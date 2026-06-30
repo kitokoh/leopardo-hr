@@ -35,6 +35,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, TaskComment> $comments
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Task extends Model
 {

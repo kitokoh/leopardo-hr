@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $status
  * @property int|null $reviewed_by
  * @property Carbon|null $reviewed_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceCorrectionRequest extends Model
 {

@@ -38,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property-read Employee|null          $validatedBy
  * @property-read \Illuminate\Database\Eloquent\Collection<int, EmployeeLocationEvent> $locationEvents
  * @property-read AttendanceLog|null     $attendanceLog
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class GeoAttendanceSession extends Model
 {

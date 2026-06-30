@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $value_type
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class CompanySetting extends Model
 {

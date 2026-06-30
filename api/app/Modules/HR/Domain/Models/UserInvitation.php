@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
  * @property array<mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class UserInvitation extends Model
 {

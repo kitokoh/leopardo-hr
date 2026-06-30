@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $status
  * @property string|null $created_by
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Project extends Model
 {

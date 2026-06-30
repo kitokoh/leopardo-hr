@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $used
  * @property float $pending
  * @property int $year
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class LeaveBalance extends Model
 {

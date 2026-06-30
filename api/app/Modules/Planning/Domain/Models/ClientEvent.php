@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
  * @property-read Employee|null $employee
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ClientEvent extends Model
 {

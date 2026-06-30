@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Access to an undefined property App\\Models\\AuditLog\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\AuditLog\>\:\:forCompany\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -47,30 +41,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/AuditLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$preferred_language\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
 
 		-
 			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:stateless\(\)\.$#'
@@ -211,42 +181,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/AuthController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\BankExport\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/BankExportController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BankExport\:\:\$file_path\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/BankExportController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BankExportController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BankExportController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$period_start\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BankExportController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BankExportController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -343,96 +277,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$approved_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$employee_note\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$manager_note\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$rejected_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_face_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_face_reference_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_device_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_reference_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$submitted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Support\\Optional\:\:toIso8601String\(\)\.$#'
 			identifier: method.notFound
 			count: 3
@@ -467,96 +311,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$disk\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$folder_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$mime_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$original_name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$path\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$size\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem\:\:download\(\)\.$#'
@@ -617,72 +371,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$color\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$icon\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$parent_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\CabinetFolder\:\:where\(\)\.$#'
@@ -751,48 +439,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$disk\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$mime_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$original_name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$path\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$size\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\CabinetDocument\|App\\Models\\CabinetFolder\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -802,108 +448,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\CabinetDocument\|App\\Models\\CabinetFolder\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$children_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$documents_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$share_token\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shareable\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shareable_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shareable_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shared_via\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shared_with_email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
 			path: app/Http/Controllers/Api/V1/CabinetShareController.php
 
 		-
@@ -1027,96 +571,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/CabinetShareController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$admin_notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$city\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$company_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$country\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$reviewed_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$sector\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$admin_notes\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1237,30 +691,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Contract\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/ContractController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Contract\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ContractController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Contract\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ContractController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Contract\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ContractController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\Contract\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -1325,36 +755,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/ContractController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Department\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Department\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Department\:\:\$manager\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Department\:\:\$manager_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Department\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Department\:\:\$positions\.$#'
@@ -1453,18 +853,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/DepartmentController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeController.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:\$company_id\.$#'
 			identifier: property.notFound
 			count: 3
@@ -1555,12 +943,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
 			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1595,24 +977,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\ExpenseClaim\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/ExpenseClaimController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\ExpenseClaim\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/ExpenseClaimController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\ExpenseClaim\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/ExpenseClaimController.php
 
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
@@ -1699,24 +1063,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/HealthController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/InvitationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/InvitationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/InvitationController.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\UserInvitation\:\:\$accepted_at\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1745,144 +1091,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/InvitationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$biometric_mode\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$device_code\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$location_label\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$sync_token_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$trusted_device_label\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_in\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_out\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$method\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_face_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$zkteco_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
 
 		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
@@ -2017,12 +1225,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/KioskController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\LeavePolicy\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/LeavePolicyController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\LeaveBalance\>\:\:forYear\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2081,12 +1283,6 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: app/Http/Controllers/Api/V1/LeavePolicyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
 
 		-
 			message: '#^Cannot access property \$timezone on mixed\.$#'
@@ -2165,60 +1361,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/MeController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$body\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$data\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$is_read\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$read_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Notification\:\:forEmployee\(\)\.$#'
@@ -2317,12 +1459,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/OnboardingChecklistController.php
-
-		-
 			message: '#^Cannot access offset ''attendance_geofence'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -2357,36 +1493,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Controllers/Api/V1/OnboardingChecklistController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/OnboardingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/OnboardingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/OnboardingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/OnboardingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/OnboardingController.php
 
 		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\UserInvitation\:\:\$accepted_at\.$#'
@@ -2545,30 +1651,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/OrgChartController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PaySlipController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PaySlipController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PaySlipController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PaySlipController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\PaySlip\:\:where\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -2651,138 +1733,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/PaySlipController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$absence_deduction\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$advance_deduction\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$bonuses\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$cotisations\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$deductions\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$employee\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$gross_salary\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$ir_amount\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$net_salary\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$overtime_amount\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$pdf_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$penalty_deduction\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$period_month\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$period_year\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$validated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$validated_by\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:with\(\)\.$#'
@@ -2923,48 +1873,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/PayrollController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$employee_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_deductions\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_employer_cost\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_gross\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_net\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollRunController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee\.$#'
 			identifier: property.notFound
 			count: 3
@@ -3049,36 +1957,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/PayrollRunController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$two_fa_secret\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
 			message: '#^Cannot call method currentAccessToken\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -3121,64 +1999,10 @@ parameters:
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$features\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanyFeatureController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformCompanyFeatureController.php
-
-		-
 			message: '#^Cannot access offset ''cameras''\|''finance''\|''leo_ai''\|''muhasebe'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformCompanyFeatureController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$currency\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$plan_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$subscription_end\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$subscription_start\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformCompanySubscriptionController.php
 
 		-
 			message: '#^Cannot cast mixed to float\.$#'
@@ -3215,36 +2039,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformPlanController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Position\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Position\:\:\$department\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Position\:\:\$department_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Position\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Position\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:with\(\)\.$#'
@@ -3331,66 +2125,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/PositionController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$created_by\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$description\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$end_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$members\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$start_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\Project\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -3451,42 +2185,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/ProjectController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Applicant\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Applicant\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Interview\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\JobPosting\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\JobPosting\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\JobPosting\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\Applicant\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -3527,90 +2225,6 @@ parameters:
 			identifier: method.nonObject
 			count: 4
 			path: app/Http/Controllers/Api/V1/RecruitmentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$amount\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$amount_remaining\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$approved_by\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$decision_comment\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$monthly_deduction\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$reason\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$repayment_months\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$repayment_plan\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
 
 		-
 			message: '#^Cannot access property \$company_id on mixed\.$#'
@@ -3685,12 +2299,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\SalaryComponent\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\SalaryComponent\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -3737,12 +2345,6 @@ parameters:
 			identifier: method.nonObject
 			count: 2
 			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryStructure\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\SalaryStructure\:\:create\(\)\.$#'
@@ -3797,72 +2399,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$break_minutes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$end_time\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$is_default\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$late_tolerance_minutes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$overtime_threshold_daily\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$overtime_threshold_weekly\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$start_time\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$work_days\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Schedule\:\:create\(\)\.$#'
@@ -3941,48 +2477,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$address\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$gps_lat\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$gps_lng\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$gps_radius_m\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Site\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Site\:\:create\(\)\.$#'
@@ -4093,36 +2587,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/TaxSlabController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\TrainingCourse\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Api/V1/TrainingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\TrainingCourse\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TrainingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\TrainingEnrollment\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TrainingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\TrainingSession\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/TrainingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\TrainingSession\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TrainingController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\TrainingCourse\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -4169,66 +2633,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/TranslationCatalogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$avatar_url\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$phone\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$preferred_language\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$provider\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company\.$#'
@@ -4375,24 +2779,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\UserEmployeeLink\:\:\$company\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4489,48 +2875,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$active\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$events\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$failure_count\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$last_triggered_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$url\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\WebhookEndpoint\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -4601,36 +2945,6 @@ parameters:
 			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Http/Controllers/Api/V1/WebhookController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$device_code\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/BiometricAdminController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/BiometricAdminController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/BiometricAdminController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Web/BiometricAdminController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Http/Controllers/Web/BiometricAdminController.php
 
 		-
 			message: '#^Parameter \#1 \$company of method App\\Http\\Controllers\\Web\\BiometricAdminController\:\:setTenantSearchPath\(\) expects App\\Models\\Company\|null, mixed given\.$#'
@@ -4789,30 +3103,6 @@ parameters:
 			path: app/Http/Controllers/Web/InvitationManagementController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Web/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$device_code\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/KioskController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/KioskController.php
-
-		-
 			message: '#^Parameter \#1 \$company of method App\\Http\\Controllers\\Web\\KioskController\:\:setTenantSearchPath\(\) expects App\\Models\\Company\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 2
@@ -4873,12 +3163,6 @@ parameters:
 			path: app/Http/Controllers/Web/MyDashboardController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformAuthController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\Guard\:\:login\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4903,66 +3187,6 @@ parameters:
 			path: app/Http/Controllers/Web/PlatformAuthController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$features\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$plan_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
 			message: '#^Cannot access offset ''cameras''\|''finance''\|''leo_ai''\|''muhasebe'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -4973,24 +3197,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/WebAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/WebAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/WebAuthController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\Guard\:\:login\(\)\.$#'
@@ -5021,30 +3227,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Web/WebAuthController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_in\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/WebEmployeeController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_out\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/WebEmployeeController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Web/WebEmployeeController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Web/WebEmployeeController.php
 
 		-
 			message: '#^Cannot access property \$currency on mixed\.$#'
@@ -5347,12 +3529,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/Absence/RejectAbsenceRequest.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/Absence/StoreAbsenceRequest.php
-
-		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\Absence\\StoreAbsenceRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -5575,12 +3751,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/Payroll/PayrollIndexRequest.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/Payroll/StorePayrollRequest.php
-
-		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\Payroll\\StorePayrollRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -5597,12 +3767,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/SalaryAdvance/DecideSalaryAdvanceRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/SalaryAdvance/SalaryAdvanceIndexRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\SalaryAdvance\\SalaryAdvanceIndexRequest\:\:messages\(\) return type has no value type specified in iterable type array\.$#'
@@ -5627,18 +3791,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/SalaryAdvance/StoreSalaryAdvanceRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
 
 		-
 			message: '#^Cannot access property \$company on mixed\.$#'
@@ -5717,18 +3869,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/StoreRegistrationRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
 
 		-
 			message: '#^Cannot access property \$company on mixed\.$#'
@@ -6031,30 +4171,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/UserInvitationResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$failure_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/DispatchWebhook.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Jobs/DispatchWebhook.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$secret\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/DispatchWebhook.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\WebhookEndpoint\:\:\$url\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/DispatchWebhook.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\WebhookDelivery\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 2
@@ -6097,24 +4213,6 @@ parameters:
 			path: app/Mail/CabinetShareMail.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$employee\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Mail/CabinetShareMail.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$share_token\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Mail/CabinetShareMail.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shareable\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Mail/CabinetShareMail.php
-
-		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -6137,12 +4235,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: app/Mail/CabinetShareMail.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Absence.php
 
 		-
 			message: '#^Class App\\Models\\Absence uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -6199,12 +4291,6 @@ parameters:
 			path: app/Models/Absence.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AbsenceType.php
-
-		-
 			message: '#^Class App\\Models\\AbsenceType uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -6215,24 +4301,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/AbsenceType.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Applicant\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Applicant.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Applicant\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Applicant.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Applicant.php
 
 		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
@@ -6295,12 +4363,6 @@ parameters:
 			path: app/Models/ApprovalDecision.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/ApprovalRequest.php
-
-		-
 			message: '#^Method App\\Models\\ApprovalRequest\:\:approvable\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\MorphTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6337,12 +4399,6 @@ parameters:
 			path: app/Models/ApprovalRequest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/ApprovalWorkflow.php
-
-		-
 			message: '#^Method App\\Models\\ApprovalWorkflow\:\:requests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6353,12 +4409,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ApprovalWorkflow.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AttendanceKiosk.php
 
 		-
 			message: '#^Class App\\Models\\AttendanceKiosk uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -6377,12 +4427,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/AttendanceKiosk.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/AttendanceLog.php
 
 		-
 			message: '#^Class App\\Models\\AttendanceLog uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -6451,12 +4495,6 @@ parameters:
 			path: app/Models/AuditLog.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/BankExport.php
-
-		-
 			message: '#^Method App\\Models\\BankExport\:\:payrollRun\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6467,12 +4505,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/BankExport.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/BiometricEnrollmentRequest.php
 
 		-
 			message: '#^Class App\\Models\\BiometricEnrollmentRequest uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -6499,40 +4531,16 @@ parameters:
 			path: app/Models/BiometricEnrollmentRequest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/CabinetDocument.php
-
-		-
 			message: '#^Property App\\Models\\CabinetDocument\:\:\$casts type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/CabinetDocument.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/CabinetFolder.php
-
-		-
 			message: '#^Property App\\Models\\CabinetFolder\:\:\$casts type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/CabinetFolder.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/CabinetShare.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/CabinetShare.php
 
 		-
 			message: '#^Cannot call method isPast\(\) on mixed\.$#'
@@ -6545,36 +4553,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/CabinetShare.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$features\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Company.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Company.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Company.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Company.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Company.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
@@ -6667,12 +4645,6 @@ parameters:
 			path: app/Models/Company.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/CompanyRequest.php
-
-		-
 			message: '#^Method App\\Models\\CompanyRequest\:\:approvedCompany\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6695,12 +4667,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/CompanySetting.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Contract.php
 
 		-
 			message: '#^Method App\\Models\\Contract\:\:amendments\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -6763,12 +4729,6 @@ parameters:
 			path: app/Models/Contract.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/ContractAmendment.php
-
-		-
 			message: '#^Method App\\Models\\ContractAmendment\:\:approver\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6785,12 +4745,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ContractAmendment.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Department.php
 
 		-
 			message: '#^Class App\\Models\\Department uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -6815,48 +4769,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Department.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Employee.php
 
 		-
 			message: '#^Access to an undefined property object\:\:\$employee_id\.$#'
@@ -6925,12 +4837,6 @@ parameters:
 			path: app/Models/Employee.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/EmployeeLoan.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:\$amount\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6983,12 +4889,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/EmployeeLoan.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Evaluation.php
 
 		-
 			message: '#^Class App\\Models\\Evaluation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -7051,12 +4951,6 @@ parameters:
 			path: app/Models/Evaluation.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/ExpenseClaim.php
-
-		-
 			message: '#^Method App\\Models\\ExpenseClaim\:\:approver\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7103,12 +4997,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/ExpenseItem.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Feature.php
 
 		-
 			message: '#^Class App\\Models\\Feature uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -7159,12 +5047,6 @@ parameters:
 			path: app/Models/Feature.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Interview.php
-
-		-
 			message: '#^Method App\\Models\\Interview\:\:applicant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7181,12 +5063,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Interview.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/JobPosting.php
 
 		-
 			message: '#^Method App\\Models\\JobPosting\:\:applicants\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -7297,12 +5173,6 @@ parameters:
 			path: app/Models/Language.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/LeaveAccrual.php
-
-		-
 			message: '#^Method App\\Models\\LeaveAccrual\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7319,12 +5189,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/LeaveAccrual.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/LeaveBalance.php
 
 		-
 			message: '#^Method App\\Models\\LeaveBalance\:\:absenceType\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -7357,12 +5221,6 @@ parameters:
 			path: app/Models/LeaveBalance.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/LeaveBalanceLog.php
-
-		-
 			message: '#^Method App\\Models\\LeaveBalanceLog\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7373,12 +5231,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/LeaveBalanceLog.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/LeavePolicy.php
 
 		-
 			message: '#^Method App\\Models\\LeavePolicy\:\:absenceType\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -7409,12 +5261,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/LoanRepayment.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Notification.php
 
 		-
 			message: '#^Method App\\Models\\Notification\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -7451,12 +5297,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Notification.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/PaySlip.php
 
 		-
 			message: '#^Method App\\Models\\PaySlip\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -7531,12 +5371,6 @@ parameters:
 			path: app/Models/PaySlipLine.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Payroll.php
-
-		-
 			message: '#^Class App\\Models\\Payroll uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -7609,12 +5443,6 @@ parameters:
 			path: app/Models/Payroll.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/PayrollRun.php
-
-		-
 			message: '#^Method App\\Models\\PayrollRun\:\:bankExports\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7675,12 +5503,6 @@ parameters:
 			path: app/Models/PayrollRun.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Position.php
-
-		-
 			message: '#^Class App\\Models\\Position uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -7697,12 +5519,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Position.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Project.php
 
 		-
 			message: '#^Class App\\Models\\Project uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -7739,12 +5555,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Project.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/SalaryAdvance.php
 
 		-
 			message: '#^Class App\\Models\\SalaryAdvance uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -7807,12 +5617,6 @@ parameters:
 			path: app/Models/SalaryAdvance.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/SalaryComponent.php
-
-		-
 			message: '#^Method App\\Models\\SalaryComponent\:\:salaryStructure\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7873,12 +5677,6 @@ parameters:
 			path: app/Models/SalaryComponent.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/SalaryStructure.php
-
-		-
 			message: '#^Method App\\Models\\SalaryStructure\:\:components\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -7921,12 +5719,6 @@ parameters:
 			path: app/Models/SalaryStructure.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Schedule.php
-
-		-
 			message: '#^Class App\\Models\\Schedule uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -7937,12 +5729,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Schedule.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Site.php
 
 		-
 			message: '#^Class App\\Models\\Site uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -8011,22 +5797,10 @@ parameters:
 			path: app/Models/SocialContribution.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/SuperAdmin.php
-
-		-
 			message: '#^Method App\\Models\\SuperAdmin\:\:getAuthPassword\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Models/SuperAdmin.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Task.php
 
 		-
 			message: '#^Class App\\Models\\Task uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -8077,12 +5851,6 @@ parameters:
 			path: app/Models/Task.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/TaskComment.php
-
-		-
 			message: '#^Method App\\Models\\TaskComment\:\:author\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -8131,12 +5899,6 @@ parameters:
 			path: app/Models/TaxSlab.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/TrainingCourse.php
-
-		-
 			message: '#^Method App\\Models\\TrainingCourse\:\:sessions\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -8147,12 +5909,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/TrainingCourse.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/TrainingEnrollment.php
 
 		-
 			message: '#^Method App\\Models\\TrainingEnrollment\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -8171,12 +5927,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/TrainingEnrollment.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/TrainingSession.php
 
 		-
 			message: '#^Method App\\Models\\TrainingSession\:\:course\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -8201,18 +5951,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/TrainingSession.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/User.php
 
 		-
 			message: '#^Method App\\Core\\Auth\\Domain\\Models\\User\:\:companyRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -8269,12 +6007,6 @@ parameters:
 			path: app/Models/UserEmployeeLink.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/UserInvitation.php
-
-		-
 			message: '#^Property App\\Core\\Auth\\Domain\\Models\\UserInvitation\:\:\$casts type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -8291,12 +6023,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/WebhookDelivery.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/WebhookEndpoint.php
 
 		-
 			message: '#^Method App\\Models\\WebhookEndpoint\:\:deliveries\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -8395,12 +6121,6 @@ parameters:
 			path: app/Modules/Cameras/Application/DTOs/UpdateCameraDTO.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Domain/Camera.php
-
-		-
 			message: '#^Class App\\Modules\\Cameras\\Domain\\Camera uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -8449,12 +6169,6 @@ parameters:
 			path: app/Modules/Cameras/Domain/Camera.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Domain/CameraAccessLog.php
-
-		-
 			message: '#^Method App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:accessToken\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -8477,24 +6191,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Cameras/Domain/CameraAccessLog.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Domain/CameraAccessToken.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Domain/CameraAccessToken.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$is_revoked\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Domain/CameraAccessToken.php
 
 		-
 			message: '#^Cannot call method isFuture\(\) on mixed\.$#'
@@ -8545,18 +6241,6 @@ parameters:
 			path: app/Modules/Cameras/Domain/CameraAccessToken.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Domain/CameraPermission.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Domain/CameraPermission.php
-
-		-
 			message: '#^Cannot call method isFuture\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -8605,18 +6289,6 @@ parameters:
 			path: app/Modules/Cameras/Domain/CameraPermission.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 4
@@ -8653,72 +6325,6 @@ parameters:
 			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$access_token_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$action\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$actor_type\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$camera_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$ip_address\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$metadata\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$reason\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Support\\Optional\:\:toIso8601ZuluString\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -8753,84 +6359,6 @@ parameters:
 			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$camera_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$granted_by\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$granted_to_email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$granted_to_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$is_revoked\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$label\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$last_used_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$permissions\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$token\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$use_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
 
 		-
 			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
@@ -8875,18 +6403,6 @@ parameters:
 			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraController.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
@@ -8909,78 +6425,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$camera_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$can_manage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$can_share\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$can_view\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$granted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$granted_by\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Support\\Optional\:\:toIso8601ZuluString\(\)\.$#'
@@ -9077,66 +6521,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/InternalCameraTokenController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$is_active\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$location\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$stream_path_override\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$camera_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$expires_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$granted_to_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$label\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$permissions\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Support\\Optional\:\:toIso8601ZuluString\(\)\.$#'
@@ -9257,102 +6641,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/UpdateCameraRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Policies/AttendancePolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Policies/AttendancePolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Policies/AttendancePolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$camera\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$can_manage\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$can_share\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraPermission\:\:\$can_view\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: app/Policies/EmployeePolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Policies/EvaluationPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Policies/EvaluationPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Evaluation\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Policies/EvaluationPolicy.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Evaluation\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Policies/EvaluationPolicy.php
 
 		-
 			message: '#^Binary operation "\." between ''company\:'' and mixed results in an error\.$#'
@@ -9625,48 +6913,6 @@ parameters:
 			path: app/Services/AuthService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_face_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_face_reference_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_device_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/BiometricEnrollmentService.php
-
-		-
 			message: '#^Anonymous function should return App\\Models\\BiometricEnrollmentRequest but returns App\\Models\\BiometricEnrollmentRequest\|null\.$#'
 			identifier: return.type
 			count: 1
@@ -9703,18 +6949,6 @@ parameters:
 			path: app/Services/BiometricEnrollmentService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$disk\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/CabinetService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetDocument\:\:\$path\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/CabinetService.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$children\.$#'
 			identifier: property.notFound
 			count: 1
@@ -9724,24 +6958,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\CabinetFolder\:\:\$documents\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Services/CabinetService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CabinetShare\:\:\$shared_with_email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/CabinetService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Services/CabinetService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
 			path: app/Services/CabinetService.php
 
 		-
@@ -9853,18 +7069,6 @@ parameters:
 			path: app/Services/CabinetService.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/CompanyProvisioningService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/CompanyProvisioningService.php
-
-		-
 			message: '#^Cannot access offset ''company'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -9931,72 +7135,6 @@ parameters:
 			path: app/Services/CompanyProvisioningService.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_consent_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_face_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_face_reference_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_fingerprint_reference_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
 			message: '#^Cannot access property \$id on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -10025,48 +7163,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Services/EmployeeService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_in\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EstimationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_out\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EstimationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$hours_worked\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EstimationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$overtime_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EstimationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Services/EstimationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/EstimationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$schedule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/EstimationService.php
 
 		-
 			message: '#^Binary operation "\*" between float and mixed results in an error\.$#'
@@ -10441,48 +7537,6 @@ parameters:
 			path: app/Services/FeatureFlag.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$biometric_mode\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$device_code\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_face_enabled\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/KioskAttendanceService.php
-
-		-
 			message: '#^Binary operation "\." between ''kiosk_'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 2
@@ -10583,48 +7637,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$extra_data\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/MobileExperienceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$advance_deduction\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$net_salary\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/PayrollService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/PayrollService.php
 
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
@@ -10765,30 +7777,6 @@ parameters:
 			path: app/Services/ReflectionService.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/SalaryAdvanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/SalaryAdvanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$amount\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/SalaryAdvanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Services/SalaryAdvanceService.php
-
-		-
 			message: '#^Binary operation "/" between mixed and int results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -10859,18 +7847,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Services/SalaryAdvanceService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/SuperAdminService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$two_fa_secret\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/SuperAdminService.php
 
 		-
 			message: '#^Binary operation "&" between mixed and 2147483647 results in an error\.$#'
@@ -10975,24 +7951,6 @@ parameters:
 			path: app/Services/TenantManager.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$failed_login_attempts\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$locked_until\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserAuthService.php
-
-		-
 			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\User\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 2
@@ -11057,60 +8015,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email_verified_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$invitation_accepted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/UserInvitationService.php
 
 		-
 			message: '#^Access to an undefined property object\:\:\$accepted_at\.$#'
@@ -11287,100 +8191,16 @@ parameters:
 			path: routes/web.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Absence\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 12
-			path: tests/Feature/Absences/AbsenceApproveTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AbsenceType\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/Absences/AbsenceApproveTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 39
-			path: tests/Feature/Absences/AbsenceApproveTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 20
-			path: tests/Feature/Absences/AbsenceApproveTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 13
-			path: tests/Feature/Absences/AbsenceApproveTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/absences/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 8
 			path: tests/Feature/Absences/AbsenceApproveTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Absence\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Absences/AbsenceCancelTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AbsenceType\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Absences/AbsenceCancelTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 19
-			path: tests/Feature/Absences/AbsenceCancelTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Absences/AbsenceCancelTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/Absences/AbsenceCancelTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/absences/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 4
 			path: tests/Feature/Absences/AbsenceCancelTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AbsenceType\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/Absences/AbsenceIndexTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 36
-			path: tests/Feature/Absences/AbsenceIndexTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 16
-			path: tests/Feature/Absences/AbsenceIndexTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 13
-			path: tests/Feature/Absences/AbsenceIndexTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -11419,100 +8239,16 @@ parameters:
 			path: tests/Feature/Absences/AbsenceIndexTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Absence\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/Absences/AbsenceRejectTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AbsenceType\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Absences/AbsenceRejectTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 26
-			path: tests/Feature/Absences/AbsenceRejectTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Absences/AbsenceRejectTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Absences/AbsenceRejectTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/absences/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 5
 			path: tests/Feature/Absences/AbsenceRejectTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Absence\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Absences/AbsenceShowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AbsenceType\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Absences/AbsenceShowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 23
-			path: tests/Feature/Absences/AbsenceShowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Absences/AbsenceShowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/Absences/AbsenceShowTest.php
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/absences/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 4
 			path: tests/Feature/Absences/AbsenceShowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AbsenceType\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/Absences/AbsenceStoreTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 30
-			path: tests/Feature/Absences/AbsenceStoreTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Absences/AbsenceStoreTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/Absences/AbsenceStoreTest.php
 
 		-
 			message: '#^Cannot access property \$days_count on App\\Models\\Absence\|null\.$#'
@@ -11593,60 +8329,6 @@ parameters:
 			path: tests/Feature/Attendance/AttendanceMonthlyReportTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_in\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$gps_lat\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$gps_lng\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Attendance/CheckInTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 2
@@ -11659,36 +8341,6 @@ parameters:
 			path: tests/Feature/Attendance/CheckInTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_out\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckOutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$hours_worked\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckOutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$overtime_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckOutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Attendance/CheckOutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CheckOutTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -11699,48 +8351,12 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: tests/Feature/Attendance/CheckOutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Attendance/ManualUpdateTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Attendance/ManualUpdateTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Attendance/ManualUpdateTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Attendance/ManualUpdateTest.php
 
 		-
 			message: '#^Part \$log\-\>id \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: tests/Feature/Attendance/ManualUpdateTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/Attendance/TodayAndHistoryTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Attendance/TodayAndHistoryTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -11839,46 +8455,10 @@ parameters:
 			path: tests/Feature/AuthGoogleSignInTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AuthLoginGuardrailsTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/AuthLoginTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$last_login_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AuthLoginTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/AuthMeLogoutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/AuthMeLogoutTest.php
-
-		-
 			message: '#^Cannot call method tokens\(\) on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: tests/Feature/AuthMeLogoutTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/AuthProfileSettingsTest.php
 
 		-
 			message: '#^Cannot access property \$password_hash on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
@@ -11977,48 +8557,6 @@ parameters:
 			path: tests/Feature/AuthSelfRegistrationTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_consent_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_face_enabled\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$biometric_fingerprint_reference_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$zkteco_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/kiosks/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 3
@@ -12029,36 +8567,6 @@ parameters:
 			identifier: argument.type
 			count: 3
 			path: tests/Feature/BiometricWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 12
-			path: tests/Feature/Cameras/CameraAccessTokensTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/Cameras/CameraAccessTokensTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 12
-			path: tests/Feature/Cameras/CameraAccessTokensTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Cameras/CameraAccessTokensTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$token\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Cameras/CameraAccessTokensTest.php
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/cameras/'' and mixed results in an error\.$#'
@@ -12101,42 +8609,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/Cameras/CameraAccessTokensTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 15
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 15
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 14
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\CameraAccessToken\:\:\$token\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/internalâ€¦'' and mixed results in an error\.$#'
@@ -12205,24 +8677,6 @@ parameters:
 			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Cameras\\Domain\\Camera\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/cameras/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 3
@@ -12277,70 +8731,10 @@ parameters:
 			path: tests/Feature/Cameras/CamerasCrudTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 10
-			path: tests/Feature/Contracts/MobilePayloadContractTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Contracts/MobilePayloadContractTest.php
-
-		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
 			count: 3
 			path: tests/Feature/Contracts/MobilePayloadContractTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email_verified_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$invitation_accepted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
 
 		-
 			message: '#^Parameter \#1 \$path of function basename expects string, string\|false\|null given\.$#'
@@ -12359,18 +8753,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 22
-			path: tests/Feature/EmployeesRbacTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/EmployeesRbacTest.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
@@ -12427,34 +8809,10 @@ parameters:
 			path: tests/Feature/EmployeesRbacTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/Estimation/DailySummaryTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Estimation/DailySummaryTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/employees/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 4
 			path: tests/Feature/Estimation/DailySummaryTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/Estimation/QuickEstimateTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 6
-			path: tests/Feature/Estimation/QuickEstimateTest.php
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/employees/'' and mixed results in an error\.$#'
@@ -12463,28 +8821,10 @@ parameters:
 			path: tests/Feature/Estimation/QuickEstimateTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Estimation/ReceiptPdfTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Estimation/ReceiptPdfTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/employees/'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 2
 			path: tests/Feature/Estimation/ReceiptPdfTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Estimation/TenantIsolationTest.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
@@ -12509,24 +8849,6 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 3
 			path: tests/Feature/Estimation/TenantIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Evaluations/EvaluationWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Evaluations/EvaluationWorkflowTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Evaluation\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/Evaluations/EvaluationWorkflowTest.php
 
 		-
 			message: '#^Cannot access property \$id on mixed\.$#'
@@ -12583,12 +8905,6 @@ parameters:
 			path: tests/Feature/Evaluations/EvaluationWorkflowTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/FeatureFlagTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -12605,12 +8921,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Feature/FeatureFlagTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/FeatureManifestApiTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -12745,24 +9055,6 @@ parameters:
 			path: tests/Feature/FeatureRegistryIntegrationTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/MeEndpointsTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$timezone\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/MeEndpointsTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 10
-			path: tests/Feature/MeEndpointsTest.php
-
-		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
 			count: 4
@@ -12773,18 +9065,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/MeEndpointsTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/MultiTenantSharedIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$slug\.$#'
-			identifier: property.notFound
-			count: 7
-			path: tests/Feature/MultiTenantSharedIsolationTest.php
 
 		-
 			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
@@ -12841,30 +9121,6 @@ parameters:
 			path: tests/Feature/OnboardingChecklistTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/OnboardingE2ETest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email_verified_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/OnboardingE2ETest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$invitation_accepted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/OnboardingE2ETest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/OnboardingE2ETest.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\UserInvitation\:\:\$accepted_at\.$#'
 			identifier: property.notFound
 			count: 1
@@ -12907,18 +9163,6 @@ parameters:
 			path: tests/Feature/OnboardingE2ETest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/PlatformAuthTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$two_fa_secret\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/PlatformAuthTest.php
-
-		-
 			message: '#^Cannot access property \$two_fa_secret on App\\Models\\SuperAdmin\|null\.$#'
 			identifier: property.nonObject
 			count: 4
@@ -12929,36 +9173,6 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 2
 			path: tests/Feature/PlatformAuthTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$features\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/PlatformCompanyEditTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 8
-			path: tests/Feature/PlatformCompanyEditTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$notes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyEditTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$plan_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyEditTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyEditTest.php
 
 		-
 			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayNotHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
@@ -13063,54 +9277,6 @@ parameters:
 			path: tests/Feature/PlatformCompanyHealthApiTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CompanyRequest\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/PlatformCompanyRequestProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyRequestProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyRequestProvisioningTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PlatformCompanyRequestProvisioningTest.php
-
-		-
 			message: '#^Part \$companyRequest\-\>id \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
@@ -13183,18 +9349,6 @@ parameters:
 			path: tests/Feature/Security/AuthenticatedGuardrailsTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Security/CrossTenantValidationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/CrossTenantValidationTest.php
-
-		-
 			message: '#^Call to an undefined static method App\\Models\\AbsenceType\:\:create\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -13205,36 +9359,6 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/Security/CrossTenantValidationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$bank_account\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$iban\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$national_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
 
 		-
 			message: '#^Access to an undefined property object\:\:\$bank_account\.$#'
@@ -13253,18 +9377,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/Security/EvaluationSecurityTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/Security/EvaluationSecurityTest.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Evaluation\:\:create\(\)\.$#'
@@ -13295,18 +9407,6 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 3
 			path: tests/Feature/Security/EvaluationSecurityTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/Security/GlobalEmailUniquenessTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/GlobalEmailUniquenessTest.php
 
 		-
 			message: '#^Cannot access property \$company_id on object\|null\.$#'
@@ -13381,18 +9481,6 @@ parameters:
 			path: tests/Feature/Security/GoogleAuthGlobalLookupTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
-
-		-
 			message: '#^Binary operation "\." between ''/api/v1/absencesâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -13409,24 +9497,6 @@ parameters:
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/Security/SalaryAdvanceSecurityTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 13
-			path: tests/Feature/Security/SalaryAdvanceSecurityTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\SalaryAdvance\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/Security/SalaryAdvanceSecurityTest.php
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/salaryâ€¦'' and mixed results in an error\.$#'
@@ -13453,30 +9523,6 @@ parameters:
 			path: tests/Feature/Security/SalaryAdvanceSecurityTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceKiosk\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/TenantModelIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 34
-			path: tests/Feature/Security/TenantModelIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/TenantIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/TenantIsolationTest.php
-
-		-
 			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
@@ -13499,18 +9545,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: tests/Feature/TenantIsolationTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/WebAuthPagesTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/WebManagerPagesTest.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Company\:\:withoutGlobalScopes\(\)\.$#'
@@ -13591,24 +9625,6 @@ parameters:
 			path: tests/Feature/WebManagerPagesTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Unit/AttendanceServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Unit/AttendanceServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/AttendanceServiceTest.php
-
-		-
 			message: '#^Cannot access property \$gps_lat on App\\Models\\AttendanceLog\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -13663,34 +9679,10 @@ parameters:
 			path: tests/Unit/AttendanceServiceTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Unit/AuthServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Unit/AuthServiceTest.php
-
-		-
 			message: '#^Cannot access property \$last_login_at on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/AuthServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Unit/EstimationServiceTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/EstimationServiceTest.php
 
 		-
 			message: '#^Cannot access offset ''days_absent'' on mixed\.$#'

@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property float $gps_lng
  * @property int $gps_radius_m
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Site extends Model
 {

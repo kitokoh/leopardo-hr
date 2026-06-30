@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array  $data
  * @property bool   $read
  * @property string|null $read_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AppNotification extends Model
 {

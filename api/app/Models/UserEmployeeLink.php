@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class UserEmployeeLink extends Model
 {

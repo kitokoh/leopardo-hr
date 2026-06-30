@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $acknowledged_by
  * @property int|null $traccar_event_id
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class VehicleAlert extends Model
 {

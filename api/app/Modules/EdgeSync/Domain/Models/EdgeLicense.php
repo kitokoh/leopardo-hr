@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  *
  * @property-read EdgeNode|null $edgeNode
  * @property-read \App\Models\Company|null $company
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class EdgeLicense extends Model
 {

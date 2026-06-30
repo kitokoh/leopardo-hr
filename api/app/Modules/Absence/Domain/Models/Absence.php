@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $reason
  * @property string|null $manager_comment
  * @property string|null $approved_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Absence extends Model
 {

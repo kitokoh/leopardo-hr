@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $processed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class PartnerPayoutRequest extends Model
 {
