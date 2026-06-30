@@ -10,9 +10,9 @@
  *   - Feature flags write: principal only
  */
 
-use App\Http\Controllers\Api\V1\BillingController;
-use App\Http\Controllers\Api\V1\FeatureFlagController;
-use App\Http\Controllers\Api\V1\OnboardingStepController;
+use App\Modules\Billing\Interfaces\Api\V1\BillingController;
+use App\Modules\Billing\Interfaces\Api\V1\FeatureFlagController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepController;
 use Illuminate\Support\Facades\Route;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
