@@ -11,7 +11,9 @@ class SalaryAdvanceAmountExceedsSalaryException extends DomainException
                 'Le montant demandé (%.2f) dépasse le maximum autorisé (%.2f).',
                 $requested,
                 $maxAllowed
-            )
+            ),
+            422,
+            'ADVANCE_EXCEEDS_SALARY'
         );
     }
 

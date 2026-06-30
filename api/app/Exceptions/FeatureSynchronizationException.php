@@ -6,114 +6,51 @@ use Exception;
 
 /**
  * Exception levée lors d'erreurs de synchronisation des fonctionnalités
- *
- * Cette exception est utilisée pour signaler les erreurs qui se produisent
- * lors de la détection, l'enregistrement ou la synchronisation des fonctionnalités
- * entre l'API et le registre des fonctionnalités.
  */
 class FeatureSynchronizationException extends Exception
 {
-    /**
-     * Crée une exception pour un échec de détection de fonctionnalité
-     *
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function detectionFailed(string $reason): self
+    public static function detectionFailed(string $reason): static
     {
-        return new self("Feature detection failed: {$reason}");
+        return new static("Feature detection failed: {$reason}");
     }
 
-    /**
-     * Crée une exception pour un échec de génération de manifeste
-     *
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function manifestGenerationFailed(string $reason): self
+    public static function manifestGenerationFailed(string $reason): static
     {
-        return new self("Manifest generation failed: {$reason}");
+        return new static("Manifest generation failed: {$reason}");
     }
 
-    /**
-     * Crée une exception pour une version incompatible
-     *
-     * @param  string  $feature  Nom de la fonctionnalité
-     * @param  string  $version  Version mobile incompatible
-     * @return static
-     */
-    public static function incompatibleVersion(string $feature, string $version): self
+    public static function incompatibleVersion(string $feature, string $version): static
     {
-        return new self("Feature {$feature} incompatible with mobile version {$version}");
+        return new static("Feature {$feature} incompatible with mobile version {$version}");
     }
 
-    /**
-     * Crée une exception pour un échec d'enregistrement de fonctionnalité
-     *
-     * @param  string  $featureKey  Clé de la fonctionnalité
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function registrationFailed(string $featureKey, string $reason): self
+    public static function registrationFailed(string $featureKey, string $reason): static
     {
-        return new self("Failed to register feature {$featureKey}: {$reason}");
+        return new static("Failed to register feature {$featureKey}: {$reason}");
     }
 
-    /**
-     * Crée une exception pour un échec de mise à jour de fonctionnalité
-     *
-     * @param  string  $featureKey  Clé de la fonctionnalité
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function updateFailed(string $featureKey, string $reason): self
+    public static function updateFailed(string $featureKey, string $reason): static
     {
-        return new self("Failed to update feature {$featureKey}: {$reason}");
+        return new static("Failed to update feature {$featureKey}: {$reason}");
     }
 
-    /**
-     * Crée une exception pour une fonctionnalité non trouvée
-     *
-     * @param  string  $featureKey  Clé de la fonctionnalité
-     * @return static
-     */
-    public static function featureNotFound(string $featureKey): self
+    public static function featureNotFound(string $featureKey): static
     {
-        return new self("Feature {$featureKey} not found in registry");
+        return new static("Feature {$featureKey} not found in registry");
     }
 
-    /**
-     * Crée une exception pour un échec de synchronisation
-     *
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function synchronizationFailed(string $reason): self
+    public static function synchronizationFailed(string $reason): static
     {
-        return new self("Synchronization failed: {$reason}");
+        return new static("Synchronization failed: {$reason}");
     }
 
-    /**
-     * Crée une exception pour un échec de validation
-     *
-     * @param  string  $field  Champ qui a échoué à la validation
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function validationFailed(string $field, string $reason): self
+    public static function validationFailed(string $field, string $reason): static
     {
-        return new self("Validation failed for {$field}: {$reason}");
+        return new static("Validation failed for {$field}: {$reason}");
     }
 
-    /**
-     * Crée une exception pour un échec de cache
-     *
-     * @param  string  $operation  Opération de cache qui a échoué
-     * @param  string  $reason  Raison de l'échec
-     * @return static
-     */
-    public static function cacheFailed(string $operation, string $reason): self
+    public static function cacheFailed(string $reason): static
     {
-        return new self("Cache operation {$operation} failed: {$reason}");
+        return new static("Cache operation failed: {$reason}");
     }
 }

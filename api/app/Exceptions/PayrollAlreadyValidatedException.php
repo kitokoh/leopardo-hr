@@ -6,7 +6,11 @@ class PayrollAlreadyValidatedException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('Cette fiche de paie est déjà validée et ne peut plus être modifiée.');
+        parent::__construct(
+            'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
+            422,
+            'PAYROLL_ALREADY_VALIDATED'
+        );
     }
 
     public function statusCode(): int
