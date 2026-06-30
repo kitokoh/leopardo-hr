@@ -6,7 +6,11 @@ class PayrollPeriodConflictException extends DomainException
 {
     public function __construct(int $month, int $year)
     {
-        parent::__construct(sprintf('Une fiche de paie existe déjà pour la période %02d/%04d.', $month, $year));
+        parent::__construct(
+            sprintf('Une fiche de paie existe déjà pour la période %02d/%04d.', $month, $year),
+            422,
+            'PAYROLL_PERIOD_CONFLICT'
+        );
     }
 
     public function statusCode(): int

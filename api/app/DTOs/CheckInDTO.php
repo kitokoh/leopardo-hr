@@ -25,16 +25,17 @@ final readonly class CheckInDTO
 
     public static function fromRequest(CheckInRequest|CheckOutRequest $request): self
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validated();
 
         return new self(
-            gps_lat: $validated['gps_lat'] ?? null,
-            gps_lng: $validated['gps_lng'] ?? null,
-            gps_accuracy: $validated['gps_accuracy'] ?? null,
+            gps_lat: isset($validated['gps_lat']) ? (float) $validated['gps_lat'] : null,
+            gps_lng: isset($validated['gps_lng']) ? (float) $validated['gps_lng'] : null,
+            gps_accuracy: isset($validated['gps_accuracy']) ? (float) $validated['gps_accuracy'] : null,
             method: 'mobile',
-            work_type: $validated['work_type'] ?? 'normal',
-            punch_note: $validated['punch_note'] ?? null,
-            device_timezone: $validated['device_timezone'] ?? null,
+            work_type: isset($validated['work_type']) ? (string) $validated['work_type'] : 'normal',
+            punch_note: isset($validated['punch_note']) ? (string) $validated['punch_note'] : null,
+            device_timezone: isset($validated['device_timezone']) ? (string) $validated['device_timezone'] : null,
         );
     }
 }
