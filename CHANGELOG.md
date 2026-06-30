@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.19.0] - 2026-06-30
+
+### Added
+- **Edge Phase 4 — Tests scénarios réels (offline/sync/conflit/licence/multi-tenant)**
+  - `tests/Feature/Edge/EdgeOfflinePunchTest.php` : 4 tests — pointages persistés hors-ligne, N pointages simultanés, health endpoint autonome, pending_count cohérent.
+  - `tests/Feature/Edge/EdgeSyncOnReconnectTest.php` : 6 tests — identification logs non-syncés, pending_count→0 après sync, signal sync_requested_at Cloud→Edge, idempotence (pas de doublons), node repasse online après heartbeat, endpoint heartbeat.
+  - `tests/Feature/Edge/EdgeConflictResolutionTest.php` : 4 tests — détection conflit (même session key), stratégie "Cloud wins", audit trail punch_meta, sync sans conflit normale.
+  - `tests/Feature/Edge/EdgeLicenseExpiryTest.php` : 8 tests — licence expirée→invalid, licence valide, renouvellement automatique, nœud révoqué non-relicenciable, exclusion révoqués des alertes, endpoint public-key 503/200, détection expiration proche.
+  - `tests/Feature/Edge/EdgeMultiTenantIsolationTest.php` : 7 tests — isolation attendance_logs, edge_nodes, employés, sync_requests; 3 tenants partitionnement strict; N nodes même tenant; alertes silence scopées tenant.
+  - `tests/Feature/Edge/EdgeSilentNodeDetectionTest.php` : 8 tests — commande sans nœud silencieux, --dry-run, nœud récent non détecté, nœud silencieux détecté, muted non alerté, notification construite correctement, null lastSeenAt, seuil custom.
+
 ## [4.18.0] - 2026-06-30
 
 ### Added
