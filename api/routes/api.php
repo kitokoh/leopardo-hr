@@ -55,6 +55,9 @@ Route::prefix('v1')->group(function (): void {
     // Demo users (public, disabled in production unless DEMO_MODE_ENABLED=true)
     Route::get('/demo-users', [DemoUserController::class, 'index']);
 
+    // Edge nodes — déploiement offline, endpoints publics + platform
+    require __DIR__.'/modules/edge.php';
+
     // Module 6 — Public Onboarding (sans auth, throttle strict)
     Route::middleware(['throttle:10,1'])->prefix('onboarding')->group(function (): void {
         Route::get('/invitation/{token}', [OnboardingController::class, 'show']);

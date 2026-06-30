@@ -1,0 +1,91 @@
+# =============================================================================
+# Leopardo Edge Node — docker-compose.yml
+#
+# Usage :
+#   1. Copier ce fichier sur votre serveur/Raspberry Pi local
+#   2. Copier .env.edge.example → .env.edge et remplir les variables
+#   3. docker compose --env-file .env.edge up -d
+#
+# Accès : http://leopardo.local  (ou http://<IP_LAN>)
+# =============================================================================
+
+version: "3.9"
+
+services:
+  edge:
+    image: leopardo/edge-api:1.0.0
+    container_name: leopardo-edge
+    restart: unless-stopped
+
+    # ── Ports ──────────────────────────────────────────────────────────────
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # ── Volumes ────────────────────────────────────────────────────────────
+    volumes:
+      # Persistance SQLite + licences + uploads
+      - edge_data:/data
+      # Clés RS256 (obligatoire en production)
+      - ./keys:/app/storage/keys:ro
+
+    # ── Variables d'environnement ──────────────────────────────────────────
+    environment:
+      APP_ENV:                  "${APP_ENV:-production}"
+      APP_DEBUG:                "${APP_DEBUG:-false}"
+      APP_KEY:                  "${APP_KEY}"
+      APP_URL:                  "${APP_URL:-http://leopardo.local}"
+
+      # Edge identity
+      EDGE_ENABLED:             "true"
+      EDGE_NODE_ID:             "${EDGE_NODE_ID}"
+      EDGE_TOKEN:               "${EDGE_TOKEN}"
+
+      # Licences RS256
+      EDGE_LICENSE_PRIVATE_KEY: "${EDGE_LICENSE_PRIVATE_KEY}"
+      EDGE_LICENSE_PUBLIC_KEY:  "${EDGE_LICENSE_PUBLIC_KEY}"
+      EDGE_LICENSE_TTL_DAYS:    "${EDGE_LICENSE_TTL_DAYS:-30}"
+
+      # Cloud parent
+      CLOUD_API_URL:            "${CLOUD_API_URL}"
+      EDGE_SILENCE_THRESHOLD_MINUTES: "${EDGE_SILENCE_THRESHOLD_MINUTES:-30}"
+
+      # SQLite
+      DB_CONNECTION:            "sqlite"
+      DB_DATABASE:              "/data/leopardo_edge.sqlite"
+
+      # Cache / Queue en filesystem (pas de Redis requis en edge)
+      CACHE_STORE:              "file"
+      QUEUE_CONNECTION:         "sync"
+      SESSION_DRIVER:           "file"
+
+      # Mail (optionnel — alertes managers)
+      MAIL_MAILER:              "${MAIL_MAILER:-log}"
+      MAIL_HOST:                "${MAIL_HOST:-}"
+      MAIL_PORT:                "${MAIL_PORT:-587}"
+      MAIL_USERNAME:            "${MAIL_USERNAME:-}"
+      MAIL_PASSWORD:            "${MAIL_PASSWORD:-}"
+      MAIL_FROM_ADDRESS:        "${MAIL_FROM_ADDRESS:-edge@leopardo-rh.com}"
+      MAIL_FROM_NAME:           "Leopardo Edge"
+
+      # Caddy
+      SERVER_NAME:              "${SERVER_NAME:-leopardo.local, :80}"
+
+    # ── Healthcheck ────────────────────────────────────────────────────────
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/api/v1/edge/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+    # ── Logging ────────────────────────────────────────────────────────────
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  edge_data:
+    driver: local

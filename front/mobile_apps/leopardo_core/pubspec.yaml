@@ -27,11 +27,20 @@ dependencies:
   geolocator: ^13.0.2
   json_annotation: ^4.11.0
   qr_flutter: ^4.1.0
+  # --- Drift (offline SQLite database) ---
+  drift: ^2.18.0
+  drift_flutter: ^0.2.2
+  sqlite3_flutter_libs: ^0.5.24
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # --- Drift codegen ---
+  drift_dev: ^2.18.0
+  build_runner: ^2.4.9
+  json_serializable: ^6.8.0
 
 flutter:
   generate: true
