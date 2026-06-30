@@ -13,6 +13,7 @@ use App\Models\Payroll;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -117,11 +118,18 @@ class HrReportController extends Controller
             ->get();
 
         $totalDays = $absences->sum('days_count');
-        $byType = $absences->groupBy('absence_type_id')->map(fn ($group) => [
-            'type' => $group->first()->absenceType?->name,
-            'count' => $group->count(),
-            'total_days' => $group->sum('days_count'),
-        ])->values();
+        /** @var \Illuminate\Support\Collection<int|string, \Illuminate\Support\Collection<int, Absence>> $grouped */
+        $grouped = $absences->groupBy('absence_type_id');
+        $byType = $grouped->map(function (Collection $group): array {
+            /** @var Absence|null $first */
+            $first = $group->first();
+
+            return [
+                'type' => $first?->absenceType?->name,
+                'count' => $group->count(),
+                'total_days' => $group->sum('days_count'),
+            ];
+        })->values();
 
         return response()->json([
             'data' => [
