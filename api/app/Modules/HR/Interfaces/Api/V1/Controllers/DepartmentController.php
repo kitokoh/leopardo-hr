@@ -23,7 +23,6 @@ class DepartmentController extends Controller
         }
 
         $departments = Department::query()
-            ->select(['id', 'company_id', 'name', 'manager_id', 'created_at'])
             ->with('manager:id,first_name,last_name')
             ->orderBy('name')
             ->get();
