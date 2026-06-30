@@ -35,6 +35,7 @@ class KioskController extends Controller
         abort_unless($actor?->isManager(), 403, 'FORBIDDEN');
         $this->setTenantSearchPath($company);
 
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'location_label' => ['nullable', 'string', 'max:120'],
@@ -62,6 +63,7 @@ class KioskController extends Controller
 
     public function punch(Request $request, string $deviceCode): JsonResponse
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'identifier' => ['required', 'string', 'max:150'],
             'action' => ['nullable', 'in:check_in,check_out'],
@@ -74,7 +76,7 @@ class KioskController extends Controller
 
         $log = $this->kioskAttendanceService->punch(
             kiosk: $kiosk,
-            identifier: trim($validated['identifier']),
+            identifier: trim((string) ($validated['identifier'] ?? '')),
             action: $validated['action'] ?? 'check_in',
         );
 
@@ -135,6 +137,7 @@ class KioskController extends Controller
 
     public function sync(Request $request, string $deviceCode): JsonResponse
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'events' => ['required', 'array'],
             'events.*.identifier' => ['required', 'string', 'max:150'],
@@ -148,7 +151,7 @@ class KioskController extends Controller
         app()->instance('current_company', $kiosk->company);
         $this->setTenantSearchPath($kiosk->company);
 
-        $processed = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events']);
+        $processed = $this->kioskAttendanceService->syncPunches($kiosk, (array) ($validated['events'] ?? []));
 
         return new JsonResponse([
             'data' => [
@@ -161,6 +164,7 @@ class KioskController extends Controller
 
     public function employeeInfo(Request $request, string $deviceCode): JsonResponse
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'identifier' => ['required', 'string', 'max:150'],
         ]);
@@ -275,6 +279,7 @@ class KioskController extends Controller
 
     public function leaveBalance(Request $request, string $deviceCode): JsonResponse
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'identifier' => ['required', 'string', 'max:150'],
         ]);
@@ -310,6 +315,7 @@ class KioskController extends Controller
 
     public function qrPunch(Request $request, string $deviceCode): JsonResponse
     {
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'qr_data' => ['required', 'string', 'max:500'],
             'action' => ['nullable', 'in:check_in,check_out'],
@@ -320,7 +326,8 @@ class KioskController extends Controller
         app()->instance('current_company', $company);
         $this->setTenantSearchPath($company);
 
-        $qrPayload = json_decode(base64_decode($validated['qr_data'], true), true);
+        /** @var array<string, mixed>|null $qrPayload */
+        $qrPayload = json_decode(base64_decode((string) ($validated['qr_data'] ?? ''), true), true);
         $identifier = $qrPayload['employee_id'] ?? $qrPayload['matricule'] ?? $validated['qr_data'];
 
         $log = $this->kioskAttendanceService->punch(
