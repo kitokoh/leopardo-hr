@@ -57,6 +57,14 @@ tags:
   - name: "Fleet Management"
   - name: "Webhooks"
     description: "Evenements sortants documentes pour integrateurs; livraison effective selon configuration tenant."
+  - name: "Growth"
+    description: "Programme partenaires, commissions et parrainages."
+  - name: "Onboarding"
+    description: "Onboarding entreprise, checklist de configuration initiale et QR codes."
+  - name: "Training"
+    description: "Formations, sessions, inscriptions et parcours de developpement."
+  - name: "Platform Admin"
+    description: "Administration super-admin : gestion tenants, plans, metriques globales."
 
 paths:
   /health:
@@ -7814,6 +7822,165 @@ paths:
       responses:
         "200":
           description: "Fichier de traduction"
+
+  # ── Growth / Partenaires ─────────────────────────────────────────────────────
+  /partner/apply:
+    post:
+      tags: ["Growth"]
+      summary: "Candidature partenaire"
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email]
+              properties:
+                name: { type: string }
+                email: { type: string, format: email }
+                company: { type: string }
+                referral_code: { type: string }
+      responses:
+        "201": { description: "Candidature soumise" }
+        "422": { $ref: "#/components/responses/Error422" }
+        "401": { $ref: "#/components/responses/Error401" }
+
+  /partner/stats:
+    get:
+      tags: ["Growth"]
+      summary: "Statistiques partenaire connecté"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200": { description: "Statistiques commissions et parrainages" }
+        "401": { $ref: "#/components/responses/Error401" }
+
+  /partner/companies:
+    get:
+      tags: ["Growth"]
+      summary: "Entreprises parrainées par le partenaire"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200": { description: "Liste des entreprises parrainées" }
+
+  /partner/payout:
+    post:
+      tags: ["Growth"]
+      summary: "Demande de versement commission"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "201": { description: "Demande créée" }
+        "422": { $ref: "#/components/responses/Error422" }
+
+  /platform/growth/partners:
+    get:
+      tags: ["Growth", "Platform Admin"]
+      summary: "Lister les partenaires (admin)"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200": { description: "Liste des partenaires" }
+        "403": { $ref: "#/components/responses/Error403" }
+
+  /platform/growth/partners/{partner}/rate:
+    patch:
+      tags: ["Growth", "Platform Admin"]
+      summary: "Mettre à jour le taux de commission d'un partenaire"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: partner
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rate]
+              properties:
+                rate: { type: number, minimum: 0, maximum: 1 }
+      responses:
+        "200": { description: "Taux mis à jour" }
+        "404": { $ref: "#/components/responses/Error404" }
+
+  /platform/growth/payouts:
+    get:
+      tags: ["Growth", "Platform Admin"]
+      summary: "Lister les demandes de versement"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200": { description: "Liste des paiements partenaires" }
+
+  # ── Onboarding Setup ─────────────────────────────────────────────────────────
+  /onboarding-setup/checklist:
+    get:
+      tags: ["Onboarding"]
+      summary: "Récupérer la checklist d'onboarding"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: "Checklist avec statut de chaque étape"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key: { type: string }
+                        label: { type: string }
+                        completed: { type: boolean }
+                        skipped: { type: boolean }
+        "401": { $ref: "#/components/responses/Error401" }
+
+  /onboarding-setup/progress:
+    get:
+      tags: ["Onboarding"]
+      summary: "Progression globale de l'onboarding"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: "Pourcentage de complétion"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  progress_percent: { type: integer }
+                  completed_steps: { type: integer }
+                  total_steps: { type: integer }
+
+  /onboarding-setup/{stepKey}/complete:
+    patch:
+      tags: ["Onboarding"]
+      summary: "Marquer une étape comme complète"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: stepKey
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: "Étape marquée complète" }
+        "404": { description: "Étape inconnue" }
+
+  /onboarding-setup/{stepKey}/skip:
+    patch:
+      tags: ["Onboarding"]
+      summary: "Ignorer une étape d'onboarding"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: stepKey
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: "Étape ignorée" }
+        "404": { description: "Étape inconnue" }
 
 components:
   securitySchemes:

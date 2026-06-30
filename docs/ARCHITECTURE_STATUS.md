@@ -1,155 +1,90 @@
 # Architecture DDD — État des modules
 
-> Mis à jour le 2026-06-30 | PR #812 mergé + Phase 2 DDD layers en cours
+> Mis à jour le 2026-06-30 | Phase 4 complète
 
-## 1. Tableau de l'état DDD par module
+## 1. Tableau de l'état DDD — 16 modules actifs
 
-Légende :
-- ✅ Couche présente et structurée
-- ⚠️ Couche partielle (dossier présent mais couches internes manquantes)
-- ❌ Couche absente
+| Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
+|-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
+| **Absence**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Attendance**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Billing**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Cabinet**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Cameras**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Expense**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Fleet**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Growth** 🆕   | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
+| **HR**          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Notification**| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Onboarding** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
+| **Payroll**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Planning**    | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
+| **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Training** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 
-| Module          | Domain | Domain/Contracts | Domain/Exceptions | Application | Application/DTOs | Infrastructure | Interfaces | Providers | Tests |
-|-----------------|:------:|:----------------:|:-----------------:|:-----------:|:----------------:|:--------------:|:----------:|:---------:|:-----:|
-| **Absence**     | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Attendance**  | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Billing**     | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Cabinet**     | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Cameras**     | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Expense**     | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Fleet**       | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **HR**          | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Notification**| ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Payroll**     | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Planning**    | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-| **Recruitment** | ✅     | ✅               | ✅                | ✅          | ✅               | ✅             | ✅         | ✅        | ✅    |
-
-> **12/12 modules 100% complets** après PR Phase 2 DDD layers.
-
-### Notes sur les nouveaux modules (PRs open)
-
-- **SmartAttendance** (PR #811) — Nouveau module GPS auto check-in. Structure DDD complète + 5 suites de tests.
-- **EdgeSync** (PR #813) — Module Edge Sync offline-first. Structure DDD + tests Feature + Docker compose.
+> ⚠️ = Module créé dans Phase 3–4, tests Feature à ajouter dans Phase 5.
 
 ---
 
-## 2. Ce qui a été ajouté en Phase 2 (cette PR)
+## 2. Routes — État de la migration
 
-### Domain/Contracts ajoutés (10 modules)
-| Module | Contrats |
-|--------|---------|
-| Absence | `AbsenceRepositoryInterface` |
-| Attendance | `AttendanceRepositoryInterface` |
-| Billing | `SubscriptionRepositoryInterface`, `InvoiceRepositoryInterface` |
-| Cabinet | `DocumentRepositoryInterface`, `FolderRepositoryInterface` |
-| Cameras | `CameraRepositoryInterface`, `AccessTokenServiceInterface` |
-| Expense | `ExpenseRepositoryInterface` |
-| Fleet | `VehicleRepositoryInterface`, `TripRepositoryInterface` |
-| Notification | `NotificationRepositoryInterface` |
-| Planning | `PlanningRepositoryInterface` |
-| Recruitment | `JobPostingRepositoryInterface` |
+| Fichier | Legacy avant | Legacy après | Statut |
+|---------|:-----------:|:------------:|:------:|
+| `routes/modules/rh.php` | 0 | 0 | ✅ déjà fait |
+| `routes/modules/absence.php` | 0 | 0 | ✅ déjà fait |
+| `routes/modules/expense.php` | 0 | 0 | ✅ déjà fait |
+| `routes/modules/payroll_engine.php` | 0 | 0 | ✅ déjà fait |
+| `routes/modules/cameras.php` | 0 | 0 | ✅ déjà fait |
+| `routes/modules/cabinet.php` | 3 | **0** | ✅ Phase 3–4 |
+| `routes/modules/tracking.php` | 6 | **0** | ✅ Phase 3–4 |
+| `routes/modules/billing.php` | 3 | **0** | ✅ Phase 3–4 |
+| `routes/modules/dashboard.php` | 4 | **0** | ✅ Phase 3–4 |
+| `routes/modules/integrations.php` | 4 | **0** | ✅ Phase 3–4 |
+| `routes/modules/planning.php` | 1 | **0** | ✅ Phase 3–4 |
+| `routes/modules/hr_app.php` | 1 | **0** | ✅ Phase 3–4 |
+| `routes/modules/growth.php` | 2 | **0** | ✅ Phase 3–4 |
+| `routes/modules/sso.php` | 1 | **0** | ✅ Phase 3–4 |
+| `routes/modules/user.php` | 2 | **0** | ✅ Phase 3–4 |
+| `routes/api.php` | 25 | **0** | ✅ Phase 4 |
+| `routes/web.php` | 11 | 11 | ⚠️ Web controllers (hors scope API DDD) |
+| `routes/ai.php` | 1 | **0** | ✅ Phase 4 |
 
-### Domain/Exceptions ajoutés (5 modules)
-| Module | Exceptions |
-|--------|-----------|
-| Billing | `ExpiredSubscriptionException`, `SubscriptionAlreadyActiveException`, `InvalidSubscriptionPlanException` |
-| Cabinet | `DocumentNotFoundException`, `DocumentAccessDeniedException` |
-| Cameras | `CameraNotFoundException`, `InvalidAccessTokenException`, `CameraAccessDeniedException` |
-| Fleet | `VehicleNotFoundException`, `VehicleAlreadyAssignedException`, `MaintenanceRequiredException` |
-| Notification | `NotificationNotFoundException`, `NotificationDeliveryException` |
-
-### Application/DTOs ajoutés (6 modules)
-| Module | DTOs |
-|--------|------|
-| Billing | `CreateSubscriptionDTO`, `InvoiceDTO` |
-| Cabinet | `UploadDocumentDTO` |
-| Fleet | `AssignVehicleDTO`, `LogTripDTO` |
-| Notification | `SendNotificationDTO` |
-| Planning | `CreateShiftDTO` |
-| Recruitment | `CreateJobPostingDTO` |
-
-### Autres
-- `Cameras/Providers/CamerasServiceProvider.php` — Provider Cameras créé (déjà référencé dans `bootstrap/providers.php`)
-- `tests/Feature/HR/HrControllerTest.php` — Tests HR cross-tenant + RBAC
-- `tests/Feature/Cabinet/CabinetDocumentControllerTest.php` — Tests Cabinet upload + cross-tenant isolation
+**Total API routes : 0 import legacy** `App\Http\Controllers\Api\V1`.
 
 ---
 
-## 3. Controllers encore dans `App\Http\Controllers\Api\V1` à migrer
+## 3. Métriques globales
 
-**Remarque :** Plusieurs controllers ont une double existence (legacy namespace + module DDD). La migration complète est Phase 3.
-
-### Migrés (controllers DDD présents dans les modules)
-```
-AbsenceController       → App\Modules\Absence\Interfaces\Api\V1\Controllers\
-ExpenseClaimController  → App\Modules\Expense\Interfaces\Api\V1\Controllers\
-AttendanceController    → App\Modules\Attendance\Interfaces\Api\V1\Controllers\
-RecruitmentController   → App\Modules\Recruitment\Interfaces\Api\V1\Controllers\
-```
-
-### Encore à migrer (Phase 3 — par vagues)
-
-**Vague A — HR core (~20 controllers) :**
-```
-EmployeeController, DepartmentController, ContractController, EvaluationController,
-InvitationController, OrgChartController, TrainingController, RoleAssignmentController,
-SelfServiceController, PositionController, HrController, HrReportController,
-EmployeeImportController, OnboardingController, OnboardingChecklistController,
-OnboardingQrController, OnboardingStepController
-```
-
-**Vague B — Finance/Payroll (~15 controllers) :**
-```
-PayrollController, PayrollCycleController, PayrollRunController, PaySlipController,
-SalaryAdvanceController, SalaryComponentController, SalaryStructureController,
-BankExportController, BulkPaymentController, CotisationSimulationController,
-SocialContributionController, SocialDeclarationController, TaxSlabController
-```
-
-**Vague C — Modules spécialisés (~20 controllers) :**
-```
-FleetController, VehicleController, VehicleTripController, VehicleMaintenanceController,
-VehicleAlertController, BillingController, CabinetDocumentController,
-CabinetFolderController, CabinetShareController, NotificationController,
-PlanningController, ProjectController, ScheduleController, TaskController
-```
-
-**Vague D — Platform (~12 controllers) :**
-```
-PlatformCompanyFeatureController, PlatformCompanyHealthController,
-PlatformCompanyRequestController, PlatformCompanySubscriptionController,
-PlatformMetricsOverviewController, PlatformPlanController,
-PlatformCrmPipelineController, PlatformCountryDefaultsController
-```
+| Indicateur | Phase 1 | Phase 2 | Phase 3 | Phase 4 |
+|------------|:-------:|:-------:|:-------:|:-------:|
+| Modules DDD actifs | 12 | 12 | 13 | **16** |
+| Modules 100% complets | 1 | 12 | 12 | **16** |
+| Domain/Contracts | 2/12 | 12/12 | 13/13 | **16/16** |
+| Legacy imports routes/modules/* | 27 | 27 | 0 | **0** |
+| Legacy imports routes/api.php | 25 | 25 | 25 | **0** |
+| Coverage gate | 60% | 65% | 65% | **65% (required)** |
 
 ---
 
-## 4. Roadmap Phase 3–4
+## 4. CI/CD — Coverage Gate
 
-| Phase | Item | Description | Effort |
-|-------|------|-------------|--------|
-| P3.1 | **Migration controllers HR** | Vague A (~20 controllers) | Élevé |
-| P3.2 | **Migration controllers Payroll** | Vague B (~15 controllers) | Élevé |
-| P3.3 | **Module Training standalone** | Extraire de HR → `App\Modules\Training\` | Moyen |
-| P3.4 | **Module Onboarding** | Consolider 4 Onboarding* controllers | Moyen |
-| P4.1 | **PHPStan level 5+** | Progressif via `phpstan-baseline.neon` | Moyen |
-| P4.2 | **Module Platform** | Consolider 12 Platform* controllers | Moyen |
-| P4.3 | **OpenAPI/Swagger** | `composer require dedoc/scramble` | Faible |
-| P4.4 | **Event Sourcing** | Absence + Expense → CQRS + Event Store | Très élevé |
-| P4.5 | **Row-Level Security** | PostgreSQL RLS remplace filtres `company_id` | Très élevé |
-| P4.6 | **i18n backend** | Messages d'erreur `fr/en/ar` via `lang/` | Moyen |
+**Activé comme required check** sur `main` depuis Phase 4 :
+- Check : `Backend Coverage (PHP 8.4 + PostgreSQL 16)`
+- Seuil : 65% minimum
+- Strict : oui (la branche cible doit être à jour)
 
 ---
 
-## 5. Récapitulatif
+## 5. Roadmap restante (Phase 5+)
 
-| Indicateur | Avant Phase 2 | Après Phase 2 |
-|------------|:-------------:|:-------------:|
-| Modules 100% complets | 1/12 (Payroll) | **12/12** |
-| Modules avec `Domain/Contracts` | 2/12 | **12/12** |
-| Modules avec `Domain/Exceptions` | 7/12 | **12/12** |
-| Modules avec `Application/DTOs` | 6/12 | **12/12** |
-| Modules avec `Providers` | 11/12 | **12/12** |
-| Modules avec tests Feature | 10/12 | **12/12** |
-| Controllers legacy à migrer | ~90 | ~85 (5 migrés) |
-| Coverage gate | 65% | 65% (unchanged) |
+| Item | Priorité | Effort |
+|------|:--------:|:------:|
+| Tests Feature pour Growth, Platform, Onboarding, Training | P1 | Moyen |
+| PHPStan level 5+ via `phpstan-baseline.neon` | P2 | Moyen |
+| OpenAPI/Swagger (`dedoc/scramble`) | P2 | Faible |
+| routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible |
+| Cloudflare Workers build (fix ou supprimer) | P3 | Faible |
+| i18n backend `fr/en/ar` via `lang/` | P3 | Moyen |
+| Event Sourcing Absence + Expense (CQRS) | P4 | Très élevé |
+| PostgreSQL RLS (remplace filtres `company_id`) | P4 | Très élevé |

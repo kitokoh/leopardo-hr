@@ -10,12 +10,11 @@ class CamerasServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Bind Cameras module contracts here
-        // e.g. $this->app->bind(CameraRepositoryInterface::class, EloquentCameraRepository::class);
+        // Bind Cameras module contracts
     }
 
     public function boot(): void
     {
-        // Boot Cameras module — routes loaded via Infrastructure/routes or Interfaces/Api/V1
+        // Boot Cameras module
     }
 }

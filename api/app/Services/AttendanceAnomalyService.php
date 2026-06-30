@@ -46,6 +46,7 @@ class AttendanceAnomalyService
             ->orderByDesc('id')
             ->get();
 
+        /** @var Collection<int, array<string, mixed>> $items */
         $items = collect()
             ->merge($this->lateArrivals($logs))
             ->merge($this->missingCheckOuts($logs))
@@ -57,6 +58,7 @@ class AttendanceAnomalyService
             ->sortByDesc('detected_at')
             ->values();
 
+        /** @var array<string, int> $counts */
         $counts = $items
             ->groupBy('type')
             ->map(fn (Collection $group): int => $group->count())
@@ -86,6 +88,10 @@ class AttendanceAnomalyService
         ];
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function lateArrivals(Collection $logs): Collection
     {
         return $logs
@@ -101,6 +107,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function missingCheckOuts(Collection $logs): Collection
     {
         return $logs
@@ -113,6 +123,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function manualCorrections(Collection $logs): Collection
     {
         return $logs
@@ -125,6 +139,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function excessiveOvertime(Collection $logs): Collection
     {
         return $logs
@@ -140,6 +158,10 @@ class AttendanceAnomalyService
             ));
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function rapidDevicePunches(Collection $logs): Collection
     {
         return $logs
@@ -182,6 +204,10 @@ class AttendanceAnomalyService
             });
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function repeatedExactCheckIns(Collection $logs): Collection
     {
         return $logs
@@ -204,9 +230,15 @@ class AttendanceAnomalyService
             });
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return Collection<int, array<string, mixed>>
+     */
     private function outOfGeofencePunches(Collection $logs, ?Company $company): Collection
     {
-        $geofence = $company?->metadata['attendance_geofence'] ?? null;
+        /** @var array<string, mixed>|null $metadata */
+        $metadata = $company?->metadata;
+        $geofence = $metadata['attendance_geofence'] ?? null;
 
         if (! is_array($geofence) || ! isset($geofence['lat'], $geofence['lng'], $geofence['radius_meters'])) {
             return collect();
