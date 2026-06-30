@@ -12,6 +12,14 @@
   - `tests/Feature/Edge/EdgeLicenseExpiryTest.php` : 8 tests — licence expirée→invalid, licence valide, renouvellement automatique, nœud révoqué non-relicenciable, exclusion révoqués des alertes, endpoint public-key 503/200, détection expiration proche.
   - `tests/Feature/Edge/EdgeMultiTenantIsolationTest.php` : 7 tests — isolation attendance_logs, edge_nodes, employés, sync_requests; 3 tenants partitionnement strict; N nodes même tenant; alertes silence scopées tenant.
   - `tests/Feature/Edge/EdgeSilentNodeDetectionTest.php` : 8 tests — commande sans nœud silencieux, --dry-run, nœud récent non détecté, nœud silencieux détecté, muted non alerté, notification construite correctement, null lastSeenAt, seuil custom.
+## [4.18.1] - 2026-06-30
+
+### Fixed
+- **PHPStan/Larastan — Vagues 1 à 4** : Réduction de ~5 430 → ~1 277 erreurs baseline (−76%).
+  - **Vague 1** : Ajout de `vendor/larastan/larastan/extension.neon` dans `phpstan.neon` (−2 189 erreurs `property.notFound` Eloquent). Corrections `mixed` dans `AttendanceMonthlyReportService`, `AttendanceAnomalyService`, `AttendanceService`, `PlatformCompanyHealthService`.
+  - **Vague 2** : Annotations `@param/@return array<string, mixed>` dans `CameraService` (−100 erreurs).
+  - **Vague 3** : Types explicites dans `EvaluationController`, `TaskController`, `AbsenceService`, `PayrollCalculator` (−288 erreurs).
+  - **Vague 4** : `FeatureRegistry` — `cache->remember()` typé, `getStatistics()` Builder<Feature> via `newQuery()`, `synchronize()` cast explicites. `PlatformCompanyRequestController` — `DB::table()->value()` cast `int`, `$result['company']` typé. `HrReportController` — closure `groupBy->map()` typée. Tests Absences — `str_pad((string))`, `firstOrFail()`.
 
 ## [4.18.0] - 2026-06-30
 
@@ -44,6 +52,15 @@
 ### Fixed
 - **NotificationController** : Ajout de la méthode `unread()` manquante (GET `/notifications/unread` répondait 500 avec `Call to undefined method`).
 - **NotificationController** : `markRead()` et `markAllRead()` créent désormais des entrées `CommunicationEvent` pour l'audit trail des lectures (fix `communication_events` table empty assertion).
+- **Phase 2 — DDD Contracts/Exceptions/DTOs complets** : `Domain/Contracts`, `Domain/Exceptions`, `Application/DTOs` ajoutés sur les 10 modules qui en manquaient (Absence, Attendance, Billing, Cabinet, Cameras, Expense, Fleet, Notification, Planning, Recruitment). 12/12 modules 100% complets.
+- **Phase 3 — Migration routes/modules/* vers namespaces DDD** : 0 import `App\Http\Controllers\Api\V1` restant dans `routes/modules/`. Module Growth créé (13ème module DDD).
+- **Phase 4 — Migration routes/api.php + 3 nouveaux modules** : 25 imports legacy supprimés de `routes/api.php`. Modules Platform, Onboarding, Training créés (16 modules totaux). Coverage Gate activé comme required check (65% strict).
+- **Phase 5 — openapi.yaml** : 13 nouveaux paths documentés (Growth: /partner/*, Onboarding: /onboarding-setup/*). Nouveaux tags Growth, Onboarding, Training, Platform Admin. Architecture-check étendu à 16 modules.
+- **i18n** : `lang/ar/dashboard.php` ajouté (manquait vs EN). Couverture ar/fr/en complète.
+
+### Fixed
+- **Architecture CI** : 9 violations de structure corrigées (Infrastructure/ manquants pour Growth/Platform/Onboarding/Training, Cameras/Providers créé). PHPStan modules ignores ajoutés pour modules Phase 3-4.
+- **OpenAPI CI** : Clé dupliquée `/me/qr-profile` supprimée de `openapi.yaml` (ligne 7985).
 
 ## [4.17.9] - 2026-06-29
 

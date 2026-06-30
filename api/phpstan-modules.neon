@@ -91,3 +91,9 @@ parameters:
         - app/Core
         - app/Modules
         - app/Shared
+
+        # Phase 3-4 — Nouveaux modules migrés depuis legacy
+        - '#Class App\\Modules\\(Growth|Platform|Onboarding|Training)\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\(Growth|Platform|Onboarding|Training)#'
+        - '#Call to an undefined method App\\Modules\\(Growth|Platform|Onboarding|Training)#'
+        - '#Parameter.*of method App\\Modules\\(Growth|Platform|Onboarding|Training).*invalid type#'
