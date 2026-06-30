@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.9-fix2] - 2026-06-30
+
+### Fixed
+- **NotificationController** : Ajout de la méthode `unread()` manquante (GET `/notifications/unread` répondait 500 avec `Call to undefined method`).
+- **NotificationController** : `markRead()` et `markAllRead()` créent désormais des entrées `CommunicationEvent` pour l'audit trail des lectures (fix `communication_events` table empty assertion).
+
 ## [4.17.9] - 2026-06-29
 
 ### Added
