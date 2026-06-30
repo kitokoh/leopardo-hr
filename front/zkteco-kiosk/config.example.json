@@ -1,5 +1,7 @@
 {
-  "apiBaseUrl": "https://gestionemployerbackend.onrender.com/api/v1",
+  "_comment": "Configuration du kiosque ZKTeco — Leopardo RH. Copier vers config.json et adapter.",
+
+  "apiBaseUrl": "https://api.leopardo-rh.com/api/v1",
   "deviceCode": "KIOSK001",
   "kioskToken": "REPLACE_WITH_KIOSK_SYNC_TOKEN",
   "companyName": "Leopardo RH Client",
@@ -8,5 +10,24 @@
   "autoSync": true,
   "syncIntervalSeconds": 60,
   "listenHost": "127.0.0.1",
-  "listenPort": 8037
+  "listenPort": 8037,
+
+  "_edge_comment": "=== MODE EDGE LOCAL (optionnel) ===",
+
+  "edge": {
+    "enabled": false,
+
+    "localApiUrl": "http://leopardo.local/api/v1/edge",
+
+    "fallbackToCloud": true,
+
+    "healthCheckPath": "/health",
+    "healthCheckIntervalSeconds": 30,
+
+    "offlineQueueMaxSize": 500,
+    "offlineQueueFlushOnReconnect": true,
+
+    "_routing_comment": "Stratégie de routage : 'edge_first' | 'cloud_first' | 'edge_only'",
+    "routingStrategy": "edge_first"
+  }
 }
