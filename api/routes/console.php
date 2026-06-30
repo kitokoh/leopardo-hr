@@ -119,12 +119,6 @@ Schedule::command('growth:approve-commissions')
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
-// Edge node monitoring — détecte les nœuds silencieux et alerte les managers
-Schedule::command('edge:detect-silent-nodes')
-    ->everyFiveMinutes()
-    ->withoutOverlapping()
-    ->onOneServer();
-
 Artisan::command('super-admin:reset-password {email} {password}', function (string $email, string $password) {
     DB::statement('SET search_path TO public');
 

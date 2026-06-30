@@ -25,6 +25,8 @@ class CameraService
 
     /**
      * Crée une caméra en s'assurant que la limite du plan n'est pas dépassée.
+     *
+     * @param array<string, mixed> $data
      */
     public function create(Company $company, Employee $actor, array $data): Camera
     {
@@ -56,6 +58,9 @@ class CameraService
         return $camera->fresh();
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function update(Camera $camera, Employee $actor, array $data): Camera
     {
         foreach (['name', 'location', 'sort_order', 'stream_path_override', 'metadata', 'is_active'] as $field) {
@@ -105,6 +110,9 @@ class CameraService
     /**
      * Produit la charge API pour l'app : caméra + stream_token signé.
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function buildStreamPayload(Camera $camera, Employee $actor): array
     {
         $issued = $this->streamTokens->issue($camera, $actor->id);
@@ -125,6 +133,9 @@ class CameraService
 
     /**
      * Crée un token d'accès tiers (lien public partageable).
+     */
+    /**
+     * @param array<string, mixed> $data
      */
     public function issueAccessToken(Camera $camera, Employee $actor, array $data): CameraAccessToken
     {
@@ -194,6 +205,9 @@ class CameraService
     /**
      * Construit la réponse /internal/camera-token/verify pour MediaMTX.
      * Résout aussi bien un stream_token JWT qu'un access_token opaque.
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function verifyTokenForMediamtx(string $token, int $cameraId, ?string $clientIp): array
     {
@@ -348,6 +362,9 @@ class CameraService
      * Teste la joignabilité d'une URL RTSP via ffprobe (best-effort).
      * Retourne ['ok' => bool, 'error' => ?string].
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function testRtsp(string $rtspUrl): array
     {
         if (! (bool) Config::get('cameras.test_rtsp.enabled', true)) {
@@ -393,6 +410,9 @@ class CameraService
         return ['ok' => false, 'error' => 'connection_failed', 'skipped' => false];
     }
 
+    /**
+     * @param array<string, mixed>|null $metadata
+     */
     public function log(
         ?Company $company,
         ?Camera $camera,
@@ -500,13 +520,15 @@ class CameraService
             return $camera->thumbnail_path;
         }
 
-        return rtrim($base, '/').'/storage/'.ltrim($camera->thumbnail_path, '/');
+        return rtrim($base, '/').'/storage/'.ltrim((string) $camera->thumbnail_path, '/');
     }
 
     private function streamUrl(Camera $camera): string
     {
         $base = rtrim((string) Config::get('cameras.stream_base_url', 'wss://proxy.leopardo-rh.com/cam'), '/');
-        $path = $camera->stream_path_override ?: (string) $camera->id;
+        $path = $camera->stream_path_override !== null && $camera->stream_path_override !== ''
+            ? (string) $camera->stream_path_override
+            : (string) $camera->id;
 
         return $base.'/'.trim($path, '/').'/webrtc';
     }

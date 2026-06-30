@@ -4,7 +4,7 @@ use App\Http\Controllers\AI\AgentController;
 use App\Http\Controllers\AI\AIAnalyticsController;
 use App\Http\Controllers\AI\AIGatewayController;
 use App\Http\Controllers\AI\VoiceController;
-use App\Http\Controllers\Api\V1\AIWorkflowController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\AIWorkflowController;
 use App\Http\Middleware\AI\AIFeatureCheck;
 use App\Http\Middleware\AI\AIRateLimiter;
 use App\Http\Middleware\AI\AITenantInjector;
