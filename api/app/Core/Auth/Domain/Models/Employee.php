@@ -87,6 +87,14 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Position|null $position
  * @property-read Schedule|null $schedule
  * @mixin \Illuminate\Database\Eloquent\Builder
+ * @method static \Illuminate\Database\Eloquent\Builder<static> query()
+ * @method static static create(array<string, mixed> $attributes = [])
+ * @method static static|null find(mixed $id, array<int, string> $columns = ['*'])
+ * @method static static findOrFail(mixed $id, array<int, string> $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder<static> where(string|\Closure|array<mixed> $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder<static> select(array<int, string>|string $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder<static> withoutGlobalScopes(array<int, string>|null $scopes = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static> with(array<int|string, mixed>|string $relations, \Closure|string $callback = null)
  */
 class Employee extends Authenticatable implements HasApiTokensContract
 {
