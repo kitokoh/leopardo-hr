@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\V1\PartnerDashboardController;
-use App\Http\Controllers\Api\V1\GrowthAdminController;
+use App\Modules\Growth\Interfaces\Api\V1\Controllers\PartnerDashboardController;
+use App\Modules\Growth\Interfaces\Api\V1\Controllers\GrowthAdminController;
 use Illuminate\Support\Facades\Route;
 
 // Espace Partenaire (Web Client)
