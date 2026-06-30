@@ -1163,6 +1163,18 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `POST /api/v1/auth/google/token` : connexion via token Google — mock Socialite renforcé (`stateless()->userFromToken()`). Test de rejet 401 pour email inconnu. Test cross-tenant garantissant l'absence de fuite d'isolation.
 - Tests couverts : GoogleAuthGlobalLookupTest (lookup global, rejet inconnu, isolation cross-tenant).
 
+## Phase 6 — PHPStan/Larastan Vagues 1–4 (v4.18.1)
+
+**Correction types mixtes — Services critiques**
+- `AttendanceMonthlyReportService`, `AttendanceAnomalyService`, `AttendanceService` : annotations `@param Collection<int, AttendanceLog>`, casts `(string)` sur timezone/dates.
+- `PlatformCompanyHealthService` : guard `DB::selectOne()` nullable, `@var object|null`.
+- `FeatureRegistry` : `cache->remember()` typé, `getStatistics()` avec `Builder<Feature>` via `newQuery()`, casts `(string)` sur `$change['feature_key']`.
+- `HrReportController` : closure `groupBy->map()` typée avec `Collection<int, Absence>`.
+- `PlatformCompanyRequestController` : `DB::table()->value()` int cast, `$result['company']` annotatio `@var Company`.
+- `CameraService` : `@param/@return array<string, mixed>` sur méthodes de stream.
+- `AbsenceService`, `PayrollCalculator`, `EvaluationController`, `TaskController` : types explicites sur tous les paramètres/retours mixtes.
+- Tests Feature/Absences : `str_pad((string) $n)`, `firstOrFail()` pour éliminer nullable.
+
 ## Phase 5 — Migration AbsenceController DDD + HR Domain/Contracts (v4.17.9)
 
 **Absence — Controller DDD canonique (remplacement Planning module)**
