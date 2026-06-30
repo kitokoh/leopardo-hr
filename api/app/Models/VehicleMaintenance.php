@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $invoice_path
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class VehicleMaintenance extends Model
 {

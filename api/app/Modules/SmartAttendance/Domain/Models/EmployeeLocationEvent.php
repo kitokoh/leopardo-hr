@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $device_timestamp
  * @property array       $metadata
  * @property Carbon      $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class EmployeeLocationEvent extends Model
 {

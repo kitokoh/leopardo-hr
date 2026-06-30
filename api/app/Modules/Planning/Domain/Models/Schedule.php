@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property bool $is_default
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Schedule extends Model
 {

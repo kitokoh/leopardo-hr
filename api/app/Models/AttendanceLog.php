@@ -38,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Employee|null $employee
  * @property-read Schedule|null $schedule
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceLog extends Model
 {

@@ -114,13 +114,14 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Collection<int, array<string, mixed>>
      */
     public function scanRoutes(): Collection
     {
         $routes = collect();
 
         foreach ($this->router->getRoutes() as $route) {
+            /** @var \Illuminate\Routing\Route $route */
             // Filtrer uniquement les routes API
             if (! $this->isApiRoute($route)) {
                 continue;

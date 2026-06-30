@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $reason
  * @property string|null $ip_address
  * @property Carbon $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class PartnerAuditLog extends Model
 {

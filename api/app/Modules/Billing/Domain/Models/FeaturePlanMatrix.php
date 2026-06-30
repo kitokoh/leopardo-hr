@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  * @property int $limit_value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class FeaturePlanMatrix extends Model
 {

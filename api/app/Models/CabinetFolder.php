@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $children_count
  * @property-read Collection<int, CabinetDocument> $documents
  * @property-read int|null $documents_count
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class CabinetFolder extends Model
 {

@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $chargily_subscription_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Subscription extends Model
 {

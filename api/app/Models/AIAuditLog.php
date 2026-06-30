@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int $duration_ms
  * @property string|null $error
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AIAuditLog extends Model
 {

@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @property-read \App\Models\Company|null $company
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class EdgeNode extends Model
 {

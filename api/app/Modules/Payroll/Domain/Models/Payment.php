@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string $status
  * @property Carbon|null $paid_at
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Payment extends Model
 {

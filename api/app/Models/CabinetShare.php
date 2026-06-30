@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Employee|null $employee
  * @property-read Model|null $shareable
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class CabinetShare extends Model
 {

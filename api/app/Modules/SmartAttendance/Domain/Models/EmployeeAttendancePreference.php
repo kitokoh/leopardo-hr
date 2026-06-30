@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $gps_consent_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class EmployeeAttendancePreference extends Model
 {

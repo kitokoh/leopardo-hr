@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $fuel_consumed
  * @property int|null $traccar_trip_id
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class VehicleTrip extends Model
 {

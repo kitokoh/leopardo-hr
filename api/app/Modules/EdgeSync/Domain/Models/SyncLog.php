@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $finished_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SyncLog extends Model
 {

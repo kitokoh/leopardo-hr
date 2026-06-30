@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $approved_by
  * @property string|null $document_path
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ContractAmendment extends Model
 {

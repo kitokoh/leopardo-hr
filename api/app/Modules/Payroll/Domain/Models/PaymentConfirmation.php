@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $user_agent
  * @property string $document_version
  * @property array<string, mixed>|null $metadata
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class PaymentConfirmation extends Model
 {

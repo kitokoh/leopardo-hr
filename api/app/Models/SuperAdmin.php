@@ -14,6 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $password_hash
  * @property string|null $two_fa_secret
  * @property Carbon|null $last_login_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SuperAdmin extends Authenticatable
 {

@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int|null    $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceModeSettings extends Model
 {

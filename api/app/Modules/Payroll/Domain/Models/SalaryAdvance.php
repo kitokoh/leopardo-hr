@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property array<mixed> $repayment_plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SalaryAdvance extends Model
 {

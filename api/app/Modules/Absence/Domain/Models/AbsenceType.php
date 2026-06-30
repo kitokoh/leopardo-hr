@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $code
  * @property bool   $paid
  * @property int    $max_days_per_year
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AbsenceType extends Model
 {
