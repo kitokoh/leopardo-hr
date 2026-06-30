@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
@@ -17,14 +19,24 @@ use Illuminate\Support\Carbon;
  * @property float $amount
  * @property string|null $reason
  * @property string $status
- * @property string|null $approved_by
+ * @property int|null $approved_by
  * @property string|null $decision_comment
- * @property string|null $repayment_months
+ * @property int $repayment_months
  * @property float $monthly_deduction
  * @property float $amount_remaining
  * @property array<mixed> $repayment_plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $manager_approved_by
+ * @property Carbon|null $manager_approved_at
+ * @property int|null $payment_declared_by
+ * @property Carbon|null $payment_declared_at
+ * @property string|null $payment_reference
+ * @property string|null $payment_note
+ * @property Carbon|null $employee_confirmed_at
+ * @property string $validation_status
+ * @property-read Employee|null $employee
+ * @property-read Employee|null $approver
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SalaryAdvance extends Model
