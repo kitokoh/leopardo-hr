@@ -44,6 +44,7 @@ class PlatformCompanyRequestController extends Controller
             });
         }
 
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<CompanyRequest> $requests */
         $requests = $query->paginate((int) ($validated['per_page'] ?? 20));
 
         return new JsonResponse([
@@ -159,15 +160,17 @@ class PlatformCompanyRequestController extends Controller
         ?int $planId,
         ?string $notes,
     ): Company {
+        $activePlanId = DB::table('plans')->where('is_active', true)->orderBy('id')->value('id');
+        $anyPlanId = DB::table('plans')->orderBy('id')->value('id');
         $resolvedPlanId = $planId
-            ?? DB::table('plans')->where('is_active', true)->orderBy('id')->value('id')
-            ?? DB::table('plans')->orderBy('id')->value('id');
+            ?? (is_numeric($activePlanId) ? (int) $activePlanId : null)
+            ?? (is_numeric($anyPlanId) ? (int) $anyPlanId : null);
 
         if (! $resolvedPlanId) {
             abort(422, 'Aucun plan actif disponible pour approuver cette demande.');
         }
 
-        $managerName = trim($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal');
+        $managerName = trim((string) ($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal'));
         $nameParts = preg_split('/\s+/', $managerName, 2) ?: ['Manager'];
 
         $email = $companyRequest->email ?: $companyRequest->user?->email;
@@ -180,7 +183,7 @@ class PlatformCompanyRequestController extends Controller
             $country = 'DZ';
         }
 
-        $result = $this->companyProvisioningService->provisionSharedCompany([
+        $provisionResult = $this->companyProvisioningService->provisionSharedCompany([
             'name' => $companyRequest->company_name,
             'sector' => $companyRequest->sector ?: 'Non precise',
             'country' => $country,
@@ -195,6 +198,9 @@ class PlatformCompanyRequestController extends Controller
             'manager_phone' => $companyRequest->manager_phone ?: $companyRequest->user?->phone ?: $companyRequest->phone,
         ], $superAdmin);
 
-        return $result['company'];
+        /** @var Company $company */
+        $company = $provisionResult['company'];
+
+        return $company;
     }
 }
