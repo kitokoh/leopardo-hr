@@ -7,9 +7,9 @@
  * via email/password ou Google, et gerer son espace personnel.
  */
 
-use App\Http\Controllers\Api\V1\CompanyRequestController;
+use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
 use App\Core\Auth\Interfaces\Api\V1\UserAuthController;
-use App\Http\Controllers\Api\V1\UserEmployeeLinkController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
