@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.18.0] - 2026-06-30
+
+### Added
+- **Phase 2 — DDD Contracts/Exceptions/DTOs complets** : `Domain/Contracts`, `Domain/Exceptions`, `Application/DTOs` ajoutés sur les 10 modules qui en manquaient (Absence, Attendance, Billing, Cabinet, Cameras, Expense, Fleet, Notification, Planning, Recruitment). 12/12 modules 100% complets.
+- **Phase 3 — Migration routes/modules/* vers namespaces DDD** : 0 import `App\Http\Controllers\Api\V1` restant dans `routes/modules/`. Module Growth créé (13ème module DDD).
+- **Phase 4 — Migration routes/api.php + 3 nouveaux modules** : 25 imports legacy supprimés de `routes/api.php`. Modules Platform, Onboarding, Training créés (16 modules totaux). Coverage Gate activé comme required check (65% strict).
+- **Phase 5 — openapi.yaml** : 13 nouveaux paths documentés (Growth: /partner/*, Onboarding: /onboarding-setup/*). Nouveaux tags Growth, Onboarding, Training, Platform Admin. Architecture-check étendu à 16 modules.
+- **i18n** : `lang/ar/dashboard.php` ajouté (manquait vs EN). Couverture ar/fr/en complète.
+
+### Fixed
+- **Architecture CI** : 9 violations de structure corrigées (Infrastructure/ manquants pour Growth/Platform/Onboarding/Training, Cameras/Providers créé). PHPStan modules ignores ajoutés pour modules Phase 3-4.
+- **OpenAPI CI** : Clé dupliquée `/me/qr-profile` supprimée de `openapi.yaml` (ligne 7985).
+
 ## [4.17.9] - 2026-06-29
 
 ### Added

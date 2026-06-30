@@ -7982,23 +7982,6 @@ paths:
         "200": { description: "Étape ignorée" }
         "404": { description: "Étape inconnue" }
 
-  /me/qr-profile:
-    get:
-      tags: ["Onboarding", "Self-Service"]
-      summary: "QR code du profil employé"
-      security: [{ BearerAuth: [] }]
-      responses:
-        "200": { description: "QR code encodé base64" }
-
-  /company/qr-onboarding:
-    get:
-      tags: ["Onboarding"]
-      summary: "QR code d'onboarding rapide de l'entreprise"
-      security: [{ BearerAuth: [] }]
-      responses:
-        "200": { description: "QR code entreprise pour scan employé" }
-
-
 components:
   securitySchemes:
     BearerAuth:
