@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ */
 class ZktecoSyncLog extends Model
 {
     protected $table = 'zkteco_sync_logs';

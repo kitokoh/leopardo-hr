@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $department_id
  * @property Carbon|null $created_at
  * @property-read Department|null $department
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Position extends Model
 {

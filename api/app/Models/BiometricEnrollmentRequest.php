@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $rejected_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class BiometricEnrollmentRequest extends Model
 {

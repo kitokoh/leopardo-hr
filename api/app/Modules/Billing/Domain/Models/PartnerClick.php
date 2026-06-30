@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $user_agent
  * @property string|null $referrer_url
  * @property Carbon $clicked_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class PartnerClick extends Model
 {

@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property bool $requires_proof
  * @property int $max_days_once
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AbsenceType extends Model
 {

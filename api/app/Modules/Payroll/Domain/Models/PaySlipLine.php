@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $rate
  * @property float $amount
  * @property int $order
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class PaySlipLine extends Model
 {

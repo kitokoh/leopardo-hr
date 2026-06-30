@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class CompanyRequest extends Model
 {

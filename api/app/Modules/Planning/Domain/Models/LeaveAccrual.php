@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $effective_date
  * @property string|null $created_by
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class LeaveAccrual extends Model
 {

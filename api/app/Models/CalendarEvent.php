@@ -6,6 +6,9 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ */
 class CalendarEvent extends Model
 {
     protected $fillable = [

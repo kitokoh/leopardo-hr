@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $status  (draft|submitted|approved|rejected|reimbursed)
  * @property string|null $submitted_at
  * @property string|null $approved_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ExpenseClaim extends Model
 {

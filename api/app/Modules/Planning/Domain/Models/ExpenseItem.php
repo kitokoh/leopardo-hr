@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $date
  * @property string|null $receipt_path
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ExpenseItem extends Model
 {

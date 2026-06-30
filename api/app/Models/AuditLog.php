@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $user_agent
  * @property array<mixed> $metadata
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AuditLog extends Model
 {

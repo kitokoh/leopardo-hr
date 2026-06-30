@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property-read Employee|null $manager
  * @property-read Collection<int, Position> $positions
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Department extends Model
 {

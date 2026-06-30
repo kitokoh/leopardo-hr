@@ -29,8 +29,9 @@ return [
     App\Modules\Expense\Providers\ExpenseServiceProvider::class,
     App\Modules\Notification\Providers\NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)
-    App\Modules\Growth\Providers\GrowthServiceProvider::class,
     App\Modules\Platform\Providers\PlatformServiceProvider::class,
     App\Modules\Onboarding\Providers\OnboardingServiceProvider::class,
     App\Modules\Training\Providers\TrainingServiceProvider::class,
+    // — EdgeSync module
+    App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider::class,
 ];

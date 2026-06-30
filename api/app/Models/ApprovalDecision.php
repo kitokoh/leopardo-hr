@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $comment
  * @property Carbon|null $decided_at
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ApprovalDecision extends Model
 {

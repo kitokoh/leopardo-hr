@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $response_code
  * @property string|null $response_body
  * @property int $duration_ms
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class WebhookDelivery extends Model
 {

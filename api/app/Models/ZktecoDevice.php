@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ */
 class ZktecoDevice extends Model
 {
     protected $table = 'zkteco_devices';

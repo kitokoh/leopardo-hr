@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $confirmed_at
  * @property array<string, mixed>|null $metadata
  * @property-read PaymentBatch $batch
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class PaymentItem extends Model
 {

@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $author_id
  * @property string|null $content
  * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class TaskComment extends Model
 {

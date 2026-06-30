@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $paid_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Commission extends Model
 {

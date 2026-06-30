@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float  $amount
  * @property string $expense_date
  * @property string|null $receipt_path
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class ExpenseItem extends Model
 {

@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Employee|null $employee
  * @property-read Employee|null $evaluator
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Evaluation extends Model
 {

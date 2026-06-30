@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $allocated
  * @property float $used
  * @property float $balance
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class LeaveBalance extends Model
 {
