@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\FeatureRegistryInterface;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,9 +13,6 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Contrôleur pour l'API du manifeste des fonctionnalités
- *
- * Expose les endpoints pour que l'application mobile puisse récupérer
- * le manifeste des fonctionnalités disponibles et compatibles.
  */
 class FeatureManifestController extends Controller
 {
@@ -21,89 +20,80 @@ class FeatureManifestController extends Controller
         private readonly FeatureRegistryInterface $registry,
     ) {}
 
-    /**
-     * Récupère le manifeste complet des fonctionnalités
-     */
     public function index(Request $request): JsonResponse
     {
         try {
+            /** @var string|null $mobileVersion */
             $mobileVersion = $request->query('mobile_version', '1.0.0');
+            /** @var Employee $user */
             $user = Auth::user();
 
             Log::info('Feature manifest requested', [
-                'user_id' => $user->id,
+                'user_id'       => $user->id,
                 'mobile_version' => $mobileVersion,
-                'user_agent' => $request->userAgent(),
+                'user_agent'    => $request->userAgent(),
             ]);
 
-            // Générer le manifeste pour la version mobile demandée
-            $manifest = $this->registry->getManifest($mobileVersion);
+            /** @var array<string, mixed> $manifest */
+            $manifest = $this->registry->getManifest(is_string($mobileVersion) ? $mobileVersion : '1.0.0');
 
-            // Filtrer les fonctionnalités selon les permissions de l'utilisateur
-            $manifest['features'] = $this->filterFeaturesByPermissions(
-                $manifest['features'],
-                $user
-            );
-
-            // Mettre à jour le nombre total après filtrage
+            /** @var array<int|string, mixed> $features */
+            $features = is_array($manifest['features'] ?? null) ? $manifest['features'] : [];
+            $manifest['features']       = $this->filterFeaturesByPermissions($features, $user);
             $manifest['total_features'] = count($manifest['features']);
-            $manifest['user_id'] = $user->id;
-            $manifest['user_role'] = $user->role ?? 'employee';
+            $manifest['user_id']        = $user->id;
+            $manifest['user_role']      = $user->role ?? 'employee';
 
             return response()->json([
                 'success' => true,
-                'data' => $manifest,
-                'meta' => [
+                'data'    => $manifest,
+                'meta'    => [
                     'generated_for_user' => $user->id,
-                    'mobile_version' => $mobileVersion,
-                    'api_version' => config('app.api_version', 'v1'),
-                    'cache_ttl' => 3600,
+                    'mobile_version'     => $mobileVersion,
+                    'api_version'        => config('app.api_version', 'v1'),
+                    'cache_ttl'          => 3600,
                 ],
             ]);
-
         } catch (\Exception $e) {
             Log::error('Failed to generate feature manifest', [
-                'user_id' => Auth::id(),
+                'user_id'        => Auth::id(),
                 'mobile_version' => $request->query('mobile_version'),
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate feature manifest',
-                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error',
+                'error'   => app()->environment('local') ? $e->getMessage() : 'Internal server error',
             ], 500);
         }
     }
 
-    /**
-     * Récupère les fonctionnalités compatibles avec une version mobile
-     */
     public function compatible(Request $request, string $version): JsonResponse
     {
         try {
+            /** @var Employee $user */
             $user = Auth::user();
 
             $features = $this->registry->getCompatibleFeatures($version);
 
-            // Convertir en format manifeste et filtrer par permissions
-            $featuresArray = $features->map(fn ($feature) => $feature->toManifestArray())->toArray();
+            /** @var array<int|string, mixed> $featuresArray */
+            $featuresArray    = $features->map(fn (mixed $feature): mixed => $feature->toManifestArray())->toArray();
             $filteredFeatures = $this->filterFeaturesByPermissions($featuresArray, $user);
 
             return response()->json([
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'mobile_version' => $version,
                     'total_features' => count($filteredFeatures),
-                    'features' => $filteredFeatures,
+                    'features'       => $filteredFeatures,
                 ],
             ]);
-
         } catch (\Exception $e) {
             Log::error('Failed to get compatible features', [
                 'user_id' => Auth::id(),
                 'version' => $version,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             return response()->json([
@@ -113,171 +103,131 @@ class FeatureManifestController extends Controller
         }
     }
 
-    /**
-     * Récupère une fonctionnalité spécifique
-     */
     public function show(string $key): JsonResponse
     {
         try {
             $feature = $this->registry->getFeature($key);
 
             if (! $feature) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Feature not found',
-                ], 404);
+                return response()->json(['success' => false, 'message' => 'Feature not found'], 404);
             }
 
+            /** @var Employee $user */
             $user = Auth::user();
 
-            // Vérifier les permissions
-            if (! $this->userHasFeaturePermissions($user, $feature->permissions)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Insufficient permissions',
-                ], 403);
+            /** @var array<string, mixed> $permissions */
+            $permissions = is_array($feature->permissions ?? null) ? $feature->permissions : [];
+
+            if (! $this->userHasFeaturePermissions($user, $permissions)) {
+                return response()->json(['success' => false, 'message' => 'Insufficient permissions'], 403);
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $feature->toManifestArray(),
-            ]);
-
+            return response()->json(['success' => true, 'data' => $feature->toManifestArray()]);
         } catch (\Exception $e) {
-            Log::error('Failed to get feature', [
-                'user_id' => Auth::id(),
-                'feature_key' => $key,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('Failed to get feature', ['user_id' => Auth::id(), 'feature_key' => $key, 'error' => $e->getMessage()]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get feature',
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to get feature'], 500);
         }
     }
 
-    /**
-     * Récupère les statistiques du registre (admin seulement)
-     */
     public function statistics(): JsonResponse
     {
         try {
+            /** @var Employee $user */
             $user = Auth::user();
 
-            // Vérifier que l'utilisateur est admin
             if (! $this->userIsAdmin($user)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Admin access required',
-                ], 403);
+                return response()->json(['success' => false, 'message' => 'Admin access required'], 403);
             }
 
             $stats = $this->registry->getStatistics();
 
-            return response()->json([
-                'success' => true,
-                'data' => $stats,
-            ]);
-
+            return response()->json(['success' => true, 'data' => $stats]);
         } catch (\Exception $e) {
-            Log::error('Failed to get registry statistics', [
-                'user_id' => Auth::id(),
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('Failed to get registry statistics', ['user_id' => Auth::id(), 'error' => $e->getMessage()]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get statistics',
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to get statistics'], 500);
         }
     }
 
-    /**
-     * Synchronise le registre (admin seulement)
-     */
     public function synchronize(): JsonResponse
     {
         try {
+            /** @var Employee $user */
             $user = Auth::user();
 
-            // Vérifier que l'utilisateur est admin
             if (! $this->userIsAdmin($user)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Admin access required',
-                ], 403);
+                return response()->json(['success' => false, 'message' => 'Admin access required'], 403);
             }
 
-            Log::info('Manual feature registry synchronization initiated', [
-                'user_id' => $user->id,
-            ]);
+            Log::info('Manual feature registry synchronization initiated', ['user_id' => $user->id]);
 
             $result = $this->registry->synchronize();
 
             return response()->json([
                 'success' => true,
-                'data' => $result,
+                'data'    => $result,
                 'message' => 'Synchronization completed successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Failed to synchronize registry', [
-                'user_id' => Auth::id(),
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('Failed to synchronize registry', ['user_id' => Auth::id(), 'error' => $e->getMessage()]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Synchronization failed',
-                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error',
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to synchronize registry'], 500);
         }
     }
 
     /**
-     * Filtre les fonctionnalités selon les permissions de l'utilisateur
-     *
-     * @param  mixed  $user
+     * @param array<int|string, mixed> $features
+     * @param Employee|Authenticatable $user
+     * @return array<int|string, mixed>
      */
-    private function filterFeaturesByPermissions(array $features, $user): array
+    private function filterFeaturesByPermissions(array $features, Employee|Authenticatable $user): array
     {
-        return array_filter($features, function ($feature) use ($user) {
-            return $this->userHasFeaturePermissions($user, $feature['permissions'] ?? []);
-        });
+        return array_values(array_filter($features, function (mixed $feature) use ($user): bool {
+            /** @var array<string, mixed> $featureArr */
+            $featureArr          = is_array($feature) ? $feature : [];
+            $requiredPermissions = is_array($featureArr['required_permissions'] ?? null)
+                ? $featureArr['required_permissions']
+                : [];
+
+            if (empty($requiredPermissions)) {
+                return true;
+            }
+
+            return $this->userHasFeaturePermissions($user, $requiredPermissions);
+        }));
     }
 
     /**
-     * Vérifie si l'utilisateur a les permissions pour une fonctionnalité
-     *
-     * @param  mixed  $user
+     * @param array<int|string, mixed> $requiredPermissions
      */
-    private function userHasFeaturePermissions($user, array $requiredPermissions): bool
+    private function userHasFeaturePermissions(Employee|Authenticatable $user, array $requiredPermissions): bool
     {
-        // Si aucune permission requise, la fonctionnalité est accessible
         if (empty($requiredPermissions)) {
             return true;
         }
 
-        // Vérifier chaque permission requise
-        foreach ($requiredPermissions as $permission) {
-            if (! $user->can($permission)) {
-                return false;
+        if ($this->userIsAdmin($user)) {
+            return true;
+        }
+
+        if (method_exists($user, 'can')) {
+            foreach ($requiredPermissions as $permission) {
+                if (! $user->can((string) $permission)) {
+                    return false;
+                }
             }
         }
 
         return true;
     }
 
-    /**
-     * Vérifie si l'utilisateur est administrateur
-     *
-     * @param  mixed  $user
-     */
-    private function userIsAdmin($user): bool
+    private function userIsAdmin(Employee|Authenticatable $user): bool
     {
-        $role = $user->role ?? '';
+        if ($user instanceof Employee) {
+            return $user->hasManagerRole('principal') || ($user->role ?? '') === 'admin';
+        }
 
-        return $role === 'manager' || in_array($role, ['admin', 'super_admin'], true);
+        return false;
     }
 }
