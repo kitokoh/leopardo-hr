@@ -1163,27 +1163,17 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `POST /api/v1/auth/google/token` : connexion via token Google — mock Socialite renforcé (`stateless()->userFromToken()`). Test de rejet 401 pour email inconnu. Test cross-tenant garantissant l'absence de fuite d'isolation.
 - Tests couverts : GoogleAuthGlobalLookupTest (lookup global, rejet inconnu, isolation cross-tenant).
 
-## Phase 6 — Edge Nodes offline (v4.18.0)
+## Phase 6 — PHPStan/Larastan Vagues 1–4 (v4.18.1)
 
-**Edge — Endpoints publics**
-- `GET /api/v1/edge/install.sh` : script bash curl|bash — pas d'auth, Content-Type `text/x-shellscript`. Vérifie les dépendances (docker, curl, openssl), télécharge docker-compose.yml, génère les clés RS256, démarre le nœud.
-- `GET /api/v1/edge/download/docker-compose.yml` : téléchargement docker-compose pré-configuré — pas d'auth, Content-Disposition attachment.
-- `GET /api/v1/edge/download/env-example` : template .env.edge — pas d'auth.
-- `GET /api/v1/edge/license-public-key` : retourne la clé publique RS256 PEM — pas d'auth, 503 si `EDGE_LICENSE_PUBLIC_KEY` absent.
-- `GET /api/v1/edge/health` : health check local nœud Edge — 200 + `{status:ok, edge:true}`.
-- `POST /api/v1/edge/heartbeat` : heartbeat nœud → cloud — met à jour `last_seen_at`, `pending_count`, `status=online`.
-
-**Edge — Platform super-admin**
-- `GET /api/v1/platform/edge/nodes` : liste tous les nœuds Edge (auth super_admin_api requis). Jointure companies. Pagination N/A (liste complète).
-- `POST /api/v1/platform/edge/nodes/{id}/sync` : force sync d'un nœud — 404 si nœud inexistant, met `sync_requested_at`.
-- `DELETE /api/v1/platform/edge/nodes/{id}` : révocation nœud — 404 si inexistant, `status=revoked`.
-
-**Edge — Cron monitoring**
-- `php artisan edge:detect-silent-nodes` : planifié toutes les 5 min. Détecte les nœuds dont `last_seen_at < now() - threshold`. Envoie `EdgeNodeSilentAlert` (mail ShouldQueue) aux managers du tenant. Option `--dry-run` sans notification. Option `--threshold=N`.
-
-**Isolation et sécurité**
-- Les endpoints platform/edge/nodes sont protégés par `auth:super_admin_api` — 401 sans token, 403 avec token tenant standard.
-- La table `edge_nodes` isole par `company_id` — aucun nœud d'un tenant ne peut être vu/modifié par un autre tenant.
+**Correction types mixtes — Services critiques**
+- `AttendanceMonthlyReportService`, `AttendanceAnomalyService`, `AttendanceService` : annotations `@param Collection<int, AttendanceLog>`, casts `(string)` sur timezone/dates.
+- `PlatformCompanyHealthService` : guard `DB::selectOne()` nullable, `@var object|null`.
+- `FeatureRegistry` : `cache->remember()` typé, `getStatistics()` avec `Builder<Feature>` via `newQuery()`, casts `(string)` sur `$change['feature_key']`.
+- `HrReportController` : closure `groupBy->map()` typée avec `Collection<int, Absence>`.
+- `PlatformCompanyRequestController` : `DB::table()->value()` int cast, `$result['company']` annotatio `@var Company`.
+- `CameraService` : `@param/@return array<string, mixed>` sur méthodes de stream.
+- `AbsenceService`, `PayrollCalculator`, `EvaluationController`, `TaskController` : types explicites sur tous les paramètres/retours mixtes.
+- Tests Feature/Absences : `str_pad((string) $n)`, `firstOrFail()` pour éliminer nullable.
 
 ## Phase 5 — Migration AbsenceController DDD + HR Domain/Contracts (v4.17.9)
 

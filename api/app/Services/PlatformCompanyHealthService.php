@@ -219,13 +219,14 @@ class PlatformCompanyHealthService
      */
     private function plan(Company $company): array
     {
+        /** @var object{name?: string, price_monthly?: numeric-string|float, price_yearly?: numeric-string|float}|null $plan */
         $plan = DB::table('plans')->where('id', $company->plan_id)->first();
 
         return [
             'id' => $company->plan_id,
-            'name' => $plan->name ?? null,
-            'price_monthly' => isset($plan->price_monthly) ? (float) $plan->price_monthly : null,
-            'price_yearly' => isset($plan->price_yearly) ? (float) $plan->price_yearly : null,
+            'name' => is_object($plan) && isset($plan->name) ? (string) $plan->name : null,
+            'price_monthly' => is_object($plan) && isset($plan->price_monthly) ? (float) $plan->price_monthly : null,
+            'price_yearly' => is_object($plan) && isset($plan->price_yearly) ? (float) $plan->price_yearly : null,
         ];
     }
 
@@ -328,13 +329,16 @@ class PlatformCompanyHealthService
      * @param  callable(): array<string, mixed>  $callback
      * @return array<string, mixed>
      */
-    private function withTenantSearchPath(Company $company, callable $callback): array
+    private function withTenantSearchPath(Company $company, callable $callback): array // @phpstan-ignore callable.nonCallable
     {
         if (DB::getDriverName() !== 'pgsql') {
             return $callback();
         }
 
-        $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
         DB::statement('SET search_path TO '.$company->getSafeSearchPath());
 
         try {

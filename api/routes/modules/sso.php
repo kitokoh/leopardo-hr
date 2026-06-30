@@ -5,7 +5,7 @@
  * Plan 15 item K2.
  */
 
-use App\Core\Auth\Interfaces\Api\V1\SSOController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\SSOController;
 use Illuminate\Support\Facades\Route;
 
 // Public: supported providers list
