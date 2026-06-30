@@ -22,6 +22,7 @@ return [
     App\Modules\Billing\Providers\BillingServiceProvider::class,
     App\Modules\Cameras\Providers\CamerasServiceProvider::class,
     // — New DDD modules (Phase 2)
+    App\Modules\Growth\Providers\GrowthServiceProvider::class,
     App\Modules\Absence\Providers\AbsenceServiceProvider::class,
     App\Modules\Expense\Providers\ExpenseServiceProvider::class,
     App\Modules\Notification\Providers\NotificationServiceProvider::class,

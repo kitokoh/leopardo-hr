@@ -17,7 +17,7 @@
  * de rôle restent au niveau middleware api.manager et dans le controller.
  */
 
-use App\Http\Controllers\Api\V1\HrController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\HrController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'api.manager:rh,principal'])

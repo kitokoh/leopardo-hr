@@ -39,6 +39,11 @@
 
 ### Fixed
 - **DepartmentController** : Suppression du `select(['...', 'manager_id'])` explicite — `manager_id` est chargé via la relation `with('manager')`, évitant `column "manager_id" does not exist` sur les environnements où la migration altérée n'a pas encore été appliquée dans le schema de test.
+## [4.17.9-fix2] - 2026-06-30
+
+### Fixed
+- **NotificationController** : Ajout de la méthode `unread()` manquante (GET `/notifications/unread` répondait 500 avec `Call to undefined method`).
+- **NotificationController** : `markRead()` et `markAllRead()` créent désormais des entrées `CommunicationEvent` pour l'audit trail des lectures (fix `communication_events` table empty assertion).
 
 ## [4.17.9] - 2026-06-29
 
