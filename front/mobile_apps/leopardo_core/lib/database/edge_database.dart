@@ -1,14 +1,16 @@
-/// Edge local SQLite database — powered by Drift.
-///
-/// Ce fichier déclare toutes les tables offline utilisées par le nœud Edge
-/// Leopardo. Le fichier `edge_database.g.dart` est généré automatiquement via:
-///   dart run build_runner build
-///
-/// Tables :
-///   - [AttendanceLogs]   : pointages en attente de sync
-///   - [EmployeeCache]    : snapshot employés pour mode offline
-///   - [SyncQueue]        : opérations à remonter vers le Cloud
-///   - [EdgeConfig]       : clé/valeur de configuration locale
+// Edge local SQLite database — powered by Drift.
+//
+// Ce fichier déclare toutes les tables offline utilisées par le nœud Edge
+// Leopardo. Le fichier `edge_database.g.dart` est généré automatiquement via:
+//   dart run build_runner build
+//
+// Tables :
+//   - [AttendanceLogs]   : pointages en attente de sync
+//   - [EmployeeCache]    : snapshot employés pour mode offline
+//   - [SyncQueue]        : opérations à remonter vers le Cloud
+//   - [EdgeConfig]       : clé/valeur de configuration locale
+
+library;
 
 import 'dart:io';
 
@@ -51,7 +53,7 @@ class AttendanceLogs extends Table {
   Set<Column> get primaryKey => {localId};
 }
 
-enum AttendanceType { check_in, check_out, break_start, break_end }
+enum AttendanceType { checkIn, checkOut, breakStart, breakEnd }
 
 // ---------------------------------------------------------------------------
 // Table : employee_cache
