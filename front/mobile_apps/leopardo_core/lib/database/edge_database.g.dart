@@ -1138,19 +1138,8 @@ class EdgeConfigCompanion extends UpdateCompanion<EdgeConfigData> {
 }
 
 // **************************************************************************
-// Database mixin (_$EdgeDatabase)
+// _$EdgeDatabase
 // **************************************************************************
-
-mixin _$EdgeDatabaseMixin on GeneratedDatabase {
-  $AttendanceLogsTable get attendanceLogs =>
-      this.resultSet<$AttendanceLogsTable>('attendance_logs');
-  $EmployeeCacheTable get employeeCache =>
-      this.resultSet<$EmployeeCacheTable>('employee_cache');
-  $SyncQueueTable get syncQueue =>
-      this.resultSet<$SyncQueueTable>('sync_queue');
-  $EdgeConfigTable get edgeConfig =>
-      this.resultSet<$EdgeConfigTable>('edge_config');
-}
 
 abstract class _$EdgeDatabase extends GeneratedDatabase {
   _$EdgeDatabase(super.e);
