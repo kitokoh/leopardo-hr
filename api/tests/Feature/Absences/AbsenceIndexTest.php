@@ -530,8 +530,8 @@ class AbsenceIndexTest extends TestCase
                 'company_id' => $company->id,
                 'employee_id' => $employee->id,
                 'absence_type_id' => $absenceType->id,
-                'start_date' => '2026-04-'.str_pad($i * 2, 2, '0', STR_PAD_LEFT),
-                'end_date' => '2026-04-'.str_pad($i * 2 + 1, 2, '0', STR_PAD_LEFT),
+                'start_date' => '2026-04-'.str_pad((string) ($i * 2), 2, '0', STR_PAD_LEFT),
+                'end_date' => '2026-04-'.str_pad((string) ($i * 2 + 1), 2, '0', STR_PAD_LEFT),
                 'days_count' => 2,
                 'status' => 'pending',
             ]);
