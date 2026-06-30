@@ -41,6 +41,7 @@ class CabinetShareController extends Controller
     public function store(ShareRequest $request): JsonResponse
     {
         $actor = $this->employee($request);
+        /** @var array<string, mixed> $data */
         $data = $request->validated();
 
         $shareableType = is_string($data['shareable_type']) ? $data['shareable_type'] : '';

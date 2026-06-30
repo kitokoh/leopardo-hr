@@ -4,7 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property string $title
+ * @property string|null $body
+ * @property string $priority
+ * @property bool $is_active
+ * @property Carbon|null $starts_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 class KioskAnnouncement extends Model
 {
     protected $fillable = [

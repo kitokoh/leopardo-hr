@@ -31,6 +31,8 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * @property int $id
  * @property int|null $company_id
+ * @property int|null $department_id
+ * @property int|null $position_id
  * @property int|null $schedule_id
  * @property int|null $site_id
  * @property string|null $matricule
@@ -58,11 +60,15 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $salary_type
  * @property float|null $salary_base
  * @property float|null $hourly_rate
+ * @property string $payment_method
+ * @property float $leave_balance
  * @property string $role
  * @property string|null $manager_role
  * @property int|null $manager_id
  * @property string $status
  * @property string|null $photo_path
+ * @property Carbon|null $last_login_at
+ * @property array<mixed>|null $metadata
  * @property bool $biometric_face_enabled
  * @property bool $biometric_fingerprint_enabled
  * @property string|null $biometric_face_reference_path
@@ -86,6 +92,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Department|null $department
  * @property-read Position|null $position
  * @property-read Schedule|null $schedule
+ * @property-read Site|null $site
  * @mixin \Illuminate\Database\Eloquent\Builder
  * @method static \Illuminate\Database\Eloquent\Builder<static> query()
  * @method static static create(array<string, mixed> $attributes = [])
