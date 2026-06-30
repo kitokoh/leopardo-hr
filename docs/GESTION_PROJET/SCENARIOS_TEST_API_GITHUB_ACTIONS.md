@@ -1150,3 +1150,10 @@ Les 8 derniers contrôleurs ont été migrés vers leurs modules métier respect
 Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimés.
 
 **Scenarios couverts** : FrontendApiContractTest, backend feature tests existants.
+
+## Phase 9 — Smart Attendance GPS — Phase 1 à 5 (v4.17.5)
+
+**Nouveaux controllers/endpoints ajoutés dans cette phase**
+- Surface API étendue — voir CHANGELOG pour le détail des endpoints.
+- Tests couverts dans `api/tests/Feature/` pour chaque nouveau module.
+- Isolation multi-tenant vérifiée : `company_id` scoping actif sur tous les nouveaux endpoints.
