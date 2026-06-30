@@ -63,16 +63,18 @@ class AbsenceService
         }
 
         DB::transaction(function () use ($absence, $approver) {
+            /** @var \App\Models\AbsenceType|null $type */
             $type = $absence->absenceType;
 
-            if ($type->deducts_leave) {
+            if ($type !== null && $type->deducts_leave) {
                 // Lock last balance row to prevent race conditions
+                /** @var LeaveBalanceLog|null $lastLog */
                 $lastLog = LeaveBalanceLog::where('employee_id', $absence->employee_id)
                     ->lockForUpdate()
                     ->orderByDesc('id')
                     ->first();
 
-                $currentBalance = $lastLog ? (float) $lastLog->balance_after : 0.0;
+                $currentBalance = $lastLog instanceof LeaveBalanceLog ? (float) $lastLog->balance_after : 0.0;
 
                 if ($currentBalance < $absence->days_count) {
                     throw new InsufficientLeaveBalanceException($currentBalance, (float) $absence->days_count);
@@ -96,6 +98,7 @@ class AbsenceService
             ]);
         });
 
+        /** @var Absence $absence */
         $absence = $absence->fresh();
 
         AbsenceApproved::dispatch($absence, $approver);
@@ -111,12 +114,15 @@ class AbsenceService
 
         DB::transaction(function () use ($absence, $reason) {
             // If already approved and balance was deducted, restore it
-            if ($absence->status === 'approved' && $absence->absenceType->deducts_leave) {
+            /** @var \App\Models\AbsenceType|null $absenceType */
+            $absenceType = $absence->absenceType;
+            if ($absence->status === 'approved' && $absenceType !== null && $absenceType->deducts_leave) {
+                /** @var LeaveBalanceLog|null $lastLog */
                 $lastLog = LeaveBalanceLog::where('employee_id', $absence->employee_id)
                     ->orderByDesc('id')
                     ->first();
 
-                $currentBalance = $lastLog ? (float) $lastLog->balance_after : 0.0;
+                $currentBalance = $lastLog instanceof LeaveBalanceLog ? (float) $lastLog->balance_after : 0.0;
                 $newBalance = $currentBalance + $absence->days_count;
 
                 $this->logBalanceChange(
@@ -135,6 +141,7 @@ class AbsenceService
             ]);
         });
 
+        /** @var Absence $absence */
         $absence = $absence->fresh();
 
         AbsenceRejected::dispatch($absence);
@@ -150,16 +157,20 @@ class AbsenceService
 
         $absence->update(['status' => 'cancelled']);
 
-        return $absence->fresh();
+        /** @var Absence $cancelled */
+        $cancelled = $absence->fresh();
+
+        return $cancelled;
     }
 
     public function currentBalance(Employee $employee): float
     {
+        /** @var LeaveBalanceLog|null $lastLog */
         $lastLog = LeaveBalanceLog::where('employee_id', $employee->id)
             ->orderByDesc('id')
             ->first();
 
-        return $lastLog ? (float) $lastLog->balance_after : 0.0;
+        return $lastLog instanceof LeaveBalanceLog ? (float) $lastLog->balance_after : 0.0;
     }
 
     private function hasDateConflict(Employee $employee, string $startDate, string $endDate, ?int $excludeId = null): bool
