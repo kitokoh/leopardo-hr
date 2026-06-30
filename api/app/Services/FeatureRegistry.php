@@ -81,7 +81,8 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, $version);
 
-        return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($version) {
+        /** @var Collection<int, Feature> $result */
+        $result = $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($version): Collection {
             $query = Feature::withoutGlobalScope('company')->active();
 
             if ($version) {
@@ -97,6 +98,8 @@ class FeatureRegistry implements FeatureRegistryInterface
 
             return $features;
         });
+
+        return $result;
     }
 
     /**
@@ -106,13 +109,17 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'single', $key);
 
-        return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($key) {
+        /** @var Feature|null $result */
+        $result = $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($key): ?Feature {
             return Feature::withoutGlobalScope('company')->where('key', $key)->first();
         });
+
+        return $result;
     }
 
     /**
      * {@inheritdoc}
+     * @param array<string, mixed> $metadata
      */
     public function updateFeature(string $key, array $metadata): void
     {
@@ -122,7 +129,9 @@ class FeatureRegistry implements FeatureRegistryInterface
             $feature = Feature::withoutGlobalScope('company')->where('key', $key)->firstOrFail();
 
             // Fusionner les nouvelles métadonnées avec les existantes
-            $updatedMetadata = array_merge($feature->metadata ?? [], $metadata);
+            /** @var array<string, mixed> $existingMetadata */
+            $existingMetadata = $feature->metadata ?? [];
+            $updatedMetadata = array_merge($existingMetadata, $metadata);
 
             $feature->update([
                 'metadata' => $updatedMetadata,
@@ -195,11 +204,12 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::MANIFEST_CACHE_KEY, $mobileVersion);
 
-        return (array) $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
+        /** @var array<string, mixed> $manifest */
+        $manifest = (array) $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion): array {
             /** @var Collection<int, Feature> $features */
             $features = $this->getCompatibleFeatures($mobileVersion ?? '1.0.0');
 
-            $manifest = [
+            $data = [
                 'version' => $this->getCurrentApiVersion(),
                 'generated_at' => Carbon::now()->toISOString(),
                 'mobile_version_min' => $this->getMinimumMobileVersion(),
@@ -213,8 +223,10 @@ class FeatureRegistry implements FeatureRegistryInterface
                 'feature_count' => $features->count(),
             ]);
 
-            return $manifest;
+            return $data;
         });
+
+        return $manifest;
     }
 
     /**
@@ -224,13 +236,16 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'compatible', $mobileVersion);
 
-        return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
+        /** @var Collection<int, Feature> $result */
+        $result = $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion): Collection {
             return Feature::withoutGlobalScope('company')
                 ->active()
                 ->compatibleWith($mobileVersion)
                 ->orderBy('title')
                 ->get();
         });
+
+        return $result;
     }
 
     /**
@@ -301,11 +316,12 @@ class FeatureRegistry implements FeatureRegistryInterface
             $newFeatures = $this->detector->detectNewFeatures();
             foreach ($newFeatures as $featureData) {
                 try {
+                    /** @var array<string, mixed> $featureData */
                     $feature = new Feature($featureData);
                     $this->registerFeature($feature);
                     $result['new']++;
                 } catch (\Exception $e) {
-                    $result['errors'][] = "Failed to register new feature: {$e->getMessage()}";
+                    $result['errors'][] = 'Failed to register new feature: '.$e->getMessage();
                 }
             }
 
@@ -313,22 +329,23 @@ class FeatureRegistry implements FeatureRegistryInterface
             $changes = $this->detector->detectChanges();
             foreach ($changes as $change) {
                 try {
+                    /** @var array{type: string, feature_key: string, current_metadata?: array<string, mixed>} $change */
+                    $featureKey = (string) $change['feature_key'];
                     switch ($change['type']) {
                         case 'modified':
-                            $this->updateFeature(
-                                $change['feature_key'],
-                                $change['current_metadata']
-                            );
+                            /** @var array<string, mixed> $currentMetadata */
+                            $currentMetadata = $change['current_metadata'] ?? [];
+                            $this->updateFeature($featureKey, $currentMetadata);
                             $result['updated']++;
                             break;
 
                         case 'removed':
-                            $this->removeFeature($change['feature_key']);
+                            $this->removeFeature($featureKey);
                             $result['removed']++;
                             break;
                     }
                 } catch (\Exception $e) {
-                    $result['errors'][] = "Failed to process change for {$change['feature_key']}: {$e->getMessage()}";
+                    $result['errors'][] = 'Failed to process change: '.$e->getMessage();
                 }
             }
 
@@ -355,22 +372,26 @@ class FeatureRegistry implements FeatureRegistryInterface
      */
     public function getStatistics(): array
     {
-        return $this->cache->remember(self::STATISTICS_CACHE_KEY, self::CACHE_TTL, function () {
-            $query = Feature::withoutGlobalScope('company');
-            $totalFeatures = (clone $query)->count();
-            $activeFeatures = (clone $query)->active()->count();
+        /** @var array<string, mixed> $stats */
+        $stats = $this->cache->remember(self::STATISTICS_CACHE_KEY, self::CACHE_TTL, function (): array {
+            /** @var \Illuminate\Database\Eloquent\Builder<Feature> $baseQuery */
+            $baseQuery = Feature::withoutGlobalScope('company')->newQuery();
+            $totalFeatures = (clone $baseQuery)->count();
+            $activeFeatures = (clone $baseQuery)->active()->count();
 
-            $byApiVersion = (clone $query)->select('api_version', DB::raw('count(*) as count'))
+            /** @var array<string, int> $byApiVersion */
+            $byApiVersion = (clone $baseQuery)->select('api_version', DB::raw('count(*) as count'))
                 ->groupBy('api_version')
                 ->pluck('count', 'api_version')
                 ->toArray();
 
-            $byStatus = (clone $query)->select('status', DB::raw('count(*) as count'))
+            /** @var array<string, int> $byStatus */
+            $byStatus = (clone $baseQuery)->select('status', DB::raw('count(*) as count'))
                 ->groupBy('status')
                 ->pluck('count', 'status')
                 ->toArray();
 
-            $recentlyUpdated = (clone $query)->where('updated_at', '>=', Carbon::now()->subDays(7))
+            $recentlyUpdated = (clone $baseQuery)->where('updated_at', '>=', Carbon::now()->subDays(7))
                 ->count();
 
             return [
@@ -384,6 +405,8 @@ class FeatureRegistry implements FeatureRegistryInterface
                 'cache_status' => $this->getCacheStatus(),
             ];
         });
+
+        return $stats;
     }
 
     /**
@@ -417,11 +440,12 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $lastSync = $this->cache->get(self::CACHE_PREFIX.':last_sync');
 
-        return $lastSync ? Carbon::parse($lastSync)->toISOString() : null;
+        return $lastSync ? Carbon::parse((string) $lastSync)->toISOString() : null;
     }
 
     /**
      * Récupère le statut du cache
+     * @return array<string, mixed>
      */
     private function getCacheStatus(): array
     {
