@@ -20,11 +20,9 @@ return new class extends Migration
             $table->id();
 
             // Référence tenant
+            // Note : pas de FK vers companies car cette table est dans shared_tenants
+            // et companies est dans le schéma public (cross-schema FK non supportée en CI).
             $table->unsignedBigInteger('company_id')->index();
-            $table->foreign('company_id')
-                  ->references('id')
-                  ->on('companies')
-                  ->cascadeOnDelete();
 
             // Identité du nœud
             $table->string('node_id', 64)->unique();
