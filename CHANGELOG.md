@@ -2,6 +2,21 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.20.0] - 2026-06-30
+
+### Added
+- **EdgeSync Module** : Module DDD complet `App\Modules\EdgeSync` avec services, modèles, jobs et notifications pour la synchronisation bidirectionnelle Cloud ↔ Edge.
+  - `CloudDeltaBuilder` : Calcul des deltas à synchroniser depuis le Cloud vers les nœuds Edge.
+  - `EdgeLicenseService` : Gestion des licences RS256 (validation, renouvellement, révocation).
+  - `SyncEngineService` : Moteur de sync avec queue, retry, conflict detection.
+  - `ProcessSyncQueueJob` : Job queued pour traitement asynchrone des syncs.
+  - `EdgeSyncDaemonCommand` : Démon long-running pour les déploiements Edge.
+  - `MonitorEdgeNodesCommand` : Monitoring des nœuds Edge silencieux.
+  - `EdgeDownloadController` : Endpoints téléchargements (docker-compose, env-example).
+  - `EdgeNode`, `EdgeLicense`, `SyncLog`, `SyncQueue` : Modèles Eloquent du module.
+  - Migration `create_edge_sync_tables` : Tables `edge_nodes`, `edge_licenses`, `sync_logs`, `sync_queue`.
+  - ZKTeco kiosk : Support routing `edge_first/cloud_first/edge_only` dans `app.js`.
+
 ## [4.18.0] - 2026-06-30
 
 ### Added

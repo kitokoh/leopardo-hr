@@ -31,6 +31,13 @@ use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
+// ── Edge Download Routes (public, no auth) ────────────────────────────────────────
+Route::prefix('edge')->group(function () {
+    Route::get('/install.sh', [\App\Http\Controllers\Api\V1\EdgeDownloadController::class, 'installScript']);
+    Route::get('/download/docker-compose.yml', [\App\Http\Controllers\Api\V1\EdgeDownloadController::class, 'dockerCompose']);
+    Route::get('/license-public-key', [\App\Http\Controllers\Api\V1\EdgeDownloadController::class, 'licensePublicKey']);
+});
+
 Route::prefix('v1')->group(function (): void {
     // Sonde live+ready : DB + Redis + storage. Consommee par Render (deploy hook)
     // et la supervision externe. 503 si la DB tombe, 200 sinon (Redis et storage
@@ -54,9 +61,6 @@ Route::prefix('v1')->group(function (): void {
 
     // Demo users (public, disabled in production unless DEMO_MODE_ENABLED=true)
     Route::get('/demo-users', [DemoUserController::class, 'index']);
-
-    // Edge nodes — déploiement offline, endpoints publics + platform
-    require __DIR__.'/modules/edge.php';
 
     // Module 6 — Public Onboarding (sans auth, throttle strict)
     Route::middleware(['throttle:10,1'])->prefix('onboarding')->group(function (): void {

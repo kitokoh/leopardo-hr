@@ -11,62 +11,7 @@ const CONFIG = {
   kioskToken: window.__KIOSK_TOKEN || '',
   refreshInterval: 15000,
   announcementRefreshInterval: 60000,
-
-  // ── Edge mode (activé via config.json edge.enabled = true)
-  edge: {
-    enabled: window.__KIOSK_EDGE_ENABLED === 'true' || false,
-    localApiUrl: window.__KIOSK_EDGE_URL || 'http://leopardo.local/api/v1/edge',
-    fallbackToCloud: true,
-    healthCheckIntervalSeconds: 30,
-    routingStrategy: window.__KIOSK_EDGE_ROUTING || 'edge_first',
-  },
 };
-
-// ── Edge routing helper ───────────────────────────────
-/**
- * Retourne l'URL de base effective selon la stratégie Edge configurée.
- * Stratégies :
- *   'edge_first'  — tente Edge en premier, fallback Cloud si indisponible
- *   'cloud_first' — tente Cloud en premier, fallback Edge si indisponible
- *   'edge_only'   — Edge uniquement, lève une erreur si indisponible
- */
-async function resolveApiBase() {
-  if (!CONFIG.edge.enabled) {
-    return (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
-  }
-
-  const strategy = CONFIG.edge.routingStrategy;
-  const edgeUrl  = (CONFIG.edge.localApiUrl || '').replace(/\/$/, '');
-  const cloudUrl = (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
-
-  if (strategy === 'edge_only') return edgeUrl;
-
-  if (strategy === 'edge_first') {
-    const edgeOk = await isEdgeReachable(edgeUrl);
-    return edgeOk ? edgeUrl : cloudUrl;
-  }
-
-  // cloud_first
-  try {
-    const res = await fetch(`${cloudUrl}/api/v1/health`, {
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) return cloudUrl;
-  } catch { /* fallthrough */ }
-  return edgeUrl;
-}
-
-async function isEdgeReachable(edgeBase) {
-  try {
-    const res = await fetch(
-      `${edgeBase.replace('/api/v1/edge', '')}/api/v1/edge/health`,
-      { signal: AbortSignal.timeout(2500) }
-    );
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
 
 // ── State ────────────────────────────────────────────
 const state = {
