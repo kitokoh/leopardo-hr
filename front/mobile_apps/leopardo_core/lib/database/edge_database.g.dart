@@ -16,28 +16,21 @@ class $AttendanceLogsTable extends AttendanceLogs
   final String? _alias;
   $AttendanceLogsTable(this.attachedDatabase, [this._alias]);
 
-  static const VerificationMeta _localIdMeta =
-      const VerificationMeta('localId');
   @override
   late final GeneratedColumn<String> localId = GeneratedColumn<String>(
       'local_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
 
-  static const VerificationMeta _remoteIdMeta =
-      const VerificationMeta('remoteId');
   @override
   late final GeneratedColumn<int> remoteId = GeneratedColumn<int>(
       'remote_id', aliasedName, true,
       type: DriftSqlType.int, requiredDuringInsert: false);
 
-  static const VerificationMeta _employeeIdMeta =
-      const VerificationMeta('employeeId');
   @override
   late final GeneratedColumn<int> employeeId = GeneratedColumn<int>(
       'employee_id', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
 
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumnWithTypeConverter<AttendanceType, String> type =
       GeneratedColumn<String>('type', aliasedName, false,
@@ -45,15 +38,11 @@ class $AttendanceLogsTable extends AttendanceLogs
           .withConverter<AttendanceType>(
               $AttendanceLogsTable.$convertertype);
 
-  static const VerificationMeta _checkedAtMeta =
-      const VerificationMeta('checkedAt');
   @override
   late final GeneratedColumn<DateTime> checkedAt = GeneratedColumn<DateTime>(
       'checked_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
 
-  static const VerificationMeta _sourceMeta =
-      const VerificationMeta('source');
   @override
   late final GeneratedColumn<String> source = GeneratedColumn<String>(
       'source', aliasedName, false,
@@ -61,15 +50,11 @@ class $AttendanceLogsTable extends AttendanceLogs
       requiredDuringInsert: false,
       defaultValue: const Constant('edge'));
 
-  static const VerificationMeta _locationJsonMeta =
-      const VerificationMeta('locationJson');
   @override
   late final GeneratedColumn<String> locationJson = GeneratedColumn<String>(
       'location_json', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
 
-  static const VerificationMeta _syncStatusMeta =
-      const VerificationMeta('syncStatus');
   @override
   late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
       'sync_status', aliasedName, false,
@@ -77,8 +62,6 @@ class $AttendanceLogsTable extends AttendanceLogs
       requiredDuringInsert: false,
       defaultValue: const Constant('pending'));
 
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
       'created_at', aliasedName, false,
@@ -172,7 +155,7 @@ class AttendanceLog extends DataClass
     final map = <String, Expression>{};
     map['local_id'] = Variable<String>(localId);
     if (!nullToAbsent || remoteId != null) {
-      map['remote_id'] = Variable<int?>(remoteId);
+      map['remote_id'] = Variable<int>(remoteId);
     }
     map['employee_id'] = Variable<int>(employeeId);
     map['type'] = Variable<String>(
@@ -180,7 +163,7 @@ class AttendanceLog extends DataClass
     map['checked_at'] = Variable<DateTime>(checkedAt);
     map['source'] = Variable<String>(source);
     if (!nullToAbsent || locationJson != null) {
-      map['location_json'] = Variable<String?>(locationJson);
+      map['location_json'] = Variable<String>(locationJson);
     }
     map['sync_status'] = Variable<String>(syncStatus);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -340,7 +323,7 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (localId.present) map['local_id'] = Variable<String>(localId.value);
-    if (remoteId.present) map['remote_id'] = Variable<int?>(remoteId.value);
+    if (remoteId.present) map['remote_id'] = Variable<int>(remoteId.value);
     if (employeeId.present) {
       map['employee_id'] = Variable<int>(employeeId.value);
     }
@@ -353,7 +336,7 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
     }
     if (source.present) map['source'] = Variable<String>(source.value);
     if (locationJson.present) {
-      map['location_json'] = Variable<String?>(locationJson.value);
+      map['location_json'] = Variable<String>(locationJson.value);
     }
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
@@ -497,17 +480,17 @@ class EmployeeCacheData extends DataClass
     map['last_name'] = Variable<String>(lastName);
     map['email'] = Variable<String>(email);
     if (!nullToAbsent || badgeQr != null) {
-      map['badge_qr'] = Variable<String?>(badgeQr);
+      map['badge_qr'] = Variable<String>(badgeQr);
     }
     if (!nullToAbsent || department != null) {
-      map['department'] = Variable<String?>(department);
+      map['department'] = Variable<String>(department);
     }
     if (!nullToAbsent || jobTitle != null) {
-      map['job_title'] = Variable<String?>(jobTitle);
+      map['job_title'] = Variable<String>(jobTitle);
     }
     map['is_active'] = Variable<bool>(isActive);
     if (!nullToAbsent || syncedAt != null) {
-      map['synced_at'] = Variable<int?>(syncedAt);
+      map['synced_at'] = Variable<int>(syncedAt);
     }
     return map;
   }
@@ -658,11 +641,11 @@ class EmployeeCacheCompanion extends UpdateCompanion<EmployeeCacheData> {
     if (firstName.present) map['first_name'] = Variable<String>(firstName.value);
     if (lastName.present) map['last_name'] = Variable<String>(lastName.value);
     if (email.present) map['email'] = Variable<String>(email.value);
-    if (badgeQr.present) map['badge_qr'] = Variable<String?>(badgeQr.value);
-    if (department.present) map['department'] = Variable<String?>(department.value);
-    if (jobTitle.present) map['job_title'] = Variable<String?>(jobTitle.value);
+    if (badgeQr.present) map['badge_qr'] = Variable<String>(badgeQr.value);
+    if (department.present) map['department'] = Variable<String>(department.value);
+    if (jobTitle.present) map['job_title'] = Variable<String>(jobTitle.value);
     if (isActive.present) map['is_active'] = Variable<bool>(isActive.value);
-    if (syncedAt.present) map['synced_at'] = Variable<int?>(syncedAt.value);
+    if (syncedAt.present) map['synced_at'] = Variable<int>(syncedAt.value);
     return map;
   }
 
@@ -818,12 +801,12 @@ class SyncQueueData extends DataClass implements Insertable<SyncQueueData> {
     map['payload_json'] = Variable<String>(payloadJson);
     map['retry_count'] = Variable<int>(retryCount);
     if (!nullToAbsent || lastError != null) {
-      map['last_error'] = Variable<String?>(lastError);
+      map['last_error'] = Variable<String>(lastError);
     }
     map['status'] = Variable<String>(status);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || processedAt != null) {
-      map['processed_at'] = Variable<DateTime?>(processedAt);
+      map['processed_at'] = Variable<DateTime>(processedAt);
     }
     return map;
   }
@@ -983,10 +966,10 @@ class SyncQueueCompanion extends UpdateCompanion<SyncQueueData> {
     if (operation.present) map['operation'] = Variable<String>(operation.value);
     if (payloadJson.present) map['payload_json'] = Variable<String>(payloadJson.value);
     if (retryCount.present) map['retry_count'] = Variable<int>(retryCount.value);
-    if (lastError.present) map['last_error'] = Variable<String?>(lastError.value);
+    if (lastError.present) map['last_error'] = Variable<String>(lastError.value);
     if (status.present) map['status'] = Variable<String>(status.value);
     if (createdAt.present) map['created_at'] = Variable<DateTime>(createdAt.value);
-    if (processedAt.present) map['processed_at'] = Variable<DateTime?>(processedAt.value);
+    if (processedAt.present) map['processed_at'] = Variable<DateTime>(processedAt.value);
     return map;
   }
 
