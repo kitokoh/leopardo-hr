@@ -22,6 +22,7 @@ import 'package:leopardo_employee/features/ai_chat/data/ai_chat_repository.dart'
 import 'package:leopardo_employee/features/ai_voice/data/ai_voice_repository.dart';
 import 'package:leopardo_employee/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
+import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();
@@ -145,4 +146,10 @@ final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return OnboardingRepository(apiClient);
+});
+
+final smartAttendanceRepositoryCoreProvider =
+    Provider<SmartAttendanceRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return SmartAttendanceRepository(apiClient);
 });

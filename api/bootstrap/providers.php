@@ -24,6 +24,8 @@ return [
     // — New DDD modules (Phase 2)
     App\Modules\Growth\Providers\GrowthServiceProvider::class,
     App\Modules\Absence\Providers\AbsenceServiceProvider::class,
+    // — SmartAttendance module
+    App\Modules\SmartAttendance\Providers\SmartAttendanceServiceProvider::class,
     App\Modules\Expense\Providers\ExpenseServiceProvider::class,
     App\Modules\Notification\Providers\NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)

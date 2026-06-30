@@ -1151,47 +1151,7 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 
 **Scenarios couverts** : FrontendApiContractTest, backend feature tests existants.
 
-## Phase 4 — Amélioration des tests Google OAuth et ajout PUT /reject Expense (v4.17.8)
-
-**Expense — Route reject REST-compliant**
-- `PUT /api/v1/expense-claims/{id}/reject` : rejet d'une note de frais par un manager — valide champ `reason` obligatoire (422 si absent). Retourne 200 + payload `data.status=rejected`.
-- `POST /api/v1/expense-claims/{id}/reject` : synonyme conservé pour compatibilité backward.
-- Isolation multitenant : un manager d'un autre tenant reçoit 404 (non 403), préservant l'opacité de l'existence de la ressource.
-- Rôle : seul un employee avec `manager_role` peut approuver/rejeter (403 sinon).
-
-**Auth Google OAuth améliorée**
-- `POST /api/v1/auth/google/token` : connexion via token Google — mock Socialite renforcé (`stateless()->userFromToken()`). Test de rejet 401 pour email inconnu. Test cross-tenant garantissant l'absence de fuite d'isolation.
-- Tests couverts : GoogleAuthGlobalLookupTest (lookup global, rejet inconnu, isolation cross-tenant).
-
-## Phase 6 — PHPStan/Larastan Vagues 1–4 (v4.18.1)
-
-**Correction types mixtes — Services critiques**
-- `AttendanceMonthlyReportService`, `AttendanceAnomalyService`, `AttendanceService` : annotations `@param Collection<int, AttendanceLog>`, casts `(string)` sur timezone/dates.
-- `PlatformCompanyHealthService` : guard `DB::selectOne()` nullable, `@var object|null`.
-- `FeatureRegistry` : `cache->remember()` typé, `getStatistics()` avec `Builder<Feature>` via `newQuery()`, casts `(string)` sur `$change['feature_key']`.
-- `HrReportController` : closure `groupBy->map()` typée avec `Collection<int, Absence>`.
-- `PlatformCompanyRequestController` : `DB::table()->value()` int cast, `$result['company']` annotatio `@var Company`.
-- `CameraService` : `@param/@return array<string, mixed>` sur méthodes de stream.
-- `AbsenceService`, `PayrollCalculator`, `EvaluationController`, `TaskController` : types explicites sur tous les paramètres/retours mixtes.
-- Tests Feature/Absences : `str_pad((string) $n)`, `firstOrFail()` pour éliminer nullable.
-
-## Phase 5 — Migration AbsenceController DDD + HR Domain/Contracts (v4.17.9)
-
-**Absence — Controller DDD canonique (remplacement Planning module)**
-- `GET /api/v1/absences` : liste paginée avec filtres `status`, `month`, `year`, `employee_id`. RBAC : employee voit ses propres absences, manager voit toutes celles du tenant.
-- `POST /api/v1/absences` : création — rules de solde, conflits de dates gérés par `AbsenceService`.
-- `GET /api/v1/absences/{id}` : 404 cross-tenant, 403 si employee ne possède pas l'absence.
-- `PUT /api/v1/absences/{id}/approve` : manager uniquement — 404 cross-tenant, 403 non-manager.
-- `PUT /api/v1/absences/{id}/reject` : manager uniquement — champ `rejected_reason` requis.
-- `DELETE /api/v1/absences/{id}` : employee peut annuler sa propre absence — 404 cross-tenant, 403 si pas propriétaire.
-- Correction bug : `absence.php` avait un double prefix `/v1/v1/absences` — corrigé en `absences` (routes étaient mortes).
-
-**HR Domain/Contracts**
-- `EmployeeRepositoryInterface` — `findById`, `findByEmail`, `paginateByCompany`, `save`, `delete`
-- `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
-- `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
-
-## Phase 8 — DDD Phase 3 — Controller Migration + Notification fixes (v4.17.9-fix2)
+## Phase 9 — Smart Attendance GPS — Phase 1 à 5 (v4.17.5)
 
 **Nouveaux controllers/endpoints ajoutés dans cette phase**
 - Surface API étendue — voir CHANGELOG pour le détail des endpoints.
