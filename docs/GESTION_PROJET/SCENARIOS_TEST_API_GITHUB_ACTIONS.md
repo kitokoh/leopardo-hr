@@ -1200,3 +1200,15 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `EmployeeRepositoryInterface` — `findById`, `findByEmail`, `paginateByCompany`, `save`, `delete`
 - `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
 - `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
+
+## Phase 6 — PHPStan vagues 1→4 (v4.18.1)
+
+**Corrections PHPStan sans impact API**
+- Cette phase corrige des annotations mixed-types sur services existants sans modification de surface API.
+- Aucun nouvel endpoint créé/supprimé — vérifications de régression non nécessaires.
+- Services affectés : `AbsenceService`, `AttendanceService`, `CameraService`, `FeatureRegistry`, `PayrollCalculator`, `PlatformCompanyHealthService`.
+- Controllers affectés : `EvaluationController`, `HrReportController`, `PlatformCompanyRequestController`, `TaskController` — signature publique inchangée.
+
+**Impact PHPStan**
+- `api/phpstan.neon` : Extension Larastan activée — niveau de check renforci progressivement.
+- Baseline mise à jour pour exclure les erreurs résiduelles en cours de résolution.
