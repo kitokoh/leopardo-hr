@@ -125,11 +125,6 @@ Schedule::command('growth:approve-commissions')
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
-Schedule::command('edge:monitor')
-    ->everyThirtyMinutes()
-    ->withoutOverlapping()
-    ->onOneServer();
-
 Artisan::command('super-admin:reset-password {email} {password}', function (string $email, string $password) {
     DB::statement('SET search_path TO public');
 

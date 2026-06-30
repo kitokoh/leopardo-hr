@@ -28,6 +28,9 @@ return [
     App\Modules\SmartAttendance\Providers\SmartAttendanceServiceProvider::class,
     App\Modules\Expense\Providers\ExpenseServiceProvider::class,
     App\Modules\Notification\Providers\NotificationServiceProvider::class,
-    // — Leopardo Edge Sync (Phase 3 — Offline First)
-    App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider::class,
+    // — New DDD modules (Phase 3–4)
+    App\Modules\Growth\Providers\GrowthServiceProvider::class,
+    App\Modules\Platform\Providers\PlatformServiceProvider::class,
+    App\Modules\Onboarding\Providers\OnboardingServiceProvider::class,
+    App\Modules\Training\Providers\TrainingServiceProvider::class,
 ];
