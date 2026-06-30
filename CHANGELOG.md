@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.5-fix3] - 2026-06-30
+
+### Fixed
+- **Smart Attendance — Migration FK** : Suppression de la FK explicite `employees` dans `create_employee_attendance_preferences_table` — évitait une erreur `column does not exist` en CI si la migration s'exécute avant `employees`.
+- **Frontend TypeScript** : `client-features.ts:266` — typage explicite `let moduleKey: ClientModuleKey | undefined` pour corriger `Type 'ClientModuleKey | undefined' is not assignable to type 'ClientModuleKey'`.
+
 ## [4.17.5] - 2026-06-29
 
 ### Fixed

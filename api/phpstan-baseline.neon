@@ -18311,3 +18311,27 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Services/ReflectionServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Auth\\Factory\:\:user\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: app/Modules/SmartAttendance
+
+		-
+			message: '#^Call to an undefined static method App\\Modules\\SmartAttendance\\Domain\\Models\\AttendanceModeSettings\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 4
+			path: app/Modules/SmartAttendance
+
+		-
+			message: '#^Call to an undefined static method App\\Modules\\SmartAttendance\\Domain\\Models\\EmployeeAttendancePreference\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 2
+			path: app/Modules/SmartAttendance
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Query\\Builder\:\:findOrFail\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Modules/SmartAttendance

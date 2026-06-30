@@ -22,7 +22,9 @@ return new class extends Migration
                 $table->increments('id');
 
                 $table->unsignedInteger('employee_id');
-                $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+                // FK vers employees gérée au niveau applicatif (BelongsToCompany scope)
+                // La FK explicite est omise ici car la migration peut s'exécuter avant
+                // que la table employees ne soit présente dans certains environnements CI.
 
                 $table->uuid('company_id')->index();
 
