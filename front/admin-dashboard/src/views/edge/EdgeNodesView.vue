@@ -175,9 +175,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
-import { useApiService } from '@/services/api.js'
-
-const api = useApiService()
+import api from '@/services/api.js'
 
 // ─── State ────────────────────────────────────────────────────────────────
 const nodes       = ref([])
