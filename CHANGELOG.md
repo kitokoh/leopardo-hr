@@ -2,6 +2,11 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.9-fix] - 2026-06-30
+
+### Fixed
+- **DepartmentController** : Suppression du `select(['...', 'manager_id'])` explicite — `manager_id` est chargé via la relation `with('manager')`, évitant `column "manager_id" does not exist` sur les environnements où la migration altérée n'a pas encore été appliquée dans le schema de test.
+
 ## [4.17.9] - 2026-06-29
 
 ### Added
