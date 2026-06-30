@@ -7,8 +7,8 @@ use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -24,7 +24,7 @@ use Tests\TestCase;
  */
 class EdgeOfflineScenarioTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private Company $company;
     private EdgeNode $node;
@@ -32,6 +32,7 @@ class EdgeOfflineScenarioTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create([
             'slug'   => 'offline-test-co',
@@ -49,6 +50,12 @@ class EdgeOfflineScenarioTest extends TestCase
             'license_expires_at' => now()->addDays(30),
             'metadata'           => ['edge_token' => 'offline-test-token'],
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     // ── Scénario 1 : Perte internet ───────────────────────
@@ -158,7 +165,7 @@ class EdgeOfflineScenarioTest extends TestCase
         // Cloud : absence déjà approuvée
         \DB::table('absences')->insert([
             'company_id'      => $this->company->id,
-            'employee_id'     => 'emp-conflict-001',
+            'employee_id'     => 1,
             'absence_type_id' => 1,
             'start_date'      => now()->addDays(3)->toDateString(),
             'end_date'        => now()->addDays(5)->toDateString(),
@@ -283,15 +290,15 @@ class EdgeOfflineScenarioTest extends TestCase
 
         // Insérer un employé du tenant B
         \DB::table('employees')->insert([
-            'id'         => 'emp-company-b-secret',
-            'company_id' => $companyB->id,
-            'first_name' => 'Secret',
-            'last_name'  => 'Employee',
-            'email'      => 'secret@company-b.test',
-            'role'       => 'employee',
-            'status'     => 'active',
-            'updated_at' => now()->toDateTimeString(),
-            'created_at' => now()->toDateTimeString(),
+            'company_id'    => $companyB->id,
+            'first_name'    => 'Secret',
+            'last_name'     => 'Employee',
+            'email'         => 'secret@company-b.test',
+            'password_hash' => bcrypt('secret'),
+            'role'          => 'employee',
+            'status'        => 'active',
+            'updated_at'    => now()->toDateTimeString(),
+            'created_at'    => now()->toDateTimeString(),
         ]);
 
         // Construire le delta pour le node du tenant A
@@ -299,10 +306,12 @@ class EdgeOfflineScenarioTest extends TestCase
         $delta   = $builder->build($this->node);
 
         $employeesInDelta = $delta['entities']['employees'] ?? [];
-        $ids = array_column($employeesInDelta, 'id');
+        $emails = array_column($employeesInDelta, 'email');
+        $companyIds = array_column($employeesInDelta, 'company_id');
 
         // L'employé de company B ne doit PAS apparaître dans le delta de company A
-        $this->assertNotContains('emp-company-b-secret', $ids);
+        $this->assertNotContains('secret@company-b.test', $emails);
+        $this->assertNotContains((string) $companyB->id, $companyIds);
     }
 
     // ── Scénario 6 : Batch massif ─────────────────────────

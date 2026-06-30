@@ -8,7 +8,7 @@ use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -24,7 +24,7 @@ use Tests\TestCase;
  */
 class EdgeSyncTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private Company $company;
     private EdgeNode $node;
@@ -32,6 +32,7 @@ class EdgeSyncTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create([
             'slug'   => 'acme-test',
@@ -156,15 +157,15 @@ class EdgeSyncTest extends TestCase
 
         // Simulate a Cloud employee updated after last sync
         \DB::table('employees')->insert([
-            'id'         => 'emp-delta-001',
-            'company_id' => $this->company->id,
-            'first_name' => 'Moussa',
-            'last_name'  => 'Diallo',
-            'email'      => 'moussa@acme.test',
-            'role'       => 'employee',
-            'status'     => 'active',
-            'created_at' => now()->subDay()->toDateTimeString(),
-            'updated_at' => now()->toDateTimeString(),
+            'company_id'    => $this->company->id,
+            'first_name'    => 'Moussa',
+            'last_name'     => 'Diallo',
+            'email'         => 'moussa@acme.test',
+            'password_hash' => bcrypt('secret'),
+            'role'          => 'employee',
+            'status'        => 'active',
+            'created_at'    => now()->subDay()->toDateTimeString(),
+            'updated_at'    => now()->toDateTimeString(),
         ]);
 
         $this->node->update(['last_sync_at' => now()->subHours(2)]);
@@ -214,7 +215,7 @@ class EdgeSyncTest extends TestCase
         // Insert an existing attendance log with same external_event_id
         \DB::table('attendance_logs')->insert([
             'company_id'        => $this->company->id,
-            'employee_id'       => 'emp-001',
+            'employee_id'       => 1,
             'check_in'          => now()->subHours(8)->toDateTimeString(),
             'external_event_id' => 'duplicate-event-001',
             'method'            => 'mobile',
@@ -257,7 +258,7 @@ class EdgeSyncTest extends TestCase
         // Insert an already-approved absence in Cloud
         \DB::table('absences')->insert([
             'company_id'     => $this->company->id,
-            'employee_id'    => 'emp-001',
+            'employee_id'    => 1,
             'absence_type_id' => 1,
             'start_date'     => now()->addDay()->toDateString(),
             'end_date'       => now()->addDays(2)->toDateString(),
@@ -323,6 +324,12 @@ class EdgeSyncTest extends TestCase
     }
 
     // ── Helpers ───────────────────────────────────────────
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
+    }
 
     private function actingAsCompanyAdmin(Company $company): self
     {
