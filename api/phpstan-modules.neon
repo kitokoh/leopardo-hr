@@ -46,6 +46,8 @@ parameters:
         - '#Access to property \$(company_id|id) on an unknown class App\\Modules\\Payroll\\Domain\\Models\\Employee#'
         - '#Call to method (resetToPrevious|setTenant|withinTenant)\(\) on an unknown class App\\Modules\\(HR|Attendance)\\Infrastructure\\Services\\TenantManager#'
         - '#Call to an undefined static method App\\Modules\\.*::create\(\)#'
+        - '#Call to an undefined static method App\\Modules\\EdgeSync\\Domain\\Models\\(EdgeNode|EdgeLicense|SyncQueue|SyncLog)::(where|find|findOrFail|updateOrCreate|whereNotNull|with|first|latest|get)\(\)#'
+        - '#Access to an undefined property App\\Modules\\EdgeSync\\Domain\\Models\\EdgeLicense::\$edgeNode#'
         - '#Call to an undefined static method App\\Modules\\Cameras\\Domain\\(Camera|CameraAccessToken)::withoutGlobalScopes\(\)#'
         - '#Call to an undefined method App\\Modules\\(Attendance|Billing|Cabinet|Payroll)\\Infrastructure\\Services\\.*::(syncDevice|createSubscription|shareDocument|generateForPeriod)\(\)#'
         - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::download\(\)#'

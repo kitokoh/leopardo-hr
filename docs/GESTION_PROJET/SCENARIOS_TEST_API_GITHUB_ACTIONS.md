@@ -1153,7 +1153,53 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 
 ## Phase 9 — Smart Attendance GPS — Phase 1 à 5 (v4.17.5)
 
-**Nouveaux controllers/endpoints ajoutés dans cette phase**
-- Surface API étendue — voir CHANGELOG pour le détail des endpoints.
-- Tests couverts dans `api/tests/Feature/` pour chaque nouveau module.
-- Isolation multi-tenant vérifiée : `company_id` scoping actif sur tous les nouveaux endpoints.
+**Expense — Route reject REST-compliant**
+- `PUT /api/v1/expense-claims/{id}/reject` : rejet d'une note de frais par un manager — valide champ `reason` obligatoire (422 si absent). Retourne 200 + payload `data.status=rejected`.
+- `POST /api/v1/expense-claims/{id}/reject` : synonyme conservé pour compatibilité backward.
+- Isolation multitenant : un manager d'un autre tenant reçoit 404 (non 403), préservant l'opacité de l'existence de la ressource.
+- Rôle : seul un employee avec `manager_role` peut approuver/rejeter (403 sinon).
+
+**Auth Google OAuth améliorée**
+- `POST /api/v1/auth/google/token` : connexion via token Google — mock Socialite renforcé (`stateless()->userFromToken()`). Test de rejet 401 pour email inconnu. Test cross-tenant garantissant l'absence de fuite d'isolation.
+- Tests couverts : GoogleAuthGlobalLookupTest (lookup global, rejet inconnu, isolation cross-tenant).
+
+## Phase 5 — Migration AbsenceController DDD + HR Domain/Contracts (v4.17.9)
+
+**Absence — Controller DDD canonique (remplacement Planning module)**
+- `GET /api/v1/absences` : liste paginée avec filtres `status`, `month`, `year`, `employee_id`. RBAC : employee voit ses propres absences, manager voit toutes celles du tenant.
+- `POST /api/v1/absences` : création — rules de solde, conflits de dates gérés par `AbsenceService`.
+- `GET /api/v1/absences/{id}` : 404 cross-tenant, 403 si employee ne possède pas l'absence.
+- `PUT /api/v1/absences/{id}/approve` : manager uniquement — 404 cross-tenant, 403 non-manager.
+- `PUT /api/v1/absences/{id}/reject` : manager uniquement — champ `rejected_reason` requis.
+- `DELETE /api/v1/absences/{id}` : employee peut annuler sa propre absence — 404 cross-tenant, 403 si pas propriétaire.
+- Correction bug : `absence.php` avait un double prefix `/v1/v1/absences` — corrigé en `absences` (routes étaient mortes).
+
+**HR Domain/Contracts**
+- `EmployeeRepositoryInterface` — `findById`, `findByEmail`, `paginateByCompany`, `save`, `delete`
+- `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
+- `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
+
+
+## Phase 6 — Edge Sync API offline-first (v4.18.0 — PR #813)
+
+**EdgeSync — Node registration & health**
+- `POST /api/v1/edge/auth/register` : enregistrement d'un node Edge — retourne `edge_token` + licence signée RS256. Validation : `node_id` unique par tenant, `company_id` requis.
+- `POST /api/v1/edge/auth/refresh-token` : renouvellement du token Edge — valide l'ancien token, émet un nouveau.
+- `GET /api/v1/edge/health` : health check public du node — retourne `status`, `node_id`, `pending_sync`, `last_sync`.
+
+**EdgeSync — Data push/pull**
+- `POST /api/v1/edge/push` : pousse un batch d'enregistrements (attendance_logs, absences) depuis le node Edge vers le Cloud. Auth Bearer `edge_token`. Validation : max 100 records/batch (`EDGE_SYNC_BATCH_SIZE`).
+- `GET /api/v1/edge/pull` : tire les delta depuis le Cloud (employees, departments, schedules). Auth Bearer `edge_token`. Retourne uniquement les entités modifiées depuis `last_sync_at`.
+
+**EdgeSync — Cloud admin endpoints**
+- `GET /api/v1/admin/edge-nodes` : liste les nodes Edge du tenant. RBAC : owner/hr_manager uniquement.
+- `GET /api/v1/admin/edge-nodes/{id}` : détail d'un node — statut, licence, dernière sync.
+- `POST /api/v1/admin/edge-nodes/{id}/sync` : déclenche une synchronisation manuelle depuis le Cloud. 404 si node inconnu ou cross-tenant.
+- `POST /api/v1/admin/edge-nodes/{id}/revoke` : révoque la licence d'un node — le node passe en mode dégradé.
+- `GET /api/v1/edge/license-public-key` : retourne la clé publique RS256 utilisée pour vérifier les licences Edge.
+
+**Isolation multitenant**
+- Un node d'un tenant A ne peut jamais voir les données du tenant B (filtrage par `company_id` sur tous les endpoints Edge).
+- Le token Edge est lié à un seul `company_id` — toute requête avec un token invalide ou cross-tenant retourne 401/403.
+
+**Scénarios critiques couverts** : EdgeSyncTest, EdgeOfflineScenarioTest.

@@ -1,0 +1,29 @@
+# ============================================================
+# Dependencies to ADD to leopardo_core/pubspec.yaml
+# for offline-first support
+# ============================================================
+# Add these under dependencies:
+
+dependencies:
+  # Local database (offline-first)
+  drift: ^2.14.1
+  drift_flutter: ^0.1.0
+  sqlite3_flutter_libs: ^0.5.0
+
+  # Connectivity detection
+  connectivity_plus: ^6.0.0
+
+  # HTTP client
+  dio: ^5.4.0
+
+  # Secure token storage
+  flutter_secure_storage: ^9.0.0
+
+  # Path utilities
+  path_provider: ^2.1.2
+  path: ^1.9.0
+
+dev_dependencies:
+  # Drift code generation
+  drift_dev: ^2.14.1
+  build_runner: ^2.4.8

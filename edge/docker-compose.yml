@@ -1,91 +1,104 @@
-# =============================================================================
-# Leopardo Edge Node — docker-compose.yml
-#
-# Usage :
-#   1. Copier ce fichier sur votre serveur/Raspberry Pi local
-#   2. Copier .env.edge.example → .env.edge et remplir les variables
-#   3. docker compose --env-file .env.edge up -d
-#
-# Accès : http://leopardo.local  (ou http://<IP_LAN>)
-# =============================================================================
-
 version: "3.9"
 
+# ============================================================
+# Leopardo Edge — Local Docker Stack
+# Installé chez le client pour fonctionnement offline-first
+# ============================================================
+
 services:
-  edge:
-    image: leopardo/edge-api:1.0.0
-    container_name: leopardo-edge
+
+  # ── Edge API (Laravel slim) ──────────────────────────────
+  edge-api:
+    image: leopardo/edge-api:latest
+    build:
+      context: ./api
+      dockerfile: Dockerfile.edge
+    container_name: leopardo-edge-api
     restart: unless-stopped
-
-    # ── Ports ──────────────────────────────────────────────────────────────
-    ports:
-      - "80:80"
-      - "443:443"
-
-    # ── Volumes ────────────────────────────────────────────────────────────
-    volumes:
-      # Persistance SQLite + licences + uploads
-      - edge_data:/data
-      # Clés RS256 (obligatoire en production)
-      - ./keys:/app/storage/keys:ro
-
-    # ── Variables d'environnement ──────────────────────────────────────────
     environment:
-      APP_ENV:                  "${APP_ENV:-production}"
-      APP_DEBUG:                "${APP_DEBUG:-false}"
-      APP_KEY:                  "${APP_KEY}"
-      APP_URL:                  "${APP_URL:-http://leopardo.local}"
-
-      # Edge identity
-      EDGE_ENABLED:             "true"
-      EDGE_NODE_ID:             "${EDGE_NODE_ID}"
-      EDGE_TOKEN:               "${EDGE_TOKEN}"
-
-      # Licences RS256
-      EDGE_LICENSE_PRIVATE_KEY: "${EDGE_LICENSE_PRIVATE_KEY}"
-      EDGE_LICENSE_PUBLIC_KEY:  "${EDGE_LICENSE_PUBLIC_KEY}"
-      EDGE_LICENSE_TTL_DAYS:    "${EDGE_LICENSE_TTL_DAYS:-30}"
-
-      # Cloud parent
-      CLOUD_API_URL:            "${CLOUD_API_URL}"
-      EDGE_SILENCE_THRESHOLD_MINUTES: "${EDGE_SILENCE_THRESHOLD_MINUTES:-30}"
-
-      # SQLite
-      DB_CONNECTION:            "sqlite"
-      DB_DATABASE:              "/data/leopardo_edge.sqlite"
-
-      # Cache / Queue en filesystem (pas de Redis requis en edge)
-      CACHE_STORE:              "file"
-      QUEUE_CONNECTION:         "sync"
-      SESSION_DRIVER:           "file"
-
-      # Mail (optionnel — alertes managers)
-      MAIL_MAILER:              "${MAIL_MAILER:-log}"
-      MAIL_HOST:                "${MAIL_HOST:-}"
-      MAIL_PORT:                "${MAIL_PORT:-587}"
-      MAIL_USERNAME:            "${MAIL_USERNAME:-}"
-      MAIL_PASSWORD:            "${MAIL_PASSWORD:-}"
-      MAIL_FROM_ADDRESS:        "${MAIL_FROM_ADDRESS:-edge@leopardo-rh.com}"
-      MAIL_FROM_NAME:           "Leopardo Edge"
-
-      # Caddy
-      SERVER_NAME:              "${SERVER_NAME:-leopardo.local, :80}"
-
-    # ── Healthcheck ────────────────────────────────────────────────────────
+      APP_ENV: edge
+      APP_KEY: "${EDGE_APP_KEY}"
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/leopardo/edge.sqlite
+      EDGE_NODE_ID: "${EDGE_NODE_ID}"
+      EDGE_TOKEN: "${EDGE_TOKEN}"
+      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo.app}"
+      CLOUD_SYNC_INTERVAL_MINUTES: "${SYNC_INTERVAL:-15}"
+      LICENSE_PUBLIC_KEY_PATH: /var/leopardo/license.pub
+    volumes:
+      - edge_data:/var/leopardo
+      - ./edge/license.pub:/var/leopardo/license.pub:ro
+    ports:
+      - "7878:80"       # http://leopardo.local:7878
+    networks:
+      - leopardo-local
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/api/v1/edge/health"]
+      test: ["CMD", "curl", "-f", "http://localhost/api/edge/health"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 20s
 
-    # ── Logging ────────────────────────────────────────────────────────────
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  # ── Edge Web UI (Next.js static export) ─────────────────
+  edge-ui:
+    image: leopardo/edge-ui:latest
+    build:
+      context: ./front/web
+      dockerfile: Dockerfile.edge
+    container_name: leopardo-edge-ui
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: "http://edge-api/api"
+      NEXT_PUBLIC_MODE: edge
+    ports:
+      - "7879:3000"     # http://leopardo.local:7879
+    depends_on:
+      - edge-api
+    networks:
+      - leopardo-local
+
+  # ── Sync Daemon ─────────────────────────────────────────
+  edge-sync:
+    image: leopardo/edge-api:latest
+    container_name: leopardo-edge-sync
+    restart: unless-stopped
+    command: ["php", "artisan", "edge:sync-daemon"]
+    environment:
+      APP_ENV: edge
+      APP_KEY: "${EDGE_APP_KEY}"
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/leopardo/edge.sqlite
+      EDGE_NODE_ID: "${EDGE_NODE_ID}"
+      EDGE_TOKEN: "${EDGE_TOKEN}"
+      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo.app}"
+      CLOUD_SYNC_INTERVAL_MINUTES: "${SYNC_INTERVAL:-15}"
+    volumes:
+      - edge_data:/var/leopardo
+    depends_on:
+      - edge-api
+    networks:
+      - leopardo-local
+
+  # ── Caddy Reverse Proxy (http://leopardo.local) ──────────
+  edge-proxy:
+    image: caddy:2-alpine
+    container_name: leopardo-edge-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./edge/Caddyfile.edge:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - edge-api
+      - edge-ui
+    networks:
+      - leopardo-local
 
 volumes:
   edge_data:
-    driver: local
+  caddy_data:
+
+networks:
+  leopardo-local:
+    driver: bridge

@@ -815,3 +815,79 @@ CREATE TABLE IF NOT EXISTS shared_tenants.zkteco_devices (
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
+
+-- EdgeSync module tables (public schema — shared across tenants)
+CREATE TABLE IF NOT EXISTS public.edge_nodes (
+    id uuid PRIMARY KEY,
+    company_id uuid NOT NULL,
+    name varchar(255) NOT NULL,
+    slug varchar(255) NOT NULL UNIQUE,
+    site_address varchar(255) NULL,
+    status varchar(50) NOT NULL DEFAULT 'active',
+    mode varchar(50) NOT NULL DEFAULT 'hybrid',
+    license_key varchar(255) NULL UNIQUE,
+    license_expires_at timestamptz NULL,
+    last_sync_at timestamptz NULL,
+    last_seen_at timestamptz NULL,
+    local_ip varchar(45) NULL,
+    public_ip varchar(45) NULL,
+    edge_version varchar(50) NOT NULL DEFAULT '1.0.0',
+    capabilities jsonb NOT NULL DEFAULT '{}',
+    metadata jsonb NOT NULL DEFAULT '{}',
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE INDEX IF NOT EXISTS edge_nodes_company_id_status_idx ON public.edge_nodes (company_id, status);
+
+CREATE TABLE IF NOT EXISTS public.sync_logs (
+    id uuid PRIMARY KEY,
+    edge_node_id uuid NOT NULL REFERENCES public.edge_nodes(id) ON DELETE CASCADE,
+    direction varchar(50) NOT NULL,
+    status varchar(50) NOT NULL,
+    records_sent integer NOT NULL DEFAULT 0,
+    records_received integer NOT NULL DEFAULT 0,
+    conflicts_detected integer NOT NULL DEFAULT 0,
+    conflicts_resolved integer NOT NULL DEFAULT 0,
+    error_message text NULL,
+    summary jsonb NOT NULL DEFAULT '{}',
+    started_at timestamptz NOT NULL,
+    finished_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.sync_queue (
+    id uuid PRIMARY KEY,
+    edge_node_id uuid NOT NULL REFERENCES public.edge_nodes(id) ON DELETE CASCADE,
+    entity_type varchar(100) NOT NULL,
+    entity_id varchar(255) NOT NULL,
+    operation varchar(20) NOT NULL,
+    payload jsonb NOT NULL,
+    status varchar(50) NOT NULL DEFAULT 'pending',
+    attempt_count integer NOT NULL DEFAULT 0,
+    conflict_resolution varchar(50) NULL,
+    conflict_note text NULL,
+    synced_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE INDEX IF NOT EXISTS sync_queue_edge_node_status_idx ON public.sync_queue (edge_node_id, status);
+CREATE INDEX IF NOT EXISTS sync_queue_entity_idx ON public.sync_queue (entity_type, entity_id);
+
+CREATE TABLE IF NOT EXISTS public.edge_licenses (
+    id uuid PRIMARY KEY,
+    company_id uuid NOT NULL,
+    edge_node_id uuid NOT NULL UNIQUE REFERENCES public.edge_nodes(id) ON DELETE CASCADE,
+    license_key varchar(255) NOT NULL UNIQUE,
+    signed_payload text NOT NULL,
+    allowed_features jsonb NOT NULL DEFAULT '[]',
+    max_employees integer NOT NULL DEFAULT 50,
+    issued_at timestamptz NOT NULL,
+    expires_at timestamptz NOT NULL,
+    last_validated_at timestamptz NULL,
+    validation_status varchar(50) NOT NULL DEFAULT 'valid',
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
