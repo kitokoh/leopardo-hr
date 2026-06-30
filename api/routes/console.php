@@ -119,9 +119,8 @@ Schedule::command('growth:approve-commissions')
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
-// Edge node monitoring — détecte les nœuds silencieux et alerte les managers
-Schedule::command('edge:detect-silent-nodes')
-    ->everyFiveMinutes()
+Schedule::command('edge:monitor')
+    ->everyThirtyMinutes()
     ->withoutOverlapping()
     ->onOneServer();
 
