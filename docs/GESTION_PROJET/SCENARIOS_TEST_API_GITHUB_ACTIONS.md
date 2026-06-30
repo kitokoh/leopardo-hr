@@ -1179,7 +1179,7 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
 - `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
 
-## Phase 10 — EdgeSync DDD Module (v4.20.0)
+## Phase 11 — Phase 4 Routes Migration + 17 modules DDD (v4.21.0)
 
 **Nouveaux controllers/endpoints ajoutés dans cette phase**
 - Surface API étendue — voir CHANGELOG pour le détail des endpoints.
