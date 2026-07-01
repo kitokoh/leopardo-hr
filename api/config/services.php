@@ -44,4 +44,10 @@ return [
         'price_enterprise' => env('STRIPE_PRICE_ENTERPRISE'),
     ],
 
+    'chargily' => [
+        'api_key' => env('CHARGILY_API_KEY'),
+        'webhook_secret' => env('CHARGILY_WEBHOOK_SECRET'),
+        'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
+    ],
+
 ];

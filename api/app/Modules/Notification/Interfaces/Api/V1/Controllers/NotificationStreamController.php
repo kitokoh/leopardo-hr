@@ -20,10 +20,40 @@ class NotificationStreamController extends Controller
 {
     public function stream(Request $request): StreamedResponse
     {
-        /** @var Employee $user */
-        $user = $request->user();
-        $userId    = $user->id;
-        $companyId = $user->company_id;
+        // Support short-lived SSE token passed as query param (avoids leaking main token in logs)
+        $userId = null;
+        $companyId = null;
+
+        if ($request->query('sse_token')) {
+            $cacheKey = 'sse_token:'.$request->query('sse_token');
+            /** @var array{user_id: int, company_id: int}|null $tokenData */
+            $tokenData = \Illuminate\Support\Facades\Cache::pull($cacheKey); // single-use
+            if ($tokenData === null) {
+                return new StreamedResponse(function (): void {
+                    echo "event: error\ndata: {\"message\":\"invalid_sse_token\"}\n\n";
+                    ob_flush();
+                    flush();
+                }, 401, [
+                    'Content-Type' => 'text/event-stream',
+                    'Cache-Control' => 'no-cache',
+                ]);
+            }
+            $userId = $tokenData['user_id'];
+            $companyId = $tokenData['company_id'];
+        } else {
+            /** @var Employee $user */
+            $user = $request->user();
+            if (!$user) {
+                return new StreamedResponse(function (): void {
+                    echo "event: error\ndata: {\"message\":\"unauthenticated\"}\n\n";
+                    ob_flush();
+                    flush();
+                }, 401, ['Content-Type' => 'text/event-stream', 'Cache-Control' => 'no-cache']);
+            }
+            $userId = $user->id;
+            $companyId = $user->company_id;
+        }
+
         $lastCheck = now();
 
         return new StreamedResponse(function () use ($userId, $companyId, &$lastCheck): void {
