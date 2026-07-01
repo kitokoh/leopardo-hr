@@ -3,6 +3,17 @@
 Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
+## [4.21.0] - 2026-07-01
+
+### Changed
+- **Refactor architecture DDD** : suppression des classes legacy doublonnées
+  - 90 controllers supprimés dans `app/Http/Controllers/Api/V1/` (doublons des modules DDD)
+  - 26 services supprimés dans `app/Services/` (51 consommateurs migrés vers les modules)
+  - `app/DTOs/` racine supprimé (`CheckInDTO`, `CreateEmployeeDTO`, `UpdateEmployeeDTO` migrés)
+  - Infrastructure créée pour `Growth`, `Platform`, `Onboarding`, `Training` (corrige 4 violations CI)
+  - Conservés : `EdgeController`, `EdgeDownloadController`, `SSO/SSOController`
+  - Surface API inchangée — aucune régression
+
 ## [4.18.0] - 2026-06-29
 
 ### Added
