@@ -1,64 +1,17 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\Modules\Notification\Domain\Models\CommunicationEvent
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model.
+ * ✅  Once all usages reference App\Modules\Notification\Domain\Models\CommunicationEvent, delete this file.
+ *
+ * @see \App\Modules\Notification\Domain\Models\CommunicationEvent
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property string $company_id
- * @property int|null $employee_id
- * @property int|null $notification_id
- * @property string $event_name
- * @property string $channel
- * @property string $status
- * @property string|null $provider
- * @property string|null $template_key
- * @property array<mixed>|null $metadata
- * @property string|null $error_message
- * @property Carbon $occurred_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class CommunicationEvent extends Model
-{
-    use BelongsToCompany;
-
-    protected $fillable = [
-        'company_id',
-        'employee_id',
-        'notification_id',
-        'event_name',
-        'channel',
-        'status',
-        'provider',
-        'template_key',
-        'metadata',
-        'error_message',
-        'occurred_at',
-    ];
-
-    protected $casts = [
-        'metadata' => 'array',
-        'occurred_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'employee_id');
-    }
-
-    /** @return BelongsTo<Notification, $this> */
-    public function notification(): BelongsTo
-    {
-        return $this->belongsTo(Notification::class, 'notification_id');
-    }
-}
+class_alias(\App\Modules\Notification\Domain\Models\CommunicationEvent::class, __NAMESPACE__ . '\\CommunicationEvent');

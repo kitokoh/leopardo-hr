@@ -3,9 +3,9 @@
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\SalaryAdvance\DecideSalaryAdvanceRequest;
-use App\Http\Requests\Api\V1\SalaryAdvance\SalaryAdvanceIndexRequest;
-use App\Http\Requests\Api\V1\SalaryAdvance\StoreSalaryAdvanceRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\DecideSalaryAdvanceRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\SalaryAdvanceIndexRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\StoreSalaryAdvanceRequest;
 use App\Http\Resources\Api\V1\SalaryAdvanceResource;
 use App\Jobs\GeneratePaymentDocumentJob;
 use App\Core\Auth\Domain\Models\Employee;

@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Application\DTOs;
 
-use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
 use Illuminate\Http\Request;
 

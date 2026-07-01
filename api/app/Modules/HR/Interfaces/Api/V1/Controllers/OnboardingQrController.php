@@ -11,7 +11,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Rules\GlobalEmailUnique;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
-use App\Services\OnboardingQrService;
+use App\Modules\Onboarding\Infrastructure\Services\OnboardingQrService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

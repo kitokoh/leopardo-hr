@@ -1,63 +1,17 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\AI\Models\AIConversation
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model.
+ * ✅  Once all usages reference App\AI\Models\AIConversation, delete this file.
+ *
+ * @see \App\AI\Models\AIConversation
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Domain\Models\User;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $user_id
- * @property string $title
- * @property array<mixed> $messages
- * @property array<mixed> $context
- * @property int $token_count
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class AIConversation extends Model
-{
-    use BelongsToCompany;
-
-    protected $table = 'ai_conversations';
-
-    protected $fillable = [
-        'company_id',
-        'user_id',
-        'title',
-        'messages',
-        'context',
-        'token_count',
-    ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'messages' => 'array',
-            'context' => 'array',
-            'token_count' => 'integer',
-        ];
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'user_id');
-    }
-
-    /** @return HasMany<AIAuditLog, $this> */
-    public function auditLogs(): HasMany
-    {
-        return $this->hasMany(AIAuditLog::class, 'conversation_id');
-    }
-}
+class_alias(\App\AI\Models\AIConversation::class, __NAMESPACE__ . '\\AIConversation');

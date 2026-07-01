@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Absence\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Absence\AbsenceIndexRequest;
-use App\Http\Requests\Api\V1\Absence\RejectAbsenceRequest;
-use App\Http\Requests\Api\V1\Absence\StoreAbsenceRequest;
+use App\Modules\Absence\Interfaces\Api\V1\Requests\AbsenceIndexRequest;
+use App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest;
+use App\Modules\Absence\Interfaces\Api\V1\Requests\StoreAbsenceRequest;
 use App\Http\Resources\Api\V1\AbsenceResource;
 use App\Models\Absence;
 use App\Core\Auth\Domain\Models\Employee;

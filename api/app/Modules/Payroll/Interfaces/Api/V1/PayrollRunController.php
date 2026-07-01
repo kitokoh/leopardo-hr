@@ -10,7 +10,7 @@ use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\Payroll\PayrollCalculator;
-use App\Http\Requests\Api\V1\Payroll\StorePayrollRunRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

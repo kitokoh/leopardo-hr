@@ -3,9 +3,9 @@
 namespace App\Modules\Planning\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Schedule\AssignScheduleEmployeesRequest;
-use App\Http\Requests\Api\V1\Schedule\StoreScheduleRequest;
-use App\Http\Requests\Api\V1\Schedule\UpdateScheduleRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\AssignScheduleEmployeesRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreScheduleRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateScheduleRequest;
 use App\Http\Resources\Api\V1\ScheduleResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Schedule;

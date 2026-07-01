@@ -1,20 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest
+ *
+ * ⚠️  DO NOT add logic here.
+ * ✅  Once all usages reference App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest, delete this file.
+ */
+
+declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Absence;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class RejectAbsenceRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'rejected_reason' => ['required', 'string', 'min:1', 'max:1000'],
-        ];
-    }
-}
+class_alias(\App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest::class, __NAMESPACE__ . '\\RejectAbsenceRequest');

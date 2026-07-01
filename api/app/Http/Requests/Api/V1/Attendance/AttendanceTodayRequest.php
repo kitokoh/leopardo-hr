@@ -1,35 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest
+ *
+ * ⚠️  DO NOT add logic here.
+ * ✅  Once all usages reference App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest, delete this file.
+ */
+
+declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Attendance;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-
-class AttendanceTodayRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'employee_id' => [
-                'nullable',
-                'integer',
-                'min:1',
-                Rule::exists('employees', 'id')->where('company_id', $this->user()?->company_id),
-            ],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'employee_id.exists' => "Employ\u{00E9} introuvable dans votre entreprise.",
-        ];
-    }
-}
+class_alias(\App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest::class, __NAMESPACE__ . '\\AttendanceTodayRequest');

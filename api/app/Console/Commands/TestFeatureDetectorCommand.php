@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\FeatureDetector;
+use App\Core\Feature\Infrastructure\Services\FeatureDetector;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
