@@ -3,8 +3,8 @@
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Department\StoreDepartmentRequest;
-use App\Http\Requests\Api\V1\Department\UpdateDepartmentRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreDepartmentRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateDepartmentRequest;
 use App\Http\Resources\Api\V1\DepartmentResource;
 use App\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;

@@ -5,7 +5,7 @@ namespace Tests\Unit\Services;
 use App\Contracts\FeatureDetectorInterface;
 use App\Exceptions\FeatureSynchronizationException;
 use App\Models\Feature;
-use App\Services\FeatureRegistry;
+use App\Core\Feature\Infrastructure\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;

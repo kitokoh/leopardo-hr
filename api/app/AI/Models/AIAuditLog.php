@@ -1,0 +1,81 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\AI\Models;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
+use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $user_id
+ * @property int|null $conversation_id
+ * @property string $prompt
+ * @property string $response
+ * @property array<mixed> $tools_called
+ * @property string $provider
+ * @property string|null $model
+ * @property int $input_tokens
+ * @property int $output_tokens
+ * @property int $cost_cents
+ * @property int $duration_ms
+ * @property string|null $error
+ * @property Carbon|null $created_at
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ */
+class AIAuditLog extends Model
+{
+    use BelongsToCompany;
+
+    protected $table = 'ai_audit_logs';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'company_id',
+        'user_id',
+        'conversation_id',
+        'prompt',
+        'response',
+        'tools_called',
+        'provider',
+        'model',
+        'input_tokens',
+        'output_tokens',
+        'cost_cents',
+        'duration_ms',
+        'error',
+        'created_at',
+    ];
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return [
+            'tools_called' => 'array',
+            'input_tokens' => 'integer',
+            'output_tokens' => 'integer',
+            'cost_cents' => 'integer',
+            'duration_ms' => 'integer',
+            'created_at' => 'datetime',
+        ];
+    }
+
+    /** @return BelongsTo<AIConversation, $this> */
+    public function conversation(): BelongsTo
+    {
+        return $this->belongsTo(AIConversation::class, 'conversation_id');
+    }
+
+    /** @return BelongsTo<Employee, $this> */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'user_id');
+    }
+}

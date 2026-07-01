@@ -1,24 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\Modules\Billing\Interfaces\Api\V1\Requests\StoreWebhookEndpointRequest
+ *
+ * ⚠️  DO NOT add logic here.
+ * ✅  Once all usages reference App\Modules\Billing\Interfaces\Api\V1\Requests\StoreWebhookEndpointRequest, delete this file.
+ */
+
+declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Webhook;
 
-use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
-use Illuminate\Foundation\Http\FormRequest;
-
-class StoreWebhookEndpointRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return $this->user() && $this->user()->hasManagerRole('principal');
-    }
-
-    /** @return array<string, mixed> */
-    public function rules(): array
-    {
-        return [
-            'url' => ['required', 'url', 'max:500'],
-            'events' => ['required', 'array', 'min:1'],
-            'events.*' => ['string', 'in:'.implode(',', WebhookController::AVAILABLE_EVENTS)],
-        ];
-    }
-}
+class_alias(\App\Modules\Billing\Interfaces\Api\V1\Requests\StoreWebhookEndpointRequest::class, __NAMESPACE__ . '\\StoreWebhookEndpointRequest');

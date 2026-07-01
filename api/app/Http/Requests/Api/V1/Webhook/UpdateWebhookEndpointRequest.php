@@ -1,25 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateWebhookEndpointRequest
+ *
+ * ⚠️  DO NOT add logic here.
+ * ✅  Once all usages reference App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateWebhookEndpointRequest, delete this file.
+ */
+
+declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Webhook;
 
-use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
-use Illuminate\Foundation\Http\FormRequest;
-
-class UpdateWebhookEndpointRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return $this->user() && $this->user()->hasManagerRole('principal');
-    }
-
-    /** @return array<string, mixed> */
-    public function rules(): array
-    {
-        return [
-            'url' => ['sometimes', 'url', 'max:500'],
-            'events' => ['sometimes', 'array', 'min:1'],
-            'events.*' => ['string', 'in:'.implode(',', WebhookController::AVAILABLE_EVENTS)],
-            'active' => ['boolean'],
-        ];
-    }
-}
+class_alias(\App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateWebhookEndpointRequest::class, __NAMESPACE__ . '\\UpdateWebhookEndpointRequest');

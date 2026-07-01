@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DeviceToken;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Services\Communication\CommunicationService;
-use App\Services\PushNotificationService;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

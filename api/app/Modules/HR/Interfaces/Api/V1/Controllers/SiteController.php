@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Site\StoreSiteRequest;
-use App\Http\Requests\Api\V1\Site\UpdateSiteRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreSiteRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateSiteRequest;
 use App\Http\Resources\Api\V1\SiteResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Site;
