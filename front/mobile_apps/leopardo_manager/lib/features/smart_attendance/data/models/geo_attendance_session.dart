@@ -35,10 +35,12 @@ class GeoAttendanceSession {
   final double? checkOutLng;
 
   factory GeoAttendanceSession.fromJson(Map<String, dynamic> json) {
+    // L'API retourne employee: {id, name, photo} — on lit employee.name
+    final employeeMap = json['employee'] as Map<String, dynamic>?;
     return GeoAttendanceSession(
       id: json['id'] as int,
-      employeeId: json['employee_id'] as int,
-      employeeName: (json['employee_name'] as String?) ?? '',
+      employeeId: (employeeMap?['id'] as int?) ?? (json['employee_id'] as int? ?? 0),
+      employeeName: (employeeMap?['name'] as String?) ?? (json['employee_name'] as String?) ?? '',
       companyId: (json['company_id'] as String?) ?? '',
       startedAt: DateTime.parse(json['started_at'] as String),
       status: (json['status'] as String?) ?? 'detected',

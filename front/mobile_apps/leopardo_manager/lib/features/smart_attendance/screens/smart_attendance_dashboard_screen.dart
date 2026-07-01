@@ -86,17 +86,21 @@ class _StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final today = stats['today'] as Map<String, dynamic>? ?? {};
-    final detected = today['detected'] ?? 0;
-    final pending = today['pending_validation'] ?? 0;
-    final approved = today['approved'] ?? 0;
-    final rejected = today['rejected'] ?? 0;
+    // API: { today: "2026-07-01", stats: { detected: N, ... }, pending: [...] }
+    final counters = stats['stats'] as Map<String, dynamic>? ?? {};
+    final detected = counters['detected'] ?? 0;
+    final pending = counters['pending_validation'] ?? 0;
+    final approved = counters['approved'] ?? 0;
+    final rejected = counters['rejected'] ?? 0;
+    final dateLabel = (stats['today'] as String?) ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
+    DateTime? parsedDate;
+    try { parsedDate = DateTime.parse(dateLabel); } catch (_) {}
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Aujourd'hui — ${DateFormat('d MMM yyyy', 'fr_FR').format(DateTime.now())}",
+          "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
           style: AppTypography.labelMedium.copyWith(color: AppColors.textMutedDark),
         ),
         const SizedBox(height: 12),

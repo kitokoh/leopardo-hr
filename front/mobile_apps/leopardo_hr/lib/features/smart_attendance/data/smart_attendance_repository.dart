@@ -34,23 +34,23 @@ class HrSmartAttendanceRepository {
     return extractDataMap(response.data);
   }
 
-  /// POST /api/v1/smart-attendance/sessions/{id}/validate
+  /// POST /api/v1/smart-attendance/sessions/{id}/approve
   Future<void> approveSession(int sessionId, {String? note}) async {
     await _apiClient.requestWithRetry(
-      '/smart-attendance/sessions/$sessionId/validate',
+      '/smart-attendance/sessions/$sessionId/approve',
       method: 'POST',
-      data: {'action': 'approve', if (note != null) 'note': note},
+      data: {if (note != null) 'note': note},
       maxRetriesOverride: 1,
       timeoutOverride: _writeTimeout,
     );
   }
 
-  /// POST /api/v1/smart-attendance/sessions/{id}/validate (action=reject)
+  /// POST /api/v1/smart-attendance/sessions/{id}/reject
   Future<void> rejectSession(int sessionId, {required String note}) async {
     await _apiClient.requestWithRetry(
-      '/smart-attendance/sessions/$sessionId/validate',
+      '/smart-attendance/sessions/$sessionId/reject',
       method: 'POST',
-      data: {'action': 'reject', 'note': note},
+      data: {'reason': note},
       maxRetriesOverride: 1,
       timeoutOverride: _writeTimeout,
     );
