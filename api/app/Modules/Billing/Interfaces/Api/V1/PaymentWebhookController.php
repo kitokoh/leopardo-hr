@@ -36,13 +36,23 @@ class PaymentWebhookController extends Controller
 
     public function chargily(Request $request): JsonResponse
     {
-        $payload = $request->all();
-        $type = $payload['type'] ?? '';
+        $payload = $request->getContent();
+        $sigHeader = $request->header('X-Chargily-Signature', '');
+
+        $chargilyService = new \App\Modules\Billing\Infrastructure\Services\ChargilyService();
+        $data = $chargilyService->verifyWebhookSignature($payload, $sigHeader);
+
+        if ($data === null) {
+            Log::warning('Chargily Webhook: Invalid signature');
+            return new JsonResponse(['error' => 'Invalid signature'], 400);
+        }
+
+        $type = $data['type'] ?? '';
 
         Log::info('Chargily webhook received', ['type' => $type]);
 
         if ($type === 'checkout.paid') {
-            $checkout = $payload['data'] ?? [];
+            $checkout = $data['data'] ?? [];
             $invoiceNumber = $checkout['metadata']['invoice_number'] ?? null;
 
             if ($invoiceNumber) {
@@ -69,7 +79,7 @@ class PaymentWebhookController extends Controller
             }
         }
 
-        return response()->json(['received' => true]);
+        return new JsonResponse(['received' => true]);
     }
 
     /**
