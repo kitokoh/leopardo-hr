@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SuperAdmin;
-use App\Services\CompanyProvisioningService;
+use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
 use Illuminate\Contracts\View\View;

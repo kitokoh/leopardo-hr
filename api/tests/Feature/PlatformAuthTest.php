@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\SuperAdmin;
-use App\Services\SuperAdminService;
+use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;

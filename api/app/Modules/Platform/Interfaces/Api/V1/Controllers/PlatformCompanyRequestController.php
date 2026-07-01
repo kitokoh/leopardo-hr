@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\CompanyRequest;
 use App\Models\SuperAdmin;
-use App\Services\CompanyProvisioningService;
+use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

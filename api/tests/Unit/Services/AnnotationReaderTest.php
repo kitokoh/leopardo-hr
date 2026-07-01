@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Services\AnnotationReader;
+use App\Core\Feature\Infrastructure\Services\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 
 class AnnotationReaderTest extends TestCase
