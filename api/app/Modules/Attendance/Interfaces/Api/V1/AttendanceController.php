@@ -2,7 +2,7 @@
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\DTOs\CheckInDTO;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Attendance\AttendanceAnomaliesRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;

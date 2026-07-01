@@ -137,10 +137,8 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
   `CommunicationEvent` → `Modules/Notification/Domain/Models/`
   `Language`, `PrivacyRequest` → `Core/` ou `Modules/HR/`
 
-- [ ] **`app/DTOs/` racine — 3 DTOs** (`CheckInDTO`, `CreateEmployeeDTO`, `UpdateEmployeeDTO`)
-  partiellement migrés mais encore sous namespace `App\DTOs`.
-  → Mettre à jour `app/Modules/Attendance/Application/DTOs/CheckInDTO.php` pour
-  utiliser le bon namespace, puis supprimer `app/DTOs/`.
+- [x] **`app/DTOs/` racine** — Supprimé. `CheckInDTO` → `App\Modules\Attendance\Application\DTOs`,
+  `CreateEmployeeDTO` / `UpdateEmployeeDTO` → `App\Modules\HR\Application\DTOs`. (PR #824 suite)
 
 #### Priorité moyenne
 

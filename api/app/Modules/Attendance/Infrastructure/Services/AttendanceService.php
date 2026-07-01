@@ -2,7 +2,7 @@
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\DTOs\CheckInDTO;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Exceptions\AlreadyCheckedInException;

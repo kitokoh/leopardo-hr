@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Company;
