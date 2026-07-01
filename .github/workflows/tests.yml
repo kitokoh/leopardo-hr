@@ -415,7 +415,6 @@ jobs:
           cat > phpstan.ci.neon <<EOF
           includes:
               - phpstan.neon
-              - vendor/larastan/larastan/extension.neon
           EOF
           mkdir -p storage/test-results
           base_sha="${DIFF_BASE_SHA:-}"

@@ -39,11 +39,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          composer_home="$(composer global config home --quiet)"
           cat > phpstan.ci.neon <<EOF
           includes:
               - phpstan.neon
-              - ${composer_home}/vendor/larastan/larastan/extension.neon
           EOF
 
           phpstan analyse -c phpstan.ci.neon --no-progress --generate-baseline=phpstan-generated-baseline.neon || true
