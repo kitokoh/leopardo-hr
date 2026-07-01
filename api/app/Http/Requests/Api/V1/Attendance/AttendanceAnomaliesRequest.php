@@ -1,29 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest
+ *
+ * ⚠️  DO NOT add logic here.
+ * ✅  Once all usages reference App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest, delete this file.
+ */
+
+declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Attendance;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-
-class AttendanceAnomaliesRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'employee_id' => [
-                'nullable',
-                'integer',
-                'min:1',
-                Rule::exists('employees', 'id')->where('company_id', $this->user()?->company_id),
-            ],
-            'date_from' => ['nullable', 'date_format:Y-m-d'],
-            'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-        ];
-    }
-}
+class_alias(\App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest::class, __NAMESPACE__ . '\\AttendanceAnomaliesRequest');

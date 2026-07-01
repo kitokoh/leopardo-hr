@@ -3,9 +3,9 @@
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Cabinet\MoveDocumentRequest;
-use App\Http\Requests\Api\V1\Cabinet\StoreDocumentRequest;
-use App\Http\Requests\Api\V1\Cabinet\UpdateDocumentRequest;
+use App\Modules\Cabinet\Interfaces\Api\V1\Requests\MoveDocumentRequest;
+use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreDocumentRequest;
+use App\Modules\Cabinet\Interfaces\Api\V1\Requests\UpdateDocumentRequest;
 use App\Http\Resources\Api\V1\CabinetDocumentResource;
 use App\Models\CabinetDocument;
 use App\Core\Auth\Domain\Models\Employee;

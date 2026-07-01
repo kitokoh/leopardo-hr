@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Services\PushNotificationService;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;

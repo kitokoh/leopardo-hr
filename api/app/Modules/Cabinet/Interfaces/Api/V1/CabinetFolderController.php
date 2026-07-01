@@ -3,8 +3,8 @@
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Cabinet\StoreFolderRequest;
-use App\Http\Requests\Api\V1\Cabinet\UpdateFolderRequest;
+use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreFolderRequest;
+use App\Modules\Cabinet\Interfaces\Api\V1\Requests\UpdateFolderRequest;
 use App\Models\CabinetFolder;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;

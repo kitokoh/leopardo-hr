@@ -11,7 +11,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Models\ExpenseClaim;
 use App\Models\PaySlip;
 use App\Models\PrivacyRequest;
-use App\Services\DataAccessAuditLogger;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

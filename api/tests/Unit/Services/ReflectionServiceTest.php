@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Services\ReflectionService;
+use App\Core\Feature\Infrastructure\Services\ReflectionService;
 use PHPUnit\Framework\TestCase;
 
 class ReflectionServiceTest extends TestCase
