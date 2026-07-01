@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.21.1] - 2026-07-01
+
+### Fixed
+- **CI cassé sur `main` — bloquait tous les merges** :
+  - Migration `2026_06_29_000202_create_employee_attendance_preferences_table.php` : apostrophes échappées en style PHP (`\'`) dans un commentaire SQL PostgreSQL au lieu du style SQL (`''`) — `SQLSTATE[42601]` sur chaque exécution des migrations tenant (Backend, Backend Coverage, Jobs & Queues Contracts).
+  - `.github/workflows/tests.yml` et `.github/workflows/phpstan-baseline.yml` : `vendor/larastan/larastan/extension.neon` inclus deux fois (déjà inclus via `phpstan.neon`) — PHPStan refusait de démarrer ("This file is included multiple times").
+  - Migration `2026_06_30_000001_create_edge_nodes_table.php` (legacy, `App\Http\Controllers\Api\V1\EdgeController`, non relié à aucune route active) recréait la table `edge_nodes` déjà créée par `2026_06_29_000001_create_edge_sync_tables.php` (module EdgeSync DDD actif) — `SQLSTATE[42P07]` Duplicate table. Migration legacy neutralisée via garde `Schema::hasTable()`.
+
 ## [4.21.0] - 2026-07-01
 
 ### Changed
