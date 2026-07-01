@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.22.0] - 2026-07-01
+
+### Changed
+- **Nettoyage architectural Phase 2 — modèles, services, FormRequests**
+  - **17 modèles orphelins** placés dans `Core/Tenant/Domain/Models/`, `Core/Auth/Domain/Models/`,
+    `Shared/Models/`, `Modules/*/Domain/Models/`, `AI/Models/` — aliases shims backward-compat dans `app/Models/`.
+  - `app/Models/` est désormais 100% composé d'alias shims (92 fichiers) — zéro breaking change.
+  - **13 services** dans `app/Services/` (non-doublons) migrés vers `Core/Feature/`, `Core/Auth/`,
+    `Modules/Platform/`, `Modules/HR/`, `Modules/Onboarding/`, `Modules/Notification/` — shims en place.
+  - **64 FormRequests** copiés dans leurs modules (`Modules/*/Interfaces/Api/V1/Requests/`) —
+    22 consommateurs mis à jour, shims backward-compat dans `app/Http/Requests/`.
+  - `api/ARCHITECTURE.md` mis à jour avec bilan complet et TODOs restants.
+
 ## [4.21.0] - 2026-07-01
 
 ### Changed
@@ -45,6 +58,19 @@
   - `EdgeNode`, `EdgeLicense`, `SyncLog`, `SyncQueue` : Modèles Eloquent du module.
   - Migration `create_edge_sync_tables` : Tables `edge_nodes`, `edge_licenses`, `sync_logs`, `sync_queue`.
   - ZKTeco kiosk : Support routing `edge_first/cloud_first/edge_only` dans `app.js`.
+## [4.22.0] - 2026-07-01
+
+### Changed
+- **Nettoyage architectural Phase 2 — modèles, services, FormRequests**
+  - **17 modèles orphelins** placés dans `Core/Tenant/Domain/Models/`, `Core/Auth/Domain/Models/`,
+    `Shared/Models/`, `Modules/*/Domain/Models/`, `AI/Models/` — aliases shims backward-compat dans `app/Models/`.
+  - `app/Models/` est désormais 100% composé d'alias shims (92 fichiers) — zéro breaking change.
+  - **13 services** dans `app/Services/` (non-doublons) migrés vers `Core/Feature/`, `Core/Auth/`,
+    `Modules/Platform/`, `Modules/HR/`, `Modules/Onboarding/`, `Modules/Notification/` — shims en place.
+  - **64 FormRequests** copiés dans leurs modules (`Modules/*/Interfaces/Api/V1/Requests/`) —
+    22 consommateurs mis à jour, shims backward-compat dans `app/Http/Requests/`.
+  - `api/ARCHITECTURE.md` mis à jour avec bilan complet et TODOs restants.
+
 ## [4.21.0] - 2026-06-30
 
 ### Added

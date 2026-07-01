@@ -125,36 +125,50 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 #### Priorité haute
 
-- [ ] **`app/Models/` — 75 modèles en double** avec `Modules/*/Domain/Models/`
-  → Stratégie recommandée : créer des class aliases dans `app/Models/` pointant
-  vers le module, puis basculer les imports progressivement par module.
-  Fichiers sans doublon module à placer dans `Core/` ou nouveau module dédié :
-  `Company`, `CompanyRequest`, `CompanySetting`, `Site`, `SuperAdmin` → `Core/Tenant/`
-  `AuditLog`, `AIAuditLog`, `AIConversation`, `AIToolRegistryEntry` → `Core/` ou `app/AI/`
-  `Notification`, `NotificationPreference`, `DeviceToken` → `Modules/Notification/Domain/Models/`
-  `UserEmployeeLink` → `Modules/HR/Domain/Models/`
-  `Commission` → `Modules/Payroll/Domain/Models/`
-  `CommunicationEvent` → `Modules/Notification/Domain/Models/`
-  `Language`, `PrivacyRequest` → `Core/` ou `Modules/HR/`
+- [x] **`app/Models/`** — 75 aliases existants (commit 807d6f09) + 17 modèles orphelins
+  placés dans leurs modules (PR phase2) : `Company/Site/CompanyRequest/CompanySetting/SuperAdmin` → `Core/Tenant/Domain/Models/`,
+  `AuditLog` → `Core/Auth/Domain/Models/`, `Language` → `Shared/Models/`,
+  `UserEmployeeLink/PrivacyRequest` → `HR/Domain/Models/`, `Commission` → `Payroll/Domain/Models/`,
+  `Notification/NotificationPreference/DeviceToken/CommunicationEvent` → `Notification/Domain/Models/`,
+  `AIAuditLog/AIConversation/AIToolRegistryEntry` → `app/AI/Models/`.
+  Aliases backward-compat dans `app/Models/` pour zéro breaking change.
 
 - [x] **`app/DTOs/` racine** — Supprimé. `CheckInDTO` → `App\Modules\Attendance\Application\DTOs`,
   `CreateEmployeeDTO` / `UpdateEmployeeDTO` → `App\Modules\HR\Application\DTOs`. (PR #824 suite)
 
 #### Priorité moyenne
 
-- [ ] **`app/Shared/` — peupler** avec `app/Traits/`, `app/Attributes/`, `app/Enums/`
-  → 110+ usages de `App\Traits\BelongsToCompany` : migration par lots ou class aliases.
+- [x] **`app/Shared/`** — peuplé (commit 807d6f09) : `Shared/Traits/`, `Shared/Attributes/`, `Shared/Enums/`.
+  `app/Traits/`, `app/Attributes/`, `app/Enums/` sont des shims. Canonical dans `Shared/`.
 
-- [ ] **`Core/Tenant/`** — migrer `app/Services/TenantManager.php` + `TenantMiddleware`
+- [x] **`Core/Tenant/`** — `TenantManager` migré dans `App\Core\Tenant\TenantManager` (commit 807d6f09).
+  `app/Services/TenantManager.php` est un alias shim.
 
-- [ ] **`app/Http/Requests/Api/V1/`** — FormRequests encore dans le namespace legacy,
-  à déplacer dans les modules correspondants (`Modules/*/Interfaces/Api/V1/Requests/`).
+- [x] **`app/Http/Requests/`** — 64 FormRequests copiés dans leurs modules respectifs.
+  Shims backward-compat maintenus dans `app/Http/Requests/` pour les usages existants.
+  22 fichiers consommateurs mis à jour avec nouveaux namespaces.
 
 #### Priorité basse
 
-- [ ] PHPStan modules : monter le niveau de 3 → 6 minimum pour Domain/Application
+- [ ] PHPStan modules : monter le niveau de 3 → 5 (objectif réaliste)
 - [ ] Application layer : enrichir les Actions dans Growth, Platform, Onboarding, Training
   (trop peu d'Actions, controllers trop épais)
+
+### ✅ Nettoyage complet — bilan cumulé (PR #824 + phase2)
+
+| Supprimé / Migré | Quantité |
+|---|---|
+| Controllers `app/Http/Controllers/Api/V1/` supprimés | 90 |
+| Services `app/Services/` doublons supprimés | 26 |
+| Services `app/Services/` non-doublons migrés + shimmed | 13 |
+| Modèles `app/Models/` convertis en aliases | 92 (75+17) |
+| FormRequests migrés vers modules | 64 |
+| `app/Shared/` peuplé (Traits, Attributes, Enums) | ✅ |
+| `Core/Tenant/TenantManager` canonique | ✅ |
+| `app/DTOs/` supprimé | ✅ |
+
+**`app/Services/`** : reste uniquement TenantManager.php (shim) + sous-dossiers `Cache/`, `Communication/`, `Payroll/`, `SSO/`, `Security/`, `Tracking/` (services spécialisés à migrer si besoin).
+**`app/Http/Requests/`** : shims backward-compat. Canonical dans les modules.
 
 ---
 

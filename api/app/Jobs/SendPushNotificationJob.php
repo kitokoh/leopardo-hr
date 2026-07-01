@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\PushNotificationService;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

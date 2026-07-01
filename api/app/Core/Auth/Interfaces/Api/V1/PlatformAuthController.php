@@ -6,7 +6,7 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SuperAdmin;
-use App\Services\SuperAdminService;
+use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

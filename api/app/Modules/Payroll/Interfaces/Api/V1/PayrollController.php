@@ -3,9 +3,9 @@
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Payroll\PayrollIndexRequest;
-use App\Http\Requests\Api\V1\Payroll\StorePayrollRequest;
-use App\Http\Requests\Api\V1\Payroll\UpdatePayrollRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\PayrollIndexRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\UpdatePayrollRequest;
 use App\Http\Resources\Api\V1\PayrollResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Payroll;

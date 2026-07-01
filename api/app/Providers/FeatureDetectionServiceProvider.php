@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Contracts\FeatureDetectorInterface;
-use App\Services\AnnotationReader;
-use App\Services\FeatureDetector;
-use App\Services\ReflectionService;
+use App\Core\Feature\Infrastructure\Services\AnnotationReader;
+use App\Core\Feature\Infrastructure\Services\FeatureDetector;
+use App\Core\Feature\Infrastructure\Services\ReflectionService;
 use Illuminate\Support\ServiceProvider;
 
 /**
