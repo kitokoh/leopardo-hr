@@ -1,0 +1,265 @@
+# render.yaml — Leopardo RH infrastructure on Render
+# https://render.com/docs/infrastructure-as-code
+
+services:
+  # ──────────────────────────────────────────────────────────────────────────
+  # Web Service — Laravel API
+  # ──────────────────────────────────────────────────────────────────────────
+  - type: web
+    name: leopardo-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile.prod
+    dockerContext: ./api
+    region: frankfurt
+    plan: starter
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        fromService:
+          name: leopardo-api
+          type: web
+          property: host
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+      # Database
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: leopardo-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: leopardo-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: leopardo-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: leopardo-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: leopardo-db
+          property: password
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      # Redis (Upstash)
+      - key: REDIS_CLIENT
+        value: predis
+      - key: REDIS_URL
+        sync: false  # set in Render dashboard
+      - key: REDIS_PASSWORD
+        sync: false
+      # App secrets
+      - key: APP_KEY
+        generateValue: true
+      - key: QUEUE_CONNECTION
+        value: redis
+      - key: CACHE_STORE
+        value: redis
+      - key: SESSION_DRIVER
+        value: redis
+      # Stripe
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_STARTER
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS
+        sync: false
+      - key: STRIPE_PRICE_ENTERPRISE
+        sync: false
+      # Chargily
+      - key: CHARGILY_API_KEY
+        sync: false
+      - key: CHARGILY_WEBHOOK_SECRET
+        sync: false
+      # Google OAuth
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URL
+        sync: false
+      # Firebase
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      # Mail
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@leopardo-rh.com
+      - key: MAIL_FROM_NAME
+        value: "Leopardo RH"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Background Worker — Laravel Queue Worker
+  # Processes: push notifications, emails, PDF generation, payroll runs
+  # ──────────────────────────────────────────────────────────────────────────
+  - type: worker
+    name: leopardo-queue-worker
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile.prod
+    dockerContext: ./api
+    region: frankfurt
+    plan: starter
+    autoDeploy: true
+    # Override default CMD to run queue:work instead of web server
+    dockerCommand: >-
+      php artisan queue:work redis
+      --queue=notifications,emails,pdf,payroll,default
+      --tries=3
+      --timeout=300
+      --sleep=3
+      --max-jobs=500
+      --max-time=3600
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: leopardo-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: leopardo-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: leopardo-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: leopardo-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: leopardo-db
+          property: password
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      - key: REDIS_CLIENT
+        value: predis
+      - key: REDIS_URL
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: APP_KEY
+        sync: false  # must match web service
+      - key: QUEUE_CONNECTION
+        value: redis
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@leopardo-rh.com
+      - key: MAIL_FROM_NAME
+        value: "Leopardo RH"
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: CHARGILY_API_KEY
+        sync: false
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Background Worker — Scheduled tasks (scheduler)
+  # Runs php artisan schedule:run every minute
+  # ──────────────────────────────────────────────────────────────────────────
+  - type: worker
+    name: leopardo-scheduler
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile.prod
+    dockerContext: ./api
+    region: frankfurt
+    plan: starter
+    autoDeploy: true
+    dockerCommand: >-
+      sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: leopardo-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: leopardo-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: leopardo-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: leopardo-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: leopardo-db
+          property: password
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      - key: REDIS_URL
+        sync: false
+      - key: APP_KEY
+        sync: false
+      - key: QUEUE_CONNECTION
+        value: redis
+
+databases:
+  - name: leopardo-db
+    databaseName: leopardo_db
+    user: leopardo_user
+    region: frankfurt
+    plan: starter
+    ipAllowList: []  # restricted to Render internal network
