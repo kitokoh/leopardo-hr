@@ -1,92 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Expense\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\ExpenseClaim continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Expense\Domain\Models\ExpenseClaim instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $employee_id
- * @property string $title
- * @property string $description
- * @property float $total_amount
- * @property string $currency
- * @property string $status
- * @property Carbon|null $submitted_at
- * @property Carbon|null $approved_at
- * @property Carbon|null $paid_at
- * @property string|null $approved_by
- * @property string|null $payment_reference
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class ExpenseClaim extends Model
-{
-    use BelongsToCompany;
-
-    protected $table = 'expense_claims';
-
-    protected $fillable = [
-        'company_id',
-        'employee_id',
-        'title',
-        'description',
-        'total_amount',
-        'currency',
-        'status',
-        'submitted_at',
-        'approved_at',
-        'paid_at',
-        'approved_by',
-        'payment_reference',
-    ];
-
-    protected $casts = [
-        'total_amount' => 'float',
-        'submitted_at' => 'datetime',
-        'approved_at' => 'datetime',
-        'paid_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'employee_id');
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'approved_by');
-    }
-
-    /** @return HasMany<ExpenseItem, $this> */
-    public function items(): HasMany
-    {
-        return $this->hasMany(ExpenseItem::class, 'expense_claim_id');
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeByStatus(Builder $q, string $status): Builder
-    {
-        return $q->where('status', $status);
-    }
-
-    public function recalculateTotal(): void
-    {
-        $this->update(['total_amount' => $this->items()->sum('amount')]);
-    }
+if (! class_exists(\App\Models\ExpenseClaim::class, false)) {
+    class_alias(
+        App\Modules\Expense\Domain\Models\ExpenseClaim::class,
+        \App\Models\ExpenseClaim::class,
+    );
 }

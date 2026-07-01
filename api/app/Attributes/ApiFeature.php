@@ -1,30 +1,11 @@
 <?php
-
-namespace App\Attributes;
-
-use Attribute;
-
 /**
- * Attribut pour marquer et configurer une fonctionnalité API
- *
- * Cet attribut permet de définir les métadonnées d'une fonctionnalité API
- * directement dans le code du contrôleur.
+ * Backward-compat alias.
+ * Canonical: App\Shared\Attributes\ApiFeature
+ * @deprecated Use App\Shared\Attributes\ApiFeature
  */
-#[Attribute(Attribute::TARGET_METHOD)]
-class ApiFeature
-{
-    /**
-     * @param  array<string, mixed>  $form_schema
-     * @param  array<string, mixed>  $list_schema
-     */
-    public function __construct(
-        public readonly string $title,
-        public readonly ?string $description = null,
-        public readonly string $ui_type = 'generic',
-        public readonly bool $mobile_compatible = true,
-        public readonly ?string $mobile_version_min = null,
-        public readonly ?string $mobile_version_max = null,
-        public readonly array $form_schema = [],
-        public readonly array $list_schema = []
-    ) {}
+declare(strict_types=1);
+namespace App\Attributes;
+if (! class_exists(\App\Attributes\ApiFeature::class, false)) {
+    class_alias(\App\Shared\Attributes\ApiFeature::class, \App\Attributes\ApiFeature::class);
 }

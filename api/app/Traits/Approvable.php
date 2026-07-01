@@ -1,45 +1,21 @@
 <?php
+/**
+ * Backward-compat re-export.
+ *
+ * Canonical: App\Shared\Traits\Approvable
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical trait.
+ * ✅  Once all usages point to App\Shared\Traits\Approvable, delete this file.
+ *
+ * @deprecated Use App\Shared\Traits\Approvable
+ */
 
 declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Models\ApprovalRequest;
-use App\Models\ApprovalWorkflow;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-
+/** @phpstan-ignore-next-line */
 trait Approvable
 {
-    public function approvalRequest(): MorphOne
-    {
-        return $this->morphOne(ApprovalRequest::class, 'approvable');
-    }
-
-    public function submitForApproval(): ApprovalRequest
-    {
-        $workflow = ApprovalWorkflow::where('model_type', static::class)
-            ->where('company_id', $this->company_id)
-            ->where('active', true)
-            ->firstOrFail();
-
-        return ApprovalRequest::create([
-            'company_id' => $this->company_id,
-            'workflow_id' => $workflow->id,
-            'approvable_type' => static::class,
-            'approvable_id' => $this->id,
-            'requester_id' => auth()->id(),
-            'current_level' => 1,
-            'status' => 'pending',
-        ]);
-    }
-
-    public function isApproved(): bool
-    {
-        return $this->approvalRequest?->status === 'approved';
-    }
-
-    public function isPendingApproval(): bool
-    {
-        return $this->approvalRequest?->status === 'pending';
-    }
+    use \App\Shared\Traits\Approvable;
 }

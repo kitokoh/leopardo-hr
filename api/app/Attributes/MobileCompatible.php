@@ -1,18 +1,11 @@
 <?php
-
-namespace App\Attributes;
-
-use Attribute;
-
 /**
- * Attribut pour marquer la compatibilité mobile d'une fonctionnalité API
+ * Backward-compat alias.
+ * Canonical: App\Shared\Attributes\MobileCompatible
+ * @deprecated Use App\Shared\Attributes\MobileCompatible
  */
-#[Attribute(Attribute::TARGET_METHOD)]
-class MobileCompatible
-{
-    public function __construct(
-        public readonly bool $compatible = true,
-        public readonly ?string $minimum_version = null,
-        public readonly ?string $maximum_version = null
-    ) {}
+declare(strict_types=1);
+namespace App\Attributes;
+if (! class_exists(\App\Attributes\MobileCompatible::class, false)) {
+    class_alias(\App\Shared\Attributes\MobileCompatible::class, \App\Attributes\MobileCompatible::class);
 }

@@ -1,38 +1,21 @@
 <?php
+/**
+ * Backward-compat re-export.
+ *
+ * Canonical: App\Shared\Traits\BelongsToCompany
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical trait.
+ * ✅  Once all usages point to App\Shared\Traits\BelongsToCompany, delete this file.
+ *
+ * @deprecated Use App\Shared\Traits\BelongsToCompany
+ */
+
+declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Models\Company;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-
+/** @phpstan-ignore-next-line */
 trait BelongsToCompany
 {
-    protected static function bootBelongsToCompany(): void
-    {
-        static::addGlobalScope('company', function (Builder $builder): void {
-            $currentCompany = app()->bound('current_company') ? currentCompany() : null;
-
-            if (! $currentCompany instanceof Company) {
-                return;
-            }
-
-            $builder->where(
-                $builder->getModel()->qualifyColumn('company_id'),
-                $currentCompany->id
-            );
-        });
-
-        static::creating(function (Model $model): void {
-            $currentCompany = app()->bound('current_company') ? currentCompany() : null;
-
-            if (! $currentCompany instanceof Company) {
-                return;
-            }
-
-            if (empty($model->getAttribute('company_id'))) {
-                $model->setAttribute('company_id', $currentCompany->id);
-            }
-        });
-    }
+    use \App\Shared\Traits\BelongsToCompany;
 }

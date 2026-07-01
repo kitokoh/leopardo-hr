@@ -1,59 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Billing\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\Partner continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Billing\Domain\Models\Partner instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int $user_id
- * @property string $referral_code
- * @property int $default_commission_rate
- * @property string $status
- * @property string $type
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class Partner extends Model
-{
-    use HasFactory;
-
-    protected $fillable = [
-        'user_id',
-        'referral_code',
-        'default_commission_rate',
-        'tax_rate',
-        'status',
-        'type',
-        'application_status',
-        'payment_details',
-        'payout_threshold',
-        'payout_cycle',
-    ];
-
-    /** @return BelongsTo<User, $this> */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /** @return HasMany<Company, $this> */
-    public function referredCompanies(): HasMany
-    {
-        return $this->hasMany(Company::class, 'referrer_partner_id');
-    }
-
-    /** @return HasMany<Commission, $this> */
-    public function commissions(): HasMany
-    {
-        return $this->hasMany(Commission::class);
-    }
+if (! class_exists(\App\Models\Partner::class, false)) {
+    class_alias(
+        App\Modules\Billing\Domain\Models\Partner::class,
+        \App\Models\Partner::class,
+    );
 }

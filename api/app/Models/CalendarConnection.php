@@ -1,51 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Attendance\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\CalendarConnection continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Attendance\Domain\Models\CalendarConnection instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-/**
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class CalendarConnection extends Model
-{
-    protected $fillable = [
-        'employee_id',
-        'provider',
-        'access_token',
-        'refresh_token',
-        'calendar_id',
-        'token_expires_at',
-        'sync_leaves',
-        'sync_training',
-        'is_active',
-        'last_synced_at',
-    ];
-
-    protected $casts = [
-        'sync_leaves' => 'boolean',
-        'sync_training' => 'boolean',
-        'is_active' => 'boolean',
-        'token_expires_at' => 'datetime',
-        'last_synced_at' => 'datetime',
-    ];
-
-    protected $hidden = [
-        'access_token',
-        'refresh_token',
-    ];
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
-
-    public function isTokenExpired(): bool
-    {
-        return $this->token_expires_at !== null && $this->token_expires_at->isPast();
-    }
+if (! class_exists(\App\Models\CalendarConnection::class, false)) {
+    class_alias(
+        App\Modules\Attendance\Domain\Models\CalendarConnection::class,
+        \App\Models\CalendarConnection::class,
+    );
 }

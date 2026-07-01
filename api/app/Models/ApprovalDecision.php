@@ -1,54 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Attendance\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\ApprovalDecision continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Attendance\Domain\Models\ApprovalDecision instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $approval_request_id
- * @property int $level
- * @property int|null $approver_id
- * @property string $decision
- * @property string|null $comment
- * @property Carbon|null $decided_at
- * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class ApprovalDecision extends Model
-{
-    public $timestamps = false;
-
-    protected $table = 'approval_decisions';
-
-    protected $fillable = [
-        'approval_request_id',
-        'level',
-        'approver_id',
-        'decision',
-        'comment',
-        'decided_at',
-    ];
-
-    protected $casts = [
-        'decided_at' => 'datetime',
-        'created_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<ApprovalRequest, $this> */
-    public function request(): BelongsTo
-    {
-        return $this->belongsTo(ApprovalRequest::class, 'approval_request_id');
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'approver_id');
-    }
+if (! class_exists(\App\Models\ApprovalDecision::class, false)) {
+    class_alias(
+        App\Modules\Attendance\Domain\Models\ApprovalDecision::class,
+        \App\Models\ApprovalDecision::class,
+    );
 }

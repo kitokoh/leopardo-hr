@@ -1,92 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Fleet\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\VehicleTrip continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Fleet\Domain\Models\VehicleTrip instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $vehicle_id
- * @property int|null $company_id
- * @property int|null $driver_id
- * @property Carbon $start_time
- * @property Carbon $end_time
- * @property mixed $start_lat
- * @property mixed $start_lng
- * @property string|null $start_address
- * @property mixed $end_lat
- * @property mixed $end_lng
- * @property string|null $end_address
- * @property string $distance_km
- * @property int $duration_minutes
- * @property string $max_speed_kmh
- * @property string $avg_speed_kmh
- * @property string $fuel_consumed
- * @property int|null $traccar_trip_id
- * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class VehicleTrip extends Model
-{
-    use BelongsToCompany;
-
-    public $timestamps = false;
-
-    protected $fillable = [
-        'vehicle_id',
-        'company_id',
-        'driver_id',
-        'start_time',
-        'end_time',
-        'start_lat',
-        'start_lng',
-        'start_address',
-        'end_lat',
-        'end_lng',
-        'end_address',
-        'distance_km',
-        'duration_minutes',
-        'max_speed_kmh',
-        'avg_speed_kmh',
-        'fuel_consumed',
-        'traccar_trip_id',
-        'created_at',
-    ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'start_time' => 'datetime',
-            'end_time' => 'datetime',
-            'start_lat' => 'decimal:7',
-            'start_lng' => 'decimal:7',
-            'end_lat' => 'decimal:7',
-            'end_lng' => 'decimal:7',
-            'distance_km' => 'decimal:2',
-            'duration_minutes' => 'integer',
-            'max_speed_kmh' => 'decimal:2',
-            'avg_speed_kmh' => 'decimal:2',
-            'fuel_consumed' => 'decimal:2',
-            'created_at' => 'datetime',
-        ];
-    }
-
-    /** @return BelongsTo<Vehicle, $this> */
-    public function vehicle(): BelongsTo
-    {
-        return $this->belongsTo(Vehicle::class);
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function driver(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'driver_id');
-    }
+if (! class_exists(\App\Models\VehicleTrip::class, false)) {
+    class_alias(
+        App\Modules\Fleet\Domain\Models\VehicleTrip::class,
+        \App\Models\VehicleTrip::class,
+    );
 }

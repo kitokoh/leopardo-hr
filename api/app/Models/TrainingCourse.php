@@ -1,62 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\HR\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\TrainingCourse continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\HR\Domain\Models\TrainingCourse instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property string $title
- * @property string $description
- * @property string|null $category
- * @property string $type
- * @property string $provider
- * @property float $duration_hours
- * @property string|null $max_participants
- * @property float $cost_per_participant
- * @property string $currency
- * @property string|null $materials_path
- * @property bool $active
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class TrainingCourse extends Model
-{
-    use BelongsToCompany;
-
-    protected $table = 'training_courses';
-
-    protected $fillable = [
-        'company_id',
-        'title',
-        'description',
-        'category',
-        'type',
-        'provider',
-        'duration_hours',
-        'max_participants',
-        'cost_per_participant',
-        'currency',
-        'materials_path',
-        'active',
-    ];
-
-    protected $casts = [
-        'duration_hours' => 'float',
-        'cost_per_participant' => 'float',
-        'active' => 'boolean',
-    ];
-
-    /** @return HasMany<TrainingSession, $this> */
-    public function sessions(): HasMany
-    {
-        return $this->hasMany(TrainingSession::class, 'training_course_id');
-    }
+if (! class_exists(\App\Models\TrainingCourse::class, false)) {
+    class_alias(
+        App\Modules\HR\Domain\Models\TrainingCourse::class,
+        \App\Models\TrainingCourse::class,
+    );
 }

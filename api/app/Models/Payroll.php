@@ -1,108 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Payroll\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\Payroll continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Payroll\Domain\Models\Payroll instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $employee_id
- * @property int $period_month
- * @property int $period_year
- * @property float $gross_salary
- * @property float $overtime_amount
- * @property array<mixed> $bonuses
- * @property array<mixed> $deductions
- * @property array<mixed> $cotisations
- * @property float $ir_amount
- * @property float $advance_deduction
- * @property float $absence_deduction
- * @property float $penalty_deduction
- * @property float $net_salary
- * @property string|null $pdf_path
- * @property string $status
- * @property string|null $validated_by
- * @property Carbon|null $validated_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Employee|null $employee
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class Payroll extends Model
-{
-    use BelongsToCompany, HasFactory;
-
-    protected $table = 'payrolls';
-
-    protected $fillable = [
-        'company_id', 'employee_id', 'period_month', 'period_year',
-        'gross_salary', 'overtime_amount', 'bonuses', 'deductions', 'cotisations',
-        'ir_amount', 'advance_deduction', 'absence_deduction', 'penalty_deduction',
-        'net_salary', 'pdf_path', 'status', 'validated_by', 'validated_at',
-    ];
-
-    protected $casts = [
-        'gross_salary' => 'float', 'overtime_amount' => 'float',
-        'bonuses' => 'array', 'deductions' => 'array', 'cotisations' => 'array',
-        'ir_amount' => 'float', 'advance_deduction' => 'float',
-        'absence_deduction' => 'float', 'penalty_deduction' => 'float',
-        'net_salary' => 'float', 'validated_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'employee_id');
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function validator(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'validated_by');
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeDraft(Builder $q): Builder
-    {
-        return $q->where('status', 'draft');
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeValidated(Builder $q): Builder
-    {
-        return $q->where('status', 'validated');
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeForPeriod(Builder $q, int $month, int $year): Builder
-    {
-        return $q->where('period_month', $month)->where('period_year', $year);
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeForEmployee(Builder $q, int $id): Builder
-    {
-        return $q->where('employee_id', $id);
-    }
+if (! class_exists(\App\Models\Payroll::class, false)) {
+    class_alias(
+        App\Modules\Payroll\Domain\Models\Payroll::class,
+        \App\Models\Payroll::class,
+    );
 }

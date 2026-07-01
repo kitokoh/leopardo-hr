@@ -1,45 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Billing\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\WebhookDelivery continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Billing\Domain\Models\WebhookDelivery instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-/**
- * @property int $id
- * @property int|null $webhook_endpoint_id
- * @property string|null $event
- * @property array<mixed> $payload
- * @property string|null $response_code
- * @property string|null $response_body
- * @property int $duration_ms
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class WebhookDelivery extends Model
-{
-    public $timestamps = false;
-
-    protected $table = 'webhook_deliveries';
-
-    protected $fillable = [
-        'webhook_endpoint_id',
-        'event',
-        'payload',
-        'response_code',
-        'response_body',
-        'duration_ms',
-    ];
-
-    protected $casts = [
-        'payload' => 'array',
-        'delivered_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<WebhookEndpoint, $this> */
-    public function endpoint(): BelongsTo
-    {
-        return $this->belongsTo(WebhookEndpoint::class, 'webhook_endpoint_id');
-    }
+if (! class_exists(\App\Models\WebhookDelivery::class, false)) {
+    class_alias(
+        App\Modules\Billing\Domain\Models\WebhookDelivery::class,
+        \App\Models\WebhookDelivery::class,
+    );
 }

@@ -1,58 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Payroll\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\Payment continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Payroll\Domain\Models\Payment instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $invoice_id
- * @property int|null $company_id
- * @property string $amount
- * @property string $currency
- * @property string $method
- * @property string|null $provider_reference
- * @property string $status
- * @property Carbon|null $paid_at
- * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class Payment extends Model
-{
-    use BelongsToCompany;
-
-    public $timestamps = false;
-
-    protected $fillable = [
-        'invoice_id',
-        'company_id',
-        'amount',
-        'currency',
-        'method',
-        'provider_reference',
-        'status',
-        'paid_at',
-        'created_at',
-    ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'amount' => 'decimal:2',
-            'paid_at' => 'datetime',
-            'created_at' => 'datetime',
-        ];
-    }
-
-    /** @return BelongsTo<Invoice, $this> */
-    public function invoice(): BelongsTo
-    {
-        return $this->belongsTo(Invoice::class);
-    }
+if (! class_exists(\App\Models\Payment::class, false)) {
+    class_alias(
+        App\Modules\Payroll\Domain\Models\Payment::class,
+        \App\Models\Payment::class,
+    );
 }
