@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Services\SocialDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;

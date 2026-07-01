@@ -3,7 +3,7 @@
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\StripeService;
+use App\Modules\Billing\Infrastructure\Services\StripeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

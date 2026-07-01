@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Partner;
 use App\Models\Commission;
 use App\Models\PartnerAuditLog;
-use App\Services\PartnerService;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

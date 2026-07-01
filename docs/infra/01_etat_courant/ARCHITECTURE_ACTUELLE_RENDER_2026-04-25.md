@@ -1,3 +1,8 @@
+> ⚠️ **Document historique — avril 2026**
+> La structure de code décrite ici a été mise à jour.
+> `App\Http\Controllers\Api\V1\*` et `App\Services\*` n'existent plus.
+> Voir `api/ARCHITECTURE.md` pour l'état actuel.
+
 # Architecture actuelle - Render / Neon
 
 Date : 2026-04-25
@@ -106,7 +111,7 @@ L'endpoint de sante canonique est :
 Cette URL est :
 
 - exposee dans `api/routes/api.php`
-- implementee par `App\Http\Controllers\Api\V1\HealthController`
+- implementee par `App\Core\Auth\Interfaces\Api\V1\HealthController` _(migré depuis `App\Http\Controllers\Api\V1\HealthController` — PR #824)_
 - attendue explicitement par `.github/workflows/deploy-main.yml`
 
 ### Contrat fonctionnel reel

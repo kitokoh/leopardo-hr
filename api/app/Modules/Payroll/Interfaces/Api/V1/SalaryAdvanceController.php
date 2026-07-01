@@ -10,7 +10,7 @@ use App\Http\Resources\Api\V1\SalaryAdvanceResource;
 use App\Jobs\GeneratePaymentDocumentJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SalaryAdvance;
-use App\Services\SalaryAdvanceService;
+use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

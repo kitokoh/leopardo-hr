@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
-use App\Services\BankExportGenerator;
+use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\UserInvitationResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\UserInvitation;
-use App\Services\UserInvitationService;
+use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

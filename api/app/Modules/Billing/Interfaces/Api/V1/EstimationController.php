@@ -7,7 +7,7 @@ use App\Http\Requests\Api\V1\Estimation\DailySummaryRequest;
 use App\Http\Requests\Api\V1\Estimation\QuickEstimateRequest;
 use App\Http\Requests\Api\V1\Estimation\ReceiptRequest;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\EstimationService;
+use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;

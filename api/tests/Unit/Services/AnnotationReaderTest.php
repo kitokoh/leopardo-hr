@@ -18,7 +18,7 @@ class AnnotationReaderTest extends TestCase
     public function test_can_extract_method_annotations(): void
     {
         $annotations = $this->annotationReader->extractMethodAnnotations(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 
@@ -56,7 +56,7 @@ class AnnotationReaderTest extends TestCase
     {
         $description = $this->annotationReader->generateDescriptionFromMethod(
             'index',
-            'App\Http\Controllers\Api\V1\EmployeeController'
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController'
         );
 
         $this->assertStringContainsString("R\u{00E9}cup\u{00E8}re la liste", $description);
@@ -64,7 +64,7 @@ class AnnotationReaderTest extends TestCase
 
         $description = $this->annotationReader->generateDescriptionFromMethod(
             'store',
-            'App\Http\Controllers\Api\V1\EmployeeController'
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController'
         );
         $this->assertStringContainsString("Cr\u{00E9}e un nouveau", $description);
         $this->assertStringContainsString('employee', $description);
@@ -73,7 +73,7 @@ class AnnotationReaderTest extends TestCase
     public function test_extracts_all_apifeature_attributes(): void
     {
         $annotations = $this->annotationReader->extractMethodAnnotations(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 
@@ -89,7 +89,7 @@ class AnnotationReaderTest extends TestCase
     public function test_handles_multiple_permission_formats(): void
     {
         $annotations = $this->annotationReader->extractMethodAnnotations(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 
@@ -100,7 +100,7 @@ class AnnotationReaderTest extends TestCase
     public function test_returns_empty_array_for_nonexistent_method(): void
     {
         $annotations = $this->annotationReader->extractMethodAnnotations(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'nonExistentMethod'
         );
 

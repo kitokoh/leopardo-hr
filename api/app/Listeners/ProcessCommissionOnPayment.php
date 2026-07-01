@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\SubscriptionPaid;
-use App\Services\CommissionService;
+use App\Modules\Payroll\Infrastructure\Services\CommissionService;
 use Illuminate\Support\Facades\Log;
 
 class ProcessCommissionOnPayment

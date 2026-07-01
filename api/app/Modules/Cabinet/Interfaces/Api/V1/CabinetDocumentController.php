@@ -9,7 +9,7 @@ use App\Http\Requests\Api\V1\Cabinet\UpdateDocumentRequest;
 use App\Http\Resources\Api\V1\CabinetDocumentResource;
 use App\Models\CabinetDocument;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\CabinetService;
+use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;

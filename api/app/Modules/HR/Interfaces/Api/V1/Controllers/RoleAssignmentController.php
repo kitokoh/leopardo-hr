@@ -5,7 +5,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Mail\RoleAssignmentMail;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\RoleInvitationService;
+use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;

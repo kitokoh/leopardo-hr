@@ -7,7 +7,7 @@ use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
-use App\Services\PaySlipPdfGenerator;
+use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

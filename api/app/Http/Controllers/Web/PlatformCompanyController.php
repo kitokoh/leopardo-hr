@@ -9,7 +9,7 @@ use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SuperAdmin;
 use App\Services\CompanyProvisioningService;
-use App\Services\UserInvitationService;
+use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;

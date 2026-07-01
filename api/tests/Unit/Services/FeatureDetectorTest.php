@@ -57,7 +57,7 @@ class FeatureDetectorTest extends TestCase
     {
         // Tester avec EmployeeController qui a des attributs
         $metadata = $this->featureDetector->extractMetadata(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 
@@ -222,7 +222,7 @@ class FeatureDetectorTest extends TestCase
     {
         // Tester l'extraction de métadonnées avec des permissions
         $metadata = $this->featureDetector->extractMetadata(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 
@@ -235,7 +235,7 @@ class FeatureDetectorTest extends TestCase
     public function test_includes_form_and_list_schemas_when_available(): void
     {
         $metadata = $this->featureDetector->extractMetadata(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendanceKiosk;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\KioskAttendanceService;
+use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -7,7 +7,7 @@ use App\Http\Resources\Api\V1\BankExportResource;
 use App\Models\BankExport;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
-use App\Services\BankExportGenerator;
+use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;

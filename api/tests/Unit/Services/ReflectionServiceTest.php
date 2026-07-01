@@ -52,7 +52,7 @@ class ReflectionServiceTest extends TestCase
     {
         // Test avec un contrôleur API valide
         $isApiController = $this->reflectionService->isApiController(
-            'App\Http\Controllers\Api\V1\EmployeeController'
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController'
         );
 
         $this->assertTrue($isApiController);
