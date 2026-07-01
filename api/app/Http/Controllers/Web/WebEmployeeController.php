@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
@@ -34,7 +36,8 @@ class WebEmployeeController extends Controller
         $history = $historyLogs
             ->groupBy(fn (AttendanceLog $log) => $log->date?->format('Y-m-d') ?? '')
             ->take(30)
-            ->map(function ($logs, string $date) use ($employee) {
+            ->map(function (\Illuminate\Support\Collection $logs, string $date) use ($employee, $company): array {
+                /** @var \Illuminate\Support\Collection<int, AttendanceLog> $logs */
                 $summary = $this->estimationService->dailySummaryFromLogs(
                     employee: $employee,
                     logs: $logs,
@@ -45,14 +48,16 @@ class WebEmployeeController extends Controller
                 /** @var AttendanceLog|null $lastLog */
                 $lastLog = $logs->sortByDesc('session_number')->first();
 
+                $tz = (string) $company->timezone;
+
                 return [
                     'date' => $date,
-                    'check_in' => $firstLog?->check_in?->setTimezone(currentCompany()->timezone)->format('H:i'),
-                    'check_out' => $lastLog?->check_out?->setTimezone(currentCompany()->timezone)->format('H:i'),
+                    'check_in' => $firstLog?->check_in?->setTimezone($tz)->format('H:i'),
+                    'check_out' => $lastLog?->check_out?->setTimezone($tz)->format('H:i'),
                     'sessions_count' => $summary['sessions_count'] ?? $logs->count(),
                     'hours_worked' => $summary['hours_worked'] ?? 0.0,
                     'total_estimated' => $summary['total_estimated'] ?? 0.0,
-                    'currency' => $summary['currency'] ?? currentCompany()->currency,
+                    'currency' => $summary['currency'] ?? (string) $company->currency,
                     'status' => $summary['status'] ?? 'absent',
                 ];
             })->values();
@@ -114,9 +119,9 @@ class WebEmployeeController extends Controller
 
         $fileName = sprintf(
             'receipt_estimate_employee_%s_%s_%s.pdf',
-            $employee->id,
-            $validated['from'],
-            $validated['to']
+            (string) $employee->id,
+            (string) $validated['from'],
+            (string) $validated['to']
         );
 
         return $pdf->download($fileName);
