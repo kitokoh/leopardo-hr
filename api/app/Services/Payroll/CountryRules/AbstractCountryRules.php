@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Payroll\CountryRules;
 
 use App\Services\Payroll\CountryRulesInterface;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Company;
@@ -18,6 +20,7 @@ class CompanyProvisioningService
     ) {}
 
     /**
+     * @param  array<string, mixed>  $payload
      * @return array{company: Company, manager: Employee}
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
@@ -28,10 +31,11 @@ class CompanyProvisioningService
         $payload['currency'] = strtoupper((string) ($payload['currency'] ?? $countryDefaults['currency']));
         $payload['timezone'] = $payload['timezone'] ?? $countryDefaults['timezone'];
 
+        /** @var array{company: Company, manager: Employee} $result */
         $result = DB::transaction(function () use ($payload): array {
             $plan = DB::table('plans')->where('id', $payload['plan_id'])->first();
             $trialDays = (int) ($plan->trial_days ?? 14);
-            $slug = $this->resolveUniqueSlug($payload['slug'] ?? Str::slug($payload['name']));
+            $slug = $this->resolveUniqueSlug((string) ($payload['slug'] ?? Str::slug((string) $payload['name'])));
 
             $company = Company::query()->create([
                 'name' => $payload['name'],
@@ -96,7 +100,7 @@ class CompanyProvisioningService
             company: $result['company'],
             employee: $result['manager'],
             invitedByType: 'super_admin',
-            invitedByEmail: $superAdmin->email,
+            invitedByEmail: (string) $superAdmin->email,
         );
 
         return $result;

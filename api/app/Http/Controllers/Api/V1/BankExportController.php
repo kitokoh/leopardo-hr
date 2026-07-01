@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
@@ -40,15 +42,15 @@ class BankExportController extends Controller
         $extension = $generator->fileExtension($format);
 
         $fileName = sprintf('bank_exports/%s_%s_%s.%s',
-            $payrollRun->company_id,
+            (string) $payrollRun->company_id,
             $payrollRun->period_start->format('Y_m'),
-            $format,
-            $extension
+            (string) $format,
+            (string) $extension
         );
 
         Storage::disk('local')->put($fileName, $content);
 
-        $totalAmount = $payrollRun->paySlips()->where('status', 'validated')->sum('net_salary');
+        $totalAmount = (float) $payrollRun->paySlips()->where('status', 'validated')->sum('net_salary');
 
         $export = BankExport::create([
             'payroll_run_id' => $payrollRun->id,
@@ -93,10 +95,15 @@ class BankExportController extends Controller
             abort(403);
         }
 
-        if (! Storage::disk('local')->exists($bankExport->file_path)) {
+        $filePath = (string) $bankExport->file_path;
+
+        if (! Storage::disk('local')->exists($filePath)) {
             return response()->json(['message' => 'Export file not found.'], 404);
         }
 
-        return Storage::disk('local')->download($bankExport->file_path);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('local');
+
+        return $disk->download($filePath);
     }
 }

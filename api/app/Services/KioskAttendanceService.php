@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\DTOs\CheckInDTO;
@@ -17,7 +19,9 @@ class KioskAttendanceService
 
     public function punch(AttendanceKiosk $kiosk, string $identifier, string $action = 'check_in'): AttendanceLog
     {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action) {
+        /** @var AttendanceLog $result */
+        $result = $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action): AttendanceLog {
+            /** @var Employee|null $employee */
             $employee = Employee::query()
                 ->where('company_id', $kiosk->company_id)
                 ->where(function ($query) use ($identifier): void {
@@ -28,7 +32,7 @@ class KioskAttendanceService
                 })
                 ->first();
 
-            if (! $employee) {
+            if (! $employee instanceof Employee) {
                 throw (new ModelNotFoundException)->setModel(Employee::class);
             }
 
@@ -38,18 +42,30 @@ class KioskAttendanceService
 
             $kiosk->forceFill(['last_seen_at' => now()])->save();
 
+            $biometricMode = (string) $kiosk->biometric_mode;
+
             if ($action === 'check_out') {
-                return $this->attendanceService->checkOut($employee, new CheckInDTO(method: 'kiosk_'.$kiosk->biometric_mode));
+                return $this->attendanceService->checkOut($employee, new CheckInDTO(method: 'kiosk_'.$biometricMode));
             }
 
-            return $this->attendanceService->checkIn($employee, new CheckInDTO(method: 'kiosk_'.$kiosk->biometric_mode));
+            return $this->attendanceService->checkIn($employee, new CheckInDTO(method: 'kiosk_'.$biometricMode));
         });
+
+        return $result;
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $events
+     * @return array<int, int>
+     */
     public function syncPunches(AttendanceKiosk $kiosk, array $events): array
     {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events) {
+        /** @var array<int, int> $result */
+        $result = $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events): array {
+            /** @var array<int, int> $processed */
             $processed = [];
+            $biometricMode = (string) $kiosk->biometric_mode;
+            $deviceCode = (string) $kiosk->device_code;
 
             foreach ($events as $event) {
                 $identifier = trim((string) ($event['identifier'] ?? ''));
@@ -57,6 +73,7 @@ class KioskAttendanceService
                     continue;
                 }
 
+                /** @var Employee|null $employee */
                 $employee = Employee::query()
                     ->where('company_id', $kiosk->company_id)
                     ->where(function ($query) use ($identifier): void {
@@ -67,7 +84,7 @@ class KioskAttendanceService
                     })
                     ->first();
 
-                if (! $employee) {
+                if (! $employee instanceof Employee) {
                     continue;
                 }
 
@@ -77,15 +94,15 @@ class KioskAttendanceService
 
                 $log = $this->attendanceService->importExternalPunch($employee, new CheckInDTO(
                     method: 'kiosk_offline',
-                    occurred_at: $event['occurred_at'] ?? null,
-                    external_event_id: $event['external_event_id'] ?? null,
-                    biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
+                    occurred_at: isset($event['occurred_at']) ? (string) $event['occurred_at'] : null,
+                    external_event_id: isset($event['external_event_id']) ? (string) $event['external_event_id'] : null,
+                    biometric_type: isset($event['biometric_type']) ? (string) $event['biometric_type'] : $biometricMode,
                     synced_from_offline: true,
-                    action: $event['action'] ?? 'check_in',
-                    source_device_code: $kiosk->device_code
+                    action: isset($event['action']) ? (string) $event['action'] : 'check_in',
+                    source_device_code: $deviceCode
                 ));
 
-                $processed[] = $log->id;
+                $processed[] = (int) $log->id;
             }
 
             $kiosk->forceFill([
@@ -95,5 +112,7 @@ class KioskAttendanceService
 
             return $processed;
         });
+
+        return $result;
     }
 }
