@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Company;
@@ -10,7 +10,7 @@ use App\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Rules\GlobalEmailUnique;
-use App\Services\EmployeeService;
+use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use App\Services\OnboardingQrService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Core\Auth\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\DTOs\UpdateEmployeeDTO;
-use App\Services\EmployeeService;
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
+use App\Modules\HR\Infrastructure\Services\EmployeeService;
 
 /**
  * Use Case : Mise à jour du profil de l'employé connecté.

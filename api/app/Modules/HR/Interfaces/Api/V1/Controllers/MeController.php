@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\EstimationService;
+use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

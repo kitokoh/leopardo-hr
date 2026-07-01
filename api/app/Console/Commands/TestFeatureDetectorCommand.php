@@ -58,7 +58,7 @@ class TestFeatureDetectorCommand extends Command
     {
         $this->info("\nTesting metadata extraction on EmployeeController::index...");
         $metadata = $detector->extractMetadata(
-            'App\Http\Controllers\Api\V1\EmployeeController',
+            'App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController',
             'index'
         );
 

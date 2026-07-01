@@ -28,7 +28,7 @@ class SelfServiceTrialController extends Controller
 {
     public function __construct(
         private readonly TenantManager $tenantManager,
-        private readonly \App\Services\PartnerService $partnerService,
+        private readonly \App\Modules\Billing\Infrastructure\Services\PartnerService $partnerService,
     ) {}
 
     /**

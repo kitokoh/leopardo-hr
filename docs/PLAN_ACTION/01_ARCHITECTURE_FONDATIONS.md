@@ -35,7 +35,7 @@ api/app/Modules/{NomModule}/
 ### Taches
 
 - [x] **T-ARCH-01** : Creer le template de module vide dans `stubs/module-template/` — **FAIT** (`api/stubs/module-template/` existe avec Application, Domain, Infrastructure, Interfaces)
-- [ ] **T-ARCH-02** : Migrer progressivement les controllers existants (Payroll, Absence, etc.) vers la structure DDD — commencer par les nouveaux modules, migrer l'existant quand on y touche
+- [x] **T-ARCH-02** : Migrer progressivement les controllers existants vers la structure DDD — **FAIT** (PR #822 + #824, 2026-07-01). 90 controllers `Api/V1/` et 26 services `Services/` supprimés, tous remplacés par leurs équivalents dans `Modules/*/`. Voir `api/ARCHITECTURE.md` pour les TODO restants (Models, DTOs, Shared).
 - [x] **T-ARCH-03** : Creer une commande Artisan `php artisan make:module {name}` qui genere la structure — **FAIT** (`app/Console/Commands/MakeModuleCommand.php` + test unit)
 
 ---

@@ -1,3 +1,7 @@
+> ⚠️ **PROMPT HISTORIQUE — NE PAS UTILISER POUR GÉNÉRER DU CODE**
+> Les namespaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` cités dans ce fichier
+> **n'existent plus** depuis PR #824 (2026-07-01). Voir `docs/PROMPTS_EXECUTION/_ARCHIVE_WARNING.md`.
+
 # CC-03 — Migrations tenant + Module Employés + Config organisationnelle
 # Agent : Claude Code
 # Durée : 6-8 heures

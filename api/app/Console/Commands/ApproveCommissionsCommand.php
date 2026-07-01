@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\PartnerService;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use Illuminate\Console\Command;
 
 class ApproveCommissionsCommand extends Command

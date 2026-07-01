@@ -1,6 +1,6 @@
 # Architecture DDD — État des modules
 
-> Mis à jour le 2026-06-30 | Phase 4 complète
+> Mis à jour le 2026-07-01 | Phase 5 en cours — nettoyage legacy (PR #824)
 
 ## 1. Tableau de l'état DDD — 16 modules actifs
 
@@ -78,13 +78,24 @@
 
 ## 5. Roadmap restante (Phase 5+)
 
-| Item | Priorité | Effort |
-|------|:--------:|:------:|
-| Tests Feature pour Growth, Platform, Onboarding, Training | P1 | Moyen |
-| PHPStan level 5+ via `phpstan-baseline.neon` | P2 | Moyen |
-| OpenAPI/Swagger (`dedoc/scramble`) | P2 | Faible |
-| routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible |
-| Cloudflare Workers build (fix ou supprimer) | P3 | Faible |
-| i18n backend `fr/en/ar` via `lang/` | P3 | Moyen |
-| Event Sourcing Absence + Expense (CQRS) | P4 | Très élevé |
-| PostgreSQL RLS (remplace filtres `company_id`) | P4 | Très élevé |
+| Item | Priorité | Effort | Statut |
+|------|:--------:|:------:|:------:|
+| Supprimer `app/Models/` doublons (75 modèles) | P1 | Élevé | 🔧 En cours |
+| Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | 🔧 En cours |
+| Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ⏳ À faire |
+| Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ⏳ À faire |
+| Tests Feature pour Growth, Platform, Onboarding, Training | P1 | Moyen | ⏳ À faire |
+| PHPStan level 5+ via `phpstan-baseline.neon` | P2 | Moyen | ⏳ À faire |
+| OpenAPI/Swagger (`dedoc/scramble`) | P2 | Faible | ⏳ À faire |
+| routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible | ⏳ À faire |
+| Cloudflare Workers build (fix ou supprimer) | P3 | Faible | ⏳ À faire |
+| i18n backend `fr/en/ar` via `lang/` | P3 | Moyen | ⏳ À faire |
+| Event Sourcing Absence + Expense (CQRS) | P4 | Très élevé | ⏳ À faire |
+| PostgreSQL RLS (remplace filtres `company_id`) | P4 | Très élevé | ⏳ À faire |
+
+### Nettoyage legacy — bilan PR #824 (2026-07-01)
+
+✅ 90 controllers `app/Http/Controllers/Api/V1/` supprimés
+✅ 26 services `app/Services/` supprimés (26 doublons Infrastructure)
+✅ 4 couches `Infrastructure/` créées (Growth, Platform, Onboarding, Training)
+✅ 51 fichiers consommateurs mis à jour (imports redirigés vers modules)

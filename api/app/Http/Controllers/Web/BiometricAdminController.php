@@ -9,7 +9,7 @@ use App\Models\AttendanceKiosk;
 use App\Models\BiometricEnrollmentRequest;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\BiometricEnrollmentService;
+use App\Modules\Attendance\Infrastructure\Services\BiometricEnrollmentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

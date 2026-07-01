@@ -26,7 +26,7 @@ return new class extends Migration
                 // La FK explicite est omise ici car la migration peut s'exécuter avant
                 // que la table employees ne soit présente dans certains environnements CI.
 
-                $table->uuid('company_id')->index();
+                $table->uuid('company_id'); // index ajouté ci-dessous, pas ici
 
                 // Mode préféré de l'employé
                 $table->string('preferred_mode', 20)->default('manual');
@@ -41,7 +41,7 @@ return new class extends Migration
 
                 // Un employé = une préférence
                 $table->unique('employee_id');
-                $table->index('company_id');
+                $table->index('company_id'); // index unique, pas de doublon avec ->index() ci-dessus
             });
 
             \Illuminate\Support\Facades\DB::statement(

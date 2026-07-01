@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Api\V1\Webhook;
 
-use App\Http\Controllers\Api\V1\WebhookController;
+use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreWebhookEndpointRequest extends FormRequest

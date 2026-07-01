@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\AttendanceGeofenceService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use PHPUnit\Framework\TestCase;
 
 class AttendanceGeofenceServiceTest extends TestCase

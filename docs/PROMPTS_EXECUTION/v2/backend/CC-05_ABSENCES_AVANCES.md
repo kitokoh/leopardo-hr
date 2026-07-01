@@ -1,3 +1,7 @@
+> ⚠️ **PROMPT HISTORIQUE — NE PAS UTILISER POUR GÉNÉRER DU CODE**
+> Les namespaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` cités dans ce fichier
+> **n'existent plus** depuis PR #824 (2026-07-01). Voir `docs/PROMPTS_EXECUTION/_ARCHIVE_WARNING.md`.
+
 # CC-05 — Module Absences + Avances sur salaire
 # Agent : Claude Code
 # Durée : 5-6 heures

@@ -17,18 +17,17 @@ Créer la nouvelle structure sans supprimer les anciens fichiers.
 - Mettre à jour les namespaces dans les copies
 - Les originaux restent fonctionnels
 
-### Étape 2 — Câblage (À FAIRE)
-Faire pointer les routes vers les nouveaux controllers.
-- Modifier `api/routes/modules/*.php` pour utiliser les nouveaux namespaces
-- Écrire les tests unitaires pour chaque module
-- Valider CI vert
+### Étape 2 — Câblage ✅ FAIT
+Toutes les routes `routes/modules/*.php` et `routes/api.php` utilisent les namespaces modules.
+Zéro import `App\Http\Controllers\Api\V1\*` dans les routes.
 
-### Étape 3 — Nettoyage (APRÈS CI VERT)
-Supprimer les fichiers originaux une fois les tests validés.
-- Utiliser `scripts/cleanup-legacy.sh --module HR`
-- Un module à la fois, CI validé après chaque suppression
+### Étape 3 — Nettoyage ✅ FAIT (PR #824 — 2026-07-01)
+- 90 controllers `app/Http/Controllers/Api/V1/` supprimés
+- 26 services `app/Services/` supprimés
+- 51 fichiers consommateurs mis à jour
+- Restent intentionnellement : `EdgeController`, `EdgeDownloadController`, `SSO/SSOController`
 
-## Règle de sécurité
+## Ce qui reste
 
-**Jamais de suppression sans CI vert.**
-Le script `cleanup-legacy.sh --dry-run` doit être exécuté avant tout `git rm`.
+Voir `api/ARCHITECTURE.md` section **TODO restants** pour la liste priorisée.
+Principalement : migration `app/Models/` (75 doublons) et `app/Shared/` (Traits/Enums).

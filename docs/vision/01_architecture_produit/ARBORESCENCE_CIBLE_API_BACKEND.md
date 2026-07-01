@@ -1,3 +1,8 @@
+> ⚠️ **Document de vision — peut diverger de l'implémentation réelle**
+> Ce fichier décrit une cible architecturale initiale. La structure réelle du projet
+> diffère légèrement (ex: `Modules/Attendance/` est un module de premier niveau,
+> non imbriqué dans `Modules/HR/`). **Source de vérité : `api/ARCHITECTURE.md`.**
+
 # Arborescence cible backend API
 
 Ce document fixe l'arborescence cible de `api/app` pour faire evoluer le backend Laravel actuel vers une architecture modulaire, lisible et durable.

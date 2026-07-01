@@ -1,3 +1,7 @@
+> ⚠️ **PROMPT HISTORIQUE — NE PAS UTILISER POUR GÉNÉRER DU CODE**
+> Les namespaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` cités dans ce fichier
+> **n'existent plus** depuis PR #824 (2026-07-01). Voir `docs/PROMPTS_EXECUTION/_ARCHIVE_WARNING.md`.
+
 # PATCH CC-07 — Modules manquants : Settings + Appareils + Onboarding + Facturation + Sauvegardes
 # À appliquer PENDANT CC-07
 # Réf : API_CONTRATS sections 9-13 + 23_STOCKAGE_ET_SAUVEGARDES.md + 24_ONBOARDING_GUIDE.md

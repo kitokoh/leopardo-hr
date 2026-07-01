@@ -10,7 +10,7 @@ use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\ContractPdfGenerator;
+use App\Modules\Cabinet\Infrastructure\Services\ContractPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
