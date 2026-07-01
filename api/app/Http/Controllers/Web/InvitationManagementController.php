@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\UserInvitation;
-use App\Services\UserInvitationService;
+use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

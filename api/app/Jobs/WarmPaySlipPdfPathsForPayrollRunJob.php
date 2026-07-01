@@ -7,7 +7,7 @@ namespace App\Jobs;
 use App\Models\Company;
 use App\Models\PaySlip;
 use App\Models\PayrollRun;
-use App\Services\PaySlipPdfGenerator;
+use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

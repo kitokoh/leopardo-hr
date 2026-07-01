@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.21.0] - 2026-07-01
+
+### Changed
+- **Nettoyage architectural API — suppression des doublons legacy**
+  - **90 controllers** dans `app/Http/Controllers/Api/V1/` supprimés (doublons migrés dans `app/Modules/*/Interfaces/Api/V1/`). Restent : `EdgeController`, `EdgeDownloadController`, `SSO/SSOController`.
+  - **26 services** dans `app/Services/` supprimés (doublons migrés dans `app/Modules/*/Infrastructure/Services/`). Tous les imports consommateurs mis à jour (51 fichiers, 55 remplacements).
+  - **4 couches `Infrastructure/`** créées dans `Modules/{Growth,Platform,Onboarding,Training}` — corrige le CI Module Structure Validator.
+  - Tests unitaires (`AnnotationReaderTest`, `FeatureDetectorTest`, `ReflectionServiceTest`) mis à jour pour référencer les controllers DDD.
+  - `FormRequests` Webhook redirigés vers `App\Modules\Billing\Interfaces\Api\V1\WebhookController`.
+  - `ARCHITECTURE.md` mis à jour avec l'état d'avancement complet et les TODOs priorisés.
+
 ## [4.19.0] - 2026-06-30
 
 ### Added

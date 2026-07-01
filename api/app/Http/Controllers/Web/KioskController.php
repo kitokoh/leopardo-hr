@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceKiosk;
 use App\Models\Company;
-use App\Services\KioskAttendanceService;
+use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

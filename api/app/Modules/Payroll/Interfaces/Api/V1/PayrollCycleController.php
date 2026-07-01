@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
-use App\Services\PayrollCycleService;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

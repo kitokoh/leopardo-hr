@@ -9,7 +9,7 @@ use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Invoice;
 use App\Models\Subscription;
-use App\Services\StripeService;
+use App\Modules\Billing\Infrastructure\Services\StripeService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

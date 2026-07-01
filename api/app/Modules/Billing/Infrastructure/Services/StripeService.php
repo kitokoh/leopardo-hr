@@ -370,7 +370,7 @@ class StripeService
 
             // GROWTH MODULE: Cancel pending commissions
             try {
-                $partnerService = app(\App\Services\PartnerService::class);
+                $partnerService = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
                 $partnerService->handlePaymentRefunded($payment);
             } catch (\Throwable $e) {
                 Log::warning('PartnerService: Failed to handle refund', [

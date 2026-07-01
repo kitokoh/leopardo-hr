@@ -5,7 +5,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\ZktecoDevice;
-use App\Services\ZktecoIntegrationService;
+use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

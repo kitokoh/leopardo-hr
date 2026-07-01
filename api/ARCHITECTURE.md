@@ -63,20 +63,26 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 |--------|--------------|-------------|-----------------|
 | `Core/Auth` | ✅ routes/api.php | ✅ complet | — (AppServiceProvider) |
 | `Core/Tenant` | — | 🔄 en cours | — |
-| `Modules/HR` | 🔄 routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
-| `Modules/Payroll` | 🔄 routes/modules/payroll_engine.php | ✅ complet | `PayrollServiceProvider` |
-| `Modules/Attendance` | 🔄 routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
-| `Modules/Planning` | 🔄 routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
+| `Modules/HR` | ✅ routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
+| `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | ✅ complet | `PayrollServiceProvider` |
+| `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
+| `Modules/Planning` | ✅ routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | ✅ complet | `AbsenceServiceProvider` |
 | `Modules/Expense` | ✅ routes/modules/expense.php | ✅ complet | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/modules/notification.php | ✅ complet | `NotificationServiceProvider` |
-| `Modules/Recruitment` | 🔄 routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
-| `Modules/Billing` | 🔄 routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
-| `Modules/Cabinet` | 🔄 routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
-| `Modules/Fleet` | 🔄 routes/modules/hr_extended.php? | ✅ complet | `FleetServiceProvider` |
+| `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
+| `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
+| `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
+| `Modules/Fleet` | ✅ routes/modules/hr_extended.php | ✅ complet | `FleetServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
+| `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |
+| `Modules/SmartAttendance` | ✅ module routes | ✅ complet | `SmartAttendanceServiceProvider` |
+| `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
+| `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
+| `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
+| `Modules/Training` | ✅ routes/modules/* | ✅ complet | `TrainingServiceProvider` |
 
-**Légende :** ✅ migré vers nouveau namespace | 🔄 migration partielle en cours
+**Légende :** ✅ complet | 🔄 migration partielle en cours
 
 ---
 
@@ -102,41 +108,77 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 ---
 
-## Migration en cours (ancienne → nouvelle archi)
+## État du nettoyage (refactor/cleanup-legacy-api — juillet 2026)
 
-### Controllers routes — migration complète ✅
+### ✅ Fait
 
-Tous les `use App\Http\Controllers\Api\V1\*` ont été remplacés dans les fichiers de routes.
+- **`app/Http/Controllers/Api/V1/`** — 90 controllers doublons supprimés.
+  Restent intentionnellement : `EdgeController`, `EdgeDownloadController`, `SSO/SSOController`
+  (pas encore de module dédié pour EdgeSync controllers et SSO).
+- **`app/Services/` — 26 services doublons supprimés**, leurs imports redirigés
+  vers `app/Modules/*/Infrastructure/Services/` dans tous les fichiers consommateurs.
+- **`app/Modules/{Growth,Platform,Onboarding,Training}/Infrastructure/`** créé —
+  couches manquantes ajoutées pour corriger le CI Module Structure Validator.
+- Tests + Console Commands pointent sur les bons namespaces modules.
 
-| Controller | Nouveau namespace |
-|-----------|------------------|
-| `MeController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
-| `SiteController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
-| `EstimationController` | `Modules\Payroll\Interfaces\Api\V1\` |
-| `NotificationStreamController` | `Modules\Notification\Interfaces\Api\V1\Controllers\` |
-| `AdvancedReportController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
-| `AuditLogController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
-| `EmployeeLoanController` | `Modules\Payroll\Interfaces\Api\V1\` |
-| `PredictionController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
+### 🔧 TODO restants (prochaines PRs)
 
-### TODO restants
+#### Priorité haute
 
-- [ ] Vider `app/Models/` des modèles déjà migrés dans `Modules/*/Domain/Models/`
-- [ ] Vider `app/Services/` des services déjà migrés dans `Modules/*/Infrastructure/Services/`
-- [ ] Peupler `app/Shared/` et supprimer les doublons `app/DTOs/`, `app/Enums/`, `app/Traits/`
-- [ ] Implémenter `Core/Tenant/` (migrer `TenantManager` + `TenantMiddleware`)
+- [ ] **`app/Models/` — 75 modèles en double** avec `Modules/*/Domain/Models/`
+  → Stratégie recommandée : créer des class aliases dans `app/Models/` pointant
+  vers le module, puis basculer les imports progressivement par module.
+  Fichiers sans doublon module à placer dans `Core/` ou nouveau module dédié :
+  `Company`, `CompanyRequest`, `CompanySetting`, `Site`, `SuperAdmin` → `Core/Tenant/`
+  `AuditLog`, `AIAuditLog`, `AIConversation`, `AIToolRegistryEntry` → `Core/` ou `app/AI/`
+  `Notification`, `NotificationPreference`, `DeviceToken` → `Modules/Notification/Domain/Models/`
+  `UserEmployeeLink` → `Modules/HR/Domain/Models/`
+  `Commission` → `Modules/Payroll/Domain/Models/`
+  `CommunicationEvent` → `Modules/Notification/Domain/Models/`
+  `Language`, `PrivacyRequest` → `Core/` ou `Modules/HR/`
+
+- [ ] **`app/DTOs/` racine — 3 DTOs** (`CheckInDTO`, `CreateEmployeeDTO`, `UpdateEmployeeDTO`)
+  partiellement migrés mais encore sous namespace `App\DTOs`.
+  → Mettre à jour `app/Modules/Attendance/Application/DTOs/CheckInDTO.php` pour
+  utiliser le bon namespace, puis supprimer `app/DTOs/`.
+
+#### Priorité moyenne
+
+- [ ] **`app/Shared/` — peupler** avec `app/Traits/`, `app/Attributes/`, `app/Enums/`
+  → 110+ usages de `App\Traits\BelongsToCompany` : migration par lots ou class aliases.
+
+- [ ] **`Core/Tenant/`** — migrer `app/Services/TenantManager.php` + `TenantMiddleware`
+
+- [ ] **`app/Http/Requests/Api/V1/`** — FormRequests encore dans le namespace legacy,
+  à déplacer dans les modules correspondants (`Modules/*/Interfaces/Api/V1/Requests/`).
+
+#### Priorité basse
+
+- [ ] PHPStan modules : monter le niveau de 3 → 6 minimum pour Domain/Application
+- [ ] Application layer : enrichir les Actions dans Growth, Platform, Onboarding, Training
+  (trop peu d'Actions, controllers trop épais)
 
 ---
 
 ## Commandes utiles
 
 ```bash
-# Vérifier les namespaces dans les routes
+# Vérifier qu'aucun controller legacy App\Http\Controllers\Api\V1 ne subsiste dans les routes
 grep -r "App\\Http\\Controllers\\Api\\V1" api/routes/
 
+# Vérifier qu'aucun service legacy App\Services\* ne subsiste hors app/Services/
+grep -rn "App\\Services\\" api/app/ api/tests/ --include="*.php" | grep -v "app/Services/"
+
 # Lancer PHPStan sur Core et Modules
-vendor/bin/phpstan analyse app/Core app/Modules --level=8
+vendor/bin/phpstan analyse app/Core app/Modules --level=3
 
 # Vérifier que tous les ServiceProviders sont enregistrés
 cat bootstrap/providers.php
+
+# Vérifier la structure de modules DDD
+for MOD in HR Payroll Attendance Planning Absence Expense Notification Recruitment Billing Cabinet Fleet Cameras Growth Platform Onboarding Training SmartAttendance EdgeSync; do
+  for LAYER in Application Domain Infrastructure Interfaces Providers; do
+    [ ! -d "app/Modules/$MOD/$LAYER" ] && echo "Missing: $MOD/$LAYER"
+  done
+done
 ```
