@@ -4,8 +4,18 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [develop, main]
+    paths:
+      - 'api/**'
+      - 'front/admin-dashboard/**'
+      - '.github/workflows/tests.yml'
+      - '.github/workflows/phpstan-baseline.yml'
   push:
     branches: [develop, main]
+    paths:
+      - 'api/**'
+      - 'front/admin-dashboard/**'
+      - '.github/workflows/tests.yml'
+      - '.github/workflows/phpstan-baseline.yml'
 
 permissions:
   contents: write
@@ -62,7 +72,7 @@ jobs:
             api_changed=true
           fi
 
-          if printf '%s\n' "${changed_files}" | grep -Eq '^(admin-dashboard/|\.github/workflows/web-ci\.yml)'; then
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(front/admin-dashboard/|\.github/workflows/web-ci\.yml)'; then
             web_changed=true
           fi
 
