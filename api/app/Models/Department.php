@@ -1,52 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\HR\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\Department continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\HR\Domain\Models\Department instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property string $name
- * @property int|null $manager_id
- * @property Carbon|null $created_at
- * @property-read Employee|null $manager
- * @property-read Collection<int, Position> $positions
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class Department extends Model
-{
-    use BelongsToCompany;
-    use HasFactory;
-
-    protected $table = 'departments';
-
-    public $timestamps = false;
-
-    const CREATED_AT = 'created_at';
-
-    protected $fillable = ['company_id', 'name', 'manager_id'];
-
-    protected $casts = ['created_at' => 'datetime'];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function manager(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'manager_id');
-    }
-
-    /** @return HasMany<Position, $this> */
-    public function positions(): HasMany
-    {
-        return $this->hasMany(Position::class, 'department_id');
-    }
+if (! class_exists(\App\Models\Department::class, false)) {
+    class_alias(
+        App\Modules\HR\Domain\Models\Department::class,
+        \App\Models\Department::class,
+    );
 }

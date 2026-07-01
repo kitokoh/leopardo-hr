@@ -1,85 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Absence\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\Absence continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Absence\Domain\Models\Absence instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $employee_id
- * @property int|null $absence_type_id
- * @property Carbon $start_date
- * @property Carbon|null $end_date
- * @property int $days_count
- * @property string $status
- * @property string|null $reason
- * @property string|null $proof_path
- * @property string|null $approved_by
- * @property string|null $rejected_reason
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class Absence extends Model
-{
-    use BelongsToCompany;
-    use HasFactory;
-
-    protected $table = 'absences';
-
-    protected $fillable = [
-        'company_id',
-        'employee_id',
-        'absence_type_id',
-        'start_date',
-        'end_date',
-        'days_count',
-        'status',
-        'reason',
-        'proof_path',
-        'approved_by',
-        'rejected_reason',
-    ];
-
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'employee_id');
-    }
-
-    /** @return BelongsTo<AbsenceType, $this> */
-    public function absenceType(): BelongsTo
-    {
-        return $this->belongsTo(AbsenceType::class, 'absence_type_id');
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function approver(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'approved_by');
-    }
-
-    public function scopePending(Builder $q): Builder
-    {
-        return $q->where('status', 'pending');
-    }
-
-    public function scopeForEmployee(Builder $q, int $employeeId): Builder
-    {
-        return $q->where('employee_id', $employeeId);
-    }
+if (! class_exists(\App\Models\Absence::class, false)) {
+    class_alias(
+        App\Modules\Absence\Domain\Models\Absence::class,
+        \App\Models\Absence::class,
+    );
 }

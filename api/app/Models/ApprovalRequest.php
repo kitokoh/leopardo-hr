@@ -1,76 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Attendance\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\ApprovalRequest continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Attendance\Domain\Models\ApprovalRequest instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $workflow_id
- * @property string $approvable_type
- * @property int|null $approvable_id
- * @property int|null $requester_id
- * @property int $current_level
- * @property string $status
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class ApprovalRequest extends Model
-{
-    use BelongsToCompany;
-
-    protected $table = 'approval_requests';
-
-    protected $fillable = [
-        'company_id',
-        'workflow_id',
-        'approvable_type',
-        'approvable_id',
-        'requester_id',
-        'current_level',
-        'status',
-    ];
-
-    /** @return BelongsTo<ApprovalWorkflow, $this> */
-    public function workflow(): BelongsTo
-    {
-        return $this->belongsTo(ApprovalWorkflow::class, 'workflow_id');
-    }
-
-    public function approvable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function requester(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'requester_id');
-    }
-
-    /** @return HasMany<ApprovalDecision, $this> */
-    public function decisions(): HasMany
-    {
-        return $this->hasMany(ApprovalDecision::class, 'approval_request_id');
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopePending(Builder $q): Builder
-    {
-        return $q->where('status', 'pending');
-    }
+if (! class_exists(\App\Models\ApprovalRequest::class, false)) {
+    class_alias(
+        App\Modules\Attendance\Domain\Models\ApprovalRequest::class,
+        \App\Models\ApprovalRequest::class,
+    );
 }

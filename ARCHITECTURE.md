@@ -53,6 +53,59 @@ Modules actuels : `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Fleet`, `HR`, 
 > Les dossiers `api/app/Http/Controllers/Api/V1/`, `api/app/Services/` et `api/app/Models/`
 > sont en cours de migration vers leurs modules respectifs. Ne pas y ajouter de nouveau code.
 
+### Code partagé transversal (`api/app/Shared/`)
+
+Les éléments utilisés par plusieurs modules vivent dans `api/app/Shared/` :
+
+```
+app/Shared/
+├── DTOs/
+│   └── PaginationDTO.php          # DTO pagination générique
+├── Traits/
+│   ├── BelongsToCompany.php       # Scope tenant + auto-fill company_id
+│   ├── Auditable.php              # Journalisation création/modification/suppression
+│   └── Approvable.php             # Workflow d'approbation morphique
+├── Attributes/
+│   ├── ApiFeature.php             # Métadonnées de feature API
+│   ├── RequiresPermission.php     # Permission requise sur une méthode
+│   └── MobileCompatible.php       # Compatibilité mobile min/max version
+├── Enums/
+│   └── ApiError.php               # Codes d'erreur API standardisés
+└── Exceptions/
+    └── DomainException.php        # Exception métier de base
+```
+
+> Les `app/Traits/`, `app/Attributes/` et `app/Enums/` résidus sont des shims de backward-compat pointant vers `Shared/`. Ne pas y écrire de nouveau code.
+
+### Gestion des tenants (`app/Core/Tenant/`)
+
+```
+app/Core/Tenant/
+└── TenantManager.php          # Singleton — activer/désactiver le contexte company
+```
+
+| Méthode | Rôle |
+|---------|------|
+| `setTenant(Company)` | Active le tenant, met à jour PostgreSQL `search_path` |
+| `resetToPrevious()` | Restaure le contexte précédent |
+| `withinTenant(Company, Closure)` | Exécute une callback dans un contexte isolé |
+| `current()` | Retourne la company active ou null |
+| `hasTenant()` | True si un tenant est actif |
+| `clearTenant()` | Réinitialise sans restaurer (utile tests/artisan) |
+
+> `App\Services\TenantManager` est un alias de backward-compat. Injecter `App\Core\Tenant\TenantManager` dans le nouveau code.
+
+### Migration en cours — class aliases (`app/Models/`)
+
+75 des 92 modèles de `app/Models/` sont des shims `class_alias` pointant vers leur module DDD canonique.
+Les 17 modèles restants (Company, Employee-link, AI*, SuperAdmin, etc.) n'ont pas encore de module dédié.
+
+Pour supprimer un alias :
+1. `grep -r "App\\\\Models\\\\NomDuModel" app/` → remplacer par le namespace canonique
+2. Supprimer le fichier shim dans `app/Models/`
+
+Même pattern pour `app/DTOs/` (3 shims), `app/Traits/` (3 shims), `app/Attributes/` (3 shims), `app/Enums/` (1 shim).
+
 ## Mobile — Flutter
 
 - `leopardo_core` est le package fondation partagé par les trois apps.

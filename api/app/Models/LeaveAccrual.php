@@ -1,62 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Planning\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\LeaveAccrual continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Planning\Domain\Models\LeaveAccrual instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $employee_id
- * @property int|null $leave_policy_id
- * @property float $amount
- * @property string $type
- * @property string $description
- * @property Carbon $effective_date
- * @property string|null $created_by
- * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class LeaveAccrual extends Model
-{
-    use BelongsToCompany;
-
-    public $timestamps = false;
-
-    protected $table = 'leave_accruals';
-
-    protected $fillable = [
-        'company_id',
-        'employee_id',
-        'leave_policy_id',
-        'amount',
-        'type',
-        'description',
-        'effective_date',
-        'created_by',
-    ];
-
-    protected $casts = [
-        'amount' => 'float',
-        'effective_date' => 'date',
-        'created_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<Employee, $this> */
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'employee_id');
-    }
-
-    /** @return BelongsTo<LeavePolicy, $this> */
-    public function leavePolicy(): BelongsTo
-    {
-        return $this->belongsTo(LeavePolicy::class, 'leave_policy_id');
-    }
+if (! class_exists(\App\Models\LeaveAccrual::class, false)) {
+    class_alias(
+        App\Modules\Planning\Domain\Models\LeaveAccrual::class,
+        \App\Models\LeaveAccrual::class,
+    );
 }

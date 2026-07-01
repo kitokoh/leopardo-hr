@@ -1,55 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Payroll\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\LoanRepayment continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Payroll\Domain\Models\LoanRepayment instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $employee_loan_id
- * @property int|null $company_id
- * @property Carbon $due_date
- * @property float $amount
- * @property float $principal
- * @property float $interest
- * @property string $status
- * @property Carbon|null $paid_at
- * @property int|null $payroll_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class LoanRepayment extends Model
-{
-    protected $table = 'loan_repayments';
-
-    protected $fillable = [
-        'employee_loan_id',
-        'company_id',
-        'due_date',
-        'amount',
-        'principal',
-        'interest',
-        'status',
-        'paid_at',
-        'payroll_id',
-    ];
-
-    protected $casts = [
-        'due_date' => 'date',
-        'amount' => 'float',
-        'principal' => 'float',
-        'interest' => 'float',
-        'paid_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<EmployeeLoan, $this> */
-    public function loan(): BelongsTo
-    {
-        return $this->belongsTo(EmployeeLoan::class, 'employee_loan_id');
-    }
+if (! class_exists(\App\Models\LoanRepayment::class, false)) {
+    class_alias(
+        App\Modules\Payroll\Domain\Models\LoanRepayment::class,
+        \App\Models\LoanRepayment::class,
+    );
 }

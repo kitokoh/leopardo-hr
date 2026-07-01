@@ -1,54 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\HR\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\OnboardingStep continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\HR\Domain\Models\OnboardingStep instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property string $step_key
- * @property string $title
- * @property string $description
- * @property string $status
- * @property Carbon|null $completed_at
- * @property string|null $completed_by
- * @property int $order
- * @property bool $required
- * @property array<mixed> $metadata
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class OnboardingStep extends Model
-{
-    use BelongsToCompany;
-
-    protected $fillable = [
-        'company_id',
-        'step_key',
-        'title',
-        'description',
-        'status',
-        'completed_at',
-        'completed_by',
-        'order',
-        'required',
-        'metadata',
-    ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'completed_at' => 'datetime',
-            'required' => 'boolean',
-            'order' => 'integer',
-            'metadata' => 'array',
-        ];
-    }
+if (! class_exists(\App\Models\OnboardingStep::class, false)) {
+    class_alias(
+        App\Modules\HR\Domain\Models\OnboardingStep::class,
+        \App\Models\OnboardingStep::class,
+    );
 }

@@ -1,49 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Billing\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\PartnerLink continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Billing\Domain\Models\PartnerLink instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int $partner_id
- * @property string $code
- * @property string|null $name
- * @property bool $is_active
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class PartnerLink extends Model
-{
-    use HasFactory;
-
-    protected $fillable = [
-        'partner_id',
-        'code',
-        'name',
-        'is_active',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
-
-    /** @return BelongsTo<Partner, $this> */
-    public function partner(): BelongsTo
-    {
-        return $this->belongsTo(Partner::class);
-    }
-
-    /** @return HasMany<PartnerClick, $this> */
-    public function clicks(): HasMany
-    {
-        return $this->hasMany(PartnerClick::class);
-    }
+if (! class_exists(\App\Models\PartnerLink::class, false)) {
+    class_alias(
+        App\Modules\Billing\Domain\Models\PartnerLink::class,
+        \App\Models\PartnerLink::class,
+    );
 }

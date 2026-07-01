@@ -1,40 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Attendance\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\ZktecoSyncLog continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Attendance\Domain\Models\ZktecoSyncLog instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-/**
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class ZktecoSyncLog extends Model
-{
-    protected $table = 'zkteco_sync_logs';
-
-    protected $fillable = [
-        'zkteco_device_id',
-        'direction',
-        'sync_type',
-        'records_count',
-        'errors_count',
-        'status',
-        'error_message',
-        'started_at',
-        'completed_at',
-    ];
-
-    protected $casts = [
-        'records_count' => 'integer',
-        'errors_count' => 'integer',
-        'started_at' => 'datetime',
-        'completed_at' => 'datetime',
-    ];
-
-    public function device(): BelongsTo
-    {
-        return $this->belongsTo(ZktecoDevice::class, 'zkteco_device_id');
-    }
+if (! class_exists(\App\Models\ZktecoSyncLog::class, false)) {
+    class_alias(
+        App\Modules\Attendance\Domain\Models\ZktecoSyncLog::class,
+        \App\Models\ZktecoSyncLog::class,
+    );
 }

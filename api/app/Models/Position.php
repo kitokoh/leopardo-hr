@@ -1,42 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\HR\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\Position continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\HR\Domain\Models\Position instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property string $name
- * @property int|null $department_id
- * @property Carbon|null $created_at
- * @property-read Department|null $department
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class Position extends Model
-{
-    use BelongsToCompany;
-    use HasFactory;
-
-    protected $table = 'positions';
-
-    public $timestamps = false;
-
-    const CREATED_AT = 'created_at';
-
-    protected $fillable = ['company_id', 'name', 'department_id'];
-
-    protected $casts = ['created_at' => 'datetime'];
-
-    /** @return BelongsTo<Department, $this> */
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class, 'department_id');
-    }
+if (! class_exists(\App\Models\Position::class, false)) {
+    class_alias(
+        App\Modules\HR\Domain\Models\Position::class,
+        \App\Models\Position::class,
+    );
 }

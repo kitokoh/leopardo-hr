@@ -1,47 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Planning\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\TaskComment continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Planning\Domain\Models\TaskComment instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property int|null $task_id
- * @property int|null $author_id
- * @property string|null $content
- * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class TaskComment extends Model
-{
-    use BelongsToCompany;
-
-    protected $table = 'task_comments';
-
-    public $timestamps = false;
-
-    const CREATED_AT = 'created_at';
-
-    protected $fillable = ['company_id', 'task_id', 'author_id', 'content'];
-
-    protected $casts = ['created_at' => 'datetime'];
-
-    /** @return BelongsTo<Task, $this> */
-    public function task(): BelongsTo
-    {
-        return $this->belongsTo(Task::class, 'task_id');
-    }
-
-    /** @return BelongsTo<Employee, $this> */
-    public function author(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class, 'author_id');
-    }
+if (! class_exists(\App\Models\TaskComment::class, false)) {
+    class_alias(
+        App\Modules\Planning\Domain\Models\TaskComment::class,
+        \App\Models\TaskComment::class,
+    );
 }

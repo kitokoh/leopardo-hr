@@ -1,49 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Billing\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\PartnerAuditLog continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Billing\Domain\Models\PartnerAuditLog instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int $admin_id
- * @property string $auditable_type
- * @property string $auditable_id
- * @property string $event
- * @property array|null $old_values
- * @property array|null $new_values
- * @property string|null $reason
- * @property string|null $ip_address
- * @property Carbon $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class PartnerAuditLog extends Model
-{
-    public $timestamps = false;
-
-    protected $fillable = [
-        'admin_id',
-        'auditable_type',
-        'auditable_id',
-        'event',
-        'old_values',
-        'new_values',
-        'reason',
-        'ip_address',
-    ];
-
-    protected $casts = [
-        'old_values' => 'array',
-        'new_values' => 'array',
-        'created_at' => 'datetime',
-    ];
-
-    public function auditable(): MorphTo
-    {
-        return $this->morphTo();
-    }
+if (! class_exists(\App\Models\PartnerAuditLog::class, false)) {
+    class_alias(
+        App\Modules\Billing\Domain\Models\PartnerAuditLog::class,
+        \App\Models\PartnerAuditLog::class,
+    );
 }

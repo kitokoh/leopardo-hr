@@ -1,52 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Attendance\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\KioskAnnouncement continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Attendance\Domain\Models\KioskAnnouncement instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int $company_id
- * @property string $title
- * @property string|null $body
- * @property string $priority
- * @property bool $is_active
- * @property Carbon|null $starts_at
- * @property Carbon|null $expires_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class KioskAnnouncement extends Model
-{
-    protected $fillable = [
-        'company_id',
-        'title',
-        'body',
-        'priority',
-        'is_active',
-        'starts_at',
-        'expires_at',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-        'starts_at' => 'datetime',
-        'expires_at' => 'datetime',
-    ];
-
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('is_active', true)
-            ->where(function (Builder $q): void {
-                $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
-            })
-            ->where(function (Builder $q): void {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
-            });
-    }
+if (! class_exists(\App\Models\KioskAnnouncement::class, false)) {
+    class_alias(
+        App\Modules\Attendance\Domain\Models\KioskAnnouncement::class,
+        \App\Models\KioskAnnouncement::class,
+    );
 }
