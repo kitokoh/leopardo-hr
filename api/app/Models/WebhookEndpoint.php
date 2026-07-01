@@ -1,73 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Billing\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\WebhookEndpoint continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Billing\Domain\Models\WebhookEndpoint instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $company_id
- * @property string|null $url
- * @property array<mixed> $events
- * @property string|null $secret
- * @property bool $active
- * @property string|null $failure_count
- * @property Carbon|null $last_triggered_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class WebhookEndpoint extends Model
-{
-    use BelongsToCompany;
-
-    protected $table = 'webhook_endpoints';
-
-    protected $fillable = [
-        'company_id',
-        'url',
-        'events',
-        'secret',
-        'active',
-        'failure_count',
-        'last_triggered_at',
-    ];
-
-    protected $casts = [
-        'events' => 'array',
-        'active' => 'boolean',
-        'last_triggered_at' => 'datetime',
-    ];
-
-    protected $hidden = ['secret'];
-
-    /** @return HasMany<WebhookDelivery, $this> */
-    public function deliveries(): HasMany
-    {
-        return $this->hasMany(WebhookDelivery::class, 'webhook_endpoint_id');
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeActive(Builder $q): Builder
-    {
-        return $q->where('active', true);
-    }
-
-    /**
-     * @param  Builder<static>  $q
-     * @return Builder<static>
-     */
-    public function scopeListeningTo(Builder $q, string $event): Builder
-    {
-        return $q->whereJsonContains('events', $event);
-    }
+if (! class_exists(\App\Models\WebhookEndpoint::class, false)) {
+    class_alias(
+        App\Modules\Billing\Domain\Models\WebhookEndpoint::class,
+        \App\Models\WebhookEndpoint::class,
+    );
 }

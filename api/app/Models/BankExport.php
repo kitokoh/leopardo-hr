@@ -1,49 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Payroll\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\BankExport continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Payroll\Domain\Models\BankExport instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-
-/**
- * @property int $id
- * @property int|null $payroll_run_id
- * @property int|null $company_id
- * @property string|null $format
- * @property string|null $file_path
- * @property float $total_amount
- * @property int $transfer_count
- * @property string $status
- * @property Carbon|null $generated_at
- * @property Carbon|null $sent_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class BankExport extends Model
-{
-    use BelongsToCompany;
-
-    protected $fillable = [
-        'payroll_run_id', 'company_id', 'format', 'file_path',
-        'total_amount', 'transfer_count', 'status',
-        'generated_at', 'sent_at',
-    ];
-
-    protected $casts = [
-        'total_amount' => 'float',
-        'transfer_count' => 'integer',
-        'generated_at' => 'datetime',
-        'sent_at' => 'datetime',
-    ];
-
-    /** @return BelongsTo<PayrollRun, $this> */
-    public function payrollRun(): BelongsTo
-    {
-        return $this->belongsTo(PayrollRun::class, 'payroll_run_id');
-    }
+if (! class_exists(\App\Models\BankExport::class, false)) {
+    class_alias(
+        App\Modules\Payroll\Domain\Models\BankExport::class,
+        \App\Models\BankExport::class,
+    );
 }

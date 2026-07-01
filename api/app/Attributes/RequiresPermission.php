@@ -1,19 +1,11 @@
 <?php
-
-namespace App\Attributes;
-
-use Attribute;
-
 /**
- * Attribut pour spécifier les permissions requises pour une fonctionnalité API
+ * Backward-compat alias.
+ * Canonical: App\Shared\Attributes\RequiresPermission
+ * @deprecated Use App\Shared\Attributes\RequiresPermission
  */
-#[Attribute(Attribute::TARGET_METHOD)]
-class RequiresPermission
-{
-    /**
-     * @param  string|array<int, string>  $permissions
-     */
-    public function __construct(
-        public readonly string|array $permissions
-    ) {}
+declare(strict_types=1);
+namespace App\Attributes;
+if (! class_exists(\App\Attributes\RequiresPermission::class, false)) {
+    class_alias(\App\Shared\Attributes\RequiresPermission::class, \App\Attributes\RequiresPermission::class);
 }

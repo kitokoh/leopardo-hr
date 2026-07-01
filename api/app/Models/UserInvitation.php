@@ -1,70 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\HR\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\UserInvitation continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\HR\Domain\Models\UserInvitation instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-
-/**
- * @property string $id
- * @property string|null $company_id
- * @property string $schema_name
- * @property string|null $employee_id
- * @property string $email
- * @property string $role
- * @property string|null $manager_role
- * @property string|null $invited_by_type
- * @property string|null $invited_by_email
- * @property string|null $token_hash
- * @property Carbon|null $expires_at
- * @property Carbon|null $accepted_at
- * @property Carbon|null $last_sent_at
- * @property array<mixed> $metadata
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class UserInvitation extends Model
-{
-    use BelongsToCompany;
-    use HasUuids;
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
-    protected $fillable = [
-        'company_id',
-        'schema_name',
-        'employee_id',
-        'email',
-        'role',
-        'manager_role',
-        'invited_by_type',
-        'invited_by_email',
-        'token_hash',
-        'expires_at',
-        'accepted_at',
-        'last_sent_at',
-        'metadata',
-    ];
-
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'accepted_at' => 'datetime',
-        'last_sent_at' => 'datetime',
-        'metadata' => 'array',
-    ];
-
-    public function getTable(): string
-    {
-        return DB::getDriverName() === 'pgsql'
-            ? 'public.user_invitations'
-            : 'user_invitations';
-    }
+if (! class_exists(\App\Models\UserInvitation::class, false)) {
+    class_alias(
+        App\Modules\HR\Domain\Models\UserInvitation::class,
+        \App\Models\UserInvitation::class,
+    );
 }

@@ -1,40 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Attendance\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\CalendarEvent continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Attendance\Domain\Models\CalendarEvent instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-/**
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class CalendarEvent extends Model
-{
-    protected $fillable = [
-        'employee_id',
-        'external_event_id',
-        'provider',
-        'title',
-        'description',
-        'starts_at',
-        'ends_at',
-        'all_day',
-        'source_type',
-        'source_id',
-        'sync_status',
-    ];
-
-    protected $casts = [
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
-        'all_day' => 'boolean',
-    ];
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(Employee::class);
-    }
+if (! class_exists(\App\Models\CalendarEvent::class, false)) {
+    class_alias(
+        App\Modules\Attendance\Domain\Models\CalendarEvent::class,
+        \App\Models\CalendarEvent::class,
+    );
 }

@@ -1,49 +1,24 @@
 <?php
+/**
+ * Class alias — backward compat shim.
+ *
+ * The canonical model now lives in App\Modules\Payroll\Domain\Models.
+ * This file is a thin redirect so that all existing code using
+ * App\Models\PaySlipLine continues to work unchanged during migration.
+ *
+ * ⚠️  DO NOT add logic here. Edit the canonical model in the module.
+ * ✅  Once all usages are updated, delete this file.
+ *
+ * @deprecated Use App\Modules\Payroll\Domain\Models\PaySlipLine instead.
+ */
 
 declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-/**
- * @property int $id
- * @property int|null $pay_slip_id
- * @property int|null $salary_component_id
- * @property string $name
- * @property string $type
- * @property float $base_amount
- * @property float $rate
- * @property float $amount
- * @property int $order
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
- */
-class PaySlipLine extends Model
-{
-    public $timestamps = false;
-
-    protected $fillable = [
-        'pay_slip_id', 'salary_component_id', 'name', 'type',
-        'base_amount', 'rate', 'amount', 'order',
-    ];
-
-    protected $casts = [
-        'base_amount' => 'float',
-        'rate' => 'float',
-        'amount' => 'float',
-        'order' => 'integer',
-    ];
-
-    /** @return BelongsTo<PaySlip, $this> */
-    public function paySlip(): BelongsTo
-    {
-        return $this->belongsTo(PaySlip::class, 'pay_slip_id');
-    }
-
-    /** @return BelongsTo<SalaryComponent, $this> */
-    public function salaryComponent(): BelongsTo
-    {
-        return $this->belongsTo(SalaryComponent::class, 'salary_component_id');
-    }
+if (! class_exists(\App\Models\PaySlipLine::class, false)) {
+    class_alias(
+        App\Modules\Payroll\Domain\Models\PaySlipLine::class,
+        \App\Models\PaySlipLine::class,
+    );
 }
