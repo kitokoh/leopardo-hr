@@ -30,6 +30,15 @@
 	<string>Main</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Leopardo utilise votre position uniquement au moment du pointage pour verifier la zone autorisee par votre entreprise.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Leopardo utilise votre position en arrière-plan pour détecter automatiquement votre arrivée et départ du bureau.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Leopardo utilise votre position en arrière-plan pour le pointage automatique.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

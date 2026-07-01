@@ -7982,6 +7982,220 @@ paths:
         "200": { description: "Étape ignorée" }
         "404": { description: "Étape inconnue" }
 
+  # ─────────────────────────────────────────────────────────────────────────
+  # SmartAttendance — Pointage GPS automatique par géofencing
+  # Ajouté dans v4.18.0
+  # ─────────────────────────────────────────────────────────────────────────
+  /smart-attendance/config:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Lire la configuration GPS de l'entreprise"
+      description: "Retourne les paramètres de géofencing (lat, lng, rayon, mode forcé)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Configuration GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceModeSettings"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Mettre à jour la configuration GPS (admin)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceModeSettingsRequest"
+      responses:
+        "200":
+          description: "Configuration mise à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceModeSettings"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /smart-attendance/preferences:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Lire les préférences de pointage de l'employé"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Préférences employé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeAttendancePreference"
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Mettre à jour les préférences de pointage"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferred_mode:
+                  type: string
+                  enum: [manual, gps, qr]
+                gps_consent_given:
+                  type: boolean
+      responses:
+        "200":
+          description: "Préférences mises à jour"
+
+  /smart-attendance/geo-events:
+    post:
+      tags: ["SmartAttendance"]
+      summary: "Envoyer un événement géographique (entrée/sortie de zone)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GeoEventRequest"
+      responses:
+        "200":
+          description: "Événement enregistré"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /smart-attendance/sessions:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Lister les sessions GPS"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [detected, pending_validation, approved, rejected, cancelled]
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: "Liste paginée des sessions GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GeoAttendanceSession"
+
+  /smart-attendance/sessions/{id}:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Détail d'une session GPS"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session GPS"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/GeoAttendanceSession"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /smart-attendance/sessions/{id}/validate:
+    post:
+      tags: ["SmartAttendance"]
+      summary: "Valider ou rejeter une session GPS (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [approve, reject]
+                note:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Session validée / rejetée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/GeoAttendanceSession"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /smart-attendance/dashboard:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Statistiques du jour — Smart Attendance (manager/RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statistiques du jour"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmartAttendanceDashboard"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -8146,6 +8360,94 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
+    # ── SmartAttendance schemas (v4.18.0) ──
+    AttendanceModeSettings:
+      type: object
+      properties:
+        id: { type: integer }
+        company_id: { type: string, format: uuid }
+        forced_mode: { type: string, enum: [manual, gps, qr], nullable: true }
+        gps_enabled: { type: boolean }
+        latitude: { type: number, format: double, nullable: true }
+        longitude: { type: number, format: double, nullable: true }
+        radius_meters: { type: integer, default: 100 }
+        allow_employee_override: { type: boolean }
+        updated_at: { type: string, format: date-time }
+
+    AttendanceModeSettingsRequest:
+      type: object
+      properties:
+        gps_enabled: { type: boolean }
+        forced_mode: { type: string, enum: [manual, gps, qr], nullable: true }
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        radius_meters: { type: integer, minimum: 50, maximum: 5000 }
+        allow_employee_override: { type: boolean }
+
+    EmployeeAttendancePreference:
+      type: object
+      properties:
+        id: { type: integer }
+        employee_id: { type: integer }
+        company_id: { type: string, format: uuid }
+        preferred_mode: { type: string, enum: [manual, gps, qr] }
+        gps_consent_given: { type: boolean }
+        gps_consent_at: { type: string, format: date-time, nullable: true }
+
+    GeoEventRequest:
+      type: object
+      required: [event_type, latitude, longitude]
+      properties:
+        event_type:
+          type: string
+          enum: [zone_enter, zone_exit]
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        accuracy: { type: integer, description: "Précision GPS en mètres" }
+
+    GeoAttendanceSession:
+      type: object
+      properties:
+        id: { type: integer }
+        employee_id: { type: integer }
+        employee_name: { type: string }
+        company_id: { type: string, format: uuid }
+        site_id: { type: integer, nullable: true }
+        started_at: { type: string, format: date-time }
+        ended_at: { type: string, format: date-time, nullable: true }
+        duration_seconds: { type: integer, nullable: true }
+        check_in_lat: { type: number, format: double }
+        check_in_lng: { type: number, format: double }
+        check_in_accuracy_meters: { type: integer, nullable: true }
+        check_out_lat: { type: number, format: double, nullable: true }
+        check_out_lng: { type: number, format: double, nullable: true }
+        status:
+          type: string
+          enum: [detected, pending_validation, approved, rejected, cancelled]
+        attendance_log_id: { type: integer, nullable: true }
+        validated_by: { type: integer, nullable: true }
+        validated_at: { type: string, format: date-time, nullable: true }
+        validation_note: { type: string, nullable: true }
+
+    SmartAttendanceDashboard:
+      type: object
+      properties:
+        today:
+          type: object
+          properties:
+            detected: { type: integer }
+            pending_validation: { type: integer }
+            approved: { type: integer }
+            rejected: { type: integer }
+            cancelled: { type: integer }
+            total_employees_present: { type: integer }
+        week:
+          type: object
+          properties:
+            total_sessions: { type: integer }
+            auto_approved_rate: { type: number, format: float }
+    # ── End SmartAttendance schemas ──
+
     CompanyBranding:
       type: object
       properties:
