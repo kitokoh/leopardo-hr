@@ -911,7 +911,7 @@ jobs:
 
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
-          - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile
+          - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile, SmartAttendance (GPS geofencing, validation manager, multi-tenant isolation)
           - Gate strategy: visible immediately, threshold progressive via BACKEND_COVERAGE_MIN
 
           ## Quality Notes

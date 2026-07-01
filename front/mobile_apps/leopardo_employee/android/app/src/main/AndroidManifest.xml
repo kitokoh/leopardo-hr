@@ -3,6 +3,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Requis sur Android 10+ pour le géofencing en arrière-plan (WorkManager) -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <!-- Requis pour le service foreground WorkManager (Android 9+) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <!-- Requis sur Android 13+ pour recevoir les notifications push -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- Requis pour le service Firebase Messaging en arrière-plan -->
@@ -44,6 +48,11 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/leopardo_icon_accent" />
+        <!-- Service WorkManager requis pour le géofencing arrière-plan SmartAttendance -->
+        <service
+            android:name="be.tramckrijte.workmanager.BackgroundWorker"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
