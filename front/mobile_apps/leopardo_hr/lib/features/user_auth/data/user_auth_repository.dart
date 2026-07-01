@@ -1,13 +1,15 @@
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
+import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:leopardo_core/models/app_user.dart';
 
 class UserAuthRepository {
   final ApiClient apiClient;
   final SecureStorage storage;
+  final AppPreferences preferences;
 
-  UserAuthRepository(this.apiClient, this.storage);
+  UserAuthRepository(this.apiClient, this.storage, this.preferences);
 
   Future<Map<String, dynamic>> register({
     required String firstName,
@@ -170,7 +172,21 @@ class UserAuthRepository {
       },
     );
 
-    return AppUser.fromJson(_userPayload(extractDataMap(response.data)));
+    final user = AppUser.fromJson(_userPayload(extractDataMap(response.data)));
+
+    // Persiste la nouvelle locale localement pour que le header Accept-Language
+    // et le Locale Flutter soient mis à jour sans nécessiter un re-login.
+    if (preferredLanguage != null) {
+      final lang = user.preferredLanguage.isNotEmpty ? user.preferredLanguage : preferredLanguage!;
+      final isRtl = lang == 'ar';
+      await preferences.saveLocaleSettings(
+        preferredLanguage: lang,
+        isRtl: isRtl,
+      );
+      apiClient.dio.options.headers['Accept-Language'] = lang;
+    }
+
+    return user;
   }
 
   Map<String, dynamic> _authPayload(dynamic payload) {
