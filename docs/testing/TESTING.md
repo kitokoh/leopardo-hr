@@ -43,7 +43,7 @@ All contributions must pass the following critical scenarios:
 - **RBAC Enforcement:** Ensure Employees cannot access Manager-only endpoints.
 - **Data Integrity:** Verify payroll and attendance calculations.
 
-Detailed test registry: [REGISTRE_SCENARIOS_TESTS.md](docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md).
+Detailed test registry: [REGISTRE_SCENARIOS_TESTS.md](../GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md).
 
 ## 📊 Continuous Integration
 
@@ -54,4 +54,4 @@ Our GitHub Actions workflows (`.github/workflows/tests.yml`) execute the full su
 
 ---
 
-For local Docker-based testing, refer to [RUNBOOK_LOCAL_TESTS.md](docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md).
+For local Docker-based testing, refer to [RUNBOOK_LOCAL_TESTS.md](../GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md).
