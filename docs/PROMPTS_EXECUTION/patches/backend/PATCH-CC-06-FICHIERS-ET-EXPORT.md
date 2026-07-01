@@ -1,3 +1,7 @@
+> ⚠️ **PROMPT HISTORIQUE — NE PAS UTILISER POUR GÉNÉRER DU CODE**
+> Les namespaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` cités dans ce fichier
+> **n'existent plus** depuis PR #824 (2026-07-01). Voir `docs/PROMPTS_EXECUTION/_ARCHIVE_WARNING.md`.
+
 # PATCH CC-06 — Serveur fichiers privés + BOM export bancaire
 # À appliquer PENDANT CC-06 (module Paie)
 # Réf : 23_STOCKAGE_ET_SAUVEGARDES.md + 26_FORMATS_EXPORT_BANCAIRE.md

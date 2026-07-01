@@ -1,80 +1,73 @@
-# Namespace Map — Migration Clean Architecture
+# Namespace Map — Architecture DDD (état final)
 
-Ce document liste la correspondance entre l'ancienne structure flat et la nouvelle structure modulaire.
+> **Migration terminée — juillet 2026**
+> Les anciens namespaces `App\Http\Controllers\Api\V1\*` et `App\Services\*`
+> n'existent plus dans le codebase. Ce document sert de référence historique
+> et de guide de contribution pour tout nouveau code.
 
-## Auth (Core)
+---
 
-| Ancien namespace | Nouveau namespace |
+## Règle unique de contribution backend
+
+> **Tout nouveau code métier va dans `api/app/Modules/<NomModule>/`.**
+> `api/app/Http/Controllers/Api/V1/` est vide (sauf `EdgeController`, `EdgeDownloadController`, `SSO/`).
+> `api/app/Services/` est vide (sauf les sous-dossiers non migrés : `Cache/`, `SSO/`, `Security/`, `Tracking/`, `Communication/`, `Payroll/`).
+> `api/app/Models/` contient encore les modèles partagés en cours de migration vers `Domain/Models/`.
+
+---
+
+## Correspondance ancienne → nouvelle (référence)
+
+### Core Auth
+
+| Ancien (supprimé) | Actuel |
 |---|---|
 | `App\Http\Controllers\Api\V1\AuthController` | `App\Core\Auth\Interfaces\Api\V1\AuthController` |
 | `App\Http\Controllers\Api\V1\PlatformAuthController` | `App\Core\Auth\Interfaces\Api\V1\PlatformAuthController` |
-| `App\Http\Controllers\Api\V1\UserAuthController` | `App\Core\Auth\Interfaces\Api\V1\UserAuthController` |
 | `App\Services\AuthService` | `App\Core\Auth\Infrastructure\Services\AuthService` |
-| `App\Services\UserAuthService` | `App\Core\Auth\Infrastructure\Services\UserAuthService` |
-| `App\Models\Employee` (auth side) | `App\Core\Auth\Domain\Models\Employee` |
-| `App\Models\User` | `App\Core\Auth\Domain\Models\User` |
+| `App\Models\Employee` (auth) | `App\Core\Auth\Domain\Models\Employee` |
 
-## HR Module
+### Module HR
 
-| Ancien namespace | Nouveau namespace |
+| Ancien (supprimé) | Actuel |
 |---|---|
-| `App\Http\Controllers\Api\V1\EmployeeController` | `App\Modules\HR\Interfaces\Api\V1\EmployeeController` |
-| `App\Http\Controllers\Api\V1\DepartmentController` | `App\Modules\HR\Interfaces\Api\V1\DepartmentController` |
-| `App\Http\Controllers\Api\V1\OrgChartController` | `App\Modules\HR\Interfaces\Api\V1\OrgChartController` |
+| `App\Http\Controllers\Api\V1\EmployeeController` | `App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController` |
+| `App\Http\Controllers\Api\V1\DepartmentController` | `App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController` |
 | `App\Services\EmployeeService` | `App\Modules\HR\Infrastructure\Services\EmployeeService` |
-| `App\Models\Employee` | `App\Modules\HR\Domain\Models\Employee` |
-| `App\Models\Department` | `App\Modules\HR\Domain\Models\Department` |
-| `App\Models\Position` | `App\Modules\HR\Domain\Models\Position` |
 | `App\DTOs\CreateEmployeeDTO` | `App\Modules\HR\Application\DTOs\CreateEmployeeDTO` |
 
-## Payroll Module
+### Module Payroll
 
-| Ancien namespace | Nouveau namespace |
+| Ancien (supprimé) | Actuel |
 |---|---|
 | `App\Http\Controllers\Api\V1\PayrollController` | `App\Modules\Payroll\Interfaces\Api\V1\PayrollController` |
 | `App\Http\Controllers\Api\V1\PaySlipController` | `App\Modules\Payroll\Interfaces\Api\V1\PaySlipController` |
 | `App\Services\PayrollService` | `App\Modules\Payroll\Infrastructure\Services\PayrollService` |
-| `App\Models\Payroll` | `App\Modules\Payroll\Domain\Models\Payroll` |
-| `App\Models\PaySlip` | `App\Modules\Payroll\Domain\Models\PaySlip` |
-| `App\Models\SalaryStructure` | `App\Modules\Payroll\Domain\Models\SalaryStructure` |
-| `App\Exceptions\PayrollAlreadyValidatedException` | `App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException` |
 
-## Attendance Module
+### Module Attendance
 
-| Ancien namespace | Nouveau namespace |
+| Ancien (supprimé) | Actuel |
 |---|---|
 | `App\Http\Controllers\Api\V1\AttendanceController` | `App\Modules\Attendance\Interfaces\Api\V1\AttendanceController` |
 | `App\Http\Controllers\Api\V1\KioskController` | `App\Modules\Attendance\Interfaces\Api\V1\KioskController` |
-| `App\Http\Controllers\Api\V1\ZktecoController` | `App\Modules\Attendance\Interfaces\Api\V1\ZktecoController` |
 | `App\Services\AttendanceService` | `App\Modules\Attendance\Infrastructure\Services\AttendanceService` |
-| `App\Services\ZktecoIntegrationService` | `App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService` |
-| `App\Models\AttendanceLog` | `App\Modules\Attendance\Domain\Models\AttendanceLog` |
-| `App\DTOs\CheckInDTO` | `App\Modules\Attendance\Application\DTOs\CheckInDTO` |
+| `App\DTOs\CheckInDTO` | `App\Modules\Attendance\Application\DTOs\CheckInDTO` _(en cours)_ |
 
-## Planning Module
+### Module Billing
 
-| Ancien namespace | Nouveau namespace |
-|---|---|
-| `App\Http\Controllers\Api\V1\AbsenceController` | `App\Modules\Planning\Interfaces\Api\V1\AbsenceController` |
-| `App\Http\Controllers\Api\V1\LeavePolicyController` | `App\Modules\Planning\Interfaces\Api\V1\LeavePolicyController` |
-| `App\Services\AbsenceService` | `App\Modules\Planning\Infrastructure\Services\AbsenceService` |
-| `App\Models\Absence` | `App\Modules\Planning\Domain\Models\Absence` |
-| `App\Models\LeaveBalance` | `App\Modules\Planning\Domain\Models\LeaveBalance` |
-| `App\Exceptions\InsufficientLeaveBalanceException` | `App\Modules\Planning\Domain\Exceptions\InsufficientLeaveBalanceException` |
-
-## Fleet Module
-
-| Ancien namespace | Nouveau namespace |
-|---|---|
-| `App\Http\Controllers\Api\V1\VehicleController` | `App\Modules\Fleet\Interfaces\Api\V1\VehicleController` |
-| `App\Models\Vehicle` | `App\Modules\Fleet\Domain\Models\Vehicle` |
-| `App\Models\VehicleTrip` | `App\Modules\Fleet\Domain\Models\VehicleTrip` |
-
-## Billing Module
-
-| Ancien namespace | Nouveau namespace |
+| Ancien (supprimé) | Actuel |
 |---|---|
 | `App\Http\Controllers\Api\V1\BillingController` | `App\Modules\Billing\Interfaces\Api\V1\BillingController` |
 | `App\Http\Controllers\Api\V1\StripeWebhookController` | `App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController` |
 | `App\Services\StripeService` | `App\Modules\Billing\Infrastructure\Services\StripeService` |
-| `App\Models\Subscription` | `App\Modules\Billing\Domain\Models\Subscription` |
+
+---
+
+## Ce qui reste à migrer
+
+Voir `api/ARCHITECTURE.md` section **"TODO restants"** pour la liste complète et priorisée.
+
+Les points principaux :
+- `api/app/Models/` — 75 modèles à déplacer dans `Modules/*/Domain/Models/` (migration progressive)
+- `api/app/DTOs/` racine — 3 DTOs à finaliser
+- `api/app/Services/{Cache,SSO,Security,Tracking,Communication,Payroll}/` — sous-dossiers spécialisés à décider

@@ -18,6 +18,13 @@
 - `api/openapi.yaml` est la spec canonique.
 - Mettre a jour `CHANGELOG.md` et `AGENTS.md` pour tout changement comportemental.
 
+## Invariants architecture backend (mis a jour 2026-07-01)
+
+- `App\Http\Controllers\Api\V1\*` **supprime** - tout nouveau controller dans `App\Modules\<Module>\Interfaces\Api\V1\`
+- `App\Services\*` **supprime** - tout nouveau service dans `App\Modules\<Module>\Infrastructure\Services\`
+- `App\Models\*` **en cours de migration** - ne pas y ajouter de nouveau modele
+- Source de verite architecture : `api/ARCHITECTURE.md`
+
 ## Commandes utiles
 
 - Mobile guard: `powershell -ExecutionPolicy Bypass -File dev-hub/tools/validate-mobile-runtime-smoke.ps1`

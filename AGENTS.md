@@ -545,7 +545,7 @@ Procedure recommandee :
 ### 2026-05-10 - Sprint 1-2 completion
 
 - Les 8 domain events existaient mais n'etaient cables a aucun listener. Il faut toujours verifier que les events ont un `EventServiceProvider` et des listeners actifs, pas seulement des classes event.
-- Les services (`EmployeeService`, `AbsenceService`, etc.) sont le bon endroit pour dispatcher les events, pas les controllers.
+- Les services (`EmployeeService`, `AbsenceService`, etc.) sont le bon endroit pour dispatcher les events, pas les controllers. _(Ces services vivent maintenant dans `App\Modules\*/Infrastructure/Services/` — plus dans `App\Services\*` supprimé en PR #824)_
 - La commande `php artisan make:module {Name}` est disponible pour scaffolder la structure DDD.
 - Les endpoints `/api/v1/health/live` et `/api/v1/health/ready` sont maintenant disponibles pour les sondes Kubernetes/Render.
 - `DEVELOPMENT.md` a la racine contient le guide de setup rapide. Le maintenir a jour a chaque ajout de dependance.
