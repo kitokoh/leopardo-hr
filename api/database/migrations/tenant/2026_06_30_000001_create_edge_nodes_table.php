@@ -16,6 +16,17 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('edge_nodes')) {
+            // La table edge_nodes est déjà créée par la migration
+            // 2026_06_29_000001_create_edge_sync_tables.php (module EdgeSync DDD,
+            // schéma UUID). Cette migration légacy visait un schéma bigint
+            // différent mais n'est reliée à aucune route active
+            // (App\Http\Controllers\Api\V1\EdgeController n'est enregistré
+            // dans aucun fichier de routes). On la neutralise pour éviter le
+            // conflit "relation edge_nodes already exists" en CI/production.
+            return;
+        }
+
         Schema::create('edge_nodes', function (Blueprint $table): void {
             $table->id();
 
