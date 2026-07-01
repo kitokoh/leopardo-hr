@@ -762,6 +762,11 @@ trait CreatesMvpSchema
             return;
         }
 
+        // Supprimer les tables SmartAttendance avant les tables MVP (contraintes FK)
+        if (method_exists($this, 'dropSmartAttendanceTables')) {
+            $this->dropSmartAttendanceTables();
+        }
+
         $this->dropMvpTables();
         $this->restoreDefaultSearchPath();
     }
@@ -1780,6 +1785,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "languages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "plans"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "hr_model_templates"'.$cascade);
+        // Tables SmartAttendance
+        DB::statement('DROP TABLE IF EXISTS "employee_location_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "geo_attendance_sessions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "employee_attendance_preferences"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_mode_settings"'.$cascade);
     }
 
     private function restoreDefaultSearchPath(): void
