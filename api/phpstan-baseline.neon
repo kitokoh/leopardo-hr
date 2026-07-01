@@ -1,184 +1,40 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\AuditLog\>\:\:forCompany\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
-
-		-
-			message: '#^Cannot access property \$company_id on mixed\.$#'
-			identifier: property.nonObject
+			message: '#^Access to an undefined property App\\Models\\BankExport\:\:\$company_id\.$#'
+			identifier: property.notFound
 			count: 2
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
+			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
-			message: '#^Cannot call method hasManagerRole\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\BankExport\:\:\$file_path\.$#'
+			identifier: property.notFound
 			count: 2
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
+			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
-			message: '#^Cannot call method orderByDesc\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
+			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
-			message: '#^Cannot call method paginate\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
+			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
-
-		-
-			message: '#^Cannot call method with\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$period_start\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/AuditLogController.php
+			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
-			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:stateless\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Call to an undefined method object\:\:random\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot access property \$plainTextToken on mixed\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method createToken\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method currentAccessToken\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$status\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method delete\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method first\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method getEmail\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method getName\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method offsetGet\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method redirect\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method user\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method userFromToken\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \#1 \$string of function strtolower expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash\:\:make\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 4
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \$deviceName of method App\\Core\\Auth\\Infrastructure\\Services\\AuthService\:\:login\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \$email of method App\\Core\\Auth\\Infrastructure\\Services\\AuthService\:\:login\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: '#^Parameter \$password of method App\\Core\\Auth\\Infrastructure\\Services\\AuthService\:\:login\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
+			path: app/Http/Controllers/Api/V1/BankExportController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee_id\.$#'
@@ -853,130 +709,34 @@ parameters:
 			path: app/Http/Controllers/Api/V1/DepartmentController.php
 
 		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:\$company_id\.$#'
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/EmployeeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/EmployeeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ExpenseClaim\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Api/V1/ExpenseClaimController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ExpenseClaim\:\:\$employee_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/ExpenseClaimController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\ExpenseClaim\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 3
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Binary operation "\*" between mixed and \(float\|int\) results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Binary operation "/" between \(float\|int\) and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Binary operation "/" between mixed and 100 results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 2
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Binary operation "/" between mixed and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\LoanRepayment\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Cannot access property \$company_id on mixed\.$#'
-			identifier: property.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Cannot call method hasManagerRole\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Cannot call method load\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Parameter \#1 \$time of static method Carbon\\Carbon\:\:parse\(\) expects Carbon\\Month\|Carbon\\WeekDay\|DateTimeInterface\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/EmployeeLoanController.php
-
-		-
-			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
-			message: '#^Parameter \#3 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
-			message: '#^Parameter \#4 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
-			message: '#^Parameter \$date of method App\\Services\\EstimationService\:\:dailySummary\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
-			message: '#^Parameter \$from of method App\\Services\\EstimationService\:\:quickEstimate\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/V1/EstimationController.php
-
-		-
-			message: '#^Parameter \$to of method App\\Services\\EstimationService\:\:quickEstimate\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/V1/EstimationController.php
+			path: app/Http/Controllers/Api/V1/ExpenseClaimController.php
 
 		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
@@ -1285,82 +1045,58 @@ parameters:
 			path: app/Http/Controllers/Api/V1/LeavePolicyController.php
 
 		-
-			message: '#^Cannot access property \$timezone on mixed\.$#'
-			identifier: property.nonObject
-			count: 6
-			path: app/Http/Controllers/Api/V1/MeController.php
-
-		-
-			message: '#^Cannot call method startOfDay\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$body\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Cannot call method startOfMonth\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#1 \$timeZone of method Carbon\\Carbon\:\:setTimezone\(\) expects DateTimeZone\|int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Http/Controllers/Api/V1/MeController.php
-
-		-
-			message: '#^Parameter \#1 \$year of static method Carbon\\Carbon\:\:create\(\) expects DateTimeInterface\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$data\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#2 \$log of class App\\Http\\Resources\\Api\\V1\\AttendanceTodayResource constructor expects App\\Models\\AttendanceLog\|null, object\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$employee_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#2 \$month of static method Carbon\\Carbon\:\:create\(\) expects int\|null, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#2 \$time of static method Carbon\\Carbon\:\:createFromFormat\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$is_read\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#3 \$timezone of class App\\Http\\Resources\\Api\\V1\\AttendanceTodayResource constructor expects string\|null, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$read_at\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#3 \$timezone of static method Carbon\\Carbon\:\:createFromFormat\(\) expects DateTimeZone\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$title\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
-			message: '#^Parameter \#7 \$timezone of static method Carbon\\Carbon\:\:create\(\) expects DateTimeZone\|int\|string\|null, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Models\\Notification\:\:\$type\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
-
-		-
-			message: '#^Parameter \$from of method App\\Services\\EstimationService\:\:quickEstimate\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
-
-		-
-			message: '#^Parameter \$to of method App\\Services\\EstimationService\:\:quickEstimate\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/MeController.php
+			path: app/Http/Controllers/Api/V1/NotificationController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Models\\Notification\:\:forEmployee\(\)\.$#'
@@ -1957,46 +1693,16 @@ parameters:
 			path: app/Http/Controllers/Api/V1/PayrollRunController.php
 
 		-
-			message: '#^Cannot call method currentAccessToken\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$features\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
+			path: app/Http/Controllers/Api/V1/PlatformCompanyFeatureController.php
 
 		-
-			message: '#^Cannot call method delete\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Parameter \#1 \$name of method App\\Models\\SuperAdmin\:\:createToken\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Parameter \#2 \$code of method App\\Services\\SuperAdminService\:\:verifyCode\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
+			path: app/Http/Controllers/Api/V1/PlatformCompanyFeatureController.php
 
 		-
 			message: '#^Cannot access offset ''cameras''\|''finance''\|''leo_ai''\|''muhasebe'' on mixed\.$#'
@@ -2479,66 +2185,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/ScheduleController.php
 
 		-
-			message: '#^Call to an undefined static method App\\Models\\Site\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Models\\Site\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Cannot access property \$company_id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Cannot call method get\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Cannot call method map\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\SiteController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Parameter \#1 \$s of method App\\Http\\Controllers\\Api\\V1\\SiteController\:\:serialize\(\) expects App\\Models\\Site, App\\Models\\Site\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Parameter \#1 \$s of method App\\Http\\Controllers\\Api\\V1\\SiteController\:\:serialize\(\) expects App\\Models\\Site, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\SocialContribution\>\:\:forCountry\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2635,148 +2281,22 @@ parameters:
 			path: app/Http/Controllers/Api/V1/TranslationCatalogController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company\.$#'
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$email\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company_id\.$#'
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\User\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Cannot access property \$name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Cannot call method currentAccessToken\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Cannot call method delete\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash\:\:make\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$avatarUrl of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:googleSignIn\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$deviceName of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:login\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$email of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:googleSignIn\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$email of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:login\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$email of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$firstName of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:googleSignIn\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$firstName of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$googleId of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:googleSignIn\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$lastName of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:googleSignIn\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$lastName of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$password of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:login\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$password of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:register\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Parameter \$phone of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:register\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserAuthController.php
+			count: 2
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
 		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\UserEmployeeLink\:\:\$company\.$#'
@@ -3619,12 +3139,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/Attendance/CheckOutRequest.php
 
 		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\ChangePasswordRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/ChangePasswordRequest.php
-
-		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\Estimation\\DailySummaryRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3725,12 +3239,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/Evaluation/UpdateEvaluationRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\LoginRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/LoginRequest.php
 
 		-
 			message: '#^Cannot access property \$company_id on mixed\.$#'
@@ -3865,10 +3373,16 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
 
 		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreRegistrationRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Requests/Api/V1/StoreRegistrationRequest.php
+			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$tenancy_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
 
 		-
 			message: '#^Cannot access property \$company on mixed\.$#'
@@ -3953,24 +3467,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateProfileRequest.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
-			identifier: cast.int
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateProfileRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateProfileRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateProfileRequest.php
 
 		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
@@ -4771,70 +4267,10 @@ parameters:
 			path: app/Models/Department.php
 
 		-
-			message: '#^Access to an undefined property object\:\:\$employee_id\.$#'
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Cannot access property \$schema_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Cannot access property \$table_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
-			identifier: cast.int
 			count: 2
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Class App\\Core\\Auth\\Domain\\Models\\Employee uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\Employee\:\:biometricEnrollmentRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\Employee\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\Employee\:\:getAuthPassword\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\Employee\:\:schedule\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$casts type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Employee.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>schema_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Models/Employee.php
+			path: app/Models/EmployeeLoan.php
 
 		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\EmployeeLoan\:\:\$amount\.$#'
@@ -5953,42 +5389,6 @@ parameters:
 			path: app/Models/TrainingSession.php
 
 		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\User\:\:companyRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\User\:\:employeeLinks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Domain\\Models\\User\:\:getAuthPassword\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Part \$this\-\>first_name \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Part \$this\-\>last_name \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Property App\\Core\\Auth\\Domain\\Models\\User\:\:\$casts type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/User.php
-
-		-
 			message: '#^Method App\\Core\\Auth\\Domain\\Models\\UserEmployeeLink\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
@@ -6763,154 +6163,46 @@ parameters:
 			path: app/Services/AnnotationReader.php
 
 		-
-			message: '#^Access to an undefined property object\:\:\$company_id\.$#'
+			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$employee_id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Services/AuthService.php
+			path: app/Services/BiometricEnrollmentService.php
 
 		-
-			message: '#^Access to an undefined property object\:\:\$employee_id\.$#'
+			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_face_enabled\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Services/AuthService.php
+			path: app/Services/BiometricEnrollmentService.php
 
 		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\Employee\:\:withoutGlobalScopes\(\)\.$#'
-			identifier: staticMethod.notFound
+			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_face_reference_path\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/BiometricEnrollmentService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_device_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/BiometricEnrollmentService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$requested_fingerprint_enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/BiometricEnrollmentService.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$company_id\.$#'
+			identifier: property.notFound
 			count: 2
-			path: app/Services/AuthService.php
+			path: app/Services/BiometricEnrollmentService.php
 
 		-
-			message: '#^Cannot access property \$company on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot access property \$failed_login_attempts on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot access property \$locked_until on mixed\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot access property \$password_hash on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot access property \$plainTextToken on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot access property \$status on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot access property \$table_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method createToken\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method first\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method forceFill\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method increment\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method isFuture\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method saveQuietly\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method syncUserLookup\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method update\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 3
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot call method with\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Cannot cast mixed to int\.$#'
-			identifier: cast.int
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\AuthService\:\:login\(\) should return array\{employee\: App\\Core\\Auth\\Domain\\Models\\Employee, token\: string, token_type\: string, token_expires_at\: string\|null\} but returns array\{employee\: mixed, token\: mixed, token_type\: ''Bearer'', token_expires_at\: string\|null\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Parameter \#1 \$employee of method App\\Core\\Auth\\Infrastructure\\Services\\AuthService\:\:supportsLoginLocking\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Parameter \#1 \$until of class App\\Exceptions\\AccountLockedException constructor expects Illuminate\\Support\\Carbon, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/AuthService.php
+			path: app/Services/BiometricEnrollmentService.php
 
 		-
 			message: '#^Anonymous function should return App\\Models\\BiometricEnrollmentRequest but returns App\\Models\\BiometricEnrollmentRequest\|null\.$#'
@@ -7951,70 +7243,58 @@ parameters:
 			path: app/Services/TenantManager.php
 
 		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\User\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/UserInvitationService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$schema_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/UserInvitationService.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email\.$#'
+			identifier: property.notFound
 			count: 2
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Call to protected method increment\(\) of class Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: method.protected
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
-			message: '#^Cannot access property \$avatar_url on mixed\.$#'
-			identifier: property.nonObject
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
-			message: '#^Cannot access property \$provider on mixed\.$#'
-			identifier: property.nonObject
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$invitation_accepted_at\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
-			message: '#^Cannot call method first\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Cannot call method isFuture\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$manager_role\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
-			message: '#^Cannot call method update\(\) on mixed\.$#'
-			identifier: method.nonObject
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$password_hash\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
-			message: '#^Parameter \#1 \$until of class App\\Exceptions\\AccountLockedException constructor expects Illuminate\\Support\\Carbon, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$role\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Core\\Auth\\Infrastructure\\Services\\UserAuthService\:\:issueToken\(\) expects App\\Core\\Auth\\Domain\\Models\\User, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Services/UserAuthService.php
-
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/UserAuthService.php
+			path: app/Services/UserInvitationService.php
 
 		-
 			message: '#^Access to an undefined property object\:\:\$accepted_at\.$#'

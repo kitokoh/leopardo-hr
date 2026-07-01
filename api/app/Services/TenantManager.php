@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Company;
@@ -46,6 +48,10 @@ class TenantManager
 
     /**
      * Execute une callback dans le contexte d'un tenant et restaure le contexte ensuite.
+     *
+     * @template T
+     * @param  Closure(): T  $cb
+     * @return T
      */
     public function withinTenant(Company $company, Closure $cb): mixed
     {

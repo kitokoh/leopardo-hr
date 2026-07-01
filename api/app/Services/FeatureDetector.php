@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Contracts\FeatureDetectorInterface;
@@ -114,14 +116,16 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @return Collection<int, array<string, mixed>>
      */
     public function scanRoutes(): Collection
     {
         $routes = collect();
 
-        foreach ($this->router->getRoutes() as $route) {
-            /** @var \Illuminate\Routing\Route $route */
+        /** @var Route $route */
+        foreach ($this->router->getRoutes()->getRoutes() as $route) {
             // Filtrer uniquement les routes API
             if (! $this->isApiRoute($route)) {
                 continue;
@@ -136,16 +140,14 @@ class FeatureDetector implements FeatureDetectorInterface
 
             // Parser l'action du contrôleur
             $controllerAction = $action['controller'];
+            if (! is_string($controllerAction)) {
+                continue;
+            }
             if (! str_contains($controllerAction, '@')) {
-                // Format moderne Laravel avec invokable ou array
-                if (is_string($controllerAction)) {
-                    $controllerClass = $controllerAction;
-                    $method = '__invoke';
-                } else {
-                    continue; // Ignorer les autres formats
-                }
+                $controllerClass = $controllerAction;
+                $method = '__invoke';
             } else {
-                [$controllerClass, $method] = explode('@', $controllerAction);
+                [$controllerClass, $method] = explode('@', $controllerAction, 2);
             }
 
             // Vérifier que c'est un contrôleur API valide

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Traits\BelongsToCompany;
@@ -8,20 +10,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property array<string, mixed>|null $metadata
- * @property list<string> $http_methods
- * @property array<string, mixed> $parameters
- * @property array<string, mixed> $response_schema
- * @property list<string> $permissions
+ * @property int $id
+ * @property string|null $company_id
  * @property string $key
  * @property string $title
  * @property string $description
  * @property string $endpoint
+ * @property list<string> $http_methods
+ * @property array<string, mixed> $parameters
+ * @property array<string, mixed> $response_schema
+ * @property list<string> $permissions
  * @property string $mobile_version_min
  * @property string|null $mobile_version_max
  * @property string $api_version
  * @property string $status
- * @property string|null $company_id
+ * @property array<string, mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Feature extends Model
@@ -57,7 +62,7 @@ class Feature extends Model
     ];
 
     /**
-     * GÃƒÂ©nÃƒÂ¨re le tableau de donnÃƒÂ©es pour le manifeste JSON.
+     * Génère le tableau de données pour le manifeste JSON.
      *
      * @return array<string, mixed>
      */
@@ -85,10 +90,9 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour rÃƒÂ©cupÃƒÂ©rer uniquement les fonctionnalitÃƒÂ©s actives.
-     */
-    /**
-     * @param  Builder<static>  $q
+     * Scope pour récupérer uniquement les fonctionnalités actives.
+     *
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeActive(Builder $query): Builder
@@ -97,10 +101,9 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour rÃƒÂ©cupÃƒÂ©rer les fonctionnalitÃƒÂ©s compatibles avec une version mobile.
-     */
-    /**
-     * @param  Builder<static>  $q
+     * Scope pour récupérer les fonctionnalités compatibles avec une version mobile.
+     *
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeCompatibleWith(Builder $query, string $mobileVersion): Builder
@@ -113,10 +116,9 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour rÃƒÂ©cupÃƒÂ©rer les fonctionnalitÃƒÂ©s par version API.
-     */
-    /**
-     * @param  Builder<static>  $q
+     * Scope pour récupérer les fonctionnalités par version API.
+     *
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForApiVersion(Builder $query, string $apiVersion): Builder
