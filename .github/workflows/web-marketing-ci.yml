@@ -3,12 +3,12 @@ name: Web CI - Leopardo Vitrine
 on:
   workflow_dispatch:
   push:
-    branches: [main, develop, staging]
+    branches: [main]                         # push CI uniquement sur main
     paths:
       - 'front/web/**'
       - '.github/workflows/web-marketing-ci.yml'
   pull_request:
-    branches: [main, develop, staging]
+    branches: [main]                         # PRs vers main uniquement
     paths:
       - 'front/web/**'
       - '.github/workflows/web-marketing-ci.yml'
