@@ -45,7 +45,7 @@ return new class extends Migration
             });
 
             \Illuminate\Support\Facades\DB::statement(
-                "COMMENT ON TABLE employee_attendance_preferences IS 'Préférence mode pointage individuel. Actif uniquement si l\'entreprise n\'impose pas de mode.'"
+                "COMMENT ON TABLE employee_attendance_preferences IS 'Préférence mode pointage individuel. Actif uniquement si l''entreprise n''impose pas de mode.'"
             );
         }
     }
