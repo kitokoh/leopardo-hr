@@ -1,4 +1,17 @@
 import axios from 'axios'
+import { normalizeLocale } from '@/i18n/index.js'
+
+/** Résout la locale active depuis localStorage ou navigator. */
+function resolveAdminLocale() {
+  try {
+    const stored = localStorage.getItem('admin_locale')
+    if (stored) return normalizeLocale(stored)
+  } catch {
+    // localStorage indisponible (SSR ou sandboxé)
+  }
+  const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr'
+  return normalizeLocale(nav)
+}
 import { useToast } from 'vue-toastification'
 
 const ERROR_BREADCRUMBS = []
@@ -89,6 +102,9 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+
+    // Envoie la locale active au backend (SetLocale middleware)
+    config.headers['Accept-Language'] = resolveAdminLocale()
 
     if (config.method === 'get') {
       config.params = {
