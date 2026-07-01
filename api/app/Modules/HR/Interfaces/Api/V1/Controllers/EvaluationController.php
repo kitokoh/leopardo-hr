@@ -3,9 +3,9 @@
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Evaluation\EvaluationIndexRequest;
-use App\Http\Requests\Api\V1\Evaluation\StoreEvaluationRequest;
-use App\Http\Requests\Api\V1\Evaluation\UpdateEvaluationRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\EvaluationIndexRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEvaluationRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEvaluationRequest;
 use App\Http\Resources\Api\V1\EvaluationResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Evaluation;

@@ -4,7 +4,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
-use App\Services\FeatureFlag;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

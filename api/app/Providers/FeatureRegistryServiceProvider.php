@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
-use App\Services\FeatureRegistry;
+use App\Core\Feature\Infrastructure\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\ServiceProvider;

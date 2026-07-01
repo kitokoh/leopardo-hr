@@ -4,8 +4,8 @@ namespace App\Http\Resources\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Language;
-use App\Services\FeatureFlag;
-use App\Services\MobileExperienceService;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Modules\HR\Infrastructure\Services\MobileExperienceService;
 use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

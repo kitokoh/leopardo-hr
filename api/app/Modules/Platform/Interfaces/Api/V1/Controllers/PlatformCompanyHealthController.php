@@ -3,7 +3,7 @@
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\PlatformCompanyHealthService;
+use App\Modules\Platform\Infrastructure\Services\PlatformCompanyHealthService;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

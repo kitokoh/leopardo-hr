@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Application\DTOs;
 
-use App\Http\Requests\Api\V1\StoreEmployeeRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEmployeeRequest;
 
 final readonly class CreateEmployeeDTO
 {
