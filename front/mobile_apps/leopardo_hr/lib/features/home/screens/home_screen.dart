@@ -656,6 +656,22 @@ class _ManagerDigestContent extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _DigestActionButton(
+                icon: Icons.my_location_rounded,
+                label: 'GPS Pointage',
+                onTap: () => context.push('/smart-attendance'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Expanded(child: SizedBox()),
+            const SizedBox(width: 8),
+            const Expanded(child: SizedBox()),
+          ],
+        ),
         if (data.openSessions > 0) ...[
           const SizedBox(height: 10),
           Row(
