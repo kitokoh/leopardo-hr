@@ -46,12 +46,13 @@ Modules/<Name>/
 └── Providers/          # ServiceProvider du module
 ```
 
-Modules actuels : `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Fleet`, `HR`, `Payroll`, `Planning`, `Recruitment`
+Modules actifs (21) : `Absence`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `SmartAttendance`, `Training` + `Core/Auth`, `Core/Tenant`
 
 ### Règle de contribution backend
 > **Tout nouveau code métier va dans `api/app/Modules/`.**
-> Les dossiers `api/app/Http/Controllers/Api/V1/`, `api/app/Services/` et `api/app/Models/`
-> sont en cours de migration vers leurs modules respectifs. Ne pas y ajouter de nouveau code.
+> `api/app/Http/Controllers/Api/V1/` et `api/app/Services/` sont **supprimés** (PR #824, 2026-07-01).
+> `api/app/Models/` est en cours de migration — ne pas y ajouter de nouveau modèle.
+> Voir `api/ARCHITECTURE.md` pour la liste complète et les TODOs restants.
 
 ### Code partagé transversal (`api/app/Shared/`)
 

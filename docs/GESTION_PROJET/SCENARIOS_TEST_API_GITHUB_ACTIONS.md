@@ -1190,3 +1190,24 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 **Impact PHPStan**
 - `api/phpstan.neon` : Extension Larastan activée — niveau de check renforci progressivement.
 - Baseline mise à jour pour exclure les erreurs résiduelles en cours de résolution.
+
+## Phase 7 — Refactor architecture DDD : suppression legacy Api/V1 (v4.21.0)
+
+**Suppression 90 controllers legacy (`app/Http/Controllers/Api/V1/`)**
+- Tous les controllers supprimés avaient un doublon fonctionnel dans `app/Modules/*/Interfaces/Api/V1/`
+- Conservés : `EdgeController`, `EdgeDownloadController`, `SSO/SSOController` (pas de doublon module)
+- Impact routes : aucun — les fichiers de routes `routes/modules/*.php` pointaient déjà vers les modules DDD
+- Vérification de non-régression : `FrontendApiContractTest` couvre l'intégralité de la surface API exposée
+
+**Suppression 26 services legacy (`app/Services/`)**
+- Services supprimés et leurs 51 consommateurs mis à jour vers les classes modules équivalentes
+- Remplacement : `AttendanceService` → `App\Modules\Attendance\...`, etc.
+- Consommateurs : Controllers, Listeners, Jobs, Mail, Tests
+
+**Infrastructure manquante créée**
+- `Modules/{Growth,Platform,Onboarding,Training}/Infrastructure/` — corrige 4 violations CI `Module Structure Validator`
+
+**Scénarios de régression à valider**
+- `FrontendApiContractTest` — surface API complète (toutes routes)
+- `backend-tests` (Feature suite complète) — comportement fonctionnel inchangé
+- `Module Structure Validator` CI — structure DDD conforme

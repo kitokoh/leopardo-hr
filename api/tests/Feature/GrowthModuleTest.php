@@ -8,7 +8,7 @@ use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Payment;
 use App\Core\Auth\Domain\Models\User;
-use App\Services\PartnerService;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
 
 use Tests\TestCase;
 
@@ -23,7 +23,7 @@ class GrowthModuleTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
         $this->partnerService = app(PartnerService::class);
-        $this->commissionService = app(\App\Services\CommissionService::class);
+        $this->commissionService = app(\App\Modules\Payroll\Infrastructure\Services\CommissionService::class);
     }
 
     protected function tearDown(): void

@@ -9,7 +9,7 @@ use App\Http\Requests\Api\V1\Payroll\UpdatePayrollRequest;
 use App\Http\Resources\Api\V1\PayrollResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Payroll;
-use App\Services\PayrollService;
+use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

@@ -5,7 +5,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\CalendarConnection;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\CalendarSyncService;
+use App\Modules\Attendance\Infrastructure\Services\CalendarSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

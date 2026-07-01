@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PartnerDashboardController extends Controller
 {
-    public function __construct(private \App\Services\PartnerService $partnerService)
+    public function __construct(private \App\Modules\Billing\Infrastructure\Services\PartnerService $partnerService)
     {}
 
     /**

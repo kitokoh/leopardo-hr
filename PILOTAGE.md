@@ -40,7 +40,7 @@ Règle :
 ## LE PROJET EN 1 PHRASE
 
 **Leopardo RH** = Mobile-First Company OS pour PME terrain (5-250 employés).
-8 surfaces frontend, 87 modèles, 93 contrôleurs API, déployé en production.
+8 surfaces frontend, 87 modèles, contrôleurs API dans `app/Modules/` (plus de controllers legacy `Api/V1/`), déployé en production.
 
 ---
 

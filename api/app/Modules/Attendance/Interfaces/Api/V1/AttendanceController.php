@@ -2,7 +2,7 @@
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\DTOs\CheckInDTO;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Attendance\AttendanceAnomaliesRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
@@ -15,10 +15,10 @@ use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Models\AttendanceCorrectionRequest;
 use App\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\AttendanceAnomalyService;
-use App\Services\AttendanceMonthlyReportService;
-use App\Services\AttendanceService;
-use App\Services\EstimationService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
+use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

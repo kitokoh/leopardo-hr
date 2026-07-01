@@ -8,7 +8,7 @@ use App\Models\AttendanceLog;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Schedule;
-use App\Services\AttendanceService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;

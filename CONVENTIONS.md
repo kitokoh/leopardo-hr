@@ -26,7 +26,8 @@ leopardo-hr/
 
 - **PHP 8.2 minimum** — utiliser les fonctionnalites modernes (enums, readonly, named args, match)
 - **`declare(strict_types=1);`** en haut de chaque fichier PHP (sauf config)
-- **Namespace PSR-4** — `App\Http\Controllers\Api\V1\*`, `App\Models\*`, `App\Services\*`
+- **Namespace PSR-4** — `App\Modules\<NomModule>\*`, `App\Core\*`, `App\Shared\*`
+  _(Les anciens espaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` sont supprimés — voir `api/ARCHITECTURE.md`)_
 - **PHPStan level max** — tout code doit passer `phpstan analyse` sans erreur au-dela du baseline
 - **Pas de `Any`, `mixed` sauf absolument necessaire** — typer tous les parametres et retours
 

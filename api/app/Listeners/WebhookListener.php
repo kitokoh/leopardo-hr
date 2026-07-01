@@ -12,7 +12,7 @@ use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\PayrollValidated;
-use App\Services\WebhookDispatcher;
+use App\Modules\Billing\Infrastructure\Services\WebhookDispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
