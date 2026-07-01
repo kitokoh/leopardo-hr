@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import api from '@/services/api'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const PLATFORM_AUTH_BASE = '/platform/auth'
 const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
@@ -47,6 +48,9 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = userData
       localStorage.setItem('admin_token', authToken)
       api.defaults.headers.common.Authorization = `Bearer ${authToken}`
+
+      // Synchronise la locale avec la préférence de l'utilisateur
+      try { useLocaleStore().initFromUser(userData) } catch { /* store non encore monté */ }
 
       return { success: true }
     } catch (error) {

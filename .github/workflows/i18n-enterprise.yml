@@ -6,7 +6,8 @@ on:
       - 'shared/i18n/**'
       - 'front/mobile/lib/l10n/**'
       - 'front/mobile_apps/leopardo_core/lib/l10n/**'
-      - 'front/admin-dashboard/src/i18n/**'
+      - 'front/admin-dashboard/src/i18n/**'     # chemin réel dans le repo
+      - 'front/web/src/lib/i18n/**'             # client Next.js
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'
   push:
@@ -17,6 +18,7 @@ on:
       - 'front/mobile/lib/l10n/**'
       - 'front/mobile_apps/leopardo_core/lib/l10n/**'
       - 'front/admin-dashboard/src/i18n/**'
+      - 'front/web/src/lib/i18n/**'
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'
 

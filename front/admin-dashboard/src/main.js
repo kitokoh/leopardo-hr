@@ -5,6 +5,8 @@ import App from './App.vue'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import './style.css'
+import { useLocaleStore } from './stores/locale.js'
+import { translate } from './i18n/index.js'
 
 // Configuration Toast
 const toastOptions = {
@@ -19,7 +21,7 @@ const toastOptions = {
   hideProgressBar: false,
   closeButton: 'button',
   icon: true,
-  rtl: false
+  rtl: false,
 }
 
 const app = createApp(App)
@@ -29,4 +31,16 @@ app.use(pinia)
 app.use(router)
 app.use(Toast, toastOptions)
 
+// Expose $t(key) et $locale dans tous les composants Vue
+app.config.globalProperties.$locale = () => {
+  // Lazy-lookup après montée du store Pinia
+  try { return useLocaleStore().current } catch { return 'fr' }
+}
+app.config.globalProperties.$t = (key, fallback = '') => {
+  try { return translate(useLocaleStore().current, key, fallback) } catch { return fallback }
+}
+
 app.mount('#app')
+
+// Initialise le store locale après montage (Pinia disponible)
+useLocaleStore()

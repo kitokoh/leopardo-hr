@@ -108,7 +108,8 @@ final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
 final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final storage = ref.watch(secureStorageProvider);
-  return UserAuthRepository(apiClient, storage);
+  final preferences = ref.watch(appPreferencesProvider);
+  return UserAuthRepository(apiClient, storage, preferences);
 });
 
 final contractRepositoryProvider = Provider<ContractRepository>((ref) {
