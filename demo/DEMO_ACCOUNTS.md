@@ -26,7 +26,7 @@ You can retrieve the latest demo credentials dynamically from our API:
 Navigate to [leo-admin.pages.dev](https://leo-admin.pages.dev) and use the **System Admin** persona to see the multi-tenant orchestration layer.
 
 ### 2. Mobile App
-Download the APK from the [Visual Showcase](../../README.md#visual-showcase) section.
+Download the APK from the [Visual Showcase](../README.md#-visual-showcase) section.
 - Use **Employee** persona to test GPS-fenced check-in.
 - Use **Manager** persona to approve the employee's request.
 

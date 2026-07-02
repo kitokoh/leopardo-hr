@@ -267,9 +267,10 @@ if (result.success) {
 
 ## 📚 Documentation
 
-- [Requirements](../../.kiro/specs/vitrine-restructure/requirements.md)
-- [Design](../../.kiro/specs/vitrine-restructure/design.md)
-- [Tasks](../../.kiro/specs/vitrine-restructure/tasks.md)
+> Les specs Kiro (`requirements.md`, `design.md`, `tasks.md`) qui ont servi à planifier
+> cette restructuration ont été supprimées du dépôt (nettoyage des artefacts bot Kiro,
+> voir l'historique Git). Ce README et le code sous `vitrine/` restent la source de
+> vérité pour la structure actuelle du module.
 
 ## 🤝 Contribution
 
