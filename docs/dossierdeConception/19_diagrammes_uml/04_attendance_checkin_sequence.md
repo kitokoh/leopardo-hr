@@ -4,7 +4,7 @@
 sequenceDiagram
     autonumber
 
-    participant E as Employe9 (Mobile)
+    participant E as Employé (Mobile)
     participant ATC as AttendanceController
     participant GPS as GpsValidationService
     participant AS as AttendanceService
@@ -16,7 +16,7 @@ sequenceDiagram
 
     E->>ATC: POST /attendance/check-in<br/>{gps_lat, gps_lng, method: 'mobile'}
 
-    Note over ATC: Ve9rification ManagerMiddleware
+    Note over ATC: Vérification ManagerMiddleware
 
     ATC->>GPS: validateLocation(employee_id, lat, lng)
 
@@ -28,7 +28,7 @@ sequenceDiagram
     alt distance > gps_radius_meters
         GPS-->>ATC: validation failed
         ATC-->>E: 422 GPS_OUTSIDE_ZONE
-    else Dans la zone ge9ographique
+    else Dans la zone géographique
         GPS-->>ATC: validation OK
 
         ATC->>AS: processCheckIn(employee_id, data)
@@ -44,28 +44,28 @@ sequenceDiagram
             AS->>PG: SELECT * FROM attendance_logs<br/>WHERE date = TODAY()<br/>AND employee_id = :id<br/>AND session_number = 1
             PG-->>AS: existing records
 
-            alt Record EXISTS (de9ja9 pointe9)
+            alt Record EXISTS (déjà pointé)
                 AS-->>ATC: 409 ALREADY_CHECKED_IN
-                ATC-->>E: 409 De9ja9 pointe9
+                ATC-->>E: 409 Déjà pointé
             else Aucun pointage
 
                 AS->>HC: SELECT * FROM holidays<br/>WHERE date = TODAY()<br/>AND company_id = :id
                 HC-->>AS: holiday record ou NULL
 
-                alt Jour fe9rie9
+                alt Jour férié
                     AS-->>ATC: 200 {data: null, context: {is_holiday: true}}
-                    ATC-->>E: 200 Jour fe9rie9 (pas de pointage)
+                    ATC-->>E: 200 Jour férié (pas de pointage)
                 else Jour ouvrable
 
                     AS->>PG: INSERT INTO attendance_logs<br/>(check_in = NOW() UTC,<br/>method = 'mobile',<br/>gps_lat, gps_lng,<br/>employee_id, date,<br/>session_number = 1)
-                    PG-->>AS: attendance_log cre9e9
+                    PG-->>AS: attendance_log créé
 
-                    AS->>AS: De9terminer le statut :<br/>check_in (convertis en TZ entreprise)<br/>vs schedule.start_time + late_tolerance
+                    AS->>AS: Déterminer le statut :<br/>check_in (convertis en TZ entreprise)<br/>vs schedule.start_time + late_tolerance
 
-                    alt Retard de9tecte9
+                    alt Retard détecté
                         AS->>PG: UPDATE attendance_logs<br/>SET status = 'late'
-                        AS->>NS: Notify manager<br/>"Retard de9tecte9"
-                        NS-->>AS: Notification envoye9e
+                        AS->>NS: Notify manager<br/>"Retard détecté"
+                        NS-->>AS: Notification envoyée
                     else A l'heure
                         AS->>PG: UPDATE attendance_logs<br/>SET status = 'on_time'
                     end
@@ -94,15 +94,15 @@ sequenceDiagram
         AS->>PG: UPDATE attendance_logs<br/>SET check_out = NOW() UTC<br/>WHERE id = :log_id
         PG-->>AS: check_out enregistré
 
-        AS->>AS: heures_travaille9es =<br/>(check_out - check_in)<br/>- pause_de9jeuner_minutes
+        AS->>AS: heures_travaillées =<br/>(check_out - check_in)<br/>- pause_déjeuner_minutes
 
-        alt heures_travaille9es > seuil_heures_sup
-            AS->>AS: Calcul heures supple9mentaires<br/>= heures_travaille9es - seuil
+        alt heures_travaillées > seuil_heures_sup
+            AS->>AS: Calcul heures supplémentaires<br/>= heures_travaillées - seuil
             AS->>PG: UPDATE attendance_logs<br/>SET overtime_minutes = :overtime,<br/>hours_worked = :total,<br/>status = 'overtime'
-            PG-->>AS: Mise e0 jour OK
+            PG-->>AS: Mise à jour OK
         else Heures normales
             AS->>PG: UPDATE attendance_logs<br/>SET hours_worked = :total,<br/>status = 'completed'
-            PG-->>AS: Mise e0 jour OK
+            PG-->>AS: Mise à jour OK
         end
 
         AS-->>ATC: updated attendance_log
@@ -116,12 +116,12 @@ sequenceDiagram
 
 | Étape | Interaction | Détail |
 |--------|-------------|---------|
-| 1-5 | **Validation ge9olocalisation** | L'employe9 envoie ses coordonnées GPS. Le service calcule la distance de Haversine entre sa position et le site de travail assigne9. Si la distance de9passe le rayon autorise9, le pointage est rejete9 (422). |
-| 6-7 | **Ve9rification du planning** | Le service vérifie qu'un planning horaire existe pour le jour en cours. Sans planning, le pointage est impossible. |
-| 8 | **Double pointage** | Une recherche dans `attendance_logs` vérifie qu'il n'existe pas de9ja un check-in pour la journe9e et la session (session_number = 1). |
-| 9-10 | **Jour fe9rie9** | Le calendrier des jours fe9rie9s de l'entreprise est consulte9. Si c'est un jour fe9rie9, le pointage n'est pas enregistré et le contexte est retourne9 e0 l'application. |
-| 11-13 | **Enregistrement du check-in** | Le pointage est insere9 en base avec l'heure UTC. Le statut (`on_time` ou `late`) est de9termine9 en comparant l'heure convertie dans le fuseau de l'entreprise avec l'heure de de9but du planning + la tole9rance de retard. |
-| 14 | **Notification de retard** | Si un retard est de9tecte9, le manage9r rec00oit une notification push imme9diatement. |
-| 15-17 | **Recherche du check-in** | Au check-out, le service recherche le pointage d'entre9e du jour. S'il n'existe pas, le check-out est rejete9 (422). |
-| 18-20 | **Calcul du temps travaille9** | Les heures travaille9es sont calcule9es en soustrayant la pause de9jeuner. Si le total de9passe le seuil d'heures supple9mentaires, les heures sup sont calcule9es et stocke9es se9pare9ment. |
-| 21-22 | **Mise e0 jour & réponse** | Le statut final est mis e0 jour (`completed` ou `overtime`) et l'employe9 rec00oit le de9tail de son pointage. |
+| 1-5 | **Validation géolocalisation** | L'employé envoie ses coordonnées GPS. Le service calcule la distance de Haversine entre sa position et le site de travail assigné. Si la distance dépasse le rayon autorisé, le pointage est rejeté (422). |
+| 6-7 | **Vérification du planning** | Le service vérifie qu'un planning horaire existe pour le jour en cours. Sans planning, le pointage est impossible. |
+| 8 | **Double pointage** | Une recherche dans `attendance_logs` vérifie qu'il n'existe pas déjà un check-in pour la journée et la session (session_number = 1). |
+| 9-10 | **Jour férié** | Le calendrier des jours fériés de l'entreprise est consulté. Si c'est un jour férié, le pointage n'est pas enregistré et le contexte est retourné à l'application. |
+| 11-13 | **Enregistrement du check-in** | Le pointage est inséré en base avec l'heure UTC. Le statut (`on_time` ou `late`) est déterminé en comparant l'heure convertie dans le fuseau de l'entreprise avec l'heure de début du planning + la tolérance de retard. |
+| 14 | **Notification de retard** | Si un retard est détecté, le manager reçoit une notification push immédiatement. |
+| 15-17 | **Recherche du check-in** | Au check-out, le service recherche le pointage d'entrée du jour. S'il n'existe pas, le check-out est rejeté (422). |
+| 18-20 | **Calcul du temps travaillé** | Les heures travaillées sont calculées en soustrayant la pause déjeuner. Si le total dépasse le seuil d'heures supplémentaires, les heures sup sont calculées et stockées séparément. |
+| 21-22 | **Mise à jour & réponse** | Le statut final est mis à jour (`completed` ou `overtime`) et l'employé reçoit le détail de son pointage. |

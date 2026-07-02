@@ -5,9 +5,12 @@ This directory contains high-quality visual assets for documentation, marketing,
 ## 📁 Directory Structure
 
 - 🖼 **[/screenshots/](screenshots/)** — High-resolution captures of the Web and Mobile interfaces.
-- 📊 **[/diagrams/](diagrams/)** — Architecture, RBAC, and Workflow diagrams (SVG/PNG).
 - 🎞 **[/videos/](videos/)** — Product demos and feature walkthroughs.
-- 🏴 **[/banners/](banners/)** — Repository banners and social preview images.
+
+> Sequence/class/state diagrams (Mermaid Markdown) live in
+> [`docs/dossierdeConception/19_diagrammes_uml/`](../docs/dossierdeConception/19_diagrammes_uml/) — that
+> is the canonical location. There is no `/diagrams/` or `/banners/` subfolder here; the
+> two quick reference diagrams below live directly in this README.
 
 ## 🏗 Key Diagrams
 
