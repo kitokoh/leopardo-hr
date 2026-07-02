@@ -30,7 +30,7 @@ php artisan migrate
 php artisan serve
 ```
 
-Voir [DEVELOPMENT.md](DEVELOPMENT.md) pour les instructions detaillees.
+Voir [DEVELOPMENT.md](../../DEVELOPMENT.md) pour les instructions detaillees.
 
 ## Workflow de contribution
 
@@ -88,7 +88,7 @@ docs/                   # Documentation projet
 - **PHP** : PSR-12, utiliser Laravel Pint (`./vendor/bin/pint`)
 - **TypeScript** : ESLint + Prettier
 - **Tests** : Chaque feature doit avoir des tests. Ne pas modifier les tests existants sans raison.
-- **Migrations** : Idempotentes sur PostgreSQL (voir [AGENTS.md](AGENTS.md))
+- **Migrations** : Idempotentes sur PostgreSQL (voir [AGENTS.md](../../AGENTS.md))
 - **API** : Documenter les endpoints dans `SCENARIOS_TEST_API_GITHUB_ACTIONS.md`
 - **Changelog** : Ajouter une entree dans `CHANGELOG.md` pour chaque changement visible
 
@@ -106,8 +106,8 @@ Utilisez le template [Feature Request](https://github.com/kitokoh/leopardo-hr/is
 
 ## Code de conduite
 
-Ce projet suit le [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). En participant, vous acceptez de respecter ces regles.
+Ce projet suit le [Contributor Covenant Code of Conduct](../../CODE_OF_CONDUCT.md). En participant, vous acceptez de respecter ces regles.
 
 ## Licence
 
-En contribuant, vous acceptez que vos contributions soient sous la meme [licence MIT](LICENSE) que le projet.
+En contribuant, vous acceptez que vos contributions soient sous la meme [licence MIT](../../LICENSE) que le projet.

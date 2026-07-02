@@ -128,6 +128,6 @@ Le middleware `ApiVersionMiddleware` :
 
 ## 8. References
 
-- [OpenAPI Spec](../openapi.yaml) — Specification API canonique
+- [OpenAPI Spec](../../api/openapi.yaml) — Specification API canonique
 - [CHANGELOG.md](../../CHANGELOG.md) — Historique des versions
 - [CONVENTIONS.md](../../CONVENTIONS.md) — Conventions de code

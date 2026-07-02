@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.22.1] - 2026-07-02
+
+### Fixed
+- **Nettoyage documentation projet (lisibilite/coherence, pas de changement fonctionnel)** :
+  - `docs/dossierdeConception/19_diagrammes_uml/{01,02,03,04}_*.md` : correction d'un encodage casse (mojibake, ex. `employe9s` -> `employés`, `de9tecte9` -> `détecté`) sur les tableaux d'explication des 4 diagrammes de sequence auth/paie/absences/pointage.
+  - Suppression de `assets/diagrams/*.md` (9 fichiers) : copies orphelines et jamais referencees des diagrammes UML canoniques de `docs/dossierdeConception/19_diagrammes_uml/`, avec une corruption d'encodage plus severe que l'original. `assets/README.md` annonce des diagrammes SVG/PNG dans ce dossier, pas du Markdown duplique.
+  - `docs/GOTO_MARKET/README.md` : le fichier contenait tout son contenu deux fois (conflit de merge non nettoye), avec des tableaux de statut contradictoires ("100% Complet" vs "A creer 0%") pour des sous-dossiers `02_MARKET/` a `99_EXECUTIVE/` qui n'existent pas dans le depot. Remplace par une version unique alignee sur la structure reelle du dossier (`01_PRODUCT/`, `2026_MARKET_LAUNCH_COMPANY_OS/`, `ASSETS_PRODUCTION/`, `GOTO_MARKET_AUDIT.md`).
+  - 9 liens Markdown casses corriges (chemins relatifs faux) : `docs/README.md`, `docs/ai/README.md`, `docs/testing/TESTING.md`, `docs/api/VERSIONING.md`, `docs/api/README.md`, `docs/contributing/GUIDELINES.md`, `assets/README.md`, `demo/DEMO_ACCOUNTS.md`.
+  - `front/web/src/modules/vitrine/README.md` : suppression de 3 liens morts vers `.kiro/specs/vitrine-restructure/` (dossier retire du depot par le nettoyage "Janitor: remove stale .kiro bot artifacts"), remplaces par une note explicative.
+
 ## [4.21.1] - 2026-07-01
 
 ### Fixed
