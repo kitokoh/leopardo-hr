@@ -179,7 +179,6 @@ export default function SmartAttendanceSessionDetailPage() {
             <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
                 {session.employee_photo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={session.employee_photo}
                     alt={session.employee_name ?? ''}

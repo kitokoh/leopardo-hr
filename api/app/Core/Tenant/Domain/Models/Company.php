@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

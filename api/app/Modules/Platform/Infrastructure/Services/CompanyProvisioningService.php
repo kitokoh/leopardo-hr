@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Infrastructure\Services;
 
+use App\Core\Tenant\TenantManager;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SuperAdmin;
+use App\Modules\HR\Infrastructure\Services\SectorTemplateService;
+use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

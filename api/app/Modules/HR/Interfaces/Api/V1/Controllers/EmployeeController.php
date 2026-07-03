@@ -2,8 +2,8 @@
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Attributes\ApiFeature;
-use App\Attributes\RequiresPermission;
+use App\Shared\Attributes\ApiFeature;
+use App\Shared\Attributes\RequiresPermission;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Http\Controllers\Controller;

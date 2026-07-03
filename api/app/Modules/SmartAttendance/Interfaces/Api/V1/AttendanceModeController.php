@@ -39,7 +39,7 @@ class AttendanceModeController extends Controller
     public function config(): JsonResponse
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = auth()->user();
+        $employee = request()->user();
         $config   = $this->resolver->resolve($employee);
 
         return response()->json([
@@ -64,7 +64,7 @@ class AttendanceModeController extends Controller
     public function updatePreference(SetModeRequest $request): JsonResponse
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = auth()->user();
+        $employee = request()->user();
         $company  = currentCompany();
 
         // Vérifier que l'entreprise autorise l'override
@@ -130,7 +130,7 @@ class AttendanceModeController extends Controller
     public function updateCompanySettings(SetCompanyModeRequest $request): JsonResponse
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $manager */
-        $manager  = auth()->user();
+        $manager  = request()->user();
         $company  = currentCompany();
 
         $settings = $this->setCompanyMode->handle(
