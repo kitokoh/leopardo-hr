@@ -7,6 +7,7 @@ namespace App\Modules\SmartAttendance\Application\Actions;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\SmartAttendance\Domain\Exceptions\GpsConsentMissingException;
 use App\Modules\SmartAttendance\Domain\Models\EmployeeAttendancePreference;
+use Illuminate\Support\Carbon;
 
 /**
  * Cas d'usage (niveau 2) : l'employé définit son mode de pointage préféré.
@@ -39,7 +40,7 @@ class SetEmployeeAttendanceMode
 
         if ($preferredMode === 'gps_auto' && ! empty($data['gps_consent_given'])) {
             $pref->gps_consent_given = true;
-            $pref->gps_consent_at    = now();
+            $pref->gps_consent_at    = Carbon::now();
         }
 
         if (($data['revoke_consent'] ?? false) === true) {

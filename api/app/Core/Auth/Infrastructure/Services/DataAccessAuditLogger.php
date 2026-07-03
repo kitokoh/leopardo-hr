@@ -30,7 +30,7 @@ class DataAccessAuditLogger
                 'user_agent' => $this->truncateUserAgent($request->userAgent()),
                 'metadata' => [
                     'category' => 'hr_data_access',
-                    'route' => optional($request->route())->getName() ?? $request->path(),
+                    'route' => $request->route()?->getName() ?? $request->path(),
                     ...$metadata,
                 ],
             ]);

@@ -93,7 +93,7 @@ class GeoSessionController extends Controller
     public function mySessions(Request $request): JsonResponse
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = auth()->user();
+        $employee = request()->user();
         $company  = currentCompany();
 
         $sessions = GeoAttendanceSession::query()
@@ -128,7 +128,7 @@ class GeoSessionController extends Controller
             ->findOrFail($id);
 
         /** @var \App\Core\Auth\Domain\Models\Employee $validator */
-        $validator = auth()->user();
+        $validator = request()->user();
 
         $session = $this->approveAction->handle(
             session:   $session,
@@ -158,7 +158,7 @@ class GeoSessionController extends Controller
             ->findOrFail($id);
 
         /** @var \App\Core\Auth\Domain\Models\Employee $validator */
-        $validator = auth()->user();
+        $validator = request()->user();
 
         $session = $this->rejectAction->handle(
             session:   $session,
