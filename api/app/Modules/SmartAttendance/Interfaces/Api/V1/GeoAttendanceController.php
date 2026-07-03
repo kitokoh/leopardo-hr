@@ -32,7 +32,7 @@ class GeoAttendanceController extends Controller
     public function event(GeoEventRequest $request): JsonResponse
     {
         /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = auth()->user();
+        $employee = request()->user();
         $company  = currentCompany();
 
         $dto = GeoEventDTO::fromRequest(

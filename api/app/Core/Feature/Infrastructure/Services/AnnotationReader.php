@@ -99,8 +99,8 @@ class AnnotationReader
                         $annotations['responses'][] = $this->parseResponseTag($value);
                         break;
                 }
-            } elseif ($currentTag === null && ! empty($line)) {
-                // Description principale
+            } elseif ($currentTag === null) {
+                // Description principale (garantie non vide par le `continue` ci-dessus)
                 $description[] = $line;
             }
         }
