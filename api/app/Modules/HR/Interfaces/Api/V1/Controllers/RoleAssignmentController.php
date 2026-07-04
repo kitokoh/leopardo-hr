@@ -100,7 +100,7 @@ class RoleAssignmentController extends Controller
                 'manager_role' => $e->manager_role,
                 'role_label'   => $e->manager_role
                     ? RoleInvitationService::getRoleLabel($e->manager_role)
-                    : ($e->isManager() ? 'Manager' : 'EmployÃ©'),
+                    : ($e->isManager() ? 'Manager' : 'Employé'),
                 'status'       => $e->status,
                 'photo_path'   => $e->photo_path,
             ]),

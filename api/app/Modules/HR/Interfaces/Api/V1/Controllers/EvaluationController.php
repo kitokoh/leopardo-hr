@@ -14,13 +14,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
- * Module 7 (complÃ©ment) â€” Evaluations
+ * Module 7 (complément) — Evaluations
  *
  * RBAC:
- *  - Manager : CRUD complet, soumet (draft â†’ submitted)
- *  - EmployÃ© : lecture seule de ses propres Ã©valuations, accuse rÃ©ception (submitted â†’ acknowledged)
+ *  - Manager : CRUD complet, soumet (draft → submitted)
+ *  - Employé : lecture seule de ses propres évaluations, accuse réception (submitted → acknowledged)
  *
- * Workflow: draft â†’ submitted â†’ acknowledged
+ * Workflow: draft → submitted → acknowledged
  */
 class EvaluationController extends Controller
 {
@@ -82,7 +82,7 @@ class EvaluationController extends Controller
         $data = $request->validated();
 
         if (Evaluation::where('employee_id', $data['employee_id'])->where('evaluator_id', $actor->id)->where('period', $data['period'])->exists()) {
-            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une Ã©valuation existe dÃ©jÃ  pour cet employÃ© sur cette pÃ©riode.']], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);
         }
 
         $evaluation = Evaluation::create([
@@ -115,7 +115,7 @@ class EvaluationController extends Controller
         $this->authorize('update', $evaluation);
 
         if ($evaluation->status === 'acknowledged') {
-            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_ACKNOWLEDGED', 'message' => 'Une Ã©valuation accusÃ©e de rÃ©ception ne peut plus Ãªtre modifiÃ©e.']], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_ACKNOWLEDGED', 'message' => 'Une évaluation accusée de réception ne peut plus être modifiée.']], 422);
         }
 
         $data = $request->validated();
@@ -133,7 +133,7 @@ class EvaluationController extends Controller
         $this->authorize('submit', $evaluation);
 
         if ($evaluation->status !== 'draft') {
-            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => 'Seule une Ã©valuation en brouillon peut Ãªtre soumise.']], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => 'Seule une évaluation en brouillon peut être soumise.']], 422);
         }
 
         $evaluation->update(['status' => 'submitted']);
@@ -149,7 +149,7 @@ class EvaluationController extends Controller
         $this->authorize('acknowledge', $evaluation);
 
         if ($evaluation->status !== 'submitted') {
-            return response()->json(['error' => ['code' => 'EVALUATION_NOT_SUBMITTED', 'message' => 'Seule une Ã©valuation soumise peut Ãªtre accusÃ©e de rÃ©ception.']], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_NOT_SUBMITTED', 'message' => 'Seule une évaluation soumise peut être accusée de réception.']], 422);
         }
 
         $evaluation->update(['status' => 'acknowledged', 'acknowledged_at' => Carbon::now()]);
@@ -165,7 +165,7 @@ class EvaluationController extends Controller
         $this->authorize('delete', $evaluation);
 
         if ($evaluation->status !== 'draft') {
-            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => 'Seule une Ã©valuation en brouillon peut Ãªtre supprimÃ©e.']], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => 'Seule une évaluation en brouillon peut être supprimée.']], 422);
         }
 
         $evaluation->delete();

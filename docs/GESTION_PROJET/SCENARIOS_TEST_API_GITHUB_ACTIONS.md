@@ -1211,3 +1211,19 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `FrontendApiContractTest` — surface API complète (toutes routes)
 - `backend-tests` (Feature suite complète) — comportement fonctionnel inchangé
 - `Module Structure Validator` CI — structure DDD conforme
+
+## Phase 8 — Correctifs CI (suite refactor DDD, v4.22.4)
+
+**Aucun nouvel endpoint / aucun endpoint supprimé — corrections de comportement sur endpoints existants**
+
+- `POST /api/v1/expense-claims` : `ExpenseItem::$fillable` déclarait la colonne inexistante `expense_date` au lieu de `date` (colonne réelle, NOT NULL) — l'insertion d'un item de note de frais échouait systématiquement en base malgré une requête valide (`QueryException` masquée derrière un 500). Corrigé pour utiliser `date`.
+  - Scénario à valider : `ExpenseClaimControllerTest::test_employee_can_submit_expense_claim` — statut 201 + `data.status = draft`.
+- `GET /api/v1/features/manifest` et `GET /api/v1/features/compatible/{version}` : `filterFeaturesByPermissions()` lisait la clé `required_permissions` alors que `Feature::toManifestArray()` expose `permissions` — le filtre RBAC ne bloquait donc **jamais** aucune feature restreinte coté manifeste (une feature avec `permissions: ['admin.manage']` était renvoyée à tous les rôles). Corrigé pour lire `permissions`. `GET /api/v1/features/{key}` (endpoint `show`) n'était pas affecté (lit déjà `$feature->permissions` directement).
+  - Scénario à valider : `FeatureManifestApiTest::it_filters_features_by_permissions` — une feature `restricted_feature` avec permission non accordée ne doit plus apparaître dans `data.features` du manifeste.
+- Endpoints d'attendance (`POST /api/v1/attendance/check-in`, `check-out`, historique) : `AttendanceLog` sans casts Eloquent (`check_in`/`check_out`/`date`/`punch_meta`) provoquait des 500 (`Error: Call to a member function ... on string`, `Array to string conversion`) sur des requêtes par ailleurs valides. Comportement fonctionnel des endpoints inchangé (pas de nouveau champ exposé), simple correction de bug empêchant l'exécution.
+  - Scénarios à valider : `CheckInTest`, `AttendanceServiceTest::test_check_out_calculates_hours_and_overtime`, `AutoCloseAttendanceCommandTest`.
+- Isolation multitenant (`company_id`) rétablie sur `AbsenceType`, `AttendanceLog`, `AttendanceKiosk`, `BiometricEnrollmentRequest` (trait `BelongsToCompany` manquant) — impact direct sur tous les endpoints qui listent ces ressources sans filtre explicite de tenant (ex. `GET /api/v1/absence-types`, `GET /api/v1/attendance/kiosks`) : une entreprise pouvait voir les enregistrements d'une autre entreprise avant ce correctif.
+  - Scénario à valider : `TenantModelIsolationTest` (4 assertions concernées).
+
+**Endpoints non affectés**
+- Tous les autres endpoints listes dans ce document restent inchangés ; ces correctifs ne touchent qu'à la couche modèle/service, pas aux routes, contrats de requête/réponse ni RBAC declaratif (`RequiresPermission`).

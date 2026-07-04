@@ -87,7 +87,7 @@ class EdgeMultiTenantIsolationTest extends TestCase
 
     protected function tearDown(): void
     {
-        Schema::dropIfExists('edge_nodes');
+        DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
@@ -100,7 +100,7 @@ class EdgeMultiTenantIsolationTest extends TestCase
         // DetectSilentEdgeNodes (non routes/planifies). On la remplace ici
         // pour la duree du test, puis tearDown() la drop pour laisser le
         // prochain setUp() recreer le schema canonique.
-        Schema::dropIfExists('edge_nodes');
+        DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
 
         Schema::create('edge_nodes', function ($table): void {
             $table->id();
