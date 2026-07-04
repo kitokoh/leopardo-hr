@@ -61,6 +61,71 @@ if ($missing.Count -gt 0) {
     throw "Missing PLAN_ACTION2 dependencies:`n$($missing -join "`n")"
 }
 
+$dependencyMap = @{}
+foreach ($row in $rows) {
+    $id = ($row.Title -split " ")[0]
+    $deps = @()
+    if (-not [string]::IsNullOrWhiteSpace($row.Dependencies)) {
+        $deps = ($row.Dependencies -split ";") | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    }
+    $dependencyMap[$id] = $deps
+}
+
+function Find-PlanAction2Cycle {
+    param(
+        [hashtable]$Graph
+    )
+
+    $state = @{}     # 0 = unvisited, 1 = in-progress, 2 = done
+    $pathStack = New-Object System.Collections.Generic.List[string]
+
+    function Visit {
+        param([string]$Node)
+
+        $state[$Node] = 1
+        $pathStack.Add($Node)
+
+        foreach ($dep in $Graph[$Node]) {
+            if (-not $Graph.ContainsKey($dep)) {
+                continue
+            }
+            if ($state[$dep] -eq 1) {
+                $cycleStart = $pathStack.IndexOf($dep)
+                $cycleNodes = $pathStack.GetRange($cycleStart, $pathStack.Count - $cycleStart)
+                $cycleNodes.Add($dep)
+                return ($cycleNodes -join " -> ")
+            }
+            if ($state[$dep] -ne 2) {
+                $found = Visit -Node $dep
+                if ($found) {
+                    return $found
+                }
+            }
+        }
+
+        $pathStack.RemoveAt($pathStack.Count - 1)
+        $state[$Node] = 2
+        return $null
+    }
+
+    foreach ($node in $Graph.Keys) {
+        if ($state[$node] -eq 2 -or $state[$node] -eq 1) {
+            continue
+        }
+        $cycle = Visit -Node $node
+        if ($cycle) {
+            return $cycle
+        }
+    }
+
+    return $null
+}
+
+$cycle = Find-PlanAction2Cycle -Graph $dependencyMap
+if ($cycle) {
+    throw "Dependency cycle detected in PLAN_ACTION2 tickets: $cycle"
+}
+
 if (Test-Path $BacklogPath) {
     $backlog = Get-Content $BacklogPath -Raw
     $notDocumented = $ids | Where-Object { $backlog -notmatch [regex]::Escape($_) }
