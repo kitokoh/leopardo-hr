@@ -2,6 +2,8 @@
 
 namespace App\Modules\EdgeSync\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use Illuminate\Bus\Queueable;
@@ -11,7 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProcessSyncQueueJob implements ShouldQueue
+class ProcessSyncQueueJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -22,7 +24,28 @@ class ProcessSyncQueueJob implements ShouldQueue
     public int $timeout = 120;
     public int $backoff = 30;
 
+    private ?string $resolvedCompanyId = null;
+
     public function __construct(public readonly string $edgeNodeId) {}
+
+    public function tenantCompanyId(): ?string
+    {
+        if ($this->resolvedCompanyId !== null) {
+            return $this->resolvedCompanyId;
+        }
+
+        $node = EdgeNode::query()->withoutGlobalScopes()->find($this->edgeNodeId);
+
+        return $this->resolvedCompanyId = $node?->company_id;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
+    }
 
     public function handle(SyncEngineService $syncEngine): void
     {
