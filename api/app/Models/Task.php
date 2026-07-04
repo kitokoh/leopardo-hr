@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Task::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\Task::class,
+        \App\Modules\Planning\Domain\Models\Task::class,
         \App\Models\Task::class,
     );
 }

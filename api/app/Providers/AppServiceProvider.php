@@ -33,12 +33,14 @@ use App\Core\Tenant\TenantManager;
 use App\Services\TenantManager as LegacyTenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -57,6 +59,17 @@ class AppServiceProvider extends ServiceProvider
             $provider = (string) config('ai.provider', 'openai');
 
             return $provider === 'claude' ? new ClaudeClient : new OpenAIClient;
+        });
+
+        // Resolution des factories pour les modeles deplaces en DDD (Core/Modules/*).
+        // Toutes les factories vivent a plat dans database/factories/{Model}Factory.php ;
+        // le guesser par defaut de Laravel calcule le namespace complet du modele
+        // (ex: Database\Factories\Core\Tenant\Domain\Models\CompanyFactory) qui n'existe
+        // pas. On ne garde que le nom court de la classe.
+        Factory::guessFactoryNamesUsing(function (string $modelName): string {
+            $shortName = Str::afterLast($modelName, '\\');
+
+            return 'Database\\Factories\\'.$shortName.'Factory';
         });
     }
 

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\BiometricEnrollmentRequest::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest::class,
+        \App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest::class,
         \App\Models\BiometricEnrollmentRequest::class,
     );
 }

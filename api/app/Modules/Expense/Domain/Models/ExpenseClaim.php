@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Expense\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

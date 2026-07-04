@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\LeaveBalanceLog::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\LeaveBalanceLog::class,
+        \App\Modules\Planning\Domain\Models\LeaveBalanceLog::class,
         \App\Models\LeaveBalanceLog::class,
     );
 }

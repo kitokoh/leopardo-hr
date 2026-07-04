@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PartnerClick::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\PartnerClick::class,
+        \App\Modules\Billing\Domain\Models\PartnerClick::class,
         \App\Models\PartnerClick::class,
     );
 }

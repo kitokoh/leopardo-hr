@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\AbsenceType::class, false)) {
     class_alias(
-        App\Modules\Absence\Domain\Models\AbsenceType::class,
+        \App\Modules\Absence\Domain\Models\AbsenceType::class,
         \App\Models\AbsenceType::class,
     );
 }

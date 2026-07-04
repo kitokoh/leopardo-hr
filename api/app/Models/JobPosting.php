@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\JobPosting::class, false)) {
     class_alias(
-        App\Modules\Recruitment\Domain\Models\JobPosting::class,
+        \App\Modules\Recruitment\Domain\Models\JobPosting::class,
         \App\Models\JobPosting::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\EmployeeLoan::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\EmployeeLoan::class,
+        \App\Modules\Payroll\Domain\Models\EmployeeLoan::class,
         \App\Models\EmployeeLoan::class,
     );
 }

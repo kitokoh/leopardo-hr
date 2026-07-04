@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Recruitment\Domain\Models;
 
+use App\Modules\HR\Domain\Models\Department;
+use App\Modules\HR\Domain\Models\Position;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

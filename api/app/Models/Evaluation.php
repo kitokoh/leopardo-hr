@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Evaluation::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\Evaluation::class,
+        \App\Modules\HR\Domain\Models\Evaluation::class,
         \App\Models\Evaluation::class,
     );
 }

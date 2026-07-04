@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\OnboardingStep::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\OnboardingStep::class,
+        \App\Modules\HR\Domain\Models\OnboardingStep::class,
         \App\Models\OnboardingStep::class,
     );
 }

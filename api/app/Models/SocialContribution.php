@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\SocialContribution::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\SocialContribution::class,
+        \App\Modules\Payroll\Domain\Models\SocialContribution::class,
         \App\Models\SocialContribution::class,
     );
 }

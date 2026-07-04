@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\BankExport::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\BankExport::class,
+        \App\Modules\Payroll\Domain\Models\BankExport::class,
         \App\Models\BankExport::class,
     );
 }

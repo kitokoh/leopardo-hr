@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Position::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\Position::class,
+        \App\Modules\HR\Domain\Models\Position::class,
         \App\Models\Position::class,
     );
 }
