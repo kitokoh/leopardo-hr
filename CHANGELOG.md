@@ -5,6 +5,11 @@
 
 ## [4.22.4] - 2026-07-04
 
+### Security
+- **Suppression du code mort `PaymentWebhookController::stripe()`** : cette methode et ses 3 handlers prives traitaient un payload Stripe sans aucune verification de signature. Elle n'etait branchee sur aucune route (`/api/v1/webhooks/stripe` pointe reellement vers `StripeWebhookController`, qui verifie deja la signature HMAC via `StripeService::verifyWebhookSignature()`), mais restait presente comme piege pour un futur branchement accidentel. Supprimee entierement ; `/webhooks/chargily` (seule route servie par `PaymentWebhookController`) reste inchangee et continue de verifier la signature Chargily.
+
+### Fixed
+- **`api/.env.example`** : ajout des variables `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URL` (Google OAuth / Socialite, deja lues par `config/services.php` mais absentes du fichier d'exemple) et `FIREBASE_SERVER_KEY`, `FIREBASE_PROJECT_ID`, `FIREBASE_SERVICE_ACCOUNT_JSON` (push FCM, idem). Sans ces entrees documentees, une premiere config en production oubliait facilement ces variables requises par `AuthController::redirectToGoogle()`/`handleGoogleCallback()` et `PushNotificationService`.
 ### Added
 - **PA2-AUTO-002 — Validation des dependances tickets PLAN_ACTION2 (#762)** : `dev-hub/tools/validate-plan-action2.ps1` detecte maintenant les cycles de dependances entre tickets PA2 (DFS sur le graphe `Dependencies` du CSV), en plus des dependances vers un ID inconnu deja couvertes. Le script echoue avec le chemin complet du cycle (ex: `PA2-X -> PA2-Y -> PA2-X`).
 
