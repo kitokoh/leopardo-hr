@@ -31,12 +31,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogControl
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
-// ── Edge Download Routes (public, no auth) ────────────────────────────────────────
-Route::prefix('edge')->group(function () {
-    Route::get('/install.sh', [\App\Http\Controllers\Api\V1\EdgeDownloadController::class, 'installScript']);
-    Route::get('/download/docker-compose.yml', [\App\Http\Controllers\Api\V1\EdgeDownloadController::class, 'dockerCompose']);
-    Route::get('/license-public-key', [\App\Http\Controllers\Api\V1\EdgeDownloadController::class, 'licensePublicKey']);
-});
+// Edge routes are now registered by EdgeSyncServiceProvider
 
 Route::prefix('v1')->group(function (): void {
     // Sonde live+ready : DB + Redis + storage. Consommee par Render (deploy hook)
@@ -175,5 +170,12 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
 
         Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
+
+        // Edge node management (super-admin)
+        Route::prefix('edge/nodes')->group(function (): void {
+            Route::get('/', [\App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController::class, 'listNodes']);
+            Route::post('/{id}/sync', [\App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController::class, 'forceSync'])->whereNumber('id');
+            Route::delete('/{id}', [\App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController::class, 'revokeNode'])->whereNumber('id');
+        });
     });
 });
