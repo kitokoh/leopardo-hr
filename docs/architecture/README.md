@@ -19,9 +19,12 @@ api/app/
 
 | Document | Description |
 |---|---|
-| [ADR-001](adr-001-clean-architecture.md) | Pourquoi Clean Architecture |
-| [ADR-002](adr-002-auth-in-core.md) | Pourquoi Auth est dans Core |
-| [ADR-003](adr-003-migration-strategy.md) | Stratégie de migration progressive |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Vue d'ensemble système (containers, monolithe modulaire, tenancy, workflows) — point d'entrée recommandé |
+| [C4_ARCHITECTURE.md](C4_ARCHITECTURE.md) | Diagrammes C4 (contexte, containers, composants) |
+| [ADR registry](adr/README.md) | Toutes les Architecture Decision Records (0001-0007) |
+| [ADR 0005](adr/0005-clean-architecture-modules.md) | Pourquoi Clean Architecture |
+| [ADR 0006](adr/0006-auth-in-core.md) | Pourquoi Auth est dans Core |
+| [ADR 0007](adr/0007-progressive-migration-strategy.md) | Stratégie de migration progressive |
 | [module-creation-guide.md](module-creation-guide.md) | Créer un nouveau module en 5 min |
 | [namespace-map.md](namespace-map.md) | Mapping ancien → nouveau namespace |
 

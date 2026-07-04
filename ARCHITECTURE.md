@@ -10,19 +10,31 @@ Leopardo HR est un monorepo multi-stack couvrant :
 leopardo-hr/
 ├── api/                    # Backend Laravel (PHP 8.4) — cœur métier HRMS
 ├── front/
-│   ├── web/                # Next.js 14 — landing page + dashboard SaaS
+│   ├── web/                # Next.js 15 — landing page + dashboard SaaS (déployé sur Vercel)
+│   ├── web-offline/        # Next.js — PWA offline-first pour le bridge Edge (http://leopardo.local)
 │   ├── admin-dashboard/    # Vue.js 3 — interface super-admin plateforme
-│   ├── mobile_apps/        # Flutter — 4 applications mobiles
+│   ├── mobile_apps/        # Flutter — 5 applications mobiles (voir melos.yaml)
 │   │   ├── leopardo_core/       # Package partagé (design system, services)
 │   │   ├── leopardo_employee/   # App employé
 │   │   ├── leopardo_manager/    # App manager/RH
+│   │   ├── leopardo_hr/         # App RH dédiée
 │   │   └── leopardo_platform_admin/ # App admin plateforme
 │   └── zkteco-kiosk/       # Kiosque HTML/JS pour pointage biométrique
-├── shared/i18n/            # Traductions partagées (fr, en, ar, tr)
-├── openapi/                # Spécification OpenAPI 3.x
+├── edge/                   # Bridge on-prem ZKTeco <-> cloud (Caddy, supervisord, install.sh)
+├── shared/
+│   ├── i18n/               # Traductions partagées (fr, en, ar, tr)
+│   └── mediaForMarketing/  # Assets marketing bruts
+├── openapi/                # Miroir de spécification OpenAPI (source canonique : api/openapi.yaml)
+├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes
 ├── docs/                   # Documentation technique et stratégique
-└── .github/workflows/      # 25+ pipelines CI/CD
+├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
+├── postman/                # Collection Postman de l'API
+├── examples/               # Exemples d'usage du SDK
+├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — voir docs/architecture/ARCHITECTURE.md)
+└── .github/workflows/      # 29 pipelines CI/CD
 ```
+
+> Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
 
 ## Backend — Domain-Driven Design
 
@@ -46,7 +58,9 @@ Modules/<Name>/
 └── Providers/          # ServiceProvider du module
 ```
 
-Modules actifs (21) : `Absence`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `SmartAttendance`, `Training` + `Core/Auth`, `Core/Tenant`
+Modules actifs (18, sous `api/app/Modules/`) : `Absence`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `SmartAttendance`, `Training` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+
+> Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 
 ### Règle de contribution backend
 > **Tout nouveau code métier va dans `api/app/Modules/`.**
