@@ -1418,6 +1418,7 @@ trait CreatesMvpSchema
                 $table->timestampTz('paid_at')->nullable();
                 $table->unsignedInteger('approved_by')->nullable();
                 $table->string('payment_reference', 100)->nullable();
+                $table->text('rejection_reason')->nullable();
                 $table->timestamps();
             });
         }
@@ -1432,6 +1433,7 @@ trait CreatesMvpSchema
                 $table->date('date');
                 $table->string('receipt_path', 500)->nullable();
                 $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->nullable();
             });
         }
 

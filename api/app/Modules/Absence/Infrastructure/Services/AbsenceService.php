@@ -58,6 +58,7 @@ class AbsenceService
             'absence_type_id'  => $dto->absenceTypeId,
             'start_date'       => $dto->startDate,
             'end_date'         => $dto->endDate,
+            'days_count'       => max(1, $days),
             'status'           => 'pending',
             'reason'           => $dto->reason,
         ]);
@@ -73,10 +74,8 @@ class AbsenceService
         }
 
         $absence->update([
-            'status'          => 'approved',
-            'approved_by'     => $approvedBy,
-            'manager_comment' => $comment,
-            'approved_at'     => now(),
+            'status'      => 'approved',
+            'approved_by' => $approvedBy,
         ]);
 
         return $absence->fresh();
@@ -94,7 +93,7 @@ class AbsenceService
         $absence->update([
             'status'          => 'rejected',
             'approved_by'     => $rejectedBy,
-            'manager_comment' => $comment,
+            'rejected_reason' => $comment,
         ]);
 
         return $absence->fresh();
