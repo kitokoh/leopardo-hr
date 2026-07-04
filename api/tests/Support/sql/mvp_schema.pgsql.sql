@@ -470,7 +470,8 @@ CREATE TABLE shared_tenants.absence_types (
     deducts_leave boolean NOT NULL DEFAULT true,
     requires_proof boolean NOT NULL DEFAULT false,
     max_days_once integer NULL,
-    created_at timestamptz NULL
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
 );
 
 CREATE TABLE shared_tenants.absences (
