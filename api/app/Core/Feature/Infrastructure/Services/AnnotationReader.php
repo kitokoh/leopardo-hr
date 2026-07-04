@@ -125,8 +125,13 @@ class AnnotationReader
             $arguments = $attribute->getArguments();
 
             // Mapper les attributs connus
+            // NB: les attributs canoniques vivent desormais sous App\Shared\Attributes\*
+            // (App\Attributes\* n'est qu'un alias de compat via class_alias()).
+            // ReflectionAttribute::getName() renvoie le nom utilise au point de
+            // declaration (le `use` du controleur), donc on doit matcher les deux.
             switch ($name) {
                 case 'App\\Attributes\\ApiFeature':
+                case 'App\\Shared\\Attributes\\ApiFeature':
                     $annotations['title'] = $arguments['title'] ?? null;
                     $annotations['description'] = $arguments['description'] ?? null;
                     $annotations['ui_type'] = $arguments['ui_type'] ?? 'generic';
@@ -138,6 +143,7 @@ class AnnotationReader
                     break;
 
                 case 'App\\Attributes\\RequiresPermission':
+                case 'App\\Shared\\Attributes\\RequiresPermission':
                     $permissions = $arguments['permissions'] ?? $arguments[0] ?? [];
                     if (! is_array($permissions)) {
                         $permissions = [$permissions];
@@ -149,6 +155,7 @@ class AnnotationReader
                     break;
 
                 case 'App\\Attributes\\MobileCompatible':
+                case 'App\\Shared\\Attributes\\MobileCompatible':
                     $annotations['mobile_compatible'] = $arguments['compatible'] ?? $arguments[0] ?? true;
                     $annotations['mobile_version_min'] = $arguments['minimum_version'] ?? $annotations['mobile_version_min'] ?? null;
                     $annotations['mobile_version_max'] = $arguments['maximum_version'] ?? $annotations['mobile_version_max'] ?? null;

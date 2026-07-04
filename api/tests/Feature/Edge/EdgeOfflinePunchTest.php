@@ -61,7 +61,7 @@ class EdgeOfflinePunchTest extends TestCase
 
     protected function tearDown(): void
     {
-        Schema::dropIfExists('edge_nodes');
+        DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
         $this->tearDownMvpSchema();
         parent::tearDown();
     }
@@ -76,7 +76,7 @@ class EdgeOfflinePunchTest extends TestCase
         // DetectSilentEdgeNodes (non routes/planifies). On la remplace ici
         // pour la duree du test, puis tearDown() la drop pour laisser le
         // prochain setUp() recreer le schema canonique.
-        \Illuminate\Support\Facades\Schema::dropIfExists('edge_nodes');
+        DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE');
 
         \Illuminate\Support\Facades\Schema::create('edge_nodes', function ($table): void {
             $table->id();
