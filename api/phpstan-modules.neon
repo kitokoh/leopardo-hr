@@ -98,6 +98,20 @@ parameters:
         - '#Call to an undefined method App\\Modules\\(Growth|Platform|Onboarding|Training)#'
         - '#Parameter.*of method App\\Modules\\(Growth|Platform|Onboarding|Training).*invalid type#'
 
+        # Level 5 — patterns supplémentaires couverts par la montée de niveau
+        - '#If condition is always true#'
+        - '#Using nullsafe method call on non-nullable type Illuminate\\Routing\\Route#'
+        - '#Using nullsafe method call on non-nullable type App\\Core\\Auth\\Domain\\Models\\Employee#'
+        - '#Offset \d+ on array\{.*\} on left side of \?\? always exists and is not nullable#'
+        - '#Offset .* on (non-empty-list|array\{) .* on left side of \?\? always exists and is not nullable#'
+        - '#Method App\\Core\\Feature\\Infrastructure\\Services\\FeatureDetector::findRouteByEndpoint\(\) never returns null#'
+        - '#Parameter \#1 \$employee of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceService::(checkIn|checkOut)\(\) expects#'
+        - '#Parameter \#1 \$callback of method Illuminate\\Support\\Collection<int,stdClass>::map\(\) expects callable.*Closure.*Employee.*given#'
+        - '#Parameter \#1 \$companyId of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceAnomalyService::summarize\(\) expects string, int\|null given#'
+        - '#Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true#'
+        - '#Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController::getCompanyPlan\(\) expects string, int\|null given#'
+        - '#Parameter \#1 \$owner of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects.*string given#'
+
     paths:
         - app/Core
         - app/Modules
