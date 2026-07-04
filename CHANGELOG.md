@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.22.2] - 2026-07-04
+
+### Fixed
+- **CI casse sur `main` malgre le fix v4.21.1 (Backend + Backend Coverage toujours en echec, 633/902 tests)** :
+  - **75 fichiers shim `app/Models/*.php`** (aliases DDD generes en v4.22.0) : `class_alias(App\Modules\...\Foo::class, ...)` resolvait le nom de classe cible relativement au namespace courant (`App\Models`) au lieu du namespace absolu -> `Class "App\Models\App\Modules\...\Foo" not found` sur la quasi-totalite des tests Feature/Unit touchant ces modeles. Correction : `\App\Modules\...\Foo::class` (backslash absolu) dans chaque shim.
+  - `AppServiceProvider` : ajout de `Factory::guessFactoryNamesUsing()` — les modeles deplaces en DDD (`Core/Tenant/Domain/Models/Company`, etc.) faisaient echouer `Company::factory()` avec `Class "Database\Factories\Core\Tenant\Domain\Models\CompanyFactory" not found` car Laravel calcule par defaut le namespace complet du modele, alors que toutes les factories vivent a plat dans `database/factories/{Model}Factory.php`.
+  - Migration `2026_06_30_000001_create_edge_nodes_table` : le `down()` supprimait `edge_nodes` sans condition alors que le `up()` se neutralise deja si la table existe (creee par la migration EdgeSync du 29/06, schema UUID). Au rollback, `sync_logs`/`sync_queue`/`edge_licenses` (FK vers `edge_nodes`) n'etaient pas encore droppees -> `cannot drop table edge_nodes because other objects depend on it`. Correction : ne dropper que si c'est le schema legacy (presence de la colonne `node_id`).
+
 ## [4.22.1] - 2026-07-02
 
 ### Fixed
