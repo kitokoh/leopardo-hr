@@ -3,6 +3,14 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.4] - 2026-07-04
+
+### Added
+- **PA2-AUTO-002 — Validation des dependances tickets PLAN_ACTION2 (#762)** : `dev-hub/tools/validate-plan-action2.ps1` detecte maintenant les cycles de dependances entre tickets PA2 (DFS sur le graphe `Dependencies` du CSV), en plus des dependances vers un ID inconnu deja couvertes. Le script echoue avec le chemin complet du cycle (ex: `PA2-X -> PA2-Y -> PA2-X`).
+
+### Fixed
+- **Cycle de dependance reel detecte dans `03_GITHUB_PROJECT_IMPORT.csv`** : `PA2-MKT-007` (Funnel CRM marketing) et `PA2-ADM-004` (Pipeline CRM platform) se referencaient mutuellement. Le pipeline admin affiche les leads produits par le funnel marketing — la dependance correcte est unidirectionnelle (`PA2-ADM-004 -> PA2-MKT-007`) ; la dependance inverse sur `PA2-MKT-007` a ete retiree.
+
 ## [4.22.3] - 2026-07-04
 
 ### Fixed
