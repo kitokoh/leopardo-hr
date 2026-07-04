@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\TaskComment::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\TaskComment::class,
+        \App\Modules\Planning\Domain\Models\TaskComment::class,
         \App\Models\TaskComment::class,
     );
 }

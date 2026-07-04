@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ZktecoDevice::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\ZktecoDevice::class,
+        \App\Modules\Attendance\Domain\Models\ZktecoDevice::class,
         \App\Models\ZktecoDevice::class,
     );
 }

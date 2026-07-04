@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\UserInvitation::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\UserInvitation::class,
+        \App\Modules\HR\Domain\Models\UserInvitation::class,
         \App\Models\UserInvitation::class,
     );
 }

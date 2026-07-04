@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\TrainingEnrollment::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\TrainingEnrollment::class,
+        \App\Modules\HR\Domain\Models\TrainingEnrollment::class,
         \App\Models\TrainingEnrollment::class,
     );
 }

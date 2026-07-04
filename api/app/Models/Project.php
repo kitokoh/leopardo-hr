@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Project::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\Project::class,
+        \App\Modules\Planning\Domain\Models\Project::class,
         \App\Models\Project::class,
     );
 }

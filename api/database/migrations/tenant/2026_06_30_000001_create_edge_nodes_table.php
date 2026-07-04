@@ -71,6 +71,14 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('edge_nodes');
+        // Ne supprimer edge_nodes que si CETTE migration l'a créée (schéma legacy
+        // bigint avec colonne node_id). Si la table a été créée par
+        // 2026_06_29_000001_create_edge_sync_tables.php (module EdgeSync DDD,
+        // schéma UUID sans colonne node_id), ne pas la toucher ici : ce sont
+        // sync_logs/sync_queue/edge_licenses (FK vers edge_nodes) qui doivent
+        // être rollback avant elle par leur propre migration.
+        if (Schema::hasTable('edge_nodes') && Schema::hasColumn('edge_nodes', 'node_id')) {
+            Schema::dropIfExists('edge_nodes');
+        }
     }
 };

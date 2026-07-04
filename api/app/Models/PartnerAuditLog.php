@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PartnerAuditLog::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\PartnerAuditLog::class,
+        \App\Modules\Billing\Domain\Models\PartnerAuditLog::class,
         \App\Models\PartnerAuditLog::class,
     );
 }

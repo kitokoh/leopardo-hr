@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\AttendanceLog::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\AttendanceLog::class,
+        \App\Modules\Attendance\Domain\Models\AttendanceLog::class,
         \App\Models\AttendanceLog::class,
     );
 }

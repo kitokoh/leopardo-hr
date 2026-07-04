@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Department::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\Department::class,
+        \App\Modules\HR\Domain\Models\Department::class,
         \App\Models\Department::class,
     );
 }

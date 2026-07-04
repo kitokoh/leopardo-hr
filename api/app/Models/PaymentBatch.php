@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PaymentBatch::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\PaymentBatch::class,
+        \App\Modules\Payroll\Domain\Models\PaymentBatch::class,
         \App\Models\PaymentBatch::class,
     );
 }

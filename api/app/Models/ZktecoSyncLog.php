@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ZktecoSyncLog::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\ZktecoSyncLog::class,
+        \App\Modules\Attendance\Domain\Models\ZktecoSyncLog::class,
         \App\Models\ZktecoSyncLog::class,
     );
 }

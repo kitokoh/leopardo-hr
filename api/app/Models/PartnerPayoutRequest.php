@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PartnerPayoutRequest::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\PartnerPayoutRequest::class,
+        \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::class,
         \App\Models\PartnerPayoutRequest::class,
     );
 }

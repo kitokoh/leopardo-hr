@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PaySlipLine::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\PaySlipLine::class,
+        \App\Modules\Payroll\Domain\Models\PaySlipLine::class,
         \App\Models\PaySlipLine::class,
     );
 }

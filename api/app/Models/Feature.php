@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Feature::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\Feature::class,
+        \App\Modules\Billing\Domain\Models\Feature::class,
         \App\Models\Feature::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\VehicleMaintenance::class, false)) {
     class_alias(
-        App\Modules\Fleet\Domain\Models\VehicleMaintenance::class,
+        \App\Modules\Fleet\Domain\Models\VehicleMaintenance::class,
         \App\Models\VehicleMaintenance::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PaySlip::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\PaySlip::class,
+        \App\Modules\Payroll\Domain\Models\PaySlip::class,
         \App\Models\PaySlip::class,
     );
 }

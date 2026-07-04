@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\WebhookDelivery::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\WebhookDelivery::class,
+        \App\Modules\Billing\Domain\Models\WebhookDelivery::class,
         \App\Models\WebhookDelivery::class,
     );
 }
