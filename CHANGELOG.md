@@ -15,6 +15,8 @@
 
 ### Fixed
 - **Cycle de dependance reel detecte dans `03_GITHUB_PROJECT_IMPORT.csv`** : `PA2-MKT-007` (Funnel CRM marketing) et `PA2-ADM-004` (Pipeline CRM platform) se referencaient mutuellement. Le pipeline admin affiche les leads produits par le funnel marketing — la dependance correcte est unidirectionnelle (`PA2-ADM-004 -> PA2-MKT-007`) ; la dependance inverse sur `PA2-MKT-007` a ete retiree.
+  - `App\Modules\Attendance\Domain\Models\AttendanceLog` sans `$casts` pour `check_in`/`check_out`/`date`/`punch_meta` -> `Error: Call to a member function diffInSeconds()/format()/greaterThan() on string` (Attendance*Test, EstimationServiceTest, AutoCloseAttendanceCommandTest) et `ErrorException: Array to string conversion` a l'insertion de `punch_meta` (CheckInTest, 4 tests). Ajoute les casts `date`, `datetime`, `boolean`, `array`.
+  - `AttendanceLog`, `AttendanceKiosk`, `BiometricEnrollmentRequest` : meme bug d'isolation tenant que `AbsenceType` (trait `BelongsToCompany` manquant alors que `company_id` est NOT NULL sur les 3 tables) -> `TenantModelIsolationTest` echouait sur les 3 (`assertCount(1, ...)` recevait 2). Les usages cross-tenant existants (`AutoCloseAttendanceCommand`, `PlatformCompanyHealthService`) utilisaient deja `withoutGlobalScopes()` explicitement et ne sont pas affectes par l'ajout du scope global.
 
 ## [4.22.3] - 2026-07-04
 
