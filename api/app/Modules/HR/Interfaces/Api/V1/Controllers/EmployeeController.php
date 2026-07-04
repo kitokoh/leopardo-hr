@@ -31,11 +31,11 @@ class EmployeeController extends Controller
     ) {}
 
     /**
-     * Liste des employÃ©s avec pagination
+     * Liste des employés avec pagination
      *
-     * @title Liste des EmployÃ©s
+     * @title Liste des Employés
      *
-     * @description RÃ©cupÃ¨re la liste paginÃ©e de tous les employÃ©s de l'entreprise
+     * @description Récupère la liste paginée de tous les employés de l'entreprise
      *
      * @permission employees.view
      *
@@ -44,8 +44,8 @@ class EmployeeController extends Controller
      * @ui list
      */
     #[ApiFeature(
-        title: 'Liste des EmployÃ©s',
-        description: 'RÃ©cupÃ¨re la liste paginÃ©e de tous les employÃ©s de l\'entreprise',
+        title: 'Liste des Employés',
+        description: 'Récupère la liste paginée de tous les employés de l\'entreprise',
         ui_type: 'list',
         mobile_compatible: true
     )]
@@ -279,11 +279,11 @@ class EmployeeController extends Controller
     }
 
     /**
-     * CrÃ©er un nouvel employÃ©
+     * Créer un nouvel employé
      *
-     * @title CrÃ©er un EmployÃ©
+     * @title Créer un Employé
      *
-     * @description CrÃ©e un nouvel employÃ© dans le systÃ¨me
+     * @description Crée un nouvel employé dans le système
      *
      * @permission employees.create
      *
@@ -292,8 +292,8 @@ class EmployeeController extends Controller
      * @ui form
      */
     #[ApiFeature(
-        title: 'CrÃ©er un EmployÃ©',
-        description: 'CrÃ©e un nouvel employÃ© dans le systÃ¨me',
+        title: 'Créer un Employé',
+        description: 'Crée un nouvel employé dans le système',
         ui_type: 'form',
         mobile_compatible: true
     )]
@@ -314,11 +314,11 @@ class EmployeeController extends Controller
     }
 
     /**
-     * Afficher les dÃ©tails d'un employÃ©
+     * Afficher les détails d'un employé
      *
-     * @title DÃ©tails de l'EmployÃ©
+     * @title Détails de l'Employé
      *
-     * @description Affiche les informations dÃ©taillÃ©es d'un employÃ© spÃ©cifique
+     * @description Affiche les informations détaillées d'un employé spécifique
      *
      * @permission employees.view
      *
@@ -327,8 +327,8 @@ class EmployeeController extends Controller
      * @ui detail
      */
     #[ApiFeature(
-        title: 'DÃ©tails de l\'EmployÃ©',
-        description: 'Affiche les informations dÃ©taillÃ©es d\'un employÃ© spÃ©cifique',
+        title: 'Détails de l\'Employé',
+        description: 'Affiche les informations détaillées d\'un employé spécifique',
         ui_type: 'detail',
         mobile_compatible: true
     )]

@@ -102,7 +102,9 @@ class SocialDeclarationGenerator
 
         foreach ($employees as $emp) {
             $gross = round($emp['gross_salary'], 2);
-            $days = $emp['days_worked'];
+            // CNSS Maroc : a defaut d'info, on retient la convention standard
+            // d'un trimestre complet (26 jours ouvres/mois x 3 mois = 78 jours).
+            $days = $emp['days_worked'] ?? 78;
 
             $totalGross += $gross;
             $totalDays += $days;

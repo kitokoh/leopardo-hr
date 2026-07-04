@@ -220,10 +220,10 @@ class PaymentWebhookControllerTest extends TestCase
         $response = $this->withHeaders([
             'Stripe-Signature' => 't=9999999999,v1=invalidsignature',
             'Content-Type' => 'application/json',
-        ])->postJson('/api/v1/webhooks/stripe', json_encode([
+        ])->postJson('/api/v1/webhooks/stripe', [
             'type' => 'invoice.paid',
             'data' => ['object' => ['id' => 'in_sig_test']],
-        ]));
+        ]);
 
         // With STRIPE_WEBHOOK_SECRET unset, StripeWebhookController falls back to StripeService
         // which skips verification → 200. With secret set → 400. Both are documented behaviour.
