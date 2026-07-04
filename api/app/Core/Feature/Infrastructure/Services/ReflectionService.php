@@ -210,9 +210,13 @@ class ReflectionService
         try {
             $reflection = new ReflectionClass($className);
 
-            // Vérifier si c'est dans le namespace des contrôleurs API
+            // Vérifier si c'est dans le namespace des contrôleurs API.
+            // Legacy: App\Http\Controllers\Api\*
+            // DDD (modules/core) : App\(Modules|Core)\<Nom>\Interfaces\Api\*
             $namespace = $reflection->getNamespaceName();
-            if (! str_contains($namespace, 'App\\Http\\Controllers\\Api')) {
+            $isLegacyApiNamespace = str_contains($namespace, 'App\\Http\\Controllers\\Api');
+            $isDddApiNamespace = (bool) preg_match('/^App\\(Modules|Core)\\[^\\]+\\Interfaces\\Api\\/', $namespace);
+            if (! $isLegacyApiNamespace && ! $isDddApiNamespace) {
                 return false;
             }
 

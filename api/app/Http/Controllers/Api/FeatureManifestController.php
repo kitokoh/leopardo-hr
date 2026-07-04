@@ -188,8 +188,10 @@ class FeatureManifestController extends Controller
         return array_values(array_filter($features, function (mixed $feature) use ($user): bool {
             /** @var array<string, mixed> $featureArr */
             $featureArr          = is_array($feature) ? $feature : [];
-            $requiredPermissions = is_array($featureArr['required_permissions'] ?? null)
-                ? $featureArr['required_permissions']
+            // Feature::toManifestArray() expose la cle 'permissions' (pas
+            // 'required_permissions', qui n'existe sur aucun modele de ce module).
+            $requiredPermissions = is_array($featureArr['permissions'] ?? null)
+                ? $featureArr['permissions']
                 : [];
 
             if (empty($requiredPermissions)) {
