@@ -230,6 +230,20 @@
 - **Modules\HR\UserInvitationService — import TenantManager** : Ajout du `use App\Services\TenantManager` manquant qui causait un `BindingResolutionException` à l'injection de dépendance.
 - **Recruitment\RecruitmentService — PHPStan CarbonInterface** : `published_at` est maintenant assigné via `Carbon::instance(now())` pour satisfaire le type `Carbon|null` déclaré sur `JobPosting::$published_at`.
 
+## [4.17.4] - 2026-07-04
+
+### Changed
+
+- **EdgeSync** : Migre `EdgeController` et `EdgeDownloadController` de `App\Http\Controllers\Api\V1` vers `App\Modules\EdgeSync\Interfaces\Api\V1`. Routes gérées par `EdgeSyncServiceProvider`. Les anciens fichiers plats sont supprimés.
+- **PHPStan modules** : Niveau relevé de 3 → 5 avec suppressions ciblées pour les modules en cours de migration.
+
+### Added
+
+- **Growth/Application/Actions** : `ApplyAsPartner`, `ApprovePartner`, `RequestPayout` — couche Application enrichie.
+- **Training/Application/Actions** : `CreateCourse`, `EnrollEmployee`, `CompleteEnrollment` — use cases DDD complets.
+- **Platform/Application/Actions** : `ProvisionCompany`, `ActivateCompany`, `SuspendCompany` — cycle de vie tenant.
+- **Onboarding/Application/Actions** : `SeedDefaultSteps`, `CompleteStep`, `SkipStep` — parcours onboarding modulaire.
+
 ## [4.17.3] - 2026-06-28
 
 ### Changed
