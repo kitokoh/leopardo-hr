@@ -122,7 +122,7 @@ Explore our comprehensive guides for every role and layer:
 
 | Category | Guides |
 | :--- | :--- |
-| 🏗 **Architecture** | [System Design](docs/architecture/SYSTEM_DESIGN.md) • [Multi-Tenancy](docs/architecture/MULTITENANCY.md) • [Performance](docs/architecture/PERFORMANCE.md) |
+| 🏗 **Architecture** | [System Architecture](docs/architecture/ARCHITECTURE.md) • [Multi-Tenancy](docs/architecture/MULTITENANCY.md) • [Performance](docs/architecture/PERFORMANCE.md) |
 | 🔑 **Security** | [Security Policy](docs/security/SECURITY.md) • [Auth System](docs/security/AUTH_SYSTEM.md) • [RBAC Matrix](docs/security/RBAC_SYSTEM.md) |
 | 🤖 **AI & Innovation** | [AI Architecture](docs/ai/AI_ARCHITECTURE.md) • [Predictive Analytics](docs/ai/AI_ARCHITECTURE.md) |
 | 🌐 **API & Dev** | [API Reference](docs/api/API_REFERENCE.md) • [OpenAPI Spec](api/openapi.yaml) • [Postman](postman/) |

@@ -59,5 +59,5 @@ If you prefer running Laravel directly:
 ## 📚 Next Steps
 
 - Explore the **[API Reference](api/README.md)**.
-- Understand the **[System Design](architecture/SYSTEM_DESIGN.md)**.
+- Understand the **[System Architecture](architecture/ARCHITECTURE.md)**.
 - Check the **[Contribution Guidelines](contributing/GUIDELINES.md)**.

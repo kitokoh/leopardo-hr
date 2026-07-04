@@ -1,7 +1,10 @@
-# ADR-001 — Adoption de la Clean Architecture
+# ADR 0005 - Adoption de la Clean Architecture
+
+## Statut
+
+Acceptee.
 
 **Date** : 2026-06-27
-**Statut** : Accepted
 **Décideurs** : Équipe technique Leopardo HR
 
 ## Contexte
