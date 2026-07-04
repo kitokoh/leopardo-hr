@@ -1,3 +1,0 @@
-/home/runner/work/leopardo-hr/leopardo-hr/api/app/Http/Middleware/PartnerLinkMiddleware.php:34:Cannot access property $status on App\Models\Partner|null.
-/home/runner/work/leopardo-hr/leopardo-hr/api/app/Http/Middleware/PartnerLinkMiddleware.php:50:Parameter #2 $value of function cookie expects string|null, int given.
-/home/runner/work/leopardo-hr/leopardo-hr/api/app/Http/Middleware/PartnerLinkMiddleware.php:62:Method App\Http\Middleware\PartnerLinkMiddleware::handle() should return Symfony\Component\HttpFoundation\Response but returns mixed.

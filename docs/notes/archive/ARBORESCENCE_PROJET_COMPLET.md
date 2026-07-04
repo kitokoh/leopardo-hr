@@ -21,7 +21,7 @@ leopardo-rh/                          ← Racine du monorepo (Gestion Employer)
 │   ├── tests/                        ← Suite de tests (Unit, Feature)
 │   ├── Dockerfile.prod               ← Config Production (FrankenPHP pour Render)
 │   ├── docker-compose.yml            ← Orchestration locale
-│   └── start-local.ps1               ← Script de démarrage rapide local
+│   └── scripts/start-local.ps1       ← Script de démarrage rapide local
 ├── mobile/                           ← MOBILE Flutter
 │   ├── assets/                       ← Images, Fonts, Mocks JSON
 │   ├── lib/                          ← Code source Dart (Clean Architecture)

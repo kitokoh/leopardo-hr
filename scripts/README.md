@@ -1,5 +1,14 @@
 # Scripts
 
+## capture_screenshots.py
+
+Playwright script that captures marketing/dashboard screenshots used in `README.md` and `docs/`.
+Run from the repo root so relative output paths (`screenshots/<platform>/<name>.png`) resolve correctly:
+
+```bash
+python3 scripts/capture_screenshots.py
+```
+
 ## cleanup-legacy.sh
 
 Script de nettoyage progressif de l'ancienne structure flat.
