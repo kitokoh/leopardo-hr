@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+
+## [4.22.3] - 2026-07-04
+
+### Fixed
+- **Suite du fix CI v4.22.2 : 160 echecs restants sur 899 tests (Backend + Backend Coverage)** :
+  - Modele canonique `App\Modules\Absence\Domain\Models\Absence` (utilise via le shim `App\Models\Absence`) ne declarait ni `company_id` (NOT NULL en base) dans `$fillable` ni le trait `BelongsToCompany` -> `QueryException: null value in column "company_id"`. Reecrit pour matcher le schema reel de la table `absences` (`days_count`, `proof_path`, `rejected_reason`) ; `AbsenceService::approve()`/`reject()` adaptes en consequence.
+  - Meme bug sur `App\Modules\Expense\Domain\Models\ExpenseClaim` : `company_id` absent du `$fillable`. Ajoute, avec `paid_at`/`payment_reference` (deja en base, absents du modele).
+  - Colonne `rejection_reason` manquante sur `expense_claims` : `ExpenseClaimController::reject()` y ecrit depuis l'origine du module mais ni la migration ni la fixture de test ne la definissaient -> `QueryException` au premier appel de `PUT .../reject`. Ajoutee a la migration additive `2026_07_04_000001_add_missing_updated_at_columns.php` et a la fixture de test.
+  - `EdgeSyncTest::actingAsCompanyAdmin()` creait un `App\Core\Auth\Domain\Models\User` avec `company_id`/`role` — colonnes qui n'existent pas sur ce modele dans ce codebase (c'est `Employee` qui les porte). Remplace par `Employee::factory()`.
+
 ## [4.22.2] - 2026-07-04
 
 ### Fixed
