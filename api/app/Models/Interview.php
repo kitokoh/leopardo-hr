@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Interview::class, false)) {
     class_alias(
-        App\Modules\Recruitment\Domain\Models\Interview::class,
+        \App\Modules\Recruitment\Domain\Models\Interview::class,
         \App\Models\Interview::class,
     );
 }

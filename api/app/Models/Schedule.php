@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Schedule::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\Schedule::class,
+        \App\Modules\Planning\Domain\Models\Schedule::class,
         \App\Models\Schedule::class,
     );
 }

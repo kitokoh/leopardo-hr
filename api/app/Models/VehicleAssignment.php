@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\VehicleAssignment::class, false)) {
     class_alias(
-        App\Modules\Fleet\Domain\Models\VehicleAssignment::class,
+        \App\Modules\Fleet\Domain\Models\VehicleAssignment::class,
         \App\Models\VehicleAssignment::class,
     );
 }

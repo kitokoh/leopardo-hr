@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\TaxSlab::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\TaxSlab::class,
+        \App\Modules\Payroll\Domain\Models\TaxSlab::class,
         \App\Models\TaxSlab::class,
     );
 }

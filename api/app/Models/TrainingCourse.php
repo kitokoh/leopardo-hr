@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\TrainingCourse::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\TrainingCourse::class,
+        \App\Modules\HR\Domain\Models\TrainingCourse::class,
         \App\Models\TrainingCourse::class,
     );
 }

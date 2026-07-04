@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\LeavePolicy::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\LeavePolicy::class,
+        \App\Modules\Planning\Domain\Models\LeavePolicy::class,
         \App\Models\LeavePolicy::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PartnerReferral::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\PartnerReferral::class,
+        \App\Modules\Billing\Domain\Models\PartnerReferral::class,
         \App\Models\PartnerReferral::class,
     );
 }

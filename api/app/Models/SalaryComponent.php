@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\SalaryComponent::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\SalaryComponent::class,
+        \App\Modules\Payroll\Domain\Models\SalaryComponent::class,
         \App\Models\SalaryComponent::class,
     );
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Absence\Domain\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AbsenceType extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'code',

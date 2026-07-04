@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Applicant::class, false)) {
     class_alias(
-        App\Modules\Recruitment\Domain\Models\Applicant::class,
+        \App\Modules\Recruitment\Domain\Models\Applicant::class,
         \App\Models\Applicant::class,
     );
 }

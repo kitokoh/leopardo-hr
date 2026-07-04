@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;

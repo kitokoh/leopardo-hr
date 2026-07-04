@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\CalendarEvent::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\CalendarEvent::class,
+        \App\Modules\Attendance\Domain\Models\CalendarEvent::class,
         \App\Models\CalendarEvent::class,
     );
 }

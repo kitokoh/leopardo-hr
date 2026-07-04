@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\LeaveBalance::class, false)) {
     class_alias(
-        App\Modules\Absence\Domain\Models\LeaveBalance::class,
+        \App\Modules\Absence\Domain\Models\LeaveBalance::class,
         \App\Models\LeaveBalance::class,
     );
 }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Billing\Infrastructure\Services;
 
+use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
 use App\Models\Commission;
 use App\Models\Company;
 use App\Models\Partner;

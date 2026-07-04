@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\VehicleTrip::class, false)) {
     class_alias(
-        App\Modules\Fleet\Domain\Models\VehicleTrip::class,
+        \App\Modules\Fleet\Domain\Models\VehicleTrip::class,
         \App\Models\VehicleTrip::class,
     );
 }

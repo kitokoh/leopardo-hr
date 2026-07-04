@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\AttendanceKiosk::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\AttendanceKiosk::class,
+        \App\Modules\Attendance\Domain\Models\AttendanceKiosk::class,
         \App\Models\AttendanceKiosk::class,
     );
 }

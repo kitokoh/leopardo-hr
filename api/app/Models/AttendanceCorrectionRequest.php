@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\AttendanceCorrectionRequest::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest::class,
+        \App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest::class,
         \App\Models\AttendanceCorrectionRequest::class,
     );
 }
