@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\VehicleAlert::class, false)) {
     class_alias(
-        App\Modules\Fleet\Domain\Models\VehicleAlert::class,
+        \App\Modules\Fleet\Domain\Models\VehicleAlert::class,
         \App\Models\VehicleAlert::class,
     );
 }

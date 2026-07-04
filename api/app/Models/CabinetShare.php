@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\CabinetShare::class, false)) {
     class_alias(
-        App\Modules\Cabinet\Domain\Models\CabinetShare::class,
+        \App\Modules\Cabinet\Domain\Models\CabinetShare::class,
         \App\Models\CabinetShare::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Subscription::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\Subscription::class,
+        \App\Modules\Billing\Domain\Models\Subscription::class,
         \App\Models\Subscription::class,
     );
 }

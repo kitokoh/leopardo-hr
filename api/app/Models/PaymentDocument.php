@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PaymentDocument::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\PaymentDocument::class,
+        \App\Modules\Payroll\Domain\Models\PaymentDocument::class,
         \App\Models\PaymentDocument::class,
     );
 }

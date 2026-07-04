@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Absence\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,6 +25,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Absence extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'employee_id',
         'absence_type_id',

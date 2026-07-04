@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ExpenseItem::class, false)) {
     class_alias(
-        App\Modules\Expense\Domain\Models\ExpenseItem::class,
+        \App\Modules\Expense\Domain\Models\ExpenseItem::class,
         \App\Models\ExpenseItem::class,
     );
 }

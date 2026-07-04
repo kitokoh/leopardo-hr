@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\PayrollRun::class, false)) {
     class_alias(
-        App\Modules\Payroll\Domain\Models\PayrollRun::class,
+        \App\Modules\Payroll\Domain\Models\PayrollRun::class,
         \App\Models\PayrollRun::class,
     );
 }

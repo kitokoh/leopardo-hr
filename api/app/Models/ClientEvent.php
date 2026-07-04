@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ClientEvent::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\ClientEvent::class,
+        \App\Modules\Planning\Domain\Models\ClientEvent::class,
         \App\Models\ClientEvent::class,
     );
 }

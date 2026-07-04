@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\LeaveAccrual::class, false)) {
     class_alias(
-        App\Modules\Planning\Domain\Models\LeaveAccrual::class,
+        \App\Modules\Planning\Domain\Models\LeaveAccrual::class,
         \App\Models\LeaveAccrual::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\Contract::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\Contract::class,
+        \App\Modules\HR\Domain\Models\Contract::class,
         \App\Models\Contract::class,
     );
 }

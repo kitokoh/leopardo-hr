@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ContractAmendment::class, false)) {
     class_alias(
-        App\Modules\HR\Domain\Models\ContractAmendment::class,
+        \App\Modules\HR\Domain\Models\ContractAmendment::class,
         \App\Models\ContractAmendment::class,
     );
 }

@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ApprovalDecision::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\ApprovalDecision::class,
+        \App\Modules\Attendance\Domain\Models\ApprovalDecision::class,
         \App\Models\ApprovalDecision::class,
     );
 }

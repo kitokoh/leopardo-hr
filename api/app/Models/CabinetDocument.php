@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\CabinetDocument::class, false)) {
     class_alias(
-        App\Modules\Cabinet\Domain\Models\CabinetDocument::class,
+        \App\Modules\Cabinet\Domain\Models\CabinetDocument::class,
         \App\Models\CabinetDocument::class,
     );
 }

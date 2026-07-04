@@ -70,9 +70,13 @@ class EdgeOfflinePunchTest extends TestCase
 
     private function createEdgeNodesTable(): void
     {
-        if (DB::getSchemaBuilder()->hasTable('edge_nodes')) {
-            return;
-        }
+        // La table edge_nodes canonique (module EdgeSync DDD, schema UUID/slug)
+        // est deja creee par setUpMvpSchema(). Ce test cible un ancien schema
+        // legacy (bigint + node_id) utilise par le code mort EdgeController /
+        // DetectSilentEdgeNodes (non routes/planifies). On la remplace ici
+        // pour la duree du test, puis tearDown() la drop pour laisser le
+        // prochain setUp() recreer le schema canonique.
+        \Illuminate\Support\Facades\Schema::dropIfExists('edge_nodes');
 
         \Illuminate\Support\Facades\Schema::create('edge_nodes', function ($table): void {
             $table->id();

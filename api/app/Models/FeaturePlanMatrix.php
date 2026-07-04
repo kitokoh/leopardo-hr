@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\FeaturePlanMatrix::class, false)) {
     class_alias(
-        App\Modules\Billing\Domain\Models\FeaturePlanMatrix::class,
+        \App\Modules\Billing\Domain\Models\FeaturePlanMatrix::class,
         \App\Models\FeaturePlanMatrix::class,
     );
 }

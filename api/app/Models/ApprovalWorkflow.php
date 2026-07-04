@@ -18,7 +18,7 @@ namespace App\Models;
 
 if (! class_exists(\App\Models\ApprovalWorkflow::class, false)) {
     class_alias(
-        App\Modules\Attendance\Domain\Models\ApprovalWorkflow::class,
+        \App\Modules\Attendance\Domain\Models\ApprovalWorkflow::class,
         \App\Models\ApprovalWorkflow::class,
     );
 }
