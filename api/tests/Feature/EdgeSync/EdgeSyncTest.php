@@ -333,11 +333,15 @@ class EdgeSyncTest extends TestCase
 
     private function actingAsCompanyAdmin(Company $company): self
     {
-        $user = \App\Core\Auth\Domain\Models\User::factory()->create([
+        // App\Core\Auth\Domain\Models\User (table `users`) n'a pas de colonne
+        // company_id/role : ce sont les colonnes du modele tenant Employee.
+        // C'est Employee qui porte le role admin dans ce codebase.
+        $admin = \App\Core\Auth\Domain\Models\Employee::factory()->create([
             'company_id' => $company->id,
             'role'       => 'admin',
         ]);
-        return $this->actingAs($user, 'sanctum');
+
+        return $this->actingAs($admin, 'sanctum');
     }
 
     private function withEdgeToken(): void
