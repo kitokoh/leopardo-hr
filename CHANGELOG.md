@@ -3,6 +3,14 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.4] - 2026-07-04
+
+### Fixed
+- **Suite du fix CI v4.22.3 : 136 echecs restants sur 899 tests (Backend)** :
+  - Meme bug que sur `Absence`/`ExpenseClaim` (cf 4.22.3), cette fois sur `App\Modules\Absence\Domain\Models\AbsenceType` : `company_id` (NOT NULL sur `absence_types`) absent du `$fillable` et trait `BelongsToCompany` manquant -> `QueryException: null value in column "company_id"` sur 43 tests (`AbsenceApproveTest`, `AbsenceRejectTest`, `AbsenceIndexTest`, `AbsenceShowTest`, `AbsenceStoreTest`, `AbsenceCancelTest`, etc). Le modele declarait aussi des colonnes fictives jamais presentes en base (`paid`, `max_days_per_year`, `requires_document`, `color`, jamais utilisees ailleurs dans le code) au lieu des colonnes reelles (`is_paid`, `deducts_leave`, `requires_proof`, `max_days_once` — deja correctement modelisees sur le doublon `App\Modules\Planning\Domain\Models\AbsenceType`, utilise comme reference).
+  - 37 tests `Feature/Edge/*` (`EdgeSilentNodeDetectionTest`, `EdgeConflictResolutionTest`, `EdgeLicenseExpiryTest`, `EdgeMultiTenantIsolationTest`, `EdgeOfflinePunchTest`, `EdgeSyncOnReconnectTest`) remplacent temporairement la table canonique `edge_nodes` par un schema legacy pour la duree du test, puis la `Schema::dropIfExists('edge_nodes')` en `tearDown()`. Sans `CASCADE`, PostgreSQL refusait le drop tant que `sync_logs`/`sync_queue`/`edge_licenses` referencaient encore la table via FK -> `QueryException: cannot drop table edge_nodes because other objects depend on it`. Remplace par `DB::statement('DROP TABLE IF EXISTS edge_nodes CASCADE')`.
+  - `PaymentWebhookControllerTest::test_stripe_webhook_rejects_invalid_signature` : passait un `json_encode(...)` (string) en 2e argument de `postJson()`, qui attend un array (il encode lui-meme) -> `TypeError`. Corrige pour passer l'array brut.
+
 ## [4.22.3] - 2026-07-04
 
 ### Fixed
