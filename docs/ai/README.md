@@ -50,5 +50,5 @@ graph LR
 ---
 
 *See also:*
-- [System Design](../architecture/SYSTEM_DESIGN.md)
+- [System Architecture](../architecture/ARCHITECTURE.md)
 - [Attendance Documentation](../kiosk/README.md)
