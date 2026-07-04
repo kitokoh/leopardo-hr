@@ -215,7 +215,8 @@ class ReflectionService
             // DDD (modules/core) : App\(Modules|Core)\<Nom>\Interfaces\Api\*
             $namespace = $reflection->getNamespaceName();
             $isLegacyApiNamespace = str_contains($namespace, 'App\\Http\\Controllers\\Api');
-            $isDddApiNamespace = (bool) preg_match('/^App\\(Modules|Core)\\[^\\]+\\Interfaces\\Api\\/', $namespace);
+            $isDddApiNamespace = str_contains($namespace, '\\Interfaces\\Api\\')
+                && (str_starts_with($namespace, 'App\\Modules\\') || str_starts_with($namespace, 'App\\Core\\'));
             if (! $isLegacyApiNamespace && ! $isDddApiNamespace) {
                 return false;
             }
