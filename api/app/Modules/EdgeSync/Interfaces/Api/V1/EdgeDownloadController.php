@@ -2,61 +2,58 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Modules\EdgeSync\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 
 /**
- * Priority 5 — Public endpoints for Edge node installation.
- * No auth required — these are public download endpoints.
+ * Public endpoints for Edge node installation assets.
+ * No authentication required — consumed by the install script.
  */
 class EdgeDownloadController extends Controller
 {
-    /**
-     * Return the Edge install script.
-     * GET /edge/install.sh
-     */
+    /** GET /edge/install.sh */
     public function installScript(): Response
     {
         $scriptPath = base_path('edge/install.sh');
 
         abort_unless(file_exists($scriptPath), 404, 'Install script not found.');
 
-        return response(file_get_contents($scriptPath), 200, [
+        return response((string) file_get_contents($scriptPath), 200, [
             'Content-Type'        => 'text/plain',
             'Content-Disposition' => 'attachment; filename="install.sh"',
             'Cache-Control'       => 'public, max-age=3600',
         ]);
     }
 
-    /**
-     * Return the Edge docker-compose.yml.
-     * GET /edge/download/docker-compose.yml
-     */
+    /** GET /edge/download/docker-compose.yml */
     public function dockerCompose(): Response
     {
         $filePath = base_path('edge/docker-compose.yml');
 
         abort_unless(file_exists($filePath), 404, 'docker-compose.yml not found.');
 
-        return response(file_get_contents($filePath), 200, [
+        return response((string) file_get_contents($filePath), 200, [
             'Content-Type'        => 'text/yaml',
             'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
             'Cache-Control'       => 'public, max-age=3600',
         ]);
     }
 
-    /**
-     * Return the Edge license public key.
-     * GET /edge/license-public-key
-     * Called by Edge node at startup to verify its own license.
-     */
+    /** GET /edge/license-public-key */
     public function licensePublicKey(): Response
     {
-        $publicKey = config('edge.license_public_key');
+        $publicKey = config('edge.license_public_key', '');
 
-        abort_unless($publicKey, 503, 'License public key not configured.');
+        if (empty($publicKey)) {
+            $keyPath = base_path('edge/keys/edge_license_public.pem');
+            if (file_exists($keyPath)) {
+                $publicKey = (string) file_get_contents($keyPath);
+            }
+        }
+
+        abort_unless(!empty($publicKey), 503, 'License public key not configured.');
 
         return response($publicKey, 200, [
             'Content-Type'  => 'text/plain',
