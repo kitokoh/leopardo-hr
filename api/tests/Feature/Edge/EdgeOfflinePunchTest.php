@@ -80,7 +80,7 @@ class EdgeOfflinePunchTest extends TestCase
 
         \Illuminate\Support\Facades\Schema::create('edge_nodes', function ($table): void {
             $table->id();
-            $table->unsignedBigInteger('company_id')->index();
+            $table->uuid('company_id')->index();
             $table->string('node_id', 64)->unique();
             $table->string('name', 128);
             $table->string('ip_address', 45)->nullable();
