@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Step 2: Call the backend to provision the trial tenant immediately
-    let provisioningResult = null;
-    let provisioningError = null;
+    // Step 2: Call the backend to initiate OTP verification
+    let signupResult = null;
+    let signupError = null;
 
     try {
       const trialResponse = await fetch(`${LEOPARDO_API_URL}/api/v1/trial/signup`, {
@@ -88,15 +88,15 @@ export async function POST(request: NextRequest) {
           plan: validatedData.plan,
           source: validatedData.source || 'signup_form',
         }),
-        signal: AbortSignal.timeout(15000), // 15s timeout for provisioning
+        signal: AbortSignal.timeout(15000),
       });
 
       const trialData = await trialResponse.json();
 
       if (trialResponse.ok && trialData.success) {
-        provisioningResult = trialData.data;
+        signupResult = trialData.data;
       } else {
-        provisioningError = trialData.error || 'PROVISIONING_FAILED';
+        signupError = trialData.error || 'SIGNUP_FAILED';
         // If email already registered, pass through the specific error
         if (trialData.error === 'EMAIL_ALREADY_REGISTERED') {
           return NextResponse.json(
@@ -113,39 +113,35 @@ export async function POST(request: NextRequest) {
         }
       }
     } catch (error) {
-      // Provisioning failed but we still captured the lead
-      provisioningError = error instanceof Error ? error.name : 'NETWORK_ERROR';
+      signupError = error instanceof Error ? error.name : 'NETWORK_ERROR';
       console.error(
         JSON.stringify({
-          event: 'marketing.signup.provisioning_failed',
+          event: 'marketing.signup.otp_send_failed',
           service: 'leopardo-web',
           email,
-          error: provisioningError,
+          error: signupError,
         })
       );
     }
 
-    // Step 3: Return response based on provisioning outcome
-    if (provisioningResult) {
-      // SUCCESS: Tenant created, return credentials
+    // Step 3: Return response
+    if (signupResult) {
       return NextResponse.json(
         {
           success: true,
-          provisioned: true,
-          message: 'Votre espace Leopardo est pret !',
+          message: 'Code de verification envoye.',
           data: {
             id: lead.id,
-            email,
-            company,
-            ...provisioningResult,
+            email: signupResult.email,
+            status: signupResult.status,
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
           },
         },
-        { status: 201 }
+        { status: 200 }
       );
     } else {
-      // FALLBACK: Provisioning failed, fall back to guided trial
+      // FALLBACK: OTP send failed, fall back to guided trial
       return NextResponse.json(
         {
           success: true,
@@ -159,7 +155,7 @@ export async function POST(request: NextRequest) {
             nextStep: 'contact_under_24h',
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
-            provisioningError,
+            signupError,
           },
         },
         { status: 201 }

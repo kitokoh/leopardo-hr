@@ -92,14 +92,56 @@ export async function submitSignupForm(
 
     return {
       success: true,
-      message: result.message || "Demande d'essai envoyee. Notre equipe vous contacte sous 24h ouvrables.",
-      data: result,
+      message: result.message || "Code de verification envoye.",
+      data: result.data,
     };
   } catch (error) {
     safeLog("Signup form error:", error);
     return {
       success: false,
       message: "Erreur lors de la demande d'essai",
+      error: error instanceof Error ? error.message : "Erreur inconnue",
+    };
+  }
+}
+
+/**
+ * Submit OTP verification to complete trial provisioning
+ */
+export async function submitVerifyForm(
+  email: string,
+  code: string
+): Promise<FormSubmissionResponse> {
+  try {
+    const response = await fetch("/api/forms/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, code }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        message: error.message || "Code invalide ou expire.",
+        error: error.error || "VERIFICATION_FAILED",
+      };
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      message: result.message || "Votre espace Leopardo est pret !",
+      data: result.data,
+    };
+  } catch (error) {
+    safeLog("Verify form error:", error);
+    return {
+      success: false,
+      message: "Erreur lors de la verification",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
   }
