@@ -176,7 +176,7 @@ GitHub Actions workflows:
 |----------|---------|--------|
 | `backend.yml` | `api/**` changes | PHPUnit, PHPStan, Pint |
 | `coverage-gate.yml` | `api/**` changes | Coverage >= threshold |
-| `mobile-ci.yml` | `mobile/**` changes | Flutter analyze + test + APK |
+| `mobile-apps-ci.yml` | `front/mobile_apps/**` changes | Flutter analyze + test + APK |
 | `web-ci.yml` | `admin-dashboard/**` changes | ESLint + Vite build |
 | `deploy-staging.yml` | Merge to `main` | Auto deploy staging |
 | `e2e-staging.yml` | After staging deploy | Playwright E2E |
