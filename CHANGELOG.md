@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.6] - 2026-07-05
+
+### Fixed
+- **Gate CI "PHPStan — Modules Architecture" casse sur `main`** : `AbsenceService::request()` et `LeavePolicyController::balances()` (module Absence) accedaient a `LeaveBalance::$allocated` et `LeaveBalance::$carried_over`, deux colonnes qui n'existent pas sur la table `leave_balances` (qui n'a que `balance`/`used`/`pending`, cf. migration `2026_05_10_000003_create_leave_management_tables.php`). PHPStan bloquait donc systematiquement le merge avec `Access to an undefined property`. Le calcul de disponibilite passe desormais par `balance - used`, et l'endpoint `balances()` expose les colonnes reellement presentes (`balance`, `used`, `pending`, `remaining`).
+
 ## [4.22.5] - 2026-07-05
 
 ### Fixed
