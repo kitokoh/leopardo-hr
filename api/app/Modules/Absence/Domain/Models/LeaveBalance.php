@@ -21,14 +21,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float      $balance
  * @property float      $used
  * @property float      $pending
+ * @property float      $allocated
+ * @property float      $carried_over
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class LeaveBalance extends Model
 {
     use BelongsToCompany;
 
-    /** The table has no created_at / updated_at managed automatically. */
-    public $timestamps = false;
+    const CREATED_AT = null;
 
     protected $fillable = [
         'company_id',
