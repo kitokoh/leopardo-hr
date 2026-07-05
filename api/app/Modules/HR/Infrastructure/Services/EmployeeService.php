@@ -7,7 +7,7 @@ use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\Cache\TenantCacheService;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -226,3 +226,4 @@ class EmployeeService
         return is_string($value) && $value !== '' ? $value : null;
     }
 }
+

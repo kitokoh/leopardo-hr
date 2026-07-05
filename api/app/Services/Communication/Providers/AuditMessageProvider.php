@@ -1,27 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider
+ *
+ * ??  DO NOT add logic here. Edit the canonical service.
+ * ?  Once all usages reference App\\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider, delete this file.
+ */
 
 declare(strict_types=1);
 
-namespace App\Services\Communication\Providers;
+namespace App\Services\;
 
-use App\Contracts\Communication\MessageProviderInterface;
-use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Support\Facades\Log;
-
-class AuditMessageProvider implements MessageProviderInterface
-{
-    /**
-     * @param  array<string, mixed>  $metadata
-     */
-    public function send(Employee $employee, string $title, string $body, array $metadata = []): string
-    {
-        Log::info('Communication provider audit-only dispatch', [
-            'employee_id' => $employee->id,
-            'title' => $title,
-            'metadata' => $metadata,
-            'body_length' => strlen($body),
-        ]);
-
-        return 'queued';
-    }
-}
+class_alias(\\App\\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider::class, __NAMESPACE__ . '\AuditMessageProvider');

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Tracking;
 
-use App\Services\Tracking\TraccarService;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -91,3 +91,4 @@ class TraccarServiceTest extends TestCase
         Http::assertSent(fn (Request $request): bool => str_starts_with($request->url(), 'https://traccar.test/api/reports/events?deviceId=77'));
     }
 }
+

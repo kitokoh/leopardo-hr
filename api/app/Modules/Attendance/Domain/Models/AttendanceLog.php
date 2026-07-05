@@ -7,8 +7,30 @@ namespace App\Modules\Attendance\Domain\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
+ * @property int $id
+ * @property string $company_id
+ * @property int $employee_id
+ * @property string|null $date
+ * @property Carbon|null $check_in
+ * @property Carbon|null $check_out
+ * @property float|null $hours_worked
+ * @property float|null $overtime_hours
+ * @property int|null $late_minutes
+ * @property string|null $method
+ * @property string|null $source_device_code
+ * @property float|null $gps_lat
+ * @property float|null $gps_lng
+ * @property float|null $gps_accuracy
+ * @property int|null $corrected_by
+ * @property bool $synced_from_offline
+ * @property array|null $punch_meta
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read \App\Core\Auth\Domain\Models\Employee|null $employee
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceLog extends Model
@@ -19,11 +41,22 @@ class AttendanceLog extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'date' => 'date',
-        'check_in' => 'datetime',
-        'check_out' => 'datetime',
-        'synced_from_offline' => 'boolean',
-        'punch_meta' => 'array',
+        'date'                 => 'date',
+        'check_in'             => 'datetime',
+        'check_out'            => 'datetime',
+        'synced_from_offline'  => 'boolean',
+        'punch_meta'           => 'array',
+        'hours_worked'         => 'float',
+        'overtime_hours'       => 'float',
+        'late_minutes'         => 'integer',
+        'gps_lat'              => 'float',
+        'gps_lng'              => 'float',
+        'gps_accuracy'         => 'float',
     ];
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(\App\Core\Auth\Domain\Models\Employee::class);
+    }
 }
 

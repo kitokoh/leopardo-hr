@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Communication\NotificationPreferenceProvisioner;
+use App\Modules\Notification\Infrastructure\Services\NotificationPreferenceProvisioner;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -36,3 +36,4 @@ class BackfillNotificationPreferences extends Command
         return self::SUCCESS;
     }
 }
+
