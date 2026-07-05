@@ -13,7 +13,7 @@ Index de la documentation technique et stratégique du projet.
 | [`QUICKSTART.md`](QUICKSTART.md) | Setup local en 5 minutes |
 | [`DEMARRAGE_RAPIDE.md`](DEMARRAGE_RAPIDE.md) | Guide de démarrage détaillé |
 | [`../DEVELOPMENT.md`](../DEVELOPMENT.md) | Conventions de développement |
-| [`../MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Commandes melos, turbo, npm workspaces |
+| [`../MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Commandes melos, npm --prefix, Makefile backend |
 
 ---
 
@@ -33,7 +33,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`api/`](api/) | Documentation API REST |
-| [`../openapi/openapi.yaml`](../openapi/openapi.yaml) | Spec OpenAPI 3.x |
+| [`../api/openapi.yaml`](../api/openapi.yaml) | Spec OpenAPI 3.x (source canonique) |
 | [`modules/`](modules/) | Documentation par module métier |
 | [`../api/MULTILANG.md`](../api/MULTILANG.md) | Multilinguisme backend |
 

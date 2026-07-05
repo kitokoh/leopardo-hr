@@ -1,7 +1,10 @@
-# ADR-002 — L'Auth dans Core, pas dans Modules
+# ADR 0006 - L'Auth dans Core, pas dans Modules
+
+## Statut
+
+Acceptee.
 
 **Date** : 2026-06-27
-**Statut** : Accepted
 
 ## Contexte
 

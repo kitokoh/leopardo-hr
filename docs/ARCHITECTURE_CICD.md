@@ -17,7 +17,7 @@ git push
 |----------|-------------|------|
 | `tests.yml` | PR + push develop/main | Tests PHP + couverture |
 | `coverage-gate.yml` | PR develop/main (api/) | Gate couverture min 65% |
-| `mobile-ci.yml` | PR + push (mobile/) | Tests Flutter + analyze |
+| `mobile-apps-ci.yml` | PR + push (front/mobile_apps/) | Tests Flutter + analyze |
 | `web-ci.yml` | PR + push (front/web/) | Build Next.js + lint |
 | `openapi-ci.yml` | PR + push (api/openapi/) | Validation spec OpenAPI |
 | `architecture-check.yml` | PR | Vérification DDD boundaries |

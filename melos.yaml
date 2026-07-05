@@ -4,6 +4,7 @@ repository: https://github.com/kitokoh/leopardo-hr
 packages:
   - front/mobile_apps/leopardo_core
   - front/mobile_apps/leopardo_employee
+  - front/mobile_apps/leopardo_hr
   - front/mobile_apps/leopardo_manager
   - front/mobile_apps/leopardo_platform_admin
 
