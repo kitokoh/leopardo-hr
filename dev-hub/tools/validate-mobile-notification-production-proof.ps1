@@ -69,12 +69,12 @@ Assert-Contains $routes "Route::delete('/device-tokens'" "device token unregiste
 Assert-Contains $routes "Route::get('/device-tokens'" "device token list route"
 Assert-Contains $routes "Route::post('/push-notifications/send'" "manager push test route"
 
-$controller = Read-RepoFile "api/app/Http/Controllers/Api/V1/DeviceTokenController.php"
+$controller = Read-RepoFile "api/app/Modules/Notification/Interfaces/Api/V1/Controllers/DeviceTokenController.php"
 Assert-Contains $controller "CommunicationService" "DeviceTokenController"
 Assert-Contains $controller "notifyEmployee" "DeviceTokenController send test"
 Assert-Contains $controller "abort_unless(`$user->isManager()" "DeviceTokenController manager guard"
 
-$backendPush = Read-RepoFile "api/app/Services/PushNotificationService.php"
+$backendPush = Read-RepoFile "api/app/Modules/Notification/Infrastructure/Services/PushNotificationService.php"
 Assert-Contains $backendPush "firebase.messaging" "Backend PushNotificationService"
 Assert-Contains $backendPush "handleFailedTokens" "Backend PushNotificationService failed token cleanup"
 Assert-Contains $backendPush "Cache::put(`$cacheKey" "Backend PushNotificationService OAuth cache"
