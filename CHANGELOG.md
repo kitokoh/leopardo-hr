@@ -3,6 +3,12 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.5] - 2026-07-05
+
+### Chore
+- **Nettoyage du monorepo (artefacts CI + binaires vendorises commis par erreur)** : suppression de `api/composer.phar`, `api/database/database.sqlite`, des rapports de tests generes (`api/storage/test-results*/`, `backend-quality-reports/`, `backend-test-reports/`, `front/web/playwright-report/index.html`) qui ne devraient jamais etre commites (deja regeneres a chaque run CI). `.gitignore` etendu pour empecher leur reapparition.
+- **Rangement des scripts epars a la racine** : `api/start-local.ps1` -> `api/scripts/start-local.ps1`, `api/test_script.php` -> `api/scripts/test_script.php`, `capture_screenshots.py` -> `scripts/capture_screenshots.py`, avec un `api/scripts/README.md` documentant leur usage. References mises a jour dans `api/README.md`, `docs/DEMARRAGE_RAPIDE.md`, `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`, `docs/notes/archive/ARBORESCENCE_PROJET_COMPLET.md`.
+
 ## [4.22.4] - 2026-07-04
 
 ### Security
