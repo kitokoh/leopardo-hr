@@ -19,7 +19,7 @@ Le backend utilise Laravel 11 et PostgreSQL, orchestrés avec Docker.
 1.  Ouvrez un terminal dans le dossier `api/`.
 2.  Lancez le script de démarrage (PowerShell) :
     ```powershell
-    .\start-local.ps1 -SeedDemo
+    .\scripts\start-local.ps1 -SeedDemo
     ```
     *Ce script va monter les containers, installer les dépendances composer, exécuter les migrations et injecter les données de démo.*
 3.  **URL API/Web** : `http://localhost:8000`
