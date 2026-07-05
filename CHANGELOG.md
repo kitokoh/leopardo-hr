@@ -3,6 +3,12 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.5] - 2026-07-05
+
+### Docs
+- **Consolidation architecture** : fusion des ADR dupliques (`docs/architecture/adr-00X-*.md` -> `docs/architecture/adr/000X-*.md`), suppression de `docs/architecture/SYSTEM_DESIGN.md` (contenu redondant avec `ARCHITECTURE.md`), mise a jour croisee de `ARCHITECTURE.md`, `README.md`, `docs/QUICKSTART.md`, `docs/ai/README.md`, `docs/validation/README.md`, `docs/PLAN_ACTION/00_SOMMAIRE.md` pour pointer vers les documents canoniques uniques.
+- **`PILOTAGE.md`** : ajout d'une section "Gouvernance documentaire" clarifiant la hierarchie des sources de verite (PILOTAGE.md pour priorites/regles operationnelles, ARCHITECTURE.md pour la structure technique), et corrige une auto-reference obsolete.
+
 ## [4.22.4] - 2026-07-04
 
 ### Security
