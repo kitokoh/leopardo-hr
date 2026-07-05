@@ -1,31 +1,15 @@
 <?php
+/**
+ * Backward-compat alias shim.
+ *
+ * Canonical: App\\Modules\Payroll\Domain\Contracts\CountryRulesInterface
+ *
+ * ??  DO NOT add logic here. Edit the canonical service.
+ * ?  Once all usages reference App\\Modules\Payroll\Domain\Contracts\CountryRulesInterface, delete this file.
+ */
 
 declare(strict_types=1);
 
-namespace App\Services\Payroll;
+namespace App\Services\;
 
-interface CountryRulesInterface
-{
-    public function countryCode(): string;
-
-    public function currency(): string;
-
-    public function minimumWage(): float;
-
-    /**
-     * @return array<int, array{name: string, code: string, type: string, rate: float, cap: float|null}>
-     */
-    public function socialContributions(): array;
-
-    /**
-     * @return array<int, array{min: float, max: float|null, rate: float, fixed_deduction: float}>
-     */
-    public function taxSlabs(): array;
-
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis): float;
-
-    /**
-     * @return array{employee: float, employer: float}
-     */
-    public function calculateSocialCharges(float $grossSalary): array;
-}
+class_alias(\\App\\Modules\Payroll\Domain\Contracts\CountryRulesInterface::class, __NAMESPACE__ . '\CountryRulesInterface');

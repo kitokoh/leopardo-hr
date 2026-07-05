@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Services\Tracking\TraccarService;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -118,4 +118,5 @@ class TrackingSyncController extends Controller
         ]);
     }
 }
+
 

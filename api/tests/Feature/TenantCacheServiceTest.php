@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Services\Cache\TenantCacheService;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
@@ -66,3 +66,4 @@ class TenantCacheServiceTest extends TestCase
         $this->assertNull($this->service->get(99, 'nonexistent'));
     }
 }
+
