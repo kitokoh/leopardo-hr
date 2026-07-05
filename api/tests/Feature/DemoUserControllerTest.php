@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Database\Seeders\DemoCompanyOnceSeeder;
 use Illuminate\Database\Schema\Blueprint;
@@ -260,3 +260,4 @@ class DemoUserControllerTest extends TestCase
         ]);
     }
 }
+

@@ -6,7 +6,7 @@ namespace App\Modules\Platform\Application\Actions;
 
 use App\Modules\Platform\Application\DTOs\ProvisionCompanyDTO;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 
 /**
  * Use Case: Provision a new tenant company (super-admin).
@@ -22,3 +22,4 @@ final class ProvisionCompany
         return $this->provisioningService->provision($dto);
     }
 }
+

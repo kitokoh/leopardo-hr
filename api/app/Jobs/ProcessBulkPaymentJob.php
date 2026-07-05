@@ -6,9 +6,9 @@ namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\SalaryAdvance;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
@@ -152,3 +152,4 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
         }
     }
 }
+

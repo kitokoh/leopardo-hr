@@ -7,9 +7,9 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApprovalRequestResource;
 use App\Http\Resources\Api\V1\ApprovalWorkflowResource;
-use App\Models\ApprovalDecision;
-use App\Models\ApprovalRequest;
-use App\Models\ApprovalWorkflow;
+use App\Modules\Attendance\Domain\Models\ApprovalDecision;
+use App\Modules\Attendance\Domain\Models\ApprovalRequest;
+use App\Modules\Attendance\Domain\Models\ApprovalWorkflow;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -206,3 +206,4 @@ class ApprovalController extends Controller
         return response()->json($decisions);
     }
 }
+

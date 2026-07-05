@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LeaveAccrualResource;
 use App\Http\Resources\Api\V1\LeaveBalanceResource;
 use App\Http\Resources\Api\V1\LeavePolicyResource;
-use App\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\LeaveAccrual;
-use App\Models\LeaveBalance;
-use App\Models\LeavePolicy;
+use App\Modules\Planning\Domain\Models\LeaveAccrual;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
+use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -259,3 +259,4 @@ class LeavePolicyController extends Controller
             ->setStatusCode(201);
     }
 }
+

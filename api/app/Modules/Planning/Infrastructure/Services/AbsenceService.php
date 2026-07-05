@@ -8,10 +8,10 @@ use App\Events\AbsenceRequested;
 use App\Exceptions\AbsenceDateConflictException;
 use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
-use App\Models\Absence;
-use App\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\LeaveBalanceLog;
+use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -188,3 +188,4 @@ class AbsenceService
         ]);
     }
 }
+

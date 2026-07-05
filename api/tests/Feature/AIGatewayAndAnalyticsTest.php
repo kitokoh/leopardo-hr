@@ -4,9 +4,9 @@ namespace Tests\Feature;
 
 use App\AI\DTOs\AIResponse;
 use App\AI\LLMClient;
-use App\Models\AIConversation;
-use App\Models\AIToolRegistryEntry;
-use App\Models\Company;
+use App\AI\Models\AIConversation;
+use App\AI\Models\AIToolRegistryEntry;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -353,3 +353,4 @@ class AIGatewayAndAnalyticsTest extends TestCase
         });
     }
 }
+

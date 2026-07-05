@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Communication;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\NotificationPreference;
+use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Illuminate\Support\Facades\Schema;
 
 class NotificationPreferenceProvisioner
@@ -127,3 +127,4 @@ class NotificationPreferenceProvisioner
         ];
     }
 }
+

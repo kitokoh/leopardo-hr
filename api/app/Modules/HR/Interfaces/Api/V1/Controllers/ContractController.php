@@ -7,8 +7,8 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
-use App\Models\Contract;
-use App\Models\ContractAmendment;
+use App\Modules\HR\Domain\Models\Contract;
+use App\Modules\HR\Domain\Models\ContractAmendment;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Infrastructure\Services\ContractPdfGenerator;
 use Illuminate\Http\JsonResponse;
@@ -371,3 +371,4 @@ class ContractController extends Controller
         ]);
     }
 }
+

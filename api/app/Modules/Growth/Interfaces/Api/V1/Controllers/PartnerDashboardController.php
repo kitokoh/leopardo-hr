@@ -3,8 +3,8 @@
 namespace App\Modules\Growth\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Partner;
-use App\Models\Commission;
+use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -140,3 +140,4 @@ class PartnerDashboardController extends Controller
         return new JsonResponse(['data' => $companies]);
     }
 }
+

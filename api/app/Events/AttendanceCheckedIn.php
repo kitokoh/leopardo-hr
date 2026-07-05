@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use App\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -15,3 +15,4 @@ class AttendanceCheckedIn
 
     public function __construct(public readonly AttendanceLog $log) {}
 }
+

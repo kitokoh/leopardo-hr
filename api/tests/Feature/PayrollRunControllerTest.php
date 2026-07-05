@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\PaySlipLine;
-use App\Services\Payroll\PayrollCalculator;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -364,3 +364,5 @@ class PayrollRunControllerTest extends TestCase
         $this->postJson("/api/v1/payroll-runs/{$otherRun->id}/cancel")->assertNotFound();
     }
 }
+
+

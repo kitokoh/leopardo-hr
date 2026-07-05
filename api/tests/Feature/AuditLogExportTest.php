@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\AuditLog;
-use App\Models\Company;
+use App\Core\Auth\Domain\Models\AuditLog;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -135,3 +135,4 @@ class AuditLogExportTest extends TestCase
         ], $attributes));
     }
 }
+

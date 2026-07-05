@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\Payroll;
+use App\Modules\Payroll\Domain\Models\Payroll;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -38,3 +38,4 @@ class PayrollResource extends JsonResource
         ];
     }
 }
+

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Models\Company;
-use App\Models\Subscription;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -36,3 +36,4 @@ class TrialExpiringMail extends Mailable
             ->with(['locale' => $this->locale]);
     }
 }
+

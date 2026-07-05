@@ -7,7 +7,7 @@ use App\Modules\Cabinet\Interfaces\Api\V1\Requests\MoveDocumentRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreDocumentRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\UpdateDocumentRequest;
 use App\Http\Resources\Api\V1\CabinetDocumentResource;
-use App\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
@@ -141,3 +141,4 @@ class CabinetDocumentController extends Controller
         }
     }
 }
+

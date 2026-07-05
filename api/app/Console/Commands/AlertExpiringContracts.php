@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Contract;
+use App\Modules\HR\Domain\Models\Contract;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -38,3 +38,4 @@ class AlertExpiringContracts extends Command
         return self::SUCCESS;
     }
 }
+

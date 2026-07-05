@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -140,3 +140,4 @@ class BankExportGeneratorTest extends TestCase
         self::assertSame('application/octet-stream', $generator->mimeType('unknown'));
     }
 }
+

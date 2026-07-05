@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\OnboardingStep;
+use App\Modules\HR\Domain\Models\OnboardingStep;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -155,3 +155,4 @@ class OnboardingStepControllerTest extends TestCase
         });
     }
 }
+

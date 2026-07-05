@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Growth\Application\Actions;
 
-use App\Models\Partner;
-use App\Models\PartnerPayoutRequest;
+use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -32,3 +32,4 @@ final class RequestPayout
         });
     }
 }
+

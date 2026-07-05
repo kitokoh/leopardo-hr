@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Traits;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -49,3 +49,4 @@ trait BelongsToCompany
         });
     }
 }
+

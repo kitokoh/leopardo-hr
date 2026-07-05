@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\SmartAttendance\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\AttendanceLog;
-use App\Models\Schedule;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -110,3 +110,4 @@ class ApproveGeoSession
         return null;
     }
 }
+

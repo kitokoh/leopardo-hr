@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\LeaveAccrual;
-use App\Models\LeaveBalance;
-use App\Models\LeavePolicy;
+use App\Modules\Planning\Domain\Models\LeaveAccrual;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
+use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -80,3 +80,4 @@ class AccrueLeaveBalances extends Command
         return self::SUCCESS;
     }
 }
+

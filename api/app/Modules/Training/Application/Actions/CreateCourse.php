@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Training\Application\Actions;
 
 use App\Modules\Training\Application\DTOs\CreateCourseDTO;
-use App\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingCourse;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -30,3 +30,4 @@ final class CreateCourse
         });
     }
 }
+

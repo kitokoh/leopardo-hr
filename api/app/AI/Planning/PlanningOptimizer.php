@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\AI\Planning;
 
-use App\Models\Absence;
-use App\Models\Contract;
-use App\Models\Department;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\HR\Domain\Models\Contract;
+use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -244,3 +244,4 @@ class PlanningOptimizer
         return 0.0;
     }
 }
+

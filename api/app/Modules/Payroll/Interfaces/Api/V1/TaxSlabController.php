@@ -5,7 +5,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaxSlabResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\TaxSlab;
+use App\Modules\Payroll\Domain\Models\TaxSlab;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -100,3 +100,4 @@ class TaxSlabController extends Controller
         return response()->json(['message' => 'Tax slab deleted successfully.']);
     }
 }
+

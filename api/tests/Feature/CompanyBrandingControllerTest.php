@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -92,3 +92,4 @@ class CompanyBrandingControllerTest extends TestCase
             ->assertJsonValidationErrors(['primary_color', 'accent_color']);
     }
 }
+

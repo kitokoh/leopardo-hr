@@ -3,7 +3,7 @@
 namespace App\Http\Resources\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Language;
+use App\Shared\Models\Language;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Modules\HR\Infrastructure\Services\MobileExperienceService;
 use DateTimeInterface;
@@ -114,3 +114,4 @@ class EmployeeResource extends JsonResource
         ];
     }
 }
+

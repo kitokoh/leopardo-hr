@@ -2,18 +2,18 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\ApprovalDecision;
-use App\Models\ApprovalRequest;
-use App\Models\ApprovalWorkflow;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\ApprovalDecision;
+use App\Modules\Attendance\Domain\Models\ApprovalRequest;
+use App\Modules\Attendance\Domain\Models\ApprovalWorkflow;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\ExpenseClaim;
-use App\Models\ExpenseItem;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\PaySlipLine;
-use App\Models\WebhookDelivery;
-use App\Models\WebhookEndpoint;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
+use App\Modules\Planning\Domain\Models\ExpenseItem;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Billing\Domain\Models\WebhookDelivery;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -347,3 +347,4 @@ class FkChainTenantIsolationTest extends TestCase
         }
     }
 }
+

@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\UserInvitationMail;
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -204,3 +204,4 @@ class PlatformCompanyProvisioningTest extends TestCase
         $response->assertJsonPath('token_type', 'Bearer');
     }
 }
+

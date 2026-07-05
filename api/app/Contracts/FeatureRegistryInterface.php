@@ -3,7 +3,7 @@
 namespace App\Contracts;
 
 use App\Exceptions\FeatureSynchronizationException;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Support\Collection;
 
 /**
@@ -61,3 +61,4 @@ interface FeatureRegistryInterface
      */
     public function getStatistics(): array;
 }
+

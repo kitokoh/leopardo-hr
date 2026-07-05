@@ -3,8 +3,8 @@
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Invoice;
-use App\Models\Payment;
+use App\Modules\Billing\Domain\Models\Invoice;
+use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -59,3 +59,4 @@ class PaymentWebhookController extends Controller
         return new JsonResponse(['received' => true]);
     }
 }
+

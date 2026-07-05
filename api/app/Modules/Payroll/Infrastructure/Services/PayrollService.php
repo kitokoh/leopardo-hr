@@ -6,8 +6,8 @@ use App\Events\PayrollValidated;
 use App\Exceptions\PayrollAlreadyValidatedException;
 use App\Exceptions\PayrollPeriodConflictException;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Payroll;
-use App\Models\SalaryAdvance;
+use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -216,3 +216,4 @@ class PayrollService
         return $normalized;
     }
 }
+

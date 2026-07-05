@@ -5,7 +5,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SocialContributionResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -103,3 +103,4 @@ class SocialContributionController extends Controller
         return response()->json(['message' => 'Social contribution deleted successfully.']);
     }
 }
+

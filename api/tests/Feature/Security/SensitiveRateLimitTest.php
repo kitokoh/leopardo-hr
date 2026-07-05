@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Security;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -58,3 +58,4 @@ class SensitiveRateLimitTest extends TestCase
         $this->getJson('/api/v1/privacy/export')->assertStatus(429);
     }
 }
+

@@ -9,7 +9,7 @@ use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -272,3 +272,4 @@ readonly class AuthService
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
     }
 }
+

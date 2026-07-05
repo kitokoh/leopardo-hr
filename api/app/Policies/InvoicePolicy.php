@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Invoice;
+use App\Modules\Billing\Domain\Models\Invoice;
 
 class InvoicePolicy
 {
@@ -31,3 +31,4 @@ class InvoicePolicy
             && $actor->hasManagerRole('principal');
     }
 }
+

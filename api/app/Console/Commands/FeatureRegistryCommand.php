@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Contracts\FeatureRegistryInterface;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -243,3 +243,4 @@ class FeatureRegistryCommand extends Command
         return filter_var($value, FILTER_VALIDATE_BOOL) ? 'Oui' : 'Non';
     }
 }
+

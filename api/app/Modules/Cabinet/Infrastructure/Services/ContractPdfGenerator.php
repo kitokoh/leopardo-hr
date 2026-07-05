@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Infrastructure\Services;
 
-use App\Models\Contract;
+use App\Modules\HR\Domain\Models\Contract;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ContractPdfGenerator
@@ -24,3 +24,4 @@ class ContractPdfGenerator
         return $pdf->output();
     }
 }
+

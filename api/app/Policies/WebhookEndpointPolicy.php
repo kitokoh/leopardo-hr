@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\WebhookEndpoint;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 
 class WebhookEndpointPolicy
 {
@@ -37,3 +37,4 @@ class WebhookEndpointPolicy
             && $actor->hasManagerRole('principal');
     }
 }
+

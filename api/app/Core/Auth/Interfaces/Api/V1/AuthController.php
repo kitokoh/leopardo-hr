@@ -19,7 +19,7 @@ use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Models\Language;
+use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -223,3 +223,4 @@ class AuthController extends Controller
             ->response();
     }
 }
+

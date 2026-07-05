@@ -5,8 +5,8 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Models\Company;
-use App\Models\CompanyRequest;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Rules\GlobalEmailUnique;
@@ -259,3 +259,4 @@ class OnboardingQrController extends Controller
         return is_string($value) && $value !== '' ? $value : null;
     }
 }
+

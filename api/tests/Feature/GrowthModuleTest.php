@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\Commission;
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Partner;
-use App\Models\Payment;
+use App\Modules\Payroll\Domain\Models\Commission;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Models\Invoice;
+use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Payroll\Domain\Models\Payment;
 use App\Core\Auth\Domain\Models\User;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 
@@ -286,7 +286,7 @@ class GrowthModuleTest extends TestCase
 
     public function test_partner_cannot_access_other_partners_stats()
     {
-        $company = \App\Models\Company::factory()->create();
+        $company = \App\Core\Tenant\Domain\Models\Company::factory()->create();
         $employee1 = \App\Core\Auth\Domain\Models\Employee::factory()->create(['company_id' => $company->id]);
 
         $user1 = User::factory()->create(['email' => $employee1->email]);
@@ -419,7 +419,7 @@ class GrowthModuleTest extends TestCase
     {
         $admin = User::factory()->create();
         $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('AUD')]);
-        $payout = \App\Models\PartnerPayoutRequest::create([
+        $payout = \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::create([
             'partner_id' => $partner->id,
             'amount' => 5000,
             'currency' => 'EUR',
@@ -460,7 +460,7 @@ class GrowthModuleTest extends TestCase
         $company->save();
 
         // Referral created 13 months ago
-        \App\Models\PartnerReferral::create([
+        \App\Modules\Billing\Domain\Models\PartnerReferral::create([
             'partner_id' => $partner->id,
             'company_id' => $company->id,
             'referred_at' => now()->subMonths(13),
@@ -483,7 +483,7 @@ class GrowthModuleTest extends TestCase
         $code = $this->uniqueCode('SUSP');
         $user = User::factory()->create();
         $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $code, 'status' => 'suspended']);
-        $link = \App\Models\PartnerLink::create(['partner_id' => $partner->id, 'code' => $code, 'is_active' => true]);
+        $link = \App\Modules\Billing\Domain\Models\PartnerLink::create(['partner_id' => $partner->id, 'code' => $code, 'is_active' => true]);
 
         $response = $this->get('/p/' . $code);
 
@@ -492,3 +492,4 @@ class GrowthModuleTest extends TestCase
         $response->assertCookieMissing('leopardo_referrer_id');
     }
 }
+

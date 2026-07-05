@@ -3,9 +3,9 @@
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
-use App\Models\CompanyRequest;
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -198,3 +198,4 @@ class PlatformCompanyRequestController extends Controller
         return $result['company'];
     }
 }
+

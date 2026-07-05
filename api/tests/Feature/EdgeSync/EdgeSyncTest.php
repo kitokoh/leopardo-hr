@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\EdgeSync;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
@@ -349,3 +349,4 @@ class EdgeSyncTest extends TestCase
         $this->withToken('test-edge-token-xxx');
     }
 }
+

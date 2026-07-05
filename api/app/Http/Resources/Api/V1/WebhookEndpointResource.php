@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\WebhookEndpoint;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,3 +24,4 @@ class WebhookEndpointResource extends JsonResource
         ];
     }
 }
+

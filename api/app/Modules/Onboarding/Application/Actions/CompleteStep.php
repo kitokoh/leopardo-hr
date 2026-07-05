@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Onboarding\Application\Actions;
 
 use App\Modules\Onboarding\Application\DTOs\CompleteStepDTO;
-use App\Models\OnboardingStep;
+use App\Modules\HR\Domain\Models\OnboardingStep;
 use Illuminate\Support\Carbon;
 
 /**
@@ -24,3 +24,4 @@ final class CompleteStep
         return $step->fresh() ?? $step;
     }
 }
+

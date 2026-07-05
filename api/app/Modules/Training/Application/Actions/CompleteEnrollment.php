@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Training\Application\Actions;
 
-use App\Models\TrainingEnrollment;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use Illuminate\Support\Carbon;
 
 /**
@@ -23,3 +23,4 @@ final class CompleteEnrollment
         return $enrollment->fresh() ?? $enrollment;
     }
 }
+

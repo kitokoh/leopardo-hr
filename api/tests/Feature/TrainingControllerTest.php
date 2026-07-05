@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\TrainingCourse;
-use App\Models\TrainingSession;
+use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingSession;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -181,3 +181,4 @@ class TrainingControllerTest extends TestCase
         ])->assertUnprocessable();
     }
 }
+

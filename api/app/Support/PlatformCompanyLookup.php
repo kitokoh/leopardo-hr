@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
@@ -28,3 +28,4 @@ class PlatformCompanyLookup
         return DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
     }
 }
+

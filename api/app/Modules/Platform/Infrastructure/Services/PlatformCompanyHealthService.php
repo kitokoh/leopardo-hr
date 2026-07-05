@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Models\AttendanceLog;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
 use Illuminate\Support\Carbon;
@@ -352,3 +352,4 @@ class PlatformCompanyHealthService
         }
     }
 }
+

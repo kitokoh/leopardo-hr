@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Site;
+use App\Core\Tenant\Domain\Models\Site;
 
 class SitePolicy
 {
@@ -35,3 +35,4 @@ class SitePolicy
             && $actor->hasManagerRole('principal');
     }
 }
+

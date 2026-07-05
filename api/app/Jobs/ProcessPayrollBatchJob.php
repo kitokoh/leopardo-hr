@@ -6,7 +6,7 @@ namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Payroll\PayrollCalculator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -95,3 +95,4 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
         ];
     }
 }
+

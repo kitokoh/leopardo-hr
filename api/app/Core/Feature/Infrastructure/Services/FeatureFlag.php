@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Feature\Infrastructure\Services;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 
 /**
  * APV L.08 — Un module = un package activable par company.
@@ -44,3 +44,4 @@ class FeatureFlag
         return $flags;
     }
 }
+

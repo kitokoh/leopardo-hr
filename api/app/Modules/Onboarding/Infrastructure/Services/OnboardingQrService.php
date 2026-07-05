@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Infrastructure\Services;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -164,3 +164,4 @@ class OnboardingQrService
         return $decoded;
     }
 }
+

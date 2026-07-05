@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Domain\Models;
 
-use App\Models\BiometricEnrollmentRequest;
-use App\Models\CabinetDocument;
-use App\Models\CabinetFolder;
-use App\Models\Company;
-use App\Models\Department;
-use App\Models\Notification;
-use App\Models\NotificationPreference;
-use App\Models\Position;
-use App\Models\PrivacyRequest;
-use App\Models\Schedule;
-use App\Models\Site;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\HR\Domain\Models\Department;
+use App\Modules\Notification\Domain\Models\Notification;
+use App\Modules\Notification\Domain\Models\NotificationPreference;
+use App\Modules\HR\Domain\Models\Position;
+use App\Modules\HR\Domain\Models\PrivacyRequest;
+use App\Modules\Planning\Domain\Models\Schedule;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Traits\BelongsToCompany;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -423,3 +423,4 @@ class Employee extends Authenticatable implements HasApiTokensContract
             : 'employee';
     }
 }
+

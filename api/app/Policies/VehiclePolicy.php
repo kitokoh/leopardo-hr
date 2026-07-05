@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Vehicle;
+use App\Modules\Fleet\Domain\Models\Vehicle;
 
 class VehiclePolicy
 {
@@ -39,3 +39,4 @@ class VehiclePolicy
         return $actor->company_id === $vehicle->company_id && $actor->isManager();
     }
 }
+

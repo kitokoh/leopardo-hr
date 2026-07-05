@@ -9,7 +9,7 @@ use App\Modules\Absence\Interfaces\Api\V1\Requests\AbsenceIndexRequest;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\StoreAbsenceRequest;
 use App\Http\Resources\Api\V1\AbsenceResource;
-use App\Models\Absence;
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Infrastructure\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
@@ -160,3 +160,4 @@ class AbsenceController extends Controller
         ]));
     }
 }
+

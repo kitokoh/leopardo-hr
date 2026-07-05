@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use PHPUnit\Framework\TestCase;
 
 class FeatureUnitTest extends TestCase
@@ -150,3 +150,4 @@ class FeatureUnitTest extends TestCase
         $this->assertEquals('features', $feature->getTable());
     }
 }
+
