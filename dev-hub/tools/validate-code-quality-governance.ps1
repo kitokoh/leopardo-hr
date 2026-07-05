@@ -53,7 +53,7 @@ foreach ($path in @(
     }
 }
 
-Assert-Contains $releaseGate "25/25" "Release readiness gate"
+Assert-Contains $releaseGate "26/26" "Release readiness gate"
 Assert-Contains $plan68 "Lot 68.3" "Plan 68"
 Assert-Contains $plan68 "validate-code-quality-governance.ps1" "Plan 68"
 

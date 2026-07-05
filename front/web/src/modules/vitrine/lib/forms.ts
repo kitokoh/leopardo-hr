@@ -76,6 +76,8 @@ export async function submitSignupForm(
         source: "signup_form",
         page,
         timestamp: new Date().toISOString(),
+        requestedWorkflow: "guided_trial",
+        nextStep: "contact_under_24h"
       }),
     });
 
