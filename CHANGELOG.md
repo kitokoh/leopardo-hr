@@ -3,6 +3,13 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.7] - 2026-07-05
+
+### Fixed
+- **CI cassee sur `main` : ParseError PHP dans les regles de paie pays** : 7 fichiers sous `api/app/Modules/Payroll/Infrastructure/Services/CountryRules/` (Algerie, France, Maroc, Senegal, Tunisie, Turquie, classe abstraite) declaraient `namespace App\\Modules\Payroll...` (double backslash, token PHP invalide), plus leurs 7 shims de compatibilite sous `api/app/Services/Payroll/CountryRules/` avec un namespace incomplet (`App\Services\;`) et un `class_alias` mal echappe. Corrige les 14 fichiers ; resout les 4 echecs `PayrollCountryRulesTest`.
+- **Bug metier : la pause (`break_minutes`) n'etait jamais deduite des heures travaillees** : `AttendanceLog` a une colonne `schedule_id` (FK) mais aucune relation Eloquent `schedule()`, alors que `AttendanceService::checkOut()`/`recalculateLog()` accedent partout a `$log->schedule`. Sans la relation, Eloquent renvoie silencieusement `null` au lieu d'echouer, donc la pause configuree sur le planning n'etait jamais soustraite du temps travaille pour aucune entreprise en production. Ajout de la relation manquante `schedule(): BelongsTo`. Restaure aussi les casts `decimal:2`/`decimal:8` sur `hours_worked`/`overtime_hours`/`gps_lat`/`gps_lng` (degrades en `float` pendant la migration DDD), retrouvant le contrat string (`'8.00'`, `'36.77000000'`) deja verifie par les tests Feature (`CheckOutTest`, `ManualUpdateTest`) et consomme par les apps mobiles via `double.tryParse()`.
+- **Warning `Undefined array key "net_imposable"` dans `SocialDeclarationGenerator::generateDsnFr()`** : `net_imposable` et `hours_worked` sont des champs optionnels dans le payload employe mais etaient lus sans fallback. Ajout de valeurs par defaut (`net_imposable` -> `net_salary`, `hours_worked` -> `0.0`).
+
 ## [4.22.6] - 2026-07-05
 
 ### Added
