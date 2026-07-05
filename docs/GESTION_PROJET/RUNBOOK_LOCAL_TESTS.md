@@ -43,7 +43,7 @@ Alternative Windows (1 commande):
 
 ```powershell
 cd api
-.\start-local.ps1 -SeedDemo -RunTests
+.\scripts\start-local.ps1 -SeedDemo -RunTests
 ```
 
 ## État de référence au 11 Avril 2026

@@ -23,7 +23,9 @@ function Set-EnvValue {
     Set-Content -Path $Path -Value $content -Encoding UTF8
 }
 
-Push-Location $PSScriptRoot
+# NOTE: this script lives in api/scripts/ but must operate from the api/ root
+# (where .env, .env.example, and docker-compose.yml live).
+Push-Location (Join-Path $PSScriptRoot "..")
 try {
     if (-not (Test-Path ".env")) {
         Copy-Item ".env.example" ".env"
