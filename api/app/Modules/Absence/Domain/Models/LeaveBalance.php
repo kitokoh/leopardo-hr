@@ -5,52 +5,65 @@ declare(strict_types=1);
 namespace App\Modules\Absence\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Tracks remaining leave days per employee per type per year.
  *
- * @property int   $id
- * @property int   $employee_id
- * @property int   $absence_type_id
- * @property int   $year
- * @property float $allocated
- * @property float $used
- * @property float $balance
+ * @property int        $id
+ * @property string|int $company_id
+ * @property int        $employee_id
+ * @property int        $absence_type_id
+ * @property int        $year
+ * @property float      $balance
+ * @property float      $used
+ * @property float      $pending
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class LeaveBalance extends Model
 {
-    const CREATED_AT = null;
+    use BelongsToCompany;
+
+    /** The table has no created_at / updated_at managed automatically. */
+    public $timestamps = false;
 
     protected $fillable = [
+        'company_id',
         'employee_id',
         'absence_type_id',
-        'year',
-        'allocated',
+        'balance',
         'used',
-        'carried_over',
+        'pending',
+        'year',
     ];
 
     protected $casts = [
-        'allocated'    => 'float',
-        'used'         => 'float',
-        'carried_over' => 'float',
+        'balance'    => 'float',
+        'used'       => 'float',
+        'pending'    => 'float',
+        'updated_at' => 'datetime',
     ];
 
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(\App\Core\Auth\Domain\Models\Employee::class);
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 
     public function absenceType(): BelongsTo
     {
-        return $this->belongsTo(AbsenceType::class);
+        return $this->belongsTo(AbsenceType::class, 'absence_type_id');
     }
 
-    public function getBalanceAttribute(): float
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
+    public function scopeForYear(Builder $q, int $year): Builder
     {
-        return ($this->allocated + ($this->carried_over ?? 0)) - $this->used;
+        return $q->where('year', $year);
     }
 }
+
