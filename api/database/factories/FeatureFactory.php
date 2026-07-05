@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -238,3 +238,4 @@ class FeatureFactory extends Factory
         ]);
     }
 }
+

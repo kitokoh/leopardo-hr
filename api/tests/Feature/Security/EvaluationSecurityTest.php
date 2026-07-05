@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Evaluation;
+use App\Modules\HR\Domain\Models\Evaluation;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -168,3 +168,4 @@ class EvaluationSecurityTest extends TestCase
         ]);
     }
 }
+

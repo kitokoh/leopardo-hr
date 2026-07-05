@@ -8,7 +8,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\UpdatePayrollRequest;
 use App\Http\Resources\Api\V1\PayrollResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Payroll;
+use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -144,3 +144,4 @@ class PayrollController extends Controller
         return response()->json(['message' => 'Payroll deleted successfully']);
     }
 }
+

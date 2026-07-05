@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\ExpenseClaim;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -32,3 +32,4 @@ class ExpenseClaimResource extends JsonResource
         ];
     }
 }
+

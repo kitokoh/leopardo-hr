@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Models\ZktecoDevice;
-use App\Models\ZktecoSyncLog;
+use App\Modules\Attendance\Domain\Models\ZktecoDevice;
+use App\Modules\Attendance\Domain\Models\ZktecoSyncLog;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -175,3 +175,4 @@ class ZktecoIntegrationService
         };
     }
 }
+

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\Interview;
+use App\Modules\Recruitment\Domain\Models\Interview;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,3 +30,4 @@ class InterviewResource extends JsonResource
         ];
     }
 }
+

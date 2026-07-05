@@ -2,7 +2,7 @@
 
 namespace App\Modules\Planning\Infrastructure\Services;
 
-use App\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -309,3 +309,4 @@ class EstimationService
         return $table?->table_name !== null;
     }
 }
+

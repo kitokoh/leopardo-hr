@@ -9,7 +9,7 @@ use App\Modules\Billing\Interfaces\Api\V1\Requests\StoreWebhookEndpointRequest;
 use App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateWebhookEndpointRequest;
 use App\Http\Resources\Api\V1\WebhookEndpointResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\WebhookEndpoint;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -118,3 +118,4 @@ class WebhookController extends Controller
         return response()->json(['data' => self::AVAILABLE_EVENTS]);
     }
 }
+

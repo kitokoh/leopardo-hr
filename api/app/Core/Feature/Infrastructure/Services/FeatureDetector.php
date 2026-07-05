@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Feature\Infrastructure\Services;
 
 use App\Contracts\FeatureDetectorInterface;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
@@ -574,3 +574,4 @@ class FeatureDetector implements FeatureDetectorInterface
         return $baseSchema;
     }
 }
+

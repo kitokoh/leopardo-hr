@@ -17,7 +17,7 @@
     </head>
     <body class="min-h-screen bg-slate-900 text-slate-100">
         @php
-            /** @var \App\Models\Employee|null $me */
+            /** @var \App\Core\Auth\Domain\Models\Employee|null $me */
             $me = auth('web')->user();
             $homeRoute = $me?->homeRoute() ?? 'login';
         @endphp
@@ -73,3 +73,4 @@
         </main>
     </body>
 </html>
+

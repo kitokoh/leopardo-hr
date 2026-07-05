@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
@@ -299,3 +299,4 @@ class PlatformCompanyController extends Controller
         return back()->with('status', 'Invitation manager renvoyee.');
     }
 }
+

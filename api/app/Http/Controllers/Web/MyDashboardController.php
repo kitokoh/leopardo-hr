@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -56,3 +56,4 @@ class MyDashboardController extends Controller
         ]);
     }
 }
+

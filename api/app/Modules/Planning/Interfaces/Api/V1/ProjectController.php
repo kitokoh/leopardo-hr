@@ -5,7 +5,7 @@ namespace App\Modules\Planning\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ProjectResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Project;
+use App\Modules\Planning\Domain\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -94,3 +94,4 @@ class ProjectController extends Controller
         return response()->json(['message' => 'Project deleted successfully']);
     }
 }
+

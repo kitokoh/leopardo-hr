@@ -5,7 +5,7 @@ namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\OnboardingStep;
+use App\Modules\HR\Domain\Models\OnboardingStep;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -115,3 +115,4 @@ class OnboardingStepController extends Controller
         return OnboardingStep::where('company_id', $companyId)->orderBy('order')->get();
     }
 }
+

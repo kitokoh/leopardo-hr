@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Infrastructure\Services;
 
-use App\Models\DeviceToken;
+use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -213,3 +213,4 @@ class PushNotificationService
             ->update(['is_active' => false]);
     }
 }
+

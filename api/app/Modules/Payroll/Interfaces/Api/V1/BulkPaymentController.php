@@ -7,7 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessBulkPaymentJob;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
@@ -114,3 +114,4 @@ class BulkPaymentController extends Controller
         ], $progress));
     }
 }
+

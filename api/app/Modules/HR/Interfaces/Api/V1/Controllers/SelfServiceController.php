@@ -5,11 +5,11 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
-use App\Models\Contract;
+use App\Modules\HR\Domain\Models\Contract;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\EmployeeLoan;
-use App\Models\LoanRepayment;
-use App\Models\TrainingEnrollment;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\Payroll\Domain\Models\LoanRepayment;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -130,3 +130,4 @@ class SelfServiceController extends Controller
         return response()->json(['data' => $repayments]); // LoanRepayment â€” no dedicated Resource yet
     }
 }
+

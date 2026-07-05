@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Notifications\EdgeNodeSilentNotification;
@@ -93,3 +93,4 @@ class MonitorEdgeNodesCommand extends Command
         ));
     }
 }
+

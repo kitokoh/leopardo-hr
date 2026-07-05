@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\PaySlipLine;
-use App\Models\SalaryComponent;
-use App\Models\SalaryStructure;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Payroll\Domain\Models\SalaryComponent;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Services\Payroll\CountryRules\AlgeriaPayrollRules;
 use App\Services\Payroll\CountryRules\FrancePayrollRules;
 use App\Services\Payroll\CountryRules\MoroccoPayrollRules;
@@ -251,3 +251,4 @@ class PayrollCalculator
         };
     }
 }
+

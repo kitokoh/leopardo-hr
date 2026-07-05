@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Task;
+use App\Modules\Planning\Domain\Models\Task;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -107,3 +107,4 @@ class TaskControllerTest extends TestCase
             ->assertJsonPath('data.title', 'Controle stock');
     }
 }
+

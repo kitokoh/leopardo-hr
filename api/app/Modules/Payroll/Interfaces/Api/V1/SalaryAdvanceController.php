@@ -9,7 +9,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Requests\StoreSalaryAdvanceRequest;
 use App\Http\Resources\Api\V1\SalaryAdvanceResource;
 use App\Jobs\GeneratePaymentDocumentJob;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SalaryAdvance;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -215,3 +215,4 @@ class SalaryAdvanceController extends Controller
         return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
 }
+

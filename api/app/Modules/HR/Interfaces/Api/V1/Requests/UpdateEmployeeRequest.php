@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Rules\GlobalEmailUnique;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
@@ -136,3 +136,4 @@ class UpdateEmployeeRequest extends FormRequest
         DB::statement('SET search_path TO shared_tenants,public');
     }
 }
+

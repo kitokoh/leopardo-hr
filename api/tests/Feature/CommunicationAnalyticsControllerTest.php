@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\CommunicationEvent;
-use App\Models\Company;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -90,3 +90,4 @@ class CommunicationAnalyticsControllerTest extends TestCase
             ->assertForbidden();
     }
 }
+

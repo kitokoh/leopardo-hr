@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\AttendanceKiosk;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Support\PlatformCompanyLookup;
@@ -435,3 +435,4 @@ class KioskController extends Controller
         ];
     }
 }
+

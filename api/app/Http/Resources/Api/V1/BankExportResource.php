@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\BankExport;
+use App\Modules\Payroll\Domain\Models\BankExport;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,3 +31,4 @@ class BankExportResource extends JsonResource
         ];
     }
 }
+

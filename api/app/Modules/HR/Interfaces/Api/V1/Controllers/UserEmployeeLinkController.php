@@ -5,7 +5,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
-use App\Models\UserEmployeeLink;
+use App\Modules\HR\Domain\Models\UserEmployeeLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -88,3 +88,4 @@ class UserEmployeeLinkController extends Controller
         return new JsonResponse(['data' => $links]);
     }
 }
+

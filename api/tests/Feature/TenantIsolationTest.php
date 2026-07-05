@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -129,3 +129,4 @@ class TenantIsolationTest extends TestCase
         $this->assertSame($company->id, $employee->company_id);
     }
 }
+

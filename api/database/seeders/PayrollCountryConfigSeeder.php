@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\SocialContribution;
-use App\Models\TaxSlab;
-use App\Services\Payroll\CountryRules\AlgeriaPayrollRules;
-use App\Services\Payroll\CountryRules\FrancePayrollRules;
-use App\Services\Payroll\CountryRules\MoroccoPayrollRules;
-use App\Services\Payroll\CountryRules\SenegalPayrollRules;
-use App\Services\Payroll\CountryRules\TunisiaPayrollRules;
-use App\Services\Payroll\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -73,3 +73,5 @@ class PayrollCountryConfigSeeder extends Seeder
         }
     }
 }
+
+

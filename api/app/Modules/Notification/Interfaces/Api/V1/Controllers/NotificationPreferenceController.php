@@ -4,7 +4,7 @@ namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationPreferenceResource;
-use App\Models\CommunicationEvent;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Services\Communication\NotificationPreferenceProvisioner;
 use Illuminate\Http\JsonResponse;
@@ -70,3 +70,4 @@ class NotificationPreferenceController extends Controller
         return (new NotificationPreferenceResource($preferences->fresh()))->response();
     }
 }
+

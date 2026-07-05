@@ -2,24 +2,24 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\Absence;
-use App\Models\AbsenceType;
-use App\Models\AttendanceKiosk;
-use App\Models\AttendanceLog;
-use App\Models\BiometricEnrollmentRequest;
-use App\Models\Company;
-use App\Models\Department;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Evaluation;
-use App\Models\Notification;
-use App\Models\Payroll;
-use App\Models\Position;
-use App\Models\Project;
-use App\Models\SalaryAdvance;
-use App\Models\Schedule;
-use App\Models\Site;
-use App\Models\Task;
-use App\Models\UserInvitation;
+use App\Modules\HR\Domain\Models\Evaluation;
+use App\Modules\Notification\Domain\Models\Notification;
+use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\HR\Domain\Models\Position;
+use App\Modules\Planning\Domain\Models\Project;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Modules\Planning\Domain\Models\Schedule;
+use App\Core\Tenant\Domain\Models\Site;
+use App\Modules\Planning\Domain\Models\Task;
+use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -459,3 +459,4 @@ class TenantModelIsolationTest extends TestCase
         ]);
     }
 }
+

@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Contracts\FeatureRegistryInterface;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -271,3 +271,4 @@ class FeatureRegistryIntegrationTest extends TestCase
         $this->assertEquals(2, $stats['by_status']['inactive']);
     }
 }
+

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
-use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\Subscription;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Models\Invoice;
+use App\Modules\Payroll\Domain\Models\Payment;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -230,3 +230,4 @@ class PaymentWebhookControllerTest extends TestCase
         $this->assertContains($response->status(), [200, 400]);
     }
 }
+

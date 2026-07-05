@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Application\Actions;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,3 +24,4 @@ final class SuspendCompany
         });
     }
 }
+

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\SmartAttendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\AttendanceLog;
-use App\Models\Site;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Core\Tenant\Domain\Models\Site;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -134,3 +134,4 @@ class GeoAttendanceSession extends Model
         return round(($this->duration_seconds ?? 0) / 3600, 2);
     }
 }
+

@@ -3,7 +3,7 @@
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\DeviceToken;
+use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Services\Communication\CommunicationService;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
@@ -103,3 +103,4 @@ class DeviceTokenController extends Controller
         ]);
     }
 }
+

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Database\Seeder;
 
 class FeatureSeeder extends Seeder
@@ -238,3 +238,4 @@ class FeatureSeeder extends Seeder
         $this->command->info('Features seeded successfully!');
     }
 }
+

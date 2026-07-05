@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Department;
+use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
 
 class DepartmentPolicy
@@ -35,3 +35,4 @@ class DepartmentPolicy
             && $actor->hasManagerRole('principal', 'rh');
     }
 }
+

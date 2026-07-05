@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Contract;
+use App\Modules\HR\Domain\Models\Contract;
 use App\Core\Auth\Domain\Models\Employee;
 
 class ContractPolicy
@@ -52,3 +52,4 @@ class ContractPolicy
             && $actor->hasManagerRole('principal', 'rh');
     }
 }
+

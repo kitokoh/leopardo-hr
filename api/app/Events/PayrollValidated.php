@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use App\Models\Payroll;
+use App\Modules\Payroll\Domain\Models\Payroll;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -15,3 +15,4 @@ class PayrollValidated
 
     public function __construct(public readonly Payroll $payroll) {}
 }
+

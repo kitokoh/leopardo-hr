@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Models\Absence;
-use App\Models\CalendarConnection;
-use App\Models\CalendarEvent;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Attendance\Domain\Models\CalendarConnection;
+use App\Modules\Attendance\Domain\Models\CalendarEvent;
 use App\Core\Auth\Domain\Models\Employee;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
@@ -270,3 +270,4 @@ class CalendarSyncService
         return false;
     }
 }
+

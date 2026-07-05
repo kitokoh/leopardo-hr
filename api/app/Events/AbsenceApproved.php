@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use App\Models\Absence;
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -19,3 +19,4 @@ class AbsenceApproved
         public readonly Employee $approver,
     ) {}
 }
+

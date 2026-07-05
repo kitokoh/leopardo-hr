@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Absences;
 
-use App\Models\Absence;
-use App\Models\AbsenceType;
-use App\Models\Company;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\LeaveBalanceLog;
-use App\Models\Schedule;
+use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
+use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -426,3 +426,4 @@ class AbsenceRejectTest extends TestCase
         $response->assertStatus(403);
     }
 }
+

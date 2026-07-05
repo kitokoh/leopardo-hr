@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SalaryAdvance;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -339,3 +339,4 @@ class SalaryAdvanceSecurityTest extends TestCase
         return $employee;
     }
 }
+

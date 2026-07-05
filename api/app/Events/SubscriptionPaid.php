@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Payment;
+use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -14,3 +14,4 @@ class SubscriptionPaid
     public function __construct(public Payment $payment)
     {}
 }
+

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\CabinetDocument;
-use App\Models\CabinetFolder;
-use App\Models\Company;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Language;
+use App\Shared\Models\Language;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -347,3 +347,4 @@ class AuthProfileSettingsTest extends TestCase
         $this->assertNull($employee->fresh()->preferred_language);
     }
 }
+

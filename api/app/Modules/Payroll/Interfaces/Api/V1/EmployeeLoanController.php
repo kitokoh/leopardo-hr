@@ -7,8 +7,8 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\EmployeeLoan;
-use App\Models\LoanRepayment;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\Payroll\Domain\Models\LoanRepayment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -167,3 +167,4 @@ class EmployeeLoanController extends Controller
         return (new LoanResource($employeeLoan->fresh()))->response();
     }
 }
+

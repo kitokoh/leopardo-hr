@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Domain\Models;
 
-use App\Models\CompanyRequest;
-use App\Models\UserEmployeeLink;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Modules\HR\Domain\Models\UserEmployeeLink;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -105,3 +105,4 @@ class User extends Authenticatable
         return $this->hasMany(UserEmployeeLink::class, 'user_id');
     }
 }
+

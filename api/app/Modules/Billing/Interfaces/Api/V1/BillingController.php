@@ -5,10 +5,10 @@ namespace App\Modules\Billing\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\InvoiceResource;
 use App\Http\Resources\Api\V1\SubscriptionResource;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Invoice;
-use App\Models\Subscription;
+use App\Modules\Billing\Domain\Models\Invoice;
+use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -261,4 +261,5 @@ class BillingController extends Controller
         }
     }
 }
+
 

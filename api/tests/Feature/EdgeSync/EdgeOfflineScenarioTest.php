@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\EdgeSync;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
@@ -415,3 +415,4 @@ class EdgeOfflineScenarioTest extends TestCase
         $this->assertEquals('192.168.1.100', $updated->local_ip);
     }
 }
+

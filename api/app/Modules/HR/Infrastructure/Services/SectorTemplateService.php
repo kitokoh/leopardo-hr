@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -160,3 +160,4 @@ class SectorTemplateService
         return (bool) ($result->exists ?? false);
     }
 }
+

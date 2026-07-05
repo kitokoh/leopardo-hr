@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\CompanyCreated;
-use App\Models\Partner;
+use App\Modules\Billing\Domain\Models\Partner;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 
@@ -37,7 +37,7 @@ class LinkPartnerToNewCompany
         $event->company->referrer_partner_id = $partner->id;
         $event->company->save();
 
-        \App\Models\PartnerReferral::updateOrCreate(
+        \App\Modules\Billing\Domain\Models\PartnerReferral::updateOrCreate(
             ['company_id' => $event->company->id],
             [
                 'partner_id' => $partner->id,
@@ -48,3 +48,4 @@ class LinkPartnerToNewCompany
         Log::info("Company {$event->company->id} linked to partner {$partner->id}");
     }
 }
+

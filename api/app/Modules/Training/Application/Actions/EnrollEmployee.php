@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Training\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\TrainingCourse;
-use App\Models\TrainingEnrollment;
-use App\Models\TrainingSession;
+use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
+use App\Modules\HR\Domain\Models\TrainingSession;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -44,3 +44,4 @@ final class EnrollEmployee
         });
     }
 }
+

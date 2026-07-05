@@ -6,8 +6,8 @@ namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Models\WebhookDelivery;
-use App\Models\WebhookEndpoint;
+use App\Modules\Billing\Domain\Models\WebhookDelivery;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -131,3 +131,4 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
         }
     }
 }
+

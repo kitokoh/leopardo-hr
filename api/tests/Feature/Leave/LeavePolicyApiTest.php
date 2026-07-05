@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Leave;
 
-use App\Models\AbsenceType;
-use App\Models\Company;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\LeaveAccrual;
-use App\Models\LeaveBalance;
-use App\Models\LeavePolicy;
+use App\Modules\Planning\Domain\Models\LeaveAccrual;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
+use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -375,3 +375,4 @@ class LeavePolicyApiTest extends TestCase
             ->assertJsonCount(1, 'data');
     }
 }
+

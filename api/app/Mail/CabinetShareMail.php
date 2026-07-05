@@ -2,9 +2,9 @@
 
 namespace App\Mail;
 
-use App\Models\CabinetDocument;
-use App\Models\CabinetFolder;
-use App\Models\CabinetShare;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
+use App\Modules\Cabinet\Domain\Models\CabinetShare;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -57,3 +57,4 @@ class CabinetShareMail extends Mailable
             ->view('emails.cabinet-share');
     }
 }
+

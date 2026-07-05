@@ -3,7 +3,7 @@
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
@@ -51,3 +51,4 @@ class PlatformCompanyFeatureController extends Controller
         ]);
     }
 }
+

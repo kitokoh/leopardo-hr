@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Absence;
-use App\Models\AttendanceLog;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\ExpenseClaim;
-use App\Models\PaySlip;
-use App\Models\PrivacyRequest;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\HR\Domain\Models\PrivacyRequest;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -162,3 +162,4 @@ class PrivacyController extends Controller
             ->count();
     }
 }
+

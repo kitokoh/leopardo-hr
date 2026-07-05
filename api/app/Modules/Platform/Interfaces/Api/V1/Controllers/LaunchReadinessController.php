@@ -3,12 +3,12 @@
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\AttendanceKiosk;
-use App\Models\ClientEvent;
-use App\Models\CommunicationEvent;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Modules\Planning\Domain\Models\ClientEvent;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\NotificationPreference;
+use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -172,3 +172,4 @@ class LaunchReadinessController extends Controller
             && (float) $geofence['radius_meters'] > 0;
     }
 }
+

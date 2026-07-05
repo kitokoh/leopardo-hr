@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Application\Actions;
 
-use App\Models\Company;
-use App\Models\Subscription;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -32,3 +32,4 @@ final class ActivateCompany
         });
     }
 }
+
