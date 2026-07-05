@@ -48,7 +48,7 @@ docker compose exec app php artisan test
 
 ```powershell
 cd api
-.\start-local.ps1 -SeedDemo
+.\scripts\start-local.ps1 -SeedDemo
 ```
 
 Options utiles :
