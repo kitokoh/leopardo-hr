@@ -1,5 +1,5 @@
 {
-  "backendExperienceService": "api/app/Services/MobileExperienceService.php",
+  "backendExperienceService": "api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php",
   "apps": [
     {
       "name": "employee",

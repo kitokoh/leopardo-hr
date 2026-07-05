@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         phone,
         plan: validatedData.plan,
         module: validatedData.module,
-        requestedWorkflow: 'self_service_trial',
+        requestedWorkflow: 'guided_trial',
         passwordCaptured: false,
       },
     });
