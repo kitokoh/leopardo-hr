@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Models\Company;
 use App\Models\PaymentDocument;
 use App\Models\PaySlip;
@@ -18,7 +20,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-class GeneratePaymentDocumentJob implements ShouldQueue
+class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -29,9 +31,31 @@ class GeneratePaymentDocumentJob implements ShouldQueue
 
     public int $timeout = 120;
 
+    private ?string $resolvedCompanyId = null;
+
     public function __construct(public readonly int $paymentDocumentId)
     {
         $this->onQueue('documents');
+    }
+
+    public function tenantCompanyId(): ?string
+    {
+        if ($this->resolvedCompanyId !== null) {
+            return $this->resolvedCompanyId;
+        }
+
+        /** @var PaymentDocument|null $document */
+        $document = PaymentDocument::query()->withoutGlobalScopes()->find($this->paymentDocumentId);
+
+        return $this->resolvedCompanyId = $document?->company_id;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
     }
 
     public function handle(): void
@@ -54,10 +78,9 @@ class GeneratePaymentDocumentJob implements ShouldQueue
         ]);
 
         try {
+            // Tenant context (search_path + current_company) is already active
+            // at this point thanks to EnsureTenantContext.
             $company = Company::query()->find($document->company_id);
-            if ($company !== null) {
-                app()->instance('current_company', $company);
-            }
 
             $binary = $this->renderPdf($document, $company);
             $filename = $this->filename($document);
@@ -83,8 +106,6 @@ class GeneratePaymentDocumentJob implements ShouldQueue
             report($e);
 
             throw $e;
-        } finally {
-            app()->forgetInstance('current_company');
         }
     }
 

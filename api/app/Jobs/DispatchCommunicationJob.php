@@ -2,8 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Company;
+use App\Contracts\Queue\TenantScopedJob;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Services\Communication\CommunicationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class DispatchCommunicationJob implements ShouldQueue
+class DispatchCommunicationJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -32,25 +33,29 @@ class DispatchCommunicationJob implements ShouldQueue
         $this->onQueue((string) config('communication.queue', 'notifications'));
     }
 
+    public function tenantCompanyId(): ?string
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
+    }
+
     public function handle(CommunicationService $communication): void
     {
-        $company = $this->companyId ? Company::query()->find($this->companyId) : null;
-        if ($company instanceof Company) {
-            app()->instance('current_company', $company);
-        }
-
+        // Tenant context (search_path + current_company) is already active at
+        // this point (when companyId is set) thanks to EnsureTenantContext.
         $employee = Employee::query()->find($this->employeeId);
 
         if (! ($employee instanceof Employee)) {
-            app()->forgetInstance('current_company');
-
             return;
         }
 
-        try {
-            $communication->notifyEmployee($employee, $this->templateKey, $this->context, $this->channels);
-        } finally {
-            app()->forgetInstance('current_company');
-        }
+        $communication->notifyEmployee($employee, $this->templateKey, $this->context, $this->channels);
     }
 }
