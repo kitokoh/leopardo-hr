@@ -137,7 +137,7 @@ class SocialDeclarationGenerator
      *
      * DSN phase 3 simplified format: S10 (emetteur), S20 (entreprise), S21 (individu), S44 (versement).
      *
-     * @param  Collection<int, array{employee_id: int, nir: string, last_name: string, first_name: string, date_naissance: string, gross_salary: float, net_salary: float, net_imposable: float, hours_worked: float, contract_type: string, start_date: string}>  $employees
+     * @param  Collection<int, array{employee_id: int, nir: string, last_name: string, first_name: string, date_naissance: string, gross_salary: float, net_salary: float, net_imposable?: float, hours_worked?: float, contract_type: string, start_date: string}>  $employees
      */
     public function generateDsnFr(
         string $companyName,
@@ -173,9 +173,11 @@ class SocialDeclarationGenerator
             $contractType = $this->mapContractTypeDsn($emp['contract_type']);
             $startDate = $emp['start_date'];
             $gross = (float) $emp['gross_salary'];
-            $netImposable = (float) $emp['net_imposable'];
-            $hours = (float) $emp['hours_worked'];
             $netSalary = (float) $emp['net_salary'];
+            // net_imposable (base imposable) is optional upstream; fall back to net_salary
+            // when the caller didn't compute it, instead of an undefined array key warning.
+            $netImposable = (float) ($emp['net_imposable'] ?? $netSalary);
+            $hours = (float) ($emp['hours_worked'] ?? 0.0);
 
             $nirClean = $this->sanitizeDsn($nir);
             $lastNameClean = $this->sanitizeDsn($lastName);
