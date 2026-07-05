@@ -1,5 +1,10 @@
 # PLAN D'ACTION COMPLET — LEOPARDO RH
 
+> ⚠️ **STATUT : CLÔTURÉ.** Selon `PILOTAGE.md` (source de vérité programme), les plans 01 à 72 de ce dossier sont **tous livrés** depuis le 2026-06-06.
+> Ce dossier est conservé pour traçabilité historique (liens depuis `CHANGELOG.md`, autres plans, `AGENTS.md`).
+> **Pour le travail en cours et à venir, voir `docs/PLAN_ACTION2/00_SOMMAIRE.md`** — c'est le plan actif qui prend le relais.
+> Ne pas créer de nouveau plan numéroté dans ce dossier ; ajouter les nouveaux tickets dans `PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md`.
+
 **Version :** 2.0  
 **Date :** 2026-05-11 (mise a jour post-sprints 1-18)  
 **Objectif :** Amener Leopardo RH au niveau enterprise-grade, capable de rivaliser avec ERPNext/Frappe HR sur le domaine RH, tout en conservant l'avantage terrain (pointage, biometrie, geofence, mobile natif).
