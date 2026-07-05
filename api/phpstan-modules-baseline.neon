@@ -1,2 +1,295 @@
 parameters:
-    ignoreErrors: []
+	ignoreErrors:
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Core/Auth/Application/Actions/LogoutAction.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Routing\\Route\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/DataAccessAuditLogger.php
+
+		-
+			message: '#^Offset 3 on array\{non\-falsy\-string, non\-empty\-string, non\-empty\-string, string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Core/Feature/Infrastructure/Services/AnnotationReader.php
+
+		-
+			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\FeatureDetector\:\:findRouteByEndpoint\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Core/Feature/Infrastructure/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter \#1 \$employee of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceService\:\:checkIn\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\Attendance\\Application\\DTOs\\CheckInDTO given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Application/Actions/ProcessCheckIn.php
+
+		-
+			message: '#^Parameter \#1 \$employee of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceService\:\:checkOut\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Application/Actions/ProcessCheckOut.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Infrastructure/Services/AttendanceMonthlyReportService.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceAnomalyService\:\:summarize\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/AttendanceController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type App\\Core\\Auth\\Domain\\Models\\Employee\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
+
+		-
+			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 2
+			path: app/Modules/Billing/Interfaces/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController\:\:getCompanyPlan\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Billing/Interfaces/Api/V1/FeatureFlagController.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Modules/Billing/Interfaces/Api/V1/SelfServiceTrialController.php
+
+		-
+			message: '#^Offset ''type'' on array\{type\: string, data\: array\<string, mixed\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Modules/Billing/Interfaces/Api/V1/StripeWebhookController.php
+
+		-
+			message: '#^Parameter \#1 \$owner of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cabinet/Application/Actions/UploadDocument.php
+
+		-
+			message: '#^Parameter \#2 \$file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cabinet/Application/Actions/UploadDocument.php
+
+		-
+			message: '#^Parameter \#3 \$data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects array\<string, mixed\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cabinet/Application/Actions/UploadDocument.php
+
+		-
+			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetDocumentController.php
+
+		-
+			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetFolderController.php
+
+		-
+			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetShareController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Modules\\Cameras\\Domain\\CameraAccessToken\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array\<string, mixed\>, Closure\(App\\Modules\\Cameras\\Domain\\Camera\)\: array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Modules\\Cameras\\Domain\\CameraPermission\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
+
+		-
+			message: '#^Parameter \#2 \$default of method Illuminate\\Http\\Request\:\:query\(\) expects array\|string\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/InternalCameraTokenController.php
+
+		-
+			message: '#^Property App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\PublicCameraViewerController\:\:\$cameras is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{''required'', ''integer'', ''min\:1''\|Illuminate\\Validation\\Rules\\In\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraAccessTokenRequest.php
+
+		-
+			message: '#^Parameter \#1 \$item of method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:applyToCloud\(\) expects App\\Modules\\EdgeSync\\Domain\\Models\\SyncQueue, stdClass given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+
+		-
+			message: '#^Parameter \#1 \$item of method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:resolveConflict\(\) expects App\\Modules\\EdgeSync\\Domain\\Models\\SyncQueue, stdClass given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Modules/EdgeSync/Domain/Models/EdgeNode.php
+
+		-
+			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$licenseService is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
+
+		-
+			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$syncEngine is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\Controllers\\OnboardingStepController\:\:seedDefaultSteps\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/OnboardingStepController.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\AbsenteeismPredictor\:\:predict\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PredictionController.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\ProactiveNotificationService\:\:getNotifications\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PredictionController.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\TurnoverPredictor\:\:predict\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PredictionController.php
+
+		-
+			message: '#^Parameter \#1 \$modelClass of method App\\Modules\\HR\\Interfaces\\Api\\V1\\Controllers\\PrivacyController\:\:countEmployeeRows\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 4
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PrivacyController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array\{id\: int, name\: string, email\: string, role\: string, manager_role\: string\|null, role_label\: string, status\: string, photo_path\: string\|null\}, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array\{id\: int, name\: string, email\: string, role\: string, manager_role\: string\|null, role_label\: string, status\: string, photo_path\: string\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/RoleAssignmentController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between null and null will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
+
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Onboarding\\Interfaces\\Api\\V1\\Controllers\\OnboardingStepController\:\:seedDefaultSteps\(\) expects string, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingStepController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array\<string, mixed\>, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Payroll/Infrastructure/Services/PayrollCycleService.php
+
+		-
+			message: '#^Offset ''days_worked'' on array\{employee_id\: int, num_cnss\: string, last_name\: string, first_name\: string, cin\: string, gross_salary\: float, days_worked\: int\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Modules/Payroll/Infrastructure/Services/SocialDeclarationGenerator.php
+
+		-
+			message: '#^Parameter \#2 \$approver of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService\:\:approve\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Planning/Application/Actions/ApproveLeave.php
+
+		-
+			message: '#^Parameter \#2 \$now of method App\\Modules\\Platform\\Infrastructure\\Services\\PlatformCompanyHealthService\:\:subscription\(\) expects Illuminate\\Support\\Carbon, Carbon\\CarbonInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Platform/Infrastructure/Services/PlatformCompanyHealthService.php
+
+		-
+			message: '#^Parameter \#1 \$session of method App\\Modules\\SmartAttendance\\Interfaces\\Api\\V1\\GeoSessionController\:\:formatSession\(\) expects App\\Modules\\SmartAttendance\\Domain\\Models\\GeoAttendanceSession, stdClass given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/SmartAttendance/Interfaces/Api/V1/GeoSessionController.php
+
+		-
+			message: '#^Trait App\\Shared\\Traits\\Approvable is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Shared/Traits/Approvable.php
+
+		-
+			message: '#^Trait App\\Shared\\Traits\\Auditable is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Shared/Traits/Auditable.php
+
+		-
+			message: '#^Trait App\\Shared\\Traits\\BelongsToCompany is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: app/Shared/Traits/BelongsToCompany.php
