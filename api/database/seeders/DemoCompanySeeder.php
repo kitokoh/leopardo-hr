@@ -1330,7 +1330,7 @@ SQL);
                 'employee_id' => $employeeIds[1] ?? $employeeIds[0],
                 'amount' => 20000,
                 'currency' => $currency,
-                'reason' => 'Rentrée scolaire',
+                'reason' => 'RentrÃ©e scolaire',
                 'monthly_deduction' => 4000,
                 'total_installments' => 5,
                 'remaining_installments' => 5,
