@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Models\WebhookDelivery;
 use App\Models\WebhookEndpoint;
 use Illuminate\Bus\Queueable;
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
-class DispatchWebhook implements ShouldQueue
+class DispatchWebhook implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -33,6 +35,26 @@ class DispatchWebhook implements ShouldQueue
         private readonly array $payload,
     ) {
         $this->queue = 'webhooks';
+    }
+
+    public function tenantCompanyId(): ?string
+    {
+        // `SerializesModels` re-hydrates `$endpoint` from the DB when the job
+        // is picked up by the worker, going through `WebhookEndpoint`'s
+        // `BelongsToCompany` global scope. Without an active tenant context
+        // at that point, the scope is a no-op and the row still resolves
+        // correctly here (its `company_id` column is read directly) — but
+        // every model touched inside `handle()` below needs the real context
+        // established first, hence the middleware.
+        return $this->endpoint->company_id;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
     }
 
     public function handle(): void

@@ -30,7 +30,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int $id
- * @property int|null $company_id
+ * @property string|null $company_id
  * @property int|null $department_id
  * @property int|null $position_id
  * @property int|null $schedule_id

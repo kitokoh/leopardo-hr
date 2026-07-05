@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int|null $company_id
+ * @property string|null $company_id
  * @property Carbon $period_start
  * @property Carbon $period_end
  * @property string $country_code

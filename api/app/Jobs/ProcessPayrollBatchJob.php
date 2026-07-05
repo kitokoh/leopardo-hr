@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Models\PayrollRun;
 use App\Payroll\PayrollCalculator;
 use Illuminate\Bus\Queueable;
@@ -13,7 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProcessPayrollBatchJob implements ShouldQueue
+class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -26,9 +28,22 @@ class ProcessPayrollBatchJob implements ShouldQueue
 
     public function __construct(
         private readonly int $payrollRunId,
-        private readonly int $companyId,
+        private readonly string $companyId,
     ) {
         $this->onQueue('payroll');
+    }
+
+    public function tenantCompanyId(): ?string
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
     }
 
     public function handle(): void

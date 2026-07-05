@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
@@ -24,7 +26,7 @@ use Throwable;
  * Dispatched on the `pdf` queue.
  * Generates a PDF for a single employee's pay slip and notifies them via push.
  */
-class GeneratePaySlipPdfJob implements ShouldQueue
+class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -35,11 +37,33 @@ class GeneratePaySlipPdfJob implements ShouldQueue
 
     public int $timeout = 120;
 
+    private ?string $resolvedCompanyId = null;
+
     public function __construct(
         public readonly int $payrollRunId,
         public readonly int $employeeId,
     ) {
         $this->onQueue('pdf');
+    }
+
+    public function tenantCompanyId(): ?string
+    {
+        if ($this->resolvedCompanyId !== null) {
+            return $this->resolvedCompanyId;
+        }
+
+        /** @var PayrollRun|null $run */
+        $run = PayrollRun::query()->withoutGlobalScopes()->find($this->payrollRunId);
+
+        return $this->resolvedCompanyId = $run?->company_id;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
     }
 
     public function handle(PushNotificationService $pushService): void
@@ -78,8 +102,8 @@ class GeneratePaySlipPdfJob implements ShouldQueue
             return;
         }
 
-        app()->instance('current_company', $company);
-
+        // Tenant context (search_path + current_company) is already active at
+        // this point thanks to EnsureTenantContext — no need to bind it again.
         try {
             // Build PDF HTML via Blade template
             $html = view('pdf.payslip', [
@@ -107,8 +131,10 @@ class GeneratePaySlipPdfJob implements ShouldQueue
 
             // Notify employee via push notification
             $this->notifyEmployee($pushService, $employee, $run);
-        } finally {
-            app()->forgetInstance('current_company');
+        } catch (Throwable $e) {
+            Log::error("GeneratePaySlipPdfJob: failed for employee #{$employee->id}: {$e->getMessage()}");
+
+            throw $e;
         }
     }
 
