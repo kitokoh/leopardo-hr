@@ -5,7 +5,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SalaryStructureResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SalaryStructure;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -121,3 +121,4 @@ class SalaryStructureController extends Controller
         return response()->json(['message' => 'Salary structure deleted successfully.']);
     }
 }
+

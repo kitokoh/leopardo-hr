@@ -7,7 +7,7 @@ namespace App\AI;
 use App\AI\DTOs\AIResponse;
 use App\AI\DTOs\ToolCall;
 use App\AI\DTOs\ToolResult;
-use App\Models\Department;
+use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
 
 class IntentEngine
@@ -264,3 +264,4 @@ class IntentEngine
         return ['employees' => $employees->toArray(), 'count' => $employees->count()];
     }
 }
+

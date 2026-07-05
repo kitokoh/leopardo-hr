@@ -9,7 +9,7 @@ use App\Modules\HR\Interfaces\Api\V1\Requests\StoreSiteRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateSiteRequest;
 use App\Http\Resources\Api\V1\SiteResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Site;
+use App\Core\Tenant\Domain\Models\Site;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -80,3 +80,4 @@ class SiteController extends Controller
         return new JsonResponse(['message' => 'Site deleted successfully']);
     }
 }
+

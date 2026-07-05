@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\FeaturePlanMatrix;
-use App\Models\Subscription;
+use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -161,3 +161,4 @@ class FeatureFlagControllerTest extends TestCase
         });
     }
 }
+

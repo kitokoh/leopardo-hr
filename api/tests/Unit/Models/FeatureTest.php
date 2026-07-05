@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
@@ -252,3 +252,4 @@ class FeatureTest extends TestCase
         $this->assertNull($feature->company_id);
     }
 }
+

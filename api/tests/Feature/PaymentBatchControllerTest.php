@@ -3,13 +3,13 @@
 namespace Tests\Feature;
 
 use App\Jobs\GeneratePaymentDocumentJob;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PaymentBatch;
-use App\Models\PaymentConfirmation;
-use App\Models\PaymentItem;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaymentBatch;
+use App\Modules\Payroll\Domain\Models\PaymentConfirmation;
+use App\Modules\Payroll\Domain\Models\PaymentItem;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Queue;
@@ -184,3 +184,4 @@ class PaymentBatchControllerTest extends TestCase
         return [$company, $manager, $employee, $run, $slip];
     }
 }
+

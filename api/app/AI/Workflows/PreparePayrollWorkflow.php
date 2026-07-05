@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\AI\Workflows;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -108,3 +108,4 @@ class PreparePayrollWorkflow
         ];
     }
 }
+

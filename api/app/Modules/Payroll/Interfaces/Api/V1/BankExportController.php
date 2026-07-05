@@ -4,9 +4,9 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\BankExportResource;
-use App\Models\BankExport;
+use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -100,3 +100,4 @@ class BankExportController extends Controller
         return Storage::disk('local')->download($bankExport->file_path);
     }
 }
+

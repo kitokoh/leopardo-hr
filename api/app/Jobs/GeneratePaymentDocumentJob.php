@@ -6,10 +6,10 @@ namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Models\Company;
-use App\Models\PaymentDocument;
-use App\Models\PaySlip;
-use App\Models\SalaryAdvance;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Models\PaymentDocument;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -197,3 +197,4 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         return $document;
     }
 }
+

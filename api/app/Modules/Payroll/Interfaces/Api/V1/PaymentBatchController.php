@@ -5,11 +5,11 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Jobs\GeneratePaymentDocumentJob;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PaymentBatch;
-use App\Models\PaymentConfirmation;
-use App\Models\PaymentItem;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaymentBatch;
+use App\Modules\Payroll\Domain\Models\PaymentConfirmation;
+use App\Modules\Payroll\Domain\Models\PaymentItem;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -282,3 +282,4 @@ class PaymentBatchController extends Controller
         return $payload;
     }
 }
+

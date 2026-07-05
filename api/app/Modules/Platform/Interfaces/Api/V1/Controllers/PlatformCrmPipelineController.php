@@ -3,7 +3,7 @@
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\CompanyRequest;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
@@ -67,3 +67,4 @@ class PlatformCrmPipelineController extends Controller
         return $diff > 0 ? (int) $diff : 0;
     }
 }
+

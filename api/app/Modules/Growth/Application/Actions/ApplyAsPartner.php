@@ -6,7 +6,7 @@ namespace App\Modules\Growth\Application\Actions;
 
 use App\Modules\Growth\Application\DTOs\CreatePartnerDTO;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Partner;
+use App\Modules\Billing\Domain\Models\Partner;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -33,3 +33,4 @@ final class ApplyAsPartner
         });
     }
 }
+

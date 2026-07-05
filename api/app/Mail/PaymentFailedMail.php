@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -35,3 +35,4 @@ class PaymentFailedMail extends Mailable
             ->with(['locale' => $this->locale]);
     }
 }
+

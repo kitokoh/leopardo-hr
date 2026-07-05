@@ -4,7 +4,7 @@ namespace Tests\Unit\Services;
 
 use App\Contracts\FeatureDetectorInterface;
 use App\Exceptions\FeatureSynchronizationException;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use App\Core\Feature\Infrastructure\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Database\Schema\Blueprint;
@@ -450,3 +450,4 @@ class FeatureRegistryTest extends TestCase
         $this->assertEquals(2, $stats['inactive_features']);
     }
 }
+

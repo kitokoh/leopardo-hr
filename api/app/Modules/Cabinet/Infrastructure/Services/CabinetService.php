@@ -3,9 +3,9 @@
 namespace App\Modules\Cabinet\Infrastructure\Services;
 
 use App\Mail\CabinetShareMail;
-use App\Models\CabinetDocument;
-use App\Models\CabinetFolder;
-use App\Models\CabinetShare;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
+use App\Modules\Cabinet\Domain\Models\CabinetShare;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
@@ -202,3 +202,4 @@ class CabinetService
             ->send(new CabinetShareMail($share));
     }
 }
+

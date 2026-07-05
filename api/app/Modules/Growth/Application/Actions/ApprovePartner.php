@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Growth\Application\Actions;
 
-use App\Models\Partner;
+use App\Modules\Billing\Domain\Models\Partner;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,3 +22,4 @@ final class ApprovePartner
         return $partner->fresh() ?? $partner;
     }
 }
+

@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\PartnerLink;
-use App\Models\PartnerClick;
+use App\Modules\Billing\Domain\Models\PartnerLink;
+use App\Modules\Billing\Domain\Models\PartnerClick;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,3 +65,4 @@ class PartnerLinkMiddleware
         return $response;
     }
 }
+

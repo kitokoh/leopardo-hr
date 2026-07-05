@@ -2,7 +2,7 @@
 
 namespace App\Modules\Cameras\Domain;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Collection;
@@ -107,3 +107,4 @@ class Camera extends Model
         return $this->hasMany(CameraAccessLog::class, 'camera_id');
     }
 }
+

@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Evaluation;
+use App\Modules\HR\Domain\Models\Evaluation;
 
 class EvaluationPolicy
 {
@@ -62,3 +62,4 @@ class EvaluationPolicy
         return $actor->id === $evaluation->employee_id;
     }
 }
+

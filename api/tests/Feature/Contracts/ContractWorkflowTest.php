@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Contracts;
 
-use App\Models\Company;
-use App\Models\Contract;
-use App\Models\ContractAmendment;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\HR\Domain\Models\Contract;
+use App\Modules\HR\Domain\Models\ContractAmendment;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -420,3 +420,4 @@ class ContractWorkflowTest extends TestCase
         $this->getJson("/api/v1/contracts/{$contract->id}/amendments")->assertForbidden();
     }
 }
+

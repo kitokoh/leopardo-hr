@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AttendanceLogFactory extends Factory
@@ -59,3 +59,4 @@ class AttendanceLogFactory extends Factory
         ]);
     }
 }
+

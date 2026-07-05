@@ -3,7 +3,7 @@
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -72,3 +72,4 @@ class PlatformCompanySubscriptionController extends Controller
         ];
     }
 }
+

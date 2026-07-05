@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -193,3 +193,4 @@ class PlatformCompanyEditTest extends TestCase
         $response->assertSee(route('platform.companies.edit', ['company' => $company->id]), false);
     }
 }
+

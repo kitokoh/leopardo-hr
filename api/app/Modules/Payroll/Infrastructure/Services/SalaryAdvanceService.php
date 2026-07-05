@@ -4,7 +4,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Exceptions\SalaryAdvanceNotPendingException;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SalaryAdvance;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Carbon;
 
 class SalaryAdvanceService
@@ -73,3 +73,4 @@ class SalaryAdvanceService
         return $plan;
     }
 }
+

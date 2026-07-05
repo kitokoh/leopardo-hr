@@ -20,9 +20,10 @@ interface GeofenceValidatorInterface
      * }
      */
     public function evaluate(
-        \App\Models\Company $company,
+        \App\Core\Tenant\Domain\Models\Company $company,
         \App\Core\Auth\Domain\Models\Employee $employee,
         ?float $lat,
         ?float $lng
     ): array;
 }
+

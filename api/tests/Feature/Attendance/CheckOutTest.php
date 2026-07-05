@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Attendance;
 
-use App\Models\AttendanceLog;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Schedule;
+use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -112,3 +112,4 @@ class CheckOutTest extends TestCase
         $this->assertSame('2026-04-04 17:00:00', $log->check_out->setTimezone('UTC')->format('Y-m-d H:i:s'));
     }
 }
+

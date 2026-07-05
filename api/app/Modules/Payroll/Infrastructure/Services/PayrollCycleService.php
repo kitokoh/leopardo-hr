@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use App\Models\Company;
-use App\Models\CompanySetting;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanySetting;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\SalaryAdvance;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -383,3 +383,4 @@ class PayrollCycleService
         ];
     }
 }
+

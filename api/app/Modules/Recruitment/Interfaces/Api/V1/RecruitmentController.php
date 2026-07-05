@@ -8,10 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
-use App\Models\Applicant;
+use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Interview;
-use App\Models\JobPosting;
+use App\Modules\Recruitment\Domain\Models\Interview;
+use App\Modules\Recruitment\Domain\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -271,3 +271,4 @@ class RecruitmentController extends Controller
         return (new InterviewResource($interview->fresh()))->response();
     }
 }
+

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\EmployeeLoan;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 
 class LoanPolicy
 {
@@ -46,3 +46,4 @@ class LoanPolicy
             && $actor->hasManagerRole('principal', 'comptable');
     }
 }
+

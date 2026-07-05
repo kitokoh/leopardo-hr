@@ -3,7 +3,7 @@
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\AttendanceKiosk;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 
@@ -84,3 +84,4 @@ class OnboardingChecklistController extends Controller
         ];
     }
 }
+

@@ -7,7 +7,7 @@ namespace App\Core\Feature\Infrastructure\Services;
 use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
 use App\Exceptions\FeatureSynchronizationException;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Carbon\Carbon;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -461,3 +461,4 @@ class FeatureRegistry implements FeatureRegistryInterface
         ];
     }
 }
+

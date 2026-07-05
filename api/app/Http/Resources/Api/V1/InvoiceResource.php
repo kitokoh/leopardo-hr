@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\Invoice;
+use App\Modules\Billing\Domain\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,3 +31,4 @@ class InvoiceResource extends JsonResource
         ];
     }
 }
+

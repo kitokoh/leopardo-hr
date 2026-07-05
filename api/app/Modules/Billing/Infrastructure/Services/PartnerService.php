@@ -3,11 +3,11 @@
 namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
-use App\Models\Commission;
-use App\Models\Company;
-use App\Models\Partner;
-use App\Models\PartnerAuditLog;
-use App\Models\Payment;
+use App\Modules\Payroll\Domain\Models\Commission;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Billing\Domain\Models\PartnerAuditLog;
+use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -99,7 +99,7 @@ class PartnerService
         $company->referrer_partner_id = $partner->id;
         $company->save();
 
-        \App\Models\PartnerReferral::updateOrCreate(
+        \App\Modules\Billing\Domain\Models\PartnerReferral::updateOrCreate(
             ['company_id' => $company->id],
             [
                 'partner_id' => $partner->id,
@@ -139,11 +139,11 @@ class PartnerService
     /**
      * Demander un paiement (Payout).
      */
-    public function requestPayout(Partner $partner, int $amountCents, string $currency): \App\Models\PartnerPayoutRequest
+    public function requestPayout(Partner $partner, int $amountCents, string $currency): \App\Modules\Billing\Domain\Models\PartnerPayoutRequest
     {
         // Calcul du solde disponible
         $totalEarned = $partner->commissions()->where('status', 'approved')->sum('amount');
-        $totalRequested = \App\Models\PartnerPayoutRequest::where('partner_id', $partner->id)
+        $totalRequested = \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::where('partner_id', $partner->id)
             ->whereIn('status', ['pending', 'approved', 'paid'])
             ->sum('amount');
 
@@ -157,7 +157,7 @@ class PartnerService
             throw new \App\Exceptions\DomainException("Montant sous le seuil.", 422, "BELOW_PAYOUT_THRESHOLD");
         }
 
-        return \App\Models\PartnerPayoutRequest::create([
+        return \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::create([
             'partner_id' => $partner->id,
             'amount' => $amountCents,
             'currency' => $currency,
@@ -168,7 +168,7 @@ class PartnerService
     /**
      * Met à jour le statut d'une demande de paiement avec Audit Trail.
      */
-    public function updatePayoutStatus(\App\Models\PartnerPayoutRequest $payout, string $newStatus, int $adminId, string $reason): void
+    public function updatePayoutStatus(\App\Modules\Billing\Domain\Models\PartnerPayoutRequest $payout, string $newStatus, int $adminId, string $reason): void
     {
         $oldStatus = $payout->status;
 
@@ -181,7 +181,7 @@ class PartnerService
 
             PartnerAuditLog::create([
                 'admin_id' => $adminId,
-                'auditable_type' => \App\Models\PartnerPayoutRequest::class,
+                'auditable_type' => \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::class,
                 'auditable_id' => (string) $payout->id,
                 'event' => 'payout_status_change',
                 'old_values' => ['status' => $oldStatus],
@@ -288,3 +288,4 @@ class PartnerService
         });
     }
 }
+

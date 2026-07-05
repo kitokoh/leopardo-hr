@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
-use App\Services\TenantManager;
+use App\Core\Tenant\TenantManager;
 use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -186,3 +186,5 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonValidationErrors(['email', 'company']);
     }
 }
+
+

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreDepartmentRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateDepartmentRequest;
 use App\Http\Resources\Api\V1\DepartmentResource;
-use App\Models\Department;
+use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -72,3 +72,4 @@ class DepartmentController extends Controller
         return response()->json(['message' => 'Department deleted successfully']);
     }
 }
+

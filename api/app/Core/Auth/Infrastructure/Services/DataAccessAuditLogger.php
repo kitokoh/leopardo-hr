@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
-use App\Models\AuditLog;
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -48,3 +48,4 @@ class DataAccessAuditLogger
         return substr($userAgent, 0, 255);
     }
 }
+

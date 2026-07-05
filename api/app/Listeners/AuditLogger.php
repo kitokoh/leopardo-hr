@@ -12,7 +12,7 @@ use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\PayrollValidated;
-use App\Models\AuditLog;
+use App\Core\Auth\Domain\Models\AuditLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -93,3 +93,4 @@ class AuditLogger implements ShouldQueue
         return array_keys(self::EVENT_MAP);
     }
 }
+

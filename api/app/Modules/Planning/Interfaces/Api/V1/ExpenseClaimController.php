@@ -7,8 +7,8 @@ namespace App\Modules\Planning\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ExpenseClaimResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\ExpenseClaim;
-use App\Models\ExpenseItem;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
+use App\Modules\Planning\Domain\Models\ExpenseItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -154,3 +154,4 @@ class ExpenseClaimController extends Controller
         return (new ExpenseClaimResource($expenseClaim->fresh()))->response();
     }
 }
+

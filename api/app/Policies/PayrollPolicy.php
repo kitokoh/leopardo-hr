@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 
 class PayrollPolicy
 {
@@ -59,3 +59,4 @@ class PayrollPolicy
         return $actor->company_id === $run->company_id && $actor->hasManagerRole('principal', 'rh');
     }
 }
+

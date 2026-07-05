@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\ExpenseClaim;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
 
 class ExpenseClaimPolicy
 {
@@ -49,3 +49,4 @@ class ExpenseClaimPolicy
         return $actor->id === $expense->employee_id && $expense->status === 'draft';
     }
 }
+

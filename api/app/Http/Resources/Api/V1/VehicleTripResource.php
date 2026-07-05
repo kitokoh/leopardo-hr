@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\VehicleTrip;
+use App\Modules\Fleet\Domain\Models\VehicleTrip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,3 +30,4 @@ class VehicleTripResource extends JsonResource
         ];
     }
 }
+

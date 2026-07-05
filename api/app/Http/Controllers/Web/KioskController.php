@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\AttendanceKiosk;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -81,3 +81,4 @@ class KioskController extends Controller
         DB::statement('SET search_path TO shared_tenants,public');
     }
 }
+

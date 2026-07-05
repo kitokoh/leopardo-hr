@@ -3,11 +3,11 @@
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
-use App\Models\CompanyRequest;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
-use App\Services\TenantManager;
+use App\Core\Tenant\TenantManager;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -521,3 +521,5 @@ class SelfServiceTrialController extends Controller
             ->toString();
     }
 }
+
+

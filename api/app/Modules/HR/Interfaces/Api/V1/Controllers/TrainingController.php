@@ -9,9 +9,9 @@ use App\Http\Resources\Api\V1\TrainingCourseResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Http\Resources\Api\V1\TrainingSessionResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\TrainingCourse;
-use App\Models\TrainingEnrollment;
-use App\Models\TrainingSession;
+use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
+use App\Modules\HR\Domain\Models\TrainingSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -242,3 +242,4 @@ class TrainingController extends Controller
         return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
     }
 }
+

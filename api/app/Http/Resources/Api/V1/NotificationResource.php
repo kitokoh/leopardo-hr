@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\Notification;
+use App\Modules\Notification\Domain\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,3 +26,4 @@ class NotificationResource extends JsonResource
         ];
     }
 }
+

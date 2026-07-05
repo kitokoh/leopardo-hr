@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Services\Payroll\PayrollCalculator;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -243,3 +243,5 @@ class PayrollRunController extends Controller
         }, 'paie_' . $payrollRun->period_start . '.csv', $headers);
     }
 }
+
+

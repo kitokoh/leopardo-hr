@@ -3,7 +3,7 @@
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CompanyRequest;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -139,3 +139,4 @@ class CompanyRequestController extends Controller
         abort(401);
     }
 }
+

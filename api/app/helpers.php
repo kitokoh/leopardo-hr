@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 
 if (! function_exists('currentCompany')) {
     /**
@@ -14,3 +14,4 @@ if (! function_exists('currentCompany')) {
         return $company;
     }
 }
+

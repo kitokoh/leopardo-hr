@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\SSO;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -158,3 +158,4 @@ class SSOService
         ];
     }
 }
+

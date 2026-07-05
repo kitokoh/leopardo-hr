@@ -3,17 +3,17 @@
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\PaySlipLine;
-use App\Models\SalaryComponent;
-use App\Models\SalaryStructure;
-use App\Services\Payroll\CountryRules\AlgeriaPayrollRules;
-use App\Services\Payroll\CountryRules\FrancePayrollRules;
-use App\Services\Payroll\CountryRules\MoroccoPayrollRules;
-use App\Services\Payroll\CountryRules\SenegalPayrollRules;
-use App\Services\Payroll\CountryRules\TunisiaPayrollRules;
-use App\Services\Payroll\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Payroll\Domain\Models\SalaryComponent;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
 use Illuminate\Support\Facades\DB;
 
 class PayrollCalculator
@@ -238,3 +238,5 @@ class PayrollCalculator
         };
     }
 }
+
+

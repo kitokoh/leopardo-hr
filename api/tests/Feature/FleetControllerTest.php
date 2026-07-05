@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Vehicle;
-use App\Models\VehicleAlert;
-use App\Models\VehicleMaintenance;
-use App\Models\VehicleTrip;
+use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Modules\Fleet\Domain\Models\VehicleAlert;
+use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
+use App\Modules\Fleet\Domain\Models\VehicleTrip;
 use App\Services\Tracking\TraccarService;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -226,3 +226,4 @@ class FleetControllerTest extends TestCase
         });
     }
 }
+

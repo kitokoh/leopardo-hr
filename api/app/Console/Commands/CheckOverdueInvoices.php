@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Invoice;
+use App\Modules\Billing\Domain\Models\Invoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -30,3 +30,4 @@ class CheckOverdueInvoices extends Command
         return self::SUCCESS;
     }
 }
+

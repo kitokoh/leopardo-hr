@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Traits;
 
-use App\Models\ApprovalRequest;
-use App\Models\ApprovalWorkflow;
+use App\Modules\Attendance\Domain\Models\ApprovalRequest;
+use App\Modules\Attendance\Domain\Models\ApprovalWorkflow;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
@@ -54,3 +54,4 @@ trait Approvable
         return $this->approvalRequest?->status === 'pending';
     }
 }
+
