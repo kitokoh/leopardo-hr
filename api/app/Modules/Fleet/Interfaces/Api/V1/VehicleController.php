@@ -10,7 +10,7 @@ use App\Http\Resources\Api\V1\VehicleResource;
 use App\Http\Resources\Api\V1\VehicleTripResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Fleet\Domain\Models\Vehicle;
-use App\Services\Tracking\TraccarService;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -226,4 +226,5 @@ class VehicleController extends Controller
         return VehicleAssignmentResource::collection($assignments)->response();
     }
 }
+
 

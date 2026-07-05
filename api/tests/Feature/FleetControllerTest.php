@@ -8,7 +8,7 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Services\Tracking\TraccarService;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -226,4 +226,5 @@ class FleetControllerTest extends TestCase
         });
     }
 }
+
 

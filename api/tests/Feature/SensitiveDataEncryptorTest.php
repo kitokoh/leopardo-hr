@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Services\Security\SensitiveDataEncryptor;
+use App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor;
 use Tests\TestCase;
 
 class SensitiveDataEncryptorTest extends TestCase
@@ -90,3 +90,4 @@ class SensitiveDataEncryptorTest extends TestCase
         $this->assertSame(['name' => 'John'], $result);
     }
 }
+

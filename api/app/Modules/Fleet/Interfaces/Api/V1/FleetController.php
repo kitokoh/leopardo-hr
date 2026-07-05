@@ -8,7 +8,7 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Services\Tracking\TraccarService;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -112,4 +112,5 @@ class FleetController extends Controller
         return response()->json(['data' => $upcoming]);
     }
 }
+
 

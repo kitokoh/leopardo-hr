@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Contracts\Queue\TenantScopedJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Services\Communication\CommunicationService;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -59,3 +59,4 @@ class DispatchCommunicationJob implements ShouldQueue, TenantScopedJob
         $communication->notifyEmployee($employee, $this->templateKey, $this->context, $this->channels);
     }
 }
+

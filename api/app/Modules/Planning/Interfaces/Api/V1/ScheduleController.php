@@ -9,7 +9,7 @@ use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateScheduleRequest;
 use App\Http\Resources\Api\V1\ScheduleResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Services\Cache\TenantCacheService;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -170,4 +170,5 @@ class ScheduleController extends Controller
         return response()->json(['message' => 'Schedule deleted successfully']);
     }
 }
+
 

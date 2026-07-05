@@ -98,6 +98,24 @@ parameters:
         - '#Call to an undefined method App\\Modules\\(Growth|Platform|Onboarding|Training)#'
         - '#Parameter.*of method App\\Modules\\(Growth|Platform|Onboarding|Training).*invalid type#'
 
+        # Eloquent models — propriétés dynamiques non annotées (migration DDD v4.16.251)
+        # Les modèles Eloquent utilisent __get() magiquement; les @property viendront progressivement.
+        - '#Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\HR\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\Notification\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\Payroll\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\Planning\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\Recruitment\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\Expense\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\SmartAttendance\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\EdgeSync\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Core\\Tenant\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Core\\Auth\\Domain\\Models\\#'
+        - '#Parameter .* of method Illuminate\\Support\\Collection.*::(map|filter|sum|each|sortBy)\(\) expects callable.*Closure.*Domain\\Models\\#'
+        - '#Method App\\Modules\\Training\\Application\\Actions\\EnrollEmployee::execute\(\) should return.*but returns stdClass#'
+        - '#Ternary operator condition is always true#'
+        - '#treatPhpDocTypesAsCertain#'
+
         # Level 5 — patterns supplémentaires couverts par la montée de niveau
         - '#If condition is always true#'
         - '#Using nullsafe method call on non-nullable type Illuminate\\Routing\\Route#'

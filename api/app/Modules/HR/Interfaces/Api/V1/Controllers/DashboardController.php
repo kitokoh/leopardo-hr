@@ -4,7 +4,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
  
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\Cache\TenantCacheService;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -318,3 +318,4 @@ class DashboardController extends Controller
             ->count();
     }
 }
+
