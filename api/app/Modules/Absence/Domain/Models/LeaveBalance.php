@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class LeaveBalance extends Model
 {
+    const CREATED_AT = null;
+
     protected $fillable = [
         'employee_id',
         'absence_type_id',
