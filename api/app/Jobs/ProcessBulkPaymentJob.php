@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Queue\TenantScopedJob;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Models\SalaryAdvance;
@@ -28,7 +30,7 @@ use Throwable;
  *   3. Write progress to Redis for status polling.
  *   4. Create audit entry.
  */
-class ProcessBulkPaymentJob implements ShouldQueue
+class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -39,11 +41,33 @@ class ProcessBulkPaymentJob implements ShouldQueue
 
     public int $timeout = 300;
 
+    private ?string $resolvedCompanyId = null;
+
     public function __construct(
         public readonly int $payrollRunId,
         public readonly int $triggeredById,
     ) {
         $this->onQueue('payroll');
+    }
+
+    public function tenantCompanyId(): ?string
+    {
+        if ($this->resolvedCompanyId !== null) {
+            return $this->resolvedCompanyId;
+        }
+
+        /** @var PayrollRun|null $run */
+        $run = PayrollRun::query()->withoutGlobalScopes()->find($this->payrollRunId);
+
+        return $this->resolvedCompanyId = $run?->company_id;
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new EnsureTenantContext()];
     }
 
     public function handle(): void
