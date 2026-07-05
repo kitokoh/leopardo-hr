@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Core\Tenant\Infrastructure\Services;
+namespace App\Core\Tenant\Infrastructure\Services;
 
 use Illuminate\Support\Facades\Cache;
 
