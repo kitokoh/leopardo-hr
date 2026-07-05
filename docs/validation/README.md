@@ -2,6 +2,22 @@
 
 Ce dossier contient les referentiels de validation fonctionnelle et QA utilises pour verifier qu'un module est reellement terminable et testable.
 
+## Documents vivants vs rapports historiques figes
+
+La majorite des fichiers de ce dossier portent une date dans leur nom
+(ex: `*_2026_06_01.md`, `RELEASE_READINESS_REPORT_2026-05-19.md`). Ce sont des
+**rapports d'audit/smoke-test figes au moment de leur redaction** — ils ne sont
+jamais mis a jour retroactivement et servent de preuve/tracabilite pour les
+plans `docs/PLAN_ACTION/` qui les ont produits. Ne pas les considerer comme
+l'etat actuel du systeme ; se referer au code sur `main` et a `PILOTAGE.md`
+pour l'etat present.
+
+Seuls les documents **sans date dans le nom** sont vivants et doivent rester a
+jour : `RELEASE_READINESS_GATE.md`, `FRONTEND_API_CONTRACT_MATRIX.md`,
+`CLIENT_LOGIN_READINESS.md`, `CLIENT_UX_OBSERVABILITY.md`,
+`LAUNCH_OBSERVABILITY_DASHBOARD.md`, `MOBILE_FIREBASE_DISTRIBUTION.md`,
+`MOBILE_MARKETING_READINESS.md`, `MOBILE_STORE_READINESS.md`, et ce fichier.
+
 ## Statut des documents
 
 | Fichier | Statut | Usage autorise | Source canonique qui prime |
