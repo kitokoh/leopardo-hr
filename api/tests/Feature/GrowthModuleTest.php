@@ -256,10 +256,25 @@ class GrowthModuleTest extends TestCase
             'referral_code' => 'GROWTH2026_' . uniqid(),
         ]);
 
-        $response = $this->postJson('/api/v1/trial/signup', [
-            'email' => 'founder_' . uniqid() . '@test.com',
+        $email = 'founder_' . uniqid() . '@test.com';
+
+        // Step 1: signup
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => $email,
             'company' => 'Test Growth Co ' . uniqid(),
             'referral_code' => $partner->referral_code,
+        ])->assertStatus(200);
+
+        // Step 2: verify with the OTP
+        $otp = \App\Core\Tenant\Domain\Models\CompanyRequest::query()
+            ->where('email', $email)
+            ->where('status', 'pending')
+            ->first()
+            ->verification_token;
+
+        $response = $this->postJson('/api/v1/trial/verify', [
+            'email' => $email,
+            'code' => $otp,
         ]);
 
         $response->assertStatus(201);

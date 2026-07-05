@@ -66,6 +66,7 @@ Route::prefix('v1')->group(function (): void {
     // Self-service trial provisioning (public, throttle strict)
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
+        Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
     });
 
     // Stripe webhook (public, verified by signature)

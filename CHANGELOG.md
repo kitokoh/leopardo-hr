@@ -3,6 +3,17 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.6] - 2026-07-05
+
+### Added
+- **Verification email OTP pour le signup trial (P0.1)** : le parcours d'inscription a l'essai gratuit passe desormais par une verification email a 6 chiffres avant de provisionner le tenant. Cela empeche les inscriptions spam et valide l'email du prospect.
+  - Nouveau endpoint `POST /api/v1/trial/verify` : recoit l'email et le code OTP, provisionne le tenant si valide.
+  - `POST /api/v1/trial/signup` ne provisionne plus immediatement : il cree une `CompanyRequest` en statut `pending`, genere un OTP a 6 chiffres valide 30 minutes, et l'envoie par email via `TrialVerificationMail`.
+  - Nouveau mailable `TrialVerificationMail` localise (FR/EN/AR/TR) avec template Blade.
+  - Migration `add_verification_fields_to_company_requests_table` : colonnes `verification_token`, `verification_expires_at`, `signup_payload` (jsonb).
+  - Frontend vitrine : `SignupForm.tsx` refactored en 3 etapes (formulaire → saisie OTP → credentials), nouvelle route Next.js `/api/forms/verify`, nouveau helper `submitVerifyForm`.
+  - Tests mis a jour : `SelfServiceTrialTest` et `GrowthModuleTest` couvrent le flow 2 etapes.
+
 ## [4.22.5] - 2026-07-05
 
 ### Fixed
