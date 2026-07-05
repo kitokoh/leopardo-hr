@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Modules\Notification\Infrastructure\Services;
+namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Contracts\Communication\MessageProviderInterface;
 use App\Jobs\SendPushNotificationJob;
