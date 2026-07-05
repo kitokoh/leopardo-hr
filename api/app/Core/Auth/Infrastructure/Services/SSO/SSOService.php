@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Core\Auth\Infrastructure\Services\SSO;
+namespace App\Core\Auth\Infrastructure\Services\SSO;
 
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
