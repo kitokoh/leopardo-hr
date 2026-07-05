@@ -47,7 +47,7 @@ class AbsenceService
             ->first();
 
         if ($balance) {
-            $available = ($balance->allocated + ($balance->carried_over ?? 0)) - $balance->used;
+            $available = $balance->balance - $balance->used;
             if ($days > $available) {
                 throw new InsufficientLeaveBalanceException($days, $available);
             }
