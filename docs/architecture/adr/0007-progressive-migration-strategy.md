@@ -1,7 +1,10 @@
-# ADR-003 — Stratégie de migration progressive
+# ADR 0007 - Stratégie de migration progressive
+
+## Statut
+
+Acceptee.
 
 **Date** : 2026-06-27
-**Statut** : Accepted
 
 ## Contexte
 

@@ -8,6 +8,11 @@
 ### Chore
 - **Nettoyage du monorepo (artefacts CI + binaires vendorises commis par erreur)** : suppression de `api/composer.phar`, `api/database/database.sqlite`, des rapports de tests generes (`api/storage/test-results*/`, `backend-quality-reports/`, `backend-test-reports/`, `front/web/playwright-report/index.html`) qui ne devraient jamais etre commites (deja regeneres a chaque run CI). `.gitignore` etendu pour empecher leur reapparition.
 - **Rangement des scripts epars a la racine** : `api/start-local.ps1` -> `api/scripts/start-local.ps1`, `api/test_script.php` -> `api/scripts/test_script.php`, `capture_screenshots.py` -> `scripts/capture_screenshots.py`, avec un `api/scripts/README.md` documentant leur usage. References mises a jour dans `api/README.md`, `docs/DEMARRAGE_RAPIDE.md`, `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`, `docs/notes/archive/ARBORESCENCE_PROJET_COMPLET.md`.
+### Docs
+- **Consolidation architecture** : fusion des ADR dupliques (`docs/architecture/adr-00X-*.md` -> `docs/architecture/adr/000X-*.md`), suppression de `docs/architecture/SYSTEM_DESIGN.md` (contenu redondant avec `ARCHITECTURE.md`), mise a jour croisee de `ARCHITECTURE.md`, `README.md`, `docs/QUICKSTART.md`, `docs/ai/README.md`, `docs/validation/README.md`, `docs/PLAN_ACTION/00_SOMMAIRE.md` pour pointer vers les documents canoniques uniques.
+- **`PILOTAGE.md`** : ajout d'une section "Gouvernance documentaire" clarifiant la hierarchie des sources de verite (PILOTAGE.md pour priorites/regles operationnelles, ARCHITECTURE.md pour la structure technique), et corrige une auto-reference obsolete.
+### Chore
+- **Coherence tooling monorepo** : suppression de `.github/workflows/mobile-ci.yml` (duplique de la matrice mobile deja couverte par `tests.yml`), dedoublonnage de `openapi/openapi.yaml` (le spec canonique reste `api/openapi.yaml`), retrait de `turbo.json`/de la dependance Turbo inutilisee (le monorepo pilote deja ses taches via `melos` pour Flutter et npm workspaces pour le web), ajout du package `melos` manquant a `package.json`. Mise a jour de `ARCHITECTURE.md`, `DEVELOPMENT.md`, `docs/ARCHITECTURE_CICD.md`, `docs/MONOREPO_TOOLING.md`, `docs/README.md`, `docs/api/README.md`, `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md` en consequence.
 
 ## [4.22.4] - 2026-07-04
 

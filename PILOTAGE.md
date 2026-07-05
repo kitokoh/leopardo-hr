@@ -210,3 +210,24 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | 6 | `docs/PLAN_ACTION/` | 72 plans d'action livrés |
 | 7 | `docs/GOTO_MARKET/` | Stratégie commerciale |
 | 8 | `api/openapi.yaml` | Spécification API (332 KB) |
+
+---
+
+## GOUVERNANCE DOCUMENTAIRE
+
+> Référencée depuis l'en-tête de ce fichier — cette section clarifie la hiérarchie
+> des sources de vérité pour lever l'ambiguïté notée dans l'avertissement en tête
+> de document (« divergence scope vs code livré »).
+
+| Sujet | Source de vérité | Notes |
+|---|---|---|
+| Priorités/phase courante, règles opérationnelles | `PILOTAGE.md` (ce fichier) | Ne remplace jamais l'état réel du code pour le scope/tenancy |
+| **Scope réel livré** (dépasse le MVP verrouillé décrit ci-dessous) | `docs/REFERENTIEL_PRODUIT/ROADMAP.md` + `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md` | À consulter en priorité sur la section « SCOPE MVP VERROUILLÉ » de ce fichier, qui décrit un périmètre initial déjà dépassé |
+| Architecture backend (modules DDD, conventions, TODOs) | `api/ARCHITECTURE.md` | |
+| Architecture système/monorepo | `docs/architecture/ARCHITECTURE.md` + `ARCHITECTURE.md` (racine) | |
+| Plans d'action historiques (01-72, tous livrés) | `docs/PLAN_ACTION/` | **Clos** — conservé pour traçabilité, voir bandeau dans `00_SOMMAIRE.md` |
+| Plan d'action actif | `docs/PLAN_ACTION2/` | Prend le relais de `docs/PLAN_ACTION/` |
+| Rapports de validation/QA datés | `docs/validation/*_YYYY_MM_DD.md` | Snapshots figés, jamais mis à jour — voir `docs/validation/README.md` |
+| Contrat API | `api/openapi.yaml` | Spec canonique (référencée par `dev-hub/sdk/MANIFEST.json`) ; `openapi/openapi.yaml` (racine) est un second fichier actuellement divergent — voir Priorité 3 de l'audit monorepo pour le plan de déduplication |
+
+**Règle** : en cas de contradiction entre `PILOTAGE.md` et un document listé ci-dessus sur son sujet propre, le document spécialisé prime pour l'état réel — `PILOTAGE.md` reste la référence pour les priorités/règles opérationnelles.

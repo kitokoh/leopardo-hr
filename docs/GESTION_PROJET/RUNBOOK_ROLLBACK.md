@@ -157,7 +157,7 @@ L'APK mobile est distribue via Firebase App Distribution ou le store. Le rollbac
 ### Option A — Hotfix rapide (prefere)
 
 1. **Corriger le bug** dans une branche hotfix
-2. **Pousser** → CI `mobile-ci.yml` valide → `mobile-distribute.yml` distribue
+2. **Pousser** → CI `mobile-apps-ci.yml` valide → `mobile-distribute.yml` distribue
 3. **Temps cible** : < 30 min pour un fix simple
 
 ### Option B — Rollback version store
