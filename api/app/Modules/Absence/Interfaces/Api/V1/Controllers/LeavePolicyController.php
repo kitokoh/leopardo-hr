@@ -24,10 +24,9 @@ class LeavePolicyController extends Controller
             ->map(fn ($b) => [
                 'absence_type' => $b->absenceType,
                 'year'         => $b->year,
-                'allocated'    => $b->allocated,
-                'used'         => $b->used,
-                'carried_over' => $b->carried_over ?? 0,
                 'balance'      => $b->balance,
+                'used'         => $b->used,
+                'pending'      => $b->pending,
             ]);
 
         return response()->json($balances);
