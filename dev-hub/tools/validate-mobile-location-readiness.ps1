@@ -58,9 +58,9 @@ foreach ($app in $apps) {
     Write-Host "[mobile-location] ${app}: native permissions and attendance payload are ready."
 }
 
-$checkInRequest = Read-RepoFile "api/app/Http/Requests/Api/V1/Attendance/CheckInRequest.php"
-$checkOutRequest = Read-RepoFile "api/app/Http/Requests/Api/V1/Attendance/CheckOutRequest.php"
-$dto = Read-RepoFile "api/app/DTOs/CheckInDTO.php"
+$checkInRequest = Read-RepoFile "api/app/Modules/Attendance/Interfaces/Api/V1/Requests/CheckInRequest.php"
+$checkOutRequest = Read-RepoFile "api/app/Modules/Attendance/Interfaces/Api/V1/Requests/CheckOutRequest.php"
+$dto = Read-RepoFile "api/app/Modules/Attendance/Application/DTOs/CheckInDTO.php"
 $resource = Read-RepoFile "api/app/Http/Resources/Api/V1/AttendanceLogResource.php"
 
 Assert-Contains $checkInRequest "gps_accuracy" "CheckInRequest"
