@@ -20,6 +20,10 @@
 - **`PILOTAGE.md`** : ajout d'une section "Gouvernance documentaire" clarifiant la hierarchie des sources de verite (PILOTAGE.md pour priorites/regles operationnelles, ARCHITECTURE.md pour la structure technique), et corrige une auto-reference obsolete.
 ### Chore
 - **Coherence tooling monorepo** : suppression de `.github/workflows/mobile-ci.yml` (duplique de la matrice mobile deja couverte par `tests.yml`), dedoublonnage de `openapi/openapi.yaml` (le spec canonique reste `api/openapi.yaml`), retrait de `turbo.json`/de la dependance Turbo inutilisee (le monorepo pilote deja ses taches via `melos` pour Flutter et npm workspaces pour le web), ajout du package `melos` manquant a `package.json`. Mise a jour de `ARCHITECTURE.md`, `DEVELOPMENT.md`, `docs/ARCHITECTURE_CICD.md`, `docs/MONOREPO_TOOLING.md`, `docs/README.md`, `docs/api/README.md`, `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md` en consequence.
+### Added
+- **12 nouvelles Actions Application (couche DDD)** completant les modules `Growth` (`ApplyAsPartner`, `ApprovePartner`, `RequestPayout`), `Onboarding` (`CompleteStep`, `SeedDefaultSteps`, `SkipStep`), `Platform` (`ActivateCompany`, `ProvisionCompany`, `SuspendCompany`) et `Training` (`CompleteEnrollment`, `CreateCourse`, `EnrollEmployee`) qui n'avaient jusqu'ici qu'un Controller/Service sans Action isolee, cassant la coherence du pattern Command deja en place ailleurs.
+- **Migration EdgeSync** : `EdgeController`/`EdgeDownloadController` deplaces dans `App\Modules\EdgeSync\Interfaces\Api\V1` (ils vivaient encore dans le namespace legacy `App\Http\Controllers\Api\V1` malgre la migration DDD du reste du module).
+- `api/phpstan-modules.neon` : leve au niveau 5 sur les modules concernes.
 
 ## [4.22.4] - 2026-07-04
 
