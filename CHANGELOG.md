@@ -3,6 +3,16 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.5] - 2026-07-05
+
+### Fixed
+- **Isolation multi-tenant des Jobs en file d'attente** : `TenantMiddleware` positionne correctement le `search_path` PostgreSQL et le binding `current_company` pour les requetes HTTP, mais aucun `Job` en queue ne le faisait. Chaque job touchant des donnees tenant (paie, notifications, PDF/documents, webhooks, EdgeSync) se contentait d'un filtre `->where('company_id', ...)`. Cela fonctionne aujourd'hui en mode "shared schema", mais casserait silencieusement des qu'une entreprise passerait en mode "schema isole" (deja supporte par `Company::schema_name`/`tenancy_type` et `TenantManager::withinTenant()`) : le `search_path` de la connexion DB du worker ne serait jamais mis a jour pour ce job.
+  - Nouvelle interface `App\Contracts\Queue\TenantScopedJob` : tout job necessitant un contexte tenant declare `tenantCompanyId()`.
+  - Nouveau middleware de job `App\Jobs\Middleware\EnsureTenantContext` : enveloppe `handle()` dans `TenantManager::withinTenant()` pour l'entreprise resolue (meme mecanisme que `TenantMiddleware` en HTTP). Relache (ne fait pas echouer) le job si l'entreprise referencee n'est pas trouvee, pour survivre a un retard de replication sans perdre le payload.
+  - Applique a tous les jobs tenant-scoped : `ProcessPayrollBatchJob`, `SendBulkNotificationsJob` (+ correction d'un bug independant : filtrait `User::where('company_id', ...)` alors que la table `users` (schema public) n'a pas de colonne `company_id` — le lien tenant passe par `user_employee_links.company_id` via `employeeLinks()`), `GeneratePaySlipPdfJob`, `GeneratePaymentDocumentJob`, `ProcessBulkPaymentJob`, `WarmPaySlipPdfPathsForPayrollRunJob`, `DispatchCommunicationJob`, `SendPushNotificationJob`, `DispatchWebhook`, et `ProcessSyncQueueJob` (EdgeSync).
+  - Correction des annotations PHPDoc `@property int|null $company_id` obsoletes en `string|null` (`companies.id` est un uuid) sur `Employee`, `WebhookEndpoint`, `PayrollRun`.
+  - Couverture ajoutee : `tests/Unit/Jobs/EnsureTenantContextTest.php` (pass-through hors tenant, tenant id null, etablissement/nettoyage du contexte, relache si entreprise absente) et mise a jour de `QueueJobsTest` (uuid company ids + assertion que chaque job implemente `TenantScopedJob`).
+
 ## [4.22.4] - 2026-07-04
 
 ### Security
