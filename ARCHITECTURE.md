@@ -19,7 +19,7 @@ leopardo-hr/
 │   │   └── leopardo_platform_admin/ # App admin plateforme
 │   └── zkteco-kiosk/       # Kiosque HTML/JS pour pointage biométrique
 ├── shared/i18n/            # Traductions partagées (fr, en, ar, tr)
-├── openapi/                # Spécification OpenAPI 3.x
+├── api/openapi.yaml        # Spécification OpenAPI 3.x (source canonique)
 ├── docs/                   # Documentation technique et stratégique
 └── .github/workflows/      # 25+ pipelines CI/CD
 ```

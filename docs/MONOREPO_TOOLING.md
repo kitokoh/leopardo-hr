@@ -4,9 +4,18 @@
 
 | Couche | Outil | Usage |
 |---|---|---|
-| JS/TS (web + admin) | npm workspaces + **Turbo** | Lint, test, build avec cache |
+| JS/TS (web + admin) | scripts npm racine avec `--prefix` (pas de workspaces) | Lint, test, build |
 | Flutter (mobile) | **Melos** | Analyse, test, build, l10n, codegen |
 | Backend (Laravel) | Makefile (existant) | Tests, migrations, qualité |
+
+> **Note** : ce dépôt n'utilise pas npm workspaces — `front/web` et
+> `front/admin-dashboard` gardent chacun leur propre `package-lock.json`.
+> Turbo a été retiré (2026-07) : il n'était pas réellement invoqué par la CI
+> (`web-ci.yml` utilise `npm run lint`/`npm ci && npm run build`, pas `turbo`)
+> et sans workspaces son graphe de dépendances/cache n'apportait aucun
+> bénéfice réel. Si le besoin de cache/parallélisation redevient concret,
+> réintroduire Turbo **en même temps** qu'une vraie migration vers les
+> workspaces npm, pas séparément.
 
 ---
 
@@ -20,7 +29,10 @@ npm  >= 10
 
 ### Setup
 ```bash
-npm install   # depuis la racine — installe tous les workspaces
+# Depuis la racine : installe seulement les deps racine (aucune, hors engines).
+# Chaque app gère son propre npm install :
+npm install --prefix front/web
+npm install --prefix front/admin-dashboard
 ```
 
 ### Commandes racine
@@ -33,16 +45,6 @@ npm run web:dev       # Next.js dev server
 npm run web:e2e       # Playwright (web)
 npm run admin:dev     # Vite dev server (admin)
 ```
-
-### Avec Turbo (cache)
-```bash
-npx turbo build       # build tous les packages JS avec cache
-npx turbo lint        # lint avec cache
-npx turbo test        # tests avec cache
-```
-
-> Turbo met en cache les artefacts de build. Un second `turbo build` sans changement
-> prend < 1 seconde.
 
 ---
 
@@ -91,7 +93,7 @@ melos run analyze --scope=leopardo_core
 ## CI/CD
 
 Les workflows GitHub Actions utilisent ces commandes :
-- `web-ci.yml` → `npx turbo lint test build`
+- `web-ci.yml` → `npm ci` puis `npm run lint` / `npm run build` (par app, sans Turbo)
 - `mobile-apps-ci.yml` → `melos bootstrap && melos run analyze && melos run test`
 
 ---
@@ -102,5 +104,6 @@ Les workflows GitHub Actions utilisent ces commandes :
 |---|---|---|
 | `leopardo_core` | Design system, services partagés | — |
 | `leopardo_employee` | App employé | `leopardo_core` |
+| `leopardo_hr` | App manager/RH dédiée | `leopardo_core` |
 | `leopardo_manager` | App manager/RH | `leopardo_core` |
 | `leopardo_platform_admin` | App super-admin | `leopardo_core` |
