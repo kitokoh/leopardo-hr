@@ -3,6 +3,15 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.7] - 2026-07-05
+
+### Fixed
+- **16 fichiers PHP avec double backslash dans le namespace** : `SSOService`, `SSOProviderConfig`, `SensitiveDataEncryptor`, `TenantCacheService`, `TraccarService`, `CommunicationService`, `NotificationPreferenceProvisioner`, `AuditMessageProvider`, `CountryRulesInterface`, `PayrollCalculator`, `AbstractCountryRules` et 5 rules pays (`Algeria`, `France`, `Morocco`, `Senegal`, `Tunisia`, `Turkey`) avaient `namespace App\\Module` au lieu de `namespace App\Module`, causant un ParseError PHPStan systematique en CI.
+- **Scripts de validation dev-hub alignes sur l'architecture DDD** : `validate-mobile-notification-production-proof.ps1` pointe desormais sur `Modules/Notification/.../DeviceTokenController.php` et `PushNotificationService.php`; `validate-mobile-location-readiness.ps1` pointe sur `Modules/Attendance/.../CheckInRequest.php`, `CheckOutRequest.php` et `DTOs/CheckInDTO.php`; `mobile-workflow-contracts.json` pointe sur `Modules/HR/.../MobileExperienceService.php`.
+- **Governance Gates** : `docs/api/README.md` contient desormais le marker `/docs/openapi.yaml`; `validate-code-quality-governance.ps1` attend `26/26` conformement au gate strict du 2026-06-01.
+- **Admin dashboard tokens de lancement** : `CompanyDetailView` porte le bouton `Activer client` avec `id="btn-activer-client"`; `CompaniesView` porte `id="btn-creer-le-client"`; `LoginView` porte `aria-label="Utiliser le compte demo super-admin"`.
+- **Vitrine signup** : `route.ts` et `forms.ts` utilisent `requestedWorkflow: 'guided_trial'` au lieu de `self_service_trial`.
+
 ## [4.22.6] - 2026-07-05
 
 ### Added
