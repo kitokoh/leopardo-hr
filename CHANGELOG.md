@@ -5,6 +5,15 @@
 
 ## [4.22.6] - 2026-07-05
 
+### Security
+- **Fuite du token SSE en query parameter (admin-dashboard)** : `useNotificationStream.js` passait le bearer token complet en clair dans l'URL `EventSource` (`?token=...`), exposant un secret longue-duree dans les logs serveur/proxy et l'historique navigateur. Le backend exposait deja un endpoint dedie (`POST /api/v1/notifications/sse-token` -> `SseTokenController`) emettant un jeton a usage unique de 60s, mais le frontend ne l'utilisait pas. Le composable echange desormais le bearer token contre ce jeton court avant d'ouvrir le flux SSE (`?sse_token=...`), avec repli sur reconnexion si l'echange echoue.
+- **Mot de passe Upstash Redis expose dans l'historique git** (`api/.env.example`, commit anterieur) : le mot de passe reel a ete remplace par un placeholder dans une revision passee, mais reste recuperable via l'historique git d'un depot public. Documente dans `AUDIT.md` comme action urgente hors code (rotation cote dashboard Upstash + mise a jour Render).
+
+### Docs
+- **`AUDIT.md` remis a jour** : la checklist finale (generee le 2026-07-01) decrivait plusieurs points comme non resolus alors qu'ils etaient deja corriges dans le code (signature Stripe/Chargily, Google Sign-In employee, Mailables bienvenue/invitation/abonnement, variables Google/Firebase/Chargily dans `.env.example`, Background Worker Render, filtres CI `tests.yml`/`web-marketing-ci.yml`). Checklist recoupee ligne par ligne avec le code de `main` et corrigee avec references precises.
+
+### Added
+- **`front/web/.env.local.example`** : fichier d'exemple manquant pour la vitrine Next.js, documentant `STRIPE_SECRET_KEY`, `LEOPARDO_API_URL`, `NEXT_PUBLIC_API_URL` et l'ensemble des variables lues par le proxy API, le checkout Stripe et les formulaires marketing.
 ### Added
 - **Verification email OTP pour le signup trial (P0.1)** : le parcours d'inscription a l'essai gratuit passe desormais par une verification email a 6 chiffres avant de provisionner le tenant. Cela empeche les inscriptions spam et valide l'email du prospect.
   - Nouveau endpoint `POST /api/v1/trial/verify` : recoit l'email et le code OTP, provisionne le tenant si valide.

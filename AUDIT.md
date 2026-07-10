@@ -2,6 +2,8 @@
 > Généré le 2026-07-01 | Auteur : audit automatisé ooks/KiloClaw  
 > Périmètre : API (Laravel), front/web (Next.js), front/admin-dashboard (Vue), apps mobiles Flutter, CI/CD GitHub Actions
 
+> ⚠️ **Revue de suivi — 2026-07-05** : plusieurs points ci-dessous ont été corrigés dans le code depuis la génération initiale (voir checklist finale pour le détail à jour). Ce document décrit l'état constaté au 2026-07-01 ; ne pas retraiter les points déjà marqués `[x]` en fin de fichier sans vérifier le code courant.
+
 ---
 
 ## 📋 Résumé Exécutif
@@ -495,20 +497,34 @@ REDIS_PASSWORD=NOUVEAU_MDP
 
 ---
 
-## 📦 Checklist finale
+## 📦 Checklist finale (mise à jour 2026-07-05)
+
+> Vérifié contre le code de `main` au 2026-07-05. Les points déjà implémentés sont cochés
+> avec la référence qui le prouve ; ne pas les retraiter sans re-vérifier le code.
 
 ```
-[ ] Rotation du mot de passe Redis Upstash (credentials exposées dans .env.example public)
-[ ] Ajouter GOOGLE_CLIENT_ID/SECRET/REDIRECT dans api/.env.example et Render
-[ ] Ajouter FIREBASE_PROJECT_ID/SERVICE_ACCOUNT_JSON dans api/.env.example et Render
-[ ] Ajouter CHARGILY_* dans api/.env.example et Render
-[ ] Créer front/web/.env.local.example avec STRIPE_SECRET_KEY, LEOPARDO_API_URL
-[ ] Implémenter vérification signature Stripe dans StripeWebhookController (Module)
-[ ] Implémenter vérification signature Chargily dans PaymentWebhookController
-[ ] Créer un Background Worker Render pour la queue Redis
-[ ] Appliquer la correction CI web-marketing-ci.yml (push → main seulement)
-[ ] Appliquer la correction CI tests.yml (paths filter + web_changed pattern)
-[ ] Ajouter les secrets GitHub Actions listés ci-dessus
-[ ] Vérifier/ajouter bouton Google Sign-In dans leopardo_employee login screen
-[ ] Créer Mailables pour : bienvenue employé, invitation, confirmation abonnement
+[x] Signature Stripe vérifiée — StripeWebhookController + StripeService::verifyWebhookSignature()
+[x] Signature Chargily vérifiée — PaymentWebhookController (header X-Chargily-Signature)
+[x] Google Sign-In présent — leopardo_employee user_login_screen.dart (_buildGoogleButton) et login_screen.dart
+[x] Mailables créés — WelcomeEmployeeMail, InvitationMail/UserInvitationMail, SubscriptionConfirmedMail, TrialWelcomeMail, TrialDripMail, TrialExpiringMail, LicenseExpiringMail, RoleAssignmentMail, CabinetShareMail
+[x] GOOGLE_CLIENT_ID/SECRET/REDIRECT_URL présents dans api/.env.example
+[x] FIREBASE_PROJECT_ID/SERVER_KEY/SERVICE_ACCOUNT_JSON présents dans api/.env.example
+[x] CHARGILY_API_KEY/WEBHOOK_SECRET/MODE présents dans api/.env.example
+[x] Background Worker Render pour la queue Redis — render.yaml (`leopardo-queue-worker`, `php artisan queue:work redis`)
+[x] CI web-marketing-ci.yml restreint à push/PR vers main uniquement, avec paths filter
+[x] CI tests.yml a un paths filter et le pattern web_changed pointe bien vers front/admin-dashboard/
+[x] Token SSE non exposé en query param — useNotificationStream.js échange désormais le bearer token
+    contre un jeton SSE à usage unique via POST /api/v1/notifications/sse-token avant d'ouvrir l'EventSource
+    (endpoint backend SseTokenController déjà présent, coté frontend corrigé le 2026-07-05)
+[x] front/web/.env.local.example créé (STRIPE_SECRET_KEY, LEOPARDO_API_URL, NEXT_PUBLIC_API_URL, etc.)
+[ ] 🔴 URGENT — Rotation du mot de passe Redis Upstash. Le fichier actuel contient un placeholder,
+    MAIS un vrai mot de passe Upstash a été committé en clair dans l'historique git
+    (`REDIS_URL=rediss://default:REDACTED_UPSTASH_PASSWORD@REDACTED.upstash.io`)
+    et reste récupérable par quiconque clone le repo (repo public). Action requise immediatement dans le
+    dashboard Upstash : reset password, puis mettre à jour la variable REDIS_URL/REDIS_PASSWORD sur Render.
+    L'historique git lui-même ne peut pas être nettoyé sans rewrite (BFG/filter-repo) coordonné avec l'équipe.
+[ ] Ajouter les secrets GitHub Actions listés ci-dessus dans Settings > Secrets — action manuelle GitHub,
+    hors du périmètre code (aucun moyen de vérifier depuis le repo si déjà fait)
 ```
+
+
