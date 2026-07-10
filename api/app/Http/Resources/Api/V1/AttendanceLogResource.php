@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -58,3 +58,4 @@ class AttendanceLogResource extends JsonResource
         ];
     }
 }
+

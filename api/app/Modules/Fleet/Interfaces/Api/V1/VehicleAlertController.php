@@ -5,7 +5,7 @@ namespace App\Modules\Fleet\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\VehicleAlertResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\VehicleAlert;
+use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -47,3 +47,4 @@ class VehicleAlertController extends Controller
         return (new VehicleAlertResource($alert->fresh()))->response();
     }
 }
+

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Modules\Payroll\Infrastructure\Services\CountryRules;
+declare(strict_types=1);
+
+namespace App\\Modules\Payroll\Infrastructure\Services\CountryRules;
 
 class AlgeriaPayrollRules extends AbstractCountryRules
 {
@@ -58,3 +60,5 @@ class AlgeriaPayrollRules extends AbstractCountryRules
         ];
     }
 }
+
+

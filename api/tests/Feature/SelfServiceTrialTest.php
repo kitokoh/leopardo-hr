@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
-use App\Services\TenantManager;
+use App\Core\Tenant\TenantManager;
 use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -14,7 +16,7 @@ class SelfServiceTrialTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    public function test_can_provision_trial_tenant_successfully()
+    public function test_signup_sends_otp_and_creates_pending_request()
     {
         Mail::fake();
 
@@ -24,6 +26,55 @@ class SelfServiceTrialTest extends TestCase
             'role' => 'founder',
             'employees' => '11-50',
             'country' => 'DZ',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Code de vérification envoyé.',
+                'data' => [
+                    'email' => 'founder@newtech.dz',
+                    'status' => 'pending_verification',
+                ],
+            ]);
+
+        // Verify CRM record created with pending status
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder@newtech.dz',
+            'company_name' => 'NewTech Algeria',
+            'status' => 'pending',
+        ]);
+
+        // Verify OTP email sent
+        Mail::assertSent(TrialVerificationMail::class, function ($mail) {
+            return $mail->hasTo('founder@newtech.dz');
+        });
+    }
+
+    public function test_can_verify_otp_and_provision_trial_tenant()
+    {
+        Mail::fake();
+
+        // Step 1: signup to get OTP
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@newtech.dz',
+            'company' => 'NewTech Algeria',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        // Get the OTP from the database
+        $companyRequest = CompanyRequest::where('email', 'founder@newtech.dz')
+            ->where('status', 'pending')
+            ->first();
+        $this->assertNotNull($companyRequest);
+        $otp = $companyRequest->verification_token;
+
+        // Step 2: verify
+        $response = $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@newtech.dz',
+            'code' => $otp,
         ]);
 
         $response->assertStatus(201)
@@ -49,7 +100,6 @@ class SelfServiceTrialTest extends TestCase
         $this->assertEquals('fr', $company->language); // From DZ defaults
 
         // Verify manager created in the tenant
-        // Switch to the tenant DB context to check employee
         app(TenantManager::class)->setTenant($company);
 
         $manager = Employee::where('email', 'founder@newtech.dz')->first();
@@ -60,7 +110,7 @@ class SelfServiceTrialTest extends TestCase
 
         app(TenantManager::class)->resetToPrevious();
 
-        // Verify CRM record created in public schema
+        // Verify CRM record updated to approved
         $this->assertDatabaseHas('company_requests', [
             'email' => 'founder@newtech.dz',
             'company_name' => 'NewTech Algeria',
@@ -68,18 +118,51 @@ class SelfServiceTrialTest extends TestCase
             'approved_company_id' => $company->id,
         ]);
 
-        // Verify Mail sent
+        // Verify Welcome Mail sent after verification
         Mail::assertSent(TrialWelcomeMail::class, function ($mail) {
             return $mail->hasTo('founder@newtech.dz');
         });
     }
 
+    public function test_rejects_invalid_otp()
+    {
+        Mail::fake();
+
+        // Step 1: signup
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@invalid.com',
+            'company' => 'Invalid Test',
+        ])->assertStatus(200);
+
+        // Step 2: wrong OTP
+        $response = $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@invalid.com',
+            'code' => '000000',
+        ]);
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'error' => 'INVALID_OR_EXPIRED_CODE',
+            ]);
+    }
+
     public function test_rejects_duplicate_manager_email()
     {
-        // First provision
+        Mail::fake();
+
+        // Full signup + verify flow for first account
         $this->postJson('/api/v1/trial/signup', [
             'email' => 'founder@existing.com',
             'company' => 'First Company',
+        ])->assertStatus(200);
+
+        $otp = CompanyRequest::where('email', 'founder@existing.com')
+            ->where('status', 'pending')->first()->verification_token;
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@existing.com',
+            'code' => $otp,
         ])->assertStatus(201);
 
         // Try again with same email
@@ -103,3 +186,5 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonValidationErrors(['email', 'company']);
     }
 }
+
+

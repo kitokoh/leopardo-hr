@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
@@ -138,3 +138,4 @@ class WebAuthPagesTest extends TestCase
         $this->assertGuest('web');
     }
 }
+

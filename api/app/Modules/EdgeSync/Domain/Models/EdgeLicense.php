@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\EdgeSync\Domain\Models;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,7 +31,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  *
  * @property-read EdgeNode|null $edgeNode
- * @property-read \App\Models\Company|null $company
+ * @property-read \App\Core\Tenant\Domain\Models\Company|null $company
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class EdgeLicense extends Model
@@ -89,3 +89,4 @@ class EdgeLicense extends Model
         return $this->expires_at->diffInDays(now()) <= config('edge.license_renewal_warning_days', 7);
     }
 }
+

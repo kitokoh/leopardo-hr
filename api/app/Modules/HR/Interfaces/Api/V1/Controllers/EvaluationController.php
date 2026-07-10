@@ -8,7 +8,7 @@ use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEvaluationRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEvaluationRequest;
 use App\Http\Resources\Api\V1\EvaluationResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Evaluation;
+use App\Modules\HR\Domain\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -173,3 +173,4 @@ class EvaluationController extends Controller
         return response()->json(['message' => 'Evaluation deleted successfully']);
     }
 }
+

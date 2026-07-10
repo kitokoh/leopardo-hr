@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Language;
+use App\Shared\Models\Language;
 use App\Support\I18nCatalog;
 use Closure;
 use Illuminate\Http\Request;
@@ -47,3 +47,4 @@ class SetLocale
         return Language::DEFAULT;
     }
 }
+

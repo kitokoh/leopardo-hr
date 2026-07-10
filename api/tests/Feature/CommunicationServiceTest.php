@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\CommunicationEvent;
-use App\Models\Company;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Notification;
-use App\Models\NotificationPreference;
-use App\Services\Communication\CommunicationService;
+use App\Modules\Notification\Domain\Models\Notification;
+use App\Modules\Notification\Domain\Models\NotificationPreference;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Tests\Support\CreatesMvpSchema;
@@ -190,3 +190,5 @@ class CommunicationServiceTest extends TestCase
         ]);
     }
 }
+
+

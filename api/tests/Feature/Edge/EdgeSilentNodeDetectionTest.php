@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Notifications\EdgeNodeSilentAlert;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -296,3 +296,4 @@ class EdgeSilentNodeDetectionTest extends TestCase
         $this->assertNotEmpty($silent5, 'Seuil 5 min : nœud de 10 min doit être détecté');
     }
 }
+

@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\UserInvitation;
+use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -77,3 +77,4 @@ class InvitationManagementController extends Controller
         return back()->with('status', 'Invitation renvoyee a '.$employee->email);
     }
 }
+

@@ -1,12 +1,9 @@
 <?php
 
-namespace App\Modules\Payroll\Domain\Contracts;
+declare(strict_types=1);
 
-/**
- * Contract for country-specific payroll calculation rules.
- * Belongs in Domain because it defines a business rule boundary,
- * not an infrastructure concern.
- */
+namespace App\\Modules\Payroll\Domain\Contracts;
+
 interface CountryRulesInterface
 {
     public function countryCode(): string;
@@ -32,3 +29,5 @@ interface CountryRulesInterface
      */
     public function calculateSocialCharges(float $grossSalary): array;
 }
+
+

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -188,3 +188,4 @@ class PlatformAuthController extends Controller
         return '2fa_setup:'.(string) $superAdmin->id;
     }
 }
+

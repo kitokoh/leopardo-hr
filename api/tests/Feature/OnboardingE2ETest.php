@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Mail\UserInvitationMail;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SuperAdmin;
-use App\Models\UserInvitation;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -366,3 +366,4 @@ class OnboardingE2ETest extends TestCase
         $this->assertSame(3, Employee::query()->where('role', 'manager')->where('manager_role', 'principal')->count());
     }
 }
+

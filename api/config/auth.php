@@ -1,7 +1,7 @@
 <?php
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Auth\Domain\Models\User;
 
 return [
@@ -137,3 +137,4 @@ return [
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
 ];
+

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -179,3 +179,4 @@ class PlatformAuthTest extends TestCase
         $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
     }
 }
+

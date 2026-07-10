@@ -7,7 +7,7 @@ namespace Tests\Unit\Jobs;
 use App\Contracts\Queue\TenantScopedJob;
 use App\Core\Tenant\TenantManager;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -119,3 +119,4 @@ class EnsureTenantContextTest extends TestCase
         $this->assertSame(30, $job->releaseDelay);
     }
 }
+

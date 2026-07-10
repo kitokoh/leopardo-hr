@@ -4,7 +4,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\ZktecoDevice;
+use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -194,3 +194,4 @@ class ZktecoController extends Controller
         return new JsonResponse(['data' => $logs]);
     }
 }
+

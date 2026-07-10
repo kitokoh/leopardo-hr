@@ -55,10 +55,15 @@ class CompanyRequest extends Model
         'approved_company_id',
         'admin_notes',
         'reviewed_at',
+        'verification_token',
+        'verification_expires_at',
+        'signup_payload',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
+        'verification_expires_at' => 'datetime',
+        'signup_payload' => 'array',
     ];
 
     /** @return BelongsTo<User, $this> */

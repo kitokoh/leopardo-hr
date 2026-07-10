@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Partner;
+use App\Modules\Billing\Domain\Models\Partner;
 use App\Core\Auth\Domain\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -28,3 +28,4 @@ class PartnerPolicy
         return true;
     }
 }
+

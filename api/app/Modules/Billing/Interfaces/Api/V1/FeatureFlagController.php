@@ -4,8 +4,8 @@ namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\FeaturePlanMatrix;
-use App\Models\Subscription;
+use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -62,3 +62,4 @@ class FeatureFlagController extends Controller
         return $subscription ? $subscription->plan : 'trial';
     }
 }
+

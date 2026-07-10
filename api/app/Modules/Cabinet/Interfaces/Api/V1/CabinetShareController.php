@@ -4,9 +4,9 @@ namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\ShareRequest;
-use App\Models\CabinetDocument;
-use App\Models\CabinetFolder;
-use App\Models\CabinetShare;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
+use App\Modules\Cabinet\Domain\Models\CabinetShare;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
@@ -179,3 +179,4 @@ class CabinetShareController extends Controller
         ];
     }
 }
+

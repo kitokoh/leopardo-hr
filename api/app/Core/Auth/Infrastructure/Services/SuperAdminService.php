@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
-use App\Models\SuperAdmin;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use PragmaRX\Google2FA\Google2FA;
 
 class SuperAdminService
@@ -135,3 +135,4 @@ class SuperAdminService
         return $decoded;
     }
 }
+

@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use Illuminate\Bus\Queueable;
@@ -34,3 +34,4 @@ class RoleAssignmentMail extends Mailable
             ->view('emails.role-assignment');
     }
 }
+

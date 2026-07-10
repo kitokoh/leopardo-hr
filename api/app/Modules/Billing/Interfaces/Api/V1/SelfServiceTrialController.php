@@ -3,11 +3,11 @@
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
-use App\Models\CompanyRequest;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
-use App\Services\TenantManager;
+use App\Core\Tenant\TenantManager;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,7 +54,6 @@ class SelfServiceTrialController extends Controller
         ]);
 
         $email = strtolower(trim($validated['email']));
-        $companyName = trim($validated['company']);
 
         // Check if a manager with this email already exists in any tenant
         $existingManager = $this->findExistingManager($email);
@@ -69,18 +68,87 @@ class SelfServiceTrialController extends Controller
             ], 409);
         }
 
-        // Resolve country defaults
+        // Generate OTP
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Record the request with pending status
+        $this->createPendingCompanyRequest($validated, $email, $otp);
+
+        // Send OTP email
+        [$firstName, $lastName] = $this->managerNameParts($validated, $email);
+        $managerName = trim($firstName . ' ' . $lastName);
         $country = strtoupper(trim($validated['country'] ?? 'DZ'));
+        $countryDefaults = CountryDefaults::for($country);
+
+        try {
+            Mail::to($email)->send(
+                new \App\Mail\TrialVerificationMail($managerName, $otp, strtolower($countryDefaults['language']))
+            );
+        } catch (\Throwable $e) {
+            Log::error('SelfServiceTrial: Failed to send OTP email', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+            // Allow testing in local/staging without mailer failing the request
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Code de vérification envoyé.',
+            'data' => [
+                'email' => $email,
+                'status' => 'pending_verification',
+            ],
+        ], 200);
+    }
+
+    /**
+     * POST /api/v1/trial/verify
+     *
+     * Verifies the OTP and provisions the trial tenant immediately.
+     */
+    public function verify(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'code' => ['required', 'string', 'size:6'],
+        ]);
+
+        $email = strtolower(trim($validated['email']));
+
+        // Find the pending request
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
+
+        $companyRequest = CompanyRequest::query()
+            ->where('email', $email)
+            ->where('status', 'pending')
+            ->where('verification_token', $validated['code'])
+            ->where('verification_expires_at', '>=', now())
+            ->first();
+
+        if (!$companyRequest) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'INVALID_OR_EXPIRED_CODE',
+                'message' => 'Code de vérification invalide ou expiré.',
+            ], 400);
+        }
+
+        // Request validated! Time to provision.
+        $payload = $companyRequest->signup_payload ?? [];
+        $companyName = $companyRequest->company_name;
+
+        $country = strtoupper(trim($payload['country'] ?? 'DZ'));
         if (strlen($country) !== 2) {
             $country = 'DZ';
         }
         $countryDefaults = CountryDefaults::for($country);
 
-        // Resolve trial plan
         $trialPlan = $this->resolveTrialPlan();
         if (!$trialPlan) {
             Log::error('SelfServiceTrial: No active plan found for trial provisioning.');
-
             return new JsonResponse([
                 'success' => false,
                 'error' => 'NO_PLAN_AVAILABLE',
@@ -88,21 +156,18 @@ class SelfServiceTrialController extends Controller
             ], 503);
         }
 
-        [$firstName, $lastName] = $this->managerNameParts($validated, $email);
-
-        // Generate temporary password
+        [$firstName, $lastName] = $this->managerNameParts($payload, $email);
         $tempPassword = $this->generateReadablePassword();
 
-        // Provision the company
         try {
             $result = $this->provisionTrialCompany([
                 'name' => $companyName,
                 'slug' => Str::slug($companyName),
-                'sector' => $this->mapRoleToSector($validated['role'] ?? null),
+                'sector' => $this->mapRoleToSector($payload['role'] ?? null),
                 'country' => $country,
                 'city' => 'Non précisé',
                 'email' => $email,
-                'phone' => $validated['phone'] ?? null,
+                'phone' => $payload['phone'] ?? null,
                 'plan_id' => $trialPlan->id,
                 'language' => strtolower($countryDefaults['language']),
                 'currency' => strtoupper($countryDefaults['currency']),
@@ -110,10 +175,10 @@ class SelfServiceTrialController extends Controller
                 'manager_first_name' => $firstName,
                 'manager_last_name' => $lastName,
                 'manager_email' => $email,
-                'manager_phone' => $validated['phone'] ?? null,
+                'manager_phone' => $payload['phone'] ?? null,
                 'temp_password' => $tempPassword,
-                'employees_range' => $validated['employees'] ?? null,
-                'referral_code' => $validated['referral_code'] ?? null,
+                'employees_range' => $payload['employees'] ?? null,
+                'referral_code' => $payload['referral_code'] ?? null,
             ]);
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Provisioning failed', [
@@ -132,14 +197,18 @@ class SelfServiceTrialController extends Controller
         // Growth Module: Dispatch CompanyCreated event for partner linking
         event(new \App\Events\CompanyCreated($result['company']));
 
-        // Create a CompanyRequest entry for CRM tracking
-        $this->createCompanyRequestRecord($validated, $result['company'], $email);
+        // Update the CompanyRequest to approved
+        $companyRequest->update([
+            'status' => 'approved',
+            'approved_company_id' => $result['company']->id,
+            'verification_token' => null, // Clear token
+        ]);
 
-        Log::info('SelfServiceTrial: Company provisioned', [
+        Log::info('SelfServiceTrial: Company provisioned after verification', [
             'company_id' => $result['company']->id,
             'company_name' => $companyName,
             'manager_email' => $email,
-            'source' => $validated['source'] ?? 'self_service_trial',
+            'source' => $payload['source'] ?? 'self_service_trial',
         ]);
 
         // Send welcome email with credentials
@@ -152,7 +221,6 @@ class SelfServiceTrialController extends Controller
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
-            // We don't fail the response, credentials are still shown in UI
         }
 
         return new JsonResponse([
@@ -373,7 +441,7 @@ class SelfServiceTrialController extends Controller
         };
     }
 
-    private function createCompanyRequestRecord(array $validated, Company $company, string $email): void
+    private function createPendingCompanyRequest(array $validated, string $email, string $otp): void
     {
         try {
             if (DB::getDriverName() === 'pgsql') {
@@ -390,15 +458,14 @@ class SelfServiceTrialController extends Controller
                 'notes' => 'Self-service trial signup.',
                 'email' => $email,
                 'phone' => $validated['phone'] ?? null,
-                'description' => 'Self-service trial signup — source: '.($validated['source'] ?? 'direct'),
-                'status' => 'approved',
-                'approved_company_id' => $company->id,
-                'reviewed_at' => now(),
-                'admin_notes' => 'Auto-provisioned via self-service trial.',
+                'description' => 'Self-service trial signup pending verification — source: '.($validated['source'] ?? 'direct'),
+                'status' => 'pending',
+                'verification_token' => $otp,
+                'verification_expires_at' => now()->addMinutes(30),
+                'signup_payload' => $validated,
             ]);
         } catch (\Throwable $e) {
-            // Non-critical: don't fail the provisioning if CRM tracking fails
-            Log::warning('SelfServiceTrial: Failed to create CompanyRequest record', [
+            Log::error('SelfServiceTrial: Failed to create pending CompanyRequest record', [
                 'error' => $e->getMessage(),
             ]);
         }
@@ -454,3 +521,5 @@ class SelfServiceTrialController extends Controller
             ->toString();
     }
 }
+
+

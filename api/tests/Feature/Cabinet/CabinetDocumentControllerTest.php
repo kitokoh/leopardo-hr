@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Cabinet;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -131,3 +131,4 @@ class CabinetDocumentControllerTest extends TestCase
         );
     }
 }
+

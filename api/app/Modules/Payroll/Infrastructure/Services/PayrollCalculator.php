@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Modules\Payroll\Infrastructure\Services;
+declare(strict_types=1);
+
+namespace App\\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\PaySlipLine;
-use App\Models\SalaryComponent;
-use App\Models\SalaryStructure;
-use App\Services\Payroll\CountryRules\AlgeriaPayrollRules;
-use App\Services\Payroll\CountryRules\FrancePayrollRules;
-use App\Services\Payroll\CountryRules\MoroccoPayrollRules;
-use App\Services\Payroll\CountryRules\SenegalPayrollRules;
-use App\Services\Payroll\CountryRules\TunisiaPayrollRules;
-use App\Services\Payroll\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Payroll\Domain\Models\SalaryComponent;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
 use Illuminate\Support\Facades\DB;
 
 class PayrollCalculator
@@ -58,17 +60,22 @@ class PayrollCalculator
         $rules = $this->getRules($run->country_code);
         $companyId = $run->company_id;
 
+        /** @var \Illuminate\Database\Eloquent\Collection<int, Employee> $employees */
         $employees = Employee::where('company_id', $companyId)
             ->where('status', 'active')
             ->get();
 
-        $structures = SalaryStructure::where('company_id', $companyId)
+        /** @var \Illuminate\Database\Eloquent\Collection<int, SalaryStructure> $structuresCollection */
+        $structuresCollection = SalaryStructure::where('company_id', $companyId)
             ->where('country_code', $run->country_code)
             ->where('active', true)
             ->with('components')
-            ->get()
-            ->keyBy('id');
+            ->get();
 
+        /** @var \Illuminate\Database\Eloquent\Collection<int|string, SalaryStructure> $structures */
+        $structures = $structuresCollection->keyBy('id');
+
+        /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
 
         DB::transaction(function () use ($run, $employees, $defaultStructure, $rules) {
@@ -80,6 +87,7 @@ class PayrollCalculator
             $totalEmployerCost = 0.0;
 
             foreach ($employees as $employee) {
+                /** @var SalaryStructure|null $structure */
                 $structure = $defaultStructure;
 
                 if (! $structure) {
@@ -88,10 +96,10 @@ class PayrollCalculator
 
                 $slip = $this->calculateSlip($run, $employee, $structure, $rules);
 
-                $totalGross += $slip->gross_salary;
-                $totalDeductions += $slip->total_deductions;
-                $totalNet += $slip->net_salary;
-                $totalEmployerCost += $slip->total_cost;
+                $totalGross += (float) $slip->gross_salary;
+                $totalDeductions += (float) $slip->total_deductions;
+                $totalNet += (float) $slip->net_salary;
+                $totalEmployerCost += (float) $slip->total_cost;
             }
 
             $run->update([
@@ -128,8 +136,10 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
+        /** @var \Illuminate\Database\Eloquent\Collection<int, SalaryComponent> $components */
         $components = $structure->components->where('active', true)->sortBy('order');
         foreach ($components as $component) {
+            /** @var SalaryComponent $component */
             if ($component->type !== 'earning') {
                 continue;
             }
@@ -146,6 +156,7 @@ class PayrollCalculator
             ];
         }
 
+        /** @var array{employee: float, employer: float} $social */
         $social = $rules->calculateSocialCharges($grossEarnings);
 
         $lines[] = [
@@ -170,6 +181,7 @@ class PayrollCalculator
         ];
 
         foreach ($components as $component) {
+            /** @var SalaryComponent $component */
             if ($component->type !== 'deduction') {
                 continue;
             }
@@ -204,6 +216,7 @@ class PayrollCalculator
         $netSalary = round(max(0, $grossEarnings - $totalDeductions), 2);
         $totalCost = round($grossEarnings + $social['employer'], 2);
 
+        /** @var PaySlip $slip */
         $slip = PaySlip::create([
             'payroll_run_id' => $run->id,
             'company_id' => $run->company_id,
@@ -238,3 +251,6 @@ class PayrollCalculator
         };
     }
 }
+
+
+

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Feature\Infrastructure\Services;
 
-use App\Models\FeaturePlanMatrix;
-use App\Models\Subscription;
+use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Cache;
 
 class FeatureService
@@ -60,3 +60,4 @@ class FeatureService
         );
     }
 }
+

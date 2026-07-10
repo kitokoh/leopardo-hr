@@ -10,10 +10,10 @@ use App\AI\IntentEngine;
 use App\AI\LLMClient;
 use App\AI\PendingActionStore;
 use App\AI\ToolRegistry;
-use App\Models\Absence;
-use App\Models\AbsenceType;
-use App\Models\AIToolRegistryEntry;
-use App\Models\Company;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\AI\Models\AIToolRegistryEntry;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use stdClass;
@@ -250,3 +250,4 @@ class AIWriteActionConfirmationTest extends TestCase
         ]);
     }
 }
+

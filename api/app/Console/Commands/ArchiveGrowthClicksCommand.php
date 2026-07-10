@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\PartnerClick;
+use App\Modules\Billing\Domain\Models\PartnerClick;
 use Illuminate\Console\Command;
 
 class ArchiveGrowthClicksCommand extends Command
@@ -38,3 +38,4 @@ class ArchiveGrowthClicksCommand extends Command
         return self::SUCCESS;
     }
 }
+

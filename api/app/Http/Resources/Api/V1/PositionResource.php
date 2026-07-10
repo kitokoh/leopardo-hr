@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\Position;
+use App\Modules\HR\Domain\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,3 +25,4 @@ class PositionResource extends JsonResource
         ];
     }
 }
+

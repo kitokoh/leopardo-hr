@@ -3,7 +3,7 @@
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CalendarConnection;
+use App\Modules\Attendance\Domain\Models\CalendarConnection;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\CalendarSyncService;
 use Illuminate\Http\JsonResponse;
@@ -126,3 +126,4 @@ class CalendarSyncController extends Controller
         return new JsonResponse(['data' => $events]);
     }
 }
+

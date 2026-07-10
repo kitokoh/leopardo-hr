@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use App\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Collection;
 
 class BankExportGenerator
@@ -208,3 +208,4 @@ class BankExportGenerator
         return $value;
     }
 }
+

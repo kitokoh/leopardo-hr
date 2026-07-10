@@ -7,8 +7,8 @@ namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationResource;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\CommunicationEvent;
-use App\Models\Notification;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
+use App\Modules\Notification\Domain\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -177,3 +177,4 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notification deleted.']);
     }
 }
+

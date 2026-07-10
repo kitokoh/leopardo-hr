@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Tenant;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -159,3 +159,4 @@ final class TenantManager
         return $row->search_path ?? 'public';
     }
 }
+

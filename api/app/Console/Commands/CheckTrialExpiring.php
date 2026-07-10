@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Subscription;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -39,3 +39,4 @@ class CheckTrialExpiring extends Command
         return self::SUCCESS;
     }
 }
+

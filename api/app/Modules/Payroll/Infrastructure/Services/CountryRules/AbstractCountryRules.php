@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Modules\Payroll\Infrastructure\Services\CountryRules;
+declare(strict_types=1);
 
-use App\Services\Payroll\CountryRulesInterface;
+namespace App\\Modules\Payroll\Infrastructure\Services\CountryRules;
+
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesInterface;
 
 abstract class AbstractCountryRules implements CountryRulesInterface
 {
@@ -42,3 +44,5 @@ abstract class AbstractCountryRules implements CountryRulesInterface
         return $tax;
     }
 }
+
+

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Invoice;
-use App\Models\Subscription;
+use App\Modules\Billing\Domain\Models\Invoice;
+use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -71,3 +71,4 @@ class GenerateMonthlyInvoices extends Command
         return self::SUCCESS;
     }
 }
+

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Applicant;
+use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\EmployeeLoan;
-use App\Models\TrainingEnrollment;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -132,3 +132,4 @@ class AdvancedReportController extends Controller
         ]);
     }
 }
+

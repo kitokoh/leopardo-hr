@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Domain\Models;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -71,3 +71,4 @@ class ClientEvent extends Model
         return $query->where('company_id', $companyId);
     }
 }
+

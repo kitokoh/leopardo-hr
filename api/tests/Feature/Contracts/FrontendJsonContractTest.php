@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Contracts;
 
-use App\Models\AttendanceKiosk;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\KioskAnnouncement;
+use App\Modules\Attendance\Domain\Models\KioskAnnouncement;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -386,3 +386,4 @@ class FrontendJsonContractTest extends TestCase
         }
     }
 }
+

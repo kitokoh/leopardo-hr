@@ -2,27 +2,27 @@
 
 namespace App\Providers;
 
-use App\Models\Absence;
-use App\Models\Applicant;
-use App\Models\ApprovalRequest;
-use App\Models\AttendanceLog;
-use App\Models\Contract;
-use App\Models\Department;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Recruitment\Domain\Models\Applicant;
+use App\Modules\Attendance\Domain\Models\ApprovalRequest;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\HR\Domain\Models\Contract;
+use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\EmployeeLoan;
-use App\Models\Evaluation;
-use App\Models\ExpenseClaim;
-use App\Models\Invoice;
-use App\Models\JobPosting;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
-use App\Models\Position;
-use App\Models\Schedule;
-use App\Models\Site;
-use App\Models\Subscription;
-use App\Models\TrainingCourse;
-use App\Models\Vehicle;
-use App\Models\WebhookEndpoint;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\HR\Domain\Models\Evaluation;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
+use App\Modules\Billing\Domain\Models\Invoice;
+use App\Modules\Recruitment\Domain\Models\JobPosting;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\HR\Domain\Models\Position;
+use App\Modules\Planning\Domain\Models\Schedule;
+use App\Core\Tenant\Domain\Models\Site;
+use App\Modules\Billing\Domain\Models\Subscription;
+use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Policies\AbsencePolicy;
@@ -99,3 +99,4 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('export-data', [ExportPolicy::class, 'export']);
     }
 }
+

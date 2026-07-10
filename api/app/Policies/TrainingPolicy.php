@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingCourse;
 
 class TrainingPolicy
 {
@@ -49,3 +49,4 @@ class TrainingPolicy
         return $actor->isManager();
     }
 }
+

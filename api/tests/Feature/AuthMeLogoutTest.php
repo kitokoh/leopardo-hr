@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Language;
+use App\Shared\Models\Language;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -199,3 +199,4 @@ class AuthMeLogoutTest extends TestCase
         $this->assertSame(0, $employee->fresh()->tokens()->count());
     }
 }
+

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Mail\TrialDripMail;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -66,3 +66,4 @@ class SendDripEmails extends Command
         $this->info("Sent {$type} email to {$companyEmail}");
     }
 }
+

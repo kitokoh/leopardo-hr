@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Contracts\FeatureRegistryInterface;
-use App\Models\Feature;
+use App\Modules\Billing\Domain\Models\Feature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -423,3 +423,4 @@ class DemoFeatureRegistryCommand extends Command
         return $value ? 'Oui' : 'Non';
     }
 }
+

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Jobs\DispatchWebhook;
-use App\Models\WebhookEndpoint;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 
 class WebhookDispatcher
 {
@@ -21,3 +21,4 @@ class WebhookDispatcher
         }
     }
 }
+

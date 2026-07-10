@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
-use App\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Models\PayrollRun;
-use App\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -155,3 +155,4 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
         }
     }
 }
+

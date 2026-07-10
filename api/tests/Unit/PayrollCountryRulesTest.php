@@ -2,12 +2,12 @@
 
 namespace Tests\Unit;
 
-use App\Services\Payroll\CountryRules\AlgeriaPayrollRules;
-use App\Services\Payroll\CountryRules\FrancePayrollRules;
-use App\Services\Payroll\CountryRules\MoroccoPayrollRules;
-use App\Services\Payroll\CountryRules\SenegalPayrollRules;
-use App\Services\Payroll\CountryRules\TunisiaPayrollRules;
-use App\Services\Payroll\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
 use PHPUnit\Framework\TestCase;
 
 class PayrollCountryRulesTest extends TestCase
@@ -60,3 +60,4 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame(333.33, $rules->calculateIncomeTax(5000));
     }
 }
+

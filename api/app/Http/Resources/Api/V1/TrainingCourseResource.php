@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingCourse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,3 +31,4 @@ class TrainingCourseResource extends JsonResource
         ];
     }
 }
+

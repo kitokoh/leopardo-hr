@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\SmartAttendance\Infrastructure\Services;
 
-use App\Models\Company;
-use App\Models\Site;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use App\Modules\SmartAttendance\Application\DTOs\GeoEventDTO;
@@ -188,3 +188,4 @@ class GeoSessionManager
         return null;
     }
 }
+

@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
-use App\Models\Schedule;
+use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -41,3 +41,4 @@ class ScheduleResource extends JsonResource
         return array_values(array_diff([1, 2, 3, 4, 5, 6, 7], $workDays));
     }
 }
+

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Traits;
 
-use App\Models\AuditLog;
+use App\Core\Auth\Domain\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -63,3 +63,4 @@ trait Auditable
         ]);
     }
 }
+

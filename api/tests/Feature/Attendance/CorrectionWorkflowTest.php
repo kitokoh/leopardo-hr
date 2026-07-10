@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Attendance;
 
-use App\Models\AttendanceCorrectionRequest;
-use App\Models\AttendanceLog;
-use App\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Models\Schedule;
+use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -172,3 +172,4 @@ class CorrectionWorkflowTest extends TestCase
         return [$company, $schedule, $manager, $employee];
     }
 }
+
