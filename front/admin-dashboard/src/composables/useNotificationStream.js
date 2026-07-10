@@ -1,5 +1,6 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import api from '@/services/api'
 
 export function useNotificationStream() {
   const notifications = ref([])
@@ -7,18 +8,43 @@ export function useNotificationStream() {
   const isConnected = ref(false)
   let eventSource = null
   let reconnectTimer = null
+  let connecting = false
 
-  function connect() {
+  async function connect() {
+    if (connecting || eventSource) return
+    connecting = true
+
     const authStore = useAuthStore()
     const token = authStore.token
-    if (!token) return
+    if (!token) {
+      connecting = false
+      return
+    }
 
     const apiUrl = import.meta.env.VITE_API_URL || ''
     const url = `${apiUrl}/api/v1/notifications/stream`
 
-    // EventSource doesn't support custom headers natively,
-    // so we pass the token as a query parameter
-    eventSource = new EventSource(`${url}?token=${encodeURIComponent(token)}`)
+    // EventSource doesn't support custom headers natively, so instead of
+    // leaking the long-lived bearer token as a query parameter (which ends up
+    // in server access logs, proxies and browser history), we first exchange
+    // it for a single-use, 60s-lived SSE token via an authenticated POST.
+    let sseToken
+    try {
+      const { data } = await api.post('/notifications/sse-token')
+      sseToken = data?.token
+    } catch {
+      connecting = false
+      scheduleReconnect()
+      return
+    }
+
+    connecting = false
+    if (!sseToken) {
+      scheduleReconnect()
+      return
+    }
+
+    eventSource = new EventSource(`${url}?sse_token=${encodeURIComponent(sseToken)}`)
 
     eventSource.addEventListener('notification', (event) => {
       try {
