@@ -27,6 +27,7 @@ class LeavePolicyController extends Controller
                 'balance'      => $b->balance,
                 'used'         => $b->used,
                 'pending'      => $b->pending,
+                'remaining'    => $b->balance - $b->used,
             ]);
 
         return response()->json($balances);

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Absence\Domain\Models\Absence;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
@@ -11,7 +11,7 @@ use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\HR\Domain\Models\Evaluation;
-use App\Modules\Planning\Domain\Models\ExpenseClaim;
+use App\Modules\Expense\Domain\Models\ExpenseClaim;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
