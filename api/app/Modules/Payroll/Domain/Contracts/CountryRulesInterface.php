@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Modules\Payroll\Domain\Contracts;
+namespace App\Modules\Payroll\Domain\Contracts;
 
 interface CountryRulesInterface
 {

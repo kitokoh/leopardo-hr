@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Modules\Notification\Infrastructure\Services;
+namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
