@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Domain\Models\Schedule;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,14 +58,16 @@ class AttendanceLog extends Model
         'gps_accuracy'         => 'float',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(\App\Core\Auth\Domain\Models\Employee::class);
+        return $this->belongsTo(Employee::class);
     }
 
+    /** @return BelongsTo<Schedule, $this> */
     public function schedule(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Planning\Domain\Models\Schedule::class);
+        return $this->belongsTo(Schedule::class);
     }
 }
 

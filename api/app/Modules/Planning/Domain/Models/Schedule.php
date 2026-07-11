@@ -36,6 +36,23 @@ class Schedule extends Model
 
     protected $table = 'schedules';
 
+    /**
+     * Valeurs par defaut au niveau modele (miroir des defauts de migration).
+     *
+     * Necessaire car Eloquent::create() ne relit pas les colonnes avec
+     * defaut SQL apres l'INSERT : sans cela, un Schedule cree sans
+     * `break_minutes` explicite garde `null` en memoire (au lieu du
+     * defaut DB 60), ce qui fausse le calcul des heures travaillees
+     * lors du check-out (App\Modules\Attendance\...\AttendanceService).
+     */
+    protected $attributes = [
+        'break_minutes' => 60,
+        'late_tolerance_minutes' => 15,
+        'overtime_threshold_daily' => '8.00',
+        'overtime_threshold_weekly' => '40.00',
+        'is_default' => false,
+    ];
+
     protected $fillable = [
         'company_id',
         'name',

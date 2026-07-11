@@ -28,7 +28,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ── Public download endpoints ──────────────────────────────────────────────
-Route::prefix('edge')->group(function (): void {
+Route::prefix('api/v1/edge')->group(function (): void {
+    Route::get('/health', [EdgeController::class, 'health'])
+        ->middleware('throttle:300,1');
     Route::get('/install.sh', [EdgeDownloadController::class, 'installScript'])
         ->middleware('throttle:60,1');
     Route::get('/download/docker-compose.yml', [EdgeDownloadController::class, 'dockerCompose'])
@@ -42,7 +44,7 @@ Route::prefix('edge')->group(function (): void {
 });
 
 // ── Authenticated admin routes ─────────────────────────────────────────────
-Route::prefix('v1/edge')
+Route::prefix('api/v1/edge')
     ->middleware(['api', 'auth:sanctum', 'tenant', 'throttle:api'])
     ->group(function (): void {
         Route::get('/', [EdgeNodeController::class, 'index']);
@@ -53,7 +55,7 @@ Route::prefix('v1/edge')
     });
 
 // ── Edge node machine routes ───────────────────────────────────────────────
-Route::prefix('v1/edge-node')
+Route::prefix('api/v1/edge-node')
     ->middleware(['api', 'throttle:300,1'])
     ->group(function (): void {
         Route::post('/{nodeId}/push', [EdgeNodeController::class, 'pushFromEdge']);
