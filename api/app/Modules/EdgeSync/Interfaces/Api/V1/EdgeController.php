@@ -219,6 +219,26 @@ class EdgeController extends Controller
     }
 
     // =========================================================================
+    // Health check
+    // =========================================================================
+
+    /**
+     * GET /edge/health
+     *
+     * Endpoint de sante independant du Cloud : un noeud Edge doit pouvoir
+     * repondre a ce check meme lorsqu'il fonctionne en mode autonome
+     * (coupure Internet). Ne depend d'aucune requete DB tenant.
+     */
+    public function health(): JsonResponse
+    {
+        return response()->json([
+            'edge'   => true,
+            'status' => 'ok',
+            'time'   => Carbon::now()->toIso8601String(),
+        ]);
+    }
+
+    // =========================================================================
     // Heartbeat Edge → Cloud
     // =========================================================================
 
