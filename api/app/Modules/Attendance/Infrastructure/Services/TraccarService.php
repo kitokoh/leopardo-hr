@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Modules\Attendance\Infrastructure\Services;
+namespace App\Modules\Attendance\Infrastructure\Services;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;

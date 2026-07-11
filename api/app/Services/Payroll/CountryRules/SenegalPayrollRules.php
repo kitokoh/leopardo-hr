@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Payroll\CountryRules;
 
-class_alias(\\App\\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules::class, __NAMESPACE__ . '\SenegalPayrollRules');
+class_alias(\App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules::class, __NAMESPACE__ . '\SenegalPayrollRules');

@@ -30,7 +30,9 @@ use Illuminate\Support\Carbon;
  * @property array|null $punch_meta
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int|null $schedule_id
  * @property-read \App\Core\Auth\Domain\Models\Employee|null $employee
+ * @property-read \App\Modules\Planning\Domain\Models\Schedule|null $schedule
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceLog extends Model
@@ -46,17 +48,22 @@ class AttendanceLog extends Model
         'check_out'            => 'datetime',
         'synced_from_offline'  => 'boolean',
         'punch_meta'           => 'array',
-        'hours_worked'         => 'float',
-        'overtime_hours'       => 'float',
+        'hours_worked'         => 'decimal:2',
+        'overtime_hours'       => 'decimal:2',
         'late_minutes'         => 'integer',
-        'gps_lat'              => 'float',
-        'gps_lng'              => 'float',
+        'gps_lat'              => 'decimal:8',
+        'gps_lng'              => 'decimal:8',
         'gps_accuracy'         => 'float',
     ];
 
     public function employee(): BelongsTo
     {
         return $this->belongsTo(\App\Core\Auth\Domain\Models\Employee::class);
+    }
+
+    public function schedule(): BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Planning\Domain\Models\Schedule::class);
     }
 }
 
