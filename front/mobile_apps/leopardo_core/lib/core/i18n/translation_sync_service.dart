@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/i18n/translation_catalog_cache.dart';
 
 class TranslationSyncResult {
@@ -41,7 +42,7 @@ class TranslationSyncService {
     final knownChecksum = _cache.readChecksum(resolvedLocale);
 
     try {
-      final response = await _apiClient.dio.get(
+      final response = await _apiClient.requestWithRetry(
         '/i18n/catalog/$resolvedLocale',
         options: Options(
           headers: {
@@ -73,8 +74,8 @@ class TranslationSyncService {
         catalog: catalog,
         fromCache: false,
       );
-    } on DioException catch (error) {
-      if (error.response?.statusCode == 304) {
+    } on ApiException catch (error) {
+      if (error.statusCode == 304) {
         final cachedCatalog =
             _cache.readCatalog(resolvedLocale) ?? <String, dynamic>{};
         return TranslationSyncResult(

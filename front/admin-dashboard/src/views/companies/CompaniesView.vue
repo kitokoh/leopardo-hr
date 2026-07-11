@@ -227,9 +227,10 @@
               <button class="btn-secondary px-8 py-3 uppercase tracking-widest text-xs font-black" type="button" @click="closeCreateClient">
                 Annuler
               </button>
-              <button class="btn-primary px-10 py-3 uppercase tracking-widest text-xs font-black shadow-premium" type="submit" :disabled="isCreating">
+              <button id="btn-creer-le-client" class="btn-primary px-10 py-3 uppercase tracking-widest text-xs font-black shadow-premium" type="submit" :disabled="isCreating">
                 <PlusIcon v-if="!isCreating" class="mr-2 h-4 w-4" />
                 <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                <!-- Creer le client -->
                 {{ isCreating ? 'Provisionnement...' : 'Créer le client' }}
               </button>
             </div>

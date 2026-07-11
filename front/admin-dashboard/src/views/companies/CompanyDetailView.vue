@@ -219,9 +219,20 @@
                 <textarea id="notes" v-model="subscriptionForm.notes" rows="3" class="form-input" placeholder="Détails sur la négociation, remises, etc."></textarea>
               </div>
 
+              <!-- Activer client -->
               <button class="btn-primary w-full justify-center shadow-premium py-3" :disabled="isSavingSubscription">
                 <span v-if="isSavingSubscription" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 {{ isSavingSubscription ? 'Enregistrement...' : 'Mettre à jour l\'abonnement' }}
+              </button>
+              <button
+                v-if="health?.company?.status === 'trial'"
+                id="btn-activer-client"
+                type="button"
+                class="w-full py-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs font-black uppercase tracking-widest hover:bg-emerald-500/20 transition-colors"
+                :disabled="isSavingSubscription"
+                @click="activateClient"
+              >
+                Activer client
               </button>
             </form>
           </section>

@@ -183,6 +183,7 @@
          <div class="mt-8 space-y-3">
            <button
              class="w-full btn-primary py-4 uppercase font-black tracking-widest text-xs"
+             aria-label="Utiliser le compte demo super-admin"
              @click="selectDemoUser('admin@leopardo-rh.com', 'password123')"
            >
              Super Administrateur

@@ -7,11 +7,11 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
 
-/// Tableau de bord Smart Attendance — Manager
+/// Tableau de bord Smart Attendance â€” Manager
 ///
 /// Affiche :
-/// - Compteurs du jour (sessions détectées, en attente, approuvées, rejetées)
-/// - Bouton vers la liste des sessions à valider
+/// - Compteurs du jour (sessions dÃ©tectÃ©es, en attente, approuvÃ©es, rejetÃ©es)
+/// - Bouton vers la liste des sessions Ã  valider
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
   const SmartAttendanceDashboardScreen({super.key});
 
@@ -23,10 +23,10 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
     final dashAsync = ref.watch(smartAttendanceDashboardProvider);
     final pendingAsync = ref.watch(pendingGeoSessionsProvider);
 
-    return MobilePage(
+    return Scaffold(
       appBar: MobileTopBar(
         title: 'Smart Attendance',
-        subtitle: 'Pointage GPS — tableau de bord équipe',
+        subtitle: 'Pointage GPS â€” tableau de bord Ã©quipe',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
@@ -43,7 +43,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
         ],
       ),
       backgroundColor: _bg,
-      child: RefreshIndicator(
+      body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(smartAttendanceDashboardProvider);
           ref.invalidate(pendingGeoSessionsProvider);
@@ -51,7 +51,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // ── Stats du jour ──────────────────────────────────────
+            // â”€â”€ Stats du jour â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             dashAsync.when(
               data: (stats) => _StatsGrid(stats: stats),
               loading: () => const Center(
@@ -64,7 +64,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // ── Bouton sessions pending ────────────────────────────
+            // â”€â”€ Bouton sessions pending â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             pendingAsync.when(
               data: (sessions) => _PendingCard(
                 count: sessions.length,
@@ -100,8 +100,8 @@ class _StatsGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
-          style: AppTypography.labelMedium.copyWith(color: AppColors.textMutedDark),
+          "Aujourd'hui â€” ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
+          style: AppTypography.caption.copyWith(color: AppColors.textMutedDark),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -112,10 +112,10 @@ class _StatsGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 1.6,
           children: [
-            _StatCard(label: 'Détectées', value: detected, color: AppColors.accent),
+            _StatCard(label: 'DÃ©tectÃ©es', value: detected, color: AppColors.rh),
             _StatCard(label: 'En attente', value: pending, color: Colors.orange),
-            _StatCard(label: 'Approuvées', value: approved, color: Colors.green),
-            _StatCard(label: 'Rejetées', value: rejected, color: AppColors.danger),
+            _StatCard(label: 'ApprouvÃ©es', value: approved, color: Colors.green),
+            _StatCard(label: 'RejetÃ©es', value: rejected, color: AppColors.danger),
           ],
         ),
       ],
@@ -140,7 +140,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF111B2E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +148,7 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             '$value',
-            style: AppTypography.headlineMedium.copyWith(color: color),
+            style: AppTypography.title.copyWith(color: color),
           ),
           const SizedBox(height: 4),
           Text(
@@ -181,7 +181,7 @@ class _PendingCard extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               'Aucune session en attente de validation',
-              style: AppTypography.bodyMedium.copyWith(color: AppColors.textDark),
+              style: AppTypography.body.copyWith(color: AppColors.textDark),
             ),
           ],
         ),
@@ -193,9 +193,9 @@ class _PendingCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.orange.withOpacity(0.1),
+          color: Colors.orange.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.orange.withOpacity(0.5)),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
@@ -207,7 +207,7 @@ class _PendingCard extends StatelessWidget {
                 children: [
                   Text(
                     '$count session${count > 1 ? 's' : ''} en attente',
-                    style: AppTypography.titleSmall.copyWith(color: Colors.orange),
+                    style: AppTypography.subtitle.copyWith(color: Colors.orange),
                   ),
                   Text(
                     'Appuyez pour valider ou rejeter',
@@ -233,7 +233,7 @@ class _ErrorCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.1),
+        color: AppColors.danger.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
