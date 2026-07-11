@@ -14,17 +14,17 @@ class TrialVerificationMail extends Mailable
     public function __construct(
         public readonly string $managerName,
         public readonly string $verificationToken,
-        public readonly string $locale = 'fr',
+        public readonly string $emailLocale = 'fr',
     ) {}
 
     public function build(): self
     {
         return $this
-            ->subject($this->resolveSubject($this->locale))
+            ->subject($this->resolveSubject($this->emailLocale))
             ->view('emails.trial-verification', [
                 'managerName' => $this->managerName,
                 'verificationToken' => $this->verificationToken,
-                'locale' => $this->locale,
+                'locale' => $this->emailLocale,
             ]);
     }
 

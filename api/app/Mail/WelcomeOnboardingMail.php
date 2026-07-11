@@ -18,7 +18,7 @@ class WelcomeOnboardingMail extends Mailable
     public function __construct(
         public readonly User $user,
         public readonly Company $company,
-        public readonly string $locale = 'fr',
+        public readonly string $emailLocale = 'fr',
     ) {}
 
     public function build(): self
@@ -30,9 +30,9 @@ class WelcomeOnboardingMail extends Mailable
         ];
 
         return $this
-            ->subject($subjects[$this->locale] ?? $subjects['fr'])
+            ->subject($subjects[$this->emailLocale] ?? $subjects['fr'])
             ->view('emails.welcome-onboarding')
-            ->with(['locale' => $this->locale]);
+            ->with(['locale' => $this->emailLocale]);
     }
 }
 
