@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\FeatureManifestController;
+use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
