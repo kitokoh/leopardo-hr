@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Security;
 
-class_alias(\\App\\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor::class, __NAMESPACE__ . '\SensitiveDataEncryptor');
+class_alias(\App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor::class, __NAMESPACE__ . '\SensitiveDataEncryptor');

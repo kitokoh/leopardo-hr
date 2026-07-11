@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Payroll;
 
-class_alias(\\App\\Modules\Payroll\Infrastructure\Services\PayrollCalculator::class, __NAMESPACE__ . '\PayrollCalculator');
+class_alias(\App\Modules\Payroll\Infrastructure\Services\PayrollCalculator::class, __NAMESPACE__ . '\PayrollCalculator');
