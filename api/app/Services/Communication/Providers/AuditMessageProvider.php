@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Communication\Providers;
 
-class_alias(\\App\\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider::class, __NAMESPACE__ . '\AuditMessageProvider');
+class_alias(\App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider::class, __NAMESPACE__ . '\AuditMessageProvider');

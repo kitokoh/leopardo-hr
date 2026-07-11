@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Payroll;
 
-class_alias(\\App\\Modules\Payroll\Domain\Contracts\CountryRulesInterface::class, __NAMESPACE__ . '\CountryRulesInterface');
+class_alias(\App\Modules\Payroll\Domain\Contracts\CountryRulesInterface::class, __NAMESPACE__ . '\CountryRulesInterface');

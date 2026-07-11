@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\SSO;
 
-class_alias(\\App\\Core\Auth\Infrastructure\Services\SSO\SSOProviderConfig::class, __NAMESPACE__ . '\SSOProviderConfig');
+class_alias(\App\Core\Auth\Infrastructure\Services\SSO\SSOProviderConfig::class, __NAMESPACE__ . '\SSOProviderConfig');
