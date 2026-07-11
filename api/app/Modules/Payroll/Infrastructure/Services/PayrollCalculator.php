@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Modules\Payroll\Infrastructure\Services;
+namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;

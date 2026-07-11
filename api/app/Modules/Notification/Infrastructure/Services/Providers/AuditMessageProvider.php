@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\\Modules\Notification\Infrastructure\Services\Providers;
+namespace App\Modules\Notification\Infrastructure\Services\Providers;
 
 use App\Contracts\Communication\MessageProviderInterface;
 use App\Core\Auth\Domain\Models\Employee;
