@@ -4,7 +4,7 @@ This directory contains high-quality visual assets for documentation, marketing,
 
 ## 📁 Directory Structure
 
-- 🖼 **[/screenshots/](screenshots/)** — High-resolution captures of the Web and Mobile interfaces.
+- 🖼 **[/screenshots/](screenshots/)** — High-resolution captures of the Web and Mobile interfaces (includes `web_dashboard/`, `web_showcase/`, `admin/`, `mobile_employee/`, `mobile_manager/`, and `marketing/`).
 - 🎞 **[/videos/](videos/)** — Product demos and feature walkthroughs.
 
 > Sequence/class/state diagrams (Mermaid Markdown) live in

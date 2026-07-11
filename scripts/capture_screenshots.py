@@ -135,7 +135,7 @@ async def capture_screenshots(platform):
                 await page.goto(url, wait_until='networkidle')
                 await asyncio.sleep(2) # Extra wait for animations
                 filename = route.replace('/', '_').strip('_') or 'index'
-                path = f"screenshots/{platform}/{filename}.png"
+                path = f"assets/screenshots/{platform}/{filename}.png"
                 await page.screenshot(path=path, full_page=True)
                 print(f"Saved to {path}")
             except Exception as e:
