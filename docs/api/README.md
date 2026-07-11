@@ -20,6 +20,7 @@ curl -X GET "https://api.leopardo-rh.com/api/v1/employees" \
 We use **OpenAPI 3.0** as our source of truth for API contracts.
 
 - 📄 **[OpenAPI YAML](../../api/openapi.yaml)** — View the full technical specification (canonical source).
+  - Also accessible at `/docs/openapi.yaml` on the API server.
 - 🧪 **[Postman Collection](../../postman/leopardo_hr.postman_collection.json)**
 
 ## 📦 Core Endpoints

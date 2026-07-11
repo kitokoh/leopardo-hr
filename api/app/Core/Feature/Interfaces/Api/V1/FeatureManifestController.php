@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api;
+namespace App\Core\Feature\Interfaces\Api\V1;
 
 use App\Contracts\FeatureRegistryInterface;
 use App\Core\Auth\Domain\Models\Employee;
