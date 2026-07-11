@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Cache;
 
-class_alias(\\App\\Core\Tenant\Infrastructure\Services\TenantCacheService::class, __NAMESPACE__ . '\TenantCacheService');
+class_alias(\App\Core\Tenant\Infrastructure\Services\TenantCacheService::class, __NAMESPACE__ . '\TenantCacheService');

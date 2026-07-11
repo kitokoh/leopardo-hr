@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\SSO;
 
-class_alias(\\App\\Core\Auth\Infrastructure\Services\SSO\SSOService::class, __NAMESPACE__ . '\SSOService');
+class_alias(\App\Core\Auth\Infrastructure\Services\SSO\SSOService::class, __NAMESPACE__ . '\SSOService');

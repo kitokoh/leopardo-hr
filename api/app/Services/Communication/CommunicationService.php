@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Communication;
 
-class_alias(\\App\\Modules\Notification\Infrastructure\Services\CommunicationService::class, __NAMESPACE__ . '\CommunicationService');
+class_alias(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class, __NAMESPACE__ . '\CommunicationService');

@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Tracking;
 
-class_alias(\\App\\Modules\Attendance\Infrastructure\Services\TraccarService::class, __NAMESPACE__ . '\TraccarService');
+class_alias(\App\Modules\Attendance\Infrastructure\Services\TraccarService::class, __NAMESPACE__ . '\TraccarService');

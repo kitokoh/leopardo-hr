@@ -10,6 +10,6 @@
 
 declare(strict_types=1);
 
-namespace App\Services\;
+namespace App\Services\Communication;
 
-class_alias(\\App\\Modules\Notification\Infrastructure\Services\NotificationPreferenceProvisioner::class, __NAMESPACE__ . '\NotificationPreferenceProvisioner');
+class_alias(\App\Modules\Notification\Infrastructure\Services\NotificationPreferenceProvisioner::class, __NAMESPACE__ . '\NotificationPreferenceProvisioner');
