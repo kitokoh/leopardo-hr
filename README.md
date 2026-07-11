@@ -32,6 +32,11 @@ Leopardo RH is not just a tool; it's a **High-Performance Ecosystem** designed t
 
 ## 🎥 Visual Showcase
 
+### 🖼️ Overview
+<p align="center">
+  <img src="assets/screenshots/marketing/ecrans1.png" width="800" alt="Leopardo RH — Overview of the solution's screens">
+</p>
+
 ### 🚀 Platform Excellence
 <p align="center">
   <video src="assets/videos/landing_demo.webm" width="800" controls muted autoplay loop playsinline>
