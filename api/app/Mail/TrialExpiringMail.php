@@ -19,7 +19,7 @@ class TrialExpiringMail extends Mailable
         public readonly Subscription $subscription,
         public readonly Company $company,
         public readonly int $daysLeft,
-        public readonly string $locale = 'fr',
+        public readonly string $emailLocale = 'fr',
     ) {}
 
     public function build(): self
@@ -31,9 +31,9 @@ class TrialExpiringMail extends Mailable
         ];
 
         return $this
-            ->subject($subjects[$this->locale] ?? $subjects['fr'])
+            ->subject($subjects[$this->emailLocale] ?? $subjects['fr'])
             ->view('emails.trial-expiring')
-            ->with(['locale' => $this->locale]);
+            ->with(['locale' => $this->emailLocale]);
     }
 }
 
