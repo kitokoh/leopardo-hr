@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+
 class SalaryAdvanceFactory extends Factory
 {
+    protected $model = SalaryAdvance::class;
     public function definition(): array
     {
         $amount = round(rand(10000, 100000) / 1000) * 1000;

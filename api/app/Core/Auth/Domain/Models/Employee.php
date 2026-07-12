@@ -307,6 +307,11 @@ class Employee extends Authenticatable implements HasApiTokensContract
         return $this->belongsTo(Site::class, 'site_id');
     }
 
+    public function onboardingProgress(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Modules\HR\Domain\Models\OnboardingProgress::class);
+    }
+
     /** @return HasMany<BiometricEnrollmentRequest, $this> */
     public function biometricEnrollmentRequests(): HasMany
     {

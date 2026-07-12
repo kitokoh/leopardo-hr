@@ -127,8 +127,29 @@ parameters:
         - '#Parameter \#1 \$callback of method Illuminate\\Support\\Collection<int,stdClass>::map\(\) expects callable.*Closure.*Employee.*given#'
         - '#Parameter \#1 \$companyId of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceAnomalyService::summarize\(\) expects string, int\|null given#'
         - '#Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true#'
-        - '#Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController::getCompanyPlan\(\) expects string, int\|null given#'
         - '#Parameter \#1 \$owner of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects.*string given#'
+
+        # Erreurs pre-existantes demasquees apres la correction du ParseError namespace (v4.22.7)
+        - '#Cannot call method format\(\) on string#'
+        - '#Call to an undefined method App\\Modules\\Attendance\\Domain\\Models\\ZktecoDevice::syncLogs\(\)#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<App\\Modules\\Attendance\\Domain\\Models\\ApprovalRequest>::pending\(\)#'
+        - '#Parameter \#2 \$log of class App\\Http\\Resources\\Api\\V1\\AttendanceTodayResource constructor expects App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog\|null, stdClass\|null given#'
+        - '#Parameter \#2 \$logs of method App\\Modules\\Planning\\Infrastructure\\Services\\EstimationService::dailySummaryFromLogs\(\) expects iterable<int, App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog>, Illuminate\\Support\\Collection<int, stdClass> given#'
+        - '#Call to an undefined method App\\Modules\\Attendance\\Domain\\Models\\CalendarConnection::isTokenExpired\(\)#'
+        - '#Access to an undefined property App\\Modules\\Billing\\Domain\\Models\\Partner::\$user#'
+        - '#Access to an undefined property App\\Modules\\Billing\\Domain\\Models\\Partner::\$payout_threshold#'
+        - '#Property App\\Modules\\Payroll\\Domain\\Models\\Commission::\$(approved_at|paid_at) \(Illuminate\\Support\\Carbon\|null\) does not accept Carbon\\CarbonInterface#'
+        - '#Access to an undefined property App\\Modules\\Billing\\Domain\\Models\\Invoice::\$subscription#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint>::active\(\)#'
+        - '#Parameter \#1 \$deviceId of method App\\Modules\\Attendance\\Infrastructure\\Services\\TraccarService::getLastPosition\(\) expects int, string given#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<App\\Core\\Auth\\Domain\\Models\\AuditLog>::forCompany\(\)#'
+        - '#Method App\\Modules\\HR\\Interfaces\\Api\\V1\\Controllers\\CompanyBrandingController::freshCompany\(\) should return App\\Core\\Tenant\\Domain\\Models\\Company but returns stdClass#'
+        - '#Call to an undefined static method App\\Modules\\HR\\Domain\\Models\\Contract::(expiringSoon|active)\(\)#'
+        - '#Parameter \#2 \$callback of method Illuminate\\Database\\Query\\Builder::when\(\) expects \(callable\(Illuminate\\Database\\Query\\Builder, bool\): Illuminate\\Database\\Query\\Builder\)\|null, Closure\(Illuminate\\Database\\Eloquent\\Builder\): Illuminate\\Database\\Query\\Builder given#'
+        - '#Call to an undefined static method App\\Modules\\Payroll\\Domain\\Models\\Payroll::forPeriod\(\)#'
+        - '#Parameter \#1 \.\.\.\$values of method Illuminate\\Support\\Collection<int,array<string, bool\|int\|string\|null>>::push\(\) expects array\{.*\}, array\{.*\} given#'
+        - '#Instanceof between stdClass and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to false#'
+        - '#Method App\\Modules\\Payroll\\Application\\Actions\\ValidatePayroll::handle\(\) should return App\\Modules\\Payroll\\Domain\\Models\\PayrollRun but returns App\\Modules\\Payroll\\Domain\\Models\\Payroll#'
 
     paths:
         - app/Core
