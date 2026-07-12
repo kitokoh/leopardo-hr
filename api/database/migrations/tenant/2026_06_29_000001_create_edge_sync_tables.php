@@ -8,6 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Nettoyage de sécurité en cas de reliquat d'une migration legacy ou d'un échec partiel
+        Schema::dropIfExists('edge_licenses');
+        Schema::dropIfExists('sync_queue');
+        Schema::dropIfExists('sync_logs');
+        Schema::dropIfExists('edge_nodes');
+
         // Edge nodes — one per client site
         Schema::create('edge_nodes', function (Blueprint $table) {
             $table->uuid('id')->primary();
