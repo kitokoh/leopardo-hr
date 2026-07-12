@@ -3,6 +3,19 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.22.8] - 2026-07-12
+
+### Added
+- **Drip Email onboarding (Lot 2 - P2)** : `SendTrialDripEmailJob` dispatche automatiquement 3 emails de nurturing (J+1, J+3, J+7) dès qu'une entreprise trial est provisionnée via `SelfServiceTrialController`. Le job vérifie que le statut est encore `trial` avant envoi et retente 3 fois avec backoff de 5 min.
+- **Modèle `OnboardingProgress`** : nouveau modèle Eloquent `App\Modules\HR\Domain\Models\OnboardingProgress` avec migration `2026_07_12_115602_create_onboarding_progresses_table`. Scoppé par `company_id` + `employee_id`, stocke `current_step`, `completed_steps` (JSON), `is_completed` et `metadata`. Relation `hasOne` ajoutée sur `Employee`.
+- **Wizard Onboarding mobile manager** : `onboarding_screen.dart` refactorisé en wizard premium — barre de progression animée (TweenAnimationBuilder), icônes par étape, badge `Requis`, boutons `Marquer complété` / `Passer` inline, état d'erreur avec retry. Corrige le bug de routing : les appels utilisent désormais `step.key` (String) au lieu de `step.id` (int) pour matcher la route API `PATCH /onboarding-setup/{stepKey}/complete`.
+- **Modèle Flutter `OnboardingStep` enrichi** : expose `status`, `order`, `required` ; `completed` et `skipped` deviennent des getters dérivés de `status`. Lit `step_key` de l'API (avec fallback `key`).
+- **Repository `OnboardingRepository` étendu** : méthode `getProgress()` (GET `/onboarding-setup/progress`), `completeStep(String stepKey)` et `skipStep(String stepKey)` utilisent PATCH — méthode correcte déclarée dans `billing.php`.
+- **k6 corrigé** : `onboarding-trial-stress.js` cible désormais `/onboarding-setup/checklist` et `/onboarding-setup/progress` (routes réelles), ajoute un check sur `progress 200`.
+
+### Fixed
+- **Import `App\Models\Company` / `App\Models\Employee` invalides** : `SendTrialDripEmailJob`, `TrialDayOneMail`, `TrialDayThreeMail`, `TrialDaySevenMail` utilisaient les alias génériques (`App\Models\*`) absents dans l'architecture DDD. Remplacés par `App\Core\Tenant\Domain\Models\Company` et `App\Core\Auth\Domain\Models\Employee`.
+
 ## [4.22.7] - 2026-07-05
 
 ### Fixed
