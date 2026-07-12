@@ -1,5 +1,5 @@
-﻿# 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.16.253 | 2026-06-20
+# 📑 PILOTAGE — LEOPARDO RH
+# PROGRAM_VERSION = 4.16.254 | 2026-07-12
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -47,11 +47,20 @@ Règle :
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-06-20
-Version        : 4.16.253
-Phase active   : LOT P0 — Conversion commerciale (premier client payant)
-Dernière release: 2026-06-06 (Plans 01-72 tous livrés)
-Prochaine action: Self-service trial provisioning + intégration Stripe
+Date MAJ       : 2026-07-12
+Version        : 4.16.254
+Phase active   : LOT P0/P1/P3 — Solidification & Scale (clés à configurer sur Render)
+Dernière release: 2026-07-12 — PR #852 feat/p1-p3-solidification-scale mergée
+Accomplis      :
+  ✅ Exports comptables CSV (Journal, Livre de paie, OD)
+  ✅ Templates sectoriels BTP + Sécurité (ApplySectorTemplate)
+  ✅ ApiTokenController self-service (Sanctum tokens pour managers)
+  ✅ Offline sync mobile réactif au retour réseau (sync_service.dart)
+  ✅ SelfServiceTrialController — provisioning sandbox <30s avec OTP
+  ✅ StripeService + BillingController — Checkout + CustomerPortal
+  ✅ PlatformCrmPipelineController — pipeline lead→trial→actif
+  ✅ Sentry Laravel DSN prêt dans composer.json
+  🔑 À faire : renseigner les clés sur Render (voir KEYS_A_CONFIGURER.md)
 Objectif 30j   : 3-5 clients payants, MRR 150-250€
 ```
 

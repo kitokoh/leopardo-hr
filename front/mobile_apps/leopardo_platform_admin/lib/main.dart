@@ -6,6 +6,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 import 'src/platform_admin_app.dart';
 
 @pragma('vm:entry-point')
@@ -25,13 +27,19 @@ Future<void> main() async {
   };
   ErrorWidget.builder = (details) => _StartupRuntimeError(details: details);
 
-  runApp(
-    StartupGate(
-      appName: 'Leopardo Platform Admin',
-      initializer: _bootstrap,
-      criticalInitializer: _bootstrapCritical,
-      optionalInitializer: _initFirebase,
-      child: const ProviderScope(child: PlatformAdminApp()),
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(
+      StartupGate(
+        appName: 'Leopardo Platform Admin',
+        initializer: _bootstrap,
+        criticalInitializer: _bootstrapCritical,
+        optionalInitializer: _initFirebase,
+        child: const ProviderScope(child: PlatformAdminApp()),
+      ),
     ),
   );
 }
