@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('onboarding_progresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('company_id')->constrained('companies')->cascadeOnDelete();
-            $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
+            $table->uuid('company_id')->index();
+            $table->unsignedBigInteger('employee_id')->index();
             
             $table->string('current_step')->nullable()->default('welcome');
             $table->boolean('is_completed')->default(false);
