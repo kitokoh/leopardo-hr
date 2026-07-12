@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Modules\Planning\Domain\Models\Schedule;
+
 class ScheduleFactory extends Factory
 {
+    protected $model = Schedule::class;
     public function definition(): array
     {
         return [

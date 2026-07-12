@@ -6,6 +6,7 @@ use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\TenantManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class KioskAttendanceService

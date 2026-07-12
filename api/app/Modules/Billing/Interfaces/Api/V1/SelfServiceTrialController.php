@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TrialWelcomeMail;
+use App\Jobs\SendTrialDripEmailJob;
 use Illuminate\Support\Str;
 
 /**
@@ -222,6 +223,11 @@ class SelfServiceTrialController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+
+        // Dispatch Drip Emails for onboarding
+        SendTrialDripEmailJob::dispatch($result['company'], 1)->delay(now()->addDay());
+        SendTrialDripEmailJob::dispatch($result['company'], 3)->delay(now()->addDays(3));
+        SendTrialDripEmailJob::dispatch($result['company'], 7)->delay(now()->addDays(7));
 
         return new JsonResponse([
             'success' => true,

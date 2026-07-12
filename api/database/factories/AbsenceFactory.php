@@ -5,8 +5,11 @@ namespace Database\Factories;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Modules\Attendance\Domain\Models\Absence;
+
 class AbsenceFactory extends Factory
 {
+    protected $model = Absence::class;
     public function definition(): array
     {
         $start = $this->faker->dateTimeBetween('+1 day', '+30 days');

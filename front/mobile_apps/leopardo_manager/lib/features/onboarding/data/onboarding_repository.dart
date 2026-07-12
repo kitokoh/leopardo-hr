@@ -20,19 +20,30 @@ class OnboardingRepository {
     return items.map((e) => OnboardingStep.fromJson(e)).toList();
   }
 
-  Future<void> completeStep(int stepId) async {
+  Future<Map<String, dynamic>> getProgress() async {
+    final response = await apiClient.requestWithRetry(
+      '/onboarding-setup/progress',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    return extractDataMap(response.data);
+  }
+
+  /// [stepKey] is the string key (e.g. 'first_employee'), matching route {stepKey}
+  Future<void> completeStep(String stepKey) async {
     await apiClient.requestWithRetry(
-      '/onboarding-setup/$stepId/complete',
-      method: 'POST',
+      '/onboarding-setup/$stepKey/complete',
+      method: 'PATCH',
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
   }
 
-  Future<void> skipStep(int stepId) async {
+  /// [stepKey] is the string key (e.g. 'invite_manager'), matching route {stepKey}
+  Future<void> skipStep(String stepKey) async {
     await apiClient.requestWithRetry(
-      '/onboarding-setup/$stepId/skip',
-      method: 'POST',
+      '/onboarding-setup/$stepKey/skip',
+      method: 'PATCH',
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
