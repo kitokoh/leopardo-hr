@@ -78,7 +78,11 @@ class SyncService {
     if (result == ConnectivityResult.none) {
       _setMode(SyncMode.offline);
     } else {
-      _detectMode();
+      _detectMode().then((_) {
+        if (_currentMode != SyncMode.offline) {
+          syncNow();
+        }
+      });
     }
   }
 

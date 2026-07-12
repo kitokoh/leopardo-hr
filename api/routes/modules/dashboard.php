@@ -21,6 +21,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/dashboard/recent-activity', [DashboardController::class, 'recentActivity']);
         Route::get('/dashboard/kpi', [DashboardController::class, 'kpi']);
         Route::get('/dashboard/manager-digest', [DashboardController::class, 'managerDigest']);
+        
+        // Developer API Tokens
+        Route::get('/api-tokens', [\App\Modules\HR\Interfaces\Api\V1\Controllers\ApiTokenController::class, 'index']);
+        Route::post('/api-tokens', [\App\Modules\HR\Interfaces\Api\V1\Controllers\ApiTokenController::class, 'store']);
+        Route::delete('/api-tokens/{tokenId}', [\App\Modules\HR\Interfaces\Api\V1\Controllers\ApiTokenController::class, 'destroy']);
     });
 
     // Notifications — all authenticated employees
@@ -39,6 +44,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/export/contracts', [ExportController::class, 'contracts']);
         Route::get('/export/vehicles', [ExportController::class, 'vehicles']);
         Route::get('/export/history', [ExportController::class, 'history']);
+        
+        // Accounting specific exports
+        Route::get('/export/payroll-journal', [ExportController::class, 'accountingJournal']);
+        Route::get('/export/payroll-ledger', [ExportController::class, 'accountingLedger']);
+        Route::get('/export/accounting-od', [ExportController::class, 'accountingOD']);
     });
 
     // Dashboard data filtered by manager_role
