@@ -238,6 +238,99 @@ class ExportController extends Controller
         return response()->json(['data' => []]);
     }
 
+    public function accountingJournal(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+            'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end'
+        ]);
+
+        return $this->exportResponse($request, $records, 'payroll_journal');
+    }
+
+    public function accountingLedger(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        // Summary representation for ledger
+        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+            'payroll_run_id', 'gross_salary', 'net_salary'
+        ]);
+        
+        // Group by payroll_run_id for the ledger
+        $grouped = $records->groupBy('payroll_run_id')->map(function ($group, $runId) {
+            return (object) [
+                'payroll_run_id' => $runId,
+                'total_gross' => $group->sum('gross_salary'),
+                'total_net' => $group->sum('net_salary'),
+                'total_deductions' => $group->sum('gross_salary') - $group->sum('net_salary'),
+            ];
+        })->values();
+
+        return $this->exportResponse($request, collect($grouped), 'payroll_ledger');
+    }
+
+    public function accountingOD(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+            'payroll_run_id', 'gross_salary', 'net_salary', 'period_end'
+        ]);
+        
+        $grouped = $records->groupBy('payroll_run_id');
+        $odEntries = collect();
+        
+        foreach ($grouped as $runId => $group) {
+            $date = $group->first()->period_end ?? now()->toDateString();
+            $totalGross = $group->sum('gross_salary');
+            $totalNet = $group->sum('net_salary');
+            $totalSocial = $totalGross - $totalNet;
+            
+            // 641 - Remuneration du personnel (Debit)
+            $odEntries->push((object)[
+                'date' => $date,
+                'account' => '641000',
+                'label' => 'Rémunérations',
+                'debit' => $totalGross,
+                'credit' => 0
+            ]);
+            
+            // 431 - Securite Sociale (Credit)
+            $odEntries->push((object)[
+                'date' => $date,
+                'account' => '431000',
+                'label' => 'Charges Sociales',
+                'debit' => 0,
+                'credit' => $totalSocial
+            ]);
+            
+            // 421 - Personnel remu dues (Credit)
+            $odEntries->push((object)[
+                'date' => $date,
+                'account' => '421000',
+                'label' => 'Rémunérations Dues',
+                'debit' => 0,
+                'credit' => $totalNet
+            ]);
+        }
+
+        return $this->exportResponse($request, $odEntries, 'accounting_od');
+    }
+
     /**
      * @param  Collection<int, \stdClass>  $collection
      */
