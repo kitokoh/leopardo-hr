@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Modules\Payroll\Domain\Models\Payroll;
+
 class PayrollFactory extends Factory
 {
+    protected $model = Payroll::class;
     public function definition(): array
     {
         $grossSalary = rand(80000, 300000);
