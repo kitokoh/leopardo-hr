@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Modules\Attendance\Domain\Models\AbsenceType;
+
 class AbsenceTypeFactory extends Factory
 {
+    protected $model = AbsenceType::class;
     public function definition(): array
     {
         return [

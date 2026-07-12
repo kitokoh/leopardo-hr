@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Modules\Attendance\Domain\Models\LeaveBalanceLog;
+
 class LeaveBalanceLogFactory extends Factory
 {
+    protected $model = LeaveBalanceLog::class;
     public function definition(): array
     {
         $balance = $this->faker->randomFloat(2, 5, 30);

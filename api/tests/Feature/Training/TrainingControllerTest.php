@@ -63,9 +63,10 @@ class TrainingControllerTest extends TestCase
         Sanctum::actingAs($this->manager);
 
         $response = $this->postJson('/api/v1/training/courses', [
-            'title'       => 'Laravel Fundamentals',
-            'description' => 'An introduction to Laravel framework.',
-            'duration'    => 120,
+            'title'          => 'Laravel Fundamentals',
+            'description'    => 'An introduction to Laravel framework.',
+            'type'           => 'internal',
+            'duration_hours' => 2,
         ]);
 
         $response->assertStatus(201);
@@ -77,9 +78,10 @@ class TrainingControllerTest extends TestCase
         Sanctum::actingAs($this->employee);
 
         $response = $this->postJson('/api/v1/training/courses', [
-            'title'       => 'Unauthorized Course',
-            'description' => 'Should not be created.',
-            'duration'    => 60,
+            'title'          => 'Unauthorized Course',
+            'description'    => 'Should not be created.',
+            'type'           => 'internal',
+            'duration_hours' => 1,
         ]);
 
         $response->assertStatus(403);
@@ -103,9 +105,10 @@ class TrainingControllerTest extends TestCase
 
         // First create a course
         $createResponse = $this->postJson('/api/v1/training/courses', [
-            'title'       => 'Visible Course',
-            'description' => 'A course owned by this company.',
-            'duration'    => 90,
+            'title'          => 'Visible Course',
+            'description'    => 'A course owned by this company.',
+            'type'           => 'internal',
+            'duration_hours' => 1.5,
         ]);
 
         if ($createResponse->status() === 201) {
@@ -125,9 +128,10 @@ class TrainingControllerTest extends TestCase
         Sanctum::actingAs($this->otherManager);
 
         $createResponse = $this->postJson('/api/v1/training/courses', [
-            'title'       => 'Other Company Course',
-            'description' => 'Belongs to another tenant.',
-            'duration'    => 45,
+            'title'          => 'Other Company Course',
+            'description'    => 'Belongs to another tenant.',
+            'type'           => 'internal',
+            'duration_hours' => 1,
         ]);
 
         if ($createResponse->status() === 201) {
