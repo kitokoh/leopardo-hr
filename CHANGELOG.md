@@ -3,6 +3,23 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.1] - 2026-07-16
+
+### Added
+- **Module Marketing (Phase 1) : schema et modeles de base** : creation du module `api/app/Modules/Marketing/` (Domain/Providers), suivant le pattern DDD des modules existants (Growth, Notification).
+  - Migrations tenant `create_social_accounts_table` et `create_social_posts_table`.
+  - `social_accounts` : connexion d'un tenant a un profil d'agregateur de publication (Ayrshare par defaut). Ne stocke volontairement aucun token OAuth Meta/LinkedIn/X brut — uniquement une reference chiffree (`provider_profile_ref`, cast `encrypted`, `hidden` en serialisation) au profil agregateur, qui gere lui-meme le cycle de vie OAuth. Reduit la surface d'exposition par rapport a un stockage de tokens par plateforme.
+  - `social_posts` : contenu, medias, plateformes cibles, statut (`draft|scheduled|publishing|published|failed`), planification, tracking des tentatives et erreurs. Prevu pour etre consomme par le futur job `PublishScheduledSocialPost` (Phase 4).
+  - Modeles Eloquent `SocialAccount`/`SocialPost` avec `BelongsToCompany` (isolation tenant standard du projet), casts, relation `hasMany`/`belongsTo`.
+  - `MarketingServiceProvider` enregistre dans `bootstrap/providers.php`.
+  - Tests Feature (`SocialAccountModelTest`) verifiant migrations + comportement modeles + chiffrement au repos. `phpstan-modules.neon` : 0 erreur sur le nouveau module. Formate via Pint.
+  - Pas encore d'endpoints API/Policies/UI (Phases 2-6 a suivre).
+
+## [4.23.0] - 2026-07-16
+
+### Fixed
+- **Role manager `marketing` invalidable via l'API malgre le support modele existant (Module Marketing - Phase 0)** : la migration `2026_06_22_000001_add_marketing_to_manager_role_enum.php` documentait deja `manager_role = 'marketing'` (colonne VARCHAR) et `Employee::isMarketing()` existait deja dans le modele, mais `StoreEmployeeRequest`/`UpdateEmployeeRequest` validaient toujours `manager_role` avec `in:principal,rh,dept,comptable,superviseur` — sans `marketing`. Il etait donc impossible de creer/mettre a jour un manager avec ce sous-role via `POST /api/v1/employees` ou `PATCH /api/v1/employees/{id}`. Ajout de `marketing` a la liste autorisee dans les deux Requests. Prepare la Phase 1 du futur module Marketing (gestion des reseaux sociaux du tenant).
+
 ## [4.22.8] - 2026-07-12
 
 ### Added
