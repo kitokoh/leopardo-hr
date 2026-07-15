@@ -19,10 +19,18 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
+    'allowed_origins' => array_filter([
         env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),
-    ],
+        // Production origins
+        'https://gestionemployerbackend.onrender.com',
+        'https://leopardo-hr.vercel.app',
+        'https://leopardo-rh.com',
+        'https://www.leopardo-rh.com',
+        'https://app.leopardo-rh.com',
+        env('ADMIN_DASHBOARD_URL'),
+        env('CORS_EXTRA_ORIGIN'),
+    ]),
 
     'allowed_origins_patterns' => [],
 
