@@ -33,10 +33,18 @@ jobs:
       - name: Resolve deployment source
         id: context
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WR_EVENT: ${{ github.event.workflow_run.event }}
+          WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WR_HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          BASE_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
             if [[ "${GITHUB_REF_NAME}" != "main" ]]; then
               echo "should_deploy=false" >> "$GITHUB_OUTPUT"
               echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
@@ -49,10 +57,16 @@ jobs:
             exit 0
           fi
 
-          if [[ "${{ github.event.workflow_run.conclusion }}" == "success" && "${{ github.event.workflow_run.event }}" == "push" && "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
+          # Defense in depth: only ever treat this as a deployable run when the
+          # upstream workflow_run (a) succeeded, (b) was itself triggered by a
+          # push (never pull_request/pull_request_target from a fork), (c) targeted
+          # main, and (d) ran in this same base repository (not a fork). This keeps
+          # the subsequent privileged checkout scoped to code that was already
+          # pushed to main by a trusted collaborator.
+          if [[ "${WR_CONCLUSION}" == "success" && "${WR_EVENT}" == "push" && "${WR_HEAD_BRANCH}" == "main" && "${WR_HEAD_REPO}" == "${BASE_REPO}" ]]; then
             echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
             echo "ref=main" >> "$GITHUB_OUTPUT"
-            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${WR_HEAD_SHA}" >> "$GITHUB_OUTPUT"
           else
             echo "should_deploy=false" >> "$GITHUB_OUTPUT"
             echo "ref=" >> "$GITHUB_OUTPUT"
