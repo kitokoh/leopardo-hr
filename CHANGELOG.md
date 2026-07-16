@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.0] - 2026-07-16
+
+### Fixed
+- **Role manager `marketing` invalidable via l'API malgre le support modele existant (Module Marketing - Phase 0)** : la migration `2026_06_22_000001_add_marketing_to_manager_role_enum.php` documentait deja `manager_role = 'marketing'` (colonne VARCHAR) et `Employee::isMarketing()` existait deja dans le modele, mais `StoreEmployeeRequest`/`UpdateEmployeeRequest` validaient toujours `manager_role` avec `in:principal,rh,dept,comptable,superviseur` — sans `marketing`. Il etait donc impossible de creer/mettre a jour un manager avec ce sous-role via `POST /api/v1/employees` ou `PATCH /api/v1/employees/{id}`. Ajout de `marketing` a la liste autorisee dans les deux Requests. Prepare la Phase 1 du futur module Marketing (gestion des reseaux sociaux du tenant).
+
 ## [4.22.8] - 2026-07-12
 
 ### Added
