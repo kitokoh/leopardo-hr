@@ -50,4 +50,11 @@ return [
         'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
     ],
 
+    'ayrshare' => [
+        // Cle API primaire du compte Leopardo cote Ayrshare (Business/Enterprise
+        // plan requis pour gerer des profils utilisateur par tenant).
+        'api_key' => env('AYRSHARE_API_KEY'),
+        'base_url' => env('AYRSHARE_BASE_URL', 'https://api.ayrshare.com/api'),
+    ],
+
 ];

@@ -2,29 +2,31 @@
 
 namespace App\Providers;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Absence\Domain\Models\Absence;
-use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\HR\Domain\Models\Contract;
-use App\Modules\HR\Domain\Models\Department;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Payroll\Domain\Models\EmployeeLoan;
-use App\Modules\HR\Domain\Models\Evaluation;
-use App\Modules\Expense\Domain\Models\ExpenseClaim;
 use App\Modules\Billing\Domain\Models\Invoice;
-use App\Modules\Recruitment\Domain\Models\JobPosting;
-use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\HR\Domain\Models\Position;
-use App\Modules\Planning\Domain\Models\Schedule;
-use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Billing\Domain\Models\Subscription;
-use App\Modules\HR\Domain\Models\TrainingCourse;
-use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Expense\Domain\Models\ExpenseClaim;
+use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Modules\HR\Domain\Models\Contract;
+use App\Modules\HR\Domain\Models\Department;
+use App\Modules\HR\Domain\Models\Evaluation;
+use App\Modules\HR\Domain\Models\Position;
+use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\Marketing\Domain\Models\SocialAccount;
+use App\Modules\Marketing\Domain\Models\SocialPost;
+use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Planning\Domain\Models\Schedule;
+use App\Modules\Recruitment\Domain\Models\Applicant;
+use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Policies\AbsencePolicy;
 use App\Policies\ApprovalRequestPolicy;
 use App\Policies\AttendancePolicy;
@@ -45,6 +47,8 @@ use App\Policies\PositionPolicy;
 use App\Policies\RecruitmentPolicy;
 use App\Policies\SchedulePolicy;
 use App\Policies\SitePolicy;
+use App\Policies\SocialAccountPolicy;
+use App\Policies\SocialPostPolicy;
 use App\Policies\TrainingPolicy;
 use App\Policies\VehiclePolicy;
 use App\Policies\WebhookEndpointPolicy;
@@ -92,6 +96,10 @@ class AuthServiceProvider extends ServiceProvider
         // Platform
         Gate::policy(WebhookEndpoint::class, WebhookEndpointPolicy::class);
 
+        // Marketing (Phase 2)
+        Gate::policy(SocialAccount::class, SocialAccountPolicy::class);
+        Gate::policy(SocialPost::class, SocialPostPolicy::class);
+
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);
         Gate::define('manage-onboarding', [OnboardingPolicy::class, 'manageSteps']);
@@ -99,4 +107,3 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('export-data', [ExportPolicy::class, 'export']);
     }
 }
-
