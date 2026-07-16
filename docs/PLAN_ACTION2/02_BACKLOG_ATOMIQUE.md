@@ -209,3 +209,18 @@
 | PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | comment choisir un ticket, eviter duplication, demander review |
 | PA2-AUTO-009 | P2 | Nettoyage branches stale | docs/scripts | listing branches fusionnees/stale, suppression manuelle controlee |
 | PA2-AUTO-010 | P2 | Audit post-merge automatique | GitHub Actions | verifie changelog, matrice, OpenAPI, i18n selon fichiers touches |
+
+## Extension v1.2 - Audit architecture technique 2026-07-16 (voir `08_AUDIT_ARCHITECTURE_TECH.md`)
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-SEC-001 | P0 | Rotation secret Redis Upstash expose en historique git | Infra/Render | mot de passe Upstash tourne, `REDIS_URL`/`REDIS_PASSWORD` mis a jour sur Render, ancien secret invalide verifie |
+| PA2-SEC-002 | P0 | RBAC scope departement reel pour manager_role=dept | API/Policies | EmployeePolicy, AttendancePolicy, SchedulePolicy, EvaluationPolicy, DepartmentPolicy filtrent par department_id/manager_id quand manager_role=dept; tests dedies |
+| PA2-SEC-003 | P1 | RBAC scope superviseur assigned-only reel | API/Policies | manager_role=superviseur limite a une liste explicite d'employes/departements assignes, pas company-wide |
+| PA2-SEC-004 | P1 | Tests de regression RBAC par role manager_role | API tests | matrice de tests couvrant principal/rh/dept/comptable/superviseur/marketing sur chaque policy existante |
+| PA2-SEC-005 | P2 | Documentation RBAC alignee code | docs | RBAC_SYSTEM.md reflete l'etat reel du scope (dept/superviseur) apres correction |
+| PA2-ARCH-001 | P1 | Brancher TaxSlab/SocialContribution DB dans PayrollCalculator | API/Payroll | le calcul utilise les baremes DB si presents pour le tenant/pays, fallback code en dur documente sinon; tests avant/apres changement de bareme |
+| PA2-ARCH-002 | P1 | Clarifier proprietaire canonique Absence/Planning | API | un seul module proprietaire des modeles Absence/AbsenceType/LeaveBalance, l'autre consomme via event ou contrat, doublons supprimes |
+| PA2-ARCH-003 | P2 | Reduire couplage direct HR vers autres modules | API | dependances HR->Onboarding/Training/Recruitment/Cabinet passees par evenements ou contrats d'interface explicites, mesure avant/apres |
+| PA2-ARCH-004 | P2 | Versionnement temporel des regles pays paie | API/Payroll | taux/baremes pays associes a une date d'effet, recalcul retroactif possible pour audit |
+| PA2-ARCH-005 | P2 | Reduire baseline PHPStan | API | plan de reduction par module, suivi du delta a chaque PR touchant un module ancien |
