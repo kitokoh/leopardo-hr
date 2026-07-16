@@ -518,6 +518,53 @@ class EmployeesRbacTest extends TestCase
         ]);
     }
 
+    public function test_principal_manager_can_create_employee_with_marketing_manager_role(): void
+    {
+        $companyA = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $managerA = Employee::query()->create([
+            'company_id' => $companyA->id,
+            'email' => 'manager@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+
+        $token = $managerA->createToken('tests')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/v1/employees', [
+                'first_name' => 'Sara',
+                'last_name' => 'Comm',
+                'email' => 'sara.marketing@a.test',
+                'password' => 'password123',
+                'role' => 'manager',
+                'manager_role' => 'marketing',
+            ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonPath('data.manager_role', 'marketing');
+        $this->assertDatabaseHas('employees', [
+            'email' => 'sara.marketing@a.test',
+            'company_id' => $companyA->id,
+            'manager_role' => 'marketing',
+        ]);
+
+        $marketingManager = Employee::query()->where('email', 'sara.marketing@a.test')->first();
+        $this->assertTrue($marketingManager->isMarketing());
+    }
+
     public function test_manager_cannot_update_employee_to_duplicate_email_within_same_company(): void
     {
         $companyA = Company::query()->create([
