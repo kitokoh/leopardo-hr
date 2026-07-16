@@ -1,5 +1,24 @@
 <?php
 
+use App\Modules\Absence\Providers\AbsenceServiceProvider;
+use App\Modules\Attendance\Providers\AttendanceServiceProvider;
+use App\Modules\Billing\Providers\BillingServiceProvider;
+use App\Modules\Cabinet\Providers\CabinetServiceProvider;
+use App\Modules\Cameras\Providers\CamerasServiceProvider;
+use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
+use App\Modules\Expense\Providers\ExpenseServiceProvider;
+use App\Modules\Fleet\Providers\FleetServiceProvider;
+use App\Modules\Growth\Providers\GrowthServiceProvider;
+use App\Modules\HR\Providers\HRServiceProvider;
+use App\Modules\Marketing\Providers\MarketingServiceProvider;
+use App\Modules\Notification\Providers\NotificationServiceProvider;
+use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
+use App\Modules\Payroll\Providers\PayrollServiceProvider;
+use App\Modules\Planning\Providers\PlanningServiceProvider;
+use App\Modules\Platform\Providers\PlatformServiceProvider;
+use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
+use App\Modules\SmartAttendance\Providers\SmartAttendanceServiceProvider;
+use App\Modules\Training\Providers\TrainingServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -12,26 +31,28 @@ return [
     EventServiceProvider::class,
     FeatureDetectionServiceProvider::class,
     FeatureRegistryServiceProvider::class,
-    App\Modules\HR\Providers\HRServiceProvider::class,
-    App\Modules\Payroll\Providers\PayrollServiceProvider::class,
-    App\Modules\Attendance\Providers\AttendanceServiceProvider::class,
-    App\Modules\Planning\Providers\PlanningServiceProvider::class,
-    App\Modules\Recruitment\Providers\RecruitmentServiceProvider::class,
-    App\Modules\Cabinet\Providers\CabinetServiceProvider::class,
-    App\Modules\Fleet\Providers\FleetServiceProvider::class,
-    App\Modules\Billing\Providers\BillingServiceProvider::class,
-    App\Modules\Cameras\Providers\CamerasServiceProvider::class,
+    HRServiceProvider::class,
+    PayrollServiceProvider::class,
+    AttendanceServiceProvider::class,
+    PlanningServiceProvider::class,
+    RecruitmentServiceProvider::class,
+    CabinetServiceProvider::class,
+    FleetServiceProvider::class,
+    BillingServiceProvider::class,
+    CamerasServiceProvider::class,
     // — New DDD modules (Phase 2)
-    App\Modules\Growth\Providers\GrowthServiceProvider::class,
-    App\Modules\Absence\Providers\AbsenceServiceProvider::class,
+    GrowthServiceProvider::class,
+    AbsenceServiceProvider::class,
     // — SmartAttendance module
-    App\Modules\SmartAttendance\Providers\SmartAttendanceServiceProvider::class,
-    App\Modules\Expense\Providers\ExpenseServiceProvider::class,
-    App\Modules\Notification\Providers\NotificationServiceProvider::class,
+    SmartAttendanceServiceProvider::class,
+    ExpenseServiceProvider::class,
+    NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)
-    App\Modules\Platform\Providers\PlatformServiceProvider::class,
-    App\Modules\Onboarding\Providers\OnboardingServiceProvider::class,
-    App\Modules\Training\Providers\TrainingServiceProvider::class,
+    PlatformServiceProvider::class,
+    OnboardingServiceProvider::class,
+    TrainingServiceProvider::class,
     // — EdgeSync module
-    App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider::class,
+    EdgeSyncServiceProvider::class,
+    // — Marketing module (Phase 1)
+    MarketingServiceProvider::class,
 ];
