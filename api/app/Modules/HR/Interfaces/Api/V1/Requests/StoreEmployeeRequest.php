@@ -49,7 +49,7 @@ class StoreEmployeeRequest extends FormRequest
             'salary_base' => ['nullable', 'numeric', 'min:0'],
             'hourly_rate' => ['nullable', 'numeric', 'min:0'],
             'role' => ['nullable', 'in:employee,manager'],
-            'manager_role' => ['nullable', 'in:principal,rh,dept,comptable,superviseur'],
+            'manager_role' => ['nullable', 'in:principal,rh,dept,comptable,superviseur,marketing'],
             'phone' => ['nullable', 'string', 'max:30'],
             'personal_email' => ['nullable', 'email', 'max:150'],
             'middle_name' => ['nullable', 'string', 'max:100'],
