@@ -62,10 +62,10 @@ class SocialDeclarationController extends Controller
             $payroll = $payrollData->get($emp->id);
 
             return [
-                'employee_id' => $emp->id,
-                'num_ss' => $emp->national_id ?? '',
-                'last_name' => $emp->last_name ?? '',
-                'first_name' => $emp->first_name ?? '',
+                'employee_id' => (int) $emp->id,
+                'num_ss' => (string) ($emp->national_id ?? ''),
+                'last_name' => (string) ($emp->last_name ?? ''),
+                'first_name' => (string) ($emp->first_name ?? ''),
                 'date_naissance' => $this->dateValue($emp->date_of_birth ?? null),
                 'gross_salary' => (float) ($payroll->total_gross ?? 0),
                 'months_worked' => (int) ($payroll->months_worked ?? 0),
@@ -153,15 +153,18 @@ class SocialDeclarationController extends Controller
             $payroll = $payrollData->get($emp->id);
             $attendance = $attendanceData->get($emp->id);
 
-            return [
-                'employee_id' => $emp->id,
-                'num_cnss' => $emp->national_id ?? '',
-                'last_name' => $emp->last_name ?? '',
-                'first_name' => $emp->first_name ?? '',
+            /** @var array{employee_id: int, num_cnss: string, last_name: string, first_name: string, cin: string, gross_salary: float, days_worked: int} $row */
+            $row = [
+                'employee_id' => (int) $emp->id,
+                'num_cnss' => (string) ($emp->national_id ?? ''),
+                'last_name' => (string) ($emp->last_name ?? ''),
+                'first_name' => (string) ($emp->first_name ?? ''),
                 'cin' => '',
                 'gross_salary' => (float) ($payroll->total_gross ?? 0),
                 'days_worked' => (int) ($attendance->days_worked ?? 0),
             ];
+
+            return $row;
         })->filter(fn (array $row) => $row['gross_salary'] > 0);
 
         $generator = new SocialDeclarationGenerator;
@@ -226,19 +229,22 @@ class SocialDeclarationController extends Controller
         $declarationRows = $employees->map(function ($emp) use ($payrollData) {
             $payroll = $payrollData->get($emp->id);
 
-            return [
-                'employee_id' => $emp->id,
-                'nir' => $emp->national_id ?? '',
-                'last_name' => $emp->last_name ?? '',
-                'first_name' => $emp->first_name ?? '',
+            /** @var array{employee_id: int, nir: string, last_name: string, first_name: string, date_naissance: string, gross_salary: float, net_salary: float, net_imposable?: float, hours_worked?: float, contract_type: string, start_date: string} $row */
+            $row = [
+                'employee_id' => (int) $emp->id,
+                'nir' => (string) ($emp->national_id ?? ''),
+                'last_name' => (string) ($emp->last_name ?? ''),
+                'first_name' => (string) ($emp->first_name ?? ''),
                 'date_naissance' => $this->dateValue($emp->date_of_birth ?? null),
                 'gross_salary' => (float) ($payroll->total_gross ?? 0),
                 'net_salary' => (float) ($payroll->total_net ?? 0),
                 'net_imposable' => (float) ($payroll->total_net ?? 0),
                 'hours_worked' => 151.67,
-                'contract_type' => $emp->contract_type ?? 'CDI',
+                'contract_type' => (string) ($emp->contract_type ?? 'CDI'),
                 'start_date' => $this->dateValue($emp->contract_start ?? null),
             ];
+
+            return $row;
         })->filter(fn (array $row) => $row['gross_salary'] > 0);
 
         $generator = new SocialDeclarationGenerator;

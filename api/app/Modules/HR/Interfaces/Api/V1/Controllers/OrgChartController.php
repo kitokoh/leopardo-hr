@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -24,7 +25,7 @@ class OrgChartController extends Controller
             ->where('status', 'active')
             ->get();
 
-        $tree = $this->buildTree($employees->groupBy('manager_id'), null);
+        $tree = $this->buildTree($employees->groupBy('manager_id')->toBase(), null);
 
         return response()->json(['data' => $tree]);
     }
@@ -82,7 +83,7 @@ class OrgChartController extends Controller
     }
 
     /**
-     * @param  Collection<int|string, Collection<int, Employee>>  $employeesByManager
+     * @param  Collection<int|string, EloquentCollection<int, Employee>>  $employeesByManager
      * @return array<int, array<string, mixed>>
      */
     private function buildTree(Collection $employeesByManager, ?int $parentId): array

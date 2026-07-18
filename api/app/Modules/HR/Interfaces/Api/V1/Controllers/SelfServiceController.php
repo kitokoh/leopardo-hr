@@ -67,7 +67,7 @@ class SelfServiceController extends Controller
 
         $enrollments = TrainingEnrollment::where('employee_id', $user->id)
             ->where('company_id', $user->company_id)
-            ->with(['trainingSession.trainingCourse:id,title,category,type,duration_hours'])
+            ->with(['session.course:id,title,category,type,duration_hours'])
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 

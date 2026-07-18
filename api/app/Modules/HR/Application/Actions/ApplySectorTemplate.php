@@ -2,7 +2,7 @@
 
 namespace App\Modules\HR\Application\Actions;
 
-use App\Core\Auth\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +17,7 @@ class ApplySectorTemplate
         }
     }
 
-    private function applyBtpTemplate(int $companyId): void
+    private function applyBtpTemplate(string $companyId): void
     {
         DB::transaction(function () use ($companyId) {
             // Horaires de chantier (par ex: 7h-15h)
@@ -66,7 +66,7 @@ class ApplySectorTemplate
         });
     }
 
-    private function applySecurityTemplate(int $companyId): void
+    private function applySecurityTemplate(string $companyId): void
     {
         DB::transaction(function () use ($companyId) {
             // Horaires de nuit
