@@ -50,7 +50,11 @@ class FleetController extends Controller
 
         $positions = [];
         foreach ($vehicles as $vehicle) {
-            $pos = $traccar->getLastPosition($vehicle->traccar_device_id);
+            if ($vehicle->traccar_device_id === null) {
+                continue;
+            }
+
+            $pos = $traccar->getLastPosition((int) $vehicle->traccar_device_id);
             $positions[] = [
                 'vehicle_id' => $vehicle->id,
                 'plate_number' => $vehicle->plate_number,

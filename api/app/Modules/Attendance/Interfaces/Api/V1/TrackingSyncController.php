@@ -54,7 +54,11 @@ class TrackingSyncController extends Controller
 
         $updated = 0;
         foreach ($vehicles as $vehicle) {
-            $pos = $traccar->getLastPosition($vehicle->traccar_device_id);
+            if ($vehicle->traccar_device_id === null) {
+                continue;
+            }
+
+            $pos = $traccar->getLastPosition((int) $vehicle->traccar_device_id);
             if ($pos) {
                 $updated++;
             }
@@ -80,7 +84,11 @@ class TrackingSyncController extends Controller
 
         $totalTrips = 0;
         foreach ($vehicles as $vehicle) {
-            $trips = $traccar->getTrips($vehicle->traccar_device_id, $from, $to);
+            if ($vehicle->traccar_device_id === null) {
+                continue;
+            }
+
+            $trips = $traccar->getTrips((int) $vehicle->traccar_device_id, $from, $to);
 
             foreach ($trips as $trip) {
                 $traccarTripId = $trip['id'] ?? null;

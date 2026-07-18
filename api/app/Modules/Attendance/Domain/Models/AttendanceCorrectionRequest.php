@@ -9,6 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property int $id
+ * @property string $company_id
+ * @property int $employee_id
+ * @property int|null $attendance_log_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property \Illuminate\Support\Carbon $requested_check_in
+ * @property \Illuminate\Support\Carbon|null $requested_check_out
+ * @property string $reason
+ * @property string $status
+ * @property int|null $reviewed_by
+ * @property \Illuminate\Support\Carbon|null $reviewed_at
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceCorrectionRequest extends Model

@@ -57,7 +57,7 @@ class TenantCacheService
     {
         $store = Cache::store();
 
-        if (method_exists($store, 'tags')) {
+        if ($store->supportsTags()) {
             $store->tags(["tenant:{$companyId}"])->flush();
         }
     }

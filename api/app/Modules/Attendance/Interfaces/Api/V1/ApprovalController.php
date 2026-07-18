@@ -144,8 +144,7 @@ class ApprovalController extends Controller
             ]);
 
             $workflow = $approvalRequest->workflow;
-            $levels = is_array($workflow->levels) ? $workflow->levels : [];
-            $maxLevel = count($levels);
+            $maxLevel = count($workflow->levels);
 
             if ($approvalRequest->current_level >= $maxLevel) {
                 $approvalRequest->update(['status' => 'approved']);

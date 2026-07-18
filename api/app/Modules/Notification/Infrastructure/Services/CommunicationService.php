@@ -118,7 +118,7 @@ class CommunicationService
     }
 
     /**
-     * @param  list<string>  $channels
+     * @param  array<int, mixed>  $channels
      * @return list<string>
      */
     private function normalizeChannels(array $channels): array
