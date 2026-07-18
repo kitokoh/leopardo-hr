@@ -5,6 +5,14 @@
 
 ## [4.23.2] - 2026-07-16
 
+### Fixed
+- **CI/Securite : alertes CodeQL high sur `deploy-main.yml`** : `github.event.workflow_run.head_branch` etait interpole directement dans un bloc `run:` shell (risque de cache-poisoning/injection) ; deplace vers une variable d'environnement (`WR_HEAD_BRANCH`). Le trigger `workflow_run` (privilegie, acces secrets) ne verifiait pas que le run d'origine provenait bien du repo de base (et non d'un fork) ; ajout d'une verification `head_repository == github.repository` en plus des checks existants conclusion/event/branch.
+- **CI : permissions GITHUB_TOKEN manquantes** : ajout d'un bloc `permissions: contents: read` explicite sur `architecture-check.yml`, `i18n-enterprise.yml` et `lighthouse.yml` (alertes CodeQL `actions/missing-workflow-permissions`).
+- **`api/phpstan-modules.neon` ne chargeait pas l'extension Larastan** : contrairement a `api/phpstan.neon`, l'include `vendor/larastan/larastan/extension.neon` etait absent, privant PHPStan de la connaissance des scopes Eloquent locaux (`scopeActive()` -> `active()`, `scopeForCountry()` -> `forCountry()`, `scopeForYear()` -> `forYear()`, etc.) et des relations magiques Eloquent. Cause racine des 36 erreurs "Call to an undefined method" qui faisaient echouer le job "PHPStan — Modules Architecture" sur `main` et sur PR #858.
+
+### Security
+- Activation de Dependabot alerts sur le repo (34 vulnerabilites detectees a l'activation : 11 high, 16 moderate, 7 low — suivi separe requis).
+- Branch protection `main` : revue obligatoire (1 approbation) desormais requise pour les contributeurs non-admin avant merge.
 ### Added
 - **Module Marketing (Phase 2) : policies, actions applicatives, client Ayrshare** : construit sur le schema de la Phase 1 (`social_accounts`/`social_posts`).
   - `Domain/Contracts/SocialPostRepositoryInterface.php` + implementations `Infrastructure/Repositories/{SocialAccountRepository,SocialPostRepository}.php` (isolation tenant standard, `findDuePosts()` prevu pour le futur job de publication planifiee, Phase 3).
