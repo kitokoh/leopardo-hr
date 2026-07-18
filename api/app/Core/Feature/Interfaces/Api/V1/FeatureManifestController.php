@@ -215,11 +215,9 @@ class FeatureManifestController extends Controller
             return true;
         }
 
-        if (method_exists($user, 'can')) {
-            foreach ($requiredPermissions as $permission) {
-                if (! $user->can((string) $permission)) {
-                    return false;
-                }
+        foreach ($requiredPermissions as $permission) {
+            if (! $user->can((string) $permission)) {
+                return false;
             }
         }
 

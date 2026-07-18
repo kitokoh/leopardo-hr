@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Modules\Attendance\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 
 class AbsenceTypeFactory extends Factory
 {

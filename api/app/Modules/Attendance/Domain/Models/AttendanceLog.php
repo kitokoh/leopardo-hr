@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $company_id
  * @property int $employee_id
- * @property string|null $date
+ * @property \Illuminate\Support\Carbon|null $date
  * @property Carbon|null $check_in
  * @property Carbon|null $check_out
  * @property float|null $hours_worked

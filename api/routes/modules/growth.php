@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->prefix('partner')->group(function () {
     Route::post('/apply', [PartnerDashboardController::class, 'apply']);
     Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
+    Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);
     Route::get('/stats', [PartnerDashboardController::class, 'stats']);
     Route::get('/companies', [PartnerDashboardController::class, 'referredCompanies']);
 });

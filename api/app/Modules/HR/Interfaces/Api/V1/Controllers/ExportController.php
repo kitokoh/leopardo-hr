@@ -267,13 +267,14 @@ class ExportController extends Controller
         ]);
         
         // Group by payroll_run_id for the ledger
-        $grouped = $records->groupBy('payroll_run_id')->map(function ($group, $runId) {
-            return (object) [
-                'payroll_run_id' => $runId,
-                'total_gross' => $group->sum('gross_salary'),
-                'total_net' => $group->sum('net_salary'),
-                'total_deductions' => $group->sum('gross_salary') - $group->sum('net_salary'),
-            ];
+        $grouped = $records->groupBy('payroll_run_id')->map(function ($group, $runId): \stdClass {
+            $row = new \stdClass;
+            $row->payroll_run_id = $runId;
+            $row->total_gross = $group->sum('gross_salary');
+            $row->total_net = $group->sum('net_salary');
+            $row->total_deductions = $group->sum('gross_salary') - $group->sum('net_salary');
+
+            return $row;
         })->values();
 
         return $this->exportResponse($request, collect($grouped), 'payroll_ledger');
