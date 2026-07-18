@@ -54,7 +54,11 @@ class EdgeDownloadController extends Controller
         }
 
         if (empty($publicKey)) {
-            return response()->json(['error' => 'edge_public_key_not_configured'], 503);
+            return response(
+                json_encode(['error' => 'edge_public_key_not_configured'], JSON_THROW_ON_ERROR),
+                503,
+                ['Content-Type' => 'application/json'],
+            );
         }
 
         return response($publicKey, 200, [
