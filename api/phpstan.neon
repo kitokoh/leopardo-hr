@@ -15,16 +15,3 @@ parameters:
         - bootstrap/cache
         - storage
     reportUnmatchedIgnoredErrors: false
-    laravel:
-        auth:
-            guards:
-                sanctum:
-                    model: App\Core\Auth\Domain\Models\Employee
-                web:
-                    model: App\Core\Auth\Domain\Models\Employee
-                user_api:
-                    model: App\Core\Auth\Domain\Models\User
-                super_admin_api:
-                    model: App\Models\SuperAdmin
-                super_admin_web:
-                    model: App\Models\SuperAdmin

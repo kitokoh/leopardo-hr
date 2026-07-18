@@ -53,7 +53,9 @@ class EdgeDownloadController extends Controller
             }
         }
 
-        abort_unless(!empty($publicKey), 503, 'License public key not configured.');
+        if (empty($publicKey)) {
+            return response()->json(['error' => 'edge_public_key_not_configured'], 503);
+        }
 
         return response($publicKey, 200, [
             'Content-Type'  => 'text/plain',

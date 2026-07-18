@@ -46,10 +46,9 @@ class DetectSilentEdgeNodes extends Command
         // ── Requête des nœuds silencieux ─────────────────────────────────
         $silentNodes = DB::table('edge_nodes as n')
             ->join('companies as c', 'c.id', '=', 'n.company_id')
-            ->leftJoin('users as u', function ($join) {
-                $join->on('u.company_id', '=', 'n.company_id')
-                     ->where('u.role', '=', 'manager')
-                     ->whereNull('u.deleted_at');
+            ->leftJoin('employees as e', function ($join) {
+                $join->on('e.company_id', '=', 'n.company_id')
+                     ->where('e.role', '=', 'manager');
             })
             ->select([
                 'n.id',
@@ -59,7 +58,7 @@ class DetectSilentEdgeNodes extends Command
                 'n.company_id',
                 'n.status',
                 'c.name as company_name',
-                DB::raw("string_agg(u.email, ',') as manager_emails"),
+                DB::raw("string_agg(e.email, ',') as manager_emails"),
             ])
             ->where('n.status', '!=', 'revoked')
             ->where(function ($q) use ($cutoffAt) {
