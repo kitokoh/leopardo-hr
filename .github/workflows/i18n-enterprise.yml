@@ -22,6 +22,9 @@ on:
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'
 
+permissions:
+  contents: read
+
 jobs:
   validate-and-sync:
     runs-on: ubuntu-latest
