@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-use App\Modules\Attendance\Domain\Models\Absence;
 
 class AbsenceFactory extends Factory
 {
