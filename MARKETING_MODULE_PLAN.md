@@ -1,0 +1,160 @@
+# Module Marketing (Ayrshare) — Plan & Suivi
+
+Dernière mise à jour : 2026-07-16
+
+Ce fichier suit l'avancement du module Marketing (publication sur les
+réseaux sociaux via Ayrshare) à travers ses phases. Chaque phase est
+livrée par PR séparée, avec CI verte, puis mergée sur `main`.
+
+## Statut global
+
+| Phase | Sujet | Statut | PR |
+|---|---|---|---|
+| 0 | Fix validation `manager_role=marketing` (Request) | ✅ Mergée | #856 |
+| 1 | Schéma DB + modèles (`social_accounts`, `social_posts`) | ✅ Mergée | #857 |
+| 2 | Policies, Actions, client Ayrshare, tests | ✅ Prête (cette PR) | — |
+| 3 | Cron de publication planifiée + contrôleurs/routes API | ⏳ À faire | — |
+| 4 | UI web dashboard Marketing | ⏳ À faire | — |
+| 5 | Onglet Marketing dans l'app mobile `leopardo_manager` | ⏳ À faire | — |
+
+---
+
+## Phase 0 — Fix validation (mergée, PR #856)
+
+- `StoreEmployeeRequest.php` / `UpdateEmployeeRequest.php` : règle
+  `manager_role` étendue à `in:principal,rh,dept,comptable,superviseur,marketing`.
+
+## Phase 1 — Schéma & modèles (mergée, PR #857)
+
+- Module `api/app/Modules/Marketing/` créé (Domain, Providers).
+- Migrations tenant :
+  - `2026_06_22_000001_add_marketing_to_manager_role_enum.php` (placeholder,
+    documentation incorrecte — voir bug corrigé en Phase 2 ci-dessous).
+  - `2026_07_16_000001_create_social_accounts_table.php`
+  - `2026_07_16_000002_create_social_posts_table.php`
+- Modèles `SocialAccount` / `SocialPost` (Domain/Models).
+- `SocialAccountRepositoryInterface` (Domain/Contracts).
+- `SocialAccountNotFoundException` (Domain/Exceptions).
+- `MarketingServiceProvider` enregistré dans `bootstrap/providers.php`.
+- Test `SocialAccountModelTest`.
+- Stockage 100% Ayrshare : uniquement `provider_profile_ref` (chiffré),
+  aucun token OAuth brut Meta/LinkedIn/X stocké.
+
+## Phase 2 — Policies, Actions, client Ayrshare (cette PR)
+
+### Fait
+
+- **Bug corrigé (découvert pendant les tests)** : la migration Phase 0
+  documentait "pas de changement DDL nécessaire" pour `manager_role`, mais
+  sur PostgreSQL `Schema::enum()` génère une vraie contrainte `CHECK`
+  (`employees_manager_role_check`) qui n'autorisait toujours pas
+  `marketing`. Toute création d'un manager marketing échouait donc au
+  niveau base malgré le fix de validation Laravel. Nouvelle migration :
+  `2026_07_16_000003_add_marketing_to_manager_role_check_constraint.php`
+  (recrée le CHECK avec `marketing` inclus, no-op sur non-pgsql).
+- **Domain**
+  - `Domain/Exceptions/SocialPostNotFoundException.php` (404)
+  - `Domain/Exceptions/SocialAccountNotFoundException.php` (404, corrigé)
+  - `Domain/Exceptions/SocialAccountInactiveException.php` (422, nouveau)
+  - `Domain/Contracts/SocialPostRepositoryInterface.php` (nouveau)
+- **Infrastructure**
+  - `Infrastructure/Repositories/SocialAccountRepository.php`
+  - `Infrastructure/Repositories/SocialPostRepository.php` (avec
+    `findDuePosts()` pour le futur cron Phase 3, bypass tenant-scope
+    façon `AutoCloseAttendanceCommand`)
+  - `Infrastructure/Services/AyrshareClient.php` (HTTP brut via `Http`
+    facade, pas de SDK — pattern `StripeService`. Méthodes :
+    `isConfigured`, `createProfile`, `generateJwtLoginUrl`,
+    `connectedPlatforms`, `publishPost`)
+  - `Infrastructure/Services/SocialPublishingService.php` (orchestration
+    `publishNow()` : résout le compte actif, appelle Ayrshare, met à jour
+    le statut/erreur du post)
+- **Application**
+  - `Application/DTOs/CreateSocialPostDTO.php`
+  - `Application/DTOs/ConnectSocialAccountDTO.php`
+  - `Application/Actions/ConnectSocialAccount.php` (idempotent,
+    `updateOrCreate` par `company_id`+`provider`)
+  - `Application/Actions/CreateSocialPost.php` (crée uniquement des
+    posts en brouillon — pas de publication automatique)
+  - `Application/Actions/SchedulePost.php` (publication immédiate si pas
+    de date, sinon passage en `scheduled`)
+- **Policies**
+  - `app/Policies/SocialAccountPolicy.php`
+  - `app/Policies/SocialPostPolicy.php`
+  - Restriction : rôles manager `principal` ou `marketing` uniquement.
+  - Garde-fous par statut : impossible de modifier/supprimer/publier un
+    post déjà `published`.
+  - Enregistrées dans `AuthServiceProvider` (section "Marketing (Phase 2)").
+- **Configuration**
+  - `config/services.php` : bloc `ayrshare` (api_key, base_url).
+  - `.env.example` : `AYRSHARE_API_KEY`, `AYRSHARE_BASE_URL`.
+  - `MarketingServiceProvider::register()` : bindings
+    `SocialAccountRepositoryInterface → SocialAccountRepository`,
+    `SocialPostRepositoryInterface → SocialPostRepository`.
+- **Tests** (21 tests, 59 assertions, tous verts en local Postgres 17) :
+  - `SocialAccountPolicyTest` (5 tests)
+  - `SocialPostPolicyTest` (4 tests)
+  - `CreateSocialPostActionTest` (2 tests)
+  - `ConnectSocialAccountActionTest` (2 tests)
+  - `SchedulePostActionTest` (2 tests)
+  - `SocialPublishingServiceTest` (4 tests, via `Http::fake()`)
+  - `SocialAccountModelTest` (2 tests, Phase 1, toujours verts)
+- **Qualité** :
+  - PHPStan (`phpstan-modules.neon`, niveau module) : 0 nouvelle erreur
+    introduite (36 erreurs préexistantes ailleurs, inchangées).
+  - Pint (style Laravel) : tous les fichiers du module formatés, 0 issue
+    restante.
+
+### Explicitement hors scope de la Phase 2 (reporté Phase 3)
+
+- Contrôleurs API (`SocialAccountController`, `SocialPostController`).
+- Routes (`api/routes/modules/marketing.php`).
+- Command console + cron `marketing:publish-scheduled-posts`
+  (`bootstrap/app.php` `withSchedule()`, alerte Sentry en cas d'échec).
+- Ajout du module "Marketing" à la liste validée par
+  `.github/workflows/architecture-check.yml` (Module Structure
+  Validator) si nécessaire.
+
+## Phase 3 — Cron + API (à faire)
+
+- [ ] `Console/Commands/PublishScheduledSocialPosts.php`
+      (`marketing:publish-scheduled-posts`), utilise
+      `SocialPostRepository::findDuePosts()` + `SocialPublishingService`.
+- [ ] Enregistrement dans `bootstrap/app.php withSchedule()` :
+      `->everyMinute()->withoutOverlapping()`, alerte Sentry si échec.
+- [ ] `Interfaces/Api/V1/Controllers/SocialAccountController.php`
+      (connect/disconnect/show).
+- [ ] `Interfaces/Api/V1/Controllers/SocialPostController.php`
+      (index/store/show/update/destroy/publish).
+- [ ] `api/routes/modules/marketing.php` + `require` dans `api/routes/api.php`.
+- [ ] Form Requests de validation (`StoreSocialPostRequest`, etc.).
+- [ ] Tests Feature HTTP (routes + middleware `tenant`/`auth:sanctum`/`throttle`).
+- [ ] Vérifier/ajouter "Marketing" à la liste modules dans
+      `architecture-check.yml` si le validateur l'exige.
+
+## Phase 4 — UI Web (à faire)
+
+- [ ] Dashboard Marketing (liste comptes connectés, calendrier de posts).
+- [ ] Formulaire de connexion de compte (flow Ayrshare `generateJWT`).
+- [ ] Formulaire de création/planification de post (upload média S3).
+
+## Phase 5 — Mobile (à faire)
+
+- [ ] Onglet Marketing conditionnel dans `leopardo_manager` UNIQUEMENT,
+      affiché si `employee.managerRole == 'marketing'`.
+- [ ] **Ne rien ajouter** à `leopardo_employee` (aucun marqueur de rôle
+      manager) — contrainte vérifiée par
+      `validate-mobile-apps-split.ps1` en CI.
+
+---
+
+## Notes techniques persistantes
+
+- Ayrshare : `POST https://api.ayrshare.com/api/post`, auth
+  `Authorization: Bearer API_KEY` + header `Profile-Key: PROFILE_KEY`
+  pour la publication par profil tenant.
+- Stockage social : uniquement `ayrshare_profile_key` /
+  `provider_profile_ref` (chiffré, hidden) — jamais de tokens OAuth bruts.
+- CI requise sur `main` : check `Backend Coverage (PHP 8.4 + PostgreSQL 16)`.
+- Process de livraison : branche → PR → CI verte → merge (jamais de push
+  direct sur `main`).
