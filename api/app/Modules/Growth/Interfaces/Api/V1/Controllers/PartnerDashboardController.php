@@ -85,6 +85,21 @@ class PartnerDashboardController extends Controller
     }
 
     /**
+     * Get the authenticated partner's dashboard summary.
+     */
+    public function dashboard(): JsonResponse
+    {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
+
+        if (!$partner) {
+            return new JsonResponse(['error' => 'NOT_A_PARTNER'], 404);
+        }
+
+        return $this->stats();
+    }
+
+    /**
      * Get statistics for the authenticated partner.
      */
     public function stats(): JsonResponse
