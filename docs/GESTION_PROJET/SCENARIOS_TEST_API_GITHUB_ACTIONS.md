@@ -1227,3 +1227,17 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 
 **Endpoints non affectés**
 - Tous les autres endpoints listes dans ce document restent inchangés ; ces correctifs ne touchent qu'à la couche modèle/service, pas aux routes, contrats de requête/réponse ni RBAC declaratif (`RequiresPermission`).
+
+## Phase 2 — Module Marketing : Policies, Actions applicatives, client Ayrshare (PR #858)
+
+**Aucune nouvelle route API publique exposée dans cette phase — couche Policy/Action interne préparant les futurs endpoints REST du module Marketing.**
+
+- `App\Policies\SocialAccountPolicy` : `view`, `connect`, `disconnect` — accès restreint aux managers `principal` ou `marketing` du même `company_id` (pattern `hasManagerRole`, aligné sur `TrainingPolicy`).
+  - Scénario à valider : `SocialAccountPolicyTest` — refus pour manager d'un autre tenant, refus pour rôle hors `principal`/`marketing`, autorisation pour manager `marketing` du bon tenant.
+- `App\Policies\SocialPostPolicy` : `viewAny`, `view`, `create`, `update`, `delete`, `publish` — mêmes règles de rôle/tenant, plus restriction d'état (`update`/`delete` uniquement sur `draft`/`scheduled`, `publish` interdit si déjà `published`).
+  - Scénario à valider : `SocialPostPolicyTest` — transitions d'état interdites (édition d'un post déjà publié, republication), isolation tenant.
+- Actions applicatives `ConnectSocialAccountAction`, `CreateSocialPostAction` (`App\Modules\Marketing\Application\Actions`) et client `Ayrshare` : orchestrent la connexion de comptes sociaux et la création de posts en s'appuyant sur les policies ci-dessus.
+  - Scénarios à valider : `ConnectSocialAccountActionTest`, `CreateSocialPostActionTest`, `SocialAccountModelTest`.
+
+**Endpoints non affectés**
+- Aucune route sous `api/routes/` n'est ajoutée ou modifiée par cette phase (seul le contrôleur pré-existant `dashboard/marketing` reste inchangé). Les prochaines phases exposeront les endpoints REST `SocialAccount`/`SocialPost` consommant ces policies.

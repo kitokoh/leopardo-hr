@@ -10,6 +10,6 @@ class SocialAccountNotFoundException extends DomainException
 {
     public static function forCompany(string $companyId): self
     {
-        return new self("Aucun compte social connecte pour l'entreprise {$companyId}.");
+        return new self("Aucun compte social connecte pour l'entreprise {$companyId}.", 404);
     }
 }

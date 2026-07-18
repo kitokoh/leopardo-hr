@@ -13,6 +13,18 @@
 ### Security
 - Activation de Dependabot alerts sur le repo (34 vulnerabilites detectees a l'activation : 11 high, 16 moderate, 7 low — suivi separe requis).
 - Branch protection `main` : revue obligatoire (1 approbation) desormais requise pour les contributeurs non-admin avant merge.
+### Added
+- **Module Marketing (Phase 2) : policies, actions applicatives, client Ayrshare** : construit sur le schema de la Phase 1 (`social_accounts`/`social_posts`).
+  - `Domain/Contracts/SocialPostRepositoryInterface.php` + implementations `Infrastructure/Repositories/{SocialAccountRepository,SocialPostRepository}.php` (isolation tenant standard, `findDuePosts()` prevu pour le futur job de publication planifiee, Phase 3).
+  - `Infrastructure/Services/AyrshareClient.php` : client HTTP brut (pattern `StripeService`, pas de SDK) pour l'API Ayrshare (`POST /api/post`, `/api/profiles/profile`, `/api/profiles/generateJWT`), auth `Bearer` + header `Profile-Key` par tenant.
+  - `Infrastructure/Services/SocialPublishingService.php` : orchestre la publication (`publishNow()`), resout le compte social actif du tenant, met a jour le statut/erreur du post.
+  - Actions applicatives `ConnectSocialAccount` (idempotente), `CreateSocialPost` (cree uniquement des brouillons), `SchedulePost` (publication immediate ou planification).
+  - `SocialAccountPolicy`/`SocialPostPolicy` : reservent la gestion des reseaux sociaux aux managers `principal`/`marketing`, avec garde-fous d'etat (impossible de modifier/supprimer/republier un post deja publie). Enregistrees dans `AuthServiceProvider`.
+  - Config `services.ayrshare` (`AYRSHARE_API_KEY`, `AYRSHARE_BASE_URL`).
+  - 21 tests Feature (59 assertions) couvrant policies, actions et publication (via `Http::fake()`).
+
+### Fixed
+- **Bug latent decouvert en ecrivant les tests Phase 2 : contrainte CHECK Postgres bloquait toujours `manager_role = 'marketing'`** : la migration `2026_06_22_000001_add_marketing_to_manager_role_enum.php` (Phase 0) affirmait a tort qu'aucun changement DDL n'etait necessaire car la colonne serait un simple VARCHAR nullable. En realite, sur PostgreSQL, `Schema::enum()` (utilise dans `2026_04_01_000101_create_employees_table.php`) genere une colonne VARCHAR **accompagnee d'une contrainte CHECK** enumerant les valeurs autorisees, jamais mise a jour pour inclure `marketing`. Consequence : meme apres le fix de validation Laravel (Phase 0), toute creation/mise a jour d'un employe avec `manager_role = 'marketing'` echouait au niveau base (`employees_manager_role_check` violation). Nouvelle migration `2026_07_16_000003_add_marketing_to_manager_role_check_constraint.php` recree la contrainte avec `marketing` inclus (no-op sur les drivers non-pgsql).
 
 ## [4.23.1] - 2026-07-16
 
