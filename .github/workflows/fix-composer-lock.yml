@@ -15,7 +15,7 @@ jobs:
     name: composer update predis → commit lock
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref || github.ref_name }}
