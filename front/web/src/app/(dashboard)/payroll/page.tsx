@@ -92,8 +92,8 @@ export default function PayrollPage() {
 
   const statCards = [
     { label: 'Total Brut', value: formatCurrency(runs.reduce((s, r) => s + (r.total_gross || 0), 0)), icon: DollarSign, accent: 'text-emerald-600 bg-emerald-50' },
-    { label: 'Total Net', value: formatCurrency(runs.reduce((s, r) => s + (r.total_net || 0), 0)), icon: FileText, accent: 'text-blue-600 bg-blue-50' },
-    { label: 'Bulletins', value: String(payslips.length), icon: Calendar, accent: 'text-violet-600 bg-violet-50' },
+    { label: 'Total Net', value: formatCurrency(runs.reduce((s, r) => s + (r.total_net || 0), 0)), icon: FileText, accent: 'text-finance-dark bg-finance-light' },
+    { label: 'Bulletins', value: String(payslips.length), icon: Calendar, accent: 'text-ia-dark bg-ia-light' },
   ];
 
   return (
@@ -184,7 +184,7 @@ export default function PayrollPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Telecharger PDF"><Download className="h-4 w-4" /></button>
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-blue-600" title="Voir detail"><Eye className="h-4 w-4" /></button>
+                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Voir detail"><Eye className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>

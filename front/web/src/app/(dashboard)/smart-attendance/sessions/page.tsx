@@ -150,7 +150,7 @@ export default function SmartAttendanceSessionsPage() {
     <ModulePageShell
       title="Sessions de présence"
       subtitle="Liste complète des sessions Smart Attendance avec filtres avancés et pagination."
-      accentClassName="bg-gradient-to-br from-blue-500/10 via-white to-white"
+      accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
     >
       {/* Back link */}
       <div>
@@ -175,7 +175,7 @@ export default function SmartAttendanceSessionsPage() {
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-600">Statut</label>
             <select
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.status}
               onChange={(e) => setPendingFilters((f) => ({ ...f, status: e.target.value }))}
             >
@@ -192,7 +192,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">Employé (ID ou nom)</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               placeholder="Rechercher…"
               value={pendingFilters.employee_id}
               onChange={(e) => setPendingFilters((f) => ({ ...f, employee_id: e.target.value }))}
@@ -203,7 +203,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">Date début</label>
             <input
               type="date"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.date_from}
               onChange={(e) => setPendingFilters((f) => ({ ...f, date_from: e.target.value }))}
             />
@@ -213,7 +213,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">Date fin</label>
             <input
               type="date"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.date_to}
               onChange={(e) => setPendingFilters((f) => ({ ...f, date_to: e.target.value }))}
             />
@@ -224,7 +224,7 @@ export default function SmartAttendanceSessionsPage() {
           <button
             type="button"
             onClick={applyFilters}
-            className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-500"
+            className="rounded-xl bg-security px-4 py-2 text-sm font-bold text-white transition hover:bg-security-dark"
           >
             Appliquer
           </button>
@@ -306,7 +306,7 @@ export default function SmartAttendanceSessionsPage() {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/smart-attendance/sessions/${session.id}`}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-security hover:text-security-dark"
                       >
                         Voir →
                       </Link>

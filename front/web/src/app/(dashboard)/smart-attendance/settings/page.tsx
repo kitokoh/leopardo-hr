@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Check } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 
@@ -136,12 +137,12 @@ export default function SmartAttendanceSettingsPage() {
               GPS : {currentSettings.gps_enabled ? 'Activé' : 'Désactivé'}
             </span>
             {currentSettings.latitude != null && currentSettings.longitude != null ? (
-              <span className="rounded-full bg-blue-100 px-2.5 py-0.5 font-bold text-blue-700">
+              <span className="rounded-full bg-security-light px-2.5 py-0.5 font-bold text-security-dark">
                 {currentSettings.latitude.toFixed(4)}, {currentSettings.longitude.toFixed(4)}
               </span>
             ) : null}
             {currentSettings.radius != null ? (
-              <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 font-bold text-indigo-700">
+              <span className="rounded-full bg-ia-light px-2.5 py-0.5 font-bold text-ia-dark">
                 Rayon : {currentSettings.radius}m
               </span>
             ) : null}
@@ -156,8 +157,8 @@ export default function SmartAttendanceSettingsPage() {
       ) : null}
 
       {successMsg ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 font-bold">
-          ✓ {successMsg}
+        <div className="flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+          <Check className="h-4 w-4" aria-hidden="true" /> {successMsg}
         </div>
       ) : null}
 
@@ -180,7 +181,7 @@ export default function SmartAttendanceSettingsPage() {
                 Mode de pointage
               </label>
               <select
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
                 value={form.forced_mode}
                 onChange={(e) => setForm((f) => ({ ...f, forced_mode: e.target.value }))}
                 disabled={saving}
@@ -207,7 +208,7 @@ export default function SmartAttendanceSettingsPage() {
                 aria-checked={form.gps_enabled}
                 onClick={() => setForm((f) => ({ ...f, gps_enabled: !f.gps_enabled }))}
                 disabled={saving}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 ${
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-security-light disabled:opacity-50 ${
                   form.gps_enabled ? 'bg-emerald-500' : 'bg-slate-300'
                 }`}
               >
@@ -221,8 +222,8 @@ export default function SmartAttendanceSettingsPage() {
 
             {/* Champs GPS conditionnels */}
             {form.gps_enabled ? (
-              <div className="space-y-4 rounded-xl border border-blue-100 bg-blue-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              <div className="space-y-4 rounded-xl border border-security-light bg-security-light/40 p-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-security-dark">
                   Configuration du géofence
                 </p>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -231,7 +232,7 @@ export default function SmartAttendanceSettingsPage() {
                     <input
                       type="number"
                       step="any"
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
                       placeholder="ex: 48.8566"
                       value={form.latitude}
                       onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
@@ -243,7 +244,7 @@ export default function SmartAttendanceSettingsPage() {
                     <input
                       type="number"
                       step="any"
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
                       placeholder="ex: 2.3522"
                       value={form.longitude}
                       onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
@@ -256,7 +257,7 @@ export default function SmartAttendanceSettingsPage() {
                   <input
                     type="number"
                     min={1}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
                     placeholder="ex: 200"
                     value={form.radius}
                     onChange={(e) => setForm((f) => ({ ...f, radius: e.target.value }))}

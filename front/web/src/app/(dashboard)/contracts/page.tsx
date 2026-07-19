@@ -67,10 +67,10 @@ export default function ContractsPage() {
 
   const statusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      active: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-      suspended: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      terminated: 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-      draft: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+      active: 'bg-emerald-50 text-emerald-700',
+      suspended: 'bg-amber-50 text-amber-700',
+      terminated: 'bg-red-50 text-red-700',
+      draft: 'bg-slate-100 text-slate-600',
     };
     const labels: Record<string, string> = { active: 'Actif', suspended: 'Suspendu', terminated: 'Termine', draft: 'Brouillon' };
     return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
