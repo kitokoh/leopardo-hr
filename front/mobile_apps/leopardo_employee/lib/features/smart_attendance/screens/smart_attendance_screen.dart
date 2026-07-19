@@ -29,7 +29,6 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
   static const Color _card = Color(0xFF111B2E);
   static const Color _text = Color(0xFFE2EAF6);
   static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _border = Color(0xFF1A2B44);
   static const Color _accent = Color(0xFF2196F3);
 
   @override
@@ -204,7 +203,6 @@ class _ModeStatusCard extends StatelessWidget {
   final VoidCallback onChangeTap;
 
   static const Color _card = Color(0xFF111B2E);
-  static const Color _text = Color(0xFFE2EAF6);
   static const Color _muted = Color(0xFF7A9CC0);
   static const Color _border = Color(0xFF1A2B44);
   static const Color _accent = Color(0xFF2196F3);
