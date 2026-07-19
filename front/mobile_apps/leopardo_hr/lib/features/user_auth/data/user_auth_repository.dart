@@ -179,7 +179,7 @@ class UserAuthRepository {
     if (preferredLanguage != null) {
       final lang = user.preferredLanguage.isNotEmpty
           ? user.preferredLanguage
-          : preferredLanguage!;
+          : preferredLanguage;
       final isRtl = lang == 'ar';
       await preferences.saveLocaleSettings(
         preferredLanguage: lang,

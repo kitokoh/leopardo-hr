@@ -15,9 +15,6 @@ import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
   const SmartAttendanceDashboardScreen({super.key});
 
-  static const Color _bg = Color(0xFF0B1120);
-  static const Color _card = Color(0xFF111B2E);
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashAsync = ref.watch(smartAttendanceDashboardProvider);
