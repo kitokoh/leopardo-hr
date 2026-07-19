@@ -7,6 +7,7 @@ use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Models\Language;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -193,6 +194,7 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
+        $otherToken = $employee->createToken('other-device')->plainTextToken;
         $token = $employee->createToken('tests')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
@@ -204,6 +206,32 @@ class AuthProfileSettingsTest extends TestCase
 
         $response->assertOk();
         $this->assertTrue(Hash::check('password456', $employee->fresh()->password_hash));
+
+        // Sanctum tokens issued before the password change (this request's own
+        // token included) must all be revoked, and a fresh token returned for
+        // the current device. See docs/security/AUDIT_API_2026-07-19.md, section 3.
+        $this->assertNotNull($response->json('token'));
+        $this->assertNotSame($token, $response->json('token'));
+
+        // Laravel's Sanctum RequestGuard memoizes the resolved user on the
+        // guard instance for the lifetime of the request/guard object, so
+        // each subsequent assertion needs a fresh guard to actually re-run
+        // token lookup instead of reusing the previous call's cached user.
+        Auth::forgetGuards();
+        $this->withHeader('Authorization', "Bearer {$otherToken}")
+            ->getJson('/api/v1/auth/me')
+            ->assertStatus(401);
+
+        Auth::forgetGuards();
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/v1/auth/me')
+            ->assertStatus(401);
+
+        $freshToken = $response->json('token');
+        Auth::forgetGuards();
+        $this->withHeader('Authorization', "Bearer {$freshToken}")
+            ->getJson('/api/v1/auth/me')
+            ->assertOk();
     }
 
     public function test_employee_cannot_change_password_with_wrong_current_password(): void
