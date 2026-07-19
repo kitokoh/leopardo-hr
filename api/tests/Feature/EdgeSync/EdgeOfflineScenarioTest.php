@@ -2,12 +2,13 @@
 
 namespace Tests\Feature\EdgeSync;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EdgeSync\Application\Services\CloudDeltaBuilder;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
-use App\Modules\EdgeSync\Domain\Models\SyncLog;
-use Illuminate\Support\Carbon;
+use App\Modules\EdgeSync\Jobs\ProcessSyncQueueJob;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -27,7 +28,10 @@ class EdgeOfflineScenarioTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $company;
+
     private EdgeNode $node;
+
+    private Employee $employee;
 
     protected function setUp(): void
     {
@@ -35,20 +39,25 @@ class EdgeOfflineScenarioTest extends TestCase
         $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create([
-            'slug'   => 'offline-test-co',
+            'slug' => 'offline-test-co',
             'status' => 'active',
         ]);
 
+        $this->employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+        ]);
+
         $this->node = EdgeNode::create([
-            'company_id'         => $this->company->id,
-            'name'               => 'Node Offline Test',
-            'slug'               => 'node-offline-test',
-            'status'             => 'active',
-            'mode'               => 'hybrid',
-            'edge_version'       => '1.0.0',
-            'capabilities'       => ['features' => ['attendance', 'absence']],
+            'company_id' => $this->company->id,
+            'name' => 'Node Offline Test',
+            'slug' => 'node-offline-test',
+            'status' => 'active',
+            'mode' => 'hybrid',
+            'edge_version' => '1.0.0',
+            'capabilities' => ['features' => ['attendance', 'absence']],
             'license_expires_at' => now()->addDays(30),
-            'metadata'           => ['edge_token' => 'offline-test-token'],
+            'metadata' => ['edge_token' => 'offline-test-token'],
         ]);
     }
 
@@ -70,21 +79,21 @@ class EdgeOfflineScenarioTest extends TestCase
         // Simuler 10 pointages enregistrés offline
         for ($i = 0; $i < 10; $i++) {
             SyncQueue::create([
-                'edge_node_id'  => $this->node->id,
-                'entity_type'   => 'attendance_logs',
-                'entity_id'     => "offline-att-{$i}",
-                'operation'     => 'create',
-                'payload'       => [
-                    'id'                  => "offline-att-{$i}",
-                    'company_id'          => $this->company->id,
-                    'employee_id'         => "emp-{$i}",
-                    'check_in'            => now()->subHours(8)->toIso8601String(),
-                    'method'              => 'mobile',
-                    'status'              => 'present',
+                'edge_node_id' => $this->node->id,
+                'entity_type' => 'attendance_logs',
+                'entity_id' => "offline-att-{$i}",
+                'operation' => 'create',
+                'payload' => [
+                    'id' => "offline-att-{$i}",
+                    'company_id' => $this->company->id,
+                    'employee_id' => "emp-{$i}",
+                    'check_in' => now()->subHours(8)->toIso8601String(),
+                    'method' => 'mobile',
+                    'status' => 'present',
                     'synced_from_offline' => true,
-                    'updated_at'          => now()->toDateTimeString(),
+                    'updated_at' => now()->toDateTimeString(),
                 ],
-                'status'        => 'pending',
+                'status' => 'pending',
                 'attempt_count' => 0,
             ]);
         }
@@ -97,7 +106,7 @@ class EdgeOfflineScenarioTest extends TestCase
         $this->assertEquals(10, $pendingCount);
         $this->assertDatabaseMissing('sync_queue', [
             'edge_node_id' => $this->node->id,
-            'status'       => 'synced',
+            'status' => 'synced',
         ]);
     }
 
@@ -110,42 +119,47 @@ class EdgeOfflineScenarioTest extends TestCase
      */
     public function scenario_2_reconnection_flushes_queue(): void
     {
-        // Préparer 5 pointages en attente
+        // Préparer 5 pointages en attente (un employé distinct par itération pour éviter
+        // le conflit d'unicité employee_id+date+session_number)
         for ($i = 0; $i < 5; $i++) {
+            $employee = Employee::factory()->create([
+                'company_id' => $this->company->id,
+                'role' => 'employee',
+            ]);
+
             SyncQueue::create([
-                'edge_node_id'  => $this->node->id,
-                'entity_type'   => 'attendance_logs',
-                'entity_id'     => "reconnect-att-{$i}",
-                'operation'     => 'create',
-                'payload'       => [
-                    'id'                  => "reconnect-att-{$i}",
-                    'company_id'          => $this->company->id,
-                    'employee_id'         => "emp-reconnect-{$i}",
-                    'check_in'            => now()->subHours(4)->toIso8601String(),
-                    'method'              => 'mobile',
-                    'status'              => 'present',
-                    'external_event_id'   => "evt-reconnect-{$i}",
+                'edge_node_id' => $this->node->id,
+                'entity_type' => 'attendance_logs',
+                'entity_id' => "reconnect-att-{$i}",
+                'operation' => 'create',
+                'payload' => [
+                    'company_id' => $this->company->id,
+                    'employee_id' => $employee->id,
+                    'check_in' => now()->subHours(4)->toIso8601String(),
+                    'method' => 'mobile',
+                    'status' => 'present',
+                    'external_event_id' => "evt-reconnect-{$i}",
                     'synced_from_offline' => true,
-                    'session_number'      => 1,
-                    'date'                => now()->toDateString(),
-                    'work_type'           => 'onsite',
-                    'biometric_type'      => 'none',
-                    'hours_worked'        => '0',
-                    'overtime_hours'      => '0',
-                    'late_minutes'        => 0,
-                    'gps_lat'             => '0',
-                    'gps_lng'             => '0',
-                    'updated_at'          => now()->toDateTimeString(),
-                    'created_at'          => now()->toDateTimeString(),
+                    'session_number' => 1,
+                    'date' => now()->toDateString(),
+                    'work_type' => 'onsite',
+                    'biometric_type' => 'none',
+                    'hours_worked' => '0',
+                    'overtime_hours' => '0',
+                    'late_minutes' => 0,
+                    'gps_lat' => '0',
+                    'gps_lng' => '0',
+                    'updated_at' => now()->toDateTimeString(),
+                    'created_at' => now()->toDateTimeString(),
                 ],
-                'status'        => 'pending',
+                'status' => 'pending',
                 'attempt_count' => 0,
             ]);
         }
 
         // Simuler retour connexion → lancer sync
         $service = app(SyncEngineService::class);
-        $log     = $service->sync($this->node);
+        $log = $service->sync($this->node);
 
         // Vérifier que la sync a bien tourné
         $this->assertContains($log->status, ['success', 'partial']);
@@ -164,28 +178,28 @@ class EdgeOfflineScenarioTest extends TestCase
     {
         // Cloud : absence déjà approuvée
         \DB::table('absences')->insert([
-            'company_id'      => $this->company->id,
-            'employee_id'     => 1,
+            'company_id' => $this->company->id,
+            'employee_id' => 1,
             'absence_type_id' => 1,
-            'start_date'      => now()->addDays(3)->toDateString(),
-            'end_date'        => now()->addDays(5)->toDateString(),
-            'status'          => 'approved',
-            'created_at'      => now()->subHour()->toDateTimeString(),
-            'updated_at'      => now()->toDateTimeString(),
+            'start_date' => now()->addDays(3)->toDateString(),
+            'end_date' => now()->addDays(5)->toDateString(),
+            'status' => 'approved',
+            'created_at' => now()->subHour()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
         ]);
         $absenceId = \DB::table('absences')->first()->id;
 
         // Edge (offline) : l'employé a modifié la même absence
         SyncQueue::create([
-            'edge_node_id'  => $this->node->id,
-            'entity_type'   => 'absences',
-            'entity_id'     => (string) $absenceId,
-            'operation'     => 'update',
-            'payload'       => [
-                'status'     => 'pending',
+            'edge_node_id' => $this->node->id,
+            'entity_type' => 'absences',
+            'entity_id' => (string) $absenceId,
+            'operation' => 'update',
+            'payload' => [
+                'status' => 'pending',
                 'updated_at' => now()->subMinutes(5)->toDateTimeString(),
             ],
-            'status'        => 'pending',
+            'status' => 'pending',
             'attempt_count' => 0,
         ]);
 
@@ -210,32 +224,31 @@ class EdgeOfflineScenarioTest extends TestCase
     {
         // Pas de doublon → doit passer normalement
         SyncQueue::create([
-            'edge_node_id'  => $this->node->id,
-            'entity_type'   => 'attendance_logs',
-            'entity_id'     => 'unique-att-local-win',
-            'operation'     => 'create',
-            'payload'       => [
-                'id'                  => 'unique-att-local-win',
-                'company_id'          => $this->company->id,
-                'employee_id'         => 'emp-lw-001',
-                'check_in'            => now()->subHours(4)->toIso8601String(),
-                'method'              => 'mobile',
-                'status'              => 'present',
-                'external_event_id'   => 'unique-evt-local-win',
+            'edge_node_id' => $this->node->id,
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'unique-att-local-win',
+            'operation' => 'create',
+            'payload' => [
+                'company_id' => $this->company->id,
+                'employee_id' => $this->employee->id,
+                'check_in' => now()->subHours(4)->toIso8601String(),
+                'method' => 'mobile',
+                'status' => 'present',
+                'external_event_id' => 'unique-evt-local-win',
                 'synced_from_offline' => true,
-                'session_number'      => 1,
-                'date'                => now()->toDateString(),
-                'work_type'           => 'onsite',
-                'biometric_type'      => 'none',
-                'hours_worked'        => '0',
-                'overtime_hours'      => '0',
-                'late_minutes'        => 0,
-                'gps_lat'             => '0',
-                'gps_lng'             => '0',
-                'updated_at'          => now()->toDateTimeString(),
-                'created_at'          => now()->toDateTimeString(),
+                'session_number' => 1,
+                'date' => now()->toDateString(),
+                'work_type' => 'onsite',
+                'biometric_type' => 'none',
+                'hours_worked' => '0',
+                'overtime_hours' => '0',
+                'late_minutes' => 0,
+                'gps_lat' => '0',
+                'gps_lng' => '0',
+                'updated_at' => now()->toDateTimeString(),
+                'created_at' => now()->toDateTimeString(),
             ],
-            'status'        => 'pending',
+            'status' => 'pending',
             'attempt_count' => 0,
         ]);
 
@@ -265,7 +278,7 @@ class EdgeOfflineScenarioTest extends TestCase
         // Le job doit détecter la licence expirée et ne rien faire
         $pendingBefore = SyncQueue::where('edge_node_id', $this->node->id)->count();
 
-        $job = new \App\Modules\EdgeSync\Jobs\ProcessSyncQueueJob($this->node->id);
+        $job = new ProcessSyncQueueJob($this->node->id);
 
         // Simuler l'appel au handle sans lancer le vrai job
         $service = $this->createMock(SyncEngineService::class);
@@ -284,26 +297,26 @@ class EdgeOfflineScenarioTest extends TestCase
     public function scenario_5_multitenancy_complete_isolation(): void
     {
         $companyB = Company::factory()->create([
-            'slug'   => 'other-company-b',
+            'slug' => 'other-company-b',
             'status' => 'active',
         ]);
 
         // Insérer un employé du tenant B
         \DB::table('employees')->insert([
-            'company_id'    => $companyB->id,
-            'first_name'    => 'Secret',
-            'last_name'     => 'Employee',
-            'email'         => 'secret@company-b.test',
+            'company_id' => $companyB->id,
+            'first_name' => 'Secret',
+            'last_name' => 'Employee',
+            'email' => 'secret@company-b.test',
             'password_hash' => bcrypt('secret'),
-            'role'          => 'employee',
-            'status'        => 'active',
-            'updated_at'    => now()->toDateTimeString(),
-            'created_at'    => now()->toDateTimeString(),
+            'role' => 'employee',
+            'status' => 'active',
+            'updated_at' => now()->toDateTimeString(),
+            'created_at' => now()->toDateTimeString(),
         ]);
 
         // Construire le delta pour le node du tenant A
-        $builder = app(\App\Modules\EdgeSync\Application\Services\CloudDeltaBuilder::class);
-        $delta   = $builder->build($this->node);
+        $builder = app(CloudDeltaBuilder::class);
+        $delta = $builder->build($this->node);
 
         $employeesInDelta = $delta['entities']['employees'] ?? [];
         $emails = array_column($employeesInDelta, 'email');
@@ -324,32 +337,33 @@ class EdgeOfflineScenarioTest extends TestCase
     {
         for ($i = 0; $i < 200; $i++) {
             SyncQueue::create([
-                'edge_node_id'  => $this->node->id,
-                'entity_type'   => 'attendance_logs',
-                'entity_id'     => "bulk-att-{$i}",
-                'operation'     => 'create',
-                'payload'       => [
-                    'id'                  => "bulk-att-{$i}",
-                    'company_id'          => $this->company->id,
-                    'employee_id'         => "emp-bulk-{$i}",
-                    'check_in'            => now()->subHours(rand(1, 8))->toIso8601String(),
-                    'method'              => 'mobile',
-                    'status'              => 'present',
-                    'external_event_id'   => "bulk-evt-{$i}",
+                'edge_node_id' => $this->node->id,
+                'entity_type' => 'attendance_logs',
+                'entity_id' => "bulk-att-{$i}",
+                'operation' => 'create',
+                'payload' => [
+                    'company_id' => $this->company->id,
+                    'employee_id' => $this->employee->id,
+                    'check_in' => now()->subHours(rand(1, 8))->toIso8601String(),
+                    'method' => 'mobile',
+                    'status' => 'present',
+                    'external_event_id' => "bulk-evt-{$i}",
                     'synced_from_offline' => true,
-                    'session_number'      => 1,
-                    'date'                => now()->toDateString(),
-                    'work_type'           => 'onsite',
-                    'biometric_type'      => 'none',
-                    'hours_worked'        => '0',
-                    'overtime_hours'      => '0',
-                    'late_minutes'        => 0,
-                    'gps_lat'             => '0',
-                    'gps_lng'             => '0',
-                    'updated_at'          => now()->toDateTimeString(),
-                    'created_at'          => now()->toDateTimeString(),
+                    // session_number varié pour éviter la contrainte unique
+                    // (employee_id, date, session_number) sur 200 lignes du même employé/jour
+                    'session_number' => $i + 1,
+                    'date' => now()->toDateString(),
+                    'work_type' => 'onsite',
+                    'biometric_type' => 'none',
+                    'hours_worked' => '0',
+                    'overtime_hours' => '0',
+                    'late_minutes' => 0,
+                    'gps_lat' => '0',
+                    'gps_lng' => '0',
+                    'updated_at' => now()->toDateTimeString(),
+                    'created_at' => now()->toDateTimeString(),
                 ],
-                'status'        => 'pending',
+                'status' => 'pending',
                 'attempt_count' => 0,
             ]);
         }
@@ -358,7 +372,7 @@ class EdgeOfflineScenarioTest extends TestCase
 
         // Lancer le push — doit traiter jusqu'à batch_size (100) en une passe
         $service = app(SyncEngineService::class);
-        $result  = $service->push($this->node);
+        $result = $service->push($this->node);
 
         // Au moins une partie doit avoir été traitée
         $this->assertGreaterThan(0, $result['sent'] + $result['conflicts']);
@@ -374,12 +388,12 @@ class EdgeOfflineScenarioTest extends TestCase
     {
         // Créer un record avec attempt_count = 4 (prochain = 5 = max)
         $item = SyncQueue::create([
-            'edge_node_id'  => $this->node->id,
-            'entity_type'   => 'nonexistent_table', // va provoquer une erreur DB
-            'entity_id'     => 'retry-test-001',
-            'operation'     => 'create',
-            'payload'       => ['invalid' => 'data'],
-            'status'        => 'pending',
+            'edge_node_id' => $this->node->id,
+            'entity_type' => 'nonexistent_table', // va provoquer une erreur DB
+            'entity_id' => 'retry-test-001',
+            'operation' => 'create',
+            'payload' => ['invalid' => 'data'],
+            'status' => 'pending',
             'attempt_count' => 4, // déjà à 4 tentatives
         ]);
 
@@ -415,4 +429,3 @@ class EdgeOfflineScenarioTest extends TestCase
         $this->assertEquals('192.168.1.100', $updated->local_ip);
     }
 }
-
