@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <style>
@@ -27,29 +27,29 @@
     </style>
 </head>
 <body>
-    <div class="company-name">Leopardo RH</div>
-    <div style="font-size: 10px; color: #666;">Plateforme SaaS de gestion RH</div>
+    <div class="company-name">{{ __('pdf.invoice_platform_name') }}</div>
+    <div style="font-size: 10px; color: #666;">{{ __('pdf.invoice_platform_tagline') }}</div>
 
-    <div class="title">FACTURE</div>
+    <div class="title">{{ __('pdf.invoice_document_title') }}</div>
     <div class="invoice-number">{{ $invoice->invoice_number ?? 'LEO-'.now()->format('Y').'-'.str_pad((string)($invoice->id ?? 0), 4, '0', STR_PAD_LEFT) }}</div>
 
     <div class="info-grid">
         <div class="info-col">
-            <div class="info-label">Facturé à</div>
-            <div class="info-value">{{ $company->name ?? 'Client' }}</div>
+            <div class="info-label">{{ __('pdf.invoice_billed_to') }}</div>
+            <div class="info-value">{{ $company->name ?? __('pdf.invoice_client_fallback') }}</div>
             <div class="info-value" style="font-size: 10px; color: #666;">{{ $company->address ?? '' }}</div>
             <div class="info-value" style="font-size: 10px; color: #666;">{{ $company->city ?? '' }} {{ $company->country ?? '' }}</div>
             @if(!empty($company->tax_id))
-            <div class="info-label">N° fiscal</div>
+            <div class="info-label">{{ __('pdf.invoice_tax_id') }}</div>
             <div class="info-value">{{ $company->tax_id }}</div>
             @endif
         </div>
         <div class="info-col" style="text-align: right;">
-            <div class="info-label">Date d'émission</div>
+            <div class="info-label">{{ __('pdf.invoice_issue_date') }}</div>
             <div class="info-value">{{ $invoice->created_at?->format('d/m/Y') ?? now()->format('d/m/Y') }}</div>
-            <div class="info-label">Date d'échéance</div>
+            <div class="info-label">{{ __('pdf.invoice_due_date') }}</div>
             <div class="info-value">{{ $invoice->due_date?->format('d/m/Y') ?? now()->addDays(30)->format('d/m/Y') }}</div>
-            <div class="info-label">Statut</div>
+            <div class="info-label">{{ __('pdf.invoice_status') }}</div>
             <div class="info-value">
                 <span class="status-badge {{ $invoice->status === 'paid' ? 'status-paid' : ($invoice->status === 'overdue' ? 'status-overdue' : 'status-pending') }}">
                     {{ strtoupper($invoice->status ?? 'pending') }}
@@ -61,15 +61,15 @@
     <table>
         <thead>
             <tr>
-                <th>Description</th>
-                <th class="amount">Quantité</th>
-                <th class="amount">Prix unitaire</th>
-                <th class="amount">Montant</th>
+                <th>{{ __('pdf.invoice_column_description') }}</th>
+                <th class="amount">{{ __('pdf.invoice_column_quantity') }}</th>
+                <th class="amount">{{ __('pdf.invoice_column_unit_price') }}</th>
+                <th class="amount">{{ __('pdf.invoice_column_amount') }}</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Abonnement {{ $invoice->plan_name ?? 'Leopardo RH' }} — {{ $invoice->period ?? 'Mensuel' }}</td>
+                <td>{{ __('pdf.invoice_subscription_line', ['plan' => $invoice->plan_name ?? 'Leopardo RH', 'period' => $invoice->period ?? __('pdf.invoice_period_monthly')]) }}</td>
                 <td class="amount">1</td>
                 <td class="amount">{{ number_format($invoice->amount_ht ?? $invoice->amount ?? 0, 2, ',', ' ') }} {{ $invoice->currency ?? 'EUR' }}</td>
                 <td class="amount">{{ number_format($invoice->amount_ht ?? $invoice->amount ?? 0, 2, ',', ' ') }} {{ $invoice->currency ?? 'EUR' }}</td>
@@ -80,22 +80,22 @@
     <div class="total-section">
         <table>
             <tr>
-                <td>Sous-total HT</td>
+                <td>{{ __('pdf.invoice_subtotal_before_tax') }}</td>
                 <td class="amount">{{ number_format($invoice->amount_ht ?? $invoice->amount ?? 0, 2, ',', ' ') }} {{ $invoice->currency ?? 'EUR' }}</td>
             </tr>
             <tr>
-                <td>TVA ({{ $invoice->tax_rate ?? 0 }}%)</td>
+                <td>{{ __('pdf.invoice_tax_line', ['rate' => $invoice->tax_rate ?? 0]) }}</td>
                 <td class="amount">{{ number_format($invoice->tax_amount ?? 0, 2, ',', ' ') }} {{ $invoice->currency ?? 'EUR' }}</td>
             </tr>
             <tr class="total-row">
-                <td>Total TTC</td>
+                <td>{{ __('pdf.invoice_total_with_tax') }}</td>
                 <td class="amount total-ttc">{{ number_format($invoice->total ?? $invoice->amount ?? 0, 2, ',', ' ') }} {{ $invoice->currency ?? 'EUR' }}</td>
             </tr>
         </table>
     </div>
 
     <div class="footer">
-        <div>Leopardo RH — Facture générée automatiquement le {{ now()->format('d/m/Y à H:i') }}</div>
+        <div>{{ __('pdf.invoice_generated_footer', ['date' => now()->format('d/m/Y H:i')]) }}</div>
         @if(!empty($legalMentions))
         <div style="margin-top: 6px;">{{ $legalMentions }}</div>
         @endif
