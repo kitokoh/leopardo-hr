@@ -35,7 +35,7 @@ docker compose exec api php artisan migrate --seed
 
 ```
 leopardo-hr/
-├── api/                    # Backend Laravel 11
+├── api/                    # Backend Laravel 12 (^12.60)
 │   ├── app/
 │   ├── config/
 │   ├── database/migrations/
@@ -44,7 +44,7 @@ leopardo-hr/
 ├── front/
 │   ├── admin-dashboard/    # Vue.js 3.4 + Pinia + Tailwind (plateforme admin)
 │   ├── web/                # Next.js 16 (vitrine + blog + SEO)
-│   └── mobile/             # Flutter 3.x + Riverpod (app employe)
+│   └── mobile_apps/        # Apps Flutter (leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin)
 ├── docker-compose.yml
 ├── Makefile
 ├── .devcontainer/          # VS Code DevContainer
@@ -138,8 +138,11 @@ Content here...
 
 ## Mobile (Flutter)
 
+Voir [`front/mobile_apps/README.md`](front/mobile_apps/README.md) pour le detail par app
+(`leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`).
+
 ```bash
-cd front/mobile
+cd front/mobile_apps/leopardo_employee
 
 flutter pub get
 flutter analyze
@@ -164,8 +167,8 @@ make test
 # Admin dashboard
 cd front/admin-dashboard && npm test
 
-# Mobile
-cd front/mobile && flutter test
+# Mobile (par app, ex. leopardo_employee)
+cd front/mobile_apps/leopardo_employee && flutter test
 ```
 
 ## CI/CD
