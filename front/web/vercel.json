@@ -3,7 +3,9 @@
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
   "framework": "nextjs",
-  "regions": ["cdg1"],
+  "regions": [
+    "cdg1"
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -77,6 +79,7 @@
   ],
   "cleanUrls": true,
   "trailingSlash": false,
+  "ignoreCommand": "bash -c 'if [ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ]; then git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . ; else git diff --quiet HEAD^ HEAD -- . ; fi'",
   "git": {
     "deploymentEnabled": {
       "main": true,
