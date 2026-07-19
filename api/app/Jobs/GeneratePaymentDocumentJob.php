@@ -10,12 +10,14 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -122,6 +124,12 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
 
     private function renderPdf(PaymentDocument $document, ?Company $company): string
     {
+        // Queued job — runs outside the HTTP request lifecycle, so the
+        // SetLocale middleware never applies here.
+        App::setLocale(I18nCatalog::normalizeLocale(
+            $document->employee?->preferred_language ?? $company?->language
+        ));
+
         $view = match ($document->document_type) {
             PaymentDocument::TYPE_ADVANCE_RECEIPT => 'pdf.payment-document-advance',
             default => 'pdf.payment-document',

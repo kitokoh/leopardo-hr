@@ -8,11 +8,13 @@ use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
+use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 
 class WebEmployeeController extends Controller
 {
@@ -110,6 +112,13 @@ class WebEmployeeController extends Controller
         );
 
         $company = currentCompany();
+
+        // This is a `web`-group route: SetLocale (api-only middleware) never
+        // runs here, so the PDF would otherwise always render in the app's
+        // default locale regardless of the employee's preference.
+        App::setLocale(I18nCatalog::normalizeLocale(
+            $employee->preferred_language ?? $company?->language
+        ));
 
         $pdf = Pdf::loadView('pdf.receipt', [
             'company' => $company,

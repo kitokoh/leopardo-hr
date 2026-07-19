@@ -7,7 +7,9 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\App;
 
 class PaySlipPdfGenerator
 {
@@ -36,6 +38,13 @@ class PaySlipPdfGenerator
         $employee = $paySlip->employee ?? Employee::find($paySlip->employee_id);
         $company = Company::find($paySlip->company_id);
         $countryCode = $paySlip->payrollRun->country_code ?? 'DZ';
+
+        // PDF jobs run outside the HTTP request lifecycle, so the SetLocale
+        // middleware never runs here — the locale must be applied explicitly
+        // before rendering, following the same priority as the API middleware.
+        App::setLocale(I18nCatalog::normalizeLocale(
+            $employee?->preferred_language ?? $company?->language
+        ));
 
         $pdf = Pdf::loadView('pdf.payslip', [
             'slip' => $paySlip,

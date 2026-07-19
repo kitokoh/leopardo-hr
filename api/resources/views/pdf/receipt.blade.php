@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <style>
@@ -14,27 +14,27 @@
     </style>
 </head>
 <body>
-    <h1>Reçu de période (estimation)</h1>
+    <h1>{{ __('pdf.receipt_estimate_title') }}</h1>
     <div class="muted">{{ $company->name }} — {{ $company->city }} — {{ $company->country }}</div>
 
-    <h2>Employé</h2>
+    <h2>{{ __('pdf.receipt_employee_section') }}</h2>
     <div>
         #{{ $employee->id }} — {{ trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')) }}
     </div>
 
-    <h2>Période</h2>
+    <h2>{{ __('pdf.receipt_period_section') }}</h2>
     <div>{{ $estimate['period']['from'] }} → {{ $estimate['period']['to'] }}</div>
 
-    <h2>Détails</h2>
+    <h2>{{ __('pdf.receipt_details_section') }}</h2>
     <table>
         <thead>
         <tr>
-            <th>Date</th>
-            <th>Heures</th>
-            <th>HS</th>
-            <th>Base</th>
-            <th>HS</th>
-            <th>Total</th>
+            <th>{{ __('pdf.receipt_column_date') }}</th>
+            <th>{{ __('pdf.receipt_column_hours') }}</th>
+            <th>{{ __('pdf.receipt_column_overtime_short') }}</th>
+            <th>{{ __('pdf.receipt_column_base') }}</th>
+            <th>{{ __('pdf.receipt_column_overtime_short') }}</th>
+            <th>{{ __('pdf.receipt_column_total') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -51,12 +51,11 @@
         </tbody>
     </table>
 
-    <h2>Totaux</h2>
-    <div>Brut estimé: {{ number_format($estimate['totals']['gross'], 2) }} {{ $estimate['currency'] }}</div>
-    <div>Déductions estimées: {{ number_format($estimate['totals']['deductions'], 2) }} {{ $estimate['currency'] }}</div>
-    <div>Net estimé: {{ number_format($estimate['totals']['net'], 2) }} {{ $estimate['currency'] }}</div>
+    <h2>{{ __('pdf.receipt_totals_section') }}</h2>
+    <div>{{ __('pdf.receipt_gross_estimated') }}: {{ number_format($estimate['totals']['gross'], 2) }} {{ $estimate['currency'] }}</div>
+    <div>{{ __('pdf.receipt_deductions_estimated') }}: {{ number_format($estimate['totals']['deductions'], 2) }} {{ $estimate['currency'] }}</div>
+    <div>{{ __('pdf.receipt_net_estimated') }}: {{ number_format($estimate['totals']['net'], 2) }} {{ $estimate['currency'] }}</div>
 
-    <div class="disclaimer">CE DOCUMENT N'EST PAS UN BULLETIN DE PAIE OFFICIEL</div>
+    <div class="disclaimer">{{ __('pdf.receipt_not_official_notice') }}</div>
 </body>
 </html>
-
