@@ -113,8 +113,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 ### ✅ Fait
 
 - **`app/Http/Controllers/Api/V1/`** — 90 controllers doublons supprimés.
-  Restent intentionnellement : `EdgeController`, `EdgeDownloadController`, `SSO/SSOController`
-  (pas encore de module dédié pour EdgeSync controllers et SSO).
+  `EdgeController`/`EdgeDownloadController` vivent désormais sous `Modules/EdgeSync/Interfaces/Api/V1/`.
 - **`app/Services/` — 26 services doublons supprimés**, leurs imports redirigés
   vers `app/Modules/*/Infrastructure/Services/` dans tous les fichiers consommateurs.
 - **`app/Modules/{Growth,Platform,Onboarding,Training}/Infrastructure/`** créé —
@@ -187,8 +186,9 @@ vendor/bin/phpstan analyse app/Core app/Modules --level=3
 # Vérifier que tous les ServiceProviders sont enregistrés
 cat bootstrap/providers.php
 
-# Vérifier la structure de modules DDD
-for MOD in HR Payroll Attendance Planning Absence Expense Notification Recruitment Billing Cabinet Fleet Cameras Growth Platform Onboarding Training SmartAttendance EdgeSync; do
+# Vérifier la structure de modules DDD (dynamique — voir aussi
+# .github/workflows/architecture-check.yml, generé depuis app/Modules/* sans liste codée en dur)
+for MOD in $(ls app/Modules); do
   for LAYER in Application Domain Infrastructure Interfaces Providers; do
     [ ! -d "app/Modules/$MOD/$LAYER" ] && echo "Missing: $MOD/$LAYER"
   done
