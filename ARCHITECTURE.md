@@ -132,12 +132,13 @@ Des scripts de synchronisation (`shared/i18n/sync/`) propagent les clés vers le
 
 ## CI/CD
 
-Voir `.github/workflows/` et `docs/ARCHITECTURE_CICD.md` (à venir).
+Voir `.github/workflows/` et `docs/ARCHITECTURE_CICD.md`.
 
 Les pipelines principaux :
-- `tests.yml` — tests backend PHPUnit/Pest
-- `web-ci.yml` — lint + test Next.js
-- `mobile-apps-ci.yml` — build Flutter
+- `tests.yml` — tests backend PHPUnit/Pest + lint/build `front/admin-dashboard`
+- `web-ci.yml` — lint + build `front/admin-dashboard` (Vue.js/Vite, dashboard plateforme)
+- `web-marketing-ci.yml` — lint + build `front/web` (Next.js, vitrine publique)
+- `mobile-apps-ci.yml` — build Flutter (`front/mobile_apps/*`)
 - `deploy-main.yml` — déploiement production
 
 ## Conventions
