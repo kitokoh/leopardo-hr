@@ -84,12 +84,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _personalPhoneController = TextEditingController(
       text: employee?.personalPhone ?? '',
     );
-    _selectedLanguage =
-        _languageLabels.containsKey(employee?.language)
-            ? employee!.language
-            : (_languageLabels.containsKey(deviceLanguage)
-                ? deviceLanguage
-                : 'fr');
+    _selectedLanguage = _languageLabels.containsKey(employee?.language)
+        ? employee!.language
+        : (_languageLabels.containsKey(deviceLanguage) ? deviceLanguage : 'fr');
     _loadLocalSettings();
     _loadEnrollmentStatus();
   }
@@ -223,21 +220,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _firstNameController,
               decoration: const InputDecoration(labelText: 'Prenom'),
-              validator:
-                  (value) =>
-                      (value == null || value.trim().isEmpty)
-                          ? 'Prenom requis'
-                          : null,
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? 'Prenom requis'
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _lastNameController,
               decoration: const InputDecoration(labelText: 'Nom'),
-              validator:
-                  (value) =>
-                      (value == null || value.trim().isEmpty)
-                          ? 'Nom requis'
-                          : null,
+              validator: (value) =>
+                  (value == null || value.trim().isEmpty) ? 'Nom requis' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -739,22 +731,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           DropdownButtonFormField<String>(
             initialValue: _selectedLanguage,
             decoration: const InputDecoration(labelText: 'Langue preferee'),
-            items:
-                _languageLabels.entries
-                    .map(
-                      (entry) => DropdownMenuItem<String>(
-                        value: entry.key,
-                        child: Text(entry.value),
-                      ),
-                    )
-                    .toList(),
-            onChanged:
-                _languageSaving
-                    ? null
-                    : (value) {
-                      if (value == null) return;
-                      setState(() => _selectedLanguage = value);
-                    },
+            items: _languageLabels.entries
+                .map(
+                  (entry) => DropdownMenuItem<String>(
+                    value: entry.key,
+                    child: Text(entry.value),
+                  ),
+                )
+                .toList(),
+            onChanged: _languageSaving
+                ? null
+                : (value) {
+                    if (value == null) return;
+                    setState(() => _selectedLanguage = value);
+                  },
           ),
           const SizedBox(height: 16),
           if (authState.error != null)
@@ -803,9 +793,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               decoration: const InputDecoration(
                 labelText: 'Mot de passe actuel',
               ),
-              validator:
-                  (value) =>
-                      (value == null || value.isEmpty) ? 'Champ requis' : null,
+              validator: (value) =>
+                  (value == null || value.isEmpty) ? 'Champ requis' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -887,10 +876,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Text(
               'Derniere demande: ${_latestEnrollment!.status.toUpperCase()}',
               style: TextStyle(
-                color:
-                    _latestEnrollment!.status == 'approved'
-                        ? AppColors.success
-                        : _latestEnrollment!.status == 'rejected'
+                color: _latestEnrollment!.status == 'approved'
+                    ? AppColors.success
+                    : _latestEnrollment!.status == 'rejected'
                         ? AppColors.danger
                         : AppColors.warning,
               ),
@@ -917,30 +905,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             contentPadding: EdgeInsets.zero,
             title: const Text('Empreinte digitale souhaitee'),
             value: _fingerprintEnabled,
-            onChanged:
-                _biometricEnabled
-                    ? (value) =>
-                        setState(() => _fingerprintEnabled = value ?? false)
-                    : null,
+            onChanged: _biometricEnabled
+                ? (value) =>
+                    setState(() => _fingerprintEnabled = value ?? false)
+                : null,
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('Reconnaissance faciale souhaitee'),
             value: _faceEnabled,
-            onChanged:
-                _biometricEnabled
-                    ? (value) => setState(() => _faceEnabled = value ?? false)
-                    : null,
+            onChanged: _biometricEnabled
+                ? (value) => setState(() => _faceEnabled = value ?? false)
+                : null,
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('Consentement au futur pointage biometrie'),
             value: _attendanceConsent,
-            onChanged:
-                _biometricEnabled
-                    ? (value) =>
-                        setState(() => _attendanceConsent = value ?? false)
-                    : null,
+            onChanged: _biometricEnabled
+                ? (value) => setState(() => _attendanceConsent = value ?? false)
+                : null,
           ),
           const SizedBox(height: 12),
           TextField(
@@ -1133,13 +1117,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 subtitle: Text(subtitle),
                 value: value,
                 activeThumbColor: AppColors.rh,
-                onChanged:
-                    saving
-                        ? null
-                        : (next) {
-                          setLocalState(() => onChanged(next));
-                          save();
-                        },
+                onChanged: saving
+                    ? null
+                    : (next) {
+                        setLocalState(() => onChanged(next));
+                        save();
+                      },
               );
             }
 
@@ -1167,41 +1150,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: 'Alertes dans l application',
                     subtitle: 'Taches, decisions RH, pointage et rappels.',
                     value: preferences.appEnabled,
-                    onChanged:
-                        (next) =>
-                            preferences = preferences.copyWith(
-                              appEnabled: next,
-                            ),
+                    onChanged: (next) => preferences = preferences.copyWith(
+                      appEnabled: next,
+                    ),
                   ),
                   tile(
                     title: 'Push mobile',
                     subtitle: 'Notifications immediates sur ce telephone.',
                     value: preferences.pushEnabled,
-                    onChanged:
-                        (next) =>
-                            preferences = preferences.copyWith(
-                              pushEnabled: next,
-                            ),
+                    onChanged: (next) => preferences = preferences.copyWith(
+                      pushEnabled: next,
+                    ),
                   ),
                   tile(
                     title: 'Email',
                     subtitle: 'Resume et confirmations importantes.',
                     value: preferences.emailEnabled,
-                    onChanged:
-                        (next) =>
-                            preferences = preferences.copyWith(
-                              emailEnabled: next,
-                            ),
+                    onChanged: (next) => preferences = preferences.copyWith(
+                      emailEnabled: next,
+                    ),
                   ),
                   tile(
                     title: 'Heures calmes',
                     subtitle: 'Limiter les canaux externes hors horaires.',
                     value: preferences.quietHoursEnabled,
-                    onChanged:
-                        (next) =>
-                            preferences = preferences.copyWith(
-                              quietHoursEnabled: next,
-                            ),
+                    onChanged: (next) => preferences = preferences.copyWith(
+                      quietHoursEnabled: next,
+                    ),
                   ),
                   if (saving)
                     const Padding(
@@ -1227,9 +1202,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
 
     try {
-      final message = await ref
-          .read(settingsRepositoryProvider)
-          .submitCompanyQr(token);
+      final message =
+          await ref.read(settingsRepositoryProvider).submitCompanyQr(token);
       if (!context.mounted) return;
       _companyQrController.clear();
       ScaffoldMessenger.of(
@@ -1247,9 +1221,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_profileFormKey.currentState!.validate()) return;
 
     setState(() => _profileSaving = true);
-    final success = await ref
-        .read(authProvider.notifier)
-        .updateProfile(
+    final success = await ref.read(authProvider.notifier).updateProfile(
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
           email: _emailController.text,
@@ -1272,9 +1244,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_passwordFormKey.currentState!.validate()) return;
 
     setState(() => _passwordSaving = true);
-    final success = await ref
-        .read(authProvider.notifier)
-        .changePassword(
+    final success = await ref.read(authProvider.notifier).changePassword(
           currentPassword: _currentPasswordController.text,
           newPassword: _newPasswordController.text,
           confirmation: _confirmPasswordController.text,
@@ -1312,9 +1282,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _savePreferences() async {
     setState(() => _preferencesSaving = true);
 
-    await ref
-        .read(settingsRepositoryProvider)
-        .saveLocalBiometricSettings(
+    await ref.read(settingsRepositoryProvider).saveLocalBiometricSettings(
           LocalBiometricSettings(
             biometricEnabled: _biometricEnabled,
             fingerprintEnabled: _biometricEnabled && _fingerprintEnabled,
@@ -1396,15 +1364,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     setState(() => _biometricSubmitting = true);
     try {
-      final enrollment = await ref
-          .read(settingsRepositoryProvider)
-          .submitBiometricEnrollment(
-            requestedFaceEnabled: _faceEnabled,
-            requestedFingerprintEnabled: _fingerprintEnabled,
-            employeeNote: _biometricNoteController.text,
-            requestedFingerprintDeviceId: _fingerprintDeviceController.text,
-            faceImage: _selectedFaceImage,
-          );
+      final enrollment =
+          await ref.read(settingsRepositoryProvider).submitBiometricEnrollment(
+                requestedFaceEnabled: _faceEnabled,
+                requestedFingerprintEnabled: _fingerprintEnabled,
+                employeeNote: _biometricNoteController.text,
+                requestedFingerprintDeviceId: _fingerprintDeviceController.text,
+                faceImage: _selectedFaceImage,
+              );
 
       if (!mounted) return;
       setState(() {

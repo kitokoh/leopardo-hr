@@ -45,7 +45,8 @@ class _PendingGeoSessionsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e'), backgroundColor: AppColors.danger),
+          SnackBar(
+              content: Text('Erreur : $e'), backgroundColor: AppColors.danger),
         );
       }
     }
@@ -59,7 +60,7 @@ class _PendingGeoSessionsScreenState
         backgroundColor: const Color(0xFF111B2E),
         title: Text(
           'Motif du rejet',
-          style: AppTypography.titleMedium.copyWith(color: AppColors.textDark),
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         content: TextField(
           controller: _noteController,
@@ -132,41 +133,44 @@ class _PendingGeoSessionsScreenState
           ),
         ],
       ),
-      backgroundColor: const Color(0xFF0B1120),
-      child: sessionsAsync.when(
-        data: (sessions) {
-          if (sessions.isEmpty) {
-            return const EmptyStateWidget(
-              icon: Icons.check_circle_outline,
-              title: 'Tout est à jour',
-              subtitle: 'Aucune session GPS en attente de validation.',
+      children: [
+        sessionsAsync.when(
+          data: (sessions) {
+            if (sessions.isEmpty) {
+              return const EmptyState(
+                icon: Icons.check_circle_outline,
+                title: 'Tout est à jour',
+                description: 'Aucune session GPS en attente de validation.',
+              );
+            }
+            return RefreshIndicator(
+              onRefresh: () async => ref.invalidate(pendingGeoSessionsProvider),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: sessions.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final session = sessions[index];
+                  return _SessionCard(
+                    session: session,
+                    onApprove: () => _approve(session),
+                    onReject: () => _reject(session),
+                  );
+                },
+              ),
             );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(pendingGeoSessionsProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: sessions.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final session = sessions[index];
-                return _SessionCard(
-                  session: session,
-                  onApprove: () => _approve(session),
-                  onReject: () => _reject(session),
-                );
-              },
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(
+            child: Text(
+              'Erreur : $e',
+              style: TextStyle(color: AppColors.danger),
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(
-            'Erreur : $e',
-            style: TextStyle(color: AppColors.danger),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -198,12 +202,16 @@ class _SessionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.person_outline_rounded, size: 18, color: AppColors.textMutedDark),
+              const Icon(Icons.person_outline_rounded,
+                  size: 18, color: AppColors.textMutedDark),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  session.employeeName.isNotEmpty ? session.employeeName : 'Employé #${session.employeeId}',
-                  style: AppTypography.titleSmall.copyWith(color: AppColors.textDark),
+                  session.employeeName.isNotEmpty
+                      ? session.employeeName
+                      : 'Employé #${session.employeeId}',
+                  style: AppTypography.subtitle
+                      .copyWith(color: AppColors.textDark),
                 ),
               ),
             ],
@@ -211,11 +219,13 @@ class _SessionCard extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.login_rounded, size: 14, color: AppColors.textMutedDark),
+              const Icon(Icons.login_rounded,
+                  size: 14, color: AppColors.textMutedDark),
               const SizedBox(width: 4),
               Text(
                 'Entrée : ${fmt.format(session.startedAt.toLocal())}',
-                style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+                style: AppTypography.bodySmall
+                    .copyWith(color: AppColors.textMutedDark),
               ),
             ],
           ),
@@ -223,11 +233,13 @@ class _SessionCard extends StatelessWidget {
             const SizedBox(height: 2),
             Row(
               children: [
-                const Icon(Icons.logout_rounded, size: 14, color: AppColors.textMutedDark),
+                const Icon(Icons.logout_rounded,
+                    size: 14, color: AppColors.textMutedDark),
                 const SizedBox(width: 4),
                 Text(
                   'Sortie : ${fmt.format(session.endedAt!.toLocal())} · ${session.durationLabel}',
-                  style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+                  style: AppTypography.bodySmall
+                      .copyWith(color: AppColors.textMutedDark),
                 ),
               ],
             ),

@@ -175,8 +175,8 @@ class _AttendanceModePickerScreenState
                   ),
                   child: Text(
                     _error!,
-                    style: const TextStyle(
-                        color: Color(0xFFEF9A9A), fontSize: 13),
+                    style:
+                        const TextStyle(color: Color(0xFFEF9A9A), fontSize: 13),
                   ),
                 ),
               ),
@@ -187,10 +187,9 @@ class _AttendanceModePickerScreenState
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed:
-                      _isSaving || _selectedMode == widget.currentMode
-                          ? null
-                          : _confirmSelection,
+                  onPressed: _isSaving || _selectedMode == widget.currentMode
+                      ? null
+                      : _confirmSelection,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _accent,
                     disabledBackgroundColor: _border,
@@ -261,9 +260,7 @@ class _ModeCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color.withOpacity(0.12)
-              : _card,
+          color: isSelected ? color.withOpacity(0.12) : _card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : _border,

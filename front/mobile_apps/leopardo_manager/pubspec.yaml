@@ -27,9 +27,10 @@ dependencies:
   local_auth: ^3.0.2
   json_annotation: ^4.11.0
   url_launcher: ^6.3.1
-  firebase_core: ^3.13.0
-  firebase_messaging: ^15.2.5
-  flutter_local_notifications: ^19.2.1
+  firebase_core: ^4.12.1
+  firebase_messaging: ^16.4.3
+  flutter_local_notifications: ^22.1.0
+  sentry_flutter: ^8.9.0
   graphview: ^1.2.1
   leopardo_core:
     path: ../leopardo_core

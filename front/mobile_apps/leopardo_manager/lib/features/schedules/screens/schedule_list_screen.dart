@@ -69,16 +69,15 @@ class ScheduleListScreen extends ConsumerWidget {
                   title: schedule.name,
                   subtitle:
                       '${schedule.startTime} - ${schedule.endTime} | pause ${schedule.breakMinutes} min | repos ${schedule.restDaysLabel}',
-                  trailing:
-                      schedule.isDefault
-                          ? const MobileStatusPill(
-                            label: 'Defaut',
-                            color: AppColors.rh,
-                          )
-                          : MobileStatusPill(
-                            label: '${schedule.workDays.length} j/sem',
-                            color: AppColors.info,
-                          ),
+                  trailing: schedule.isDefault
+                      ? const MobileStatusPill(
+                          label: 'Defaut',
+                          color: AppColors.rh,
+                        )
+                      : MobileStatusPill(
+                          label: '${schedule.workDays.length} j/sem',
+                          color: AppColors.info,
+                        ),
                   onTap: () => _showScheduleSheet(context, ref, schedule),
                   footer: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,8 +85,8 @@ class ScheduleListScreen extends ConsumerWidget {
                       _ScheduleFooter(schedule: schedule),
                       const SizedBox(height: 10),
                       TextButton.icon(
-                        onPressed:
-                            () => _showAssignSheet(context, ref, schedule),
+                        onPressed: () =>
+                            _showAssignSheet(context, ref, schedule),
                         icon: const Icon(Icons.group_add_outlined, size: 17),
                         label: const Text('Affecter aux employes'),
                       ),
@@ -97,19 +96,18 @@ class ScheduleListScreen extends ConsumerWidget {
               },
             );
           },
-          loading:
-              () => const MobileEmptyLoading(label: 'Chargement des regles'),
-          error:
-              (error, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  MobileErrorPanel(
-                    message: error.toString(),
-                    onRetry: () => ref.invalidate(schedulesProvider),
-                  ),
-                ],
+          loading: () =>
+              const MobileEmptyLoading(label: 'Chargement des regles'),
+          error: (error, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              MobileErrorPanel(
+                message: error.toString(),
+                onRetry: () => ref.invalidate(schedulesProvider),
               ),
+            ],
+          ),
         ),
       ),
     );
@@ -263,23 +261,20 @@ class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
                       onToggle: _toggleEmployee,
                     );
                   },
-                  loading:
-                      () =>
-                          const MobileEmptyLoading(label: 'Chargement equipe'),
-                  error:
-                      (error, _) => MobileErrorPanel(
-                        message: error.toString(),
-                        onRetry: () => ref.invalidate(teamListProvider),
-                      ),
+                  loading: () =>
+                      const MobileEmptyLoading(label: 'Chargement equipe'),
+                  error: (error, _) => MobileErrorPanel(
+                    message: error.toString(),
+                    onRetry: () => ref.invalidate(teamListProvider),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               MobilePrimaryAction(
                 icon: Icons.done_all_outlined,
-                label:
-                    _selectedIds.isEmpty
-                        ? 'Selectionner des employes'
-                        : 'Affecter ${_selectedIds.length} employe(s)',
+                label: _selectedIds.isEmpty
+                    ? 'Selectionner des employes'
+                    : 'Affecter ${_selectedIds.length} employe(s)',
                 onPressed: _selectedIds.isEmpty || _submitting ? null : _submit,
               ),
             ],
@@ -367,14 +362,12 @@ class _EmployeeSelectionList extends StatelessWidget {
           child: Ink(
             padding: const EdgeInsets.all(12),
             decoration: MobileSurface.cardDecoration(
-              color:
-                  selected
-                      ? AppColors.rh.withValues(alpha: 0.12)
-                      : MobileSurface.chip,
-              borderColor:
-                  selected
-                      ? AppColors.rh.withValues(alpha: 0.45)
-                      : MobileSurface.border,
+              color: selected
+                  ? AppColors.rh.withValues(alpha: 0.12)
+                  : MobileSurface.chip,
+              borderColor: selected
+                  ? AppColors.rh.withValues(alpha: 0.45)
+                  : MobileSurface.border,
               radius: 14,
             ),
             child: Row(
@@ -544,11 +537,9 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
                 controller: _nameCtrl,
                 label: 'Nom',
                 icon: Icons.badge_outlined,
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Nom obligatoire'
-                            : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'Nom obligatoire'
+                    : null,
               ),
               const SizedBox(height: 12),
               Row(
@@ -638,17 +629,16 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children:
-                    _dayLabels.entries.map((entry) {
-                      final selected = _workDays.contains(entry.key);
-                      return FilterChip(
-                        selected: selected,
-                        label: Text(entry.value),
-                        onSelected: (_) => _toggleDay(entry.key),
-                        selectedColor: AppColors.rh.withValues(alpha: 0.18),
-                        checkmarkColor: AppColors.rh,
-                      );
-                    }).toList(),
+                children: _dayLabels.entries.map((entry) {
+                  final selected = _workDays.contains(entry.key);
+                  return FilterChip(
+                    selected: selected,
+                    label: Text(entry.value),
+                    onSelected: (_) => _toggleDay(entry.key),
+                    selectedColor: AppColors.rh.withValues(alpha: 0.18),
+                    checkmarkColor: AppColors.rh,
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 12),
               SwitchListTile.adaptive(
@@ -716,11 +706,10 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
     final picked = await showTimePicker(
       context: context,
       initialTime: isStart ? _startTime : _endTime,
-      builder:
-          (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child ?? const SizedBox.shrink(),
-          ),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
 
     if (picked == null) return;
@@ -793,8 +782,8 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
   SchedulePayload _payload() {
     final breakMinutes = int.parse(_breakCtrl.text);
     final workDays = _workDays.toList()..sort();
-    final restDays =
-        <int>{1, 2, 3, 4, 5, 6, 7}.difference(_workDays).toList()..sort();
+    final restDays = <int>{1, 2, 3, 4, 5, 6, 7}.difference(_workDays).toList()
+      ..sort();
     final leaveDays = double.parse(_leaveDaysCtrl.text.replaceAll(',', '.'));
 
     return SchedulePayload(
@@ -802,18 +791,17 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       startTime: _formatTime(_startTime),
       endTime: _formatTime(_endTime),
       breakMinutes: breakMinutes,
-      breakRules:
-          breakMinutes > 0
-              ? [
-                ScheduleBreakRule(
-                  label: 'Pause principale',
-                  startTime: null,
-                  endTime: null,
-                  minutes: breakMinutes,
-                  isPaid: false,
-                ),
-              ]
-              : const [],
+      breakRules: breakMinutes > 0
+          ? [
+              ScheduleBreakRule(
+                label: 'Pause principale',
+                startTime: null,
+                endTime: null,
+                minutes: breakMinutes,
+                isPaid: false,
+              ),
+            ]
+          : const [],
       workDays: workDays,
       restDays: restDays,
       leaveRules: [

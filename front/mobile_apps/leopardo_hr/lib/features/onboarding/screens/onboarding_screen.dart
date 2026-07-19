@@ -61,8 +61,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh:
-            () async => await ref.refresh(onboardingChecklistProvider.future),
+        onRefresh: () async =>
+            await ref.refresh(onboardingChecklistProvider.future),
         child: checklistAsync.when(
           data: (steps) {
             if (steps.isEmpty) {
@@ -132,88 +132,82 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         isDone
                             ? Icons.check_circle
                             : Icons.radio_button_unchecked,
-                        color:
-                            isDone
-                                ? AppColors.success
-                                : AppColors.textMutedDark,
+                        color: isDone
+                            ? AppColors.success
+                            : AppColors.textMutedDark,
                       ),
                       title: Text(
                         step.title,
                         style: AppTypography.subtitle.copyWith(
-                          color:
-                              isDone
-                                  ? AppColors.textMutedDark
-                                  : AppColors.textDark,
+                          color: isDone
+                              ? AppColors.textMutedDark
+                              : AppColors.textDark,
                           decoration:
                               isDone ? TextDecoration.lineThrough : null,
                         ),
                       ),
-                      subtitle:
-                          step.description != null
-                              ? Text(
-                                step.description!,
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: AppColors.textMutedDark,
-                                ),
-                              )
-                              : null,
-                      trailing:
-                          isDone
-                              ? null
-                              : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.skip_next,
-                                      color: AppColors.textMutedDark,
-                                      size: 20,
-                                    ),
-                                    tooltip: 'Passer',
-                                    onPressed: () => _skip(step.id),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.check,
-                                      color: AppColors.success,
-                                      size: 20,
-                                    ),
-                                    tooltip: 'Terminer',
-                                    onPressed: () => _complete(step.id),
-                                  ),
-                                ],
+                      subtitle: step.description != null
+                          ? Text(
+                              step.description!,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textMutedDark,
                               ),
+                            )
+                          : null,
+                      trailing: isDone
+                          ? null
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.skip_next,
+                                    color: AppColors.textMutedDark,
+                                    size: 20,
+                                  ),
+                                  tooltip: 'Passer',
+                                  onPressed: () => _skip(step.id),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.check,
+                                    color: AppColors.success,
+                                    size: 20,
+                                  ),
+                                  tooltip: 'Terminer',
+                                  onPressed: () => _complete(step.id),
+                                ),
+                              ],
+                            ),
                     ),
                   );
                 }),
               ],
             );
           },
-          loading:
-              () => const SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 400,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      semanticsLabel: 'Chargement de l\'onboarding...',
-                    ),
-                  ),
+          loading: () => const SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: 400,
+              child: Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: 'Chargement de l\'onboarding...',
                 ),
               ),
-          error:
-              (e, _) => SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 400,
-                  child: Center(
-                    child: Text(
-                      e.toString(),
-                      style: const TextStyle(color: AppColors.danger),
-                    ),
-                  ),
+            ),
+          ),
+          error: (e, _) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: 400,
+              child: Center(
+                child: Text(
+                  e.toString(),
+                  style: const TextStyle(color: AppColors.danger),
                 ),
               ),
+            ),
+          ),
         ),
       ),
     );

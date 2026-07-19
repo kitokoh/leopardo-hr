@@ -36,9 +36,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref
-        .read(platformAuthControllerProvider.notifier)
-        .login(
+    await ref.read(platformAuthControllerProvider.notifier).login(
           email: _emailController.text.trim(),
           password: _passwordController.text,
           twoFactorCode: _twoFactorController.text.trim(),
@@ -119,11 +117,10 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       label: 'Email super-admin',
                       icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
-                      validator:
-                          (value) =>
-                              value == null || !value.contains('@')
-                                  ? 'Email requis'
-                                  : null,
+                      validator: (value) =>
+                          value == null || !value.contains('@')
+                              ? 'Email requis'
+                              : null,
                     ),
                     const SizedBox(height: 12),
                     _PlatformTextField(
@@ -132,21 +129,18 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
                       suffixIcon: IconButton(
-                        onPressed:
-                            () => setState(
-                              () => _obscurePassword = !_obscurePassword,
-                            ),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_rounded
                               : Icons.visibility_off_rounded,
                         ),
                       ),
-                      validator:
-                          (value) =>
-                              value == null || value.length < 6
-                                  ? 'Mot de passe requis'
-                                  : null,
+                      validator: (value) => value == null || value.length < 6
+                          ? 'Mot de passe requis'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     _PlatformTextField(

@@ -98,17 +98,16 @@ class UserHomeScreen extends ConsumerWidget {
             radius: 28,
             backgroundColor: AppColors.rh,
             backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-            child:
-                avatarUrl == null
-                    ? Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                    : null,
+            child: avatarUrl == null
+                ? Text(
+                    name.isNotEmpty ? name[0].toUpperCase() : '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(width: 14),
           Expanded(

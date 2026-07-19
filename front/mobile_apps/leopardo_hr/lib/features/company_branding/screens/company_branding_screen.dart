@@ -32,31 +32,28 @@ class CompanyBrandingScreen extends ConsumerWidget {
         backgroundColor: MobileSurface.background,
         onRefresh: () async => ref.refresh(companyBrandingProvider.future),
         child: branding.when(
-          data:
-              (response) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-                children: [
-                  _BrandPreview(branding: response.branding),
-                  const SizedBox(height: 18),
-                  _BrandingForm(initial: response.branding),
-                ],
+          data: (response) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+            children: [
+              _BrandPreview(branding: response.branding),
+              const SizedBox(height: 18),
+              _BrandingForm(initial: response.branding),
+            ],
+          ),
+          loading: () => const MobileEmptyLoading(
+            label: 'Chargement de l identite entreprise',
+          ),
+          error: (error, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              MobileErrorPanel(
+                message: error.toString(),
+                onRetry: () => ref.invalidate(companyBrandingProvider),
               ),
-          loading:
-              () => const MobileEmptyLoading(
-                label: 'Chargement de l identite entreprise',
-              ),
-          error:
-              (error, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  MobileErrorPanel(
-                    message: error.toString(),
-                    onRetry: () => ref.invalidate(companyBrandingProvider),
-                  ),
-                ],
-              ),
+            ],
+          ),
         ),
       ),
     );
@@ -88,20 +85,18 @@ class _BrandPreview extends StatelessWidget {
                   color: primary.withValues(alpha: 0.16),
                   border: Border.all(color: primary.withValues(alpha: 0.5)),
                 ),
-                child:
-                    branding.logoUrl == null
-                        ? Icon(Icons.business_rounded, color: primary)
-                        : ClipOval(
-                          child: Image.network(
-                            branding.logoUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder:
-                                (_, __, ___) => Icon(
-                                  Icons.business_rounded,
-                                  color: primary,
-                                ),
+                child: branding.logoUrl == null
+                    ? Icon(Icons.business_rounded, color: primary)
+                    : ClipOval(
+                        child: Image.network(
+                          branding.logoUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Icon(
+                            Icons.business_rounded,
+                            color: primary,
                           ),
                         ),
+                      ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -182,9 +177,7 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
     setState(() => _saving = true);
 
     try {
-      await ref
-          .read(companyBrandingRepositoryProvider)
-          .update(
+      await ref.read(companyBrandingRepositoryProvider).update(
             CompanyBrandingPayload(
               displayName: _nameCtrl.text,
               logoUrl: _logoCtrl.text,
@@ -226,11 +219,9 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
             _Field(
               controller: _nameCtrl,
               label: 'Nom affiche',
-              validator:
-                  (value) =>
-                      (value == null || value.trim().length < 2)
-                          ? 'Nom trop court'
-                          : null,
+              validator: (value) => (value == null || value.trim().length < 2)
+                  ? 'Nom trop court'
+                  : null,
             ),
             _Field(
               controller: _logoCtrl,
@@ -267,22 +258,21 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
                 DropdownMenuItem(value: 'light', child: Text('Clair')),
                 DropdownMenuItem(value: 'auto', child: Text('Auto')),
               ],
-              onChanged:
-                  (value) => setState(() => _brandMode = value ?? 'default'),
+              onChanged: (value) =>
+                  setState(() => _brandMode = value ?? 'default'),
             ),
             const SizedBox(height: 18),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _saving ? null : _save,
-                icon:
-                    _saving
-                        ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Icon(Icons.save_outlined),
+                icon: _saving
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save_outlined),
                 label: Text(_saving ? 'Enregistrement' : 'Enregistrer'),
               ),
             ),

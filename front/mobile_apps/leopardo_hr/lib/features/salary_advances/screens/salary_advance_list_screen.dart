@@ -68,10 +68,9 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                 final advance = advances[index];
                 final color = _getStatusColor(advance.status);
                 final amount = _formatMoney(advance.amount, advance.currency);
-                final reason =
-                    advance.reason?.trim().isNotEmpty == true
-                        ? advance.reason!
-                        : 'Aucun motif';
+                final reason = advance.reason?.trim().isNotEmpty == true
+                    ? advance.reason!
+                    : 'Aucun motif';
                 final months = advance.repaymentMonths;
                 final requester =
                     advance.employeeName?.trim().isNotEmpty == true
@@ -87,10 +86,9 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                       icon: Icons.payments_outlined,
                       iconColor: color,
                       title: requester,
-                      subtitle:
-                          months == null
-                              ? '$amount - $reason'
-                              : '$amount - $reason - $months mois',
+                      subtitle: months == null
+                          ? '$amount - $reason'
+                          : '$amount - $reason - $months mois',
                       trailing: MobileStatusPill(
                         label: _getStatusLabel(advance),
                         color: color,
@@ -107,19 +105,18 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
               },
             );
           },
-          loading:
-              () => const MobileEmptyLoading(label: 'Chargement des avances'),
-          error:
-              (e, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  MobileErrorPanel(
-                    message: e.toString(),
-                    onRetry: () => ref.invalidate(salaryAdvancesProvider),
-                  ),
-                ],
+          loading: () =>
+              const MobileEmptyLoading(label: 'Chargement des avances'),
+          error: (e, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              MobileErrorPanel(
+                message: e.toString(),
+                onRetry: () => ref.invalidate(salaryAdvancesProvider),
               ),
+            ],
+          ),
         ),
       ),
     );
@@ -192,29 +189,25 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
 
   Widget _advanceContext(SalaryAdvance advance) {
     final amount = _formatMoney(advance.amount, advance.currency);
-    final reason =
-        advance.reason?.trim().isNotEmpty == true
-            ? advance.reason!.trim()
-            : 'Motif non renseigne';
+    final reason = advance.reason?.trim().isNotEmpty == true
+        ? advance.reason!.trim()
+        : 'Motif non renseigne';
     final requestedAt = advance.requestedAt ?? advance.createdAt;
-    final date =
-        requestedAt == null
-            ? 'Date non renseignee'
-            : DateFormat('d MMM yyyy', 'fr_FR').format(requestedAt);
-    final repayment =
-        advance.repaymentMonths == null
-            ? 'Remboursement a definir'
-            : '${advance.repaymentMonths} mois';
+    final date = requestedAt == null
+        ? 'Date non renseignee'
+        : DateFormat('d MMM yyyy', 'fr_FR').format(requestedAt);
+    final repayment = advance.repaymentMonths == null
+        ? 'Remboursement a definir'
+        : '${advance.repaymentMonths} mois';
     final requester = [
       if (advance.employeeName?.trim().isNotEmpty == true)
         advance.employeeName!.trim(),
       if (advance.employeeEmail?.trim().isNotEmpty == true)
         advance.employeeEmail!.trim(),
     ].join(' - ');
-    final company =
-        advance.companyName?.trim().isNotEmpty == true
-            ? advance.companyName!.trim()
-            : 'Entreprise courante';
+    final company = advance.companyName?.trim().isNotEmpty == true
+        ? advance.companyName!.trim()
+        : 'Entreprise courante';
     final validation = _validationLabel(advance.validationStatus);
     final payment = [
       if (advance.managerApprovedAt != null)
@@ -253,23 +246,22 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Annuler cette avance ?'),
-            content: const Text(
-              'La demande en attente sera retiree avant decision RH.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Garder'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Annuler'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Annuler cette avance ?'),
+        content: const Text(
+          'La demande en attente sera retiree avant decision RH.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Garder'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Annuler'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -296,30 +288,27 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     final amount = _formatMoney(advance.amount, advance.currency);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Approuver cette avance ?'),
-            content: Text(
-              '${advance.employeeName ?? 'Employe #${advance.employeeId}'} demande $amount.\n\nMotif : ${advance.reason?.trim().isNotEmpty == true ? advance.reason!.trim() : 'non renseigne'}\n\nLa decision sera envoyee a l employe.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Retour'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Approuver'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Approuver cette avance ?'),
+        content: Text(
+          '${advance.employeeName ?? 'Employe #${advance.employeeId}'} demande $amount.\n\nMotif : ${advance.reason?.trim().isNotEmpty == true ? advance.reason!.trim() : 'non renseigne'}\n\nLa decision sera envoyee a l employe.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Retour'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Approuver'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .approveAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).approveAdvance(
             advanceId: advance.id,
             repaymentMonths: advance.repaymentMonths,
           );
@@ -344,23 +333,22 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     final amount = _formatMoney(advance.amount, advance.currency);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Avance envoyee ?'),
-            content: Text(
-              'Confirmez que $amount ont ete envoyes a ${advance.employeeName ?? 'Employe #${advance.employeeId}'}.\n\nL employe recevra ensuite la demande de confirmation de reception.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Retour'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Confirmer'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Avance envoyee ?'),
+        content: Text(
+          'Confirmez que $amount ont ete envoyes a ${advance.employeeName ?? 'Employe #${advance.employeeId}'}.\n\nL employe recevra ensuite la demande de confirmation de reception.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Retour'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirmer'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -393,20 +381,19 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder:
-          (_) => MobileDecisionCommentSheet(
-            title: 'Refuser l avance',
-            helper: 'Le commentaire aide l employe a comprendre la decision.',
-            submitLabel: 'Refuser',
-            danger: true,
-            onSubmit: (comment) async {
-              await ref
-                  .read(salaryAdvanceRepositoryProvider)
-                  .rejectAdvance(advanceId: advanceId, comment: comment);
-              ref.invalidate(salaryAdvancesProvider);
-            },
-            successMessage: 'Avance refusee.',
-          ),
+      builder: (_) => MobileDecisionCommentSheet(
+        title: 'Refuser l avance',
+        helper: 'Le commentaire aide l employe a comprendre la decision.',
+        submitLabel: 'Refuser',
+        danger: true,
+        onSubmit: (comment) async {
+          await ref
+              .read(salaryAdvanceRepositoryProvider)
+              .rejectAdvance(advanceId: advanceId, comment: comment);
+          ref.invalidate(salaryAdvancesProvider);
+        },
+        successMessage: 'Avance refusee.',
+      ),
     );
   }
 
@@ -566,17 +553,16 @@ class _SalaryAdvanceRequestSheetState
               initialValue: _repaymentMonths,
               decoration: const InputDecoration(labelText: 'Remboursement'),
               dropdownColor: MobileSurface.surface,
-              items:
-                  List.generate(12, (index) => index + 1)
-                      .map(
-                        (months) => DropdownMenuItem(
-                          value: months,
-                          child: Text('$months mois'),
-                        ),
-                      )
-                      .toList(),
-              onChanged:
-                  (value) => setState(() => _repaymentMonths = value ?? 1),
+              items: List.generate(12, (index) => index + 1)
+                  .map(
+                    (months) => DropdownMenuItem(
+                      value: months,
+                      child: Text('$months mois'),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) =>
+                  setState(() => _repaymentMonths = value ?? 1),
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -588,23 +574,20 @@ class _SalaryAdvanceRequestSheetState
                 labelText: 'Motif',
                 hintText: 'Ex: besoin familial urgent',
               ),
-              validator:
-                  (value) =>
-                      value == null || value.trim().length < 4
-                          ? 'Motif obligatoire'
-                          : null,
+              validator: (value) => value == null || value.trim().length < 4
+                  ? 'Motif obligatoire'
+                  : null,
             ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
-              child:
-                  _submitting
-                      ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Text('Soumettre au RH'),
+              child: _submitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Soumettre au RH'),
             ),
           ],
         ),
@@ -616,9 +599,7 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .requestAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,

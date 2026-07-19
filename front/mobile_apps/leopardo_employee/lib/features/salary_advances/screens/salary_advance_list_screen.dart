@@ -64,10 +64,9 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                 final advance = advances[index];
                 final color = _getStatusColor(advance.status);
                 final amount = _formatMoney(advance.amount, advance.currency);
-                final reason =
-                    advance.reason?.trim().isNotEmpty == true
-                        ? advance.reason!
-                        : 'Aucun motif';
+                final reason = advance.reason?.trim().isNotEmpty == true
+                    ? advance.reason!
+                    : 'Aucun motif';
                 final months = advance.repaymentMonths;
 
                 return Semantics(
@@ -92,19 +91,18 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
               },
             );
           },
-          loading:
-              () => const MobileEmptyLoading(label: 'Chargement des avances'),
-          error:
-              (e, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  MobileErrorPanel(
-                    message: e.toString(),
-                    onRetry: () => ref.invalidate(salaryAdvancesProvider),
-                  ),
-                ],
+          loading: () =>
+              const MobileEmptyLoading(label: 'Chargement des avances'),
+          error: (e, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              MobileErrorPanel(
+                message: e.toString(),
+                onRetry: () => ref.invalidate(salaryAdvancesProvider),
               ),
+            ],
+          ),
         ),
       ),
     );
@@ -170,23 +168,22 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Annuler cette avance ?'),
-            content: const Text(
-              'La demande en attente sera retiree avant decision RH.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Garder'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Annuler'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Annuler cette avance ?'),
+        content: const Text(
+          'La demande en attente sera retiree avant decision RH.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Garder'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Annuler'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -212,23 +209,22 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Confirmer la reception ?'),
-            content: const Text(
-              'Confirmez seulement si le montant est effectivement arrive. Cette action sera historisee.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Retour'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Confirmer'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Confirmer la reception ?'),
+        content: const Text(
+          'Confirmez seulement si le montant est effectivement arrive. Cette action sera historisee.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Retour'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirmer'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -375,17 +371,16 @@ class _SalaryAdvanceRequestSheetState
               initialValue: _repaymentMonths,
               decoration: const InputDecoration(labelText: 'Remboursement'),
               dropdownColor: MobileSurface.surface,
-              items:
-                  List.generate(12, (index) => index + 1)
-                      .map(
-                        (months) => DropdownMenuItem(
-                          value: months,
-                          child: Text('$months mois'),
-                        ),
-                      )
-                      .toList(),
-              onChanged:
-                  (value) => setState(() => _repaymentMonths = value ?? 1),
+              items: List.generate(12, (index) => index + 1)
+                  .map(
+                    (months) => DropdownMenuItem(
+                      value: months,
+                      child: Text('$months mois'),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) =>
+                  setState(() => _repaymentMonths = value ?? 1),
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -397,23 +392,20 @@ class _SalaryAdvanceRequestSheetState
                 labelText: 'Motif',
                 hintText: 'Ex: besoin familial urgent',
               ),
-              validator:
-                  (value) =>
-                      value == null || value.trim().length < 4
-                          ? 'Motif obligatoire'
-                          : null,
+              validator: (value) => value == null || value.trim().length < 4
+                  ? 'Motif obligatoire'
+                  : null,
             ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
-              child:
-                  _submitting
-                      ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Text('Soumettre au RH'),
+              child: _submitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Soumettre au RH'),
             ),
           ],
         ),
@@ -425,9 +417,7 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .requestAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,

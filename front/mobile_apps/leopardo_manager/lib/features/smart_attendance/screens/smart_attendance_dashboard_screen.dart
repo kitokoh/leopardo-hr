@@ -7,26 +7,23 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
 
-/// Tableau de bord Smart Attendance â€” Manager
+/// Tableau de bord Smart Attendance — Manager
 ///
 /// Affiche :
-/// - Compteurs du jour (sessions dÃ©tectÃ©es, en attente, approuvÃ©es, rejetÃ©es)
-/// - Bouton vers la liste des sessions Ã  valider
+/// - Compteurs du jour (sessions détectées, en attente, approuvées, rejetées)
+/// - Bouton vers la liste des sessions à valider
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
   const SmartAttendanceDashboardScreen({super.key});
-
-  static const Color _bg = Color(0xFF0B1120);
-  static const Color _card = Color(0xFF111B2E);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashAsync = ref.watch(smartAttendanceDashboardProvider);
     final pendingAsync = ref.watch(pendingGeoSessionsProvider);
 
-    return Scaffold(
+    return MobilePage(
       appBar: MobileTopBar(
         title: 'Smart Attendance',
-        subtitle: 'Pointage GPS â€” tableau de bord Ã©quipe',
+        subtitle: 'Pointage GPS — tableau de bord équipe',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
@@ -42,40 +39,40 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-      backgroundColor: _bg,
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(smartAttendanceDashboardProvider);
-          ref.invalidate(pendingGeoSessionsProvider);
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // â”€â”€ Stats du jour â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            dashAsync.when(
-              data: (stats) => _StatsGrid(stats: stats),
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(),
+      children: [
+        RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(smartAttendanceDashboardProvider);
+            ref.invalidate(pendingGeoSessionsProvider);
+          },
+          child: Column(
+            children: [
+              // ── Stats du jour ──────────────────────────────────────
+              dashAsync.when(
+                data: (stats) => _StatsGrid(stats: stats),
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
+                error: (e, _) => _ErrorCard(message: e.toString()),
               ),
-              error: (e, _) => _ErrorCard(message: e.toString()),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // â”€â”€ Bouton sessions pending â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            pendingAsync.when(
-              data: (sessions) => _PendingCard(
-                count: sessions.length,
-                onTap: () => context.push('/smart-attendance/pending'),
+              // ── Bouton sessions pending ────────────────────────────
+              pendingAsync.when(
+                data: (sessions) => _PendingCard(
+                  count: sessions.length,
+                  onTap: () => context.push('/smart-attendance/pending'),
+                ),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
               ),
-              loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -92,16 +89,21 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel = (stats['today'] as String?) ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final dateLabel = (stats['today'] as String?) ??
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
-    try { parsedDate = DateTime.parse(dateLabel); } catch (_) {}
+    try {
+      parsedDate = DateTime.parse(dateLabel);
+    } catch (_) {}
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Aujourd'hui â€” ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
-          style: AppTypography.caption.copyWith(color: AppColors.textMutedDark),
+          "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.textMutedDark,
+          ),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -112,10 +114,23 @@ class _StatsGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 1.6,
           children: [
-            _StatCard(label: 'DÃ©tectÃ©es', value: detected, color: AppColors.rh),
-            _StatCard(label: 'En attente', value: pending, color: Colors.orange),
-            _StatCard(label: 'ApprouvÃ©es', value: approved, color: Colors.green),
-            _StatCard(label: 'RejetÃ©es', value: rejected, color: AppColors.danger),
+            _StatCard(
+              label: 'Détectées',
+              value: detected,
+              color: AppColors.rh,
+            ),
+            _StatCard(
+                label: 'En attente', value: pending, color: Colors.orange),
+            _StatCard(
+              label: 'Approuvées',
+              value: approved,
+              color: Colors.green,
+            ),
+            _StatCard(
+              label: 'Rejetées',
+              value: rejected,
+              color: AppColors.danger,
+            ),
           ],
         ),
       ],
@@ -146,14 +161,13 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            '$value',
-            style: AppTypography.title.copyWith(color: color),
-          ),
+          Text('$value', style: AppTypography.title.copyWith(color: color)),
           const SizedBox(height: 4),
           Text(
             label,
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textMutedDark,
+            ),
           ),
         ],
       ),
@@ -199,7 +213,11 @@ class _PendingCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.pending_actions_rounded, color: Colors.orange, size: 28),
+            const Icon(
+              Icons.pending_actions_rounded,
+              color: Colors.orange,
+              size: 28,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -207,11 +225,15 @@ class _PendingCard extends StatelessWidget {
                 children: [
                   Text(
                     '$count session${count > 1 ? 's' : ''} en attente',
-                    style: AppTypography.subtitle.copyWith(color: Colors.orange),
+                    style: AppTypography.subtitle.copyWith(
+                      color: Colors.orange,
+                    ),
                   ),
                   Text(
                     'Appuyez pour valider ou rejeter',
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textMutedDark,
+                    ),
                   ),
                 ],
               ),

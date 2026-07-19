@@ -23,8 +23,7 @@ class SmartAttendanceScreen extends ConsumerStatefulWidget {
       _SmartAttendanceScreenState();
 }
 
-class _SmartAttendanceScreenState
-    extends ConsumerState<SmartAttendanceScreen> {
+class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
   // Palette de couleurs cohérente avec le reste de l'app
   static const Color _bg = Color(0xFF0B1120);
   static const Color _card = Color(0xFF111B2E);
@@ -423,9 +422,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                isMonitoring
-                    ? 'Surveillance active'
-                    : 'Surveillance inactive',
+                isMonitoring ? 'Surveillance active' : 'Surveillance inactive',
                 style: TextStyle(
                   color: isMonitoring ? _green : _muted,
                   fontSize: 14,
@@ -439,8 +436,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
           if (hasActiveSession) ...[
             const SizedBox(height: 12),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: _green.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
@@ -473,8 +469,8 @@ class _GpsZoneStatusCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFFFA726).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: const Color(0xFFFFA726).withOpacity(0.3)),
+                border:
+                    Border.all(color: const Color(0xFFFFA726).withOpacity(0.3)),
               ),
               child: const Row(
                 children: [
@@ -484,8 +480,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'La zone GPS de votre entreprise n\'est pas encore configurée.',
-                      style: TextStyle(
-                          color: Color(0xFFFFA726), fontSize: 12),
+                      style: TextStyle(color: Color(0xFFFFA726), fontSize: 12),
                     ),
                   ),
                 ],
@@ -657,15 +652,14 @@ class _SessionCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         timeFmt.format(session.endedAt!),
-                        style:
-                            const TextStyle(color: _muted, fontSize: 12),
+                        style: const TextStyle(color: _muted, fontSize: 12),
                       ),
                     ] else ...[
                       const SizedBox(width: 12),
                       const Text(
                         'En cours',
-                        style: TextStyle(
-                            color: Color(0xFF4CAF50), fontSize: 12),
+                        style:
+                            TextStyle(color: Color(0xFF4CAF50), fontSize: 12),
                       ),
                     ],
                     if (session.durationFormatted != null) ...[

@@ -171,7 +171,7 @@ function absenceTypeName(row) {
 async function fetchPaginated(resourceUrl, params = {}) {
   const rows = []
   let page = 1
-  let lastPage = 1
+  let lastPage
   const perPage = params.per_page ?? 80
 
   do {

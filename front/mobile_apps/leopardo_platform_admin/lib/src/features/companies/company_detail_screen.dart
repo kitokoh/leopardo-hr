@@ -11,19 +11,19 @@ import 'company_screen.dart';
 
 final platformCompanyDetailProvider =
     FutureProvider.family<_CompanyDetailData, String>((ref, companyId) async {
-      final repository = ref.watch(platformRepositoryProvider);
-      final results = await Future.wait([
-        repository.companyHealth(companyId),
-        repository.companySubscription(companyId),
-        repository.companyFeatures(companyId),
-      ]);
+  final repository = ref.watch(platformRepositoryProvider);
+  final results = await Future.wait([
+    repository.companyHealth(companyId),
+    repository.companySubscription(companyId),
+    repository.companyFeatures(companyId),
+  ]);
 
-      return _CompanyDetailData(
-        health: results[0] as PlatformCompanyHealth,
-        subscription: results[1] as PlatformCompanySubscription,
-        features: results[2] as PlatformCompanyFeatures,
-      );
-    });
+  return _CompanyDetailData(
+    health: results[0] as PlatformCompanyHealth,
+    subscription: results[1] as PlatformCompanySubscription,
+    features: results[2] as PlatformCompanyFeatures,
+  );
+});
 
 final platformPlansProvider = FutureProvider<List<PlatformPlan>>((ref) {
   return ref.watch(platformRepositoryProvider).plans();
@@ -49,17 +49,15 @@ class CompanyDetailScreen extends ConsumerWidget {
       ),
       children: [
         detail.when(
-          data:
-              (data) => _CompanyDetailContent(companyId: companyId, data: data),
+          data: (data) =>
+              _CompanyDetailContent(companyId: companyId, data: data),
           loading: () => const MobileEmptyLoading(label: 'Chargement client'),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry:
-                    () => ref.invalidate(
-                      platformCompanyDetailProvider(companyId),
-                    ),
-              ),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(
+              platformCompanyDetailProvider(companyId),
+            ),
+          ),
         ),
       ],
     );
@@ -173,10 +171,9 @@ class _CompanyDetailContent extends ConsumerWidget {
             MobileMetricTile(
               value: '${health.criticalAnomalies30d}',
               label: 'Anomalies critiques',
-              color:
-                  health.criticalAnomalies30d > 0
-                      ? AppColors.danger
-                      : AppColors.rh,
+              color: health.criticalAnomalies30d > 0
+                  ? AppColors.danger
+                  : AppColors.rh,
             ),
           ],
         ),
@@ -204,35 +201,32 @@ class _CompanyDetailContent extends ConsumerWidget {
                 MobilePrimaryAction(
                   icon: Icons.verified_rounded,
                   label: 'Activer client',
-                  onPressed:
-                      () => _activateCompany(
-                        context: context,
-                        ref: ref,
-                        companyId: companyId,
-                        subscription: data.subscription,
-                      ),
+                  onPressed: () => _activateCompany(
+                    context: context,
+                    ref: ref,
+                    companyId: companyId,
+                    subscription: data.subscription,
+                  ),
                 ),
                 const SizedBox(height: 10),
               ],
               MobilePrimaryAction(
                 icon: Icons.edit_note_rounded,
                 label: 'Modifier abonnement',
-                onPressed:
-                    () => showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: MobileSurface.surface,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
-                        ),
-                      ),
-                      builder:
-                          (_) => _SubscriptionSheet(
-                            companyId: companyId,
-                            subscription: data.subscription,
-                          ),
+                onPressed: () => showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: MobileSurface.surface,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
                     ),
+                  ),
+                  builder: (_) => _SubscriptionSheet(
+                    companyId: companyId,
+                    subscription: data.subscription,
+                  ),
+                ),
               ),
             ],
           ),
@@ -246,39 +240,35 @@ class _CompanyDetailContent extends ConsumerWidget {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children:
-                    data.features.knownModules.map((module) {
-                      final enabled = data.features.active[module] == true;
-                      return MobileStatusPill(
-                        label: module,
-                        color: enabled ? AppColors.rh : MobileSurface.disabled,
-                        icon:
-                            enabled
-                                ? Icons.check_circle_rounded
-                                : Icons.radio_button_unchecked_rounded,
-                      );
-                    }).toList(),
+                children: data.features.knownModules.map((module) {
+                  final enabled = data.features.active[module] == true;
+                  return MobileStatusPill(
+                    label: module,
+                    color: enabled ? AppColors.rh : MobileSurface.disabled,
+                    icon: enabled
+                        ? Icons.check_circle_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 12),
               MobilePrimaryAction(
                 icon: Icons.tune_rounded,
                 label: 'Modifier modules',
-                onPressed:
-                    () => showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: MobileSurface.surface,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
-                        ),
-                      ),
-                      builder:
-                          (_) => _FeaturesSheet(
-                            companyId: companyId,
-                            features: data.features,
-                          ),
+                onPressed: () => showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: MobileSurface.surface,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
                     ),
+                  ),
+                  builder: (_) => _FeaturesSheet(
+                    companyId: companyId,
+                    features: data.features,
+                  ),
+                ),
               ),
             ],
           ),
@@ -319,9 +309,7 @@ class _CompanyDetailContent extends ConsumerWidget {
     }
 
     try {
-      await ref
-          .read(platformRepositoryProvider)
-          .updateCompanySubscription(
+      await ref.read(platformRepositoryProvider).updateCompanySubscription(
             companyId: companyId,
             planId: subscription.planId,
             status: 'active',
@@ -367,10 +355,9 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
   @override
   void initState() {
     super.initState();
-    _status =
-        _statuses.contains(widget.subscription.status)
-            ? widget.subscription.status
-            : 'active';
+    _status = _statuses.contains(widget.subscription.status)
+        ? widget.subscription.status
+        : 'active';
   }
 
   @override
@@ -389,9 +376,7 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(platformRepositoryProvider)
-          .updateCompanySubscription(
+      await ref.read(platformRepositoryProvider).updateCompanySubscription(
             companyId: widget.companyId,
             planId: _planId!,
             status: _status,
@@ -426,30 +411,26 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
       ),
       child: plans.when(
         data: (items) {
-          final activePlans =
-              items
-                  .where((plan) => plan.isActive || plan.id == _planId)
-                  .toList();
-          _planId ??=
-              activePlans
-                  .firstWhere(
-                    (plan) =>
-                        plan.id == widget.subscription.planId ||
-                        plan.name == widget.subscription.planName,
-                    orElse:
-                        () =>
-                            activePlans.isNotEmpty
-                                ? activePlans.first
-                                : const PlatformPlan(
-                                  id: 0,
-                                  name: 'Plan',
-                                  monthlyPrice: 0,
-                                  yearlyPrice: 0,
-                                  maxEmployees: null,
-                                  isActive: true,
-                                ),
-                  )
-                  .id;
+          final activePlans = items
+              .where((plan) => plan.isActive || plan.id == _planId)
+              .toList();
+          _planId ??= activePlans
+              .firstWhere(
+                (plan) =>
+                    plan.id == widget.subscription.planId ||
+                    plan.name == widget.subscription.planName,
+                orElse: () => activePlans.isNotEmpty
+                    ? activePlans.first
+                    : const PlatformPlan(
+                        id: 0,
+                        name: 'Plan',
+                        monthlyPrice: 0,
+                        yearlyPrice: 0,
+                        maxEmployees: null,
+                        isActive: true,
+                      ),
+              )
+              .id;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -469,40 +450,36 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
                 initialValue: _planId == 0 ? null : _planId,
                 dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Plan'),
-                items:
-                    activePlans
-                        .map(
-                          (plan) => DropdownMenuItem<int>(
-                            value: plan.id,
-                            child: Text(
-                              '${plan.name} - ${plan.monthlyPrice}/mois',
-                            ),
-                          ),
-                        )
-                        .toList(),
-                onChanged:
-                    _submitting
-                        ? null
-                        : (value) => setState(() => _planId = value),
+                items: activePlans
+                    .map(
+                      (plan) => DropdownMenuItem<int>(
+                        value: plan.id,
+                        child: Text(
+                          '${plan.name} - ${plan.monthlyPrice}/mois',
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: _submitting
+                    ? null
+                    : (value) => setState(() => _planId = value),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _status,
                 dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Statut'),
-                items:
-                    _statuses
-                        .map(
-                          (status) => DropdownMenuItem<String>(
-                            value: status,
-                            child: Text(status),
-                          ),
-                        )
-                        .toList(),
-                onChanged:
-                    _submitting
-                        ? null
-                        : (value) => setState(() => _status = value ?? _status),
+                items: _statuses
+                    .map(
+                      (status) => DropdownMenuItem<String>(
+                        value: status,
+                        child: Text(status),
+                      ),
+                    )
+                    .toList(),
+                onChanged: _submitting
+                    ? null
+                    : (value) => setState(() => _status = value ?? _status),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -523,11 +500,10 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
           );
         },
         loading: () => const MobileEmptyLoading(label: 'Chargement plans'),
-        error:
-            (error, _) => MobileErrorPanel(
-              message: error.toString(),
-              onRetry: () => ref.invalidate(platformPlansProvider),
-            ),
+        error: (error, _) => MobileErrorPanel(
+          message: error.toString(),
+          onRetry: () => ref.invalidate(platformPlansProvider),
+        ),
       ),
     );
   }
@@ -553,9 +529,7 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(platformRepositoryProvider)
-          .updateCompanyFeatures(
+      await ref.read(platformRepositoryProvider).updateCompanyFeatures(
             companyId: widget.companyId,
             features: _features,
           );
@@ -602,23 +576,21 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
             final locked = module == 'rh';
             return SwitchListTile.adaptive(
               value: _features[module] == true,
-              onChanged:
-                  locked || _submitting
-                      ? null
-                      : (value) => setState(() => _features[module] = value),
+              onChanged: locked || _submitting
+                  ? null
+                  : (value) => setState(() => _features[module] = value),
               activeThumbColor: AppColors.rh,
               activeTrackColor: AppColors.rh.withValues(alpha: 0.28),
               title: Text(
                 module,
                 style: const TextStyle(color: MobileSurface.text),
               ),
-              subtitle:
-                  locked
-                      ? const Text(
-                        'Module socle toujours actif',
-                        style: TextStyle(color: MobileSurface.secondary),
-                      )
-                      : null,
+              subtitle: locked
+                  ? const Text(
+                      'Module socle toujours actif',
+                      style: TextStyle(color: MobileSurface.secondary),
+                    )
+                  : null,
             );
           }),
           const SizedBox(height: 12),

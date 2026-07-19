@@ -35,15 +35,13 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
       ),
       children: [
         attendance.when(
-          loading:
-              () => const MobileEmptyLoading(
-                label: 'Synchronisation des presences...',
-              ),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry: () => ref.invalidate(managerAttendanceTodayProvider),
-              ),
+          loading: () => const MobileEmptyLoading(
+            label: 'Synchronisation des presences...',
+          ),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(managerAttendanceTodayProvider),
+          ),
           data: (items) => _AttendanceBody(items: items),
         ),
       ],
@@ -59,10 +57,9 @@ class _AttendanceBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final present = items.where((item) => item.checkIn != null).length;
-    final open =
-        items
-            .where((item) => item.checkIn != null && item.checkOut == null)
-            .length;
+    final open = items
+        .where((item) => item.checkIn != null && item.checkOut == null)
+        .length;
     final late = items.where((item) => (item.lateMinutes ?? 0) > 0).length;
 
     return Column(
@@ -135,13 +132,12 @@ class ManagerAnomaliesScreen extends ConsumerWidget {
       ),
       children: [
         report.when(
-          loading:
-              () => const MobileEmptyLoading(label: 'Analyse des anomalies...'),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry: () => ref.invalidate(managerAnomaliesProvider),
-              ),
+          loading: () =>
+              const MobileEmptyLoading(label: 'Analyse des anomalies...'),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(managerAnomaliesProvider),
+          ),
           data: (data) => _AnomalyBody(report: data),
         ),
       ],
@@ -268,56 +264,53 @@ class _ManagerCorrectionsScreenState
       ),
       children: [
         corrections.when(
-          loading:
-              () =>
-                  const MobileEmptyLoading(label: 'Chargement des demandes...'),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry: () => ref.invalidate(managerCorrectionsProvider),
-              ),
-          data:
-              (items) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MobilePanel(
-                    child: Row(
-                      children: [
-                        const MobileIconBubble(
-                          icon: Icons.fact_check_outlined,
-                          color: AppColors.rh,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            '${items.length} demande(s) a traiter',
-                            style: AppTypography.subtitle.copyWith(
-                              color: MobileSurface.text,
-                            ),
-                          ),
-                        ),
-                      ],
+          loading: () =>
+              const MobileEmptyLoading(label: 'Chargement des demandes...'),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(managerCorrectionsProvider),
+          ),
+          data: (items) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MobilePanel(
+                child: Row(
+                  children: [
+                    const MobileIconBubble(
+                      icon: Icons.fact_check_outlined,
+                      color: AppColors.rh,
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  if (items.isEmpty)
-                    const _EmptyState(
-                      icon: Icons.task_alt_rounded,
-                      title: 'File de correction vide',
-                      message:
-                          'Les demandes envoyees depuis les trois points du pointage seront listees ici.',
-                    )
-                  else
-                    ...items.map(
-                      (item) => _CorrectionRow(
-                        correction: item,
-                        busy: _busyId == item.id,
-                        onApprove: () => _decide(item, true),
-                        onReject: () => _decide(item, false),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '${items.length} demande(s) a traiter',
+                        style: AppTypography.subtitle.copyWith(
+                          color: MobileSurface.text,
+                        ),
                       ),
                     ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(height: 14),
+              if (items.isEmpty)
+                const _EmptyState(
+                  icon: Icons.task_alt_rounded,
+                  title: 'File de correction vide',
+                  message:
+                      'Les demandes envoyees depuis les trois points du pointage seront listees ici.',
+                )
+              else
+                ...items.map(
+                  (item) => _CorrectionRow(
+                    correction: item,
+                    busy: _busyId == item.id,
+                    onApprove: () => _decide(item, true),
+                    onReject: () => _decide(item, false),
+                  ),
+                ),
+            ],
+          ),
         ),
       ],
     );
@@ -331,10 +324,9 @@ class _AttendanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor =
-        log.checkOut == null
-            ? AppColors.warning
-            : ((log.lateMinutes ?? 0) > 0 ? AppColors.warning : AppColors.rh);
+    final statusColor = log.checkOut == null
+        ? AppColors.warning
+        : ((log.lateMinutes ?? 0) > 0 ? AppColors.warning : AppColors.rh);
 
     return MobilePanel(
       margin: const EdgeInsets.only(bottom: 8),
@@ -501,17 +493,16 @@ class _CorrectionRow extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: busy ? null : onApprove,
-                  icon:
-                      busy
-                          ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                          : const Icon(Icons.check_rounded, size: 17),
+                  icon: busy
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.check_rounded, size: 17),
                   label: const Text('Appliquer'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.rh,

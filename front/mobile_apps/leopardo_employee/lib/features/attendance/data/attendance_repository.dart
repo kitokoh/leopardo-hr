@@ -30,37 +30,49 @@ class AttendanceRepository {
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
-      final payload = {
-        'work_type': workType,
-        'device_timezone': _deviceTimezoneContext(),
-        if (gpsLat != null) 'gps_lat': gpsLat,
-        if (gpsLng != null) 'gps_lng': gpsLng,
-        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
-        if (punchNote != null && punchNote.trim().isNotEmpty)
-          'punch_note': punchNote.trim(),
-      };
-      
-      try {
-        final response = await apiClient.requestWithRetry(
-          '/attendance/check-in',
-          method: 'POST',
-          data: payload,
-          maxRetriesOverride: 0,
-          timeoutOverride: _actionTimeout,
+    final payload = {
+      'work_type': workType,
+      'device_timezone': _deviceTimezoneContext(),
+      if (gpsLat != null) 'gps_lat': gpsLat,
+      if (gpsLng != null) 'gps_lng': gpsLng,
+      if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+      if (punchNote != null && punchNote.trim().isNotEmpty)
+        'punch_note': punchNote.trim(),
+    };
+
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/attendance/check-in',
+        method: 'POST',
+        data: payload,
+        maxRetriesOverride: 0,
+        timeoutOverride: _actionTimeout,
+      );
+      return AttendanceLog.fromJson(_dataMap(response.data));
+    } catch (e) {
+      if (e is ApiException &&
+          (e.message.toLowerCase().contains('connexion') ||
+              e.message.toLowerCase().contains('internet'))) {
+        final box =
+            await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+        await box.add({
+          'type': 'check-in',
+          'payload': payload,
+          'timestamp': DateTime.now().toIso8601String()
+        });
+        return AttendanceLog(
+          id: 0,
+          employeeId: 0,
+          date: DateTime.now(),
+          status: 'offline_sync_pending',
+          employeeName: 'Vous',
+          sessionNumber: 1,
+          workType: workType,
+          checkIn: DateTime.now(),
         );
-        return AttendanceLog.fromJson(_dataMap(response.data));
-      } catch (e) {
-        if (e is ApiException && (e.message.toLowerCase().contains('connexion') || e.message.toLowerCase().contains('internet'))) {
-          final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
-          await box.add({'type': 'check-in', 'payload': payload, 'timestamp': DateTime.now().toIso8601String()});
-          return AttendanceLog(
-            id: 0, employeeId: 0, date: DateTime.now(), status: 'offline_sync_pending',
-            employeeName: 'Vous', sessionNumber: 1, workType: workType,
-            checkIn: DateTime.now(),
-          );
-        }
-        rethrow;
       }
+      rethrow;
+    }
   }
 
   Future<AttendanceLog> checkOut({
@@ -70,37 +82,49 @@ class AttendanceRepository {
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
-      final payload = {
-        'work_type': workType,
-        'device_timezone': _deviceTimezoneContext(),
-        if (gpsLat != null) 'gps_lat': gpsLat,
-        if (gpsLng != null) 'gps_lng': gpsLng,
-        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
-        if (punchNote != null && punchNote.trim().isNotEmpty)
-          'punch_note': punchNote.trim(),
-      };
-      
-      try {
-        final response = await apiClient.requestWithRetry(
-          '/attendance/check-out',
-          method: 'POST',
-          data: payload,
-          maxRetriesOverride: 0,
-          timeoutOverride: _actionTimeout,
+    final payload = {
+      'work_type': workType,
+      'device_timezone': _deviceTimezoneContext(),
+      if (gpsLat != null) 'gps_lat': gpsLat,
+      if (gpsLng != null) 'gps_lng': gpsLng,
+      if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+      if (punchNote != null && punchNote.trim().isNotEmpty)
+        'punch_note': punchNote.trim(),
+    };
+
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/attendance/check-out',
+        method: 'POST',
+        data: payload,
+        maxRetriesOverride: 0,
+        timeoutOverride: _actionTimeout,
+      );
+      return AttendanceLog.fromJson(_dataMap(response.data));
+    } catch (e) {
+      if (e is ApiException &&
+          (e.message.toLowerCase().contains('connexion') ||
+              e.message.toLowerCase().contains('internet'))) {
+        final box =
+            await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+        await box.add({
+          'type': 'check-out',
+          'payload': payload,
+          'timestamp': DateTime.now().toIso8601String()
+        });
+        return AttendanceLog(
+          id: 0,
+          employeeId: 0,
+          date: DateTime.now(),
+          status: 'offline_sync_pending',
+          employeeName: 'Vous',
+          sessionNumber: 1,
+          workType: workType,
+          checkOut: DateTime.now(),
         );
-        return AttendanceLog.fromJson(_dataMap(response.data));
-      } catch (e) {
-        if (e is ApiException && (e.message.toLowerCase().contains('connexion') || e.message.toLowerCase().contains('internet'))) {
-          final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
-          await box.add({'type': 'check-out', 'payload': payload, 'timestamp': DateTime.now().toIso8601String()});
-          return AttendanceLog(
-            id: 0, employeeId: 0, date: DateTime.now(), status: 'offline_sync_pending',
-            employeeName: 'Vous', sessionNumber: 1, workType: workType,
-            checkOut: DateTime.now(),
-          );
-        }
-        rethrow;
       }
+      rethrow;
+    }
   }
 
   Future<AttendanceLog> updateAttendanceLog({
@@ -294,10 +318,9 @@ class AttendanceRepository {
     }
 
     final itemPayload = data['item'];
-    final todayPayload =
-        itemPayload is Map
-            ? itemPayload.cast<String, dynamic>()
-            : (data.containsKey('item') ? null : data);
+    final todayPayload = itemPayload is Map
+        ? itemPayload.cast<String, dynamic>()
+        : (data.containsKey('item') ? null : data);
 
     if (todayPayload == null) {
       return {
@@ -311,16 +334,14 @@ class AttendanceRepository {
     final now = DateTime.now();
     final today = todayPayload.cast<String, dynamic>();
     final rawSessions = data['sessions'];
-    final sessions =
-        rawSessions is List
-            ? rawSessions
-                .whereType<Map>()
-                .map(
-                  (entry) =>
-                      AttendanceLog.fromJson(entry.cast<String, dynamic>()),
-                )
-                .toList()
-            : const <AttendanceLog>[];
+    final sessions = rawSessions is List
+        ? rawSessions
+            .whereType<Map>()
+            .map(
+              (entry) => AttendanceLog.fromJson(entry.cast<String, dynamic>()),
+            )
+            .toList()
+        : const <AttendanceLog>[];
 
     return {
       'log': AttendanceLog(
@@ -330,18 +351,15 @@ class AttendanceRepository {
         checkIn: _parseLocalTime(today['check_in_time'] as String?),
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
-        workedHours:
-            today['hours_worked'] != null
-                ? double.tryParse(today['hours_worked'].toString())
-                : 0.0,
-        overtimeHours:
-            today['overtime_hours'] != null
-                ? double.tryParse(today['overtime_hours'].toString())
-                : 0.0,
-        lateMinutes:
-            today['late_minutes'] != null
-                ? int.tryParse(today['late_minutes'].toString())
-                : null,
+        workedHours: today['hours_worked'] != null
+            ? double.tryParse(today['hours_worked'].toString())
+            : 0.0,
+        overtimeHours: today['overtime_hours'] != null
+            ? double.tryParse(today['overtime_hours'].toString())
+            : 0.0,
+        lateMinutes: today['late_minutes'] != null
+            ? int.tryParse(today['late_minutes'].toString())
+            : null,
         employeeName: today['name']?.toString(),
         employeePhotoUrl:
             (today['photo_url'] ?? today['photo_path'])?.toString(),
@@ -366,10 +384,9 @@ class AttendanceRepository {
   }
 
   static Map<String, dynamic> _dataMap(dynamic responseData) {
-    final response =
-        responseData is Map
-            ? responseData.cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final response = responseData is Map
+        ? responseData.cast<String, dynamic>()
+        : const <String, dynamic>{};
     final payload = response['data'];
     if (payload is Map) {
       final item = payload['item'];

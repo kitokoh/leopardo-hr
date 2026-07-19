@@ -177,7 +177,9 @@ class UserAuthRepository {
     // Persiste la nouvelle locale localement pour que le header Accept-Language
     // et le Locale Flutter soient mis Ã  jour sans nÃ©cessiter un re-login.
     if (preferredLanguage != null) {
-      final lang = user.preferredLanguage.isNotEmpty ? user.preferredLanguage : preferredLanguage!;
+      final lang = user.preferredLanguage.isNotEmpty
+          ? user.preferredLanguage
+          : preferredLanguage!;
       final isRtl = lang == 'ar';
       await preferences.saveLocaleSettings(
         preferredLanguage: lang,

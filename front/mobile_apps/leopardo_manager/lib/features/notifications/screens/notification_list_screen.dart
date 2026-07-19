@@ -40,66 +40,63 @@ class NotificationListScreen extends ConsumerWidget {
         ),
       ),
       body: notificationsAsync.when(
-        data:
-            (notifications) => RefreshIndicator(
-              onRefresh: () async => ref.refresh(notificationsProvider.future),
-              color: AppColors.rh,
-              backgroundColor: MobileSurface.background,
-              child:
-                  notifications.isEmpty
-                      ? ListView(
-                        padding: const EdgeInsets.all(20),
-                        children: [
-                          EmptyState(
-                            icon: Icons.notifications_none,
-                            title: 'Aucune notification',
-                            description:
-                                'Vous etes a jour. Cette page se rafraichit automatiquement.',
+        data: (notifications) => RefreshIndicator(
+          onRefresh: () async => ref.refresh(notificationsProvider.future),
+          color: AppColors.rh,
+          backgroundColor: MobileSurface.background,
+          child: notifications.isEmpty
+              ? ListView(
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    EmptyState(
+                      icon: Icons.notifications_none,
+                      title: 'Aucune notification',
+                      description:
+                          'Vous etes a jour. Cette page se rafraichit automatiquement.',
+                    ),
+                  ],
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: notifications.length,
+                  itemBuilder: (context, index) {
+                    final notification = notifications[index];
+                    return _NotificationTile(
+                      key: ValueKey(notification.id),
+                      title: notification.title,
+                      body: notification.body,
+                      isRead: notification.isRead,
+                      onTap: () async {
+                        if (!notification.isRead) {
+                          await ref
+                              .read(notificationRepositoryProvider)
+                              .markAsRead(notification.id);
+                          ref.invalidate(notificationsProvider);
+                        }
+                      },
+                      onDelete: () async {
+                        await ref
+                            .read(notificationRepositoryProvider)
+                            .deleteNotification(notification.id);
+                        ref.invalidate(notificationsProvider);
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Notification supprimee.'),
                           ),
-                        ],
-                      )
-                      : ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: notifications.length,
-                        itemBuilder: (context, index) {
-                          final notification = notifications[index];
-                          return _NotificationTile(
-                            key: ValueKey(notification.id),
-                            title: notification.title,
-                            body: notification.body,
-                            isRead: notification.isRead,
-                            onTap: () async {
-                              if (!notification.isRead) {
-                                await ref
-                                    .read(notificationRepositoryProvider)
-                                    .markAsRead(notification.id);
-                                ref.invalidate(notificationsProvider);
-                              }
-                            },
-                            onDelete: () async {
-                              await ref
-                                  .read(notificationRepositoryProvider)
-                                  .deleteNotification(notification.id);
-                              ref.invalidate(notificationsProvider);
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Notification supprimee.'),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-            ),
+                        );
+                      },
+                    );
+                  },
+                ),
+        ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (e, _) => Center(
-              child: Text(
-                e.toString(),
-                style: const TextStyle(color: AppColors.danger),
-              ),
-            ),
+        error: (e, _) => Center(
+          child: Text(
+            e.toString(),
+            style: const TextStyle(color: AppColors.danger),
+          ),
+        ),
       ),
     );
   }
@@ -150,19 +147,17 @@ class _NotificationTile extends StatelessWidget {
           child: Ink(
             padding: const EdgeInsets.all(14),
             decoration: MobileSurface.cardDecoration(
-              color:
-                  isRead
-                      ? MobileSurface.surface
-                      : AppColors.info.withValues(alpha: 0.08),
+              color: isRead
+                  ? MobileSurface.surface
+                  : AppColors.info.withValues(alpha: 0.08),
               radius: 14,
             ),
             child: Row(
               children: [
                 MobileIconBubble(
-                  icon:
-                      isRead
-                          ? Icons.notifications_none
-                          : Icons.notifications_active,
+                  icon: isRead
+                      ? Icons.notifications_none
+                      : Icons.notifications_active,
                   color: accent,
                   size: 38,
                 ),
@@ -220,18 +215,17 @@ class _NotificationTile extends StatelessWidget {
                       onTap();
                     }
                   },
-                  itemBuilder:
-                      (_) => [
-                        if (!isRead)
-                          const PopupMenuItem(
-                            value: 'read',
-                            child: Text('Marquer comme lue'),
-                          ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: Text('Supprimer'),
-                        ),
-                      ],
+                  itemBuilder: (_) => [
+                    if (!isRead)
+                      const PopupMenuItem(
+                        value: 'read',
+                        child: Text('Marquer comme lue'),
+                      ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Text('Supprimer'),
+                    ),
+                  ],
                 ),
               ],
             ),

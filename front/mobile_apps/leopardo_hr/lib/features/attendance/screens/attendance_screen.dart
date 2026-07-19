@@ -60,8 +60,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final methods = await auth.getAvailableBiometrics();
       if (!mounted) return;
       setState(() {
-        _fingerprintAvailable =
-            supported &&
+        _fingerprintAvailable = supported &&
             canCheck &&
             methods.any((type) => type == BiometricType.fingerprint);
       });
@@ -82,8 +81,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
     final week = _buildWeekSummaries(weekLogs);
     final employee = authState.employee;
-    final isCheckedIn =
-        attState.todayLog?.checkIn != null &&
+    final isCheckedIn = attState.todayLog?.checkIn != null &&
         attState.todayLog?.checkOut == null;
     final canDirectEdit =
         employee?.isPrincipal == true || employee?.isHr == true;
@@ -167,10 +165,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       ),
     );
 
-    final success =
-        isCheckedIn
-            ? await ref.read(attendanceProvider.notifier).checkOut()
-            : await ref.read(attendanceProvider.notifier).checkIn();
+    final success = isCheckedIn
+        ? await ref.read(attendanceProvider.notifier).checkOut()
+        : await ref.read(attendanceProvider.notifier).checkIn();
     if (!mounted) return;
     messenger.clearSnackBars();
     if (isCheckedIn) {
@@ -208,10 +205,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     required String roleLabel,
     required bool canDirectEdit,
   }) {
-    final initial =
-        firstName.trim().isEmpty
-            ? 'L'
-            : firstName.trim().characters.first.toUpperCase();
+    final initial = firstName.trim().isEmpty
+        ? 'L'
+        : firstName.trim().characters.first.toUpperCase();
 
     return Row(
       children: [
@@ -296,30 +292,29 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 break;
             }
           },
-          itemBuilder:
-              (_) => const [
-                PopupMenuItem(
-                  value: 'correction',
-                  child: _MenuItem(
-                    icon: Icons.edit_calendar_outlined,
-                    label: 'Modifier',
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'monthly',
-                  child: _MenuItem(
-                    icon: Icons.calendar_month_outlined,
-                    label: 'Mon mois complet',
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'profile',
-                  child: _MenuItem(
-                    icon: Icons.person_outline,
-                    label: 'Mon profil',
-                  ),
-                ),
-              ],
+          itemBuilder: (_) => const [
+            PopupMenuItem(
+              value: 'correction',
+              child: _MenuItem(
+                icon: Icons.edit_calendar_outlined,
+                label: 'Modifier',
+              ),
+            ),
+            PopupMenuItem(
+              value: 'monthly',
+              child: _MenuItem(
+                icon: Icons.calendar_month_outlined,
+                label: 'Mon mois complet',
+              ),
+            ),
+            PopupMenuItem(
+              value: 'profile',
+              child: _MenuItem(
+                icon: Icons.person_outline,
+                label: 'Mon profil',
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -408,17 +403,16 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   ],
                 ),
                 child: Center(
-                  child:
-                      isLoading
-                          ? const SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.4,
-                            ),
-                          )
-                          : _buildFingerprintIcon(),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.4,
+                          ),
+                        )
+                      : _buildFingerprintIcon(),
                 ),
               ),
             ),
@@ -429,17 +423,16 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           isLoading
               ? 'Enregistrement en cours...'
               : isCheckedIn
-              ? 'Appuyez pour enregistrer votre depart'
-              : 'Appuyez pour enregistrer votre arrivee',
+                  ? 'Appuyez pour enregistrer votre depart'
+                  : 'Appuyez pour enregistrer votre arrivee',
           style: const TextStyle(color: _secondary, fontSize: 12),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         if (_fingerprintAvailable)
           GestureDetector(
-            onTap:
-                () =>
-                    setState(() => _fingerprintEnabled = !_fingerprintEnabled),
+            onTap: () =>
+                setState(() => _fingerprintEnabled = !_fingerprintEnabled),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -480,8 +473,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final checkOut = _formatTime(log?.checkOut);
     final statusLabel = _statusLabel(log);
     final statusColor = _statusColor(log);
-    final gain =
-        state.summary?.totalEstimated ??
+    final gain = state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
     final currency = state.summary?.currency ?? 'DZD';
 
@@ -561,10 +553,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     required bool canDirectEdit,
     required String currency,
   }) {
-    final barColor =
-        day.isAbsent
-            ? _soft
-            : day.lateMinutes > 0
+    final barColor = day.isAbsent
+        ? _soft
+        : day.lateMinutes > 0
             ? AppColors.warning
             : AppColors.rh;
 
@@ -644,13 +635,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ),
           ),
           GestureDetector(
-            onTap:
-                () => _showCorrectionSheet(
-                  context,
-                  forDate: day.date,
-                  canDirectEdit: canDirectEdit,
-                  logId: day.logId,
-                ),
+            onTap: () => _showCorrectionSheet(
+              context,
+              forDate: day.date,
+              canDirectEdit: canDirectEdit,
+              logId: day.logId,
+            ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
               decoration: const BoxDecoration(
@@ -748,12 +738,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => _CorrectionSheet(
-            targetDate: targetDate,
-            canDirectEdit: canDirectEdit,
-            logId: logId,
-          ),
+      builder: (_) => _CorrectionSheet(
+        targetDate: targetDate,
+        canDirectEdit: canDirectEdit,
+        logId: logId,
+      ),
     );
   }
 
@@ -768,10 +757,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     return List.generate(5, (index) {
       final date = today.subtract(Duration(days: index));
       final log = byDay[_dateKey(date)];
-      final labelPrefix =
-          index == 0
-              ? 'Aujourd hui'
-              : index == 1
+      final labelPrefix = index == 0
+          ? 'Aujourd hui'
+          : index == 1
               ? 'Hier'
               : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
       final label =
@@ -831,12 +819,11 @@ class _FingerprintPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-    final paint =
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.8
-          ..strokeCap = StrokeCap.round;
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.round;
 
     canvas.drawCircle(Offset(cx, cy), 1.5, paint..style = PaintingStyle.fill);
     paint.style = PaintingStyle.stroke;
@@ -892,8 +879,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
 
   bool _isTimeFuture(TimeOfDay time) {
     final now = DateTime.now();
-    final isToday =
-        widget.targetDate.day == now.day &&
+    final isToday = widget.targetDate.day == now.day &&
         widget.targetDate.month == now.month &&
         widget.targetDate.year == now.year;
     if (!isToday) return false;
@@ -913,11 +899,10 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       initialTime: TimeOfDay.now(),
       helpText:
           isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
-      builder:
-          (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          ),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
     if (picked == null) return;
 
@@ -959,28 +944,22 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = true);
     var success = true;
     if (widget.canDirectEdit) {
-      success = await ref
-          .read(attendanceProvider.notifier)
-          .updateCorrection(
+      success = await ref.read(attendanceProvider.notifier).updateCorrection(
             logId: widget.logId!,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
-            checkOut:
-                _checkOut == null
-                    ? null
-                    : _asDateTime(widget.targetDate, _checkOut!),
+            checkOut: _checkOut == null
+                ? null
+                : _asDateTime(widget.targetDate, _checkOut!),
             notes: _reasonCtrl.text.trim(),
           );
     } else {
-      success = await ref
-          .read(attendanceProvider.notifier)
-          .requestCorrection(
+      success = await ref.read(attendanceProvider.notifier).requestCorrection(
             logId: widget.logId,
             date: widget.targetDate,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
-            checkOut:
-                _checkOut == null
-                    ? null
-                    : _asDateTime(widget.targetDate, _checkOut!),
+            checkOut: _checkOut == null
+                ? null
+                : _asDateTime(widget.targetDate, _checkOut!),
             reason: _reasonCtrl.text.trim(),
           );
     }
@@ -988,8 +967,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (!success) {
-      final message =
-          ref.read(attendanceProvider).error ??
+      final message = ref.read(attendanceProvider).error ??
           'Impossible d envoyer la modification pour le moment.';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
@@ -1098,11 +1076,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                   borderSide: const BorderSide(color: Color(0xFF1A2B44)),
                 ),
               ),
-              validator:
-                  (value) =>
-                      value == null || value.trim().isEmpty
-                          ? 'Motif obligatoire'
-                          : null,
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Motif obligatoire'
+                  : null,
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -1117,22 +1093,21 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child:
-                    _submitting
-                        ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                        : Text(
-                          widget.canDirectEdit
-                              ? 'Modifier'
-                              : 'Demander une modification',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                child: _submitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
                         ),
+                      )
+                    : Text(
+                        widget.canDirectEdit
+                            ? 'Modifier'
+                            : 'Demander une modification',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
               ),
             ),
           ],
