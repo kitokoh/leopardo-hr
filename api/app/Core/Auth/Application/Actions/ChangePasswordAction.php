@@ -15,7 +15,12 @@ use Illuminate\Support\Facades\Hash;
  */
 final class ChangePasswordAction
 {
-    public function execute(Employee $employee, string $currentPassword, string $newPassword): void
+    /**
+     * @return array{token: string, token_type: string, token_expires_at: ?string}|null
+     *         A fresh Sanctum token for the current device, or null when the
+     *         request was not made through a token guard (e.g. session auth).
+     */
+    public function execute(Employee $employee, string $currentPassword, string $newPassword): ?array
     {
         if (! Hash::check($currentPassword, $employee->password_hash)) {
             throw new class('Mot de passe actuel incorrect') extends DomainException {
@@ -26,5 +31,26 @@ final class ChangePasswordAction
 
         $employee->password_hash = Hash::make($newPassword);
         $employee->save();
+
+        // Revoke every existing Sanctum token. A stolen token must stop
+        // working the moment the password is changed instead of staying
+        // valid until its natural expiration (up to 7 days). We then issue a
+        // fresh token for the current device so the caller isn't logged out
+        // by their own password change. See
+        // docs/security/AUDIT_API_2026-07-19.md, section 3.
+        $currentToken = $employee->currentAccessToken();
+        $tokenName = ($currentToken?->name) ?? 'api';
+        $abilities = ($currentToken?->abilities) ?? ['*'];
+        $expiresAt = $currentToken?->expires_at;
+
+        $employee->tokens()->delete();
+
+        $newToken = $employee->createToken($tokenName, $abilities, $expiresAt);
+
+        return [
+            'token' => $newToken->plainTextToken,
+            'token_type' => 'Bearer',
+            'token_expires_at' => $expiresAt?->toIso8601String(),
+        ];
     }
 }

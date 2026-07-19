@@ -34,7 +34,20 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    // Explicit allow-list instead of '*': defence-in-depth so that a future
+    // debug-time addition of '*' to allowed_origins (a classic CORS-debugging
+    // mistake) doesn't immediately combine with supports_credentials=true
+    // into a cross-origin credential theft vector. See
+    // docs/security/AUDIT_API_2026-07-19.md, section 4.
+    'allowed_headers' => [
+        'Authorization',
+        'Content-Type',
+        'Accept',
+        'X-Requested-With',
+        'X-Request-Id',
+        'X-API-Version',
+        'X-App-Context',
+    ],
 
     'exposed_headers' => [],
 

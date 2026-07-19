@@ -8,6 +8,7 @@ use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
+use App\Rules\NotPrivateUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -59,6 +60,24 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
 
     public function handle(): void
     {
+        // Anti-SSRF, defence-in-depth: the URL was already validated against
+        // private/reserved IP ranges when the endpoint was created/updated
+        // (see StoreWebhookEndpointRequest/UpdateWebhookEndpointRequest), but
+        // DNS can be rebound between then and now. Re-resolve and re-check
+        // right before making the outbound request instead of trusting the
+        // stored value blindly. See docs/security/AUDIT_API_2026-07-19.md.
+        $host = parse_url($this->endpoint->url, PHP_URL_HOST);
+        if (! str_starts_with($this->endpoint->url, 'https://') || ! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
+            Log::warning('Webhook delivery blocked: URL resolves to a disallowed host', [
+                'endpoint_id' => $this->endpoint->id,
+                'event' => $this->event,
+            ]);
+
+            $this->endpoint->update(['active' => false]);
+
+            return;
+        }
+
         $body = [
             'event' => $this->event,
             'timestamp' => now()->toIso8601String(),

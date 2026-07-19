@@ -48,6 +48,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Render sits as the single edge proxy in front of this app; without
+        // trusting it explicitly, Illuminate\Http\Request::ip() falls back to
+        // undefined behaviour for X-Forwarded-For, which weakens per-IP rate
+        // limiting (RateLimiter::for('api', ...) etc). See
+        // docs/security/AUDIT_API_2026-07-19.md, section 5.
+        $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_FOR
+            | Request::HEADER_X_FORWARDED_HOST
+            | Request::HEADER_X_FORWARDED_PORT
+            | Request::HEADER_X_FORWARDED_PROTO);
+
         $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
         $middleware->web(append: [
