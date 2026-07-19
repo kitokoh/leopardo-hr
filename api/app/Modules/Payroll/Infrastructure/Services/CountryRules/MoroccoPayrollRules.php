@@ -31,7 +31,7 @@ class MoroccoPayrollRules extends AbstractCountryRules
         ];
     }
 
-    public function taxSlabs(): array
+    protected function defaultTaxSlabs(): array
     {
         return [
             ['min' => 0, 'max' => 30000, 'rate' => 0, 'fixed_deduction' => 0],

@@ -59,5 +59,44 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame(0.0, $rules->calculateIncomeTax(2500));
         self::assertSame(333.33, $rules->calculateIncomeTax(5000));
     }
+
+    /**
+     * Regression test for the TaxSlab/PayrollCalculator disconnect (PA2-ARCH-001):
+     * outside a booted Laravel app (no facade root, no DB — same environment as
+     * every other test in this pure PHPUnit\Framework\TestCase file),
+     * taxSlabs()/calculateIncomeTax() must keep falling back to the hardcoded
+     * defaultTaxSlabs() instead of fataling, so results stay identical to
+     * before the DB-backed lookup was introduced.
+     */
+    public function test_tax_slabs_fall_back_to_hardcoded_defaults_without_a_booted_app(): void
+    {
+        $rules = new AlgeriaPayrollRules;
+
+        self::assertSame(6, count($rules->taxSlabs()));
+        self::assertSame(0.0, $rules->calculateIncomeTax(20000));
+        self::assertSame(5800.0, $rules->calculateIncomeTax(50000));
+    }
+
+    /**
+     * forCompany() must return a new scoped instance without mutating the
+     * original rules object (PayrollCalculator relies on this to scope
+     * company-specific TaxSlab overrides per payroll run without leaking
+     * state across companies/requests).
+     */
+    public function test_for_company_returns_a_scoped_clone_without_mutating_the_original(): void
+    {
+        $rules = new TunisiaPayrollRules;
+
+        $scoped = $rules->forCompany('11111111-1111-1111-1111-111111111111');
+
+        self::assertNotSame($rules, $scoped);
+        self::assertInstanceOf(TunisiaPayrollRules::class, $scoped);
+        self::assertSame('TN', $scoped->countryCode());
+        // No DB/tax_slabs table available in this pure unit-test environment,
+        // so both the original and the scoped clone fall back to the same
+        // hardcoded defaults — confirms forCompany() doesn't break the
+        // no-DB fallback path.
+        self::assertSame($rules->taxSlabs(), $scoped->taxSlabs());
+    }
 }
 
