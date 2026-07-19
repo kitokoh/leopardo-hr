@@ -165,7 +165,7 @@ class EdgeNodeController extends Controller
         }
 
         // Dispatch async processing
-        \App\Modules\EdgeSync\Jobs\ProcessSyncQueueJob::dispatch($node->id);
+        \App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob::dispatch($node->id);
 
         $node->update(['last_seen_at' => now()]);
 
