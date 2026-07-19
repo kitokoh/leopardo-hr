@@ -14,21 +14,23 @@
   - `npm` : ajouter `front/web`, `front/admin-dashboard`, `front/web-offline` en plus de `api`.
   - Ajouter écosystème `github-actions` (`directory: "/"`) pour recevoir les CVE et mises à jour des actions tierces automatiquement.
 
-## Priorité P1 — Sécurité supply-chain (à planifier, 1-2 sprints)
+## Priorité P1 — Sécurité supply-chain (implémenté partiellement le 2026-07-19)
 
-- [ ] **(Audit §2.1)** Épingler par SHA complet au minimum `trufflesecurity/trufflehog` (actuellement `@main`, le plus risqué car il tourne avec accès en lecture au repo). Ensuite étendre progressivement à `shivammathur/setup-php`, `subosito/flutter-action`, `treosh/lighthouse-ci-action`, `wzieba/Firebase-Distribution-Github-Action`, `dawidd6/action-send-mail`.
-  - Une fois l'écosystème `github-actions` de Dependabot actif (fait en P0), Dependabot propose déjà les PR de bump de SHA — pas de script custom nécessaire.
-- [ ] **(Audit §2.2)** Uniformiser toutes les actions GitHub officielles sur la dernière version stable (`actions/checkout@v5`, `actions/upload-artifact@v5` partout). Vérifier le changelog de `checkout@v5` (`persist-credentials`) avant bascule sur les workflows qui font des `git push` (auto-fix Pint, release, fix-composer-lock).
+- [x] **(Audit §2.1)** `secret-scan.yml` : `trufflesecurity/trufflehog` épinglé par SHA complet (`27b0417c16317ca9a472a9a8092acce143b49c55` = v3.95.9) au lieu de `@main`. C'était la ref la plus risquée du repo (accès lecture au code + exécution sur chaque PR/push). Reste à faire : étendre progressivement le pinning SHA à `shivammathur/setup-php`, `subosito/flutter-action`, `wzieba/Firebase-Distribution-Github-Action`, `dawidd6/action-send-mail` — l'écosystème `github-actions` de Dependabot (ajouté en P0) proposera les PR de bump automatiquement une fois ces actions épinglées une première fois.
+- [x] **(Audit §2.2)** Uniformisation `actions/checkout@v4` → `v5` (3 fichiers) et `actions/upload-artifact@v4` → `v5` (9 fichiers). Vérifié au préalable qu'aucun de ces workflows ne fait de `git push` (aucun changement de comportement `persist-credentials` à risque).
+- [x] **(Audit §2.2, bonus)** `lighthouse.yml` : `treosh/lighthouse-ci-action@v10` → `@v12` (actionlint signalait un runtime Node trop ancien pour GitHub Actions ; v12 tourne sur node24).
 - [ ] **(Audit §2.3)** Combler le trou SAST PHP :
   - Option recommandée : job dédié `Psalm` ou renforcement de `phpstan-modules.neon`/`phpstan-strict.neon` déjà présents dans le repo mais pas systématiquement exécutés en CI bloquante — vérifier s'ils tournent réellement quelque part (`architecture-check.yml` exécute `phpstan-modules.neon`, mais `phpstan-strict.neon` ne semble appelé par aucun workflow).
   - Alternative complémentaire : intégrer `semgrep` (gratuit, open-source, supporte PHP nativement) en job CI dédié pour combler l'absence de CodeQL PHP réel.
 - [ ] **(Audit §2.4, hors CI)** Rotation immédiate du mot de passe Redis Upstash exposé dans l'historique git + purge d'historique coordonnée avec l'équipe (BFG Repo-Cleaner ou `git filter-repo`). Action déjà notée dans `AUDIT.md`, toujours non cochée — à traiter en priorité absolue en dehors de ce plan CI mais mentionnée ici car elle affaiblit la valeur de `secret-scan.yml`.
 
-## Priorité P2 — Réduction de dette / duplication (moyen terme)
+## Priorité P2 — Réduction de dette / duplication (implémenté le 2026-07-19)
 
-- [ ] **(Audit §3.1)** Étendre `_setup-php.yml` pour couvrir le bootstrap multi-tenant (schema `shared_tenants` + migrations `public`/`tenant`), puis migrer `tests.yml` (×2 jobs), `coverage-gate.yml`, `backend-jobs-ci.yml` pour l'appeler via `uses: ./.github/workflows/_setup-php.yml` + `needs`. Réduction attendue : ~300 lignes de duplication.
-- [ ] **(Audit §3.2)** Faire de même pour `_setup-flutter.yml` : migrer `mobile-apps-ci.yml`, `mobile-distribute.yml`, `deploy-main.yml` (distribute-mobile) pour l'appeler.
-- [ ] **(Audit §3.3)** Remplacer la détection de fichiers changés maison (`git diff` + `grep -E`) par `dorny/paths-filter@v3` (bien maintenu, épinglable par SHA) dans `tests.yml` et `deploy-main.yml`, avec une configuration YAML centralisée des patterns partagés plutôt que deux regex divergentes à maintenir manuellement.
+- [x] **(Audit §3.1)** Dédup setup PHP+PostgreSQL+Redis : création de `.github/actions/setup-backend-db` (**composite action**, pas un reusable workflow — voir note technique ci-dessous) puis migration de `tests.yml` (jobs `backend-tests` et `backend-coverage`), `coverage-gate.yml`, `backend-jobs-ci.yml`. ~360 lignes dupliquées supprimées.
+- [x] **(Audit §3.2)** Dédup setup Flutter/Java : création de `.github/actions/setup-flutter-android` puis migration de `mobile-apps-ci.yml` (×2 jobs), `mobile-distribute.yml`, `deploy-main.yml` (job `distribute-mobile`).
+- [x] Suppression de `_setup-php.yml` et `_setup-flutter.yml` (reusable workflows morts, remplacés par les composite actions ci-dessus).
+  - **Note technique importante** découverte pendant l'implémentation : ces deux fichiers étaient des *reusable workflows* (`on: workflow_call`), pas des composite actions. Un reusable workflow appelé via `jobs.<id>.uses:` s'exécute comme **un job séparé sur un runner distinct** — il ne peut donc pas partager les conteneurs `services:` (postgres/redis) déclarés par le job appelant. C'est très probablement la raison structurelle pour laquelle `_setup-php.yml`, pourtant bien écrit, n'a jamais pu être appelé par `tests.yml`/`coverage-gate.yml`/`backend-jobs-ci.yml` : ces jobs ont besoin que Postgres/Redis tournent dans le *même* job que les steps PHP. Les composite actions (`uses: ./.github/actions/...` avec `runs: using: composite`) s'exécutent comme des steps normaux à l'intérieur du job appelant et n'ont pas cette limitation — c'est le mécanisme correct pour ce cas d'usage.
+- [ ] **(Audit §3.3)** Remplacer la détection de fichiers changés maison (`git diff` + `grep -E`) par `dorny/paths-filter@v3` (bien maintenu, épinglable par SHA) dans `tests.yml` et `deploy-main.yml`, avec une configuration YAML centralisée des patterns partagés plutôt que deux regex divergentes à maintenir manuellement. Non implémenté dans cette itération (changement de comportement de déclenchement CI à valider avec l'équipe avant merge).
 
 ## Priorité P3 — Fiabilité des déploiements (à discuter avec l'équipe avant de changer le comportement)
 
@@ -47,8 +49,11 @@
 ## Ce qui a été livré dans cette PR (2026-07-19)
 
 1. `AUDIT_CICD_2026-07-19.md` — audit complet (ce document est son plan associé).
-2. Correctifs P0 :
+2. Correctifs P0 (commit 1) :
    - `tests.yml` : suppression du fragment orphelin `mobile_*`.
    - `release.yml` : suppression du job legacy `build-artifacts` pointant vers `front/mobile` (dossier supprimé).
    - `.github/dependabot.yml` : correction des chemins Flutter réels + extension npm aux 3 front-ends manquants + ajout écosystème `github-actions`.
-3. Le reste (P1-P4) est documenté et priorisé mais volontairement **non implémenté dans cette PR** car cela demande des décisions produit/sécurité (rotation de secrets, comportement de déploiement optimiste, choix d'outil SAST) qui doivent être validées par l'équipe avant modification du comportement de production.
+3. Correctifs P1 + P2 (commit 2) :
+   - Pinning SHA de `trufflehog`, uniformisation `checkout`/`upload-artifact` sur les dernières versions stables, bump `lighthouse-ci-action` v10→v12.
+   - Nouvelles composite actions `.github/actions/setup-backend-db` et `.github/actions/setup-flutter-android`, migration de 7 workflows, suppression des reusable workflows morts `_setup-php.yml`/`_setup-flutter.yml`.
+4. Le reste (partie de P1, P3, P4) est documenté et priorisé mais volontairement **non implémenté dans cette PR** car cela demande des décisions produit/sécurité (rotation de secrets, comportement de déploiement optimiste, choix d'outil SAST) qui doivent être validées par l'équipe avant modification du comportement de production.
