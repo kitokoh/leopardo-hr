@@ -15,6 +15,8 @@ import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
   const SmartAttendanceDashboardScreen({super.key});
 
+  static const Color _bg = Color(0xFF0B1120);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dashAsync = ref.watch(smartAttendanceDashboardProvider);
@@ -140,7 +142,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF111B2E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,9 +196,9 @@ class _PendingCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.orange.withOpacity(0.1),
+          color: Colors.orange.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.orange.withOpacity(0.5)),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
@@ -236,7 +238,7 @@ class _ErrorCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.1),
+        color: AppColors.danger.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(

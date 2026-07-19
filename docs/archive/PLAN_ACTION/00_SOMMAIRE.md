@@ -1,7 +1,7 @@
 # PLAN D'ACTION COMPLET — LEOPARDO RH
 
-> ⚠️ **STATUT : CLÔTURÉ.** Selon `PILOTAGE.md` (source de vérité programme), les plans 01 à 72 de ce dossier sont **tous livrés** depuis le 2026-06-06.
-> Ce dossier est conservé pour traçabilité historique (liens depuis `CHANGELOG.md`, autres plans, `AGENTS.md`).
+> ⚠️ **STATUT : CLÔTURÉ ET ARCHIVÉ.** Selon `PILOTAGE.md` (source de vérité programme), les plans 01 à 72 de ce dossier sont **tous livrés** depuis le 2026-06-06.
+> Ce dossier a été déplacé de `docs/PLAN_ACTION/` vers `docs/archive/PLAN_ACTION/` le 2026-07-19 pour matérialiser sa clôture ; le contenu est inchangé, seul l'emplacement a changé. Il est conservé pour traçabilité historique (liens depuis `CHANGELOG.md`, autres plans, `AGENTS.md`).
 > **Pour le travail en cours et à venir, voir `docs/PLAN_ACTION2/00_SOMMAIRE.md`** — c'est le plan actif qui prend le relais.
 > Ne pas créer de nouveau plan numéroté dans ce dossier ; ajouter les nouveaux tickets dans `PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md`.
 

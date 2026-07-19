@@ -74,7 +74,7 @@ class EstimationController extends Controller
         // The receipt is about $employee's data, not the authenticated actor
         // (manager) who requested it — render it in the employee's language.
         App::setLocale(I18nCatalog::normalizeLocale(
-            $employee->preferred_language ?? $company?->language
+            $employee->preferred_language ?? $company->language
         ));
 
         $pdf = Pdf::loadView('pdf.receipt', [
