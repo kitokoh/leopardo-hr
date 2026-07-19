@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Auth\Infrastructure\Services\SuperAdminService;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -89,6 +89,78 @@ class PlatformAuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user('super_admin_api')?->currentAccessToken()?->delete();
+
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:100'],
+            'email' => ['sometimes', 'email', 'max:150'],
+        ]);
+
+        /** @var SuperAdmin $superAdmin */
+        $superAdmin = $request->user('super_admin_api');
+
+        if (isset($validated['email']) && $validated['email'] !== $superAdmin->email) {
+            $emailTaken = SuperAdmin::query()
+                ->where('email', $validated['email'])
+                ->where('id', '!=', $superAdmin->id)
+                ->exists();
+
+            if ($emailTaken) {
+                return new JsonResponse([
+                    'error' => 'EMAIL_ALREADY_TAKEN',
+                    'message' => 'Cette adresse email est déjà utilisée.',
+                ], 422);
+            }
+
+            $superAdmin->email = $validated['email'];
+        }
+
+        if (isset($validated['name'])) {
+            $superAdmin->name = $validated['name'];
+        }
+
+        $superAdmin->save();
+
+        return new JsonResponse([
+            'data' => [
+                'id' => $superAdmin->id,
+                'name' => $superAdmin->name,
+                'email' => $superAdmin->email,
+                'role' => 'super_admin',
+                'two_fa_enabled' => (bool) $superAdmin->two_fa_secret,
+            ],
+        ]);
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
+        ]);
+
+        /** @var SuperAdmin $superAdmin */
+        $superAdmin = $request->user('super_admin_api');
+
+        if (! Hash::check($validated['current_password'], $superAdmin->password_hash)) {
+            return new JsonResponse([
+                'error' => 'INVALID_PASSWORD',
+                'message' => 'Le mot de passe actuel est incorrect.',
+            ], 401);
+        }
+
+        $superAdmin->password_hash = Hash::make($validated['new_password']);
+        $superAdmin->save();
+
+        // Revoke all other API tokens so a leaked password can't keep an active session alive.
+        $currentTokenId = $superAdmin->currentAccessToken()?->id;
+        $superAdmin->tokens()
+            ->when($currentTokenId, fn ($query) => $query->where('id', '!=', $currentTokenId))
+            ->delete();
 
         return new JsonResponse(['status' => 'ok']);
     }
@@ -188,4 +260,3 @@ class PlatformAuthController extends Controller
         return '2fa_setup:'.(string) $superAdmin->id;
     }
 }
-

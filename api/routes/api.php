@@ -151,6 +151,8 @@ Route::prefix('v1')->group(function (): void {
     // Platform (super-admin, hors module)
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
         Route::get('/auth/me', [PlatformAuthController::class, 'me']);
+        Route::patch('/auth/profile', [PlatformAuthController::class, 'updateProfile']);
+        Route::post('/auth/change-password', [PlatformAuthController::class, 'changePassword']);
         Route::post('/auth/logout', [PlatformAuthController::class, 'logout']);
 
         // 2FA Super-Admin
