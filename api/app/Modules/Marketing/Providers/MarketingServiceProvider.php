@@ -20,6 +20,7 @@ class MarketingServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Boot Marketing module — routes loaded via routes/modules/marketing.php (Phase 3).
+        // Routes chargees via require dans routes/api.php (Phase 3) :
+        // routes/modules/marketing.php.
     }
 }
