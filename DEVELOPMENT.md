@@ -49,7 +49,7 @@ leopardo-hr/
 ├── Makefile
 ├── .devcontainer/          # VS Code DevContainer
 └── docs/
-    ├── PLAN_ACTION/        # Plans d'action et suivi
+    ├── archive/PLAN_ACTION/ # Plans d'action historiques (clos, voir PLAN_ACTION2/)
     └── API/                # Documentation OpenAPI
 ```
 
