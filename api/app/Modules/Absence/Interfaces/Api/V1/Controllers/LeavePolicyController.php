@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Absence\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Absence\Domain\Models\LeaveBalance;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
