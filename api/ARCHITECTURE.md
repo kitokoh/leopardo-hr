@@ -67,7 +67,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 | `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | ✅ complet | `PayrollServiceProvider` |
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
-| `Modules/Absence` | ✅ routes/modules/absence.php | ✅ complet | `AbsenceServiceProvider` |
+| `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
 | `Modules/Expense` | ✅ routes/modules/expense.php | ✅ complet | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/modules/notification.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
@@ -79,6 +79,8 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 | `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
 | `Modules/SmartAttendance` | ✅ module routes | ✅ complet | `SmartAttendanceServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
+
+> **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Training` | ✅ routes/modules/* | ✅ complet | `TrainingServiceProvider` |
@@ -188,10 +190,14 @@ vendor/bin/phpstan analyse app/Core app/Modules --level=3
 cat bootstrap/providers.php
 
 # Vérifier la structure de modules DDD (dynamique — voir aussi
-# .github/workflows/architecture-check.yml, generé depuis app/Modules/* sans liste codée en dur)
+# .github/workflows/architecture-check.yml, généré depuis app/Modules/* sans liste codée en dur)
+# NB: Absence n'a que Interfaces/+Providers/ (derogation PA2-ARCH-002, voir plus haut)
 for MOD in $(ls app/Modules); do
   for LAYER in Application Domain Infrastructure Interfaces Providers; do
     [ ! -d "app/Modules/$MOD/$LAYER" ] && echo "Missing: $MOD/$LAYER"
   done
+done
+for LAYER in Interfaces Providers; do
+  [ ! -d "app/Modules/Absence/$LAYER" ] && echo "Missing: Absence/$LAYER"
 done
 ```

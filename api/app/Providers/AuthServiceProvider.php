@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Site;
-use App\Modules\Absence\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Billing\Domain\Models\Invoice;
