@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Install backup tools
         shell: bash
@@ -109,7 +109,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Install drill tools
         shell: bash
@@ -161,7 +161,7 @@ jobs:
 
       - name: Upload drill log
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: database-restore-drill-log
           path: /tmp/leopardo-backups/last-drill.log

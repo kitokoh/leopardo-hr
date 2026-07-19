@@ -44,7 +44,7 @@ jobs:
     name: Validate PLAN_ACTION2 backlog
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Validate CSV and dependencies
         shell: pwsh
         run: ./dev-hub/tools/validate-plan-action2.ps1
@@ -55,7 +55,7 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Sync PLAN_ACTION2 tickets
         shell: pwsh
         env:
