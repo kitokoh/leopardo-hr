@@ -84,6 +84,12 @@ class EmployeeController extends Controller
             ])
             ->select($this->employeeIndexColumns());
 
+        if ($actor->isDepartmentScoped()) {
+            // manager_role=dept is scoped to their own department only (PA2-SEC-002).
+            // Fail closed: an actor without a department sees nothing rather than everything.
+            $query->where('department_id', $actor->department_id ?? -1);
+        }
+
         if (! empty($validated['status'])) {
             $query->where('status', $validated['status']);
         }
