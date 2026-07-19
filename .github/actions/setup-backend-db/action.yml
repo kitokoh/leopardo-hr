@@ -1,0 +1,176 @@
+name: "Setup backend DB (PHP + Composer + multi-tenant migrations)"
+description: >
+  Composite action that sets up PHP, installs Composer dependencies, writes the
+  CI .env file, and bootstraps the multi-tenant migration schemas
+  (public + shared_tenants) against the postgres/redis service containers
+  already running in the calling job. Extracted from the near-identical
+  copy-pasted blocks in tests.yml (x2), coverage-gate.yml and
+  backend-jobs-ci.yml — see AUDIT_CICD_2026-07-19.md section 3.1.
+
+  IMPORTANT: this is a composite action, not a reusable workflow. It must be
+  called with `uses: ./.github/actions/setup-backend-db` from a job that
+  already declares the `postgres` and `redis` service containers itself,
+  because GitHub Actions cannot share service containers across separate
+  jobs/reusable workflows — only within the same job.
+
+inputs:
+  php-version:
+    description: "PHP version to install"
+    required: false
+    default: "8.4"
+  extensions:
+    description: "PHP extensions to install"
+    required: false
+    default: "pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd"
+  coverage:
+    description: "Coverage driver (none | pcov | xdebug)"
+    required: false
+    default: "none"
+  tools:
+    description: "Extra Composer/PHP tools for shivammathur/setup-php"
+    required: false
+    default: "composer:v2"
+  working-directory:
+    description: "Backend (Laravel) working directory"
+    required: false
+    default: "./api"
+  db-host:
+    description: "PostgreSQL service host"
+    required: false
+    default: "127.0.0.1"
+  db-port:
+    description: "PostgreSQL service port"
+    required: false
+    default: "5432"
+  db-database:
+    description: "PostgreSQL database name (must match the service container env)"
+    required: false
+    default: "leopardo_test"
+  db-username:
+    description: "PostgreSQL username (must match the service container env)"
+    required: false
+    default: "leopardo_user"
+  db-password:
+    description: "PostgreSQL password (must match the service container env)"
+    required: false
+    default: "leopardo_pass_test"
+  redis-host:
+    description: "Redis service host"
+    required: false
+    default: "127.0.0.1"
+  redis-port:
+    description: "Redis service port"
+    required: false
+    default: "6379"
+  run-migrations:
+    description: "Whether to bootstrap schemas and run public/tenant migrations"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup PHP ${{ inputs.php-version }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: ${{ inputs.extensions }}
+        tools: ${{ inputs.tools }}
+        coverage: ${{ inputs.coverage }}
+
+    - name: Resolve Composer cache directory
+      id: composer-cache
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: composer-${{ runner.os }}-php${{ inputs.php-version }}-${{ hashFiles(format('{0}/composer.lock', inputs.working-directory)) }}
+        restore-keys: |
+          composer-${{ runner.os }}-php${{ inputs.php-version }}-
+
+    - name: Install Composer dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Prepare environment
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        cat > .env <<EOF
+        APP_NAME=LeopardoRH
+        APP_ENV=testing
+        APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+        APP_DEBUG=true
+        APP_URL=http://localhost
+
+        DB_CONNECTION=pgsql
+        DB_HOST=${{ inputs.db-host }}
+        DB_PORT=${{ inputs.db-port }}
+        DB_DATABASE=${{ inputs.db-database }}
+        DB_USERNAME=${{ inputs.db-username }}
+        DB_PASSWORD=${{ inputs.db-password }}
+        DB_SEARCH_PATH=shared_tenants,public
+
+        CACHE_STORE=array
+        QUEUE_CONNECTION=sync
+        SESSION_DRIVER=array
+        REDIS_HOST=${{ inputs.redis-host }}
+        REDIS_PORT=${{ inputs.redis-port }}
+        EOF
+
+    - name: Bootstrap migration repositories
+      if: inputs.run-migrations == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        PGHOST: ${{ inputs.db-host }}
+        PGPORT: ${{ inputs.db-port }}
+        PGDATABASE: ${{ inputs.db-database }}
+        PGUSER: ${{ inputs.db-username }}
+        PGPASSWORD: ${{ inputs.db-password }}
+      run: |
+        php <<'PHP'
+        <?php
+        $dsn = sprintf(
+            'pgsql:host=%s;port=%s;dbname=%s',
+            getenv('PGHOST'),
+            getenv('PGPORT'),
+            getenv('PGDATABASE')
+        );
+        $pdo = new PDO($dsn, getenv('PGUSER'), getenv('PGPASSWORD'), [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ]);
+
+        $pdo->exec(<<<'SQL'
+        CREATE SCHEMA IF NOT EXISTS shared_tenants;
+        CREATE TABLE IF NOT EXISTS public.migrations (
+            id serial PRIMARY KEY,
+            migration varchar(255) NOT NULL,
+            batch integer NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
+            id serial PRIMARY KEY,
+            migration varchar(255) NOT NULL,
+            batch integer NOT NULL
+        );
+        SQL);
+
+        echo "Migration repositories ensured for public/shared_tenants.\n";
+        PHP
+
+    - name: Run public migrations
+      if: inputs.run-migrations == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: DB_SEARCH_PATH=public php artisan migrate --path=database/migrations/public --force --isolated
+
+    - name: Run tenant migrations
+      if: inputs.run-migrations == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated

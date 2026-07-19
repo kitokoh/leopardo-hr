@@ -69,88 +69,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.4"
-          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
-          tools: composer:v2
-          coverage: none
-
-      - name: Resolve Composer cache directory
-        id: composer-cache
-        working-directory: ./api
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
-          restore-keys: |
-            composer-${{ runner.os }}-php84-
-
-      - name: Install Composer dependencies
-        working-directory: ./api
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Prepare environment
-        working-directory: ./api
-        run: |
-          cat > .env <<'EOF'
-          APP_NAME=LeopardoRH
-          APP_ENV=testing
-          APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-          APP_DEBUG=true
-          APP_URL=http://localhost
-
-          DB_CONNECTION=pgsql
-          DB_HOST=127.0.0.1
-          DB_PORT=5432
-          DB_DATABASE=leopardo_test
-          DB_USERNAME=leopardo_user
-          DB_PASSWORD=leopardo_pass_test
-          DB_SEARCH_PATH=shared_tenants,public
-
-          CACHE_STORE=array
-          QUEUE_CONNECTION=sync
-          SESSION_DRIVER=array
-          REDIS_HOST=127.0.0.1
-          REDIS_PORT=6379
-          EOF
-
-      - name: Bootstrap migration repositories
-        working-directory: ./api
-        run: |
-          php <<'PHP'
-          <?php
-          $dsn = 'pgsql:host=127.0.0.1;port=5432;dbname=leopardo_test';
-          $pdo = new PDO($dsn, 'leopardo_user', 'leopardo_pass_test', [
-              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-          ]);
-          $pdo->exec(<<<'SQL'
-          CREATE SCHEMA IF NOT EXISTS shared_tenants;
-          CREATE TABLE IF NOT EXISTS public.migrations (
-              id serial PRIMARY KEY,
-              migration varchar(255) NOT NULL,
-              batch integer NOT NULL
-          );
-          CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
-              id serial PRIMARY KEY,
-              migration varchar(255) NOT NULL,
-              batch integer NOT NULL
-          );
-          SQL);
-          echo "Migration repositories ensured for jobs CI.\n";
-          PHP
-
-      - name: Run public migrations
-        working-directory: ./api
-        run: DB_SEARCH_PATH=public php artisan migrate --path=database/migrations/public --force --isolated
-
-      - name: Run tenant migrations
-        working-directory: ./api
-        run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
+      - name: Setup backend (PHP + Composer + multi-tenant DB)
+        uses: ./.github/actions/setup-backend-db
 
       - name: Run queue contract tests
         id: queue_contracts
@@ -187,7 +107,7 @@ jobs:
 
       - name: Upload jobs CI artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: backend-jobs-ci-reports
           path: |
