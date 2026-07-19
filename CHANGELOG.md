@@ -3,6 +3,15 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.5] - 2026-07-19
+
+### Fixed
+- **Deblocage de 5 pipelines CI casses sur `main`** (constate en verifiant l'etat reel des runs, pas seulement le YAML) :
+  - `front/web` : `typescript` fixe a `^5.9.2` (etait `^7`, version inexistante et incompatible avec `typescript-eslint@8.x` tire par `eslint-config-next@16.2.10`), qui faisait echouer `npm ci` avec un conflit ERESOLVE bloquant `Web CI - Leopardo Vitrine`. Icone `Chrome` de `lucide-react` (renommee/supprimee en amont) remplacee par un SVG Google inline sur la page de login.
+  - `front/admin-dashboard` : migration de `postcss.config.js` vers `@tailwindcss/postcss` (Tailwind v4 a deplace le plugin PostCSS hors du package `tailwindcss`), `tailwind.config.js` existant preserve via la directive `@config`. Ajout de la directive `@reference` manquante dans les 4 blocs `<style scoped>` (`LoginView`, `CompaniesView`, `CompanyDetailView`, `SupportView`) qui utilisent `@apply` avec des classes custom, requise par la resolution scoped de Tailwind v4.
+  - Mobile (`leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`) : `push_notification_service.dart` mis a jour pour l'API `flutter_local_notifications` v20+ (parametres nommes sur `initialize()`/`show()`), et alignement des contraintes `firebase_core`/`firebase_messaging`/`flutter_local_notifications` entre `leopardo_core` et les 4 apps consommatrices, qui empechait toute resolution `pub` et faisait echouer `Mobile Apps CI - Flutter` sur chaque run depuis 18 jours (et par heritage le job `distribute-mobile` de `Deploy - Leopardo RH`).
+  - `api/openapi.yaml` : correction de 4 `$ref` incorrects dans la section `SmartAttendance` (`Unauthenticated`/`NotFound`/`Forbidden` -> `Error401`/`Error404`/`Error403`, les noms reels definis sous `components/responses`), qui faisaient echouer le lint Redocly de `OpenAPI CI`.
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed
