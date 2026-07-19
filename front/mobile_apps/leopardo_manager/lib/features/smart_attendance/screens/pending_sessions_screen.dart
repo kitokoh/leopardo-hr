@@ -132,44 +132,41 @@ class _PendingGeoSessionsScreenState
           ),
         ],
       ),
-      children: [
-        sessionsAsync.when(
-          data: (sessions) {
-            if (sessions.isEmpty) {
-              return const EmptyState(
-                icon: Icons.check_circle_outline,
-                title: 'Tout est à jour',
-                description: 'Aucune session GPS en attente de validation.',
-              );
-            }
-            return RefreshIndicator(
-              onRefresh: () async => ref.invalidate(pendingGeoSessionsProvider),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemCount: sessions.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final session = sessions[index];
-                  return _SessionCard(
-                    session: session,
-                    onApprove: () => _approve(session),
-                    onReject: () => _reject(session),
-                  );
-                },
-              ),
+      backgroundColor: const Color(0xFF0B1120),
+      body: sessionsAsync.when(
+        data: (sessions) {
+          if (sessions.isEmpty) {
+            return const EmptyState(
+              icon: Icons.check_circle_outline,
+              title: 'Tout est à jour',
+              description: 'Aucune session GPS en attente de validation.',
             );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(
-            child: Text(
-              'Erreur : $e',
-              style: TextStyle(color: AppColors.danger),
+          }
+          return RefreshIndicator(
+            onRefresh: () async => ref.invalidate(pendingGeoSessionsProvider),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: sessions.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final session = sessions[index];
+                return _SessionCard(
+                  session: session,
+                  onApprove: () => _approve(session),
+                  onReject: () => _reject(session),
+                );
+              },
             ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Text(
+            'Erreur : $e',
+            style: TextStyle(color: AppColors.danger),
           ),
         ),
-      ],
+      ),
     );
   }
 }

@@ -284,8 +284,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                               color: step.completed
                                   ? AppColors.success.withValues(alpha: 0.15)
                                   : isSkipped
-                                      ? AppColors.textMutedDark
-                                          .withValues(alpha: 0.1)
+                                      ? AppColors.textMutedDark.withValues(alpha: 0.1)
                                       : AppColors.rh.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -334,15 +333,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.rh
-                                              .withValues(alpha: 0.15),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          color: AppColors.rh.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           'Requis',
-                                          style:
-                                              AppTypography.bodySmall.copyWith(
+                                          style: AppTypography.bodySmall.copyWith(
                                             color: AppColors.rh,
                                             fontSize: 10,
                                           ),
@@ -420,8 +416,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         ref.invalidate(onboardingChecklistProvider),
                     child: Text(
                       'Réessayer',
-                      style:
-                          AppTypography.subtitle.copyWith(color: AppColors.rh),
+                      style: AppTypography.subtitle.copyWith(color: AppColors.rh),
                     ),
                   ),
                 ],
