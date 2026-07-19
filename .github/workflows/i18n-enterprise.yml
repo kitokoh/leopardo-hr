@@ -6,9 +6,18 @@ on:
       - 'shared/i18n/**'
       - 'front/mobile/lib/l10n/**'
       - 'front/mobile_apps/leopardo_core/lib/l10n/**'
+      - 'front/mobile_apps/leopardo_employee/lib/**'
+      - 'front/mobile_apps/leopardo_manager/lib/**'
+      - 'front/mobile_apps/leopardo_platform_admin/lib/**'
       - 'front/admin-dashboard/src/i18n/**'     # chemin réel dans le repo
+      - 'front/admin-dashboard/src/**'
       - 'front/web/src/lib/i18n/**'             # client Next.js
+      - 'front/web/src/app/**'
+      - 'front/web/src/modules/**'
+      - 'front/zkteco-kiosk/**'
       - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'api/resources/views/emails/**'
       - '.github/workflows/i18n-enterprise.yml'
   push:
     branches:
@@ -17,9 +26,18 @@ on:
       - 'shared/i18n/**'
       - 'front/mobile/lib/l10n/**'
       - 'front/mobile_apps/leopardo_core/lib/l10n/**'
+      - 'front/mobile_apps/leopardo_employee/lib/**'
+      - 'front/mobile_apps/leopardo_manager/lib/**'
+      - 'front/mobile_apps/leopardo_platform_admin/lib/**'
       - 'front/admin-dashboard/src/i18n/**'
+      - 'front/admin-dashboard/src/**'
       - 'front/web/src/lib/i18n/**'
+      - 'front/web/src/app/**'
+      - 'front/web/src/modules/**'
+      - 'front/zkteco-kiosk/**'
       - 'api/lang/**'
+      - 'api/resources/views/pdf/**'
+      - 'api/resources/views/emails/**'
       - '.github/workflows/i18n-enterprise.yml'
 
 permissions:
