@@ -23,7 +23,8 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
     final dashAsync = ref.watch(smartAttendanceDashboardProvider);
     final pendingAsync = ref.watch(pendingGeoSessionsProvider);
 
-    return MobilePage(
+    return Scaffold(
+      backgroundColor: _bg,
       appBar: MobileTopBar(
         title: 'Smart Attendance',
         subtitle: 'Pointage GPS — tableau de bord équipe',
@@ -42,8 +43,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-      backgroundColor: _bg,
-      child: RefreshIndicator(
+      body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(smartAttendanceDashboardProvider);
           ref.invalidate(pendingGeoSessionsProvider);
@@ -101,7 +101,7 @@ class _StatsGrid extends StatelessWidget {
       children: [
         Text(
           "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
-          style: AppTypography.labelMedium.copyWith(color: AppColors.textMutedDark),
+          style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -112,7 +112,7 @@ class _StatsGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 1.6,
           children: [
-            _StatCard(label: 'Détectées', value: detected, color: AppColors.accent),
+            _StatCard(label: 'Détectées', value: detected, color: AppColors.info),
             _StatCard(label: 'En attente', value: pending, color: Colors.orange),
             _StatCard(label: 'Approuvées', value: approved, color: Colors.green),
             _StatCard(label: 'Rejetées', value: rejected, color: AppColors.danger),
@@ -148,7 +148,7 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             '$value',
-            style: AppTypography.headlineMedium.copyWith(color: color),
+            style: AppTypography.title.copyWith(color: color),
           ),
           const SizedBox(height: 4),
           Text(
@@ -181,7 +181,7 @@ class _PendingCard extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               'Aucune session en attente de validation',
-              style: AppTypography.bodyMedium.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
             ),
           ],
         ),
@@ -207,7 +207,7 @@ class _PendingCard extends StatelessWidget {
                 children: [
                   Text(
                     '$count session${count > 1 ? 's' : ''} en attente',
-                    style: AppTypography.titleSmall.copyWith(color: Colors.orange),
+                    style: AppTypography.subtitle.copyWith(color: Colors.orange),
                   ),
                   Text(
                     'Appuyez pour valider ou rejeter',
