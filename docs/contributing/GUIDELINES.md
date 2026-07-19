@@ -1,5 +1,10 @@
 # Contributing to Leopardo RH
 
+> 📌 Ce document est le guide de contribution detaille (conventions de code, structure, workflow),
+> complementaire au [`/CONTRIBUTING.md`](../../CONTRIBUTING.md) racine (aperçu rapide + liens).
+> Les deux sont maintenus ensemble ; en cas de divergence factuelle (versions, chemins), verifier
+> l'etat reel du depot plutot que de trancher arbitrairement entre les deux.
+
 Merci de contribuer a Leopardo RH ! Ce guide explique comment participer au projet.
 
 ## Prerequis
@@ -64,24 +69,27 @@ Nous suivons [Conventional Commits](https://www.conventionalcommits.org/) :
 ## Structure du projet
 
 ```
-api/                    # Backend Laravel (PHP)
+api/                    # Backend Laravel 12 (PHP 8.4)
 ├── app/
-│   ├── Http/Controllers/Api/V1/   # Controleurs API
-│   ├── Models/                     # Modeles Eloquent
-│   ├── Services/                   # Services metier (DDD)
-│   ├── Policies/                   # RBAC Policies
-│   └── Events/                     # Domain Events
+│   ├── Modules/<Name>/             # Domaines DDD (Domain/Application/Infrastructure/Interfaces/Providers)
+│   ├── Core/{Auth,Tenant,Feature}/ # Socle transversal SaaS
+│   ├── Shared/                     # Kernel partage entre modules (DTOs, Enums, Events, Exceptions, Traits)
+│   └── AI/                         # Module IA autonome
 ├── tests/Feature/                  # Tests fonctionnels
 ├── database/migrations/            # Migrations PostgreSQL
 └── routes/                         # Routes API
 
 front/                  # Frontends
-├── admin-dashboard/    # Dashboard admin (Next.js)
-├── web/                # Vitrine publique (Next.js)
-└── mobile/             # App mobile (Flutter)
+├── admin-dashboard/    # Dashboard super-admin plateforme (Vue.js 3)
+├── web/                # Vitrine + dashboard SaaS public (Next.js 15)
+├── web-offline/        # PWA offline-first bridge Edge (Next.js)
+├── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin
+└── zkteco-kiosk/       # Kiosque pointage biometrique (HTML/JS)
 
 docs/                   # Documentation projet
 ```
+
+> Voir `api/ARCHITECTURE.md` pour l'arbre de decision "ou placer mon code ?" a jour.
 
 ## Regles de code
 

@@ -14,7 +14,7 @@ Application Flutter de gestion RH pour les employés et managers.
 | :--- | :--- | :--- |
 | **Local** | `http://10.0.2.2:8000/api/v1` | Développement (émulateur) |
 | **Staging** | `https://gestionemployerbackend.onrender.com/api/v1` | Tests internes |
-| **Production** | `https://api.leopardo-rh.com/api/v1` | Play Store |
+| **Production** | `https://api.leopardo-rh.com/api/v1` | Play Store — ⚠️ domaine cible pas encore configure/DNS-resolu (voir `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md`) |
 
 ## 🚀 Démarrage rapide
 
