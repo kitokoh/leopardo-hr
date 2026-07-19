@@ -3,7 +3,7 @@
 ## Stack
 
 - Backend: Laravel, PostgreSQL multi-tenant schema, Sanctum, queues.
-- Mobile: Flutter 3.x, Riverpod 3.x, apps separees Employee/Manager/Platform Admin.
+- Mobile: Flutter 3.x, Riverpod 3.x, apps separees Employee/Manager/HR/Platform Admin (`front/mobile_apps/leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`), plus le package partage `leopardo_core`.
 - Push: Firebase/FCM, mais aucune dependance externe ne doit bloquer le premier ecran.
 - CI/CD: GitHub Actions source de verite.
 - Deploiement: Render, Vercel, Firebase App Distribution.
@@ -18,11 +18,12 @@
 - `api/openapi.yaml` est la spec canonique.
 - Mettre a jour `CHANGELOG.md` et `AGENTS.md` pour tout changement comportemental.
 
-## Invariants architecture backend (mis a jour 2026-07-01)
+## Invariants architecture backend (mis a jour 2026-07-19)
 
-- `App\Http\Controllers\Api\V1\*` **supprime** - tout nouveau controller dans `App\Modules\<Module>\Interfaces\Api\V1\`
-- `App\Services\*` **supprime** - tout nouveau service dans `App\Modules\<Module>\Infrastructure\Services\`
-- `App\Models\*` **en cours de migration** - ne pas y ajouter de nouveau modele
+- `App\Http\Controllers\Api\V1\*` **supprime** (PR #824, 2026-07-01) - tout nouveau controller dans `App\Modules\<Module>\Interfaces\Api\V1\`
+- `App\Services\*` **n'est pas vide** : services legacy dupliques supprimes, mais des services specialises non-DDD restent (`Cache/`, `Communication/`, `Payroll/`, `SSO/`, `Security/`, `Tracking/`, etc.) + le shim `TenantManager.php` - tout nouveau service metier dans `App\Modules\<Module>\Infrastructure\Services\`
+- `App\Models\*` **supprime**, migration terminee - ne pas y ajouter de nouveau modele ; tout modele vit dans `App\Modules\<Module>\Domain\Models\` ou `App\Core\Tenant\Domain\Models\`
+- 19 modules actifs sous `api/app/Modules/` (voir `find api/app/Modules -maxdepth 1 -mindepth 1 -type d` pour la liste a jour)
 - Source de verite architecture : `api/ARCHITECTURE.md`
 
 ## Commandes utiles
