@@ -5,30 +5,8 @@ namespace App\Providers;
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
-use App\Modules\Recruitment\Domain\Models\Applicant;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Domain\Models\Evaluation;
-use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
-use App\Modules\Billing\Domain\Models\Invoice;
-use App\Modules\Recruitment\Domain\Models\JobPosting;
-use App\Modules\HR\Domain\Models\OnboardingStep;
-use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Billing\Domain\Models\Subscription;
-use App\Modules\HR\Domain\Models\TrainingCourse;
-use App\Modules\Fleet\Domain\Models\Vehicle;
-use App\Policies\AttendancePolicy;
-use App\Policies\BillingPolicy;
-use App\Policies\EmployeePolicy;
-use App\Policies\EvaluationPolicy;
 use App\Policies\ExportPolicy;
-use App\Policies\FeatureFlagPolicy;
-use App\Policies\OnboardingPolicy;
-use App\Policies\PayrollPolicy;
-use App\Policies\RecruitmentPolicy;
-use App\Policies\TrainingPolicy;
-use App\Policies\VehiclePolicy;
 use App\Core\Tenant\TenantManager;
 use App\Services\TenantManager as LegacyTenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -78,19 +56,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::policy(Applicant::class, RecruitmentPolicy::class);
-        Gate::policy(AttendanceLog::class, AttendancePolicy::class);
-        Gate::policy(Employee::class, EmployeePolicy::class);
-        Gate::policy(Evaluation::class, EvaluationPolicy::class);
-        Gate::policy(FeaturePlanMatrix::class, FeatureFlagPolicy::class);
-        Gate::policy(Invoice::class, BillingPolicy::class);
-        Gate::policy(JobPosting::class, RecruitmentPolicy::class);
-        Gate::policy(OnboardingStep::class, OnboardingPolicy::class);
-        Gate::policy(PayrollRun::class, PayrollPolicy::class);
-        Gate::policy(PaySlip::class, PayrollPolicy::class);
-        Gate::policy(Subscription::class, BillingPolicy::class);
-        Gate::policy(TrainingCourse::class, TrainingPolicy::class);
-        Gate::policy(Vehicle::class, VehiclePolicy::class);
+        // PA2-ARCH-008 : point d'enregistrement unique. Tous les Gate::policy(...)
+        // vivent desormais exclusivement dans AuthServiceProvider::boot() ; ce
+        // provider ne garde que les Gate::define(...) qui n'y sont pas dupliques.
         Gate::define('export', [ExportPolicy::class, 'export']);
         Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
         Gate::define('downloadExport', [ExportPolicy::class, 'download']);
