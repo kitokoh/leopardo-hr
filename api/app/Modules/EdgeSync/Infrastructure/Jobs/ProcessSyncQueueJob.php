@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\EdgeSync\Jobs;
+namespace App\Modules\EdgeSync\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
