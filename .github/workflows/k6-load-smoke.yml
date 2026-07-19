@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Prepare reports directory
         run: mkdir -p dev-hub/load/reports
@@ -83,7 +83,7 @@ jobs:
 
       - name: Upload k6 summary
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: k6-api-core-smoke-summary
           path: dev-hub/load/reports/api-core-smoke-summary.json
