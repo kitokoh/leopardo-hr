@@ -11,6 +11,12 @@
 ### Security
 - **Isolation multi-tenant SmartAttendance : defense en profondeur sur `GeoAttendanceSession`** : ce modele n'utilisait pas le trait `BelongsToCompany` (contrairement a la quasi-totalite des modeles metier), l'isolation reposant uniquement sur des `where('company_id', ...)` manuels repetes dans chaque methode de `GeoSessionController`/`GeoSessionManager`. Tous les sites d'appel existants ont ete verifies corrects (voir `tests/Feature/SmartAttendance/MultiTenantIsolationTest.php`, toujours vert), mais ce pattern est fragile pour du code futur (meme categorie de risque que celle deja signalee pour `CabinetShareController` dans l'audit du 2026-07-19). Ajout du trait standard pour rendre l'isolation par defaut plutot qu'optionnelle par site d'appel.
 
+### Changed
+- **`declare(strict_types=1);` ajoute sur les 80 controllers API qui ne l'avaient pas** (sur 122 au total), conformement a `CONVENTIONS.md` §2.1 ("en haut de chaque fichier PHP sauf config"). Verifie au prealable qu'aucun de ces fichiers n'appelle localement une methode a parametre scalaire type (`int`/`float`/`bool`) avec une valeur `\$request->input()/get()/query()` non castee — zero site d'appel a risque trouve. La liaison des parametres de route (ex. `int \$id`) par le dispatcher Laravel n'est pas affectee par `strict_types` du controller (coercition geree cote framework). Aucun changement de comportement attendu ; a confirmer par la suite `phpunit` complete en CI.
+
+### Docs
+- **Nouveau document `docs/security/OPENAPI_COVERAGE_GAP_2026-07-19.md`** : ecart quantifie entre les routes API declarees (~532, prefixes reconstruits statiquement) et les operations documentees dans `openapi.yaml` (~345) — environ 210 routes candidates non documentees, listees par module avec leur fichier source, plus les faux positifs probables du parseur statique a revoir avec `php artisan route:list`. Pas de generation de specs OpenAPI dans cette revue (risque de documenter des schemas inexacts sans runtime PHP pour les verifier) ; document fourni comme backlog actionnable module par module.
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed
