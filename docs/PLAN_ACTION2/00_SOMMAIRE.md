@@ -30,6 +30,7 @@ Le but n'est plus de prouver que Leopardo fonctionne. Le but est de le rendre:
 | `07_SUPERVISION_GITHUB_PROJECT.md` | Regles de pilotage GitHub Projects, supervision PR et validation multi-agents |
 | `08_AUDIT_ARCHITECTURE_TECH.md` | Audit technique 2026-07-16 : dependances composer, RBAC reel (policies), moteur paie multi-pays, secrets git. Source des tickets `PA2-SEC-*` et `PA2-ARCH-001` a `005` |
 | `09_AUDIT_MODULES_API_STRUCTURE.md` | Audit structure modules 2026-07-19 : garde CI incomplet, code mort/controllers dupliques non routes, policies enregistrees deux fois, controllers epais, strict_types. Source des tickets `PA2-ARCH-006` a `009` |
+| `10_AUDIT_I18N_MULTILINGUE.md` | Audit i18n multilingue reel 2026-07-19 : infra catalogue/CI correcte mais texte encore code en dur (PDF, emails, mobile x3, web, admin, kiosk), formats date/devise fixes en fr-FR, melange de langues fige dans les donnees vitrine. Source des tickets `PA2-I18N-005` a `015` |
 
 ## Axes couverts
 
