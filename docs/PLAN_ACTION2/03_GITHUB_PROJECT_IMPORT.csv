@@ -139,3 +139,7 @@ Title,Priority,Area,Surface,Dependencies,Acceptance Criteria
 "PA2-ARCH-003 Reduire couplage direct HR vers autres modules","P2","Architecture","API","PA2-ARCH-002","Dependances HR vers Onboarding/Training/Recruitment/Cabinet passees par evenements ou contrats d interface explicites mesure avant/apres"
 "PA2-ARCH-004 Versionnement temporel des regles pays paie","P2","Architecture","API; Payroll","PA2-ARCH-001","Taux et baremes pays associes a une date d effet recalcul retroactif possible pour audit"
 "PA2-ARCH-005 Reduire baseline PHPStan","P2","Architecture","API","","Plan de reduction par module suivi du delta a chaque PR touchant un module ancien"
+"PA2-ARCH-006 Etendre module-structure-check a SmartAttendance/EdgeSync/Marketing","P1","Architecture","CI","","Boucle generee depuis app/Modules/* pas de liste codee en dur; statut EdgeSync/Infrastructure et Marketing/Interfaces tranche"
+"PA2-ARCH-007 Supprimer les controllers dupliques jamais routes","P1","Architecture","API","","Training/TrainingController et Onboarding/OnboardingQrController migres doublon HR supprime Planning/ExpenseClaimController et Billing/EstimationController supprimes garde CI ajoute"
+"PA2-ARCH-008 Point d enregistrement unique pour les Gate::policy","P1","Architecture","API; Providers","","Un seul provider enregistre chaque policy divergence Invoice BillingPolicy vs InvoicePolicy tranchee test unitaire ajoute"
+"PA2-ARCH-009 Retrofit declare(strict_types=1) sur modules anciens","P2","Architecture","API","","HR/Payroll/Attendance/Cameras a 100% garde CI incremental ajoute"
