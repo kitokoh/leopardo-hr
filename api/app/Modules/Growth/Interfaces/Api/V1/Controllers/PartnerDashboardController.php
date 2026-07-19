@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Growth\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;

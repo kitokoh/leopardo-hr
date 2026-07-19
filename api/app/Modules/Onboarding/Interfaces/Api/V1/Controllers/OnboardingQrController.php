@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
