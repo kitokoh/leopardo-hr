@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [Unreleased]
+
+### Fixed
+- **PA2-ARCH-006 : `module-structure-check` ne couvrait que 16/19 modules** : le job `.github/workflows/architecture-check.yml` bouclait sur une liste codee en dur (`HR Payroll Attendance Planning Recruitment Cabinet Fleet Billing Cameras Absence Expense Growth Platform Onboarding Training Notification Marketing`), qui omettait `SmartAttendance` et `EdgeSync`. La boucle decouvre desormais les modules dynamiquement via `find api/app/Modules -maxdepth 1 -mindepth 1 -type d`, donc tout nouveau module est automatiquement couvert. Cela a revele l'anomalie residuelle documentee dans `docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md` : `EdgeSync` n'avait pas de couche `Infrastructure/` (il avait `Jobs/`, `Notifications/`, `database/`, `routes/` a la place, hors schema DDD documente dans `ARCHITECTURE.md`). `ProcessSyncQueueJob` et les 2 notifications (`EdgeLicenseExpiringNotification`, `EdgeNodeSilentNotification`) sont deplaces vers `Modules/EdgeSync/Infrastructure/{Jobs,Notifications}/` avec mise a jour des namespaces et de tous les fichiers consommateurs (`EdgeNodeController`, `MonitorEdgeNodesCommand`, `tests/Feature/EdgeSync/EdgeOfflineScenarioTest.php`). `database/` et `routes/` restent hors du schema des 5 couches (comme `SmartAttendance/routes/`) car ce ne sont pas des couches DDD mais des repertoires transverses standards Laravel ; non signales par le garde CI qui ne verifie que les 5 couches attendues. `ARCHITECTURE.md` (racine et `api/`) mis a jour : 19 modules actifs (ajout `Marketing`, deja present mais non compte), commande de verification manuelle alignee sur la boucle dynamique.
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed
