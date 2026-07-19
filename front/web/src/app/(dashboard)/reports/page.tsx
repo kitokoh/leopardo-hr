@@ -31,7 +31,7 @@ const reports: ReportConfig[] = [
     title: 'Resume Presences',
     description: 'Rapport mensuel des presences, retards et absences par employe.',
     icon: Clock,
-    color: 'text-blue-600 bg-blue-50',
+    color: 'text-security-dark bg-security-light',
     endpoint: '/reports/attendance-summary',
     params: [
       { key: 'month', label: 'Mois', type: 'month' },
@@ -53,7 +53,7 @@ const reports: ReportConfig[] = [
     title: 'Soldes Conges',
     description: 'Etat des soldes de conges pour tous les employes.',
     icon: Calendar,
-    color: 'text-violet-600 bg-violet-50',
+    color: 'text-ia-dark bg-ia-light',
     endpoint: '/reports/leave-balances',
     params: [
       { key: 'year', label: 'Annee', type: 'number' },
@@ -76,7 +76,7 @@ const reports: ReportConfig[] = [
     title: 'Suivi Formations',
     description: 'Taux de participation et completion des formations.',
     icon: TrendingUp,
-    color: 'text-cyan-600 bg-cyan-50',
+    color: 'text-brand-600 bg-brand-50',
     endpoint: '/reports/training-progress',
     params: [
       { key: 'year', label: 'Annee', type: 'number' },
@@ -134,7 +134,7 @@ export default function ReportsPage() {
     <ModulePageShell
       title="Rapports"
       subtitle="Generez et telechargez vos rapports RH : presences, paie, conges, effectifs, formations et contrats."
-      accentClassName="bg-gradient-to-br from-violet-500/10 via-white to-white"
+      accentClassName="bg-gradient-to-br from-ia/10 via-white to-white"
     >
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {reports.map((report, i) => (

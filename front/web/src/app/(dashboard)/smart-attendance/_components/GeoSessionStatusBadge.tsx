@@ -30,7 +30,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   },
   cancelled: {
     label: 'Annulé',
-    className: 'bg-gray-100 text-gray-500 border-gray-200',
+    className: 'bg-slate-100 text-slate-500 border-slate-200',
   },
 };
 

@@ -145,7 +145,7 @@ export default function NotificationSettingsPage() {
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700">Communication interne</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Communication interne</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">Mes preferences de notifications</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
               Choisissez les canaux utiles sans perdre les alertes critiques. Les messages courts restent limites aux contenus non sensibles.
@@ -162,7 +162,7 @@ export default function NotificationSettingsPage() {
           </button>
         </div>
         {message ? (
-          <p className="mt-4 rounded-2xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-800">{message}</p>
+          <p className="mt-4 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-800">{message}</p>
         ) : null}
       </section>
 
@@ -177,14 +177,14 @@ export default function NotificationSettingsPage() {
               type="button"
               onClick={() => updateChannel(channel.key, !enabled)}
               className={`rounded-2xl border p-5 text-left shadow-sm transition ${
-                enabled ? 'border-teal-300 bg-teal-50' : 'border-slate-200 bg-white hover:border-slate-300'
+                enabled ? 'border-brand-300 bg-brand-50' : 'border-slate-200 bg-white hover:border-slate-300'
               }`}
             >
               <div className="flex items-start justify-between gap-4">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${enabled ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${enabled ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-bold ${enabled ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${enabled ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
                   {enabled ? 'Actif' : 'Desactive'}
                 </span>
               </div>
