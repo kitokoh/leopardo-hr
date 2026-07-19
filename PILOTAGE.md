@@ -237,6 +237,6 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | Plans d'action historiques (01-72, tous livrés) | `docs/archive/PLAN_ACTION/` | **Clos** — conservé pour traçabilité, voir bandeau dans `00_SOMMAIRE.md` |
 | Plan d'action actif | `docs/PLAN_ACTION2/` | Prend le relais de `docs/archive/PLAN_ACTION/` |
 | Rapports de validation/QA datés | `docs/validation/*_YYYY_MM_DD.md` | Snapshots figés, jamais mis à jour — voir `docs/validation/README.md` |
-| Contrat API | `api/openapi.yaml` | Spec canonique (référencée par `dev-hub/sdk/MANIFEST.json`) ; `openapi/openapi.yaml` (racine) est un second fichier actuellement divergent — voir Priorité 3 de l'audit monorepo pour le plan de déduplication |
+| Contrat API | `api/openapi.yaml` | Spec canonique (référencée par `dev-hub/sdk/MANIFEST.json`). Le second fichier `openapi/openapi.yaml` (racine) qui divergeait a été supprimé (voir `chore(monorepo): fix duplicated mobile CI, dedupe OpenAPI spec...` #840) ; `api/openapi.yaml` est désormais la seule spec présente dans le repo. |
 
 **Règle** : en cas de contradiction entre `PILOTAGE.md` et un document listé ci-dessus sur son sujet propre, le document spécialisé prime pour l'état réel — `PILOTAGE.md` reste la référence pour les priorités/règles opérationnelles.
