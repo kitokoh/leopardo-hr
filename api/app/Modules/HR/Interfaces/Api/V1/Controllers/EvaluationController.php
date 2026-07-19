@@ -54,6 +54,14 @@ class EvaluationController extends Controller
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
         } else {
+            if ($actor->isDepartmentScoped()) {
+                // manager_role=dept is scoped to their own department only (PA2-SEC-002).
+                $departmentEmployeeIds = Employee::query()
+                    ->where('company_id', $actor->company_id)
+                    ->where('department_id', $actor->department_id ?? -1)
+                    ->pluck('id');
+                $query->whereIn('employee_id', $departmentEmployeeIds);
+            }
             if ($request->filled('employee_id')) {
                 $query->where('employee_id', $request->integer('employee_id'));
             }
@@ -79,7 +87,22 @@ class EvaluationController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorize('create', Evaluation::class);
+
         $data = $request->validated();
+
+        if ($actor->isDepartmentScoped()) {
+            // manager_role=dept can only evaluate employees within their own
+            // department (PA2-SEC-002).
+            $target = Employee::query()
+                ->where('company_id', $actor->company_id)
+                ->findOrFail($data['employee_id']);
+
+            if (! $actor->managesDepartmentOf($target)) {
+                abort(403);
+            }
+        }
 
         if (Evaluation::where('employee_id', $data['employee_id'])->where('evaluator_id', $actor->id)->where('period', $data['period'])->exists()) {
             return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);

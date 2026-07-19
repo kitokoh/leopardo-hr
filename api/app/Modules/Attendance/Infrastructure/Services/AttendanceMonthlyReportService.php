@@ -12,14 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AttendanceMonthlyReportService
 {
-    public function build(Company $company, string $month): array
+    public function build(Company $company, string $month, ?int $departmentId = null): array
     {
         $start = Carbon::createFromFormat('Y-m-d', $month.'-01', $company->timezone)->startOfMonth();
         $end = $start->copy()->endOfMonth();
 
         $employees = Employee::query()
-            ->select(['id', 'company_id', 'first_name', 'last_name', 'matricule', 'status', 'salary_type', 'salary_base', 'hourly_rate'])
+            ->select(['id', 'company_id', 'department_id', 'first_name', 'last_name', 'matricule', 'status', 'salary_type', 'salary_base', 'hourly_rate'])
             ->where('company_id', $company->id)
+            ->when($departmentId !== null, fn ($query) => $query->where('department_id', $departmentId))
             ->orderBy('id')
             ->get();
 
@@ -39,6 +40,7 @@ class AttendanceMonthlyReportService
             ])
             ->where('company_id', $company->id)
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->when($departmentId !== null, fn ($query) => $query->whereIn('employee_id', $employees->pluck('id')))
             ->get();
 
         $logsByEmployee = $logs->groupBy('employee_id');

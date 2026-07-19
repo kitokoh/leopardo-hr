@@ -100,9 +100,13 @@ class AttendanceController extends Controller
             $perPage = $request->integer('per_page', 50);
 
             $paginator = Employee::query()
-                ->select(['id', 'company_id', 'first_name', 'last_name', 'email', 'role', 'status'])
+                ->select(['id', 'company_id', 'department_id', 'first_name', 'last_name', 'email', 'role', 'status'])
                 ->where('company_id', $actor->company_id)
                 ->where('status', 'active')
+                ->when(
+                    $actor->isDepartmentScoped(),
+                    fn ($query) => $query->where('department_id', $actor->department_id ?? -1)
+                )
                 ->orderBy('id')
                 ->paginate(max(1, min(100, $perPage)));
 
@@ -195,6 +199,15 @@ class AttendanceController extends Controller
             // Manager viewing all employees: scope to own company to prevent cross-tenant data leakage.
             // AttendanceLog has no global company scope, so we must add the WHERE clause explicitly.
             $query->where('company_id', $actor->company_id);
+
+            if ($actor->isDepartmentScoped()) {
+                // manager_role=dept is scoped to their own department only (PA2-SEC-002).
+                $departmentEmployeeIds = Employee::query()
+                    ->where('company_id', $actor->company_id)
+                    ->where('department_id', $actor->department_id ?? -1)
+                    ->pluck('id');
+                $query->whereIn('employee_id', $departmentEmployeeIds);
+            }
         }
 
         if (! empty($validated['date_from'])) {
@@ -228,7 +241,11 @@ class AttendanceController extends Controller
         $this->authorize('viewAny', AttendanceLog::class);
 
         return new JsonResponse(
-            $anomalyService->summarize($actor->company_id, $request->validated())
+            $anomalyService->summarize(
+                $actor->company_id,
+                $request->validated(),
+                $actor->isDepartmentScoped() ? ($actor->department_id ?? -1) : null,
+            )
         );
     }
 
@@ -245,7 +262,11 @@ class AttendanceController extends Controller
         $validated = $request->validated();
         $month = $validated['month'] ?? now($company->timezone)->format('Y-m');
         $format = $validated['format'] ?? 'json';
-        $report = $reportService->build($company, $month);
+        $report = $reportService->build(
+            $company,
+            $month,
+            $actor->isDepartmentScoped() ? ($actor->department_id ?? -1) : null,
+        );
 
         return match ($format) {
             'csv' => $reportService->toCsv($report),
