@@ -9,7 +9,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
 
-/// Ã‰cran liste des sessions GPS en attente de validation â€” Manager
+/// Ã‰cran liste des sessions GPS en attente de validation â€" Manager
 class PendingGeoSessionsScreen extends ConsumerStatefulWidget {
   const PendingGeoSessionsScreen({super.key});
 
@@ -37,7 +37,7 @@ class _PendingGeoSessionsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Session approuvÃ©e âœ“'),
+            content: Text('Session approuvÃ©e âœ"'),
             backgroundColor: Colors.green,
           ),
         );
@@ -59,7 +59,7 @@ class _PendingGeoSessionsScreenState
         backgroundColor: const Color(0xFF111B2E),
         title: Text(
           'Motif du rejet',
-          style: AppTypography.titleMedium.copyWith(color: AppColors.textDark),
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         content: TextField(
           controller: _noteController,
@@ -119,8 +119,8 @@ class _PendingGeoSessionsScreenState
 
     return Scaffold(
       appBar: MobileTopBar(
-        title: 'Sessions Ã  valider',
-        subtitle: 'Smart Attendance â€” GPS',
+        title: 'Sessions Ã  valider',
+        subtitle: 'Smart Attendance â€" GPS',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
@@ -138,8 +138,8 @@ class _PendingGeoSessionsScreenState
           if (sessions.isEmpty) {
             return const EmptyState(
               icon: Icons.check_circle_outline,
-              title: 'Tout est Ã  jour',
-              subtitle: 'Aucune session GPS en attente de validation.',
+              title: 'Tout est Ã  jour',
+              description: 'Aucune session GPS en attente de validation.',
             );
           }
           return RefreshIndicator(

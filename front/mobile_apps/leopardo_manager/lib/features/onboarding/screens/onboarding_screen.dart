@@ -102,7 +102,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         ),
       ),
       body: RefreshIndicator(
-        color: AppColors.primary,
+        color: AppColors.rh,
         backgroundColor: AppColors.cardDark,
         onRefresh: () async => await ref.refresh(onboardingChecklistProvider.future),
         child: checklistAsync.when(
@@ -138,8 +138,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 0.85),
-                        AppColors.primary.withValues(alpha: 0.5),
+                        AppColors.rh.withValues(alpha: 0.85),
+                        AppColors.rh.withValues(alpha: 0.5),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -147,7 +147,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: AppColors.rh.withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -258,7 +258,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                             : isSkipped
                                 ? AppColors.textMutedDark.withValues(alpha: 0.3)
                                 : step.required
-                                    ? AppColors.primary.withValues(alpha: 0.4)
+                                    ? AppColors.rh.withValues(alpha: 0.4)
                                     : Colors.transparent,
                         width: 1.5,
                       ),
@@ -277,7 +277,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                   ? AppColors.success.withValues(alpha: 0.15)
                                   : isSkipped
                                       ? AppColors.textMutedDark.withValues(alpha: 0.1)
-                                      : AppColors.primary.withValues(alpha: 0.15),
+                                      : AppColors.rh.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
@@ -290,7 +290,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                   ? AppColors.success
                                   : isSkipped
                                       ? AppColors.textMutedDark
-                                      : AppColors.primary,
+                                      : AppColors.rh,
                               size: 22,
                             ),
                           ),
@@ -325,13 +325,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.primary.withValues(alpha: 0.15),
+                                          color: AppColors.rh.withValues(alpha: 0.15),
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           'Requis',
                                           style: AppTypography.bodySmall.copyWith(
-                                            color: AppColors.primary,
+                                            color: AppColors.rh,
                                             fontSize: 10,
                                           ),
                                         ),
@@ -405,7 +405,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     onPressed: () => ref.invalidate(onboardingChecklistProvider),
                     child: Text(
                       'Réessayer',
-                      style: AppTypography.subtitle.copyWith(color: AppColors.primary),
+                      style: AppTypography.subtitle.copyWith(color: AppColors.rh),
                     ),
                   ),
                 ],

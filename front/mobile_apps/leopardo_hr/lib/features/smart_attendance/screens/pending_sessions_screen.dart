@@ -59,7 +59,7 @@ class _PendingGeoSessionsScreenState
         backgroundColor: const Color(0xFF111B2E),
         title: Text(
           'Motif du rejet',
-          style: AppTypography.titleMedium.copyWith(color: AppColors.textDark),
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         content: TextField(
           controller: _noteController,
@@ -117,7 +117,8 @@ class _PendingGeoSessionsScreenState
   Widget build(BuildContext context) {
     final sessionsAsync = ref.watch(pendingGeoSessionsProvider);
 
-    return MobilePage(
+    return Scaffold(
+      backgroundColor: const Color(0xFF0B1120),
       appBar: MobileTopBar(
         title: 'Sessions à valider',
         subtitle: 'Smart Attendance — GPS',
@@ -132,14 +133,13 @@ class _PendingGeoSessionsScreenState
           ),
         ],
       ),
-      backgroundColor: const Color(0xFF0B1120),
-      child: sessionsAsync.when(
+      body: sessionsAsync.when(
         data: (sessions) {
           if (sessions.isEmpty) {
-            return const EmptyStateWidget(
+            return const EmptyState(
               icon: Icons.check_circle_outline,
               title: 'Tout est à jour',
-              subtitle: 'Aucune session GPS en attente de validation.',
+              description: 'Aucune session GPS en attente de validation.',
             );
           }
           return RefreshIndicator(
@@ -203,7 +203,7 @@ class _SessionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   session.employeeName.isNotEmpty ? session.employeeName : 'Employé #${session.employeeId}',
-                  style: AppTypography.titleSmall.copyWith(color: AppColors.textDark),
+                  style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
                 ),
               ),
             ],

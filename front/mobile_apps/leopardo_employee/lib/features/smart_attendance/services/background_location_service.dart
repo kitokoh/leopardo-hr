@@ -125,7 +125,7 @@ class BackgroundLocationService {
       // Récupération de la position courante avec précision équilibrée
       position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.balanced,
+          accuracy: LocationAccuracy.medium,
           timeLimit: Duration(seconds: 10),
         ),
       );
