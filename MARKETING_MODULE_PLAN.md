@@ -1,6 +1,6 @@
 # Module Marketing (Ayrshare) — Plan & Suivi
 
-Dernière mise à jour : 2026-07-16
+Dernière mise à jour : 2026-07-19
 
 Ce fichier suit l'avancement du module Marketing (publication sur les
 réseaux sociaux via Ayrshare) à travers ses phases. Chaque phase est
@@ -12,8 +12,8 @@ livrée par PR séparée, avec CI verte, puis mergée sur `main`.
 |---|---|---|---|
 | 0 | Fix validation `manager_role=marketing` (Request) | ✅ Mergée | #856 |
 | 1 | Schéma DB + modèles (`social_accounts`, `social_posts`) | ✅ Mergée | #857 |
-| 2 | Policies, Actions, client Ayrshare, tests | ✅ Prête (cette PR) | — |
-| 3 | Cron de publication planifiée + contrôleurs/routes API | ⏳ À faire | — |
+| 2 | Policies, Actions, client Ayrshare, tests | ✅ Mergée | #858 |
+| 3 | Cron de publication planifiée + contrôleurs/routes API | ✅ Prête (branche `codex/marketing-phase3-api-cron`) | — |
 | 4 | UI web dashboard Marketing | ⏳ À faire | — |
 | 5 | Onglet Marketing dans l'app mobile `leopardo_manager` | ⏳ À faire | — |
 
@@ -115,22 +115,43 @@ livrée par PR séparée, avec CI verte, puis mergée sur `main`.
   `.github/workflows/architecture-check.yml` (Module Structure
   Validator) si nécessaire.
 
-## Phase 3 — Cron + API (à faire)
+## Phase 3 — Cron + API (prête, branche `codex/marketing-phase3-api-cron`)
 
-- [ ] `Console/Commands/PublishScheduledSocialPosts.php`
+Plan détaillé : `docs/PLAN_ACTION/73_PLAN_MARKETING_PHASE3_API_CRON.md`.
+
+- [x] `Application/Actions/DisconnectSocialAccount.php` (idempotent, ne
+      supprime jamais la ligne — historique des posts conservé).
+- [x] `Console/Commands/PublishScheduledSocialPosts.php`
       (`marketing:publish-scheduled-posts`), utilise
       `SocialPostRepository::findDuePosts()` + `SocialPublishingService`.
-- [ ] Enregistrement dans `bootstrap/app.php withSchedule()` :
-      `->everyMinute()->withoutOverlapping()`, alerte Sentry si échec.
-- [ ] `Interfaces/Api/V1/Controllers/SocialAccountController.php`
+- [x] Enregistrement dans `routes/console.php` (fichier réellement utilisé
+      par le reste du projet pour `Schedule::`, pas `bootstrap/app.php`) :
+      `->everyMinute()->withoutOverlapping()->onOneServer()`.
+- [x] `Interfaces/Api/V1/Controllers/SocialAccountController.php`
       (connect/disconnect/show).
-- [ ] `Interfaces/Api/V1/Controllers/SocialPostController.php`
-      (index/store/show/update/destroy/publish).
-- [ ] `api/routes/modules/marketing.php` + `require` dans `api/routes/api.php`.
-- [ ] Form Requests de validation (`StoreSocialPostRequest`, etc.).
-- [ ] Tests Feature HTTP (routes + middleware `tenant`/`auth:sanctum`/`throttle`).
-- [ ] Vérifier/ajouter "Marketing" à la liste modules dans
-      `architecture-check.yml` si le validateur l'exige.
+- [x] `Interfaces/Api/V1/Controllers/SocialPostController.php`
+      (index/store/show/update/destroy/publish — `store` planifie via
+      `SchedulePost` si `scheduled_at` est fourni, la création reste
+      toujours un draft en interne).
+- [x] `api/routes/modules/marketing.php` + `require` dans `api/routes/api.php`
+      (même empilement middleware que `dashboard.php` :
+      `auth:sanctum,tenant,throttle:api,throttle:api-plan,api.manager:marketing,principal`).
+- [x] Form Requests de validation (`ConnectSocialAccountRequest`,
+      `StoreSocialPostRequest`, `UpdateSocialPostRequest`,
+      `SchedulePostRequest`).
+- [x] Tests Feature HTTP (routes + middleware `tenant`/`auth:sanctum`/
+      `throttle`) : 15 tests, isolation tenant, 403 rôles non autorisés.
+- [x] "Marketing" ajouté à la liste modules dans `architecture-check.yml`
+      (module-structure-check) — les 5 couches existent désormais
+      (Application, Domain, Infrastructure, Interfaces, Providers).
+- Tests : 21 (Phase 1/2) + 21 nouveaux (Phase 3) = 42 tests Feature
+  Marketing, tous verts (Postgres 17 local, même setup que CI
+  `tests.yml`). PHPStan (`phpstan-modules.neon`) : 0 erreur. Pint :
+  0 issue restante après formatage.
+- Hors scope Phase 3 (reporté) : alerte Sentry dédiée sur échec du cron
+  (le job logue déjà les échecs via `Log::error`/`Log::warning`, mais pas
+  d'intégration Sentry explicite ajoutée — le reste du projet n'a pas de
+  pattern établi pour ça sur les autres `Schedule::command()`).
 
 ## Phase 4 — UI Web (à faire)
 
