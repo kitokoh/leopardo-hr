@@ -42,40 +42,40 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
           ),
         ],
       ),
-      backgroundColor: _bg,
-      child: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(smartAttendanceDashboardProvider);
-          ref.invalidate(pendingGeoSessionsProvider);
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // ── Stats du jour ──────────────────────────────────────
-            dashAsync.when(
-              data: (stats) => _StatsGrid(stats: stats),
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(),
+      children: [
+        RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(smartAttendanceDashboardProvider);
+            ref.invalidate(pendingGeoSessionsProvider);
+          },
+          child: Column(
+            children: [
+              // ── Stats du jour ──────────────────────────────────────
+              dashAsync.when(
+                data: (stats) => _StatsGrid(stats: stats),
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
+                error: (e, _) => _ErrorCard(message: e.toString()),
               ),
-              error: (e, _) => _ErrorCard(message: e.toString()),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // ── Bouton sessions pending ────────────────────────────
-            pendingAsync.when(
-              data: (sessions) => _PendingCard(
-                count: sessions.length,
-                onTap: () => context.push('/smart-attendance/pending'),
+              // ── Bouton sessions pending ────────────────────────────
+              pendingAsync.when(
+                data: (sessions) => _PendingCard(
+                  count: sessions.length,
+                  onTap: () => context.push('/smart-attendance/pending'),
+                ),
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
               ),
-              loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -92,16 +92,20 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel = (stats['today'] as String?) ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final dateLabel = (stats['today'] as String?) ??
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
-    try { parsedDate = DateTime.parse(dateLabel); } catch (_) {}
+    try {
+      parsedDate = DateTime.parse(dateLabel);
+    } catch (_) {}
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
-          style: AppTypography.labelMedium.copyWith(color: AppColors.textMutedDark),
+          style:
+              AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -112,10 +116,14 @@ class _StatsGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 1.6,
           children: [
-            _StatCard(label: 'Détectées', value: detected, color: AppColors.accent),
-            _StatCard(label: 'En attente', value: pending, color: Colors.orange),
-            _StatCard(label: 'Approuvées', value: approved, color: Colors.green),
-            _StatCard(label: 'Rejetées', value: rejected, color: AppColors.danger),
+            _StatCard(
+                label: 'Détectées', value: detected, color: AppColors.info),
+            _StatCard(
+                label: 'En attente', value: pending, color: Colors.orange),
+            _StatCard(
+                label: 'Approuvées', value: approved, color: Colors.green),
+            _StatCard(
+                label: 'Rejetées', value: rejected, color: AppColors.danger),
           ],
         ),
       ],
@@ -148,12 +156,13 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             '$value',
-            style: AppTypography.headlineMedium.copyWith(color: color),
+            style: AppTypography.title.copyWith(color: color),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+            style: AppTypography.bodySmall
+                .copyWith(color: AppColors.textMutedDark),
           ),
         ],
       ),
@@ -181,7 +190,7 @@ class _PendingCard extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               'Aucune session en attente de validation',
-              style: AppTypography.bodyMedium.copyWith(color: AppColors.textDark),
+              style: AppTypography.body.copyWith(color: AppColors.textDark),
             ),
           ],
         ),
@@ -199,7 +208,8 @@ class _PendingCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.pending_actions_rounded, color: Colors.orange, size: 28),
+            const Icon(Icons.pending_actions_rounded,
+                color: Colors.orange, size: 28),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -207,11 +217,13 @@ class _PendingCard extends StatelessWidget {
                 children: [
                   Text(
                     '$count session${count > 1 ? 's' : ''} en attente',
-                    style: AppTypography.titleSmall.copyWith(color: Colors.orange),
+                    style:
+                        AppTypography.subtitle.copyWith(color: Colors.orange),
                   ),
                   Text(
                     'Appuyez pour valider ou rejeter',
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+                    style: AppTypography.bodySmall
+                        .copyWith(color: AppColors.textMutedDark),
                   ),
                 ],
               ),

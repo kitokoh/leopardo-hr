@@ -40,9 +40,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     HapticFeedback.mediumImpact();
 
-    final ok = await ref
-        .read(userAuthProvider.notifier)
-        .register(
+    final ok = await ref.read(userAuthProvider.notifier).register(
           firstName: _firstNameCtrl.text.trim(),
           lastName: _lastNameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
@@ -63,9 +61,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref
-          .read(userAuthProvider.notifier)
-          .googleSignIn(
+      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
             googleId: account.id,
             email: account.email,
             firstName: account.displayName?.split(' ').first ?? '',
@@ -154,20 +150,20 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     return Column(
       children: [
         Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.ia, AppColors.rh],
-                ),
-              ),
-              child: const Icon(
-                Icons.person_add_outlined,
-                color: Colors.white,
-                size: 30,
-              ),
-            )
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [AppColors.ia, AppColors.rh],
+            ),
+          ),
+          child: const Icon(
+            Icons.person_add_outlined,
+            color: Colors.white,
+            size: 30,
+          ),
+        )
             .animate()
             .fadeIn(duration: 400.ms)
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),
@@ -191,14 +187,13 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: _googleLoading ? null : _googleSignIn,
-        icon:
-            _googleLoading
-                ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-                : const Icon(Icons.g_mobiledata, size: 24),
+        icon: _googleLoading
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.g_mobiledata, size: 24),
         label: const Text('Continuer avec Google'),
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 300.ms).slideY(begin: 0.1);
@@ -244,8 +239,8 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                       labelText: 'Prenom',
                       prefixIcon: Icon(Icons.person_outlined),
                     ),
-                    validator:
-                        (v) => (v?.trim().isEmpty ?? true) ? 'Requis' : null,
+                    validator: (v) =>
+                        (v?.trim().isEmpty ?? true) ? 'Requis' : null,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -257,8 +252,8 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                       labelText: 'Nom',
                       prefixIcon: Icon(Icons.person_outlined),
                     ),
-                    validator:
-                        (v) => (v?.trim().isEmpty ?? true) ? 'Requis' : null,
+                    validator: (v) =>
+                        (v?.trim().isEmpty ?? true) ? 'Requis' : null,
                   ),
                 ),
               ],
@@ -317,17 +312,16 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
             const SizedBox(height: 22),
             ElevatedButton(
               onPressed: state.isLoading ? null : _register,
-              child:
-                  state.isLoading
-                      ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                      : const Text('Creer mon compte'),
+              child: state.isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Creer mon compte'),
             ),
             const SizedBox(height: 14),
             Center(

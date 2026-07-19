@@ -200,8 +200,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         notes: notes,
       );
       final now = DateTime.now();
-      final isToday =
-          log.date.year == now.year &&
+      final isToday = log.date.year == now.year &&
           log.date.month == now.month &&
           log.date.day == now.day;
       state = state.copyWith(
@@ -303,8 +302,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-    });
+  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+});
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
   ref,
@@ -324,18 +323,18 @@ final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((
 
 final managerAttendanceTodayProvider =
     FutureProvider.autoDispose<List<AttendanceLog>>((ref) async {
-      final repo = ref.watch(attendanceRepositoryProvider);
-      return repo.getManagerAttendanceToday();
-    });
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return repo.getManagerAttendanceToday();
+});
 
 final managerAnomaliesProvider =
     FutureProvider.autoDispose<ManagerAnomalyReport>((ref) async {
-      final repo = ref.watch(attendanceRepositoryProvider);
-      return repo.getManagerAnomalies();
-    });
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return repo.getManagerAnomalies();
+});
 
 final managerCorrectionsProvider =
     FutureProvider.autoDispose<List<AttendanceCorrection>>((ref) async {
-      final repo = ref.watch(attendanceRepositoryProvider);
-      return repo.getPendingCorrections();
-    });
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return repo.getPendingCorrections();
+});

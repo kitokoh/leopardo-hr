@@ -120,148 +120,144 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
         backgroundColor: MobileSurface.background,
         onRefresh: _refresh,
         child: payrollsAsync.when(
-          data:
-              (payrolls) => ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                itemCount: payrolls.isEmpty ? 2 : payrolls.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: _BalanceCard(balanceAsync: balanceAsync),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: _PaymentDocumentsCard(
-                            documentsAsync: documentsAsync,
-                            downloadingId: _downloadingDocumentId,
-                            onDownload: _downloadPaymentDocument,
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-
-                  if (payrolls.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.only(top: 56),
-                      child: EmptyState(
-                        icon: Icons.description,
-                        title: 'Aucune fiche de paie',
-                        description:
-                            'Vos fiches de paie apparaitront ici des qu elles seront validees.',
+          data: (payrolls) => ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            itemCount: payrolls.isEmpty ? 2 : payrolls.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _BalanceCard(balanceAsync: balanceAsync),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _PaymentDocumentsCard(
+                        documentsAsync: documentsAsync,
+                        downloadingId: _downloadingDocumentId,
+                        onDownload: _downloadPaymentDocument,
                       ),
-                    );
-                  }
+                    ),
+                  ],
+                );
+              }
 
-                  final payroll = payrolls[index - 1];
-                  final isDownloading = _downloadingId == payroll.id;
-                  return MobilePanel(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        const MobileIconBubble(
-                          icon: Icons.receipt_long_outlined,
-                          color: AppColors.rh,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Mois ${payroll.month}/${payroll.year}',
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: MobileSurface.text,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${payroll.netSalary.toStringAsFixed(2)} ${payroll.currency} net',
-                                style: AppTypography.caption.copyWith(
-                                  color: MobileSurface.secondary,
-                                ),
-                              ),
-                              if (payroll.status == 'validated')
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 6),
-                                  child: MobileStatusPill(
-                                    label: 'Valide',
-                                    color: AppColors.success,
-                                    icon: Icons.check_circle,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        isDownloading
-                            ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                semanticsLabel: 'Telechargement en cours',
-                              ),
-                            )
-                            : IconButton(
-                              icon: const Icon(
-                                Icons.picture_as_pdf,
-                                color: AppColors.info,
-                              ),
-                              tooltip: 'Telecharger le bulletin PDF',
-                              onPressed:
-                                  payroll.pdfPath != null
-                                      ? () => _downloadPdf(payroll.id)
-                                      : null,
+              if (payrolls.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.only(top: 56),
+                  child: EmptyState(
+                    icon: Icons.description,
+                    title: 'Aucune fiche de paie',
+                    description:
+                        'Vos fiches de paie apparaitront ici des qu elles seront validees.',
+                  ),
+                );
+              }
+
+              final payroll = payrolls[index - 1];
+              final isDownloading = _downloadingId == payroll.id;
+              return MobilePanel(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    const MobileIconBubble(
+                      icon: Icons.receipt_long_outlined,
+                      color: AppColors.rh,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Mois ${payroll.month}/${payroll.year}',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: MobileSurface.text,
+                              fontWeight: FontWeight.w700,
                             ),
-                      ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${payroll.netSalary.toStringAsFixed(2)} ${payroll.currency} net',
+                            style: AppTypography.caption.copyWith(
+                              color: MobileSurface.secondary,
+                            ),
+                          ),
+                          if (payroll.status == 'validated')
+                            const Padding(
+                              padding: EdgeInsets.only(top: 6),
+                              child: MobileStatusPill(
+                                label: 'Valide',
+                                color: AppColors.success,
+                                icon: Icons.check_circle,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  );
-                },
+                    isDownloading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              semanticsLabel: 'Telechargement en cours',
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(
+                              Icons.picture_as_pdf,
+                              color: AppColors.info,
+                            ),
+                            tooltip: 'Telecharger le bulletin PDF',
+                            onPressed: payroll.pdfPath != null
+                                ? () => _downloadPdf(payroll.id)
+                                : null,
+                          ),
+                  ],
+                ),
+              );
+            },
+          ),
+          loading: () => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              _BalanceCard(balanceAsync: balanceAsync),
+              const SizedBox(height: 16),
+              _PaymentDocumentsCard(
+                documentsAsync: documentsAsync,
+                downloadingId: _downloadingDocumentId,
+                onDownload: _downloadPaymentDocument,
               ),
-          loading:
-              () => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _BalanceCard(balanceAsync: balanceAsync),
-                  const SizedBox(height: 16),
-                  _PaymentDocumentsCard(
-                    documentsAsync: documentsAsync,
-                    downloadingId: _downloadingDocumentId,
-                    onDownload: _downloadPaymentDocument,
-                  ),
-                  const SizedBox(height: 120),
-                  const Center(
-                    child: CircularProgressIndicator(
-                      semanticsLabel: 'Chargement des fiches de paie',
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 120),
+              const Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: 'Chargement des fiches de paie',
+                ),
               ),
-          error:
-              (e, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _BalanceCard(balanceAsync: balanceAsync),
-                  const SizedBox(height: 16),
-                  _PaymentDocumentsCard(
-                    documentsAsync: documentsAsync,
-                    downloadingId: _downloadingDocumentId,
-                    onDownload: _downloadPaymentDocument,
-                  ),
-                  const SizedBox(height: 120),
-                  Text(
-                    e.toString(),
-                    style: const TextStyle(color: AppColors.danger),
-                  ),
-                ],
+            ],
+          ),
+          error: (e, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              _BalanceCard(balanceAsync: balanceAsync),
+              const SizedBox(height: 16),
+              _PaymentDocumentsCard(
+                documentsAsync: documentsAsync,
+                downloadingId: _downloadingDocumentId,
+                onDownload: _downloadPaymentDocument,
               ),
+              const SizedBox(height: 120),
+              Text(
+                e.toString(),
+                style: const TextStyle(color: AppColors.danger),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -329,19 +325,17 @@ class _PaymentDocumentsCard extends StatelessWidget {
             ],
           );
         },
-        loading:
-            () => const LinearProgressIndicator(
-              minHeight: 3,
-              color: AppColors.rh,
-              backgroundColor: MobileSurface.surface,
-            ),
-        error:
-            (_, __) => Text(
-              'Documents temporairement indisponibles',
-              style: AppTypography.caption.copyWith(
-                color: MobileSurface.secondary,
-              ),
-            ),
+        loading: () => const LinearProgressIndicator(
+          minHeight: 3,
+          color: AppColors.rh,
+          backgroundColor: MobileSurface.surface,
+        ),
+        error: (_, __) => Text(
+          'Documents temporairement indisponibles',
+          style: AppTypography.caption.copyWith(
+            color: MobileSurface.secondary,
+          ),
+        ),
       ),
     );
   }
@@ -401,10 +395,9 @@ class _PaymentDocumentTile extends StatelessWidget {
             IconButton(
               tooltip: 'Telecharger',
               icon: const Icon(Icons.download_outlined),
-              color:
-                  document.isAvailable
-                      ? AppColors.info
-                      : MobileSurface.secondary,
+              color: document.isAvailable
+                  ? AppColors.info
+                  : MobileSurface.secondary,
               onPressed:
                   document.isAvailable ? () => onDownload(document) : null,
             ),
@@ -422,79 +415,76 @@ class _BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return balanceAsync.when(
-      data:
-          (balance) => MobilePanel(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      data: (balance) => MobilePanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    const MobileIconBubble(
-                      icon: Icons.account_balance_wallet_outlined,
-                      color: AppColors.rh,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mon solde',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: MobileSurface.text,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          Text(
-                            '${balance.periodStart} - ${balance.periodEnd}',
-                            style: AppTypography.caption.copyWith(
-                              color: MobileSurface.secondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _MoneyLine(
-                  label: 'Reste a recevoir',
-                  value: balance.remaining,
-                  currency: balance.currency,
+                const MobileIconBubble(
+                  icon: Icons.account_balance_wallet_outlined,
                   color: AppColors.rh,
                 ),
-                const SizedBox(height: 8),
-                _MoneyLine(
-                  label: 'Avances deduites',
-                  value: balance.advances,
-                  currency: balance.currency,
-                  color: AppColors.warning,
-                ),
-                const SizedBox(height: 8),
-                _MoneyLine(
-                  label: 'Deja paye',
-                  value: balance.paid,
-                  currency: balance.currency,
-                  color: AppColors.info,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mon solde',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: MobileSurface.text,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        '${balance.periodStart} - ${balance.periodEnd}',
+                        style: AppTypography.caption.copyWith(
+                          color: MobileSurface.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-      loading:
-          () => const MobilePanel(
-            child: LinearProgressIndicator(
-              minHeight: 3,
+            const SizedBox(height: 16),
+            _MoneyLine(
+              label: 'Reste a recevoir',
+              value: balance.remaining,
+              currency: balance.currency,
               color: AppColors.rh,
-              backgroundColor: MobileSurface.surface,
             ),
-          ),
-      error:
-          (_, __) => const MobilePanel(
-            child: Text(
-              'Solde temporairement indisponible',
-              style: TextStyle(color: MobileSurface.secondary),
+            const SizedBox(height: 8),
+            _MoneyLine(
+              label: 'Avances deduites',
+              value: balance.advances,
+              currency: balance.currency,
+              color: AppColors.warning,
             ),
-          ),
+            const SizedBox(height: 8),
+            _MoneyLine(
+              label: 'Deja paye',
+              value: balance.paid,
+              currency: balance.currency,
+              color: AppColors.info,
+            ),
+          ],
+        ),
+      ),
+      loading: () => const MobilePanel(
+        child: LinearProgressIndicator(
+          minHeight: 3,
+          color: AppColors.rh,
+          backgroundColor: MobileSurface.surface,
+        ),
+      ),
+      error: (_, __) => const MobilePanel(
+        child: Text(
+          'Solde temporairement indisponible',
+          style: TextStyle(color: MobileSurface.secondary),
+        ),
+      ),
     );
   }
 }

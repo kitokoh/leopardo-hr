@@ -36,8 +36,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience =
-        employee?.mobileExperience ??
+    final experience = employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],
@@ -46,10 +45,9 @@ class HomeScreen extends ConsumerWidget {
     final stage = experience.stage;
     final quickActions = experience.quickActions.take(3).toList();
     final activeModules = experience.activeModules.take(4).toList();
-    final firstName =
-        employee?.firstName.isNotEmpty == true
-            ? employee!.firstName
-            : employee?.email.split('@').first ?? '';
+    final firstName = employee?.firstName.isNotEmpty == true
+        ? employee!.firstName
+        : employee?.email.split('@').first ?? '';
     final branding = ref.watch(
       tenantBrandingProvider.select(
         (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
@@ -90,10 +88,9 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
-                      subtitle:
-                          stage == 'new'
-                              ? 'Les premiers gestes vraiment utiles.'
-                              : 'Vos trois gestes RH du jour.',
+                      subtitle: stage == 'new'
+                          ? 'Les premiers gestes vraiment utiles.'
+                          : 'Vos trois gestes RH du jour.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -285,10 +282,9 @@ class _QuickActionsGrid extends StatelessWidget {
           childAspectRatio: 1.04,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children:
-              actions
-                  .map((action) => _QuickActionCard(action: action))
-                  .toList(),
+          children: actions
+              .map((action) => _QuickActionCard(action: action))
+              .toList(),
         );
       },
     );
@@ -461,15 +457,15 @@ class ManagerDigest {
   });
 
   const ManagerDigest.empty()
-    : teamScope = 'company',
-      teamSize = 0,
-      present = 0,
-      late = 0,
-      openSessions = 0,
-      pendingActions = 0,
-      pendingAbsences = 0,
-      pendingSalaryAdvances = 0,
-      pendingCorrections = 0;
+      : teamScope = 'company',
+        teamSize = 0,
+        present = 0,
+        late = 0,
+        openSessions = 0,
+        pendingActions = 0,
+        pendingAbsences = 0,
+        pendingSalaryAdvances = 0,
+        pendingCorrections = 0;
 
   final String teamScope;
   final int teamSize;
@@ -543,10 +539,9 @@ class _ManagerDigestCard extends ConsumerWidget {
           ),
           digest.when(
             loading: () => const _ManagerDigestLoading(),
-            error:
-                (error, _) => _ManagerDigestError(
-                  onRetry: () => ref.invalidate(managerDigestProvider),
-                ),
+            error: (error, _) => _ManagerDigestError(
+              onRetry: () => ref.invalidate(managerDigestProvider),
+            ),
             data: (data) => _ManagerDigestContent(data: data),
           ),
           const SizedBox(height: 14),
@@ -590,10 +585,9 @@ class _ManagerDigestContent extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: _DigestTile(
-                color:
-                    data.pendingActions > 0
-                        ? AppColors.info
-                        : AppColors.success,
+                color: data.pendingActions > 0
+                    ? AppColors.info
+                    : AppColors.success,
                 value: data.pendingActions.toString(),
                 label: 'actions RH',
               ),

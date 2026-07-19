@@ -255,8 +255,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               'ou',
-                              style: AppTypography.caption
-                                  .copyWith(color: muted),
+                              style:
+                                  AppTypography.caption.copyWith(color: muted),
                             ),
                           ),
                           Expanded(

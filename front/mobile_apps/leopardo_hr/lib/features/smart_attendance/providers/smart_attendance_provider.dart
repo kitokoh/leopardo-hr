@@ -11,15 +11,11 @@ final hrSmartAttendanceRepositoryProvider =
 /// Liste des sessions en attente de validation manager.
 final pendingGeoSessionsProvider =
     FutureProvider.autoDispose<List<GeoAttendanceSession>>((ref) async {
-  return ref
-      .watch(hrSmartAttendanceRepositoryProvider)
-      .getPendingSessions();
+  return ref.watch(hrSmartAttendanceRepositoryProvider).getPendingSessions();
 });
 
 /// Stats du dashboard Smart Attendance.
 final smartAttendanceDashboardProvider =
     FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
-  return ref
-      .watch(hrSmartAttendanceRepositoryProvider)
-      .getDashboardStats();
+  return ref.watch(hrSmartAttendanceRepositoryProvider).getDashboardStats();
 });

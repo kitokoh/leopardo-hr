@@ -77,11 +77,10 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               onRetry: () => ref.invalidate(monthlySummaryProvider(_month)),
             );
           },
-          data:
-              (summary) => _MonthlySummaryBody(
-                summary: summary,
-                onHistory: () => context.push('/history'),
-              ),
+          data: (summary) => _MonthlySummaryBody(
+            summary: summary,
+            onHistory: () => context.push('/history'),
+          ),
         ),
       ],
     );

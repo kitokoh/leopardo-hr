@@ -181,10 +181,9 @@ class SettingsRepository {
       if (faceImage != null)
         'face_image': await MultipartFile.fromFile(
           faceImage.path,
-          filename:
-              faceImage.uri.pathSegments.isNotEmpty
-                  ? faceImage.uri.pathSegments.last
-                  : 'face.jpg',
+          filename: faceImage.uri.pathSegments.isNotEmpty
+              ? faceImage.uri.pathSegments.last
+              : 'face.jpg',
         ),
     });
 
@@ -231,17 +230,16 @@ class EmployeeCareer {
     return EmployeeCareer(
       availableForNewCompany: json['available_for_new_company'] == true,
       currentCompanyName: json['current_company_name']?.toString(),
-      timeline:
-          rawTimeline is List
-              ? rawTimeline
-                  .whereType<Map>()
-                  .map(
-                    (entry) => EmployeeCareerEntry.fromJson(
-                      entry.cast<String, dynamic>(),
-                    ),
-                  )
-                  .toList()
-              : const <EmployeeCareerEntry>[],
+      timeline: rawTimeline is List
+          ? rawTimeline
+              .whereType<Map>()
+              .map(
+                (entry) => EmployeeCareerEntry.fromJson(
+                  entry.cast<String, dynamic>(),
+                ),
+              )
+              .toList()
+          : const <EmployeeCareerEntry>[],
     );
   }
 }

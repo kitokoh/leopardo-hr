@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowRight,
   CheckCircle,
-  Chrome,
   Eye,
   EyeOff,
   Globe2,
@@ -503,7 +502,7 @@ function LoginInner() {
                 href={googleAuthHref()}
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
               >
-                <Chrome className="h-4 w-4" aria-hidden="true" />
+                <Globe2 className="h-4 w-4" aria-hidden="true" />
                 {locale === 'fr'
                   ? 'Continuer avec Google'
                   : locale === 'tr'

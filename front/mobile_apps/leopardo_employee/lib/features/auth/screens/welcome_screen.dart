@@ -225,7 +225,8 @@ class _ModuleTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: AppColors.tint(context, color, lightAlpha: 0.12, darkAlpha: 0.20),
+        color:
+            AppColors.tint(context, color, lightAlpha: 0.12, darkAlpha: 0.20),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: color.withValues(alpha: 0.20),

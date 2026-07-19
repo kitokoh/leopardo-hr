@@ -85,19 +85,18 @@ class AbsenceListScreen extends ConsumerWidget {
               },
             );
           },
-          loading:
-              () => const MobileEmptyLoading(label: 'Chargement des absences'),
-          error:
-              (e, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  MobileErrorPanel(
-                    message: e.toString(),
-                    onRetry: () => ref.invalidate(absencesProvider),
-                  ),
-                ],
+          loading: () =>
+              const MobileEmptyLoading(label: 'Chargement des absences'),
+          error: (e, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              MobileErrorPanel(
+                message: e.toString(),
+                onRetry: () => ref.invalidate(absencesProvider),
               ),
+            ],
+          ),
         ),
       ),
     );
@@ -161,25 +160,22 @@ class AbsenceListScreen extends ConsumerWidget {
   }
 
   Widget _absenceContext(Absence absence) {
-    final reason =
-        absence.reason?.trim().isNotEmpty == true
-            ? absence.reason!.trim()
-            : 'Motif non renseigne';
+    final reason = absence.reason?.trim().isNotEmpty == true
+        ? absence.reason!.trim()
+        : 'Motif non renseigne';
     final submittedAt = absence.createdAt;
-    final submittedLabel =
-        submittedAt == null
-            ? 'Date de demande non renseignee'
-            : DateFormat('d MMM yyyy', 'fr_FR').format(submittedAt);
+    final submittedLabel = submittedAt == null
+        ? 'Date de demande non renseignee'
+        : DateFormat('d MMM yyyy', 'fr_FR').format(submittedAt);
     final requester = [
       if (absence.employeeName?.trim().isNotEmpty == true)
         absence.employeeName!.trim(),
       if (absence.employeeEmail?.trim().isNotEmpty == true)
         absence.employeeEmail!.trim(),
     ].join(' - ');
-    final company =
-        absence.companyName?.trim().isNotEmpty == true
-            ? absence.companyName!.trim()
-            : 'Entreprise courante';
+    final company = absence.companyName?.trim().isNotEmpty == true
+        ? absence.companyName!.trim()
+        : 'Entreprise courante';
     return Text(
       '${requester.isEmpty ? '' : 'Demandeur : $requester\n'}Entreprise : $company\nDemande : $submittedLabel\nMotif : $reason',
       style: AppTypography.caption.copyWith(
@@ -196,23 +192,22 @@ class AbsenceListScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Approuver cette absence ?'),
-            content: Text(
-              '${absence.employeeName ?? 'Employe #${absence.employeeId}'} - ${absence.absenceTypeName ?? 'Absence'}\n${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)} (${absence.daysCount.toStringAsFixed(1)} j)\n\nMotif : ${absence.reason?.trim().isNotEmpty == true ? absence.reason!.trim() : 'non renseigne'}\n\nLa demande passera en statut approuve et l employe sera notifie.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Retour'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Approuver'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Approuver cette absence ?'),
+        content: Text(
+          '${absence.employeeName ?? 'Employe #${absence.employeeId}'} - ${absence.absenceTypeName ?? 'Absence'}\n${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)} (${absence.daysCount.toStringAsFixed(1)} j)\n\nMotif : ${absence.reason?.trim().isNotEmpty == true ? absence.reason!.trim() : 'non renseigne'}\n\nLa demande passera en statut approuve et l employe sera notifie.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Retour'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Approuver'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -244,21 +239,20 @@ class AbsenceListScreen extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder:
-          (_) => MobileDecisionCommentSheet(
-            title: 'Refuser l absence',
-            helper: 'Le motif sera visible par l employe.',
-            submitLabel: 'Refuser',
-            danger: true,
-            onSubmit: (comment) async {
-              await ref
-                  .read(absenceRepositoryProvider)
-                  .rejectAbsence(absenceId: absenceId, reason: comment);
-              ref.invalidate(absencesProvider);
-              ref.invalidate(leaveBalancesProvider);
-            },
-            successMessage: 'Absence refusee.',
-          ),
+      builder: (_) => MobileDecisionCommentSheet(
+        title: 'Refuser l absence',
+        helper: 'Le motif sera visible par l employe.',
+        submitLabel: 'Refuser',
+        danger: true,
+        onSubmit: (comment) async {
+          await ref
+              .read(absenceRepositoryProvider)
+              .rejectAbsence(absenceId: absenceId, reason: comment);
+          ref.invalidate(absencesProvider);
+          ref.invalidate(leaveBalancesProvider);
+        },
+        successMessage: 'Absence refusee.',
+      ),
     );
   }
 
@@ -278,23 +272,22 @@ class AbsenceListScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Annuler cette demande ?'),
-            content: const Text(
-              'La demande en attente sera retiree et le RH verra le statut annule.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Garder'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Annuler'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Annuler cette demande ?'),
+        content: const Text(
+          'La demande en attente sera retiree et le RH verra le statut annule.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Garder'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Annuler'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -319,12 +312,12 @@ class AbsenceListScreen extends ConsumerWidget {
   }
 
   static String _statusLabel(String status) => switch (status) {
-    'approved' => 'approuvee',
-    'pending' => 'en attente',
-    'rejected' => 'rejetee',
-    'cancelled' => 'annulee',
-    _ => status,
-  };
+        'approved' => 'approuvee',
+        'pending' => 'en attente',
+        'rejected' => 'rejetee',
+        'cancelled' => 'annulee',
+        _ => status,
+      };
 
   static Color _getStatusColor(String status) {
     switch (status) {
@@ -403,12 +396,11 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
               const SizedBox(height: 18),
               balances.when(
                 data: (rawBalances) {
-                  final options =
-                      rawBalances
-                          .map(_AbsenceTypeOption.fromBalance)
-                          .where((option) => option != null)
-                          .cast<_AbsenceTypeOption>()
-                          .toList();
+                  final options = rawBalances
+                      .map(_AbsenceTypeOption.fromBalance)
+                      .where((option) => option != null)
+                      .cast<_AbsenceTypeOption>()
+                      .toList();
                   _selectedType ??= options.isNotEmpty ? options.first : null;
 
                   if (options.isEmpty) {
@@ -420,36 +412,31 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                   }
 
                   return DropdownButtonFormField<_AbsenceTypeOption>(
-                    initialValue:
-                        options.contains(_selectedType)
-                            ? _selectedType
-                            : options.first,
+                    initialValue: options.contains(_selectedType)
+                        ? _selectedType
+                        : options.first,
                     dropdownColor: MobileSurface.surface,
                     decoration: const InputDecoration(labelText: 'Type'),
-                    items:
-                        options
-                            .map(
-                              (option) => DropdownMenuItem(
-                                value: option,
-                                child: Text(option.label),
-                              ),
-                            )
-                            .toList(),
-                    validator:
-                        (value) =>
-                            value == null ? 'Type d absence requis' : null,
+                    items: options
+                        .map(
+                          (option) => DropdownMenuItem(
+                            value: option,
+                            child: Text(option.label),
+                          ),
+                        )
+                        .toList(),
+                    validator: (value) =>
+                        value == null ? 'Type d absence requis' : null,
                     onChanged: (value) => setState(() => _selectedType = value),
                   );
                 },
-                loading:
-                    () => const MobileEmptyLoading(
-                      label: 'Chargement des soldes',
-                    ),
-                error:
-                    (error, _) => MobileErrorPanel(
-                      message: error.toString(),
-                      onRetry: () => ref.invalidate(leaveBalancesProvider),
-                    ),
+                loading: () => const MobileEmptyLoading(
+                  label: 'Chargement des soldes',
+                ),
+                error: (error, _) => MobileErrorPanel(
+                  message: error.toString(),
+                  onRetry: () => ref.invalidate(leaveBalancesProvider),
+                ),
               ),
               const SizedBox(height: 12),
               Row(
@@ -481,23 +468,20 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                   labelText: 'Motif',
                   hintText: 'Ex: rendez-vous medical, conge familial...',
                 ),
-                validator:
-                    (value) =>
-                        value == null || value.trim().length < 4
-                            ? 'Motif obligatoire'
-                            : null,
+                validator: (value) => value == null || value.trim().length < 4
+                    ? 'Motif obligatoire'
+                    : null,
               ),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: _submitting ? null : _submit,
-                child:
-                    _submitting
-                        ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Text('Soumettre au RH'),
+                child: _submitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Soumettre au RH'),
               ),
             ],
           ),
@@ -533,9 +517,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(absenceRepositoryProvider)
-          .requestAbsence(
+      await ref.read(absenceRepositoryProvider).requestAbsence(
             absenceTypeId: selectedType.id,
             startDate: _startDate,
             endDate: _endDate,
@@ -619,8 +601,7 @@ class _AbsenceTypeOption {
     if (id == null) return null;
 
     final name = type['name']?.toString();
-    final remaining =
-        balance['remaining_days'] ??
+    final remaining = balance['remaining_days'] ??
         balance['remaining'] ??
         balance['balance'] ??
         balance['available_days'];

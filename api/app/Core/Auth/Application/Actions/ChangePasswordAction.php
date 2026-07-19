@@ -11,21 +11,27 @@ use Illuminate\Support\Facades\Hash;
 /**
  * Use Case : Changement de mot de passe.
  *
- * @throws DomainException  When the current password is incorrect.
+ * @throws DomainException When the current password is incorrect.
  */
 final class ChangePasswordAction
 {
     /**
-     * @return array{token: string, token_type: string, token_expires_at: ?string}|null
-     *         A fresh Sanctum token for the current device, or null when the
-     *         request was not made through a token guard (e.g. session auth).
+     * @return array{token: string, token_type: string, token_expires_at: ?string} A fresh Sanctum token for the current device.
      */
-    public function execute(Employee $employee, string $currentPassword, string $newPassword): ?array
+    public function execute(Employee $employee, string $currentPassword, string $newPassword): array
     {
         if (! Hash::check($currentPassword, $employee->password_hash)) {
-            throw new class('Mot de passe actuel incorrect') extends DomainException {
-                public function errorCode(): string { return 'INVALID_CURRENT_PASSWORD'; }
-                public function statusCode(): int   { return 422; }
+            throw new class('Mot de passe actuel incorrect') extends DomainException
+            {
+                public function errorCode(): string
+                {
+                    return 'INVALID_CURRENT_PASSWORD';
+                }
+
+                public function statusCode(): int
+                {
+                    return 422;
+                }
             };
         }
 
@@ -41,7 +47,7 @@ final class ChangePasswordAction
         $currentToken = $employee->currentAccessToken();
         $tokenName = ($currentToken?->name) ?? 'api';
         $abilities = ($currentToken?->abilities) ?? ['*'];
-        $expiresAt = $currentToken?->expires_at;
+        $expiresAt = $currentToken->expires_at;
 
         $employee->tokens()->delete();
 

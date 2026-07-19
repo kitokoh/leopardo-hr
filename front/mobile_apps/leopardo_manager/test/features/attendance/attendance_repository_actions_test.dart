@@ -8,7 +8,7 @@ import '../../helpers/mobile_test_harness.dart';
 void main() {
   ApiClient clientWithHandler(
     void Function(RequestOptions options, RequestInterceptorHandler handler)
-    onRequest,
+        onRequest,
   ) {
     final client = ApiClient(FakeSecureStorage(), FakeAppPreferences());
     client.dio.interceptors.insert(
@@ -114,10 +114,9 @@ void main() {
                   'employee_id': 12,
                   'date': '2026-05-25',
                   'check_in': '2026-05-25T08:00:00Z',
-                  'check_out':
-                      options.path.endsWith('check-out')
-                          ? '2026-05-25T17:00:00Z'
-                          : null,
+                  'check_out': options.path.endsWith('check-out')
+                      ? '2026-05-25T17:00:00Z'
+                      : null,
                   'hours_worked': 8,
                   'status': 'present',
                 },

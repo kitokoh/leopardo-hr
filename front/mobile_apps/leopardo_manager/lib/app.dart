@@ -83,7 +83,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && onPublic) return '/';
-      if (isAuth && ( !authState.employee!.isManager || authState.employee!.isHr ) && !onPublic) {
+      if (isAuth &&
+          (!authState.employee!.isManager || authState.employee!.isHr) &&
+          !onPublic) {
         // Redirection si l'utilisateur n'est pas un Manager pur dans l'app Manager
         return '/welcome';
       }
@@ -224,12 +226,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/manager/dashboard',
-        builder:
-            (context, state) => const ManagerPlaceholderScreen(
-              title: 'Tableau de bord manager',
-              description:
-                  'Emplacement reserve au cockpit equipe, KPI RH et priorites du jour.',
-            ),
+        builder: (context, state) => const ManagerPlaceholderScreen(
+          title: 'Tableau de bord manager',
+          description:
+              'Emplacement reserve au cockpit equipe, KPI RH et priorites du jour.',
+        ),
       ),
       GoRoute(
         path: '/manager/attendance',
@@ -301,8 +302,7 @@ class LeopardoApp extends ConsumerWidget {
     final preferences = ref.watch(appPreferencesProvider);
     final deviceLanguage =
         PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

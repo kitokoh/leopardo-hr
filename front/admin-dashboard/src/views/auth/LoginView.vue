@@ -266,6 +266,7 @@ async function handleLogin() {
 </script>
 
 <style scoped>
+@reference '../../style.css';
 input:focus {
   @apply ring-brand-500 border-brand-500 shadow-[0_0_15px_rgba(20,184,166,0.1)];
 }

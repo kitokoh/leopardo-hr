@@ -42,8 +42,8 @@ class PlatformAuthState {
 
 final platformAuthControllerProvider =
     NotifierProvider<PlatformAuthController, PlatformAuthState>(
-      PlatformAuthController.new,
-    );
+  PlatformAuthController.new,
+);
 
 class PlatformAuthController extends Notifier<PlatformAuthState> {
   static const _startupAuthTimeout = Duration(seconds: 12);
@@ -78,9 +78,7 @@ class PlatformAuthController extends Notifier<PlatformAuthState> {
   }) async {
     state = state.copyWith(isSubmitting: true, clearError: true);
     try {
-      final user = await ref
-          .read(platformRepositoryProvider)
-          .login(
+      final user = await ref.read(platformRepositoryProvider).login(
             email: email,
             password: password,
             twoFactorCode: twoFactorCode,

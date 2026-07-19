@@ -51,10 +51,9 @@ class PlatformCompany {
       status: data['status']?.toString() ?? 'unknown',
       country: data['country']?.toString() ?? '--',
       currency: data['currency']?.toString() ?? '--',
-      plan:
-          planValue is Map
-              ? planValue['name']?.toString() ?? 'Plan'
-              : planName?.toString() ?? planValue?.toString() ?? 'Plan',
+      plan: planValue is Map
+          ? planValue['name']?.toString() ?? 'Plan'
+          : planName?.toString() ?? planValue?.toString() ?? 'Plan',
       createdAt: data['created_at']?.toString() ?? '',
     );
   }
@@ -66,19 +65,17 @@ class PlatformCompany {
 
     return PlatformCompany(
       id: company['id']?.toString() ?? '',
-      name:
-          company['name']?.toString() ??
+      name: company['name']?.toString() ??
           company['company_name']?.toString() ??
           '-',
       status: company['status']?.toString() ?? 'unknown',
       country: company['country']?.toString() ?? '--',
       currency: company['currency']?.toString() ?? '--',
-      plan:
-          planValue is Map
-              ? planValue['name']?.toString() ?? 'Plan'
-              : company['plan_name']?.toString() ??
-                  company['plan']?.toString() ??
-                  'Plan',
+      plan: planValue is Map
+          ? planValue['name']?.toString() ?? 'Plan'
+          : company['plan_name']?.toString() ??
+              company['plan']?.toString() ??
+              'Plan',
       createdAt: company['created_at']?.toString() ?? '',
     );
   }
@@ -170,14 +167,13 @@ class PlatformCompanyHealth {
       criticalAnomalies30d: (anomalies['critical_30d'] as num?)?.toInt() ?? 0,
       onboardingProgress:
           (onboarding['progress_percent'] as num?)?.toInt() ?? 0,
-      nextActions:
-          actions is List
-              ? actions
-                  .whereType<Map>()
-                  .map((item) => item['label']?.toString() ?? '')
-                  .where((label) => label.isNotEmpty)
-                  .toList()
-              : const [],
+      nextActions: actions is List
+          ? actions
+              .whereType<Map>()
+              .map((item) => item['label']?.toString() ?? '')
+              .where((label) => label.isNotEmpty)
+              .toList()
+          : const [],
     );
   }
 }
@@ -262,10 +258,9 @@ class PlatformCompanyFeatures {
 
     return PlatformCompanyFeatures(
       active: features.map((key, value) => MapEntry(key, value == true)),
-      knownModules:
-          modules is List
-              ? modules.map((item) => item.toString()).toList()
-              : features.keys.toList(),
+      knownModules: modules is List
+          ? modules.map((item) => item.toString()).toList()
+          : features.keys.toList(),
     );
   }
 }

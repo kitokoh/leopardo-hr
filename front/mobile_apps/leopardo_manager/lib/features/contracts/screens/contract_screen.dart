@@ -31,97 +31,92 @@ class ContractScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async => await ref.refresh(contractsProvider.future),
         child: contractsAsync.when(
-          data:
-              (contracts) =>
-                  contracts.isEmpty
-                      ? ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: const [
-                          SizedBox(height: 80),
-                          EmptyState(
-                            icon: Icons.description_outlined,
-                            title: 'Aucun contrat',
-                            description:
-                                'Votre contrat apparaitra ici une fois configure.',
-                          ),
-                        ],
-                      )
-                      : ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(20),
-                        itemCount: contracts.length,
-                        itemBuilder: (context, index) {
-                          final contract = contracts[index];
-                          return Card(
-                            color: AppColors.cardDark,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        contract.reference,
-                                        style: AppTypography.subtitle.copyWith(
-                                          color: AppColors.textDark,
-                                        ),
-                                      ),
-                                      _StatusChip(status: contract.status),
-                                    ],
+          data: (contracts) => contracts.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(height: 80),
+                    EmptyState(
+                      icon: Icons.description_outlined,
+                      title: 'Aucun contrat',
+                      description:
+                          'Votre contrat apparaitra ici une fois configure.',
+                    ),
+                  ],
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  itemCount: contracts.length,
+                  itemBuilder: (context, index) {
+                    final contract = contracts[index];
+                    return Card(
+                      color: AppColors.cardDark,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  contract.reference,
+                                  style: AppTypography.subtitle.copyWith(
+                                    color: AppColors.textDark,
                                   ),
-                                  const SizedBox(height: 8),
-                                  _InfoRow(
-                                    label: 'Type',
-                                    value: contract.type.toUpperCase(),
-                                  ),
-                                  _InfoRow(
-                                    label: 'Debut',
-                                    value: contract.startDate,
-                                  ),
-                                  _InfoRow(
-                                    label: 'Fin',
-                                    value: contract.endDate ?? 'CDI',
-                                  ),
-                                  _InfoRow(
-                                    label: 'Salaire base',
-                                    value:
-                                        '${contract.baseSalary.toStringAsFixed(2)} ${contract.currency}',
-                                  ),
-                                ],
-                              ),
+                                ),
+                                _StatusChip(status: contract.status),
+                              ],
                             ),
-                          );
-                        },
+                            const SizedBox(height: 8),
+                            _InfoRow(
+                              label: 'Type',
+                              value: contract.type.toUpperCase(),
+                            ),
+                            _InfoRow(
+                              label: 'Debut',
+                              value: contract.startDate,
+                            ),
+                            _InfoRow(
+                              label: 'Fin',
+                              value: contract.endDate ?? 'CDI',
+                            ),
+                            _InfoRow(
+                              label: 'Salaire base',
+                              value:
+                                  '${contract.baseSalary.toStringAsFixed(2)} ${contract.currency}',
+                            ),
+                          ],
+                        ),
                       ),
-          loading:
-              () => const SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 400,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      semanticsLabel: 'Chargement des contrats...',
-                    ),
-                  ),
+                    );
+                  },
+                ),
+          loading: () => const SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: 400,
+              child: Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: 'Chargement des contrats...',
                 ),
               ),
-          error:
-              (e, _) => SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: 400,
-                  child: Center(
-                    child: Text(
-                      e.toString(),
-                      style: const TextStyle(color: AppColors.danger),
-                    ),
-                  ),
+            ),
+          ),
+          error: (e, _) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: 400,
+              child: Center(
+                child: Text(
+                  e.toString(),
+                  style: const TextStyle(color: AppColors.danger),
                 ),
               ),
+            ),
+          ),
         ),
       ),
     );

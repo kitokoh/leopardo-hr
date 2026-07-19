@@ -15,10 +15,10 @@ use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
-use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,8 +48,8 @@ class AuthController extends Controller
 
         return (new EmployeeResource($employee))
             ->additional([
-                'token'            => $result['token'],
-                'token_type'       => $result['token_type'],
+                'token' => $result['token'],
+                'token_type' => $result['token_type'],
                 'token_expires_at' => $result['token_expires_at'],
             ])
             ->response();
@@ -61,7 +61,7 @@ class AuthController extends Controller
 
         return (new EmployeeResource($result['employee']))
             ->additional([
-                'token'      => $result['token'],
+                'token' => $result['token'],
                 'token_type' => $result['token_type'],
             ])
             ->response()
@@ -132,7 +132,7 @@ class AuthController extends Controller
 
         // All previous Sanctum tokens were revoked by the action; a fresh one
         // for the current device is returned so the caller stays logged in.
-        return new JsonResponse(['status' => 'ok', ...($tokenResult ?? [])]);
+        return new JsonResponse(['status' => 'ok', ...$tokenResult]);
     }
 
     public function refreshToken(Request $request): JsonResponse
@@ -174,12 +174,12 @@ class AuthController extends Controller
         if (! $employee) {
             /** @var Employee $employee */
             $employee = Employee::create([
-                'first_name'    => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name'     => $googleUser->offsetGet('family_name') ?? '',
-                'email'         => $googleUser->getEmail(),
+                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
+                'last_name' => $googleUser->offsetGet('family_name') ?? '',
+                'email' => $googleUser->getEmail(),
                 'password_hash' => Hash::make(str()->random(24)),
-                'role'          => 'ordinary',
-                'status'        => 'active',
+                'role' => 'ordinary',
+                'status' => 'active',
             ]);
         }
 
@@ -187,7 +187,7 @@ class AuthController extends Controller
 
         return (new EmployeeResource($employee))
             ->additional([
-                'token'      => $token->plainTextToken,
+                'token' => $token->plainTextToken,
                 'token_type' => 'Bearer',
             ])
             ->response()
@@ -198,7 +198,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'access_token' => 'required|string',
-            'device_name'  => 'nullable|string|max:255',
+            'device_name' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -219,10 +219,9 @@ class AuthController extends Controller
 
         return (new EmployeeResource($employee))
             ->additional([
-                'token'      => $token->plainTextToken,
+                'token' => $token->plainTextToken,
                 'token_type' => 'Bearer',
             ])
             ->response();
     }
 }
-

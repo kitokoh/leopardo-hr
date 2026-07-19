@@ -3,12 +3,16 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  file_selector_windows
+  connectivity_plus
+  firebase_core
   flutter_secure_storage_windows
-  local_auth_windows
+  geolocator_windows
+  sentry_flutter
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  flutter_local_notifications_windows
+  jni
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
