@@ -31,7 +31,7 @@ class TurkeyPayrollRules extends AbstractCountryRules
         ];
     }
 
-    public function taxSlabs(): array
+    protected function defaultTaxSlabs(): array
     {
         return [
             ['min' => 0, 'max' => 110000, 'rate' => 15, 'fixed_deduction' => 0],
