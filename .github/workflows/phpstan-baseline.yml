@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
@@ -75,7 +75,7 @@ jobs:
           EOF
 
       - name: Upload PHPStan baseline candidate
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: phpstan-generated-baseline
           path: |

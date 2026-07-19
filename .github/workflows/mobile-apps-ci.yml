@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -112,7 +112,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Setup Flutter + Java
         uses: ./.github/actions/setup-flutter-android
@@ -157,7 +157,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Setup Flutter + Java
         uses: ./.github/actions/setup-flutter-android
@@ -171,7 +171,7 @@ jobs:
         run: flutter build apk --debug --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.project.artifact }}
           path: ${{ matrix.project.path }}/build/app/outputs/flutter-apk/app-debug.apk
