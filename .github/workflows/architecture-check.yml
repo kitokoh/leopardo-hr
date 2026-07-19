@@ -77,6 +77,9 @@ jobs:
           fi
           echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
 
+      - name: Check for orphan (unrouted) controllers
+        run: dev-hub/tools/check-unrouted-controllers.sh api
+
   frontend-lint:
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
