@@ -1,5 +1,9 @@
 # Product Roadmap — Leopardo RH
 
+> ⚠️ **Ce document decrit une trajectoire produit aspirationnelle/marketing.**
+> Pour l'etat operationnel reel, les priorites courantes et les ecarts avec cette roadmap,
+> se referer a [`PILOTAGE.md`](PILOTAGE.md), qui prime en cas de divergence entre les deux documents.
+
 Leopardo RH follows a phased delivery approach, prioritizing stability for SMEs before expanding into advanced enterprise features.
 
 ## 📍 Current Status: Phase 0 (MVP)
