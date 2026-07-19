@@ -209,7 +209,7 @@ export default function NotificationSettingsPage() {
                     type="checkbox"
                     checked={enabled}
                     onChange={(event) => updateCategory(category.key, event.target.checked)}
-                    className="h-5 w-5 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                    className="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                   />
                 </label>
               );
@@ -233,7 +233,7 @@ export default function NotificationSettingsPage() {
               type="checkbox"
               checked={Boolean(preferences.quiet_hours?.enabled)}
               onChange={(event) => updateQuietHours('enabled', event.target.checked)}
-              className="h-5 w-5 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              className="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
             />
           </label>
           <div className="mt-4 grid grid-cols-2 gap-3">
