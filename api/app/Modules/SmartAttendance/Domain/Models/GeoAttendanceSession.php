@@ -7,6 +7,7 @@ namespace App\Modules\SmartAttendance\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Tenant\Domain\Models\Site;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,6 +43,18 @@ use Illuminate\Support\Carbon;
  */
 class GeoAttendanceSession extends Model
 {
+    // Defense-in-depth: this model previously relied entirely on manual
+    // `where('company_id', ...)` calls sprinkled across GeoSessionController
+    // and GeoSessionManager for tenant isolation. Every existing call site
+    // was verified to filter correctly (see
+    // tests/Feature/SmartAttendance/MultiTenantIsolationTest.php), but a
+    // future query that forgets the manual filter would silently leak
+    // cross-tenant data. Adding the standard global scope (same pattern as
+    // the rest of the codebase) makes isolation the default instead of an
+    // opt-in per call site. See docs/security/AUDIT_API_2026-07-19.md
+    // follow-up review (2026-07-19b).
+    use BelongsToCompany;
+
     protected $table = 'geo_attendance_sessions';
 
     protected $fillable = [
