@@ -9,8 +9,12 @@ All API requests require a **Bearer Token** obtained via the login endpoint.
 - **Base URL:** `https://gestionemployerbackend.onrender.com/api/v1`
 - **Format:** `application/json`
 
+> ⚠️ (Audit doc 2026-07-19) `api.leopardo-rh.com` ci-dessous n'a jamais ete configure/DNS-resolu en production ;
+> c'est un domaine custom cible mentionne dans `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` (todo non fait).
+> Utiliser la vraie Base URL ci-dessus (`gestionemployerbackend.onrender.com`) pour toute requete reelle.
+
 ```bash
-curl -X GET "https://api.leopardo-rh.com/api/v1/employees" \
+curl -X GET "https://gestionemployerbackend.onrender.com/api/v1/employees" \
      -H "Authorization: Bearer {YOUR_TOKEN}" \
      -H "Accept: application/json"
 ```

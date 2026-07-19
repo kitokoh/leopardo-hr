@@ -12,8 +12,8 @@ leopardo-hr/
 ├── api/                    # Backend Laravel (PHP 8.2+)
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
-│   └── web/                # Vitrine (Next.js)
-├── mobile/                 # Application Flutter (Dart)
+│   ├── web/                # Vitrine (Next.js)
+│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin
 ├── docs/                   # Documentation technique
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── docker-compose.yml      # Dev environment
@@ -123,7 +123,7 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 
 ### 3.3 Mobile (Flutter)
 
-- Tests widget + unit dans `mobile/test/`
+- Tests widget + unit dans `front/mobile_apps/<app>/test/` (voir `front/mobile_apps/README.md`)
 - Commande : `flutter test`
 - Framework state : flutter_riverpod 3.3 (pas Bloc)
 - **Coverage gate** : seuil actuel 21%, cible 25%
@@ -167,7 +167,7 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 - **Flutter 3.x** — versions stables uniquement
 - **State management** : `flutter_riverpod 3.3` (pas Bloc, pas Provider legacy)
 - **Navigation** : GoRouter
-- Repertoire : `mobile/lib/`
+- Repertoire : `front/mobile_apps/<app>/lib/` (voir `front/mobile_apps/README.md` pour la liste des apps)
 
 ## 7. Documentation API
 

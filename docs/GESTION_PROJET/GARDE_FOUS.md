@@ -3,6 +3,15 @@
 # Ce fichier est lu par tous les agents IA et le chef de projet
 # TOUT le monde doit respecter ces règles sans exception
 
+> ⚠️ **DOCUMENT ARCHIVÉ / OBSOLÈTE (audit doc du 2026-07-19)**
+> La "liste noire MVP" ci-dessous décrit le scope Phase 1 tel qu'imaginé en avril 2026.
+> Depuis, le produit a largement dépassé ce scope en production : absences/congés, paie complète,
+> avances sur salaire, ZKTeco/biométrie, multi-pays, notifications push (FCM), et le mode schema
+> Enterprise (multitenancy) sont **déjà livrés**, tel que documenté dans `PILOTAGE.md` (source de
+> vérité opérationnelle courante). Ne pas utiliser ce fichier pour refuser une tâche légitime.
+> Conservé uniquement à titre historique/pédagogique sur la discipline anti scope-creep.
+> Se référer à `PILOTAGE.md` pour le scope réel courant.
+
 ---
 
 ## GARDE-FOU 1 — ANTI SCOPE CREEP (le plus important)

@@ -6,7 +6,7 @@ Ce dossier centralise les documents de pilotage, les runbooks, les audits d'ecar
 
 1. `../../PILOTAGE.md` - source de verite operationnelle
 2. `ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` - ecart entre documentation cible et etat reel de `main`
-3. `GARDE_FOUS.md` - regles anti-derive
+3. `GARDE_FOUS.md` - regles anti-derive — ⚠️ ARCHIVE/OBSOLETE depuis l'audit doc du 2026-07-19, sa "liste noire MVP" contredit le scope reel livre documente dans `PILOTAGE.md`. Lire pour la discipline anti scope-creep uniquement, pas pour le perimetre produit reel.
 4. `RUNBOOK_DEPLOY.md`, `RUNBOOK_ROLLBACK.md`, `RUNBOOK_BACKUP_RESTORE.md`, `RUNBOOK_INCIDENT_P1.md` - socle d'exploitation
 5. `REGISTRE_SCENARIOS_TESTS.md` + `SCENARIOS_TEST_*` - base canonique de couverture fonctionnelle et CI
 6. ARCHITECTURE_I18N_ENTERPRISE_2026-05-07.md - cible multilingue partagee backend/web/mobile

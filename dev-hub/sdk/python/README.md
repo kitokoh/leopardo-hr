@@ -4,11 +4,14 @@ Generated from `api/openapi.yaml`.
 
 ## Usage
 
+> Note : `api.leopardo-rh.com` est un domaine cible non encore configure en production.
+> Remplacer par `https://gestionemployerbackend.onrender.com/api/v1` pour un usage reel aujourd'hui.
+
 ```python
 from leopardo_client import LeopardoClient
 
 client = LeopardoClient(
-    base_url="https://api.leopardo-rh.com/api/v1",
+    base_url="https://api.leopardo-rh.com/api/v1",  # domaine cible, voir note ci-dessus
     token="your-token",
 )
 
