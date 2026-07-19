@@ -34,16 +34,15 @@ class TaskListScreen extends ConsumerWidget {
         },
         child: tasksAsync.when(
           loading: () => const MobileEmptyLoading(label: 'Chargement taches'),
-          error:
-              (error, _) => ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  MobileErrorPanel(
-                    message: error.toString(),
-                    onRetry: () => ref.invalidate(todayManagerTasksProvider),
-                  ),
-                ],
+          error: (error, _) => ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              MobileErrorPanel(
+                message: error.toString(),
+                onRetry: () => ref.invalidate(todayManagerTasksProvider),
               ),
+            ],
+          ),
           data: (tasks) {
             if (tasks.isEmpty) {
               return ListView(
@@ -91,10 +90,9 @@ class _TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _priorityColor(task.priority);
-    final due =
-        task.dueDate == null
-            ? 'Aujourd hui'
-            : DateFormat('d MMM', 'fr_FR').format(task.dueDate!);
+    final due = task.dueDate == null
+        ? 'Aujourd hui'
+        : DateFormat('d MMM', 'fr_FR').format(task.dueDate!);
 
     return MobileListCard(
       icon: task.isDone ? Icons.task_alt_rounded : Icons.radio_button_unchecked,
@@ -110,28 +108,27 @@ class _TaskCard extends StatelessWidget {
         label: task.isDone ? 'Terminee' : 'A faire',
         color: task.isDone ? AppColors.rh : color,
       ),
-      footer:
-          task.performanceScore == null
-              ? null
-              : Text(
-                'Score performance ${task.performanceScore!.toStringAsFixed(0)}/100',
-                style: AppTypography.caption.copyWith(color: AppColors.rh),
-              ),
+      footer: task.performanceScore == null
+          ? null
+          : Text(
+              'Score performance ${task.performanceScore!.toStringAsFixed(0)}/100',
+              style: AppTypography.caption.copyWith(color: AppColors.rh),
+            ),
     );
   }
 
   static Color _priorityColor(String priority) => switch (priority) {
-    'urgent' || 'high' => AppColors.warning,
-    'low' => MobileSurface.secondary,
-    _ => AppColors.info,
-  };
+        'urgent' || 'high' => AppColors.warning,
+        'low' => MobileSurface.secondary,
+        _ => AppColors.info,
+      };
 
   static String _priorityLabel(String priority) => switch (priority) {
-    'urgent' => 'Urgent',
-    'high' => 'Haute',
-    'low' => 'Basse',
-    _ => 'Normale',
-  };
+        'urgent' => 'Urgent',
+        'high' => 'Haute',
+        'low' => 'Basse',
+        _ => 'Normale',
+      };
 }
 
 class _CreateTaskSheet extends ConsumerStatefulWidget {
@@ -192,42 +189,37 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
               const SizedBox(height: 16),
               employeesAsync.when(
                 data: _employeeSelector,
-                loading:
-                    () => const LinearProgressIndicator(
-                      minHeight: 3,
-                      color: AppColors.rh,
-                    ),
-                error:
-                    (error, _) => TextButton.icon(
-                      onPressed: () => ref.invalidate(teamListProvider),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Recharger equipe'),
-                    ),
+                loading: () => const LinearProgressIndicator(
+                  minHeight: 3,
+                  color: AppColors.rh,
+                ),
+                error: (error, _) => TextButton.icon(
+                  onPressed: () => ref.invalidate(teamListProvider),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Recharger equipe'),
+                ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _templateKey,
                 decoration: const InputDecoration(labelText: 'Modele metier'),
-                items:
-                    _taskTemplates
-                        .map(
-                          (template) => DropdownMenuItem(
-                            value: template.key,
-                            child: Text(template.label),
-                          ),
-                        )
-                        .toList(),
+                items: _taskTemplates
+                    .map(
+                      (template) => DropdownMenuItem(
+                        value: template.key,
+                        child: Text(template.label),
+                      ),
+                    )
+                    .toList(),
                 onChanged: _applyTemplate,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _title,
                 decoration: const InputDecoration(labelText: 'Titre'),
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Titre obligatoire'
-                            : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'Titre obligatoire'
+                    : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -255,9 +247,8 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
                           child: Text('Urgente'),
                         ),
                       ],
-                      onChanged:
-                          (value) =>
-                              setState(() => _priority = value ?? 'normal'),
+                      onChanged: (value) =>
+                          setState(() => _priority = value ?? 'normal'),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -307,9 +298,8 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
                           child: Text('Elevage'),
                         ),
                       ],
-                      onChanged:
-                          (value) =>
-                              setState(() => _category = value ?? 'terrain'),
+                      onChanged: (value) =>
+                          setState(() => _category = value ?? 'terrain'),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -331,9 +321,8 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
                           child: Text('Chaque semaine'),
                         ),
                       ],
-                      onChanged:
-                          (value) =>
-                              setState(() => _recurrenceRule = value ?? 'none'),
+                      onChanged: (value) =>
+                          setState(() => _recurrenceRule = value ?? 'none'),
                     ),
                   ),
                 ],
@@ -341,14 +330,13 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
               const SizedBox(height: 18),
               ElevatedButton.icon(
                 onPressed: _submitting ? null : _submit,
-                icon:
-                    _submitting
-                        ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Icon(Icons.send_rounded),
+                icon: _submitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.send_rounded),
                 label: const Text('Assigner aujourd hui'),
               ),
             ],
@@ -363,17 +351,16 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
     return DropdownButtonFormField<int>(
       initialValue: _employeeId,
       decoration: const InputDecoration(labelText: 'Collaborateur'),
-      items:
-          active
-              .map(
-                (employee) => DropdownMenuItem(
-                  value: employee.id,
-                  child: Text(employee.fullName),
-                ),
-              )
-              .toList(),
-      validator:
-          (value) => value == null ? 'Selectionner un collaborateur' : null,
+      items: active
+          .map(
+            (employee) => DropdownMenuItem(
+              value: employee.id,
+              child: Text(employee.fullName),
+            ),
+          )
+          .toList(),
+      validator: (value) =>
+          value == null ? 'Selectionner un collaborateur' : null,
       onChanged: (value) => setState(() => _employeeId = value),
     );
   }
@@ -400,9 +387,7 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(taskRepositoryProvider)
-          .create(
+      await ref.read(taskRepositoryProvider).create(
             title: _title.text,
             description: _description.text,
             employeeId: _employeeId!,

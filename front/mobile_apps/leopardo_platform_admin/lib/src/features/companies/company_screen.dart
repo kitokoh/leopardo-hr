@@ -36,45 +36,40 @@ class CompanyScreen extends ConsumerWidget {
       ),
       children: [
         companies.when(
-          data:
-              (items) =>
-                  items.isEmpty
-                      ? const MobilePanel(
-                        child: Text(
-                          'Aucune entreprise a afficher.',
-                          style: TextStyle(color: MobileSurface.secondary),
+          data: (items) => items.isEmpty
+              ? const MobilePanel(
+                  child: Text(
+                    'Aucune entreprise a afficher.',
+                    style: TextStyle(color: MobileSurface.secondary),
+                  ),
+                )
+              : Column(
+                  children: items
+                      .map(
+                        (company) => MobileListCard(
+                          icon: Icons.business_rounded,
+                          iconColor: AppColors.rh,
+                          title: company.name,
+                          subtitle:
+                              '${company.country} / ${company.currency} - ${company.plan}',
+                          trailing: MobileStatusPill(
+                            label: company.status,
+                            color: _statusColor(company.status),
+                          ),
+                          onTap: company.id.isEmpty
+                              ? null
+                              : () => context.push(
+                                    '/platform/companies/${Uri.encodeComponent(company.id)}',
+                                  ),
                         ),
                       )
-                      : Column(
-                        children:
-                            items
-                                .map(
-                                  (company) => MobileListCard(
-                                    icon: Icons.business_rounded,
-                                    iconColor: AppColors.rh,
-                                    title: company.name,
-                                    subtitle:
-                                        '${company.country} / ${company.currency} - ${company.plan}',
-                                    trailing: MobileStatusPill(
-                                      label: company.status,
-                                      color: _statusColor(company.status),
-                                    ),
-                                    onTap:
-                                        company.id.isEmpty
-                                            ? null
-                                            : () => context.push(
-                                              '/platform/companies/${Uri.encodeComponent(company.id)}',
-                                            ),
-                                  ),
-                                )
-                                .toList(),
-                      ),
+                      .toList(),
+                ),
           loading: () => const MobileEmptyLoading(label: 'Chargement tenants'),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry: () => ref.invalidate(platformCompaniesProvider),
-              ),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(platformCompaniesProvider),
+          ),
         ),
       ],
     );

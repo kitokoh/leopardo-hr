@@ -97,23 +97,21 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
-      builder:
-          (_) => Consumer(
-            builder: (context, ref, _) {
-              final documentsAsync = ref.watch(
-                payrollPaymentDocumentsProvider(payrollRunId),
-              );
-              return _PayrollDocumentsSheet(
-                documentsAsync: documentsAsync,
-                downloadingId: _downloadingDocumentId,
-                onRefresh:
-                    () => ref.refresh(
-                      payrollPaymentDocumentsProvider(payrollRunId).future,
-                    ),
-                onDownload: _downloadPaymentDocument,
-              );
-            },
-          ),
+      builder: (_) => Consumer(
+        builder: (context, ref, _) {
+          final documentsAsync = ref.watch(
+            payrollPaymentDocumentsProvider(payrollRunId),
+          );
+          return _PayrollDocumentsSheet(
+            documentsAsync: documentsAsync,
+            downloadingId: _downloadingDocumentId,
+            onRefresh: () => ref.refresh(
+              payrollPaymentDocumentsProvider(payrollRunId).future,
+            ),
+            onDownload: _downloadPaymentDocument,
+          );
+        },
+      ),
     );
   }
 
@@ -145,135 +143,130 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
         backgroundColor: MobileSurface.background,
         onRefresh: _refresh,
         child: payrollsAsync.when(
-          data:
-              (payrolls) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _SummaryCard(summaryAsync: summaryAsync),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Bulletins recents',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: MobileSurface.text,
-                      fontWeight: FontWeight.w800,
-                    ),
+          data: (payrolls) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              _SummaryCard(summaryAsync: summaryAsync),
+              const SizedBox(height: 16),
+              Text(
+                'Bulletins recents',
+                style: AppTypography.bodySmall.copyWith(
+                  color: MobileSurface.text,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 10),
+              if (payrolls.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(top: 40),
+                  child: EmptyState(
+                    icon: Icons.description,
+                    title: 'Aucune fiche de paie',
+                    description:
+                        'Les bulletins valides apparaitront ici apres traitement.',
                   ),
-                  const SizedBox(height: 10),
-                  if (payrolls.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: EmptyState(
-                        icon: Icons.description,
-                        title: 'Aucune fiche de paie',
-                        description:
-                            'Les bulletins valides apparaitront ici apres traitement.',
-                      ),
-                    )
-                  else
-                    ...payrolls.map((payroll) {
-                      final isDownloading = _downloadingId == payroll.id;
-                      return MobilePanel(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            const MobileIconBubble(
-                              icon: Icons.receipt_long_outlined,
-                              color: AppColors.rh,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Mois ${payroll.month}/${payroll.year}',
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: MobileSurface.text,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${payroll.netSalary.toStringAsFixed(2)} ${payroll.currency} net',
-                                    style: AppTypography.caption.copyWith(
-                                      color: MobileSurface.secondary,
-                                    ),
-                                  ),
-                                  if (payroll.status == 'validated')
-                                    const Padding(
-                                      padding: EdgeInsets.only(top: 6),
-                                      child: MobileStatusPill(
-                                        label: 'Valide',
-                                        color: AppColors.success,
-                                        icon: Icons.check_circle,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            isDownloading
-                                ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    semanticsLabel: 'Telechargement en cours',
-                                  ),
-                                )
-                                : IconButton(
-                                  icon: const Icon(
-                                    Icons.picture_as_pdf,
-                                    color: AppColors.info,
-                                  ),
-                                  tooltip: 'Telecharger le bulletin PDF',
-                                  onPressed:
-                                      payroll.pdfPath != null
-                                          ? () => _downloadPdf(payroll.id)
-                                          : null,
-                                ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.folder_copy_outlined,
-                                color: AppColors.warning,
-                              ),
-                              tooltip: 'Documents de paiement',
-                              onPressed:
-                                  () => _showPaymentDocuments(payroll.id),
-                            ),
-                          ],
+                )
+              else
+                ...payrolls.map((payroll) {
+                  final isDownloading = _downloadingId == payroll.id;
+                  return MobilePanel(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        const MobileIconBubble(
+                          icon: Icons.receipt_long_outlined,
+                          color: AppColors.rh,
                         ),
-                      );
-                    }),
-                ],
-              ),
-          loading:
-              () => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _SummaryCard(summaryAsync: summaryAsync),
-                  const SizedBox(height: 120),
-                  const Center(
-                    child: CircularProgressIndicator(
-                      semanticsLabel: 'Chargement des fiches de paie',
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Mois ${payroll.month}/${payroll.year}',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: MobileSurface.text,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${payroll.netSalary.toStringAsFixed(2)} ${payroll.currency} net',
+                                style: AppTypography.caption.copyWith(
+                                  color: MobileSurface.secondary,
+                                ),
+                              ),
+                              if (payroll.status == 'validated')
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 6),
+                                  child: MobileStatusPill(
+                                    label: 'Valide',
+                                    color: AppColors.success,
+                                    icon: Icons.check_circle,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        isDownloading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  semanticsLabel: 'Telechargement en cours',
+                                ),
+                              )
+                            : IconButton(
+                                icon: const Icon(
+                                  Icons.picture_as_pdf,
+                                  color: AppColors.info,
+                                ),
+                                tooltip: 'Telecharger le bulletin PDF',
+                                onPressed: payroll.pdfPath != null
+                                    ? () => _downloadPdf(payroll.id)
+                                    : null,
+                              ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.folder_copy_outlined,
+                            color: AppColors.warning,
+                          ),
+                          tooltip: 'Documents de paiement',
+                          onPressed: () => _showPaymentDocuments(payroll.id),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                }),
+            ],
+          ),
+          loading: () => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              _SummaryCard(summaryAsync: summaryAsync),
+              const SizedBox(height: 120),
+              const Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: 'Chargement des fiches de paie',
+                ),
               ),
-          error:
-              (e, _) => ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _SummaryCard(summaryAsync: summaryAsync),
-                  const SizedBox(height: 120),
-                  Text(
-                    e.toString(),
-                    style: const TextStyle(color: AppColors.danger),
-                  ),
-                ],
+            ],
+          ),
+          error: (e, _) => ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              _SummaryCard(summaryAsync: summaryAsync),
+              const SizedBox(height: 120),
+              Text(
+                e.toString(),
+                style: const TextStyle(color: AppColors.danger),
               ),
+            ],
+          ),
         ),
       ),
     );
@@ -341,42 +334,36 @@ class _PayrollDocumentsSheet extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             documentsAsync.when(
-              data:
-                  (documents) =>
-                      documents.isEmpty
-                          ? Text(
-                            'Aucun document genere pour ce cycle. Les recus apparaitront apres paiement.',
-                            style: AppTypography.caption.copyWith(
-                              color: MobileSurface.secondary,
+              data: (documents) => documents.isEmpty
+                  ? Text(
+                      'Aucun document genere pour ce cycle. Les recus apparaitront apres paiement.',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: documents
+                          .map(
+                            (document) => _PaymentDocumentTile(
+                              document: document,
+                              isDownloading: downloadingId == document.id,
+                              onDownload: onDownload,
                             ),
                           )
-                          : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children:
-                                documents
-                                    .map(
-                                      (document) => _PaymentDocumentTile(
-                                        document: document,
-                                        isDownloading:
-                                            downloadingId == document.id,
-                                        onDownload: onDownload,
-                                      ),
-                                    )
-                                    .toList(),
-                          ),
-              loading:
-                  () => const LinearProgressIndicator(
-                    minHeight: 3,
-                    color: AppColors.rh,
-                    backgroundColor: MobileSurface.surface,
-                  ),
-              error:
-                  (_, __) => Text(
-                    'Documents temporairement indisponibles',
-                    style: AppTypography.caption.copyWith(
-                      color: MobileSurface.secondary,
+                          .toList(),
                     ),
-                  ),
+              loading: () => const LinearProgressIndicator(
+                minHeight: 3,
+                color: AppColors.rh,
+                backgroundColor: MobileSurface.surface,
+              ),
+              error: (_, __) => Text(
+                'Documents temporairement indisponibles',
+                style: AppTypography.caption.copyWith(
+                  color: MobileSurface.secondary,
+                ),
+              ),
             ),
           ],
         ),
@@ -439,10 +426,9 @@ class _PaymentDocumentTile extends StatelessWidget {
             IconButton(
               tooltip: 'Telecharger',
               icon: const Icon(Icons.download_outlined),
-              color:
-                  document.isAvailable
-                      ? AppColors.info
-                      : MobileSurface.secondary,
+              color: document.isAvailable
+                  ? AppColors.info
+                  : MobileSurface.secondary,
               onPressed:
                   document.isAvailable ? () => onDownload(document) : null,
             ),
@@ -460,97 +446,92 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return summaryAsync.when(
-      data:
-          (summary) => MobilePanel(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      data: (summary) => MobilePanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    const MobileIconBubble(
-                      icon: Icons.account_balance_wallet_outlined,
-                      color: AppColors.rh,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Solde equipe',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: MobileSurface.text,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          Text(
-                            '${summary.items.length} collaborateur(s)',
+                const MobileIconBubble(
+                  icon: Icons.account_balance_wallet_outlined,
+                  color: AppColors.rh,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Solde equipe',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: MobileSurface.text,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        '${summary.items.length} collaborateur(s)',
+                        style: AppTypography.caption.copyWith(
+                          color: MobileSurface.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _MoneyLine(
+              label: 'Reste a payer',
+              value: summary.remaining,
+              color: AppColors.rh,
+            ),
+            const SizedBox(height: 8),
+            _MoneyLine(
+              label: 'Avances deduites',
+              value: summary.advances,
+              color: AppColors.warning,
+            ),
+            const SizedBox(height: 12),
+            ...summary.items.take(5).map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.employeeName,
                             style: AppTypography.caption.copyWith(
                               color: MobileSurface.secondary,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _MoneyLine(
-                  label: 'Reste a payer',
-                  value: summary.remaining,
-                  color: AppColors.rh,
-                ),
-                const SizedBox(height: 8),
-                _MoneyLine(
-                  label: 'Avances deduites',
-                  value: summary.advances,
-                  color: AppColors.warning,
-                ),
-                const SizedBox(height: 12),
-                ...summary.items
-                    .take(5)
-                    .map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                item.employeeName,
-                                style: AppTypography.caption.copyWith(
-                                  color: MobileSurface.secondary,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              '${item.remaining.toStringAsFixed(0)} ${item.currency}',
-                              style: AppTypography.caption.copyWith(
-                                color: MobileSurface.text,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
                         ),
-                      ),
+                        Text(
+                          '${item.remaining.toStringAsFixed(0)} ${item.currency}',
+                          style: AppTypography.caption.copyWith(
+                            color: MobileSurface.text,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
-              ],
-            ),
-          ),
-      loading:
-          () => const MobilePanel(
-            child: LinearProgressIndicator(
-              minHeight: 3,
-              color: AppColors.rh,
-              backgroundColor: MobileSurface.surface,
-            ),
-          ),
-      error:
-          (_, __) => const MobilePanel(
-            child: Text(
-              'Resume paie temporairement indisponible',
-              style: TextStyle(color: MobileSurface.secondary),
-            ),
-          ),
+                  ),
+                ),
+          ],
+        ),
+      ),
+      loading: () => const MobilePanel(
+        child: LinearProgressIndicator(
+          minHeight: 3,
+          color: AppColors.rh,
+          backgroundColor: MobileSurface.surface,
+        ),
+      ),
+      error: (_, __) => const MobilePanel(
+        child: Text(
+          'Resume paie temporairement indisponible',
+          style: TextStyle(color: MobileSurface.secondary),
+        ),
+      ),
     );
   }
 }

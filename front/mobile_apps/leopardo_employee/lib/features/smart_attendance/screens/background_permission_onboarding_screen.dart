@@ -82,7 +82,8 @@ class _BackgroundPermissionOnboardingScreenState
         ),
         title: const Text(
           'Autoriser la localisation',
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -123,7 +124,8 @@ class _BackgroundPermissionOnboardingScreenState
                 'Leopardo a besoin d\'accéder à votre position même quand l\'application '
                 'est fermée.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 15, height: 1.5),
+                style:
+                    TextStyle(color: Colors.white70, fontSize: 15, height: 1.5),
               ),
               const SizedBox(height: 24),
 
@@ -152,7 +154,8 @@ class _BackgroundPermissionOnboardingScreenState
                     ? const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.settings_rounded),
                 label: const Text('Ouvrir les paramètres'),
@@ -221,7 +224,8 @@ class _StepCard extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+            style: const TextStyle(
+                color: Colors.white70, fontSize: 14, height: 1.4),
           ),
         ),
       ],

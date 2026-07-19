@@ -20,8 +20,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience =
-        employee?.mobileExperience ??
+    final experience = employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],
@@ -30,10 +29,9 @@ class HomeScreen extends ConsumerWidget {
     final stage = experience.stage;
     final quickActions = experience.quickActions.take(3).toList();
     final activeModules = experience.activeModules.take(4).toList();
-    final firstName =
-        employee?.firstName.isNotEmpty == true
-            ? employee!.firstName
-            : employee?.email.split('@').first ?? '';
+    final firstName = employee?.firstName.isNotEmpty == true
+        ? employee!.firstName
+        : employee?.email.split('@').first ?? '';
     final branding = ref.watch(
       tenantBrandingProvider.select(
         (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
@@ -72,10 +70,9 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
-                      subtitle:
-                          stage == 'new'
-                              ? 'Les premiers gestes vraiment utiles.'
-                              : 'Vos trois gestes RH du jour.',
+                      subtitle: stage == 'new'
+                          ? 'Les premiers gestes vraiment utiles.'
+                          : 'Vos trois gestes RH du jour.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -258,10 +255,9 @@ class _QuickActionsGrid extends StatelessWidget {
           childAspectRatio: 1.04,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children:
-              actions
-                  .map((action) => _QuickActionCard(action: action))
-                  .toList(),
+          children: actions
+              .map((action) => _QuickActionCard(action: action))
+              .toList(),
         );
       },
     );

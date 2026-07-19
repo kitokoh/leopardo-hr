@@ -83,11 +83,11 @@ class FakeSecureStorage extends SecureStorage {
 
 class StaticAuthRepository extends AuthRepository {
   StaticAuthRepository()
-    : super(
-        ApiClient(FakeSecureStorage(), FakeAppPreferences()),
-        FakeSecureStorage(),
-        FakeAppPreferences(),
-      );
+      : super(
+          ApiClient(FakeSecureStorage(), FakeAppPreferences()),
+          FakeSecureStorage(),
+          FakeAppPreferences(),
+        );
 
   @override
   Future<Map<String, dynamic>?> checkAuth() async => null;
@@ -98,11 +98,11 @@ class StaticAuthRepository extends AuthRepository {
 
 class StaticAuthNotifier extends AuthNotifier {
   StaticAuthNotifier(AuthState initialState)
-    : super(
-        StaticAuthRepository(),
-        PushNotificationService(),
-        ApiClient(FakeSecureStorage(), FakeAppPreferences()),
-      ) {
+      : super(
+          StaticAuthRepository(),
+          PushNotificationService(),
+          ApiClient(FakeSecureStorage(), FakeAppPreferences()),
+        ) {
     state = initialState;
   }
 

@@ -52,9 +52,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref
-          .read(userAuthProvider.notifier)
-          .googleSignIn(
+      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
             googleId: account.id,
             email: account.email,
             firstName: account.displayName?.split(' ').first ?? '',
@@ -143,16 +141,16 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     return Column(
       children: [
         Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.rh, AppColors.rhDark],
-                ),
-              ),
-              child: const Icon(Icons.login, color: Colors.white, size: 30),
-            )
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [AppColors.rh, AppColors.rhDark],
+            ),
+          ),
+          child: const Icon(Icons.login, color: Colors.white, size: 30),
+        )
             .animate()
             .fadeIn(duration: 400.ms)
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),
@@ -176,14 +174,13 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: _googleLoading ? null : _googleSignIn,
-        icon:
-            _googleLoading
-                ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-                : const Icon(Icons.g_mobiledata, size: 24),
+        icon: _googleLoading
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.g_mobiledata, size: 24),
         label: const Text('Continuer avec Google'),
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 300.ms).slideY(begin: 0.1);
@@ -249,24 +246,23 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                   onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-              validator:
-                  (v) => (v ?? '').isEmpty ? 'Mot de passe requis' : null,
+              validator: (v) =>
+                  (v ?? '').isEmpty ? 'Mot de passe requis' : null,
               onFieldSubmitted: (_) => _login(),
             ),
             const SizedBox(height: 22),
             ElevatedButton(
               onPressed: state.isLoading ? null : _login,
-              child:
-                  state.isLoading
-                      ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                      : const Text('Se connecter'),
+              child: state.isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Se connecter'),
             ),
             const SizedBox(height: 14),
             Center(

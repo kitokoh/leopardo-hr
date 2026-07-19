@@ -85,8 +85,8 @@ class _AiVoiceScreenState extends ConsumerState<AiVoiceScreen> {
                 _recording
                     ? 'Ecoute en cours...'
                     : _processing
-                    ? 'Traitement...'
-                    : 'Appuyez pour parler',
+                        ? 'Traitement...'
+                        : 'Appuyez pour parler',
                 style: AppTypography.subtitle.copyWith(
                   color: AppColors.textDark,
                 ),
@@ -101,28 +101,26 @@ class _AiVoiceScreenState extends ConsumerState<AiVoiceScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _recording ? AppColors.danger : AppColors.ia,
-                    boxShadow:
-                        _recording
-                            ? [
-                              BoxShadow(
-                                color: AppColors.danger.withValues(alpha: 0.4),
-                                blurRadius: 24,
-                                spreadRadius: 4,
-                              ),
-                            ]
-                            : null,
+                    boxShadow: _recording
+                        ? [
+                            BoxShadow(
+                              color: AppColors.danger.withValues(alpha: 0.4),
+                              blurRadius: 24,
+                              spreadRadius: 4,
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Center(
-                    child:
-                        _processing
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                            : Icon(
-                              _recording ? Icons.stop : Icons.mic,
-                              color: Colors.white,
-                              size: 36,
-                            ),
+                    child: _processing
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : Icon(
+                            _recording ? Icons.stop : Icons.mic,
+                            color: Colors.white,
+                            size: 36,
+                          ),
                   ),
                 ),
               ),

@@ -27,69 +27,66 @@ class PlatformDashboardScreen extends ConsumerWidget {
         actions: [
           IconButton(
             tooltip: 'Deconnexion',
-            onPressed:
-                () =>
-                    ref.read(platformAuthControllerProvider.notifier).logout(),
+            onPressed: () =>
+                ref.read(platformAuthControllerProvider.notifier).logout(),
             icon: const Icon(Icons.logout_rounded),
           ),
         ],
       ),
       children: [
         metrics.when(
-          data:
-              (data) => MobilePanel(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          data: (data) => MobilePanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Vue executive',
+                  style: TextStyle(
+                    color: MobileSurface.text,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
                   children: [
-                    const Text(
-                      'Vue executive',
-                      style: TextStyle(
-                        color: MobileSurface.text,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    MobileMetricTile(
+                      value: '${data.totalCompanies}',
+                      label: 'Entreprises',
+                      color: AppColors.rh,
                     ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        MobileMetricTile(
-                          value: '${data.totalCompanies}',
-                          label: 'Entreprises',
-                          color: AppColors.rh,
-                        ),
-                        const SizedBox(width: 10),
-                        MobileMetricTile(
-                          value: '${data.activeCompanies}',
-                          label: 'Actives',
-                          color: AppColors.info,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        MobileMetricTile(
-                          value: '${data.trialCompanies}',
-                          label: 'Essais',
-                          color: AppColors.warning,
-                        ),
-                        const SizedBox(width: 10),
-                        MobileMetricTile(
-                          value: '${data.mrr}',
-                          label: 'MRR',
-                          color: AppColors.success,
-                        ),
-                      ],
+                    const SizedBox(width: 10),
+                    MobileMetricTile(
+                      value: '${data.activeCompanies}',
+                      label: 'Actives',
+                      color: AppColors.info,
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    MobileMetricTile(
+                      value: '${data.trialCompanies}',
+                      label: 'Essais',
+                      color: AppColors.warning,
+                    ),
+                    const SizedBox(width: 10),
+                    MobileMetricTile(
+                      value: '${data.mrr}',
+                      label: 'MRR',
+                      color: AppColors.success,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
           loading: () => const MobileEmptyLoading(label: 'Chargement cockpit'),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry: () => ref.invalidate(platformMetricsProvider),
-              ),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(platformMetricsProvider),
+          ),
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Actions plateforme'),

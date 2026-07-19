@@ -11,7 +11,7 @@ class _ChatMessage {
   final DateTime timestamp;
 
   _ChatMessage({required this.role, required this.content, DateTime? timestamp})
-    : timestamp = timestamp ?? DateTime.now();
+      : timestamp = timestamp ?? DateTime.now();
 }
 
 class AiChatScreen extends ConsumerStatefulWidget {
@@ -102,72 +102,68 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child:
-                _messages.isEmpty
-                    ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.auto_awesome,
-                            size: 48,
-                            color: AppColors.ia,
+            child: _messages.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 48,
+                          color: AppColors.ia,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Posez vos questions RH',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textMutedDark,
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Posez vos questions RH',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textMutedDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                    : ListView.builder(
-                      controller: _scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _messages.length + (_loading ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == _messages.length) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: _TypingIndicator(),
-                            ),
-                          );
-                        }
-                        final msg = _messages[index];
-                        final isUser = msg.role == 'user';
-                        return Align(
-                          alignment:
-                              isUser
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            padding: const EdgeInsets.all(12),
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.75,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isUser ? AppColors.ia : AppColors.cardDark,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              msg.content,
-                              style: TextStyle(
-                                color:
-                                    isUser ? Colors.white : AppColors.textDark,
-                                fontSize: 14,
-                              ),
-                            ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _messages.length + (_loading ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == _messages.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: _TypingIndicator(),
                           ),
                         );
-                      },
-                    ),
+                      }
+                      final msg = _messages[index];
+                      final isUser = msg.role == 'user';
+                      return Align(
+                        alignment: isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(12),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.75,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isUser ? AppColors.ia : AppColors.cardDark,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            msg.content,
+                            style: TextStyle(
+                              color: isUser ? Colors.white : AppColors.textDark,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 16),

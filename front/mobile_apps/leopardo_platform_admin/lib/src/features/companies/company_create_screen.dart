@@ -125,9 +125,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     final selectedCountry = _selectedCountry(_countries());
     setState(() => _submitting = true);
     try {
-      final company = await ref
-          .read(platformRepositoryProvider)
-          .createCompany(
+      final company = await ref.read(platformRepositoryProvider).createCompany(
             name: _name.text.trim(),
             email: _email.text.trim(),
             country: selectedCountry.country,
@@ -238,9 +236,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   }
 
   List<PlatformCountryDefault> _countries() {
-    return ref
-        .watch(platformCountryDefaultsProvider)
-        .maybeWhen(
+    return ref.watch(platformCountryDefaultsProvider).maybeWhen(
           data: (items) => items.isNotEmpty ? items : _fallbackCountryDefaults,
           orElse: () => _fallbackCountryDefaults,
         );
@@ -297,15 +293,14 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           fillColor: MobileSurface.chip,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        items:
-            countries
-                .map(
-                  (country) => DropdownMenuItem(
-                    value: country,
-                    child: Text('${country.label} (${country.country})'),
-                  ),
-                )
-                .toList(),
+        items: countries
+            .map(
+              (country) => DropdownMenuItem(
+                value: country,
+                child: Text('${country.label} (${country.country})'),
+              ),
+            )
+            .toList(),
         onChanged: (country) {
           if (country == null) return;
           setState(() => _selectedCountryCode = country.country);
@@ -332,30 +327,29 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children:
-            items
-                .map(
-                  (item) => Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: MobileSurface.surface,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: MobileSurface.border),
-                    ),
-                    child: Text(
-                      '${item.$1}: ${item.$2}',
-                      style: const TextStyle(
-                        color: MobileSurface.secondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+        children: items
+            .map(
+              (item) => Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: MobileSurface.surface,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: MobileSurface.border),
+                ),
+                child: Text(
+                  '${item.$1}: ${item.$2}',
+                  style: const TextStyle(
+                    color: MobileSurface.secondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
-                )
-                .toList(),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }

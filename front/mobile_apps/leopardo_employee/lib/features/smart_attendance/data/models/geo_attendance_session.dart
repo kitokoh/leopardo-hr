@@ -57,8 +57,7 @@ class GeoAttendanceSession {
   bool get isApproved => status == 'approved';
 
   /// Indique si la session est en attente de validation
-  bool get isPending =>
-      status == 'detected' || status == 'pending_validation';
+  bool get isPending => status == 'detected' || status == 'pending_validation';
 
   /// Indique si la session a été rejetée ou annulée
   bool get isRejectedOrCancelled =>

@@ -23,98 +23,103 @@ class RecordingInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     this.options.add(options);
     requests.add('${options.method} ${options.path}');
-    final responseData =
-        options.method == 'POST' && options.path == '/employees'
+    final responseData = options.method == 'POST' &&
+            options.path == '/employees'
+        ? {
+            'data': {
+              'id': 44,
+              'first_name': 'Amina',
+              'last_name': 'Benali',
+              'email': 'amina@example.test',
+              'status': 'active',
+            },
+          }
+        : options.method == 'POST' && options.path == '/salary-advances'
             ? {
-              'data': {
-                'id': 44,
-                'first_name': 'Amina',
-                'last_name': 'Benali',
-                'email': 'amina@example.test',
-                'status': 'active',
-              },
-            }
-            : options.method == 'POST' && options.path == '/salary-advances'
-            ? {
-              'data': {
-                'id': 12,
-                'employee_id': 44,
-                'status': 'pending',
-                'amount': 30000,
-                'reason': 'Besoin familial',
-                'repayment_months': 3,
-              },
-            }
+                'data': {
+                  'id': 12,
+                  'employee_id': 44,
+                  'status': 'pending',
+                  'amount': 30000,
+                  'reason': 'Besoin familial',
+                  'repayment_months': 3,
+                },
+              }
             : options.method == 'DELETE' &&
-                options.path == '/salary-advances/12'
-            ? {
-              'data': {
-                'id': 12,
-                'employee_id': 44,
-                'status': 'cancelled',
-                'amount': 30000,
-              },
-            }
-            : options.method == 'DELETE' && options.path == '/absences/33'
-            ? {
-              'data': {
-                'id': 33,
-                'employee_id': 44,
-                'absence_type_id': 2,
-                'start_date': '2026-05-26',
-                'end_date': '2026-05-26',
-                'days_count': 1,
-                'status': 'cancelled',
-              },
-            }
-            : options.method == 'PUT' && options.path == '/absences/33/approve'
-            ? {
-              'data': {
-                'id': 33,
-                'employee_id': 44,
-                'absence_type_id': 2,
-                'start_date': '2026-05-26',
-                'end_date': '2026-05-26',
-                'days_count': 1,
-                'status': 'approved',
-              },
-            }
-            : options.method == 'PUT' && options.path == '/absences/33/reject'
-            ? {
-              'data': {
-                'id': 33,
-                'employee_id': 44,
-                'absence_type_id': 2,
-                'start_date': '2026-05-26',
-                'end_date': '2026-05-26',
-                'days_count': 1,
-                'status': 'rejected',
-                'rejected_reason': 'Solde insuffisant',
-              },
-            }
-            : options.method == 'PUT' &&
-                options.path == '/salary-advances/12/approve'
-            ? {
-              'data': {
-                'id': 12,
-                'employee_id': 44,
-                'status': 'approved',
-                'amount': 30000,
-                'repayment_months': 3,
-              },
-            }
-            : options.method == 'PUT' &&
-                options.path == '/salary-advances/12/reject'
-            ? {
-              'data': {
-                'id': 12,
-                'employee_id': 44,
-                'status': 'rejected',
-                'amount': 30000,
-                'decision_comment': 'Hors politique interne',
-              },
-            }
-            : {'data': <dynamic>[]};
+                    options.path == '/salary-advances/12'
+                ? {
+                    'data': {
+                      'id': 12,
+                      'employee_id': 44,
+                      'status': 'cancelled',
+                      'amount': 30000,
+                    },
+                  }
+                : options.method == 'DELETE' && options.path == '/absences/33'
+                    ? {
+                        'data': {
+                          'id': 33,
+                          'employee_id': 44,
+                          'absence_type_id': 2,
+                          'start_date': '2026-05-26',
+                          'end_date': '2026-05-26',
+                          'days_count': 1,
+                          'status': 'cancelled',
+                        },
+                      }
+                    : options.method == 'PUT' &&
+                            options.path == '/absences/33/approve'
+                        ? {
+                            'data': {
+                              'id': 33,
+                              'employee_id': 44,
+                              'absence_type_id': 2,
+                              'start_date': '2026-05-26',
+                              'end_date': '2026-05-26',
+                              'days_count': 1,
+                              'status': 'approved',
+                            },
+                          }
+                        : options.method == 'PUT' &&
+                                options.path == '/absences/33/reject'
+                            ? {
+                                'data': {
+                                  'id': 33,
+                                  'employee_id': 44,
+                                  'absence_type_id': 2,
+                                  'start_date': '2026-05-26',
+                                  'end_date': '2026-05-26',
+                                  'days_count': 1,
+                                  'status': 'rejected',
+                                  'rejected_reason': 'Solde insuffisant',
+                                },
+                              }
+                            : options.method == 'PUT' &&
+                                    options.path ==
+                                        '/salary-advances/12/approve'
+                                ? {
+                                    'data': {
+                                      'id': 12,
+                                      'employee_id': 44,
+                                      'status': 'approved',
+                                      'amount': 30000,
+                                      'repayment_months': 3,
+                                    },
+                                  }
+                                : options.method == 'PUT' &&
+                                        options.path ==
+                                            '/salary-advances/12/reject'
+                                    ? {
+                                        'data': {
+                                          'id': 12,
+                                          'employee_id': 44,
+                                          'status': 'rejected',
+                                          'amount': 30000,
+                                          'decision_comment':
+                                              'Hors politique interne',
+                                        },
+                                      }
+                                    : {'data': <dynamic>[]};
     handler.resolve(
       Response(requestOptions: options, statusCode: 200, data: responseData),
     );

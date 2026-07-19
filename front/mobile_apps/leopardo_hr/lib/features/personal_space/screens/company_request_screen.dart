@@ -108,7 +108,6 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                 Icons.category,
               ),
               _buildField(_cityController, 'Ville', Icons.location_city),
-
               const SizedBox(height: 24),
               _buildSectionTitle('Détails du Responsable'),
               _buildField(
@@ -127,7 +126,6 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                 'Téléphone du responsable',
                 Icons.phone,
               ),
-
               const SizedBox(height: 24),
               _buildSectionTitle('Notes Complémentaires'),
               TextFormField(
@@ -140,10 +138,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
-                child:
-                    _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Envoyer la demande'),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Envoyer la demande'),
               ),
             ],
           ),

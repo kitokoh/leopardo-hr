@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
@@ -169,7 +170,8 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Impossible de charger les sessions GPS. Vérifiez votre connexion.',
+        error:
+            'Impossible de charger les sessions GPS. Vérifiez votre connexion.',
       );
     }
   }

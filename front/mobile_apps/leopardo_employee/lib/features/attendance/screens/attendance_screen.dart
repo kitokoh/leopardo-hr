@@ -61,8 +61,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final methods = await auth.getAvailableBiometrics();
       if (!mounted) return;
       setState(() {
-        _fingerprintAvailable =
-            supported &&
+        _fingerprintAvailable = supported &&
             canCheck &&
             methods.any((type) => type == BiometricType.fingerprint);
       });
@@ -84,8 +83,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
     final week = _buildWeekSummaries(weekLogs);
     final employee = authState.employee;
-    final isCheckedIn =
-        attState.todayLog?.checkIn != null &&
+    final isCheckedIn = attState.todayLog?.checkIn != null &&
         attState.todayLog?.checkOut == null;
     const canDirectEdit = false;
 
@@ -171,14 +169,13 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       ),
     );
 
-    final success =
-        isCheckedIn
-            ? await ref
-                .read(attendanceProvider.notifier)
-                .checkOut(workType: choice.workType)
-            : await ref
-                .read(attendanceProvider.notifier)
-                .checkIn(workType: choice.workType);
+    final success = isCheckedIn
+        ? await ref
+            .read(attendanceProvider.notifier)
+            .checkOut(workType: choice.workType)
+        : await ref
+            .read(attendanceProvider.notifier)
+            .checkIn(workType: choice.workType);
     if (!mounted) return;
     messenger.clearSnackBars();
     messenger.showSnackBar(
@@ -221,53 +218,52 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     bool isCheckedIn,
     List<AttendanceLog> sessions,
   ) {
-    final choices =
-        isCheckedIn
-            ? const [
-              _PunchChoice.firstDeparture,
-              _PunchChoice(
-                workType: 'break',
-                title: 'Partir en pause',
-                subtitle: 'Ferme la session et marque une pause',
-                loadingLabel: 'Envoi de la pause',
-                successLabel: 'Pause confirmee.',
-                failureLabel: 'Pause non confirmee',
-              ),
-            ]
-            : [
-              _PunchChoice(
-                workType: 'resume',
-                title: 'Reprise',
-                subtitle: 'Reprendre apres une pause ou une sortie',
-                loadingLabel: 'Envoi reprise',
-                successLabel: 'Reprise confirmee.',
-                failureLabel: 'Reprise non confirmee',
-              ),
-              const _PunchChoice(
-                workType: 'overtime',
-                title: 'Heures supplementaires',
-                subtitle: 'Demarrer une session d heures supp',
-                loadingLabel: 'Envoi heures supplementaires',
-                successLabel: 'Heures supplementaires demarrees.',
-                failureLabel: 'Heures supplementaires non confirmees',
-              ),
-              const _PunchChoice(
-                workType: 'mission',
-                title: 'Mission',
-                subtitle: 'Temps de travail hors site habituel',
-                loadingLabel: 'Envoi mission',
-                successLabel: 'Mission demarree.',
-                failureLabel: 'Mission non confirmee',
-              ),
-              const _PunchChoice(
-                workType: 'travel',
-                title: 'Deplacement',
-                subtitle: 'Temps de deplacement professionnel',
-                loadingLabel: 'Envoi deplacement',
-                successLabel: 'Deplacement demarre.',
-                failureLabel: 'Deplacement non confirme',
-              ),
-            ];
+    final choices = isCheckedIn
+        ? const [
+            _PunchChoice.firstDeparture,
+            _PunchChoice(
+              workType: 'break',
+              title: 'Partir en pause',
+              subtitle: 'Ferme la session et marque une pause',
+              loadingLabel: 'Envoi de la pause',
+              successLabel: 'Pause confirmee.',
+              failureLabel: 'Pause non confirmee',
+            ),
+          ]
+        : [
+            _PunchChoice(
+              workType: 'resume',
+              title: 'Reprise',
+              subtitle: 'Reprendre apres une pause ou une sortie',
+              loadingLabel: 'Envoi reprise',
+              successLabel: 'Reprise confirmee.',
+              failureLabel: 'Reprise non confirmee',
+            ),
+            const _PunchChoice(
+              workType: 'overtime',
+              title: 'Heures supplementaires',
+              subtitle: 'Demarrer une session d heures supp',
+              loadingLabel: 'Envoi heures supplementaires',
+              successLabel: 'Heures supplementaires demarrees.',
+              failureLabel: 'Heures supplementaires non confirmees',
+            ),
+            const _PunchChoice(
+              workType: 'mission',
+              title: 'Mission',
+              subtitle: 'Temps de travail hors site habituel',
+              loadingLabel: 'Envoi mission',
+              successLabel: 'Mission demarree.',
+              failureLabel: 'Mission non confirmee',
+            ),
+            const _PunchChoice(
+              workType: 'travel',
+              title: 'Deplacement',
+              subtitle: 'Temps de deplacement professionnel',
+              loadingLabel: 'Envoi deplacement',
+              successLabel: 'Deplacement demarre.',
+              failureLabel: 'Deplacement non confirme',
+            ),
+          ];
 
     return showModalBottomSheet<_PunchChoice>(
       context: context,
@@ -275,51 +271,50 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (ctx) => Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2A3C5A),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Type de pointage',
-                    style: TextStyle(
-                      color: _text,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ...choices.map(
-                  (choice) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      choice.title,
-                      style: const TextStyle(color: _text),
-                    ),
-                    subtitle: Text(
-                      choice.subtitle,
-                      style: const TextStyle(color: _muted, fontSize: 12),
-                    ),
-                    trailing: const Icon(Icons.chevron_right, color: _muted),
-                    onTap: () => Navigator.pop(ctx, choice),
-                  ),
-                ),
-              ],
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A3C5A),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Type de pointage',
+                style: TextStyle(
+                  color: _text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ...choices.map(
+              (choice) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  choice.title,
+                  style: const TextStyle(color: _text),
+                ),
+                subtitle: Text(
+                  choice.subtitle,
+                  style: const TextStyle(color: _muted, fontSize: 12),
+                ),
+                trailing: const Icon(Icons.chevron_right, color: _muted),
+                onTap: () => Navigator.pop(ctx, choice),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -328,10 +323,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     required String roleLabel,
     required AsyncValue<List<Map<String, dynamic>>> tasksAsync,
   }) {
-    final initial =
-        firstName.trim().isEmpty
-            ? 'L'
-            : firstName.trim().characters.first.toUpperCase();
+    final initial = firstName.trim().isEmpty
+        ? 'L'
+        : firstName.trim().characters.first.toUpperCase();
 
     return Row(
       children: [
@@ -415,37 +409,36 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 break;
             }
           },
-          itemBuilder:
-              (_) => const [
-                PopupMenuItem(
-                  value: 'tasks',
-                  child: _MenuItem(
-                    icon: Icons.task_alt_outlined,
-                    label: 'Taches du jour',
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'history',
-                  child: _MenuItem(
-                    icon: Icons.history_outlined,
-                    label: 'Historique',
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'preferences',
-                  child: _MenuItem(
-                    icon: Icons.tune_outlined,
-                    label: 'Preferences',
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'settings',
-                  child: _MenuItem(
-                    icon: Icons.settings_outlined,
-                    label: 'Parametres',
-                  ),
-                ),
-              ],
+          itemBuilder: (_) => const [
+            PopupMenuItem(
+              value: 'tasks',
+              child: _MenuItem(
+                icon: Icons.task_alt_outlined,
+                label: 'Taches du jour',
+              ),
+            ),
+            PopupMenuItem(
+              value: 'history',
+              child: _MenuItem(
+                icon: Icons.history_outlined,
+                label: 'Historique',
+              ),
+            ),
+            PopupMenuItem(
+              value: 'preferences',
+              child: _MenuItem(
+                icon: Icons.tune_outlined,
+                label: 'Preferences',
+              ),
+            ),
+            PopupMenuItem(
+              value: 'settings',
+              child: _MenuItem(
+                icon: Icons.settings_outlined,
+                label: 'Parametres',
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -462,55 +455,50 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: tasksAsync.when(
-                loading:
-                    () => const _TasksSheetFrame(
-                      child: _SheetMessage(
-                        icon: Icons.sync,
-                        title: 'Synchronisation',
-                        body: 'Chargement des taches du jour...',
-                      ),
-                    ),
-                error:
-                    (_, __) => const _TasksSheetFrame(
-                      child: _SheetMessage(
-                        icon: Icons.wifi_off_outlined,
-                        title: 'Taches indisponibles',
-                        body:
-                            'Le pointage reste utilisable. Reessayez apres synchronisation.',
-                      ),
-                    ),
-                data:
-                    (tasks) => _TasksSheetFrame(
-                      child:
-                          tasks.isEmpty
-                              ? const _SheetMessage(
-                                icon: Icons.task_alt_outlined,
-                                title: 'Aucune tache aujourd hui',
-                                body:
-                                    'Vous pourrez pointer normalement. Les taches assignees apparaitront ici.',
-                              )
-                              : Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const _SheetHeader(
-                                    title: 'Taches du jour',
-                                    subtitle:
-                                        'Cloturez ce qui est realise avant votre depart.',
-                                  ),
-                                  const SizedBox(height: 14),
-                                  ...tasks.map((task) => _TaskLine(task: task)),
-                                ],
-                              ),
-                    ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          child: tasksAsync.when(
+            loading: () => const _TasksSheetFrame(
+              child: _SheetMessage(
+                icon: Icons.sync,
+                title: 'Synchronisation',
+                body: 'Chargement des taches du jour...',
               ),
             ),
+            error: (_, __) => const _TasksSheetFrame(
+              child: _SheetMessage(
+                icon: Icons.wifi_off_outlined,
+                title: 'Taches indisponibles',
+                body:
+                    'Le pointage reste utilisable. Reessayez apres synchronisation.',
+              ),
+            ),
+            data: (tasks) => _TasksSheetFrame(
+              child: tasks.isEmpty
+                  ? const _SheetMessage(
+                      icon: Icons.task_alt_outlined,
+                      title: 'Aucune tache aujourd hui',
+                      body:
+                          'Vous pourrez pointer normalement. Les taches assignees apparaitront ici.',
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _SheetHeader(
+                          title: 'Taches du jour',
+                          subtitle:
+                              'Cloturez ce qui est realise avant votre depart.',
+                        ),
+                        const SizedBox(height: 14),
+                        ...tasks.map((task) => _TaskLine(task: task)),
+                      ],
+                    ),
+            ),
           ),
+        ),
+      ),
     );
   }
 
@@ -597,17 +585,16 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   ],
                 ),
                 child: Center(
-                  child:
-                      isLoading
-                          ? const SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.4,
-                            ),
-                          )
-                          : _buildFingerprintIcon(),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.4,
+                          ),
+                        )
+                      : _buildFingerprintIcon(),
                 ),
               ),
             ),
@@ -618,17 +605,16 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           isLoading
               ? 'Enregistrement en cours...'
               : isCheckedIn
-              ? 'Appuyez pour enregistrer votre depart'
-              : 'Appuyez pour enregistrer votre arrivee',
+                  ? 'Appuyez pour enregistrer votre depart'
+                  : 'Appuyez pour enregistrer votre arrivee',
           style: const TextStyle(color: _secondary, fontSize: 12),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         if (_fingerprintAvailable)
           GestureDetector(
-            onTap:
-                () =>
-                    setState(() => _fingerprintEnabled = !_fingerprintEnabled),
+            onTap: () =>
+                setState(() => _fingerprintEnabled = !_fingerprintEnabled),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -669,13 +655,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final checkOut = _formatTime(log?.checkOut);
     final statusLabel = _statusLabel(log);
     final statusColor = _statusColor(log);
-    final gain =
-        state.summary?.totalEstimated ??
+    final gain = state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
     final currency = state.summary?.currency ?? 'DZD';
     final sessionsCount =
         int.tryParse(state.daySummary?['sessions_count']?.toString() ?? '') ??
-        state.todaySessions.length;
+            state.todaySessions.length;
     final breakMinutes =
         int.tryParse(state.daySummary?['break_minutes']?.toString() ?? '') ?? 0;
 
@@ -769,16 +754,14 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
   Widget _buildTodayTasks(AsyncValue<List<Map<String, dynamic>>> tasksAsync) {
     return tasksAsync.when(
-      loading:
-          () => _buildNoticeCard(
-            'Synchronisation des taches du jour...',
-            AppColors.warning,
-          ),
-      error:
-          (_, __) => _buildNoticeCard(
-            'Taches du jour indisponibles pour l instant.',
-            AppColors.warning,
-          ),
+      loading: () => _buildNoticeCard(
+        'Synchronisation des taches du jour...',
+        AppColors.warning,
+      ),
+      error: (_, __) => _buildNoticeCard(
+        'Taches du jour indisponibles pour l instant.',
+        AppColors.warning,
+      ),
       data: (tasks) {
         if (tasks.isEmpty) {
           return _buildNoticeCard(
@@ -819,10 +802,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     required bool canDirectEdit,
     required String currency,
   }) {
-    final barColor =
-        day.isAbsent
-            ? _soft
-            : day.lateMinutes > 0
+    final barColor = day.isAbsent
+        ? _soft
+        : day.lateMinutes > 0
             ? AppColors.warning
             : AppColors.rh;
 
@@ -902,13 +884,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ),
           ),
           GestureDetector(
-            onTap:
-                () => _showDayActionsSheet(
-                  context,
-                  day: day,
-                  canDirectEdit: canDirectEdit,
-                  currency: currency,
-                ),
+            onTap: () => _showDayActionsSheet(
+              context,
+              day: day,
+              canDirectEdit: canDirectEdit,
+              currency: currency,
+            ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
               decoration: const BoxDecoration(
@@ -1006,12 +987,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => _CorrectionSheet(
-            targetDate: targetDate,
-            canDirectEdit: canDirectEdit,
-            logId: logId,
-          ),
+      builder: (_) => _CorrectionSheet(
+        targetDate: targetDate,
+        canDirectEdit: canDirectEdit,
+        logId: logId,
+      ),
     );
   }
 
@@ -1027,59 +1007,53 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (ctx) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const _SheetHandle(),
-                  const SizedBox(height: 16),
-                  _SheetHeader(
-                    title: day.dayLabel,
-                    subtitle:
-                        day.isAbsent
-                            ? 'Aucun pointage enregistre pour cette journee.'
-                            : '${day.sessionsCount} session(s) - ${day.hoursFormatted} travaillees.',
-                  ),
-                  const SizedBox(height: 14),
-                  _ActionTile(
-                    icon: Icons.receipt_long_outlined,
-                    title: 'Details de la journee',
-                    subtitle:
-                        'Voir les pointages, pauses, heures supp et temps reel.',
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _showDayDetailsSheet(context, day, currency: currency);
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _ActionTile(
-                    icon: Icons.edit_calendar_outlined,
-                    title:
-                        canDirectEdit
-                            ? 'Modifier'
-                            : 'Demander une modification',
-                    subtitle:
-                        canDirectEdit
-                            ? 'Corriger directement cette ligne de pointage.'
-                            : 'Soumettre une correction au RH pour validation.',
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _showCorrectionSheet(
-                        context,
-                        forDate: day.date,
-                        canDirectEdit: canDirectEdit,
-                        logId: day.logId,
-                      );
-                    },
-                  ),
-                ],
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _SheetHandle(),
+              const SizedBox(height: 16),
+              _SheetHeader(
+                title: day.dayLabel,
+                subtitle: day.isAbsent
+                    ? 'Aucun pointage enregistre pour cette journee.'
+                    : '${day.sessionsCount} session(s) - ${day.hoursFormatted} travaillees.',
               ),
-            ),
+              const SizedBox(height: 14),
+              _ActionTile(
+                icon: Icons.receipt_long_outlined,
+                title: 'Details de la journee',
+                subtitle:
+                    'Voir les pointages, pauses, heures supp et temps reel.',
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showDayDetailsSheet(context, day, currency: currency);
+                },
+              ),
+              const SizedBox(height: 8),
+              _ActionTile(
+                icon: Icons.edit_calendar_outlined,
+                title: canDirectEdit ? 'Modifier' : 'Demander une modification',
+                subtitle: canDirectEdit
+                    ? 'Corriger directement cette ligne de pointage.'
+                    : 'Soumettre une correction au RH pour validation.',
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showCorrectionSheet(
+                    context,
+                    forDate: day.date,
+                    canDirectEdit: canDirectEdit,
+                    logId: day.logId,
+                  );
+                },
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -1095,92 +1069,89 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.72,
-            minChildSize: 0.42,
-            maxChildSize: 0.92,
-            builder:
-                (context, controller) => SafeArea(
-                  child: ListView(
-                    controller: controller,
-                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-                    children: [
-                      const _SheetHandle(),
-                      const SizedBox(height: 16),
-                      _SheetHeader(
-                        title: 'Details de la journee',
-                        subtitle: DateFormat(
-                          'EEEE d MMMM yyyy',
-                          'fr_FR',
-                        ).format(day.date),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _DetailMetric(
-                              label: 'Temps travaille',
-                              value: day.hoursFormatted,
-                              color: const Color(0xFFC8D8F0),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _DetailMetric(
-                              label: 'Heures supp',
-                              value: day.overtimeFormatted,
-                              color: AppColors.rh,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _DetailMetric(
-                              label: 'Pauses',
-                              value: '${day.breakMinutes} min',
-                              color: AppColors.warning,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: _DetailMetric(
-                              label: 'Gain estime',
-                              value:
-                                  '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
-                              color: AppColors.rh,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      const Text(
-                        'Pointages',
-                        style: TextStyle(
-                          color: _secondary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.6,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      if (day.sessions.isEmpty)
-                        const _SheetMessage(
-                          icon: Icons.event_busy_outlined,
-                          title: 'Aucune session',
-                          body:
-                              'Cette journee ne contient pas encore de pointage.',
-                        )
-                      else
-                        ...day.sessions.map(_SessionDetailTile.new),
-                    ],
+      builder: (_) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.72,
+        minChildSize: 0.42,
+        maxChildSize: 0.92,
+        builder: (context, controller) => SafeArea(
+          child: ListView(
+            controller: controller,
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+            children: [
+              const _SheetHandle(),
+              const SizedBox(height: 16),
+              _SheetHeader(
+                title: 'Details de la journee',
+                subtitle: DateFormat(
+                  'EEEE d MMMM yyyy',
+                  'fr_FR',
+                ).format(day.date),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DetailMetric(
+                      label: 'Temps travaille',
+                      value: day.hoursFormatted,
+                      color: const Color(0xFFC8D8F0),
+                    ),
                   ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _DetailMetric(
+                      label: 'Heures supp',
+                      value: day.overtimeFormatted,
+                      color: AppColors.rh,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DetailMetric(
+                      label: 'Pauses',
+                      value: '${day.breakMinutes} min',
+                      color: AppColors.warning,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _DetailMetric(
+                      label: 'Gain estime',
+                      value:
+                          '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
+                      color: AppColors.rh,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Pointages',
+                style: TextStyle(
+                  color: _secondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
                 ),
+              ),
+              const SizedBox(height: 10),
+              if (day.sessions.isEmpty)
+                const _SheetMessage(
+                  icon: Icons.event_busy_outlined,
+                  title: 'Aucune session',
+                  body: 'Cette journee ne contient pas encore de pointage.',
+                )
+              else
+                ...day.sessions.map(_SessionDetailTile.new),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -1195,10 +1166,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     return List.generate(5, (index) {
       final date = today.subtract(Duration(days: index));
       final sessions = byDay[_dateKey(date)] ?? const <AttendanceLog>[];
-      final labelPrefix =
-          index == 0
-              ? 'Aujourd hui'
-              : index == 1
+      final labelPrefix = index == 0
+          ? 'Aujourd hui'
+          : index == 1
               ? 'Hier'
               : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
       final label =
@@ -1246,12 +1216,11 @@ class _FingerprintPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-    final paint =
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.8
-          ..strokeCap = StrokeCap.round;
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.round;
 
     canvas.drawCircle(Offset(cx, cy), 1.5, paint..style = PaintingStyle.fill);
     paint.style = PaintingStyle.stroke;
@@ -1701,12 +1670,11 @@ class _TaskLine extends ConsumerWidget {
             done
                 ? Icons.task_alt
                 : priority == 'urgent' || priority == 'high'
-                ? Icons.priority_high
-                : Icons.task_alt,
-            color:
-                done
-                    ? AppColors.rh
-                    : priority == 'urgent' || priority == 'high'
+                    ? Icons.priority_high
+                    : Icons.task_alt,
+            color: done
+                ? AppColors.rh
+                : priority == 'urgent' || priority == 'high'
                     ? AppColors.warning
                     : AppColors.rh,
             size: 18,
@@ -1753,11 +1721,10 @@ class _TaskLine extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (_) => _TaskCompletionSheet(
-            taskId: taskId,
-            estimatedMinutes: estimatedMinutes,
-          ),
+      builder: (_) => _TaskCompletionSheet(
+        taskId: taskId,
+        estimatedMinutes: estimatedMinutes,
+      ),
     );
   }
 }
@@ -1850,14 +1817,13 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
             const SizedBox(height: 14),
             ElevatedButton.icon(
               onPressed: _submitting ? null : _submit,
-              icon:
-                  _submitting
-                      ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Icon(Icons.task_alt),
+              icon: _submitting
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.task_alt),
               label: const Text('Marquer terminee'),
             ),
           ],
@@ -1870,9 +1836,7 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(attendanceRepositoryProvider)
-          .completeTask(
+      await ref.read(attendanceRepositoryProvider).completeTask(
             taskId: widget.taskId,
             completedMinutes: int.parse(_minutesCtrl.text.trim()),
             note: _noteCtrl.text,
@@ -1925,8 +1889,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
 
   bool _isTimeFuture(TimeOfDay time) {
     final now = DateTime.now();
-    final isToday =
-        widget.targetDate.day == now.day &&
+    final isToday = widget.targetDate.day == now.day &&
         widget.targetDate.month == now.month &&
         widget.targetDate.year == now.year;
     if (!isToday) return false;
@@ -1946,11 +1909,10 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       initialTime: TimeOfDay.now(),
       helpText:
           isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
-      builder:
-          (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child!,
-          ),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
     if (picked == null) return;
 
@@ -1992,28 +1954,22 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = true);
     var success = true;
     if (widget.canDirectEdit) {
-      success = await ref
-          .read(attendanceProvider.notifier)
-          .updateCorrection(
+      success = await ref.read(attendanceProvider.notifier).updateCorrection(
             logId: widget.logId!,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
-            checkOut:
-                _checkOut == null
-                    ? null
-                    : _asDateTime(widget.targetDate, _checkOut!),
+            checkOut: _checkOut == null
+                ? null
+                : _asDateTime(widget.targetDate, _checkOut!),
             notes: _reasonCtrl.text.trim(),
           );
     } else {
-      success = await ref
-          .read(attendanceProvider.notifier)
-          .requestCorrection(
+      success = await ref.read(attendanceProvider.notifier).requestCorrection(
             logId: widget.logId,
             date: widget.targetDate,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
-            checkOut:
-                _checkOut == null
-                    ? null
-                    : _asDateTime(widget.targetDate, _checkOut!),
+            checkOut: _checkOut == null
+                ? null
+                : _asDateTime(widget.targetDate, _checkOut!),
             reason: _reasonCtrl.text.trim(),
           );
     }
@@ -2021,8 +1977,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (!success) {
-      final message =
-          ref.read(attendanceProvider).error ??
+      final message = ref.read(attendanceProvider).error ??
           'Impossible d envoyer la modification pour le moment.';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
@@ -2131,11 +2086,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                   borderSide: const BorderSide(color: Color(0xFF1A2B44)),
                 ),
               ),
-              validator:
-                  (value) =>
-                      value == null || value.trim().isEmpty
-                          ? 'Motif obligatoire'
-                          : null,
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Motif obligatoire'
+                  : null,
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -2150,22 +2103,21 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child:
-                    _submitting
-                        ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                        : Text(
-                          widget.canDirectEdit
-                              ? 'Modifier'
-                              : 'Demander une modification',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                child: _submitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
                         ),
+                      )
+                    : Text(
+                        widget.canDirectEdit
+                            ? 'Modifier'
+                            : 'Demander une modification',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
               ),
             ),
           ],

@@ -9,8 +9,8 @@ import '../platform/platform_models.dart';
 
 final platformCompanyRequestsProvider =
     FutureProvider<List<PlatformCompanyRequest>>((ref) {
-      return ref.watch(platformRepositoryProvider).companyRequests();
-    });
+  return ref.watch(platformRepositoryProvider).companyRequests();
+});
 
 class CompanyRequestsScreen extends ConsumerWidget {
   const CompanyRequestsScreen({super.key});
@@ -30,30 +30,25 @@ class CompanyRequestsScreen extends ConsumerWidget {
       ),
       children: [
         requests.when(
-          data:
-              (items) =>
-                  items.isEmpty
-                      ? const MobilePanel(
-                        child: Text(
-                          'Aucune demande en attente.',
-                          style: TextStyle(color: MobileSurface.secondary),
-                        ),
+          data: (items) => items.isEmpty
+              ? const MobilePanel(
+                  child: Text(
+                    'Aucune demande en attente.',
+                    style: TextStyle(color: MobileSurface.secondary),
+                  ),
+                )
+              : Column(
+                  children: items
+                      .map(
+                        (request) => _CompanyRequestCard(request: request),
                       )
-                      : Column(
-                        children:
-                            items
-                                .map(
-                                  (request) =>
-                                      _CompanyRequestCard(request: request),
-                                )
-                                .toList(),
-                      ),
+                      .toList(),
+                ),
           loading: () => const MobileEmptyLoading(label: 'Chargement demandes'),
-          error:
-              (error, _) => MobileErrorPanel(
-                message: error.toString(),
-                onRetry: () => ref.invalidate(platformCompanyRequestsProvider),
-              ),
+          error: (error, _) => MobileErrorPanel(
+            message: error.toString(),
+            onRetry: () => ref.invalidate(platformCompanyRequestsProvider),
+          ),
         ),
       ],
     );
@@ -70,15 +65,12 @@ class _CompanyRequestCard extends ConsumerWidget {
     WidgetRef ref,
     bool approved,
   ) async {
-    await ref
-        .read(platformRepositoryProvider)
-        .reviewCompanyRequest(
+    await ref.read(platformRepositoryProvider).reviewCompanyRequest(
           id: request.id,
           approved: approved,
-          adminNotes:
-              approved
-                  ? 'Approuve depuis Leopardo Platform Admin mobile'
-                  : 'Refuse depuis Leopardo Platform Admin mobile',
+          adminNotes: approved
+              ? 'Approuve depuis Leopardo Platform Admin mobile'
+              : 'Refuse depuis Leopardo Platform Admin mobile',
         );
     ref.invalidate(platformCompanyRequestsProvider);
     if (!context.mounted) return;

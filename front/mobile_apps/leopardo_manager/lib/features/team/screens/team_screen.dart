@@ -124,43 +124,42 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder:
-          (_) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Ajouter un collaborateur',
-                    style: AppTypography.subtitle.copyWith(
-                      color: MobileSurface.text,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ListTile(
-                    leading: const Icon(Icons.edit_note_rounded),
-                    title: const Text('Formulaire classique'),
-                    subtitle: const Text('Saisie manuelle complete'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      _openCreateEmployeeSheet(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.qr_code_scanner_rounded),
-                    title: const Text('Depuis QR employe'),
-                    subtitle: const Text('Coller le code fourni'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      _openEmployeeQrSheet(context);
-                    },
-                  ),
-                ],
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Ajouter un collaborateur',
+                style: AppTypography.subtitle.copyWith(
+                  color: MobileSurface.text,
+                ),
               ),
-            ),
+              const SizedBox(height: 12),
+              ListTile(
+                leading: const Icon(Icons.edit_note_rounded),
+                title: const Text('Formulaire classique'),
+                subtitle: const Text('Saisie manuelle complete'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openCreateEmployeeSheet(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.qr_code_scanner_rounded),
+                title: const Text('Depuis QR employe'),
+                subtitle: const Text('Coller le code fourni'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openEmployeeQrSheet(context);
+                },
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -187,12 +186,10 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder:
-          (_) => _EmployeeQrImportSheet(
-            onPrefillReady:
-                (prefill) =>
-                    _openCreateEmployeeSheet(context, prefill: prefill),
-          ),
+      builder: (_) => _EmployeeQrImportSheet(
+        onPrefillReady: (prefill) =>
+            _openCreateEmployeeSheet(context, prefill: prefill),
+      ),
     );
   }
 
@@ -222,18 +219,17 @@ class _EmployeesTab extends ConsumerWidget {
         await ref.refresh(teamListProvider.future).then((_) {});
       },
       child: async.when(
-        loading:
-            () => const MobileEmptyLoading(label: 'Chargement de l equipe'),
-        error:
-            (err, _) => ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                MobileErrorPanel(
-                  message: err.toString(),
-                  onRetry: () => ref.invalidate(teamListProvider),
-                ),
-              ],
+        loading: () =>
+            const MobileEmptyLoading(label: 'Chargement de l equipe'),
+        error: (err, _) => ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            MobileErrorPanel(
+              message: err.toString(),
+              onRetry: () => ref.invalidate(teamListProvider),
             ),
+          ],
+        ),
         data: (employees) {
           if (employees.isEmpty) {
             return ListView(
@@ -319,13 +315,13 @@ class _EmployeesTab extends ConsumerWidget {
   }
 
   Color _workStateColor(String state) => switch (state) {
-    'present' => AppColors.rh,
-    'break' => AppColors.warning,
-    'leave' => AppColors.info,
-    'mission' => AppColors.ia,
-    'absent' => AppColors.danger,
-    _ => MobileSurface.disabled,
-  };
+        'present' => AppColors.rh,
+        'break' => AppColors.warning,
+        'leave' => AppColors.info,
+        'mission' => AppColors.ia,
+        'absent' => AppColors.danger,
+        _ => MobileSurface.disabled,
+      };
 
   void _showActions(
     BuildContext context,
@@ -340,109 +336,107 @@ class _EmployeesTab extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder:
-          (_) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              employee.fullName,
+              style: AppTypography.subtitle.copyWith(
+                color: MobileSurface.text,
+              ),
+            ),
+            Text(
+              employee.email,
+              style: const TextStyle(color: MobileSurface.secondary),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
-                Text(
-                  employee.fullName,
-                  style: AppTypography.subtitle.copyWith(
-                    color: MobileSurface.text,
-                  ),
+                MobileStatusPill(
+                  label: employee.workStateLabel,
+                  color: _workStateColor(employee.workState),
                 ),
-                Text(
-                  employee.email,
-                  style: const TextStyle(color: MobileSurface.secondary),
+                MobileStatusPill(
+                  label: _roleLabel(employee),
+                  color: employee.isHr || employee.isPrincipal
+                      ? AppColors.info
+                      : MobileSurface.disabled,
                 ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    MobileStatusPill(
-                      label: employee.workStateLabel,
-                      color: _workStateColor(employee.workState),
-                    ),
-                    MobileStatusPill(
-                      label: _roleLabel(employee),
-                      color:
-                          employee.isHr || employee.isPrincipal
-                              ? AppColors.info
-                              : MobileSurface.disabled,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  leading: const Icon(Icons.badge_outlined),
-                  title: const Text('Voir la fiche'),
-                  subtitle: const Text('Coordonnees, poste, salaire, horaire'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _openProfileSheet(context, employee);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.edit_note_rounded),
-                  title: const Text('Modifier la fiche'),
-                  subtitle: const Text(
-                    'Mettre a jour les champs RH essentiels',
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    _openEditEmployeeSheet(context, employee);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.query_stats_rounded),
-                  title: const Text('Statistiques et pointages'),
-                  subtitle: const Text('Presence, anomalies, historique'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    context.push('/manager/attendance');
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.task_alt_rounded),
-                  title: const Text('Taches'),
-                  subtitle: const Text('Voir ou assigner des taches terrain'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    context.push('/tasks');
-                  },
-                ),
-                if (canManageRh && !employee.isPrincipal)
-                  ListTile(
-                    leading: Icon(
-                      employee.isHr
-                          ? Icons.person_remove_alt_1_outlined
-                          : Icons.admin_panel_settings_outlined,
-                    ),
-                    title: Text(employee.isHr ? 'Revoquer RH' : 'Nommer RH'),
-                    subtitle: Text(
-                      employee.isHr
-                          ? 'Retirer les permissions RH de ce compte'
-                          : 'Donner les permissions RH a ce collaborateur',
-                    ),
-                    onTap: () async {
-                      Navigator.of(context).pop();
-                      await _toggleHrRole(context, ref, employee);
-                    },
-                  ),
-                if (employee.status != 'archived')
-                  ListTile(
-                    leading: const Icon(Icons.archive_outlined),
-                    title: const Text('Archiver'),
-                    onTap: () async {
-                      Navigator.of(context).pop();
-                      await _archive(context, ref, employee);
-                    },
-                  ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            ListTile(
+              leading: const Icon(Icons.badge_outlined),
+              title: const Text('Voir la fiche'),
+              subtitle: const Text('Coordonnees, poste, salaire, horaire'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _openProfileSheet(context, employee);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_note_rounded),
+              title: const Text('Modifier la fiche'),
+              subtitle: const Text(
+                'Mettre a jour les champs RH essentiels',
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                _openEditEmployeeSheet(context, employee);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.query_stats_rounded),
+              title: const Text('Statistiques et pointages'),
+              subtitle: const Text('Presence, anomalies, historique'),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.push('/manager/attendance');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.task_alt_rounded),
+              title: const Text('Taches'),
+              subtitle: const Text('Voir ou assigner des taches terrain'),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.push('/tasks');
+              },
+            ),
+            if (canManageRh && !employee.isPrincipal)
+              ListTile(
+                leading: Icon(
+                  employee.isHr
+                      ? Icons.person_remove_alt_1_outlined
+                      : Icons.admin_panel_settings_outlined,
+                ),
+                title: Text(employee.isHr ? 'Revoquer RH' : 'Nommer RH'),
+                subtitle: Text(
+                  employee.isHr
+                      ? 'Retirer les permissions RH de ce compte'
+                      : 'Donner les permissions RH a ce collaborateur',
+                ),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _toggleHrRole(context, ref, employee);
+                },
+              ),
+            if (employee.status != 'archived')
+              ListTile(
+                leading: const Icon(Icons.archive_outlined),
+                title: const Text('Archiver'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _archive(context, ref, employee);
+                },
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -454,25 +448,24 @@ class _EmployeesTab extends ConsumerWidget {
     final makeHr = !employee.isHr;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text(makeHr ? 'Nommer RH ?' : 'Revoquer RH ?'),
-            content: Text(
-              makeHr
-                  ? '${employee.fullName} pourra gerer les demandes RH et les collaborateurs.'
-                  : '${employee.fullName} redeviendra employe sans permissions RH.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Annuler'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(makeHr ? 'Nommer RH' : 'Revoquer'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: Text(makeHr ? 'Nommer RH ?' : 'Revoquer RH ?'),
+        content: Text(
+          makeHr
+              ? '${employee.fullName} pourra gerer les demandes RH et les collaborateurs.'
+              : '${employee.fullName} redeviendra employe sans permissions RH.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(makeHr ? 'Nommer RH' : 'Revoquer'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
 
@@ -526,23 +519,22 @@ class _EmployeesTab extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text('Archiver cet employe ?'),
-            content: Text(
-              '${employee.fullName} n aura plus acces a l application.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Annuler'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Archiver'),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text('Archiver cet employe ?'),
+        content: Text(
+          '${employee.fullName} n aura plus acces a l application.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Archiver'),
+          ),
+        ],
+      ),
     );
     if (confirmed != true) return;
     try {
@@ -687,18 +679,17 @@ class _InvitationsTab extends ConsumerWidget {
         await ref.refresh(invitationsListProvider.future).then((_) {});
       },
       child: async.when(
-        loading:
-            () => const MobileEmptyLoading(label: 'Chargement des invitations'),
-        error:
-            (err, _) => ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                MobileErrorPanel(
-                  message: err.toString(),
-                  onRetry: () => ref.invalidate(invitationsListProvider),
-                ),
-              ],
+        loading: () =>
+            const MobileEmptyLoading(label: 'Chargement des invitations'),
+        error: (err, _) => ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            MobileErrorPanel(
+              message: err.toString(),
+              onRetry: () => ref.invalidate(invitationsListProvider),
             ),
+          ],
+        ),
         data: (invitations) {
           if (invitations.isEmpty) {
             return ListView(
@@ -723,25 +714,23 @@ class _InvitationsTab extends ConsumerWidget {
                 icon: Icons.mail_outline_rounded,
                 iconColor: color,
                 title: inv.email,
-                subtitle:
-                    inv.sentAt == null
-                        ? 'Invitation ${_invitationLabel(inv.status)}'
-                        : 'Dernier envoi ${inv.sentAt!.day.toString().padLeft(2, '0')}/${inv.sentAt!.month.toString().padLeft(2, '0')}',
+                subtitle: inv.sentAt == null
+                    ? 'Invitation ${_invitationLabel(inv.status)}'
+                    : 'Dernier envoi ${inv.sentAt!.day.toString().padLeft(2, '0')}/${inv.sentAt!.month.toString().padLeft(2, '0')}',
                 trailing: MobileStatusPill(
                   label: _invitationLabel(inv.status),
                   color: color,
                 ),
-                footer:
-                    inv.status == 'pending'
-                        ? Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
-                            onPressed: () async => _resend(context, ref, inv),
-                            icon: const Icon(Icons.send_rounded, size: 16),
-                            label: const Text('Renvoyer'),
-                          ),
-                        )
-                        : null,
+                footer: inv.status == 'pending'
+                    ? Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: () async => _resend(context, ref, inv),
+                          icon: const Icon(Icons.send_rounded, size: 16),
+                          label: const Text('Renvoyer'),
+                        ),
+                      )
+                    : null,
               );
             },
           );
@@ -751,20 +740,20 @@ class _InvitationsTab extends ConsumerWidget {
   }
 
   String _invitationLabel(String status) => switch (status) {
-    'pending' => 'En attente',
-    'sent' => 'Envoyee',
-    'accepted' => 'Acceptee',
-    'expired' => 'Expiree',
-    'revoked' => 'Revoquee',
-    _ => status,
-  };
+        'pending' => 'En attente',
+        'sent' => 'Envoyee',
+        'accepted' => 'Acceptee',
+        'expired' => 'Expiree',
+        'revoked' => 'Revoquee',
+        _ => status,
+      };
 
   Color _invitationColor(String status) => switch (status) {
-    'accepted' => AppColors.rh,
-    'sent' || 'pending' => AppColors.info,
-    'expired' || 'revoked' => AppColors.danger,
-    _ => MobileSurface.disabled,
-  };
+        'accepted' => AppColors.rh,
+        'sent' || 'pending' => AppColors.info,
+        'expired' || 'revoked' => AppColors.danger,
+        _ => MobileSurface.disabled,
+      };
 
   Future<void> _resend(
     BuildContext context,
@@ -797,10 +786,9 @@ class _EmployeeProfileSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currency = employee.currency ?? 'DZD';
-    final salary =
-        employee.salaryType == 'hourly'
-            ? '${employee.hourlyRate?.toStringAsFixed(0) ?? '0'} $currency/h'
-            : '${employee.salaryBase?.toStringAsFixed(0) ?? '0'} $currency';
+    final salary = employee.salaryType == 'hourly'
+        ? '${employee.hourlyRate?.toStringAsFixed(0) ?? '0'} $currency/h'
+        : '${employee.salaryBase?.toStringAsFixed(0) ?? '0'} $currency';
 
     return SafeArea(
       child: Padding(
@@ -934,45 +922,42 @@ class _CompanyQrSheet extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: async.when(
-          loading:
-              () => const Center(
-                heightFactor: 4,
-                child: CircularProgressIndicator(),
+          loading: () => const Center(
+            heightFactor: 4,
+            child: CircularProgressIndicator(),
+          ),
+          error: (err, _) => MobileErrorPanel(
+            message: err.toString(),
+            onRetry: () => ref.invalidate(_companyQrProvider),
+          ),
+          data: (payload) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'QR entreprise',
+                style: AppTypography.subtitle.copyWith(
+                  color: MobileSurface.text,
+                ),
               ),
-          error:
-              (err, _) => MobileErrorPanel(
-                message: err.toString(),
-                onRetry: () => ref.invalidate(_companyQrProvider),
+              const SizedBox(height: 6),
+              Text(
+                'A partager a un employe pour demander son integration chez ${payload.companyName}.',
+                style: AppTypography.bodySmall.copyWith(
+                  color: MobileSurface.secondary,
+                ),
               ),
-          data:
-              (payload) => Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'QR entreprise',
-                    style: AppTypography.subtitle.copyWith(
-                      color: MobileSurface.text,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'A partager a un employe pour demander son integration chez ${payload.companyName}.',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: MobileSurface.secondary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  LeopardoQrCard(
-                    data: payload.token,
-                    title: 'QR entreprise scannable',
-                    subtitle:
-                        'L employe le scanne depuis son espace compte pour demander son integration.',
-                    expiresAt: payload.expiresAt,
-                    copyLabel: 'Copier aussi le jeton',
-                  ),
-                ],
+              const SizedBox(height: 16),
+              LeopardoQrCard(
+                data: payload.token,
+                title: 'QR entreprise scannable',
+                subtitle:
+                    'L employe le scanne depuis son espace compte pour demander son integration.',
+                expiresAt: payload.expiresAt,
+                copyLabel: 'Copier aussi le jeton',
               ),
+            ],
+          ),
         ),
       ),
     );
@@ -1050,14 +1035,13 @@ class _EmployeeQrImportSheetState
           const SizedBox(height: 14),
           ElevatedButton.icon(
             onPressed: _loading ? null : _scan,
-            icon:
-                _loading
-                    ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : const Icon(Icons.qr_code_scanner_rounded),
+            icon: _loading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.qr_code_scanner_rounded),
             label: const Text('Lire et pre-remplir'),
           ),
         ],
@@ -1089,9 +1073,8 @@ class _EmployeeQrImportSheetState
 
     setState(() => _loading = true);
     try {
-      final prefill = await ref
-          .read(employeeRepositoryProvider)
-          .scanEmployeeQr(token);
+      final prefill =
+          await ref.read(employeeRepositoryProvider).scanEmployeeQr(token);
       if (!mounted) return;
       Navigator.of(context).pop();
       widget.onPrefillReady(prefill);
@@ -1243,8 +1226,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
   Widget build(BuildContext context) {
     final schedulesAsync = ref.watch(schedulesProvider);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final currency =
-        ref.watch(authProvider).employee?.currency ??
+    final currency = ref.watch(authProvider).employee?.currency ??
         widget.employee.currency ??
         'DZD';
 
@@ -1278,11 +1260,10 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                     child: TextFormField(
                       controller: _firstName,
                       decoration: const InputDecoration(labelText: 'Prenom'),
-                      validator:
-                          (value) =>
-                              value == null || value.trim().isEmpty
-                                  ? 'Obligatoire'
-                                  : null,
+                      validator: (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Obligatoire'
+                              : null,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -1290,11 +1271,10 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                     child: TextFormField(
                       controller: _lastName,
                       decoration: const InputDecoration(labelText: 'Nom'),
-                      validator:
-                          (value) =>
-                              value == null || value.trim().isEmpty
-                                  ? 'Obligatoire'
-                                  : null,
+                      validator: (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Obligatoire'
+                              : null,
                     ),
                   ),
                 ],
@@ -1304,11 +1284,9 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                 controller: _email,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'Email'),
-                validator:
-                    (value) =>
-                        value == null || !value.contains('@')
-                            ? 'Email invalide'
-                            : null,
+                validator: (value) => value == null || !value.contains('@')
+                    ? 'Email invalide'
+                    : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -1328,23 +1306,20 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
               ),
               const SizedBox(height: 14),
               schedulesAsync.when(
-                data:
-                    (schedules) => _ScheduleSelector(
-                      schedules: schedules,
-                      selectedId: _scheduleId,
-                      onChanged: (value) => setState(() => _scheduleId = value),
-                    ),
-                loading:
-                    () => const LinearProgressIndicator(
-                      minHeight: 3,
-                      color: AppColors.rh,
-                    ),
-                error:
-                    (error, stackTrace) => TextButton.icon(
-                      onPressed: () => ref.invalidate(schedulesProvider),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Recharger les horaires'),
-                    ),
+                data: (schedules) => _ScheduleSelector(
+                  schedules: schedules,
+                  selectedId: _scheduleId,
+                  onChanged: (value) => setState(() => _scheduleId = value),
+                ),
+                loading: () => const LinearProgressIndicator(
+                  minHeight: 3,
+                  color: AppColors.rh,
+                ),
+                error: (error, stackTrace) => TextButton.icon(
+                  onPressed: () => ref.invalidate(schedulesProvider),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Recharger les horaires'),
+                ),
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
@@ -1356,18 +1331,17 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                   DropdownMenuItem(value: 'hourly', child: Text('Horaire')),
                   DropdownMenuItem(value: 'daily', child: Text('Journalier')),
                 ],
-                onChanged:
-                    (value) => setState(() => _salaryType = value ?? 'fixed'),
+                onChanged: (value) =>
+                    setState(() => _salaryType = value ?? 'fixed'),
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _salaryType == 'hourly' ? _hourlyRate : _salaryBase,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText:
-                      _salaryType == 'hourly'
-                          ? 'Taux horaire'
-                          : 'Salaire de base',
+                  labelText: _salaryType == 'hourly'
+                      ? 'Taux horaire'
+                      : 'Salaire de base',
                   suffixText:
                       _salaryType == 'hourly' ? '$currency/h' : currency,
                 ),
@@ -1390,14 +1364,13 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
               const SizedBox(height: 18),
               ElevatedButton.icon(
                 onPressed: _submitting ? null : _submit,
-                icon:
-                    _submitting
-                        ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Icon(Icons.save_outlined),
+                icon: _submitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save_outlined),
                 label: const Text('Enregistrer'),
               ),
             ],
@@ -1578,18 +1551,16 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 controller: _firstName,
                 style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(labelText: 'Prenom'),
-                validator:
-                    (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _lastName,
                 style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(labelText: 'Nom'),
-                validator:
-                    (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
@@ -1632,29 +1603,25 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   suffixIcon: Icon(Icons.calendar_today_outlined),
                 ),
                 onTap: _pickHireDate,
-                validator:
-                    (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 16),
               schedulesAsync.when(
-                data:
-                    (schedules) => _ScheduleSelector(
-                      schedules: schedules,
-                      selectedId: _scheduleId,
-                      onChanged: (value) => setState(() => _scheduleId = value),
-                    ),
-                loading:
-                    () => const LinearProgressIndicator(
-                      minHeight: 3,
-                      color: AppColors.rh,
-                    ),
-                error:
-                    (error, stackTrace) => TextButton.icon(
-                      onPressed: () => ref.invalidate(schedulesProvider),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Recharger les horaires'),
-                    ),
+                data: (schedules) => _ScheduleSelector(
+                  schedules: schedules,
+                  selectedId: _scheduleId,
+                  onChanged: (value) => setState(() => _scheduleId = value),
+                ),
+                loading: () => const LinearProgressIndicator(
+                  minHeight: 3,
+                  color: AppColors.rh,
+                ),
+                error: (error, stackTrace) => TextButton.icon(
+                  onPressed: () => ref.invalidate(schedulesProvider),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Recharger les horaires'),
+                ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -1665,11 +1632,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   DropdownMenuItem(value: 'employee', child: Text('Employe')),
                   DropdownMenuItem(value: 'manager', child: Text('Manager')),
                 ],
-                onChanged:
-                    (v) => setState(() {
-                      _role = v ?? 'employee';
-                      if (_role != 'manager') _managerRole = null;
-                    }),
+                onChanged: (v) => setState(() {
+                  _role = v ?? 'employee';
+                  if (_role != 'manager') _managerRole = null;
+                }),
               ),
               if (_role == 'manager') ...[
                 const SizedBox(height: 8),
@@ -1691,11 +1657,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                       child: Text('Superviseur'),
                     ),
                   ],
-                  validator:
-                      (v) =>
-                          (_role == 'manager' && (v == null || v.isEmpty))
-                              ? 'Selectionnez un type'
-                              : null,
+                  validator: (v) =>
+                      (_role == 'manager' && (v == null || v.isEmpty))
+                          ? 'Selectionnez un type'
+                          : null,
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
@@ -1733,10 +1698,9 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   controller: _salaryBase,
                   style: const TextStyle(color: MobileSurface.text),
                   decoration: InputDecoration(
-                    labelText:
-                        _salaryType == 'daily'
-                            ? 'Salaire journalier'
-                            : 'Salaire mensuel brut',
+                    labelText: _salaryType == 'daily'
+                        ? 'Salaire journalier'
+                        : 'Salaire mensuel brut',
                     suffixText: currency,
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
@@ -1771,18 +1735,17 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submitting ? null : _submit,
-                child:
-                    _submitting
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : Text(
-                          widget.prefill == null
-                              ? 'Envoyer l invitation'
-                              : 'Creer depuis QR et inviter',
-                        ),
+                child: _submitting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(
+                        widget.prefill == null
+                            ? 'Envoyer l invitation'
+                            : 'Creer depuis QR et inviter',
+                      ),
               ),
             ],
           ),

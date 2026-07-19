@@ -80,14 +80,12 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       final data = await _repository.getTodayStatus();
       state = state.copyWith(
         todayLog: data['log'],
-        todaySessions:
-            data['sessions'] is List<AttendanceLog>
-                ? data['sessions'] as List<AttendanceLog>
-                : const <AttendanceLog>[],
-        daySummary:
-            data['summary'] is Map
-                ? (data['summary'] as Map).cast<String, dynamic>()
-                : null,
+        todaySessions: data['sessions'] is List<AttendanceLog>
+            ? data['sessions'] as List<AttendanceLog>
+            : const <AttendanceLog>[],
+        daySummary: data['summary'] is Map
+            ? (data['summary'] as Map).cast<String, dynamic>()
+            : null,
         context: data['context'],
         isLoading: false,
       );
@@ -146,10 +144,9 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         isPunching: false,
         notice: _successNotice(
           log: log,
-          fallback:
-              workType == 'overtime'
-                  ? 'Heures supplementaires demarrees.'
-                  : 'Arrivee enregistree a l instant.',
+          fallback: workType == 'overtime'
+              ? 'Heures supplementaires demarrees.'
+              : 'Arrivee enregistree a l instant.',
           location: location,
         ),
       );
@@ -190,10 +187,9 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         isPunching: false,
         notice: _successNotice(
           log: log,
-          fallback:
-              workType == 'break'
-                  ? 'Pause enregistree.'
-                  : 'Depart enregistre a l instant.',
+          fallback: workType == 'break'
+              ? 'Pause enregistree.'
+              : 'Depart enregistre a l instant.',
           location: location,
         ),
       );
@@ -225,8 +221,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         notes: notes,
       );
       final now = DateTime.now();
-      final isToday =
-          log.date.year == now.year &&
+      final isToday = log.date.year == now.year &&
           log.date.month == now.month &&
           log.date.day == now.day;
       state = state.copyWith(
@@ -343,8 +338,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-    });
+  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+});
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
   ref,

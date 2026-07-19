@@ -18,9 +18,9 @@ final payrollMobileSummaryProvider = FutureProvider<PayrollMobileSummary>((
 
 final payrollPaymentDocumentsProvider =
     FutureProvider.family<List<PaymentDocument>, int>((
-      ref,
-      payrollRunId,
-    ) async {
-      final repo = ref.watch(payrollRepositoryProvider);
-      return await repo.getPaymentDocumentsForPayrollRun(payrollRunId);
-    });
+  ref,
+  payrollRunId,
+) async {
+  final repo = ref.watch(payrollRepositoryProvider);
+  return await repo.getPaymentDocumentsForPayrollRun(payrollRunId);
+});

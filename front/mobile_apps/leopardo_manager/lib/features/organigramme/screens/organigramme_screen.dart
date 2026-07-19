@@ -61,27 +61,24 @@ class OrganigrammeScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children:
-                      nodes
-                          .map((node) => _OrgTreeWidget(node: node, depth: 0))
-                          .toList(),
+                  children: nodes
+                      .map((node) => _OrgTreeWidget(node: node, depth: 0))
+                      .toList(),
                 ),
               ),
             );
           },
-          loading:
-              () => const Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: 'Chargement de l\'organigramme...',
-                ),
-              ),
-          error:
-              (e, _) => Center(
-                child: Text(
-                  e.toString(),
-                  style: const TextStyle(color: AppColors.danger),
-                ),
-              ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(
+              semanticsLabel: 'Chargement de l\'organigramme...',
+            ),
+          ),
+          error: (e, _) => Center(
+            child: Text(
+              e.toString(),
+              style: const TextStyle(color: AppColors.danger),
+            ),
+          ),
         ),
       ),
     );
@@ -122,10 +119,9 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                   margin: const EdgeInsets.only(right: 4),
                 ),
               GestureDetector(
-                onTap:
-                    hasChildren
-                        ? () => setState(() => _expanded = !_expanded)
-                        : null,
+                onTap: hasChildren
+                    ? () => setState(() => _expanded = !_expanded)
+                    : null,
                 child: Container(
                   constraints: const BoxConstraints(
                     minWidth: 180,
@@ -134,16 +130,14 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color:
-                        widget.depth == 0
-                            ? AppColors.rh.withValues(alpha: 0.15)
-                            : AppColors.cardDark,
+                    color: widget.depth == 0
+                        ? AppColors.rh.withValues(alpha: 0.15)
+                        : AppColors.cardDark,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          widget.depth == 0
-                              ? AppColors.rh.withValues(alpha: 0.4)
-                              : AppColors.textMutedDark.withValues(alpha: 0.2),
+                      color: widget.depth == 0
+                          ? AppColors.rh.withValues(alpha: 0.4)
+                          : AppColors.textMutedDark.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -152,20 +146,18 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                       CircleAvatar(
                         radius: 20,
                         backgroundColor: AppColors.rh.withValues(alpha: 0.2),
-                        backgroundImage:
-                            node.photoUrl != null
-                                ? NetworkImage(node.photoUrl!)
-                                : null,
-                        child:
-                            node.photoUrl == null
-                                ? Text(
-                                  _initials(node.name),
-                                  style: AppTypography.bodySmall.copyWith(
-                                    color: AppColors.rh,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                                : null,
+                        backgroundImage: node.photoUrl != null
+                            ? NetworkImage(node.photoUrl!)
+                            : null,
+                        child: node.photoUrl == null
+                            ? Text(
+                                _initials(node.name),
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.rh,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 10),
                       Flexible(

@@ -286,10 +286,9 @@ class AttendanceRepository {
     }
 
     final itemPayload = data['item'];
-    final todayPayload =
-        itemPayload is Map
-            ? itemPayload.cast<String, dynamic>()
-            : (data.containsKey('item') ? null : data);
+    final todayPayload = itemPayload is Map
+        ? itemPayload.cast<String, dynamic>()
+        : (data.containsKey('item') ? null : data);
 
     if (todayPayload == null) {
       return {'log': null, 'context': context};
@@ -306,18 +305,15 @@ class AttendanceRepository {
         checkIn: _parseLocalTime(today['check_in_time'] as String?),
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
-        workedHours:
-            today['hours_worked'] != null
-                ? double.tryParse(today['hours_worked'].toString())
-                : 0.0,
-        overtimeHours:
-            today['overtime_hours'] != null
-                ? double.tryParse(today['overtime_hours'].toString())
-                : 0.0,
-        lateMinutes:
-            today['late_minutes'] != null
-                ? int.tryParse(today['late_minutes'].toString())
-                : null,
+        workedHours: today['hours_worked'] != null
+            ? double.tryParse(today['hours_worked'].toString())
+            : 0.0,
+        overtimeHours: today['overtime_hours'] != null
+            ? double.tryParse(today['overtime_hours'].toString())
+            : 0.0,
+        lateMinutes: today['late_minutes'] != null
+            ? int.tryParse(today['late_minutes'].toString())
+            : null,
         employeeName: today['name']?.toString(),
         employeePhotoUrl:
             (today['photo_url'] ?? today['photo_path'])?.toString(),
@@ -337,10 +333,9 @@ class AttendanceRepository {
   }
 
   static Map<String, dynamic> _dataMap(dynamic responseData) {
-    final response =
-        responseData is Map
-            ? responseData.cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final response = responseData is Map
+        ? responseData.cast<String, dynamic>()
+        : const <String, dynamic>{};
     final payload = response['data'];
     if (payload is Map) {
       final item = payload['item'];
@@ -384,14 +379,12 @@ class ManagerAnomalyReport {
   final List<ManagerAnomaly> items;
 
   factory ManagerAnomalyReport.fromJson(Map<String, dynamic> json) {
-    final summary =
-        json['summary'] is Map
-            ? (json['summary'] as Map).cast<String, dynamic>()
-            : const <String, dynamic>{};
-    final impact =
-        summary['business_impact'] is Map
-            ? (summary['business_impact'] as Map).cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final summary = json['summary'] is Map
+        ? (json['summary'] as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
+    final impact = summary['business_impact'] is Map
+        ? (summary['business_impact'] as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
     final rawItems = json['items'] as List? ?? const [];
 
     return ManagerAnomalyReport(
@@ -402,11 +395,10 @@ class ManagerAnomalyReport {
       lateMinutes: _asInt(impact['late_minutes']),
       missingCheckOuts: _asInt(impact['missing_check_outs']),
       manualCorrections: _asInt(impact['manual_corrections']),
-      items:
-          rawItems
-              .whereType<Map>()
-              .map((e) => ManagerAnomaly.fromJson(e.cast<String, dynamic>()))
-              .toList(),
+      items: rawItems
+          .whereType<Map>()
+          .map((e) => ManagerAnomaly.fromJson(e.cast<String, dynamic>()))
+          .toList(),
     );
   }
 }
@@ -429,10 +421,9 @@ class ManagerAnomaly {
   final String recommendedAction;
 
   factory ManagerAnomaly.fromJson(Map<String, dynamic> json) {
-    final employee =
-        json['employee'] is Map
-            ? (json['employee'] as Map).cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final employee = json['employee'] is Map
+        ? (json['employee'] as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
 
     return ManagerAnomaly(
       type: json['type']?.toString() ?? 'unknown',
@@ -465,20 +456,18 @@ class AttendanceCorrection {
   final String status;
 
   factory AttendanceCorrection.fromJson(Map<String, dynamic> json) {
-    final employee =
-        json['employee'] is Map
-            ? (json['employee'] as Map).cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final employee = json['employee'] is Map
+        ? (json['employee'] as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
 
     return AttendanceCorrection(
       id: _asInt(json['id']),
       employeeName: employee['name']?.toString() ?? 'Employe',
       date: json['date']?.toString() ?? '',
       requestedCheckIn: DateTime.parse(json['requested_check_in'].toString()),
-      requestedCheckOut:
-          json['requested_check_out'] != null
-              ? DateTime.parse(json['requested_check_out'].toString())
-              : null,
+      requestedCheckOut: json['requested_check_out'] != null
+          ? DateTime.parse(json['requested_check_out'].toString())
+          : null,
       reason: json['reason']?.toString() ?? '',
       status: json['status']?.toString() ?? 'pending',
     );

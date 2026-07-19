@@ -102,9 +102,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         ),
       ),
       body: RefreshIndicator(
-        color: AppColors.primary,
+        color: AppColors.rh,
         backgroundColor: AppColors.cardDark,
-        onRefresh: () async => await ref.refresh(onboardingChecklistProvider.future),
+        onRefresh: () async =>
+            await ref.refresh(onboardingChecklistProvider.future),
         child: checklistAsync.when(
           data: (steps) {
             if (steps.isEmpty) {
@@ -121,10 +122,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               );
             }
 
-            final completed = steps.where((s) => s.completed || s.skipped).length;
+            final completed =
+                steps.where((s) => s.completed || s.skipped).length;
             final total = steps.length;
             final progress = total > 0 ? completed / total : 0.0;
-            final requiredDone = steps.where((s) => s.required && s.completed).length;
+            final requiredDone =
+                steps.where((s) => s.required && s.completed).length;
             final requiredTotal = steps.where((s) => s.required).length;
             final allRequiredDone = requiredDone >= requiredTotal;
 
@@ -138,8 +141,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primary.withValues(alpha: 0.85),
-                        AppColors.primary.withValues(alpha: 0.5),
+                        AppColors.rh.withValues(alpha: 0.85),
+                        AppColors.rh.withValues(alpha: 0.5),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -147,7 +150,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: AppColors.rh.withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -197,8 +200,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                 borderRadius: BorderRadius.circular(6),
                                 child: LinearProgressIndicator(
                                   value: value,
-                                  backgroundColor: Colors.white.withValues(alpha: 0.25),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                                  backgroundColor:
+                                      Colors.white.withValues(alpha: 0.25),
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
                                   minHeight: 10,
                                 ),
                               ),
@@ -217,7 +223,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            const Icon(Icons.verified, color: Colors.greenAccent, size: 16),
+                            const Icon(Icons.verified,
+                                color: Colors.greenAccent, size: 16),
                             const SizedBox(width: 6),
                             Text(
                               'Étapes obligatoires complètes !',
@@ -235,7 +242,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 const SizedBox(height: 20),
                 Text(
                   'Étapes',
-                  style: AppTypography.subtitle.copyWith(color: AppColors.textMutedDark),
+                  style: AppTypography.subtitle
+                      .copyWith(color: AppColors.textMutedDark),
                 ),
                 const SizedBox(height: 10),
 
@@ -258,7 +266,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                             : isSkipped
                                 ? AppColors.textMutedDark.withValues(alpha: 0.3)
                                 : step.required
-                                    ? AppColors.primary.withValues(alpha: 0.4)
+                                    ? AppColors.rh.withValues(alpha: 0.4)
                                     : Colors.transparent,
                         width: 1.5,
                       ),
@@ -276,8 +284,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                               color: step.completed
                                   ? AppColors.success.withValues(alpha: 0.15)
                                   : isSkipped
-                                      ? AppColors.textMutedDark.withValues(alpha: 0.1)
-                                      : AppColors.primary.withValues(alpha: 0.15),
+                                      ? AppColors.textMutedDark
+                                          .withValues(alpha: 0.1)
+                                      : AppColors.rh.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Icon(
@@ -290,7 +299,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                   ? AppColors.success
                                   : isSkipped
                                       ? AppColors.textMutedDark
-                                      : AppColors.primary,
+                                      : AppColors.rh,
                               size: 22,
                             ),
                           ),
@@ -325,13 +334,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.primary.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(4),
+                                          color: AppColors.rh
+                                              .withValues(alpha: 0.15),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           'Requis',
-                                          style: AppTypography.bodySmall.copyWith(
-                                            color: AppColors.primary,
+                                          style:
+                                              AppTypography.bodySmall.copyWith(
+                                            color: AppColors.rh,
                                             fontSize: 10,
                                           ),
                                         ),
@@ -393,19 +405,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: AppColors.danger, size: 48),
+                  const Icon(Icons.error_outline,
+                      color: AppColors.danger, size: 48),
                   const SizedBox(height: 16),
                   Text(
                     e.toString(),
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.danger),
+                    style: AppTypography.bodySmall
+                        .copyWith(color: AppColors.danger),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   TextButton(
-                    onPressed: () => ref.invalidate(onboardingChecklistProvider),
+                    onPressed: () =>
+                        ref.invalidate(onboardingChecklistProvider),
                     child: Text(
                       'Réessayer',
-                      style: AppTypography.subtitle.copyWith(color: AppColors.primary),
+                      style:
+                          AppTypography.subtitle.copyWith(color: AppColors.rh),
                     ),
                   ),
                 ],
