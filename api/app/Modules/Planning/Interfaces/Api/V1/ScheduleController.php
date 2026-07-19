@@ -123,6 +123,12 @@ class ScheduleController extends Controller
         );
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
+            ->when(
+                $actor->isDepartmentScoped(),
+                // manager_role=dept can only assign schedules to employees in their own
+                // department (PA2-SEC-002); fail closed when the actor has no department.
+                fn ($query) => $query->where('department_id', $actor->department_id ?? -1)
+            )
             ->whereIn('id', $employeeIds)
             ->get(['id']);
 

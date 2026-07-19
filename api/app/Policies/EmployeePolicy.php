@@ -13,7 +13,19 @@ class EmployeePolicy
 
     public function view(Employee $actor, Employee $employee): bool
     {
-        return $actor->isManager() || $actor->id === $employee->id;
+        if ($actor->id === $employee->id) {
+            return true;
+        }
+
+        if (! $actor->isManager()) {
+            return false;
+        }
+
+        if ($actor->isDepartmentScoped()) {
+            return $actor->managesDepartmentOf($employee);
+        }
+
+        return true;
     }
 
     public function create(Employee $actor): bool
