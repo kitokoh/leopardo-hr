@@ -117,7 +117,7 @@ livrée par PR séparée, avec CI verte, puis mergée sur `main`.
 
 ## Phase 3 — Cron + API (prête, branche `codex/marketing-phase3-api-cron`)
 
-Plan détaillé : `docs/PLAN_ACTION/73_PLAN_MARKETING_PHASE3_API_CRON.md`.
+Plan détaillé : `docs/archive/PLAN_ACTION/73_PLAN_MARKETING_PHASE3_API_CRON.md`.
 
 - [x] `Application/Actions/DisconnectSocialAccount.php` (idempotent, ne
       supprime jamais la ligne — historique des posts conservé).
