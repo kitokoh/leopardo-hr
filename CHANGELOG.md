@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [Unreleased]
+
+### Fixed
+- **PA2-ARCH-007 : suppression des controllers dupliques jamais routes + garde CI anti-recidive** : `docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md` avait releve 4 controllers dupliques dans deux modules ou une seule des deux copies etait reellement cablee dans `routes/` (`Training\TrainingController`, `Onboarding\OnboardingQrController`, `Planning\ExpenseClaimController`, `Billing\EstimationController`) ; les 4 copies orphelines (jamais referencees dans un fichier de routes) sont supprimees, la copie active de chaque paire est conservee sans modification. En construisant le nouveau garde CI, 3 doublons supplementaires non catalogues par l'audit ont ete detectes dans l'autre sens (copie HR orpheline, copie Onboarding active) : `HR\OnboardingController`, `HR\OnboardingChecklistController`, `HR\OnboardingStepController` — supprimes egalement. Nouveau script `dev-hub/tools/check-unrouted-controllers.sh`, branche dans `.github/workflows/architecture-check.yml` (job `module-structure-check`) : resout le FQCN de chaque `*Controller.php` sous `api/app/Modules/*/Interfaces/` et echoue si ce FQCN n'apparait dans aucun fichier de routes (`api/routes/**` + `api/app/Modules/*/routes/*`), pour empecher la reapparition de ce type de dette. Verifie localement : `composer dump-autoload`, `php artisan route:list` (toutes les routes onboarding/training/expense-claim/estimation resolvent toujours vers les bons controllers), `php artisan test --filter="Training|Onboarding|ExpenseClaim|Estimation"` (11 failed / 61 passed identique avant/apres, via `git stash` sur la meme branche — les echecs pre-existants viennent de `SET search_path` non supporte par SQLite, sans lien avec ce changement).
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed

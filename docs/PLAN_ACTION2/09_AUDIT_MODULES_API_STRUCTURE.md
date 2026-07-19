@@ -29,6 +29,8 @@ Recherche systematique (controller par controller vs contenu de `routes/` + `app
 
 Risque concret pour la demo : un testeur/dev qui corrige un bug dans le controller du module "logique" (celui qui porte le bon nom de module d'apres l'architecture documentee) ne voit **aucun effet**, car le trafic reel passe par l'autre copie. Le module `Training` va plus loin : il a 3 Actions + 1 controller complets, mais zero route ne les utilise — 100% du trafic reel transite encore par le controller legacy sous `HR`.
 
+> Mise a jour 2026-07-19 (PA2-ARCH-007) : en construisant le garde CI `dev-hub/tools/check-unrouted-controllers.sh` (resout le FQCN de chaque controller et verifie sa presence dans un fichier de routes), 3 doublons supplementaires non catalogues ci-dessus ont ete detectes, cette fois dans le sens inverse (copie `HR` orpheline, copie du module "logique" reellement cablee) : `App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingController`, `OnboardingChecklistController` et `OnboardingStepController` (les copies actives sont sous `App\Modules\Onboarding\Interfaces\Api\V1\Controllers\`, cablees dans `routes/api.php` et `routes/modules/billing.php`). Les 7 orphelins (4 + 3) sont supprimes dans la PR qui introduit le garde ; le garde fait desormais partie de `architecture-check.yml` pour empecher toute recidive.
+
 ## 3. Policies enregistrees deux fois, avec une incoherence reelle sur `Invoice`
 
 `app/Providers/AppServiceProvider.php::boot()` et `app/Providers/AuthServiceProvider.php::boot()` enregistrent chacun des `Gate::policy()` pour un sous-ensemble largement recoupant de modeles (`Employee`, `AttendanceLog`, `Evaluation`, `Subscription`, `PayrollRun`/`PaySlip`, `JobPosting`/`Applicant`, `TrainingCourse`, `Vehicle`). La plupart du temps la meme Policy est assignee dans les deux fichiers (redondant mais inoffensif). **Une divergence reelle existe sur `Invoice`** :
@@ -77,7 +79,7 @@ Format identique a `02_BACKLOG_ATOMIQUE.md` / `08_AUDIT_ARCHITECTURE_TECH.md`. C
 | Domaine | Etat | Severite |
 |---|---|---|
 | Garde CI structure de modules | Ne couvre que 16/19 modules (Marketing corrige entre-temps), 1 anomalie residuelle (EdgeSync/Infrastructure) non detectee | Faible-moyen |
-| Code mort (controllers dupliques non routes) | 4 controllers orphelins confirmes, dont 1 module (Training) entierement non branche | Moyen |
+| Code mort (controllers dupliques non routes) | Resolu (PA2-ARCH-007) : 7 controllers orphelins supprimes (4 catalogues + 3 trouves par le nouveau garde CI), garde CI permanent ajoute | Moyen → Resolu |
 | Policies dupliquees entre providers | Divergence reelle sur `Invoice` (BillingPolicy vs InvoicePolicy) | Moyen |
 | Controllers epais / deficit Actions | Confirme au-dela des 4 modules deja notes dans `ARCHITECTURE.md` | Faible-moyen (dette, non bloquant demo) |
 | `declare(strict_types=1)` | Bien applique sur code neuf, absent sur ~40-60% du code ancien | Faible |
