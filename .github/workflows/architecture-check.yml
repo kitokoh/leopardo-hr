@@ -42,7 +42,17 @@ jobs:
         run: |
           echo "Checking Clean Architecture module structure..."
           ERRORS=0
-          for MODULE in HR Payroll Attendance Planning Recruitment Cabinet Fleet Billing Cameras Absence Expense Growth Platform Onboarding Training Notification Marketing; do
+
+          # Discover modules dynamically instead of a hard-coded list, so new
+          # modules (or renamed ones) are covered automatically (PA2-ARCH-006).
+          MODULES=$(find api/app/Modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | sort)
+
+          if [ -z "$MODULES" ]; then
+            echo "❌ No modules discovered under api/app/Modules — check the path."
+            exit 1
+          fi
+
+          for MODULE in $MODULES; do
             BASE="api/app/Modules/$MODULE"
             for LAYER in Application Domain Infrastructure Interfaces Providers; do
               if [ ! -d "$BASE/$LAYER" ]; then
@@ -65,7 +75,7 @@ jobs:
             echo "Found $ERRORS structure violations."
             exit 1
           fi
-          echo "✅ All module structures valid."
+          echo "✅ All module structures valid ($(echo "$MODULES" | wc -l) modules checked)."
 
   frontend-lint:
     name: Frontend — ESLint + TypeScript

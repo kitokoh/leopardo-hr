@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\EdgeSync\Notifications;
+namespace App\Modules\EdgeSync\Infrastructure\Notifications;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use Illuminate\Bus\Queueable;
