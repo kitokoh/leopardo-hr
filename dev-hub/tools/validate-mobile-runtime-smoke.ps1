@@ -36,7 +36,17 @@ function Assert-NoAwaitBeforeRunApp($Content, $Label) {
     }
 
     $beforeRunApp = $Content.Substring($mainIndex, $runAppIndex - $mainIndex)
-    if ($beforeRunApp -match "\bawait\s+") {
+
+    # Sentry's official bootstrap pattern awaits SentryFlutter.init(...) with a
+    # synchronous `appRunner: () => runApp(...)` callback: runApp() executes
+    # immediately inside that callback, not after an awaited delay, so it does
+    # not recreate the black-screen/frozen-splash issue this guard targets.
+    # Strip any `await SentryFlutter.init(` ... `appRunner: () =>` prefix
+    # before checking for other, unrelated awaits ahead of runApp().
+    $sentryAppRunnerPattern = "await\s+SentryFlutter\.init\s*\([\s\S]*?appRunner\s*:\s*\(\)\s*=>\s*$"
+    $sanitizedBeforeRunApp = [System.Text.RegularExpressions.Regex]::Replace($beforeRunApp, $sentryAppRunnerPattern, "")
+
+    if ($sanitizedBeforeRunApp -match "\bawait\s+") {
         Fail "$Label awaits native/bootstrap work before runApp(); this can recreate a black screen or frozen splash."
     }
 }
