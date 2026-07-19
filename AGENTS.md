@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-13 (v4.16.251)
+Derniere mise a jour : 2026-07-19 (audit doc — le fichier a continue d'etre edite apres le 2026-06-13 sans que cet en-tete soit rafraichi ; voir `git log -- AGENTS.md` pour les dates reelles des sections recentes)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -524,9 +524,7 @@ Procedure recommandee :
 - Le fichier `docs/PLAN_ACTION/14_ROADMAP_EXECUTION_POST_LOTS.md` sert maintenant de roadmap actualisee apres execution des lots plateforme metrics/backend/admin. Le fichier 13 reste l'inventaire brut ; le 14 doit porter la sequence priorisee et les retours d'experience.
 - Les prochaines actions GTM doivent rester connectees au wedge produit prioritaire : pointage, anomalies, rapport mensuel, onboarding et ROI client mesurable.
 - `docs/GOTO_MARKET/` est aussi le centre de reflexion sur la viabilite globale : utiliser la tech pour repondre a un besoin actuel, gagner de l'argent, et ne pas hesiter a repositionner ou moderniser le produit/offre quand le marche l'exige.
-- Les fichiers destines a presenter Leopardo RH au public doivent aller dans `docs/GOTO_MARKET/public/` avec un sous-dossier par canal : `social/`, `landing/`, `video/`, `press/`, `partners/`, `ads/`, `content_calendar/`, `metrics/`.
-- Le pack de lancement acquisition vit dans `docs/GOTO_MARKET/12_PACK_LANCEMENT_ACQUISITION.md` et les supports associes (`public/email`, `public/lead_magnets`, `public/owned_channels`, etc.).
-- La vision "Leopardo RH peut aussi aider une entreprise a gerer et automatiser son marketing" est documentee dans `docs/GOTO_MARKET/product_marketing_automation/`, mais elle n'est pas implementee dans le depot et ne doit pas distraire du wedge pointage tant qu'il n'est pas solidement vendu.
+- ⚠️ (Audit doc 2026-07-19) Les chemins `docs/GOTO_MARKET/public/`, `docs/GOTO_MARKET/12_PACK_LANCEMENT_ACQUISITION.md` et `docs/GOTO_MARKET/product_marketing_automation/` mentionnes historiquement dans les entrees precedentes n'existent plus dans le depot. La structure GTM reelle actuelle vit sous `docs/GOTO_MARKET/01_PRODUCT/`, `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/`, `docs/GOTO_MARKET/ASSETS_PRODUCTION/` et `docs/GOTO_MARKET/GOTO_MARKET_AUDIT.md` (voir `docs/GOTO_MARKET/README.md`). Verifier l'arborescence reelle avant de referencer un sous-dossier GTM.
 
 ### 2026-05-07 - Federation de PR ouvertes
 
