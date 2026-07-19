@@ -136,6 +136,7 @@ export const CLIENT_MODULES: ClientModule[] = [
   },
   {
     key: 'billing',
+    href: '/billing',
     label: 'Facturation',
     group: 'platform',
     capabilityKeys: ['billing', 'can_manage_billing'],
@@ -145,6 +146,7 @@ export const CLIENT_MODULES: ClientModule[] = [
   },
   {
     key: 'integrations',
+    href: '/settings/developer',
     label: 'Integrations',
     group: 'platform',
     capabilityKeys: ['integrations', 'can_manage_integrations'],
@@ -164,6 +166,8 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/payroll': 'payroll',
   '/training': 'training',
   '/reports': 'reports',
+  '/billing': 'billing',
+  '/settings/developer': 'integrations',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
