@@ -352,19 +352,9 @@ jobs:
           fi
           echo "MOBILE_DISTRIBUTE_READY=${READY}" >> "$GITHUB_ENV"
 
-      - name: Setup Java 17
+      - name: Setup Flutter + Java
         if: env.MOBILE_DISTRIBUTE_READY == 'true'
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Setup Flutter
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+        uses: ./.github/actions/setup-flutter-android
 
       - name: Flutter pub get
         if: env.MOBILE_DISTRIBUTE_READY == 'true'
