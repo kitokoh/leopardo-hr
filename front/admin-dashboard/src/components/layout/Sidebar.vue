@@ -113,10 +113,17 @@
             {{ userInitials }}
           </span>
         </div>
-        <div class="ml-3 flex-1 overflow-hidden">
+        <router-link to="/settings" class="ml-3 flex-1 overflow-hidden min-w-0 hover:opacity-80 transition-opacity" title="Mon compte">
           <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ authStore.userName }}</p>
           <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ authStore.userRole }}</p>
-        </div>
+        </router-link>
+        <router-link
+          to="/settings"
+          class="ml-2 p-2 rounded-xl text-slate-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all duration-200"
+          title="Mon compte"
+        >
+          <CogIcon class="h-5 w-5" />
+        </router-link>
         <router-link
           to="/logout"
           class="ml-2 p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
