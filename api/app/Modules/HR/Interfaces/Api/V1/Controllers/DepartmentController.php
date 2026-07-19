@@ -22,10 +22,14 @@ class DepartmentController extends Controller
             abort(403);
         }
 
-        $departments = Department::query()
-            ->with('manager:id,first_name,last_name')
-            ->orderBy('name')
-            ->get();
+        $query = Department::query()->with('manager:id,first_name,last_name');
+
+        if ($user->isDepartmentScoped()) {
+            // manager_role=dept is scoped to their own department only (PA2-SEC-002).
+            $query->where('id', $user->department_id ?? -1);
+        }
+
+        $departments = $query->orderBy('name')->get();
 
         return DepartmentResource::collection($departments);
     }
@@ -43,17 +47,15 @@ class DepartmentController extends Controller
 
     public function show(Request $request, Department $department): DepartmentResource
     {
-        /** @var Employee $user */
-        $user = $request->user();
-        if (! $user->isManager()) {
-            abort(403);
-        }
+        $this->authorize('view', $department);
 
         return new DepartmentResource($department->load('manager', 'positions'));
     }
 
     public function update(UpdateDepartmentRequest $request, Department $department): DepartmentResource
     {
+        $this->authorize('update', $department);
+
         $department->update($request->validated());
 
         return new DepartmentResource($department->fresh());
@@ -61,11 +63,7 @@ class DepartmentController extends Controller
 
     public function destroy(Request $request, Department $department): JsonResponse
     {
-        /** @var Employee $user */
-        $user = $request->user();
-        if (! $user->isManager()) {
-            abort(403);
-        }
+        $this->authorize('delete', $department);
 
         $department->delete();
 

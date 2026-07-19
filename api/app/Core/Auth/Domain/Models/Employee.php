@@ -124,6 +124,8 @@ class Employee extends Authenticatable implements HasApiTokensContract
     protected $fillable = [
         'company_id',
         'schedule_id',
+        'department_id',
+        'position_id',
         'site_id',
         'matricule',
         'zkteco_id',
@@ -256,6 +258,32 @@ class Employee extends Authenticatable implements HasApiTokensContract
     public function isDept(): bool
     {
         return $this->hasManagerRole('dept');
+    }
+
+    /**
+     * Whether this actor's manager scope is limited to a single department
+     * (currently only `manager_role = 'dept'`). Company-wide roles
+     * (principal, rh, comptable, marketing) and self-service employees
+     * are not department-scoped.
+     */
+    public function isDepartmentScoped(): bool
+    {
+        return $this->isDept();
+    }
+
+    /**
+     * Whether $target sits within this department-scoped actor's own
+     * department. Returns false when the actor has no department
+     * assigned (fail closed) so a misconfigured dept manager sees
+     * nothing rather than everything.
+     */
+    public function managesDepartmentOf(self $target): bool
+    {
+        if ($this->department_id === null) {
+            return false;
+        }
+
+        return $this->department_id === $target->department_id;
     }
 
     /**

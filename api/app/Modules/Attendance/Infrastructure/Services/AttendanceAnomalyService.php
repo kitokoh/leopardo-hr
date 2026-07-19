@@ -13,12 +13,19 @@ class AttendanceAnomalyService
      * @param  array{employee_id?: int|null, date_from?: string|null, date_to?: string|null, per_page?: int|null}  $filters
      * @return array<string, mixed>
      */
-    public function summarize(string $companyId, array $filters = []): array
+    public function summarize(string $companyId, array $filters = [], ?int $departmentId = null): array
     {
         $company = Company::query()->find($companyId);
         $dateTo = Carbon::parse($filters['date_to'] ?? now('UTC')->toDateString())->toDateString();
         $dateFrom = Carbon::parse($filters['date_from'] ?? Carbon::parse($dateTo)->subDays(30)->toDateString())->toDateString();
         $limit = max(1, min(100, (int) ($filters['per_page'] ?? 50)));
+
+        $departmentEmployeeIds = $departmentId !== null
+            ? \App\Core\Auth\Domain\Models\Employee::query()
+                ->where('company_id', $companyId)
+                ->where('department_id', $departmentId)
+                ->pluck('id')
+            : null;
 
         $logs = AttendanceLog::query()
             ->with(['employee:id,company_id,first_name,last_name,matricule'])
@@ -42,6 +49,7 @@ class AttendanceAnomalyService
             ->where('company_id', $companyId)
             ->whereBetween('date', [$dateFrom, $dateTo])
             ->when($filters['employee_id'] ?? null, fn ($query, $employeeId) => $query->where('employee_id', $employeeId))
+            ->when($departmentEmployeeIds !== null, fn ($query) => $query->whereIn('employee_id', $departmentEmployeeIds))
             ->orderByDesc('date')
             ->orderByDesc('id')
             ->get();
