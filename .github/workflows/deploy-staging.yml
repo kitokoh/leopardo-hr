@@ -1,7 +1,25 @@
 name: Deploy Staging - Leopardo RH
 
+# Audit §4.1 / Plan P3 — BEHAVIOR CHANGE, flagged for explicit team review:
+#
+# Previously triggered on `push: [main]` with a manual JS polling loop
+# (up to 10 min) looking for a check run whose *name* merely `includes`
+# both "Backend" and "PHP" — fragile to renames, and on timeout it deployed
+# anyway ("optimistic" deploy with no CI signal). This resolves both
+# documented problems at once by switching to `workflow_run`, the same
+# pattern already proven in deploy-main.yml: the job simply never starts
+# until "Tests - Leopardo RH" concludes, so there is no polling window and
+# no timeout to be optimistic about — the previous optimistic-deploy
+# fallback is removed rather than reconfigured, since workflow_run has no
+# equivalent failure mode to be optimistic about.
+#
+# If the team specifically wants to preserve a way to deploy staging without
+# waiting on full CI (e.g. hotfix), workflow_dispatch still allows that
+# explicitly, same as before.
 on:
-  push:
+  workflow_run:
+    workflows: ["Tests - Leopardo RH"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -23,57 +41,38 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should_deploy: ${{ steps.check.outputs.should_deploy }}
+      sha: ${{ steps.check.outputs.sha }}
     steps:
-      - name: Check required CI workflows
+      - name: Check required CI workflow conclusion
         id: check
         uses: actions/github-script@v9
         with:
           script: |
-            const sha = context.sha;
-            const { owner, repo } = context.repo;
-
             if (context.eventName === 'workflow_dispatch') {
               core.setOutput('should_deploy', 'true');
+              core.setOutput('sha', context.sha);
               core.info('Manual trigger — deploying.');
               return;
             }
 
-            // Wait up to 10 minutes for CI to complete
-            const maxWait = 600;
-            const interval = 30;
-            let elapsed = 0;
+            const conclusion = context.payload.workflow_run?.conclusion;
+            const headBranch = context.payload.workflow_run?.head_branch;
+            const headSha = context.payload.workflow_run?.head_sha;
+            const headRepoFullName = context.payload.workflow_run?.head_repository?.full_name;
+            const baseRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
 
-            while (elapsed < maxWait) {
-              const { data: checkRuns } = await github.rest.checks.listForRef({
-                owner,
-                repo,
-                ref: sha,
-                per_page: 100,
-              });
-
-              const testsRun = checkRuns.check_runs.find(
-                (r) => r.name.includes('Backend') && r.name.includes('PHP')
-              );
-
-              if (testsRun && testsRun.status === 'completed') {
-                if (testsRun.conclusion === 'success') {
-                  core.setOutput('should_deploy', 'true');
-                  core.info(`Backend tests passed for ${sha}.`);
-                  return;
-                } else {
-                  core.setOutput('should_deploy', 'false');
-                  core.warning(`Backend tests ${testsRun.conclusion} for ${sha}. Skipping deploy.`);
-                  return;
-                }
-              }
-
-              core.info(`Waiting for CI... (${elapsed}s / ${maxWait}s)`);
-              await new Promise((r) => setTimeout(r, interval * 1000));
-              elapsed += interval;
+            // Same defense-in-depth as deploy-main.yml: only ever deploy for a
+            // workflow_run that (a) succeeded, (b) targeted main, and (c) ran
+            // in this base repository (never a fork).
+            if (conclusion === 'success' && headBranch === 'main' && headRepoFullName === baseRepoFullName) {
+              core.setOutput('should_deploy', 'true');
+              core.setOutput('sha', headSha);
+              core.info(`Tests - Leopardo RH succeeded for ${headSha}.`);
+            } else {
+              core.setOutput('should_deploy', 'false');
+              core.setOutput('sha', headSha ?? '');
+              core.warning(`Tests - Leopardo RH conclusion=${conclusion} branch=${headBranch} repo=${headRepoFullName}. Skipping staging deploy.`);
             }
-
-            core.warning('CI did not complete in time. Deploying anyway (optimistic).');
-            core.setOutput('should_deploy', 'true');
 
   deploy-staging-api:
     name: Deploy API to Staging (Render)
@@ -136,5 +135,4 @@ jobs:
           echo "| CI Gate | ${{ needs.gate.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| API Deploy | ${{ needs.deploy-staging-api.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "**Commit:** \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "**Branch:** \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Commit:** \`${{ needs.gate.outputs.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

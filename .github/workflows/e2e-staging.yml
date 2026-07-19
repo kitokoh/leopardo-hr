@@ -40,17 +40,46 @@ jobs:
     outputs:
       run_e2e: ${{ steps.check.outputs.run_e2e }}
     steps:
+      # Audit §4.2 / Plan P3: previously gated on the parent "Deploy - Leopardo RH"
+      # workflow_run's overall conclusion, which also depends on the
+      # distribute-mobile job (Flutter/Firebase). A broken mobile build could
+      # mark the whole workflow failed and skip these API/admin/web E2E smoke
+      # tests even when the API deploy itself succeeded. This now checks the
+      # specific `deploy-api` job's conclusion via the Checks API, matching
+      # the level of specificity deploy-main.yml already uses for its own
+      # gating, and the same approach applied to owasp-zap.yml.
       - name: Determine if E2E should run
         id: check
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "run_e2e=true" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
-            echo "run_e2e=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run_e2e=false" >> "$GITHUB_OUTPUT"
-          fi
+        uses: actions/github-script@v9
+        with:
+          script: |
+            if (context.eventName === 'workflow_dispatch') {
+              core.setOutput('run_e2e', 'true');
+              return;
+            }
+
+            if (context.payload.workflow_run?.conclusion !== 'success' &&
+                context.payload.workflow_run?.conclusion !== 'failure') {
+              // cancelled/skipped/timed_out parent run: nothing useful to check.
+              core.setOutput('run_e2e', 'false');
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const runId = context.payload.workflow_run.id;
+
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              owner,
+              repo,
+              run_id: runId,
+              per_page: 100,
+            });
+
+            const deployApiJob = jobs.find((job) => job.name === 'Deploy API + Web to Render');
+            const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
+
+            core.info(`deploy-api job conclusion: ${deployApiConclusion}`);
+            core.setOutput('run_e2e', deployApiConclusion === 'success' ? 'true' : 'false');
 
   e2e-api-smoke:
     name: API Smoke Tests
