@@ -54,9 +54,13 @@ class GeoSessionController extends Controller
             $query->whereDate('started_at', '<=', $request->input('date_to'));
         }
 
-        $sessions = $query->paginate(
-            (int) $request->input('per_page', 20)
-        );
+        // Clamp per_page like every other paginated endpoint in the codebase
+        // (max 100) to avoid an authenticated caller requesting an
+        // unbounded page size. See docs/security/AUDIT_API_2026-07-19.md
+        // follow-up review (2026-07-19b).
+        $perPage = max(1, min(100, (int) $request->input('per_page', 20)));
+
+        $sessions = $query->paginate($perPage);
 
         return response()->json([
             'data' => $sessions->map(fn ($s) => $this->formatSession($s)),
@@ -64,6 +68,7 @@ class GeoSessionController extends Controller
                 'total'        => $sessions->total(),
                 'current_page' => $sessions->currentPage(),
                 'last_page'    => $sessions->lastPage(),
+                'per_page'     => $sessions->perPage(),
             ],
         ]);
     }

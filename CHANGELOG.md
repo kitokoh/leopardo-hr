@@ -3,6 +3,14 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [Unreleased]
+
+### Fixed
+- **API SmartAttendance : `per_page` non borne sur `GET /api/v1/smart-attendance/sessions`** : c'etait le seul endpoint pagine du repo (sur ~40+) qui ne clampait pas `per_page`, ce qui permettait a un manager/RH authentifie de demander une taille de page arbitrairement grande (`per_page=999999`), un mini-DoS applicatif authentifie. Aligne sur le pattern deja utilise partout ailleurs (`max(1, min(100, ...))`) ; ajout de `per_page` dans la reponse `meta` pour coherence avec les autres endpoints ; 2 tests Feature ajoutes. Voir revue de suivi dans `docs/security/AUDIT_API_2026-07-19.md`.
+
+### Security
+- **Isolation multi-tenant SmartAttendance : defense en profondeur sur `GeoAttendanceSession`** : ce modele n'utilisait pas le trait `BelongsToCompany` (contrairement a la quasi-totalite des modeles metier), l'isolation reposant uniquement sur des `where('company_id', ...)` manuels repetes dans chaque methode de `GeoSessionController`/`GeoSessionManager`. Tous les sites d'appel existants ont ete verifies corrects (voir `tests/Feature/SmartAttendance/MultiTenantIsolationTest.php`, toujours vert), mais ce pattern est fragile pour du code futur (meme categorie de risque que celle deja signalee pour `CabinetShareController` dans l'audit du 2026-07-19). Ajout du trait standard pour rendre l'isolation par defaut plutot qu'optionnelle par site d'appel.
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed
