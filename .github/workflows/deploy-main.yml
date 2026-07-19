@@ -75,7 +75,7 @@ jobs:
 
       - name: Checkout deployment SHA
         if: steps.context.outputs.should_deploy == 'pending-validation'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.context.outputs.sha }}
           fetch-depth: 2
@@ -121,7 +121,7 @@ jobs:
       - name: Verify required workflow conclusions for deployment SHA
         if: steps.context.outputs.should_deploy == 'pending-validation'
         id: workflow_gate
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             if (`${{ github.event_name }}` === 'workflow_dispatch') {
@@ -287,7 +287,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: ${{ needs.prepare.outputs.sha }}
 
@@ -385,7 +385,7 @@ jobs:
 
       - name: Upload mobile artifact
         if: env.MOBILE_DISTRIBUTE_READY == 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.app.artifact_name }}-${{ github.run_number }}
           path: ${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk

@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Run launch probes
         env:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Upload launch smoke report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: launch-observability-smoke-report
           path: dev-hub/observability/reports/launch-observability-smoke.json
