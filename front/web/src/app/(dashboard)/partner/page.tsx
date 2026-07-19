@@ -119,7 +119,7 @@ export default function PartnerDashboard() {
         <MetricCard label="Conversions" value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-brand-600 bg-brand-50" />
         <MetricCard label="Gains Totaux" value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' \u20ac'} icon={Coins} accent="text-emerald-600 bg-emerald-50" />
         <MetricCard label="En attente" value={((data?.stats?.pending_approval || 0) / 100).toFixed(2) + ' \u20ac'} icon={Clock3} accent="text-amber-600 bg-amber-50" />
-        <MetricCard label="Solde Retirable" value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' \u20ac'} icon={Wallet} accent="text-blue-600 bg-blue-50" />
+        <MetricCard label="Solde Retirable" value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' \u20ac'} icon={Wallet} accent="text-security-dark bg-security-light" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
