@@ -157,9 +157,9 @@ class PlatformAuthController extends Controller
         $superAdmin->save();
 
         // Revoke all other API tokens so a leaked password can't keep an active session alive.
-        $currentTokenId = $superAdmin->currentAccessToken()?->id;
+        $currentTokenId = $superAdmin->currentAccessToken()->id;
         $superAdmin->tokens()
-            ->when($currentTokenId, fn ($query) => $query->where('id', '!=', $currentTokenId))
+            ->where('id', '!=', $currentTokenId)
             ->delete();
 
         return new JsonResponse(['status' => 'ok']);
