@@ -1,0 +1,35 @@
+name: "Setup Flutter + Java for Android builds"
+description: >
+  Composite action wrapping the repeated Java 17 + Flutter setup used by
+  mobile-apps-ci.yml, mobile-distribute.yml, deploy-main.yml (distribute-mobile)
+  and previously release.yml. See AUDIT_CICD_2026-07-19.md section 3.2.
+
+inputs:
+  java-version:
+    description: "Temurin JDK version"
+    required: false
+    default: "17"
+  flutter-channel:
+    description: "Flutter channel (stable | beta)"
+    required: false
+    default: "stable"
+  flutter-version:
+    description: "Pinned Flutter version; 'any' uses the channel's latest (subosito/flutter-action default)"
+    required: false
+    default: "any"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Java ${{ inputs.java-version }}
+      uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: ${{ inputs.flutter-channel }}
+        flutter-version: ${{ inputs.flutter-version }}
+        cache: true
