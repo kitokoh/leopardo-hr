@@ -147,8 +147,8 @@ export default function TrainingPage() {
   }, {});
 
   const statCards = [
-    { label: 'Total formations', value: total, icon: GraduationCap, accent: 'text-violet-600 bg-violet-50' },
-    { label: 'Categories', value: Object.keys(categoryCounts).length, icon: BookOpen, accent: 'text-blue-600 bg-blue-50' },
+    { label: 'Total formations', value: total, icon: GraduationCap, accent: 'text-ia-dark bg-ia-light' },
+    { label: 'Categories', value: Object.keys(categoryCounts).length, icon: BookOpen, accent: 'text-security-dark bg-security-light' },
     { label: 'Certifications', value: courses.filter((c) => c.type === 'certification').length, icon: Award, accent: 'text-emerald-600 bg-emerald-50' },
     { label: 'Capacite totale', value: courses.reduce((s, c) => s + (c.max_participants || 0), 0), icon: Users, accent: 'text-amber-600 bg-amber-50' },
   ];
