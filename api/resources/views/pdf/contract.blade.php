@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
-    <title>Contrat de Travail</title>
+    <title>{{ __('pdf.contract_title', ['type' => strtoupper($contract->contract_type ?? 'CDI')]) }}</title>
     <style>
         body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 12px; line-height: 1.5; color: #333; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; }
@@ -19,51 +19,51 @@
 <body>
 
     <div class="header">
-        <h1>{{ $company->name ?? 'L\'Entreprise' }}</h1>
+        <h1>{{ $company->name ?? __('pdf.contract_company_fallback') }}</h1>
         <p>{{ $company->address ?? '' }}</p>
     </div>
 
     <div class="title">
-        CONTRAT DE TRAVAIL - {{ strtoupper($contract->contract_type ?? 'CDI') }}
+        {{ __('pdf.contract_title', ['type' => strtoupper($contract->contract_type ?? 'CDI')]) }}
     </div>
 
     <div class="section">
-        <p>Entre les soussignés :</p>
-        <p><strong>{{ $company->name ?? 'L\'Entreprise' }}</strong>, agissant en qualité d'employeur,</p>
-        <p>Et</p>
-        <p><strong>{{ $employee->first_name }} {{ $employee->last_name }}</strong>, ci-après dénommé(e) le Salarié,</p>
-        <p>Il a été convenu ce qui suit :</p>
+        <p>{{ __('pdf.contract_parties_intro') }}</p>
+        <p><strong>{{ $company->name ?? __('pdf.contract_company_fallback') }}</strong>, {{ __('pdf.contract_employer_role') }}</p>
+        <p>{{ __('pdf.contract_and') }}</p>
+        <p><strong>{{ $employee->first_name }} {{ $employee->last_name }}</strong>, {{ __('pdf.contract_employee_role') }}</p>
+        <p>{{ __('pdf.contract_agreement_intro') }}</p>
     </div>
 
     <div class="section">
-        <div class="section-title">Article 1 : Engagement</div>
-        <p>Le Salarié est engagé à compter du <strong>{{ \Carbon\Carbon::parse($contract->start_date)->format('d/m/Y') }}</strong> en qualité de <strong>{{ $contract->job_title }}</strong>.</p>
+        <div class="section-title">{{ __('pdf.contract_article1_title') }}</div>
+        <p>{!! __('pdf.contract_article1_body', ['start_date' => '<strong>'.\Carbon\Carbon::parse($contract->start_date)->format('d/m/Y').'</strong>', 'job_title' => '<strong>'.$contract->job_title.'</strong>']) !!}</p>
         @if($contract->end_date)
-            <p>Ce contrat est conclu pour une durée déterminée, prenant fin le <strong>{{ \Carbon\Carbon::parse($contract->end_date)->format('d/m/Y') }}</strong>.</p>
+            <p>{!! __('pdf.contract_article1_fixed_term', ['end_date' => '<strong>'.\Carbon\Carbon::parse($contract->end_date)->format('d/m/Y').'</strong>']) !!}</p>
         @endif
     </div>
 
     <div class="section">
-        <div class="section-title">Article 2 : Rémunération</div>
-        <p>En contrepartie de ses services, le Salarié percevra une rémunération de base de <strong>{{ number_format($contract->base_salary, 2, ',', ' ') }} {{ $contract->currency ?? 'DZD' }}</strong> ({{ $contract->salary_frequency ?? 'mensuel' }}).</p>
+        <div class="section-title">{{ __('pdf.contract_article2_title') }}</div>
+        <p>{!! __('pdf.contract_article2_body', ['amount' => '<strong>'.number_format($contract->base_salary, 2, ',', ' ').' '.($contract->currency ?? 'DZD').'</strong>', 'frequency' => $contract->salary_frequency ?? __('pdf.contract_frequency_monthly')]) !!}</p>
     </div>
 
     <div class="section">
-        <div class="section-title">Article 3 : Durée du travail</div>
-        <p>Le Salarié sera soumis à un temps de travail de <strong>{{ $contract->work_hours_per_week ?? '40' }} heures par semaine</strong>.</p>
+        <div class="section-title">{{ __('pdf.contract_article3_title') }}</div>
+        <p>{!! __('pdf.contract_article3_body', ['hours' => '<strong>'.($contract->work_hours_per_week ?? '40').'</strong>']) !!}</p>
     </div>
 
     <table class="signatures">
         <tr>
             <td>
-                Fait à ......................., le .......................<br><br>
-                <strong>Pour l'employeur</strong><br>
-                (Signature et cachet)
+                {{ __('pdf.contract_signature_place_date') }}<br><br>
+                <strong>{{ __('pdf.contract_signature_employer') }}</strong><br>
+                {{ __('pdf.contract_signature_employer_note') }}
             </td>
             <td>
-                Fait à ......................., le .......................<br><br>
-                <strong>Le Salarié</strong><br>
-                (Signature précédée de la mention "Lu et approuvé")
+                {{ __('pdf.contract_signature_place_date') }}<br><br>
+                <strong>{{ __('pdf.contract_signature_employee') }}</strong><br>
+                {{ __('pdf.contract_signature_employee_note') }}
             </td>
         </tr>
     </table>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <style>
@@ -15,24 +15,24 @@
 </head>
 <body>
     <div class="header">
-        <p class="title">Document de paiement</p>
-        <p class="muted">{{ $company?->name ?? 'Leopardo RH' }} - Reference #{{ $document->id }}</p>
+        <p class="title">{{ __('pdf.payment_document_title') }}</p>
+        <p class="muted">{{ $company?->name ?? 'Leopardo RH' }} - {{ __('pdf.payment_document_reference', ['id' => $document->id]) }}</p>
     </div>
 
     <div class="box">
-        <strong>Collaborateur</strong><br>
-        {{ trim(($employee?->first_name ?? '').' '.($employee?->last_name ?? '')) ?: 'Non renseigne' }}<br>
+        <strong>{{ __('pdf.payment_document_collaborator') }}</strong><br>
+        {{ trim(($employee?->first_name ?? '').' '.($employee?->last_name ?? '')) ?: __('pdf.payment_document_not_specified') }}<br>
         <span class="muted">{{ $employee?->email }}</span>
     </div>
 
     <table>
-        <tr><th>Type</th><td>{{ $document->document_type }}</td></tr>
-        <tr><th>Statut</th><td>{{ $document->status }}</td></tr>
-        <tr><th>Periode</th><td>{{ $payrollRun?->period_start?->toDateString() }} - {{ $payrollRun?->period_end?->toDateString() }}</td></tr>
-        <tr><th>Montant net</th><td>{{ number_format((float) ($paySlip?->net_salary ?? ($metadata['amount'] ?? 0)), 2, ',', ' ') }}</td></tr>
-        <tr><th>Genere le</th><td>{{ now()->format('Y-m-d H:i') }}</td></tr>
+        <tr><th>{{ __('pdf.payment_document_type') }}</th><td>{{ $document->document_type }}</td></tr>
+        <tr><th>{{ __('pdf.payment_document_status') }}</th><td>{{ $document->status }}</td></tr>
+        <tr><th>{{ __('pdf.payment_document_period') }}</th><td>{{ $payrollRun?->period_start?->toDateString() }} - {{ $payrollRun?->period_end?->toDateString() }}</td></tr>
+        <tr><th>{{ __('pdf.payment_document_net_amount') }}</th><td>{{ number_format((float) ($paySlip?->net_salary ?? ($metadata['amount'] ?? 0)), 2, ',', ' ') }}</td></tr>
+        <tr><th>{{ __('pdf.payment_document_generated_on') }}</th><td>{{ now()->format('Y-m-d H:i') }}</td></tr>
     </table>
 
-    <p class="muted">Document genere automatiquement par Leopardo RH. Les validations et confirmations restent tracees dans l'application.</p>
+    <p class="muted">{{ __('pdf.payment_document_footer') }}</p>
 </body>
 </html>

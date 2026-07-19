@@ -10,9 +10,11 @@ use App\Modules\Planning\Interfaces\Api\V1\Requests\QuickEstimateRequest;
 use App\Modules\Planning\Interfaces\Api\V1\Requests\ReceiptRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
+use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 
 /**
  * EstimationController — manager-scoped salary estimation per employee.
@@ -68,6 +70,12 @@ class EstimationController extends Controller
         );
 
         $company = currentCompany();
+
+        // The receipt is about $employee's data, not the authenticated actor
+        // (manager) who requested it — render it in the employee's language.
+        App::setLocale(I18nCatalog::normalizeLocale(
+            $employee->preferred_language ?? $company?->language
+        ));
 
         $pdf = Pdf::loadView('pdf.receipt', [
             'company'  => $company,
