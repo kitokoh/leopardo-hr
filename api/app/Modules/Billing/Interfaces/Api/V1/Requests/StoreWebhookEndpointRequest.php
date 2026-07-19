@@ -3,6 +3,7 @@
 namespace App\Modules\Billing\Interfaces\Api\V1\Requests;
 
 use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
+use App\Rules\NotPrivateUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreWebhookEndpointRequest extends FormRequest
@@ -16,7 +17,7 @@ class StoreWebhookEndpointRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'url' => ['required', 'url', 'max:500'],
+            'url' => ['required', 'url', 'max:500', new NotPrivateUrl],
             'events' => ['required', 'array', 'min:1'],
             'events.*' => ['string', 'in:'.implode(',', WebhookController::AVAILABLE_EVENTS)],
         ];
