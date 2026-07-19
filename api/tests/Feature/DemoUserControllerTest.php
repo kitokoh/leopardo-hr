@@ -30,6 +30,10 @@ class DemoUserControllerTest extends TestCase
 
     public function test_demo_users_expose_operational_personas(): void
     {
+        // Demo mode must be explicitly opted into for this endpoint to serve
+        // anything; see docs/security/AUDIT_API_2026-07-19.md, section 1.
+        config(['app.demo_mode_enabled' => true]);
+
         $response = $this->getJson('/api/v1/demo-users')
             ->assertOk()
             ->assertJsonPath('data.super_admin.role', 'super_admin')
@@ -48,10 +52,27 @@ class DemoUserControllerTest extends TestCase
         $this->assertSame('/me', $users->firstWhere('role', 'employee')['primary_path']);
     }
 
-    public function test_demo_users_remain_available_for_public_tester_guides_in_production(): void
+    public function test_demo_users_endpoint_is_a_404_in_production_unless_explicitly_enabled(): void
     {
+        // A prior version of this test asserted the opposite (200 in
+        // production with demo mode off) which is exactly the data leak
+        // documented in docs/security/AUDIT_API_2026-07-19.md, section 1:
+        // real-looking credentials for demo tenants were served on every
+        // environment, including production, with no way to opt out. The
+        // route must 404 whenever DEMO_MODE_ENABLED is not explicitly true,
+        // regardless of environment.
         app()->detectEnvironment(fn (): string => 'production');
         config(['app.demo_mode_enabled' => false]);
+
+        $this->getJson('/api/v1/demo-users')->assertNotFound();
+    }
+
+    public function test_demo_users_endpoint_can_be_opted_into_in_production_for_tester_guides(): void
+    {
+        // Operators may still explicitly opt in (e.g. a dedicated demo/staging
+        // environment flagged as "production") via DEMO_MODE_ENABLED=true.
+        app()->detectEnvironment(fn (): string => 'production');
+        config(['app.demo_mode_enabled' => true]);
 
         $this->getJson('/api/v1/demo-users')
             ->assertOk()
@@ -60,6 +81,9 @@ class DemoUserControllerTest extends TestCase
 
     public function test_demo_once_seeder_keeps_public_super_admin_credentials_usable(): void
     {
+        // The seeder itself is a separate opt-in gate from the HTTP endpoint
+        // (config/database seeding step vs. runtime request), so it is
+        // exercised here with demo mode explicitly enabled.
         config(['app.demo_mode_enabled' => true]);
 
         DB::table('public.super_admins')->insert([
