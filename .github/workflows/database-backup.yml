@@ -161,7 +161,7 @@ jobs:
 
       - name: Upload drill log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: database-restore-drill-log
           path: /tmp/leopardo-backups/last-drill.log

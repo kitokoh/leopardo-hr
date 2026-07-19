@@ -98,19 +98,9 @@ jobs:
             echo "SHOULD_BUILD=true" >> "$GITHUB_ENV"
           fi
 
-      - name: Setup Java 17
+      - name: Setup Flutter + Java
         if: env.SHOULD_BUILD == 'true'
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Setup Flutter
-        if: env.SHOULD_BUILD == 'true'
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+        uses: ./.github/actions/setup-flutter-android
 
       - name: Resolve target environment
         if: env.SHOULD_BUILD == 'true'
