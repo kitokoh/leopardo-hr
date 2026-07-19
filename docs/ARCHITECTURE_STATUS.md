@@ -1,8 +1,8 @@
 # Architecture DDD — État des modules
 
-> Mis à jour le 2026-07-01 | Phase 5 en cours — nettoyage legacy (PR #824)
+> Mis à jour le 2026-07-19 (audit doc) | Phase 5 en cours — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 16 modules actifs
+## 1. Tableau de l'état DDD — 19 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -11,19 +11,24 @@
 | **Billing**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cabinet**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cameras**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **EdgeSync** 🆕  | ✅ | — | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
 | **Expense**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Fleet**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Growth** 🆕   | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **HR**          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Marketing** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Notification**| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Onboarding** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Payroll**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Planning**    | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **SmartAttendance** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Training** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 
-> ⚠️ = Module créé dans Phase 3–4, tests Feature à ajouter dans Phase 5.
+> ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.
+> — = Non applicable (module `EdgeSync` suit une structure specialisee synchro/offline, pas le squelette DDD standard Contracts/Exceptions/DTOs).
+> Corrige lors de l'audit doc du 2026-07-19 : ce tableau omettait `EdgeSync` et `Marketing`, deux modules reellement presents sous `api/app/Modules/` (19 au total, pas 16).
 
 ---
 

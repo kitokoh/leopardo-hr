@@ -24,14 +24,13 @@ leopardo-hr/
 ├── shared/
 │   ├── i18n/               # Traductions partagées (fr, en, ar, tr)
 │   └── mediaForMarketing/  # Assets marketing bruts
-├── openapi/                # Miroir de spécification OpenAPI (source canonique : api/openapi.yaml)
-├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes
+├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes (inclut dev-hub/openapi/v1.yaml, un second fichier de spec actuellement divergent de api/openapi.yaml, source canonique)
 ├── docs/                   # Documentation technique et stratégique
 ├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — voir docs/architecture/ARCHITECTURE.md)
-└── .github/workflows/      # 29 pipelines CI/CD
+└── .github/workflows/      # 25 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
@@ -64,8 +63,8 @@ Modules actifs (19, sous `api/app/Modules/`) : `Absence`, `Attendance`, `Billing
 
 ### Règle de contribution backend
 > **Tout nouveau code métier va dans `api/app/Modules/`.**
-> `api/app/Http/Controllers/Api/V1/` et `api/app/Services/` sont **supprimés** (PR #824, 2026-07-01).
-> `api/app/Models/` est en cours de migration — ne pas y ajouter de nouveau modèle.
+> `api/app/Http/Controllers/Api/V1/` a été intégralement supprimé (90 controllers legacy, PR #824, 2026-07-01). `api/app/Services/` a perdu ses 26 doublons legacy mais **n'est pas vide** : il reste des services spécialisés non-DDD (`Cache/`, `Communication/`, `Payroll/`, `SSO/`, `Security/`, `Tracking/`, etc.) + le shim `TenantManager.php`. Voir `api/ARCHITECTURE.md` pour le détail exact.
+> `api/app/Models/` a été supprimé (migration DDD terminée) — tout nouveau modèle va dans le module DDD concerné sous `api/app/Modules/<Name>/Domain/Models/`.
 > Voir `api/ARCHITECTURE.md` pour la liste complète et les TODOs restants.
 
 ### Code partagé transversal (`api/app/Shared/`)
@@ -110,22 +109,21 @@ app/Core/Tenant/
 
 > `App\Services\TenantManager` est un alias de backward-compat. Injecter `App\Core\Tenant\TenantManager` dans le nouveau code.
 
-### Migration en cours — class aliases (`app/Models/`)
+### Migration class aliases — état au 2026-07-19
 
-75 des 92 modèles de `app/Models/` sont des shims `class_alias` pointant vers leur module DDD canonique.
-Les 17 modèles restants (Company, Employee-link, AI*, SuperAdmin, etc.) n'ont pas encore de module dédié.
+`app/Models/` et `app/DTOs/` sont maintenant vides/supprimés (migration DDD terminée pour ces deux dossiers).
+Il reste des shims backward-compat dans `app/Traits/` (3 shims), `app/Attributes/` (3 shims) et `app/Enums/` (1 shim),
+pointant vers leur équivalent canonique sous `app/Shared/`.
 
-Pour supprimer un alias :
-1. `grep -r "App\\\\Models\\\\NomDuModel" app/` → remplacer par le namespace canonique
-2. Supprimer le fichier shim dans `app/Models/`
-
-Même pattern pour `app/DTOs/` (3 shims), `app/Traits/` (3 shims), `app/Attributes/` (3 shims), `app/Enums/` (1 shim).
+Pour supprimer un alias restant :
+1. `grep -r "App\\Traits\\NomDuTrait" app/` (ou `Attributes`/`Enums`) → remplacer par le namespace canonique `App\Shared\...`
+2. Supprimer le fichier shim correspondant.
 
 ## Mobile — Flutter
 
-- `leopardo_core` est le package fondation partagé par les trois apps.
-- `leopardo_employee` et `leopardo_manager` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
-- `leopardo_mobile_legacy` est archivé — ne pas y contribuer.
+- `leopardo_core` est le package fondation partagé par toutes les apps.
+- `leopardo_employee`, `leopardo_manager` et `leopardo_hr` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
+- Apps actives : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin` (voir `front/mobile_apps/README.md`). Le mobile historique (`front/mobile/`) a été retiré du dépôt.
 
 ## i18n
 

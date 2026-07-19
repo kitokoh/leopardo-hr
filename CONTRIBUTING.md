@@ -6,7 +6,7 @@ First off, thank you for considering contributing to Leopardo RH! It's people li
 
 Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for code quality, security, and documentation.
 
--   **Backend:** PHP 8.4, Laravel 11, PSR-12, Pest PHP for testing.
+-   **Backend:** PHP 8.4, Laravel 12 (^12.60), PSR-12, Pest PHP for testing.
 -   **Frontend:** Next.js 15, TypeScript, Tailwind CSS.
 -   **Mobile:** Flutter 3.x, Riverpod for state management.
 -   **Architecture:** Modular Monolith & Domain-Driven Design (DDD).

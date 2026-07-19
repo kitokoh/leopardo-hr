@@ -2,13 +2,15 @@
 
 ## Cartographie des workflows
 
-### 🔁 Reusable workflows (préfixe `_`)
-Ces workflows sont appelés par d'autres — ne pas déclencher directement.
+### 🔁 Composite actions partagées (`.github/actions/`)
+Ces actions composites remplacent les anciens workflows reutilisables `_setup-php.yml`
+et `_setup-flutter.yml` (supprimés, voir `CHANGELOG.md` v4.23.4). Elles sont appelées
+depuis les steps des workflows ci-dessous, pas declenchees directement.
 
-| Fichier | Rôle |
+| Action | Rôle |
 |---|---|
-| `_setup-php.yml` | PHP 8.4 + PostgreSQL 16 + Redis 7 + Composer cache |
-| `_setup-flutter.yml` | Flutter + Melos bootstrap |
+| `.github/actions/setup-backend-db` | PHP + Composer + bootstrap migrations multi-tenant (public + shared_tenants) contre postgres/redis |
+| `.github/actions/setup-flutter-android` | Java 17 + Flutter pour les builds Android (utilisee par `mobile-apps-ci.yml`, `mobile-distribute.yml`, `deploy-main.yml`) |
 
 ---
 
@@ -75,7 +77,7 @@ Ces workflows sont appelés par d'autres — ne pas déclencher directement.
 
 ## Règles de contribution CI
 
-1. **Ne pas dupliquer la config PHP/Flutter** — utiliser `_setup-php.yml` et `_setup-flutter.yml`
+1. **Ne pas dupliquer la config PHP/Flutter** — utiliser les composite actions `.github/actions/setup-backend-db` et `.github/actions/setup-flutter-android`
 2. **Nommer clairement** : `<scope>-<action>.yml` (ex: `api-lint.yml`, `mobile-test.yml`)
 3. **path filters** obligatoires sur les PRs pour éviter de déclencher tout sur chaque push
 4. **`concurrency`** obligatoire avec `cancel-in-progress: true`
