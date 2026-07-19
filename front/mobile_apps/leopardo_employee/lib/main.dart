@@ -9,7 +9,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'app.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   FlutterError.onError = (details) {
