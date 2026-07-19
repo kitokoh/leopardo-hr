@@ -16,7 +16,7 @@ Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for 
 ## 🚀 How to Contribute
 
 1.  **Explore:** Read our [System Architecture](docs/architecture/ARCHITECTURE.md) to understand the project structure.
-2.  **Environment Setup:** Follow the [Development Guide](docs/deployment/DEPLOYMENT_GUIDE.md).
+2.  **Environment Setup:** Follow the [Development Guide](DEVELOPMENT.md) for local setup (Docker Compose, `.env`, migrations). For production/worker deployment topics, see the separate [Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md).
 3.  **Find an Issue:** Look for issues labeled `good first issue` or `enterprise-ready`.
 4.  **Branching:** Use descriptive branch names: `feat/xxx`, `fix/xxx`, `docs/xxx`.
 5.  **Quality Gate:** Ensure all tests pass (`php artisan test`) and linting is clean.
