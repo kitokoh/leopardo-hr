@@ -54,8 +54,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/i18n/catalog/{locale}', [TranslationCatalogController::class, 'show']);
     });
 
-    // Demo users (public, disabled in production unless DEMO_MODE_ENABLED=true)
-    Route::get('/demo-users', [DemoUserController::class, 'index']);
+    // Demo users (public, disabled by default; opt-in only via DEMO_MODE_ENABLED=true
+    // on staging/demo environments — DemoUserController::index() enforces the same
+    // gate and 404s when the flag is off, see docs/security/AUDIT_API_2026-07-19.md)
+    Route::middleware(['throttle:10,1'])->get('/demo-users', [DemoUserController::class, 'index']);
 
     // Module 6 — Public Onboarding (sans auth, throttle strict)
     Route::middleware(['throttle:10,1'])->prefix('onboarding')->group(function (): void {

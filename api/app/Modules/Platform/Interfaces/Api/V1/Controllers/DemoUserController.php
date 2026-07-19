@@ -11,6 +11,14 @@ class DemoUserController extends Controller
 {
     public function index(): JsonResponse
     {
+        // Hard gate: this endpoint returns real-looking credentials for demo
+        // tenants. It must be a 404 (not just "empty") whenever demo mode is
+        // not explicitly enabled, so it never leaks the existence of the route
+        // itself in production. See docs/security/AUDIT_API_2026-07-19.md.
+        if (! config('app.demo_mode_enabled')) {
+            abort(404);
+        }
+
         return response()->json([
             'data' => [
                 'super_admin' => [

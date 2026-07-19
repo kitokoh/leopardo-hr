@@ -96,12 +96,27 @@ class PlatformControllerTest extends TestCase
     }
 
     /** @test */
-    public function demo_users_endpoint_is_accessible_without_auth(): void
+    public function demo_users_endpoint_is_disabled_by_default(): void
     {
+        // Secure-by-default: DEMO_MODE_ENABLED is not set to true in this test
+        // environment, so the endpoint must 404 and never leak seed
+        // credentials. See docs/security/AUDIT_API_2026-07-19.md, section 1.
+        config(['app.demo_mode_enabled' => false]);
+
         $response = $this->getJson('/api/v1/demo-users');
 
-        // Public endpoint: should return 200; some environments may disable it (404)
-        $this->assertContains($response->status(), [200, 404]);
+        $response->assertStatus(404);
+    }
+
+    /** @test */
+    public function demo_users_endpoint_serves_data_only_when_explicitly_enabled(): void
+    {
+        config(['app.demo_mode_enabled' => true]);
+
+        $response = $this->getJson('/api/v1/demo-users');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.super_admin.role', 'super_admin');
     }
 
     /** @test */
