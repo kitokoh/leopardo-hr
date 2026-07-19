@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Prepare reports directory
         shell: bash
@@ -90,7 +90,7 @@ jobs:
 
       - name: Upload smoke report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: launch-api-profile-smoke
           path: docs/validation/runtime/launch-api-profile-smoke.txt
