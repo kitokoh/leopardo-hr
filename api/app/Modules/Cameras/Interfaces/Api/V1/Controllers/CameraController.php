@@ -126,7 +126,7 @@ class CameraController extends Controller
     {
         $this->authorize('testRtsp', Camera::class);
 
-        $result = $this->cameras->testRtsp($request->string('rtsp_url'));
+        $result = $this->cameras->testRtsp($request->string('rtsp_url')->toString());
 
         if (! $result['ok']) {
             $status = match ($result['error']) {

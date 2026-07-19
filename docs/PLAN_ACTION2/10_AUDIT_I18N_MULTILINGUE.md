@@ -6,7 +6,7 @@ Perimetre: `shared/i18n/*`, `api/lang/*`, `api/resources/views/{pdf,emails}`, `f
 
 Ce document complete `08_AUDIT_ARCHITECTURE_TECH.md` et `09_AUDIT_MODULES_API_STRUCTURE.md` avec un audit dedie a l'internationalisation. Les tickets d'action issus de cet audit sont listes en fin de fichier et repris dans `02_BACKLOG_ATOMIQUE.md` / `03_GITHUB_PROJECT_IMPORT.csv` sous le prefixe `PA2-I18N-*` (suite de `PA2-I18N-001` a `004` deja existants).
 
-Methode : lecture directe du code (pas de supposition), execution reelle des validateurs/scripts existants (`node shared/i18n/validators/validate.js`, `node shared/i18n/sync/sync-{backend,mobile,web}.js`), comptage de fichiers/cles par surface, lecture du rapport de dette deja genere (`docs/validation/I18N_DEBT_REPORT_2026_06_06.md`), lecture de la gouvernance existante (`docs/GUIDES/GUIDE_JULES_TRADUCTION_MULTILINGUE.md`, `docs/PLAN_ACTION/24_PLAN_MULTILINGUE_JULES_TRANSLATION.md`, `docs/PLAN_ACTION/47_PLAN_I18N_MOBILE_MULTI_APP_ALIGNMENT.md`).
+Methode : lecture directe du code (pas de supposition), execution reelle des validateurs/scripts existants (`node shared/i18n/validators/validate.js`, `node shared/i18n/sync/sync-{backend,mobile,web}.js`), comptage de fichiers/cles par surface, lecture du rapport de dette deja genere (`docs/validation/I18N_DEBT_REPORT_2026_06_06.md`), lecture de la gouvernance existante (`docs/GUIDES/GUIDE_JULES_TRADUCTION_MULTILINGUE.md`, `docs/archive/PLAN_ACTION/24_PLAN_MULTILINGUE_JULES_TRANSLATION.md`, `docs/archive/PLAN_ACTION/47_PLAN_I18N_MOBILE_MULTI_APP_ALIGNMENT.md`).
 
 ---
 
