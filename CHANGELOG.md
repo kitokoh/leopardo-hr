@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.4] - 2026-07-19
+
+### Fixed
+- **Bug de compilation Dart dans `leopardo_employee`, `leopardo_manager`, `leopardo_hr` : `void main() { ... await ... }`** : les trois `main.dart` declaraient `main()` sans le mot-cle `async` alors que le corps de la fonction contient `await SentryFlutter.init(...)`. C'est une erreur de compilation Dart (pas seulement un avertissement du guard CI `validate-mobile-runtime-smoke.ps1`, qui l'a detectee) ; seul `leopardo_platform_admin` avait deja la signature correcte `Future<void> main() async`. Corrige en alignant les 3 apps sur `Future<void> main() async { ... }`. Ce bug bloquait le job `Mobile Apps CI - Flutter` sur `main` depuis plusieurs commits.
+
 ## [4.23.3] - 2026-07-19
 
 ### Security
