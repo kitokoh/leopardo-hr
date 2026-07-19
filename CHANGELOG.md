@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [Unreleased]
+
+### Fixed
+- **PA2-ARCH-008 : point d'enregistrement unique pour les Gate::policy** : `AppServiceProvider::boot()` et `AuthServiceProvider::boot()` enregistraient chacun un jeu de `Gate::policy(...)` avec des doublons (Attendance, Employee, Evaluation, FeaturePlanMatrix, OnboardingStep, Payroll, Recruitment, Subscription, Training, Vehicle) et une vraie divergence sur `Invoice` : `AppServiceProvider` le liait a `BillingPolicy`, `AuthServiceProvider` a `InvoicePolicy` — seul le dernier provider bootstrappe (`AuthServiceProvider`, enregistre apres dans `bootstrap/providers.php`) l'emportait en pratique, donc `InvoicePolicy` etait deja la policy effective, mais implicitement et fragilement (un simple reordonnancement des providers aurait bascule silencieusement vers `BillingPolicy`). Tous les `Gate::policy(...)` vivent desormais exclusivement dans `AuthServiceProvider::boot()` ; `AppServiceProvider::boot()` ne garde que ses `Gate::define(...)` (export). La divergence `Invoice` est tranchee explicitement et documentee en faveur de `InvoicePolicy` (scoping `company_id` + roles dedies view/create/pay, plus fine que `BillingPolicy`). Nouveau test `tests/Unit/Providers/PolicyRegistrationTest.php` : verifie qu'un seul des deux providers appelle encore `Gate::policy(...)`, que `Invoice` resout sans ambiguite vers `InvoicePolicy`, et que les modeles deplaces (`Employee`, `OnboardingStep`, `FeaturePlanMatrix`) resolvent toujours une policy. Verifie : `php artisan test --filter="Billing|Invoice|Policy|Onboarding|Marketing|Recruitment|Fleet|Vehicle|Attendance|Payroll"` — 65 failed / 166 passed apres (contre 65 failed / 163 passed avant, la difference etant les 3 nouveaux tests de regression) ; les 65 echecs sont identiques avant/apres (via `git stash`) et pre-existent (incompatibilites SQLite type `EXTRACT(MONTH FROM ...)` / `SET search_path`, sans lien avec ce changement).
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed
