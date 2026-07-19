@@ -31,6 +31,53 @@ jobs:
         working-directory: api
         run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=1G --no-progress
 
+  # Audit §2.3 / Plan P1: phpstan-strict.neon existed in the repo (level 8 on
+  # app/Core, app/Modules, app/Shared) but was never invoked by any workflow
+  # — the audit flagged this as a dead config that quietly gave a false sense
+  # of stricter coverage. Wiring it in here, alongside the existing
+  # phpstan-modules job it was designed to complement.
+  #
+  # Deliberately non-blocking for now (continue-on-error): level 8 has never
+  # run against this codebase in CI, so its current finding count on
+  # pre-existing code is unknown and likely nonzero. Flipping this to a hard
+  # gate without first baselining existing findings (e.g. `phpstan --generate-baseline`
+  # scoped to phpstan-strict.neon) would retroactively block unrelated PRs on
+  # pre-existing debt. Findings are still visible in the job log/summary so
+  # the team can triage and then remove continue-on-error once a baseline
+  # exists — this mirrors the same non-blocking-until-triaged approach taken
+  # for the new Semgrep PHP SAST job in codeql.yml.
+  phpstan-strict:
+    name: PHPStan — Strict (Core/Modules/Shared, level 8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install dependencies
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run PHPStan (strict)
+        id: phpstan_strict
+        continue-on-error: true
+        working-directory: api
+        run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --memory-limit=1G --no-progress
+
+      - name: Report PHPStan strict outcome
+        if: always()
+        shell: bash
+        run: |
+          echo "PHPStan strict (level 8) outcome: ${{ steps.phpstan_strict.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${{ steps.phpstan_strict.outcome }}" == "failure" ]]; then
+            echo "::warning::phpstan-strict.neon reported findings. Non-blocking until the team baselines existing debt; see workflow comments in architecture-check.yml."
+          fi
+
   module-structure-check:
     name: Module Structure Validator
     runs-on: ubuntu-latest

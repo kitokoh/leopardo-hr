@@ -80,29 +80,32 @@ jobs:
           ref: ${{ steps.context.outputs.sha }}
           fetch-depth: 2
 
-      - name: Detect changed areas for deployment gating
+      - name: Resolve parent commit for change detection
         if: steps.context.outputs.should_deploy == 'pending-validation'
-        id: changes
+        id: parent
         shell: bash
         run: |
           set -euo pipefail
-
           sha="${{ steps.context.outputs.sha }}"
           parent="$(git rev-list --parents -n 1 "${sha}" | awk '{print $2}')"
-          changed_files=""
+          echo "sha=${parent:-${sha}}" >> "$GITHUB_OUTPUT"
 
-          if [[ -n "${parent}" ]]; then
-            changed_files="$(git diff --name-only "${parent}" "${sha}")"
-          else
-            changed_files="$(git show --name-only --pretty='' "${sha}")"
-          fi
+      - name: Detect changed areas for deployment gating
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: changes
+        # Audit §3.3 / Plan P2: now shares .github/paths-filters.yml with
+        # tests.yml's detect-changes job instead of a second hand-rolled
+        # `git diff` + `grep -E` regex that could (and did) drift out of sync.
+        uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        with:
+          filters: .github/paths-filters.yml
+          base: ${{ steps.parent.outputs.sha }}
 
-          web_changed=false
-          if printf '%s\n' "${changed_files}" | grep -Eq '^(front/admin-dashboard/|\.github/workflows/web-ci\.yml|\.github/workflows/deploy-main\.yml|docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS\.md|docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS\.md)'; then
-            web_changed=true
-          fi
-
-          echo "web_changed=${web_changed}" >> "$GITHUB_OUTPUT"
+      - name: Export web_changed output
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        shell: bash
+        run: |
+          echo "web_changed=${{ steps.changes.outputs.web }}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve program version for deploy metadata
         if: steps.context.outputs.should_deploy == 'pending-validation'
