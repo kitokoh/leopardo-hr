@@ -12,11 +12,13 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Expense\Domain\Models\ExpenseClaim;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
+use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
@@ -79,11 +81,17 @@ class AuthServiceProvider extends ServiceProvider
 
         // Finance
         Gate::policy(Subscription::class, BillingPolicy::class);
+        // PA2-ARCH-008 : divergence tranchee. AppServiceProvider et AuthServiceProvider
+        // enregistraient chacun une policy differente pour Invoice (BillingPolicy vs
+        // InvoicePolicy). InvoicePolicy est plus fine (scoping company_id + roles
+        // dedies view/create/pay) : c'est la policy retenue, unique point d'enregistrement.
         Gate::policy(Invoice::class, InvoicePolicy::class);
         Gate::policy(EmployeeLoan::class, LoanPolicy::class);
         Gate::policy(ExpenseClaim::class, ExpenseClaimPolicy::class);
         Gate::policy(PayrollRun::class, PayrollPolicy::class);
         Gate::policy(PaySlip::class, PayrollPolicy::class);
+        Gate::policy(FeaturePlanMatrix::class, FeatureFlagPolicy::class);
+        Gate::policy(OnboardingStep::class, OnboardingPolicy::class);
 
         // Recruitment & Training
         Gate::policy(JobPosting::class, RecruitmentPolicy::class);
