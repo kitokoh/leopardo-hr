@@ -28,7 +28,8 @@ Le but n'est plus de prouver que Leopardo fonctionne. Le but est de le rendre:
 | `05_SCOPE_PAYS_PAIE_POINTAGE.md` | Scope fonctionnel multi-pays pour pointage, paie, devise et regles locales |
 | `06_COMMUNICATION_ANNONCES_DISCUSSIONS.md` | Scope produit/API pour discussions, annonces, notifications, email et WhatsApp |
 | `07_SUPERVISION_GITHUB_PROJECT.md` | Regles de pilotage GitHub Projects, supervision PR et validation multi-agents |
-| `08_AUDIT_ARCHITECTURE_TECH.md` | Audit technique 2026-07-16 : dependances composer, RBAC reel (policies), moteur paie multi-pays, secrets git. Source des tickets `PA2-SEC-*` et `PA2-ARCH-*` |
+| `08_AUDIT_ARCHITECTURE_TECH.md` | Audit technique 2026-07-16 : dependances composer, RBAC reel (policies), moteur paie multi-pays, secrets git. Source des tickets `PA2-SEC-*` et `PA2-ARCH-001` a `005` |
+| `09_AUDIT_MODULES_API_STRUCTURE.md` | Audit structure modules 2026-07-19 : garde CI incomplet, code mort/controllers dupliques non routes, policies enregistrees deux fois, controllers epais, strict_types. Source des tickets `PA2-ARCH-006` a `009` |
 
 ## Axes couverts
 
