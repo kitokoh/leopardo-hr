@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ApiError, apiFetch } from '@/lib/api-client';
 
 interface EdgeNode {
   id: string;
@@ -40,6 +41,7 @@ export default function EdgeNodesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newNode, setNewNode] = useState({ name: '', site_address: '', mode: 'hybrid' });
   const [installCommand, setInstallCommand] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNodes();
@@ -49,11 +51,13 @@ export default function EdgeNodesPage() {
 
   async function fetchNodes() {
     try {
-      const res = await fetch('/api/v1/edge');
+      const res = await apiFetch('/edge');
       const data = await res.json();
       setNodes(data.data ?? []);
-    } catch {
-      console.error('Failed to fetch edge nodes');
+      setLoadError(null);
+    } catch (err) {
+      console.error('Failed to fetch edge nodes', err);
+      setLoadError(err instanceof ApiError ? err.message : 'Impossible de charger les Edge nodes.');
     } finally {
       setLoading(false);
     }
@@ -62,12 +66,12 @@ export default function EdgeNodesPage() {
   async function triggerSync(nodeId: string) {
     setSyncing(nodeId);
     try {
-      const res = await fetch(`/api/v1/edge/${nodeId}/sync`, { method: 'POST' });
+      const res = await apiFetch(`/edge/${nodeId}/sync`, { method: 'POST' });
       const data = await res.json();
       alert(`Sync terminé — envoyés: ${data.data?.records_sent ?? 0}, conflits: ${data.data?.conflicts_detected ?? 0}`);
       fetchNodes();
-    } catch {
-      alert('Erreur lors de la synchronisation');
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : 'Erreur lors de la synchronisation');
     } finally {
       setSyncing(null);
     }
@@ -75,17 +79,16 @@ export default function EdgeNodesPage() {
 
   async function addNode() {
     try {
-      const res = await fetch('/api/v1/edge', {
+      const res = await apiFetch('/edge', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNode),
       });
       const data = await res.json();
       if (data.install_command) setInstallCommand(data.install_command);
       setShowAddModal(false);
       fetchNodes();
-    } catch {
-      alert('Erreur lors de la création du node');
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : 'Erreur lors de la création du node');
     }
   }
 
@@ -112,6 +115,11 @@ export default function EdgeNodesPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      {loadError && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

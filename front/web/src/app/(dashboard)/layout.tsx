@@ -208,18 +208,38 @@ export default function DashboardLayout({
             <span className="text-[10px] font-black uppercase tracking-widest">Plan & Modules</span>
           </div>
           <div className="grid gap-2">
-            {navGroups.platform.map((module) => (
-              <div key={module.key} className="flex items-center justify-between gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                <span>{module.label}</span>
-                <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
-                  module.enabled
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-900/30 dark:text-emerald-400'
-                    : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-500'
-                }`}>
-                  {module.enabled ? (module.state === 'trial' ? 'Trial' : 'Actif') : 'Lock'}
-                </span>
-              </div>
-            ))}
+            {navGroups.platform.map((module) => {
+              const content = (
+                <>
+                  <span>{module.label}</span>
+                  <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
+                    module.enabled
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-900/30 dark:text-emerald-400'
+                      : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-500'
+                  }`}>
+                    {module.enabled ? (module.state === 'trial' ? 'Trial' : 'Actif') : 'Lock'}
+                  </span>
+                </>
+              );
+
+              if (module.href && module.enabled) {
+                return (
+                  <Link
+                    key={module.key}
+                    href={module.href}
+                    className="flex items-center justify-between gap-2 rounded-lg px-1 py-0.5 text-[11px] font-bold text-slate-600 transition-colors hover:bg-white/60 dark:text-slate-400 dark:hover:bg-slate-800/60"
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <div key={module.key} className="flex items-center justify-between gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                  {content}
+                </div>
+              );
+            })}
           </div>
         </div>
 
