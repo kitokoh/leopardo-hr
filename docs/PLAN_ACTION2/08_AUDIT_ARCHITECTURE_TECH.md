@@ -81,7 +81,7 @@ Un chef de departement (`manager_role = 'dept'`) ou un superviseur (`manager_rol
 
 ## 4. Secret Redis en clair — rappel de criticite (deja documente, toujours ouvert)
 
-Confirme a nouveau lors de cet audit : `AUDIT.md` reference lui-meme un mot de passe Upstash reel commite dans l'historique git public (`REDACTED.upstash.io`), et la case correspondante dans sa propre checklist finale reste **non cochee** (`[ ]`). Aucune preuve dans le code ou les commits recents d'une rotation effectuee. Ce point est repris ici en P0 dans le backlog ci-dessous parce qu'il n'a pas de ticket PA2 dedie a ce jour — seulement une note dans un fichier d'audit que personne n'est oblige de relire.
+Confirme a nouveau lors de cet audit : `AUDIT.md` reference lui-meme un mot de passe Upstash reel commite dans l'historique git public (hostname et mot de passe retires de la documentation le 2026-07-19, voir `SECURITY_INCIDENT_REDIS_2026-07.md`), et la case correspondante dans sa propre checklist finale restait **non cochee** avant cette meme date. Aucune preuve dans le code ou les commits recents d'une rotation Upstash effectuee — cette action reste a faire manuellement (hors perimetre code). Ce point est repris ici en P0 dans le backlog ci-dessous parce qu'il n'a pas de ticket PA2 dedie a ce jour — seulement une note dans un fichier d'audit que personne n'est oblige de relire.
 
 ---
 
