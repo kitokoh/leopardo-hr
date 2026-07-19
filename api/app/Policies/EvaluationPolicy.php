@@ -18,7 +18,11 @@ class EvaluationPolicy
             return false;
         }
 
-        return $actor->isManager() || $actor->id === $evaluation->employee_id;
+        if ($actor->id === $evaluation->employee_id) {
+            return true;
+        }
+
+        return $this->managesEvaluatedEmployee($actor, $evaluation);
     }
 
     public function create(Employee $actor): bool
@@ -32,7 +36,7 @@ class EvaluationPolicy
             return false;
         }
 
-        return $actor->isManager();
+        return $this->managesEvaluatedEmployee($actor, $evaluation);
     }
 
     public function delete(Employee $actor, Evaluation $evaluation): bool
@@ -41,7 +45,7 @@ class EvaluationPolicy
             return false;
         }
 
-        return $actor->isManager();
+        return $this->managesEvaluatedEmployee($actor, $evaluation);
     }
 
     public function submit(Employee $actor, Evaluation $evaluation): bool
@@ -50,7 +54,7 @@ class EvaluationPolicy
             return false;
         }
 
-        return $actor->isManager();
+        return $this->managesEvaluatedEmployee($actor, $evaluation);
     }
 
     public function acknowledge(Employee $actor, Evaluation $evaluation): bool
@@ -60,6 +64,25 @@ class EvaluationPolicy
         }
 
         return $actor->id === $evaluation->employee_id;
+    }
+
+    /**
+     * PA2-SEC-002: manager_role=dept may only act on evaluations for employees
+     * within their own department. Company-wide manager roles are unaffected.
+     */
+    private function managesEvaluatedEmployee(Employee $actor, Evaluation $evaluation): bool
+    {
+        if (! $actor->isManager()) {
+            return false;
+        }
+
+        if (! $actor->isDepartmentScoped()) {
+            return true;
+        }
+
+        $target = $evaluation->employee;
+
+        return $target !== null && $actor->managesDepartmentOf($target);
     }
 }
 

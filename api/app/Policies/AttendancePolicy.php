@@ -24,7 +24,19 @@ class AttendancePolicy
 
     public function viewForEmployee(Employee $actor, Employee $target): bool
     {
-        return $actor->isManager() || $actor->id === $target->id;
+        if ($actor->id === $target->id) {
+            return true;
+        }
+
+        if (! $actor->isManager()) {
+            return false;
+        }
+
+        if ($actor->isDepartmentScoped()) {
+            return $actor->managesDepartmentOf($target);
+        }
+
+        return true;
     }
 
     public function update(Employee $actor, AttendanceLog $log): bool
