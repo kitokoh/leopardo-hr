@@ -134,6 +134,42 @@ class GeoSessionDashboardTest extends TestCase
     }
 
     /**
+     * GET /sessions?per_page=... doit être borné à 100 comme tous les autres
+     * endpoints paginés du repo, pour éviter qu'un appelant authentifié
+     * demande une page arbitrairement grande.
+     * Voir docs/security/AUDIT_API_2026-07-19.md (revue de suivi 2026-07-19b).
+     */
+    public function test_per_page_is_clamped_to_one_hundred(): void
+    {
+        for ($i = 0; $i < 3; $i++) {
+            $this->createSession();
+        }
+
+        Sanctum::actingAs($this->manager);
+
+        $response = $this->getJson('/api/v1/smart-attendance/sessions?per_page=999999');
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('meta.per_page', 100);
+    }
+
+    /**
+     * GET /sessions?per_page=0 (ou négatif) doit être ramené à 1, pas planter
+     * ni retourner une page vide anormale.
+     */
+    public function test_per_page_is_floored_to_one(): void
+    {
+        $this->createSession();
+
+        Sanctum::actingAs($this->manager);
+
+        $response = $this->getJson('/api/v1/smart-attendance/sessions?per_page=0');
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('meta.per_page', 1);
+    }
+
+    /**
      * GET /sessions?status=pending_validation ne retourne que les sessions
      * avec ce statut.
      */
