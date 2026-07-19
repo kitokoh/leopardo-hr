@@ -84,7 +84,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Resolve selected app
         shell: bash
@@ -242,7 +242,7 @@ jobs:
 
       - name: Upload mobile artifact
         if: env.SHOULD_BUILD == 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.app.artifact_name }}-${{ env.TARGET }}-${{ env.BUILD_NAME }}
           path: ${{ env.BUILD_FILE }}
