@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_core/core/widgets/pulse_button.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
@@ -364,59 +365,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: isLoading ? null : onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: 188,
-            height: 188,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.rh.withValues(alpha: 0.08),
-              border: Border.all(
-                color: AppColors.rh.withValues(alpha: 0.28),
-                width: 16,
-              ),
-            ),
-            child: Container(
-              margin: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.rh.withValues(alpha: 0.13),
-                border: Border.all(
-                  color: AppColors.rh.withValues(alpha: 0.42),
-                  width: 10,
-                ),
-              ),
-              child: Container(
-                margin: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      isCheckedIn ? AppColors.rhDark : const Color(0xFF0D5C3A),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.rh.withValues(alpha: 0.28),
-                      blurRadius: 28,
-                      spreadRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.4,
-                          ),
-                        )
-                      : _buildFingerprintIcon(),
-                ),
-              ),
-            ),
-          ),
+        PulseButton(
+          isCheckedIn: isCheckedIn,
+          isLoading: isLoading,
+          onTap: onTap,
+          size: 184,
         ),
         const SizedBox(height: 12),
         Text(
@@ -459,13 +412,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildFingerprintIcon() {
-    return const SizedBox(
-      width: 44,
-      height: 44,
-      child: CustomPaint(painter: _FingerprintPainter(color: AppColors.rh)),
-    );
-  }
 
   Widget _buildTodayCard(AttendanceState state) {
     final log = state.todayLog;
@@ -811,43 +757,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 }
 
-class _FingerprintPainter extends CustomPainter {
-  final Color color;
-  const _FingerprintPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.8
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawCircle(Offset(cx, cy), 1.5, paint..style = PaintingStyle.fill);
-    paint.style = PaintingStyle.stroke;
-
-    final radii = [5.0, 9.0, 13.0, 17.0, 21.0];
-    final alphas = [1.0, 0.85, 0.70, 0.55, 0.40];
-    for (var i = 0; i < radii.length; i++) {
-      final r = radii[i];
-      paint.color = color.withValues(alpha: alphas[i]);
-      final sweep = i == radii.length - 1 ? 0.55 : 0.70;
-      canvas.drawArc(
-        Rect.fromCircle(center: Offset(cx, cy), radius: r),
-        -3.14 * sweep,
-        3.14 * sweep * 2,
-        false,
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_FingerprintPainter oldDelegate) =>
-      oldDelegate.color != color;
-}
 
 class _CorrectionSheet extends ConsumerStatefulWidget {
   final DateTime targetDate;

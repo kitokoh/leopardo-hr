@@ -4,16 +4,27 @@ import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
+/// Bouton de pointage premium partagé Employee/Manager.
+///
+/// v4 — remplace l'ancien fond plein rouge/vert par un anneau progressif en
+/// glassmorphism sombre : plus lisible en plein soleil, cohérent avec les
+/// anneaux utilisés dans [AttendanceScreen], et sans la brutalité visuelle
+/// d'un disque rouge saturé pour l'action "sortir".
 class PulseButton extends StatefulWidget {
   final bool isCheckedIn;
   final bool isLoading;
   final VoidCallback? onTap;
+
+  /// Taille du diamètre extérieur. Par défaut 184 (parité avec l'ancien
+  /// design), réductible pour les écrans compacts.
+  final double size;
 
   const PulseButton({
     super.key,
     required this.isCheckedIn,
     required this.isLoading,
     this.onTap,
+    this.size = 184,
   });
 
   @override
@@ -64,70 +75,107 @@ class _PulseButtonState extends State<PulseButton>
         child: AnimatedBuilder(
           animation: _animation,
           builder: (context, child) {
+            final accent = widget.isCheckedIn ? AppColors.danger : AppColors.rh;
+            final coreColors =
+                widget.isCheckedIn
+                    ? const [Color(0xFFB91C1C), Color(0xFF7F1D1D)]
+                    : const [Color(0xFF0D5C3A), AppColors.rhDark];
+
             return Transform.scale(
               scale: widget.isLoading ? 1.0 : _animation.value,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: 184,
-                height: 184,
+              child: Container(
+                width: widget.size,
+                height: widget.size,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors:
-                        widget.isCheckedIn
-                            ? const [Color(0xFFEF4444), Color(0xFFB91C1C)]
-                            : const [AppColors.rh, Color(0xFF06B6D4)],
+                  color: accent.withValues(alpha: 0.08),
+                  border: Border.all(
+                    color: accent.withValues(alpha: 0.28),
+                    width: widget.size * 0.085,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: (widget.isCheckedIn
-                              ? AppColors.danger
-                              : AppColors.rh)
-                          .withValues(alpha: 0.32),
-                      blurRadius: 34,
-                      spreadRadius:
-                          widget.isLoading ? 4 : 12 * _animation.value,
-                    ),
-                  ],
                 ),
-                child: Center(
-                  child:
-                      widget.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                widget.isCheckedIn
-                                    ? Icons.logout_rounded
-                                    : Icons.fingerprint_rounded,
-                                color: Colors.white,
-                                size: 38,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                widget.isCheckedIn ? 'SORTIR' : 'POINTER',
-                                style: AppTypography.subtitle.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                widget.isCheckedIn
-                                    ? 'Fin de journee'
-                                    : 'Arrivee',
-                                style: AppTypography.caption.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.82),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                child: Padding(
+                  padding: EdgeInsets.all(widget.size * 0.095),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: accent.withValues(alpha: 0.13),
+                      border: Border.all(
+                        color: accent.withValues(alpha: 0.42),
+                        width: widget.size * 0.053,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(widget.size * 0.095),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: coreColors,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: accent.withValues(alpha: 0.28),
+                              blurRadius: 28,
+                              spreadRadius:
+                                  widget.isLoading ? 4 : 8 * _animation.value,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child:
+                              widget.isLoading
+                                  ? const SizedBox(
+                                    width: 30,
+                                    height: 30,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.4,
+                                    ),
+                                  )
+                                  : Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        widget.isCheckedIn
+                                            ? Icons.logout_rounded
+                                            : Icons.fingerprint_rounded,
+                                        color: Colors.white,
+                                        size: widget.size * 0.19,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        widget.isCheckedIn
+                                            ? 'SORTIR'
+                                            : 'POINTER',
+                                        style: AppTypography.subtitle.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.8,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        widget.isCheckedIn
+                                            ? 'Fin de journee'
+                                            : 'Arrivee',
+                                        style: AppTypography.caption.copyWith(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.82,
+                                          ),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             );
