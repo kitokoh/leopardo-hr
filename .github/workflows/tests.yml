@@ -750,55 +750,6 @@ jobs:
           echo "Backend coverage threshold not met."
           exit 1
 
-            echo "- Smoke build: ${{ steps.mobile_smoke_build.outcome }}"
-          } > "${summary_file}"
-
-      - name: Upload mobile quality summary
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: legacy-mobile-quality-summary
-          path: front/mobile/quality-summary.md
-          if-no-files-found: ignore
-
-      - name: Upload mobile test artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: legacy-mobile-test-reports
-          path: |
-            front/mobile/coverage/lcov.info
-            front/mobile/coverage/summary.txt
-            front/mobile/coverage/threshold.txt
-            front/mobile/test-results.json
-            front/mobile/quality-summary.md
-            front/mobile/test/**/*
-          if-no-files-found: ignore
-
-      - name: Fail mobile job if analyze failed
-        if: steps.mobile_analyze.outcome == 'failure'
-        run: |
-          echo "Flutter analyze failed."
-          exit 1
-
-      - name: Fail mobile job if tests failed
-        if: steps.mobile_tests.outcome == 'failure'
-        run: |
-          echo "Flutter tests failed."
-          exit 1
-
-      - name: Fail mobile job if coverage gate failed
-        if: steps.mobile_coverage_gate.outcome == 'failure'
-        run: |
-          echo "Mobile coverage threshold not met."
-          exit 1
-
-      - name: Fail mobile job if smoke build failed
-        if: steps.mobile_smoke_build.outcome == 'failure'
-        run: |
-          echo "Android smoke build failed."
-          exit 1
-
   governance-gates:
     name: Governance Gates (changelog + canonical files)
     runs-on: ubuntu-latest
@@ -876,7 +827,6 @@ jobs:
           set -euo pipefail
           BACKEND_SUMMARY="artifacts/backend-quality-summary/backend-quality-summary.md"
           BACKEND_COVERAGE_SUMMARY="artifacts/backend-coverage-summary/backend-coverage-summary.md"
-          MOBILE_SUMMARY="artifacts/mobile-quality-summary/quality-summary.md"
           cat > ci-report.md <<EOF
           # CI Report — Leopardo RH
 
