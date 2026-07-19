@@ -117,7 +117,7 @@ class _PendingGeoSessionsScreenState
   Widget build(BuildContext context) {
     final sessionsAsync = ref.watch(pendingGeoSessionsProvider);
 
-    return MobilePage(
+    return Scaffold(
       appBar: MobileTopBar(
         title: 'Sessions à valider',
         subtitle: 'Smart Attendance — GPS',

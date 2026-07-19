@@ -166,10 +166,10 @@ class _AttendanceModePickerScreenState
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF44336).withOpacity(0.15),
+                    color: const Color(0xFFF44336).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: const Color(0xFFF44336).withOpacity(0.4)),
+                        color: const Color(0xFFF44336).withValues(alpha: 0.4)),
                   ),
                   child: Text(
                     _error!,
@@ -258,7 +258,7 @@ class _ModeCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.12) : _card,
+          color: isSelected ? color.withValues(alpha: 0.12) : _card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : _border,
@@ -272,7 +272,7 @@ class _ModeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 22),
@@ -300,7 +300,7 @@ class _ModeCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.2),
+                            color: color.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(

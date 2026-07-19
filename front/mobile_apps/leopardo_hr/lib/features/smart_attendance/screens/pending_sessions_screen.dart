@@ -192,7 +192,7 @@ class _SessionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF111B2E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,7 +251,7 @@ class _SessionCard extends StatelessWidget {
                   label: const Text('Rejeter'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.danger,
-                    side: BorderSide(color: AppColors.danger.withOpacity(0.5)),
+                    side: BorderSide(color: AppColors.danger.withValues(alpha: 0.5)),
                   ),
                 ),
               ),
