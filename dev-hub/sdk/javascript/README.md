@@ -4,11 +4,14 @@ Generated from `api/openapi.yaml`.
 
 ## Usage
 
+> Note : `api.leopardo-rh.com` est un domaine cible non encore configure en production.
+> Remplacer par `https://gestionemployerbackend.onrender.com/api/v1` pour un usage reel aujourd'hui.
+
 ```js
 import { createLeopardoClient } from "./leopardoClient.js";
 
 const client = createLeopardoClient({
-  baseUrl: "https://api.leopardo-rh.com/api/v1",
+  baseUrl: "https://api.leopardo-rh.com/api/v1", // domaine cible, voir note ci-dessus
   token: process.env.LEOPARDO_TOKEN,
 });
 

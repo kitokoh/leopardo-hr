@@ -1,15 +1,15 @@
 # Leopardo Mobile Apps
 
-Ce dossier est la source canonique des applications mobiles de lancement. Il
-prepare la separation mobile sans casser `front/mobile/`, qui reste uniquement
-un mobile historique de maintenance.
+Ce dossier est la source canonique des applications mobiles de lancement.
+Le mobile historique (`front/mobile/`) a ete retire du depot ; ces apps sont
+desormais les seules applications mobiles actives.
 
 ## Structure
 
-- `leopardo_mobile_legacy/` : archive exacte du mobile historique. Ne pas modifier apres creation.
 - `leopardo_core/` : package Flutter partage. Il contient uniquement les briques communes : API client, stockage, i18n, theme, couleurs, typographie, widgets de base, modeles et providers core.
 - `leopardo_employee/` : app mobile employe. Elle expose les parcours personnels : connexion, accueil employe, pointage, absences, avances, paie, notifications, documents et compte.
 - `leopardo_manager/` : app mobile manager/RH. Elle conserve le perimetre complet du mobile actuel et prepare les routes des futurs ecrans manager.
+- `leopardo_hr/` : app mobile RH dediee, issue d'un split de `leopardo_manager`. Integree a la matrice CI canonique `mobile-distribute.yml` pour le deploiement Firebase (voir `CHANGELOG.md`).
 - `leopardo_platform_admin/` : app mobile super-admin plateforme. Elle consomme uniquement les API `/platform/*` pour piloter les tenants, creer une entreprise cliente, traiter les demandes clients et suivre les metriques globales.
 
 ## Regles de contribution
@@ -20,14 +20,12 @@ un mobile historique de maintenance.
 - L'app manager/RH conserve les ecrans complets et gere les differences internes via `employee.managerRole`.
 - L'app platform admin ne contient aucun workflow tenant employe/manager : pas de pointage, absences, avances, equipe ou approvals RH.
 - La differenciation par sous-role manager se fait dans les ecrans concernes, pas dans le router.
-- `front/mobile/` reste le mobile historique fonctionnel tant que la bascule produit n'est pas terminee. Ne pas y ajouter de nouvelle fonctionnalite produit : les evolutions employee, manager/RH et platform admin vont dans `front/mobile_apps/*`.
-- `leopardo_mobile_legacy/` est un filet de securite : ne pas le modifier.
+- `front/mobile/` (mobile historique) a ete retire du depot ; toutes les evolutions employee, manager/RH, HR et platform admin vont dans `front/mobile_apps/*`.
 
 ## CI et distribution
 
-- `Mobile Apps CI - Flutter` valide `leopardo_core`, `leopardo_employee`, `leopardo_manager` et `leopardo_platform_admin`.
-- `Mobile - Build and Firebase Distribution` compile et distribue les trois APK Android de lancement vers Firebase App Distribution.
-- `Legacy Mobile CI - Flutter` et les jobs `Legacy Mobile Flutter` ne concernent que `front/mobile/`. Ils servent a maintenir l'historique, pas a valider les nouvelles apps store.
+- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr` et `leopardo_platform_admin`.
+- `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) compile et distribue les APK Android de lancement vers Firebase App Distribution.
 
 ## Garde-fous Plan 26
 
@@ -50,14 +48,13 @@ Il verifie notamment :
 - aucun marqueur `isManager`, `canManageTeam`, `managerRole`, `isPrincipal` ou `isHr` dans l'app employe ;
 - aucun import `package:leopardo_rh` dans les nouvelles apps ;
 - aucun import `leopardo_employee` ou `leopardo_manager` depuis `leopardo_core` ;
-- dependance `leopardo_core` presente dans les deux apps ;
+- dependance `leopardo_core` presente dans les apps concernees ;
 - routes manager preparees dans `leopardo_manager` ;
-- en pull request, aucune modification de `leopardo_mobile_legacy`.
-- identites App Store / Play Store distinctes pour `leopardo_employee` et `leopardo_manager` ;
+- identites App Store / Play Store distinctes pour `leopardo_employee`, `leopardo_manager` et `leopardo_hr` ;
 - endpoints et routes critiques presents pour les workflows mobiles principaux ;
 - absence de handlers UI vides sur les apps mobiles.
 
-Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis consommer cette API depuis les deux apps. Si une evolution ne concerne qu'un persona, la placer uniquement dans `leopardo_employee` ou `leopardo_manager`.
+Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis consommer cette API depuis les apps concernees. Si une evolution ne concerne qu'un persona, la placer uniquement dans l'app correspondante (`leopardo_employee`, `leopardo_manager` ou `leopardo_hr`).
 
 ## Identites store
 
@@ -65,6 +62,7 @@ Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis c
 |---|---|---|---|
 | `leopardo_employee` | `com.leopardo.employee` | `com.leopardo.employee` | Leopardo Employee |
 | `leopardo_manager` | `com.leopardo.manager` | `com.leopardo.manager` | Leopardo Manager |
+| `leopardo_hr` | `com.leopardo.rh` | `com.leopardo.rh` | Leopardo RH |
 | `leopardo_platform_admin` | `com.leopardo.platformadmin` | `com.leopardo.platformadmin` | Leopardo Platform Admin |
 
 ## Branding natif
@@ -78,7 +76,7 @@ Les assets canoniques du branding mobile sont generes directement dans chaque ap
 - iOS App Store : `ios/Runner/Assets.xcassets/AppIcon.appiconset/`
 - iOS splash : `ios/Runner/Assets.xcassets/LaunchImage.imageset/`
 
-Ne pas remettre les icones Flutter par defaut. Pour changer l'identite visuelle, regenerer les trois familles d'assets employee, manager et platform admin dans le meme lot afin de garder une coherence store.
+Ne pas remettre les icones Flutter par defaut. Pour changer l'identite visuelle, regenerer les familles d'assets employee, manager, HR et platform admin dans le meme lot afin de garder une coherence store.
 
 Avant un upload public, le mode strict doit passer apres configuration des signatures release :
 
@@ -104,6 +102,11 @@ flutter analyze
 flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
 cd ../leopardo_manager
+flutter pub get
+flutter analyze
+flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
+
+cd ../leopardo_hr
 flutter pub get
 flutter analyze
 flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
