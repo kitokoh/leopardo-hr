@@ -27,9 +27,9 @@ dependencies:
   local_auth: ^3.0.1
   json_annotation: ^4.11.0
   url_launcher: ^6.3.1
-  firebase_core: ^3.13.0
-  firebase_messaging: ^15.2.5
-  flutter_local_notifications: ^19.2.1
+  firebase_core: ^4.12.1
+  firebase_messaging: ^16.4.3
+  flutter_local_notifications: ^22.1.0
   leopardo_core:
     path: ../leopardo_core
 
@@ -38,8 +38,8 @@ dependencies:
   cached_network_image: ^3.4.1
 
   # Module Smart Attendance — Géofencing + Background Location
-  geolocator: ^13.0.1
-  workmanager: ^0.5.7
+  geolocator: ^14.0.3
+  workmanager: ^0.9.0
   permission_handler: ^11.3.1
 
 dev_dependencies:
