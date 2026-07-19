@@ -35,6 +35,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^8.0.1",
     "@playwright/test": "^1.52.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/leaflet": "^1.9.8",
     "@types/nprogress": "^0.2.3",
     "@vitejs/plugin-vue": "^6.0.8",
