@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { ModulePageShell } from '@/components/module-page-shell';
 import { CreditCard, Download, ExternalLink, FileText, Loader2, ShieldCheck, XCircle } from 'lucide-react';
 
 type Subscription = {
@@ -184,12 +185,11 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Facturation</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Gerez votre abonnement, vos moyens de paiement et vos factures.</p>
-      </div>
-
+    <ModulePageShell
+      title="Facturation"
+      subtitle="Gerez votre abonnement, vos moyens de paiement et vos factures directement depuis votre espace client."
+      accentClassName="bg-gradient-to-br from-emerald-500/10 via-white to-white"
+    >
       {error ? (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       ) : null}
@@ -322,6 +322,6 @@ export default function BillingPage() {
           </div>
         </>
       )}
-    </div>
+    </ModulePageShell>
   );
 }
