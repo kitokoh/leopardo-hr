@@ -99,6 +99,83 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function updateProfile(payload) {
+    try {
+      const response = await api.patch(`${PLATFORM_AUTH_BASE}/profile`, payload)
+      user.value = response.data?.data || user.value
+
+      return { success: true, data: response.data?.data }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error,
+        message: error.response?.data?.message || 'La mise a jour du profil a echoue.',
+      }
+    }
+  }
+
+  async function changePassword(payload) {
+    try {
+      await api.post(`${PLATFORM_AUTH_BASE}/change-password`, payload)
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error,
+        message: error.response?.data?.message || 'Le changement de mot de passe a echoue.',
+      }
+    }
+  }
+
+  async function setup2fa() {
+    try {
+      const response = await api.post(`${PLATFORM_AUTH_BASE}/2fa/setup`)
+
+      return { success: true, data: response.data?.data }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error,
+        message: error.response?.data?.message || 'La generation du secret 2FA a echoue.',
+      }
+    }
+  }
+
+  async function enable2fa(code) {
+    try {
+      await api.post(`${PLATFORM_AUTH_BASE}/2fa/enable`, { code })
+      if (user.value) {
+        user.value = { ...user.value, two_fa_enabled: true }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error,
+        message: error.response?.data?.message || 'Le code 2FA fourni est invalide.',
+      }
+    }
+  }
+
+  async function disable2fa(password) {
+    try {
+      await api.post(`${PLATFORM_AUTH_BASE}/2fa/disable`, { password })
+      if (user.value) {
+        user.value = { ...user.value, two_fa_enabled: false }
+      }
+
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error,
+        message: error.response?.data?.message || 'La desactivation du 2FA a echoue.',
+      }
+    }
+  }
+
   return {
     user,
     token,
@@ -110,5 +187,10 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     checkAuth,
+    updateProfile,
+    changePassword,
+    setup2fa,
+    enable2fa,
+    disable2fa,
   }
 })

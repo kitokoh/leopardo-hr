@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Auth\Infrastructure\Services\SuperAdminService;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
@@ -178,5 +178,82 @@ class PlatformAuthTest extends TestCase
         $response->assertOk();
         $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
     }
-}
 
+    public function test_super_admin_can_update_own_profile(): void
+    {
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/platform/auth/profile', [
+                'name' => 'Updated Admin Name',
+                'email' => 'updated-admin@leopardo.test',
+            ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.name', 'Updated Admin Name');
+        $response->assertJsonPath('data.email', 'updated-admin@leopardo.test');
+
+        $this->assertSame('Updated Admin Name', $this->superAdmin->fresh()->name);
+        $this->assertSame('updated-admin@leopardo.test', $this->superAdmin->fresh()->email);
+    }
+
+    public function test_super_admin_profile_update_rejects_email_already_taken(): void
+    {
+        SuperAdmin::query()->create([
+            'name' => 'Other Admin',
+            'email' => 'other-admin@leopardo.test',
+            'password_hash' => Hash::make('password123'),
+        ]);
+
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/platform/auth/profile', [
+                'email' => 'other-admin@leopardo.test',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonPath('error', 'EMAIL_ALREADY_TAKEN');
+        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()->email);
+    }
+
+    public function test_super_admin_can_change_own_password(): void
+    {
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->postJson('/api/v1/platform/auth/change-password', [
+                'current_password' => 'password123',
+                'new_password' => 'brandNewPassword456',
+                'new_password_confirmation' => 'brandNewPassword456',
+            ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'ok');
+
+        $this->assertTrue(Hash::check('brandNewPassword456', $this->superAdmin->fresh()->password_hash));
+
+        // Old sessions/tokens (except the one used for this request) are revoked.
+        $loginAfterChange = $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'brandNewPassword456',
+        ]);
+        $loginAfterChange->assertOk();
+    }
+
+    public function test_change_password_rejects_wrong_current_password(): void
+    {
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->postJson('/api/v1/platform/auth/change-password', [
+                'current_password' => 'wrong-password',
+                'new_password' => 'brandNewPassword456',
+                'new_password_confirmation' => 'brandNewPassword456',
+            ]);
+
+        $response->assertStatus(401);
+        $response->assertJsonPath('error', 'INVALID_PASSWORD');
+        $this->assertTrue(Hash::check('password123', $this->superAdmin->fresh()->password_hash));
+    }
+}
