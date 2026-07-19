@@ -10,22 +10,108 @@ updates:
         patterns:
           - "*"
 
+  # npm — backend Laravel front-end tooling (Vite assets), pas un vrai front-end
   - package-ecosystem: "npm"
     directory: "/api"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
     groups:
-      frontend-dependencies:
+      backend-frontend-dependencies:
         patterns:
           - "*"
 
-  - package-ecosystem: "pub"
-    directory: "/mobile"
+  # npm — vitrine publique Next.js
+  - package-ecosystem: "npm"
+    directory: "/front/web"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
     groups:
-      flutter-dependencies:
+      web-marketing-dependencies:
+        patterns:
+          - "*"
+
+  # npm — admin dashboard Vue.js
+  - package-ecosystem: "npm"
+    directory: "/front/admin-dashboard"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      admin-dashboard-dependencies:
+        patterns:
+          - "*"
+
+  # npm — web offline (PWA/offline-first companion app)
+  - package-ecosystem: "npm"
+    directory: "/front/web-offline"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      web-offline-dependencies:
+        patterns:
+          - "*"
+
+  # pub — apps Flutter reelles du monorepo (front/mobile_apps/*)
+  - package-ecosystem: "pub"
+    directory: "/front/mobile_apps/leopardo_core"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      flutter-core-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pub"
+    directory: "/front/mobile_apps/leopardo_employee"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      flutter-employee-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pub"
+    directory: "/front/mobile_apps/leopardo_manager"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      flutter-manager-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pub"
+    directory: "/front/mobile_apps/leopardo_hr"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      flutter-hr-dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "pub"
+    directory: "/front/mobile_apps/leopardo_platform_admin"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      flutter-platform-admin-dependencies:
+        patterns:
+          - "*"
+
+  # github-actions — maintient les actions tierces a jour (CVE, SHA pinning)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      github-actions-dependencies:
         patterns:
           - "*"
