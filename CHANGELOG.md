@@ -23,6 +23,13 @@
 
 ### Docs
 - **Nouveau document `docs/security/OPENAPI_COVERAGE_GAP_2026-07-19.md`** : ecart quantifie entre les routes API declarees (~532, prefixes reconstruits statiquement) et les operations documentees dans `openapi.yaml` (~345) — environ 210 routes candidates non documentees, listees par module avec leur fichier source, plus les faux positifs probables du parseur statique a revoir avec `php artisan route:list`. Pas de generation de specs OpenAPI dans cette revue (risque de documenter des schemas inexacts sans runtime PHP pour les verifier) ; document fourni comme backlog actionnable module par module.
+## [4.23.5] - 2026-07-19
+
+### Added
+- **Audit vitrine acquisition/conversion (`PA2-MKT-008` a `014`)** : nouveau `docs/PLAN_ACTION2/11_AUDIT_VITRINE_ACQUISITION.md`, complement de `08_AUDIT_ARCHITECTURE_TECH.md`/`09_AUDIT_MODULES_API_STRUCTURE.md`/`10_AUDIT_I18N_MULTILINGUE.md`, focalise sur la vitrine commerciale (`front/web/src/modules/vitrine`). Constats principaux verifies par lecture de code et requetes HTTP reelles : (1) `assets/screenshots/` contient de vraies captures produit (dashboard, mobile employee/manager, admin) jamais branchees sur la vitrine malgre un composant `ProductScreenshots` dedie ; (2) `data/testimonials.ts` reference 4 avatars (`avatar-1..4.webp`) inexistants dans `public/avatars/`, provoquant des icones brisees ; (3) le domaine `leopardo.com` documente comme cible de production (`docs/DEPLOYMENT_PRODUCTION.md`) sert en realite le site d'une entreprise americaine de construction sans rapport — le nom de domaine n'a jamais ete achete pour ce produit — et la vraie vitrine ne vit que sur des URLs de preview Vercel protegees par SSO, inaccessibles a un prospect externe ; (4) marques listees dans `TrustedBrands.tsx` presentees comme "Ils nous font confiance" sans preuve de relation client reelle. 7 nouveaux tickets `PA2-MKT-008` a `014` ajoutes a `02_BACKLOG_ATOMIQUE.md` et `03_GITHUB_PROJECT_IMPORT.csv`.
+
+### Changed
+- **Archivage de `docs/PLAN_ACTION/` vers `docs/archive/PLAN_ACTION/`** : le dossier des 72 plans d'action historiques (clos depuis le 2026-06-06 selon `PILOTAGE.md`) est deplace tel quel pour materialiser sa cloture, sans modification de contenu hors bandeau d'en-tete de `00_SOMMAIRE.md`. Toutes les references externes mises a jour en consequence : `AGENTS.md`, `CONVENTIONS.md`, `PILOTAGE.md`, `MARKETING_MODULE_PLAN.md`, `DEVELOPMENT.md`, `docs/README.md`, `docs/CONTEXT/03_OPERATIONAL_CONTEXT.md`, `docs/architecture/PARTITIONING.md`, `docs/validation/README.md`, `docs/validation/CODE_QUALITY_GOVERNANCE_REPORT_2026_06_01.md`, `docs/validation/NEXT_PRODUCT_PLAN_2026_06_01.md`, `docs/PLAN_ACTION2/10_AUDIT_I18N_MULTILINGUE.md`, ainsi que les scripts de gouvernance `dev-hub/tools/release-readiness.ps1` et `dev-hub/tools/validate-code-quality-governance.ps1` qui verifient l'existence de fichiers de ce dossier. `docs/PLAN_ACTION2/` (plan actif) reste inchange de position.
 
 ## [4.23.4] - 2026-07-19
 
@@ -149,7 +156,7 @@
 - **Nettoyage du monorepo (artefacts CI + binaires vendorises commis par erreur)** : suppression de `api/composer.phar`, `api/database/database.sqlite`, des rapports de tests generes (`api/storage/test-results*/`, `backend-quality-reports/`, `backend-test-reports/`, `front/web/playwright-report/index.html`) qui ne devraient jamais etre commites (deja regeneres a chaque run CI). `.gitignore` etendu pour empecher leur reapparition.
 - **Rangement des scripts epars a la racine** : `api/start-local.ps1` -> `api/scripts/start-local.ps1`, `api/test_script.php` -> `api/scripts/test_script.php`, `capture_screenshots.py` -> `scripts/capture_screenshots.py`, avec un `api/scripts/README.md` documentant leur usage. References mises a jour dans `api/README.md`, `docs/DEMARRAGE_RAPIDE.md`, `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`, `docs/notes/archive/ARBORESCENCE_PROJET_COMPLET.md`.
 ### Docs
-- **Consolidation architecture** : fusion des ADR dupliques (`docs/architecture/adr-00X-*.md` -> `docs/architecture/adr/000X-*.md`), suppression de `docs/architecture/SYSTEM_DESIGN.md` (contenu redondant avec `ARCHITECTURE.md`), mise a jour croisee de `ARCHITECTURE.md`, `README.md`, `docs/QUICKSTART.md`, `docs/ai/README.md`, `docs/validation/README.md`, `docs/PLAN_ACTION/00_SOMMAIRE.md` pour pointer vers les documents canoniques uniques.
+- **Consolidation architecture** : fusion des ADR dupliques (`docs/architecture/adr-00X-*.md` -> `docs/architecture/adr/000X-*.md`), suppression de `docs/architecture/SYSTEM_DESIGN.md` (contenu redondant avec `ARCHITECTURE.md`), mise a jour croisee de `ARCHITECTURE.md`, `README.md`, `docs/QUICKSTART.md`, `docs/ai/README.md`, `docs/validation/README.md`, `docs/archive/PLAN_ACTION/00_SOMMAIRE.md` pour pointer vers les documents canoniques uniques.
 - **`PILOTAGE.md`** : ajout d'une section "Gouvernance documentaire" clarifiant la hierarchie des sources de verite (PILOTAGE.md pour priorites/regles operationnelles, ARCHITECTURE.md pour la structure technique), et corrige une auto-reference obsolete.
 ### Chore
 - **Coherence tooling monorepo** : suppression de `.github/workflows/mobile-ci.yml` (duplique de la matrice mobile deja couverte par `tests.yml`), dedoublonnage de `openapi/openapi.yaml` (le spec canonique reste `api/openapi.yaml`), retrait de `turbo.json`/de la dependance Turbo inutilisee (le monorepo pilote deja ses taches via `melos` pour Flutter et npm workspaces pour le web), ajout du package `melos` manquant a `package.json`. Mise a jour de `ARCHITECTURE.md`, `DEVELOPMENT.md`, `docs/ARCHITECTURE_CICD.md`, `docs/MONOREPO_TOOLING.md`, `docs/README.md`, `docs/api/README.md`, `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md` en consequence.
@@ -1493,7 +1500,7 @@
 - API attendance : `GET /api/v1/attendance/today` expose maintenant `sessions` et `summary` pour les details de journee mobile.
 - API tasks : ajout des champs execution (`estimated_minutes`, `completed_minutes`, `completed_at`, `completion_note`, `performance_score`, `recurrence_rule`, `template_key`) et de `GET /api/v1/tasks/today`.
 - Mobile employee : le bouton de pointage propose pause/reprise/heures supp/mission/deplacement et affiche les taches du jour.
-- Documentation : ajout du Plan 31 `docs/PLAN_ACTION/31_PLAN_POINTAGE_TACHES_MOBILE.md`.
+- Documentation : ajout du Plan 31 `docs/archive/PLAN_ACTION/31_PLAN_POINTAGE_TACHES_MOBILE.md`.
 
 ### Fixed
 
@@ -1558,7 +1565,7 @@
 
 ### Added
 
-- API : ajout du Plan 30 `docs/PLAN_ACTION/30_PLAN_API_WORKFLOW_HARDENING.md` pour verrouiller les workflows frontends/API.
+- API : ajout du Plan 30 `docs/archive/PLAN_ACTION/30_PLAN_API_WORKFLOW_HARDENING.md` pour verrouiller les workflows frontends/API.
 - Tests : extension de `FrontendApiContractTest` aux routes employee/manager mobile et Platform Admin mobile.
 - Documentation : matrice `FRONTEND_API_CONTRACT_MATRIX.md` enrichie avec les workflows mobiles equipe, avances, approvals et plateforme.
 
@@ -1596,7 +1603,7 @@
 
 ### Added
 
-- Mobile : ajout du Plan 28 `docs/PLAN_ACTION/28_PLAN_MOBILE_MULTI_APP_EXCELLENCE.md` pour verrouiller l'architecture mobile employee/manager.
+- Mobile : ajout du Plan 28 `docs/archive/PLAN_ACTION/28_PLAN_MOBILE_MULTI_APP_EXCELLENCE.md` pour verrouiller l'architecture mobile employee/manager.
 - Mobile : nouveau validateur `dev-hub/tools/validate-mobile-plan28.ps1` execute par `mobile-apps-ci.yml`.
 
 ### Changed
@@ -1651,7 +1658,7 @@
 
 ### Added
 
-- Documentation : Plan 27 `docs/PLAN_ACTION/27_PLAN_MOBILE_RELEASE_READINESS.md` pour readiness App Store / Play Store.
+- Documentation : Plan 27 `docs/archive/PLAN_ACTION/27_PLAN_MOBILE_RELEASE_READINESS.md` pour readiness App Store / Play Store.
 - Documentation : checklist `docs/validation/MOBILE_STORE_READINESS.md` couvrant boutons, workflows et criteres no-go mobile.
 - Mobile : script `dev-hub/tools/validate-mobile-release-readiness.ps1` pour verifier identites store, routes critiques, endpoints et handlers vides.
 
@@ -1664,7 +1671,7 @@
 
 ### Added
 
-- Documentation : Plan 26 `docs/PLAN_ACTION/26_PLAN_MOBILE_MULTI_APP_PRODUCTION.md` pour durcir la separation mobile employee/manager.
+- Documentation : Plan 26 `docs/archive/PLAN_ACTION/26_PLAN_MOBILE_MULTI_APP_PRODUCTION.md` pour durcir la separation mobile employee/manager.
 - Mobile : script `dev-hub/tools/validate-mobile-apps-split.ps1` ajoutant des garde-fous de structure multi-app.
 - CI : `mobile-apps-ci.yml` execute maintenant le garde de separation avant les analyses Flutter.
 
@@ -1822,7 +1829,7 @@
 - FormRequests : 10 classes extraites (StoreDepartment, UpdateDepartment, StorePosition, UpdatePosition, StoreSchedule, UpdateSchedule, StoreSite, UpdateSite, StoreWebhookEndpoint, UpdateWebhookEndpoint) avec validation et authorize gates.
 - ApiError enum : catalogue centralise de ~40 codes erreur API avec traductions FR/EN/AR/TR, codes HTTP semantiques et methode `->response()`.
 - Traductions api_errors : fichiers i18n `lang/{en,fr,ar,tr}/api_errors.php` pour les messages erreur API.
-- Plan 23 : document `docs/PLAN_ACTION/23_PLAN_API_PRODUCTION_GRADE.md` â€” audit architecture + plan 8 iterations production-grade.
+- Plan 23 : document `docs/archive/PLAN_ACTION/23_PLAN_API_PRODUCTION_GRADE.md` â€” audit architecture + plan 8 iterations production-grade.
 
 ### Changed
 
@@ -2247,7 +2254,7 @@
 ### Added
 
 - CI : workflow dedie `Backend Jobs CI` pour tester les contrats queues/jobs (`QueueJobsTest` + warmup PDF paie).
-- Docs : creation du `docs/PLAN_ACTION/17_PLAN_COVERAGE_LANCEMENT.md` pour piloter le prochain vrai lot avant lancement marketing.
+- Docs : creation du `docs/archive/PLAN_ACTION/17_PLAN_COVERAGE_LANCEMENT.md` pour piloter le prochain vrai lot avant lancement marketing.
 - Docs : synchronisation des items `T-ARCH-19` et `T-CI-07` avec l'etat reel du depot.
 
 ## [4.16.94] - 2026-05-20

@@ -120,7 +120,7 @@ CREATE INDEX idx_{table}_created_at ON {table} (created_at);
 
 - Activer `log_min_duration_statement = 500` en staging
 - Les queries > 500ms sont loguees et traitees comme des incidents performance
-- Voir `docs/PLAN_ACTION/07_MONITORING_LOGGING_OBSERVABILITE.md` pour le plan monitoring
+- Voir `docs/archive/PLAN_ACTION/07_MONITORING_LOGGING_OBSERVABILITE.md` pour le plan monitoring
 
 ## 5. Strategie de scalabilite
 

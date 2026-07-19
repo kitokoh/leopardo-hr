@@ -200,6 +200,6 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 ## 10. References
 
 - [AGENTS.md](./AGENTS.md) — Guide operationnel complet
-- [docs/PLAN_ACTION/](./docs/PLAN_ACTION/) — Plans d'action detailles
+- [docs/archive/PLAN_ACTION/](./docs/archive/PLAN_ACTION/) — Plans d'action detailles
 - [docs/validation/](./docs/validation/) — Rapports de readiness
 - [docs/security/](./docs/security/) — Audits securite

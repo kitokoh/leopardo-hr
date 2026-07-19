@@ -31,9 +31,9 @@ function Assert-NotContains($Content, $Needle, $Label) {
 }
 
 $apiReadme = Read-RepoFile "docs/api/README.md"
-$planSummary = Read-RepoFile "docs/PLAN_ACTION/00_SOMMAIRE.md"
+$planSummary = Read-RepoFile "docs/archive/PLAN_ACTION/00_SOMMAIRE.md"
 $releaseGate = Read-RepoFile "docs/validation/RELEASE_READINESS_GATE.md"
-$plan68 = Read-RepoFile "docs/PLAN_ACTION/68_PLAN_AUDIT_POST_67_QUALITE_CODE_LANCEMENT.md"
+$plan68 = Read-RepoFile "docs/archive/PLAN_ACTION/68_PLAN_AUDIT_POST_67_QUALITE_CODE_LANCEMENT.md"
 
 Assert-Contains $apiReadme "/docs/openapi.yaml" "API README"
 Assert-Contains $apiReadme "/docs" "API README"
