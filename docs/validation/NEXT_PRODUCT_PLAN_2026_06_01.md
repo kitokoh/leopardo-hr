@@ -2,7 +2,7 @@
 
 ## Decision
 
-Le prochain cycle d'execution est le Plan 69 : `docs/PLAN_ACTION/69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md`.
+Le prochain cycle d'execution est le Plan 69 : `docs/archive/PLAN_ACTION/69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md`.
 
 Ce plan est issu des preuves Plan 67 et de l'audit Plan 68. Il ne relance pas une refonte. Il concentre l'execution sur les parcours qui peuvent bloquer le lancement marketing :
 

@@ -8,7 +8,7 @@ La majorite des fichiers de ce dossier portent une date dans leur nom
 (ex: `*_2026_06_01.md`, `RELEASE_READINESS_REPORT_2026-05-19.md`). Ce sont des
 **rapports d'audit/smoke-test figes au moment de leur redaction** — ils ne sont
 jamais mis a jour retroactivement et servent de preuve/tracabilite pour les
-plans `docs/PLAN_ACTION/` qui les ont produits. Ne pas les considerer comme
+plans `docs/archive/PLAN_ACTION/` qui les ont produits. Ne pas les considerer comme
 l'etat actuel du systeme ; se referer au code sur `main` et a `PILOTAGE.md`
 pour l'etat present.
 

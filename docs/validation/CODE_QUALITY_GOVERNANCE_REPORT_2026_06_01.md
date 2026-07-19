@@ -7,7 +7,7 @@ Le Plan 68.3 est traite comme un audit pragmatique : corriger les incoherences q
 ## Corrections livrees
 
 - `docs/api/README.md` pointe maintenant vers la documentation publique reelle `/docs` et la specification canonique `/docs/openapi.yaml`.
-- `docs/PLAN_ACTION/00_SOMMAIRE.md` ne mentionne plus l'ancien chemin `openapi/v1.yaml`.
+- `docs/archive/PLAN_ACTION/00_SOMMAIRE.md` ne mentionne plus l'ancien chemin `openapi/v1.yaml`.
 - `dev-hub/tools/validate-code-quality-governance.ps1` verifie les chemins canoniques API et la presence des artefacts post-67.
 - Le gate release readiness integre maintenant cette preuve.
 
