@@ -3,6 +3,15 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.4] - 2026-07-19
+
+### Changed
+- **CI/CD : durcissement supply-chain (P1) + deduplication setup PHP/Flutter (P2)**, suite a `AUDIT_CICD_2026-07-19.md` :
+  - Pinning par SHA des actions tierces non-GitHub a plus haut risque (`trufflesecurity/trufflehog`, `shivammathur/setup-php`, `subosito/flutter-action`, `treosh/lighthouse-ci-action`, `wzieba/Firebase-Distribution-Github-Action`, `dawidd6/action-send-mail`), avec commentaire de version en clair pour faciliter les futures revues Dependabot.
+  - Uniformisation `actions/checkout` et `actions/upload-artifact` sur une version stable commune dans tous les workflows.
+  - Nouvelles actions composites reutilisables `.github/actions/setup-backend-db` (PHP + PostgreSQL + Redis + bootstrap multi-tenant `shared_tenants`) et `.github/actions/setup-flutter-android`, qui remplacent ~360 lignes dupliquees entre `tests.yml` (x2 jobs), `coverage-gate.yml`, `backend-jobs-ci.yml`, `mobile-apps-ci.yml`, `mobile-distribute.yml`, `deploy-main.yml`. Suppression des reusable workflows morts `_setup-php.yml`/`_setup-flutter.yml` (jamais appeles).
+  - Voir `PLAN_ACTION_CICD_2026-07-19.md` pour le suivi detaille P0-P4.
+
 ## [4.23.3] - 2026-07-19
 
 ### Security
