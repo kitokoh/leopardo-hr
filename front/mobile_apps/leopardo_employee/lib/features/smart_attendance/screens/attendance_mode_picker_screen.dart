@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
 
 /// Écran de sélection du mode de pointage préféré pour l'employé.
@@ -26,7 +25,6 @@ class _AttendanceModePickerScreenState
     extends ConsumerState<AttendanceModePickerScreen> {
   // Couleurs de l'app (cohérentes avec AttendanceScreen)
   static const Color _bg = Color(0xFF0B1120);
-  static const Color _card = Color(0xFF111B2E);
   static const Color _text = Color(0xFFE2EAF6);
   static const Color _muted = Color(0xFF7A9CC0);
   static const Color _border = Color(0xFF1A2B44);
