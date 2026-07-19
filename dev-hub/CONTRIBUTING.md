@@ -1,5 +1,10 @@
 # Contribution Guidelines
 
+> 📌 **Portee de ce document** : version destinee aux developpeurs et integrateurs
+> externes (`dev-hub/`). Pour la contribution interne au monorepo, la reference qui prime
+> reste [`/CONTRIBUTING.md`](../CONTRIBUTING.md) a la racine du depot. En cas de divergence
+> entre les deux fichiers, la version racine est canonique.
+
 Thank you for your interest in contributing to Leopardo RH! We welcome contributions from the community to help us build the best open-source HR platform.
 
 ## 🤝 How to Contribute

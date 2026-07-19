@@ -70,7 +70,7 @@ Objectif 30j   : 3-5 clients payants, MRR 150-250€
 
 | Surface | Stack | Déploiement | Statut |
 |---------|-------|-------------|--------|
-| API Backend | Laravel 11 / PHP 8.4 / PostgreSQL 16 | Render | ✅ Production |
+| API Backend | Laravel 12 (^12.60) / PHP 8.4 / PostgreSQL 16 | Render | ✅ Production |
 | Admin Dashboard | Vue 3 + Vite + Tailwind | Cloudflare Pages | ✅ Production |
 | Vitrine Web | Next.js + TypeScript + Tailwind | Vercel | ✅ Production |
 | App Employee | Flutter/Dart | Firebase App Distribution | ✅ Distribution |

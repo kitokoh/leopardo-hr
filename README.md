@@ -66,7 +66,7 @@ graph TB
     end
 
     subgraph "Enterprise Gateway"
-        API[Laravel 11 / PHP 8.4]
+        API[Laravel 12 / PHP 8.4]
         Sec[RBAC & JWT Shield]
     end
 
@@ -95,7 +95,7 @@ graph TB
 
 | Module | Access Point | Technology Stack |
 | :--- | :--- | :--- |
-| **API Backend** | [Gateway](https://gestionemployerbackend.onrender.com) | Laravel 11, PostgreSQL |
+| **API Backend** | [Gateway](https://gestionemployerbackend.onrender.com) | Laravel 12, PostgreSQL |
 | **Corporate Web** | [Live Preview](https://gestionemployer-backend.vercel.app) | Next.js 15, Tailwind CSS |
 | **Admin Panel** | [Dashboard](https://leo-admin.pages.dev) | Cloudflare Pages |
 | **Mobile Suite** | [Employee / Manager / Admin](https://github.com/kitokoh/leopardo-hr#mobile-ecosystem) | Flutter 3.x, Riverpod |
@@ -133,6 +133,7 @@ Explore our comprehensive guides for every role and layer:
 | 🌐 **API & Dev** | [API Reference](docs/api/API_REFERENCE.md) • [OpenAPI Spec](api/openapi.yaml) • [Postman](postman/) |
 | 📱 **Interfaces** | [Mobile Setup](docs/mobile/README.md) • [Kiosk Mode](docs/kiosk/README.md) • [Web Admin](docs/admin/README.md) |
 | 🚀 **Operations** | [Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md) • [Testing Suite](docs/testing/TESTING.md) • [Observability](docs/architecture/OBSERVABILITY.md) |
+| 🧭 **Gouvernance & Onboarding agent** | [AGENTS.md](AGENTS.md) • [PILOTAGE.md](PILOTAGE.md) (source de vérité opérationnelle courante) • [docs/CONTEXT/](docs/CONTEXT/README.md) (onboarding structuré) |
 
 ---
 
@@ -143,7 +144,7 @@ Explore our comprehensive guides for every role and layer:
 - [ ] **Phase 3:** Public API Ecosystem & SDKs.
 - [ ] **Phase 4:** Global Financial Integrations (SEPA/SWIFT).
 
-See the **[Full Public Roadmap](ROADMAP.md)**.
+See the **[Full Public Roadmap](ROADMAP.md)** (aspirationnelle) et **[PILOTAGE.md](PILOTAGE.md)** pour l'état operationnel reel priorise (ce dernier prime en cas de divergence).
 
 ---
 

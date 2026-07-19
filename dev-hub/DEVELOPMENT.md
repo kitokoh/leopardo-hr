@@ -1,5 +1,10 @@
 # Development Guide — Leopardo RH
 
+> 📌 **Portee de ce document** : version destinee aux developpeurs et integrateurs
+> externes (`dev-hub/`). Pour le developpement interne au monorepo, la reference qui prime
+> reste [`/DEVELOPMENT.md`](../DEVELOPMENT.md) a la racine du depot. En cas de divergence
+> entre les deux fichiers (versions de prerequis, structure), la version racine est canonique.
+
 ## Prerequisites
 
 | Tool | Version | Notes |
