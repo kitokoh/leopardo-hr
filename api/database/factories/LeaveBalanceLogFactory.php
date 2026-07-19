@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Modules\Attendance\Domain\Models\LeaveBalanceLog;
+use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 
 class LeaveBalanceLogFactory extends Factory
 {
