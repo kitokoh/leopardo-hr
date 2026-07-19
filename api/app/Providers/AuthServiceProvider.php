@@ -7,6 +7,7 @@ use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Absence\Domain\Models\Absence;
 use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
@@ -17,6 +18,7 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
+use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
@@ -79,11 +81,20 @@ class AuthServiceProvider extends ServiceProvider
 
         // Finance
         Gate::policy(Subscription::class, BillingPolicy::class);
+        // PA2-ARCH-008: decision explicite. Invoice avait deux policies enregistrees
+        // en double sur deux providers (BillingPolicy ici via AppServiceProvider,
+        // InvoicePolicy ici) — cf. docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md.
+        // InvoicePolicy est retenue car plus specifique (view/create/pay avec scope
+        // tenant explicite) ; BillingPolicy reste responsable de la Subscription et
+        // des Gate::define() manage-billing/viewInvoices/downloadInvoice ci-dessous,
+        // qui restent des permissions d'action et non un Gate::policy(Invoice::class, ...).
         Gate::policy(Invoice::class, InvoicePolicy::class);
         Gate::policy(EmployeeLoan::class, LoanPolicy::class);
         Gate::policy(ExpenseClaim::class, ExpenseClaimPolicy::class);
         Gate::policy(PayrollRun::class, PayrollPolicy::class);
         Gate::policy(PaySlip::class, PayrollPolicy::class);
+        Gate::policy(FeaturePlanMatrix::class, FeatureFlagPolicy::class);
+        Gate::policy(OnboardingStep::class, OnboardingPolicy::class);
 
         // Recruitment & Training
         Gate::policy(JobPosting::class, RecruitmentPolicy::class);

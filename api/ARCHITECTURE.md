@@ -84,6 +84,24 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 **Légende :** ✅ complet | 🔄 migration partielle en cours
 
+### Dérogation documentée : `Modules/EdgeSync/{Jobs,Notifications,database,routes}`
+
+`EdgeSync` a désormais les 5 couches standard (`Application/Domain/Infrastructure/Interfaces/Providers`,
+voir PA2-ARCH-006) mais garde en plus, à la racine du module, `Jobs/`, `Notifications/`,
+`database/migrations/` et `routes/` au lieu de les ranger sous `Infrastructure/` ou
+`Application/`. Décision explicite (2026-07-19, PA2-ARCH-006) : **ne pas déplacer**
+`ProcessSyncQueueJob`, `EdgeLicenseExpiringNotification` et `EdgeNodeSilentNotification`
+sous `Infrastructure/` dans l'immédiat, car ce sont des classes de `Job`/`Notification`
+queue-able : leur nom de classe pleinement qualifié est sérialisé dans les payloads Redis
+des jobs déjà en file d'attente en production. Un renommage de namespace sans migration
+de compatibilité casserait silencieusement le retry de ces jobs. `database/` et `routes/`
+suivent la même convention que `Modules/SmartAttendance/routes/` (déjà acceptée). Le garde
+CI `module-structure-check` ne vérifie que la présence des 5 couches standard et ne
+sanctionne pas ces répertoires additionnels tant qu'ils restent listés ici.
+Revoir cette dérogation si une migration de jobs en file d'attente (drain complet des
+queues) est planifiée pour d'autres raisons — ce serait le bon moment pour déplacer ces
+classes sans risque de perte de jobs en vol.
+
 ---
 
 ## Conventions de nommage

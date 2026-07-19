@@ -25,4 +25,8 @@ return [
     'daily_summary' => 'Günlük özet',
     'monthly_summary' => 'Aylık özet',
     'history' => 'Geçmiş',
+
+    // GPS oturumları (SmartAttendance)
+    'geo_session_approved' => 'Oturum onaylandı. Devam kaydı oluşturuldu.',
+    'geo_session_rejected' => 'Oturum reddedildi.',
 ];

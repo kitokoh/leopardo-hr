@@ -25,4 +25,8 @@ return [
     'daily_summary' => 'الملخص اليومي',
     'monthly_summary' => 'الملخص الشهري',
     'history' => 'السجل',
+
+    // جلسات تحديد الموقع (SmartAttendance)
+    'geo_session_approved' => 'تمت الموافقة على الجلسة. تم إنشاء سجل الحضور.',
+    'geo_session_rejected' => 'تم رفض الجلسة.',
 ];

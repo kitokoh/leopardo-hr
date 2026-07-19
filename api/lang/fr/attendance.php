@@ -25,4 +25,8 @@ return [
     'daily_summary' => 'Résumé journalier',
     'monthly_summary' => 'Résumé mensuel',
     'history' => 'Historique',
+
+    // Sessions GPS (SmartAttendance)
+    'geo_session_approved' => 'Session approuvée. Le pointage a été créé.',
+    'geo_session_rejected' => 'Session refusée.',
 ];

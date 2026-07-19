@@ -3,6 +3,14 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.5] - 2026-07-19
+
+### Fixed
+- **PA2-ARCH-007 : suppression des controllers dupliques jamais routes** (residus de migrations DDD inachevees, cf. `docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md`) : `Modules/Training/Interfaces/Api/V1/Controllers/TrainingController.php` (+ ses 2 `Requests`) et `Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingQrController.php` supprimes, le trafic reel passait deja par les copies `Modules/HR/Interfaces/Api/V1/Controllers/{TrainingController,OnboardingQrController}.php` referencees dans `routes/modules/hr_extended.php` et `routes/modules/rh.php`. `Modules/Planning/Interfaces/Api/V1/ExpenseClaimController.php` et `Modules/Billing/Interfaces/Api/V1/EstimationController.php` supprimes de la meme facon (copies actives : `Modules/Expense/.../ExpenseClaimController.php` et `Modules/Payroll/.../EstimationController.php`). Aucun de ces 4 fichiers n'etait reference par un fichier `routes/`. Nouveau job CI `dead-controller-check` dans `.github/workflows/architecture-check.yml` qui echoue si un controller sous `app/Modules/*/Interfaces/` n'est jamais reference par `::class` dans un dossier `routes/`.
+- **PA2-ARCH-008 : `Invoice` avait un `Gate::policy()` enregistre deux fois avec deux policies differentes** (`AppServiceProvider` -> `BillingPolicy`, `AuthServiceProvider` -> `InvoicePolicy`), le resultat reel dependait silencieusement de l'ordre de boot des deux providers dans `bootstrap/providers.php`. Decision explicite : `InvoicePolicy` est retenue (scope tenant explicite sur `view`/`pay`) ; tous les `Gate::policy()` de modele sont desormais centralises dans `AuthServiceProvider::boot()` uniquement (`AppServiceProvider` ne garde que les `Gate::define()` d'export, qui ne sont pas des policies de modele). Nouveau test `tests/Unit/GatePolicyRegistrationTest.php` qui echoue si un meme modele a un `Gate::policy()` enregistre dans plus d'un `*ServiceProvider.php`.
+- **PA2-ARCH-006 : `module-structure-check` ne couvrait que 16 modules sur 19** (liste codee en dur, oubliait `SmartAttendance` et `EdgeSync`). La boucle CI est desormais generee depuis les repertoires reels de `app/Modules/*` au lieu d'une liste figee. `EdgeSync/Infrastructure/` (qui manquait reellement) a ete cree ; la derogation documentee pour `EdgeSync/{Jobs,Notifications,database,routes}` (classes de Job/Notification queue-able, namespace serialise dans les payloads Redis deja en file d'attente en prod) est explicitee dans `api/ARCHITECTURE.md`.
+- **PA2-I18N-007 : message API en francais code en dur dans `GeoSessionController`** (`SmartAttendance`) : `approve()`/`reject()` retournaient un texte fixe (`'Session approuvee...'`, `'Session refusee.'`) au lieu de passer par le catalogue i18n. Nouvelles cles `attendance.geo_session_approved`/`attendance.geo_session_rejected` ajoutees aux 4 locales (`fr`, `en`, `ar`, `tr`).
+
 ## [4.23.4] - 2026-07-19
 
 ### Fixed

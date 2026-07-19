@@ -41,15 +41,28 @@ jobs:
       - name: Check module structure
         run: |
           echo "Checking Clean Architecture module structure..."
+          # PA2-ARCH-006: la liste de modules n'est plus codee en dur ici. Elle est
+          # generee depuis les repertoires reels de api/app/Modules/* pour qu'un
+          # nouveau module (ex: SmartAttendance, EdgeSync, Marketing, ajoutes apres
+          # la premiere version de ce garde CI) soit automatiquement couvert sans
+          # oubli manuel. Voir docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md.
           ERRORS=0
-          for MODULE in HR Payroll Attendance Planning Recruitment Cabinet Fleet Billing Cameras Absence Expense Growth Platform Onboarding Training Notification Marketing; do
-            BASE="api/app/Modules/$MODULE"
-            for LAYER in Application Domain Infrastructure Interfaces Providers; do
-              if [ ! -d "$BASE/$LAYER" ]; then
-                echo "❌ Missing: $BASE/$LAYER"
+          for MODULE_DIR in api/app/Modules/*/; do
+            MODULE=$(basename "$MODULE_DIR")
+            for LAYER in Application Domain Interfaces Providers; do
+              if [ ! -d "$MODULE_DIR$LAYER" ]; then
+                echo "❌ Missing: ${MODULE_DIR}${LAYER}"
                 ERRORS=$((ERRORS + 1))
               fi
             done
+            # Infrastructure/ est requis, sauf derogation documentee explicitement
+            # dans ARCHITECTURE.md (a ce jour: aucune — EdgeSync/Infrastructure
+            # existe desormais, seuls Jobs/Notifications/database/routes restent
+            # a la racine du module par choix documente).
+            if [ ! -d "${MODULE_DIR}Infrastructure" ]; then
+              echo "❌ Missing: ${MODULE_DIR}Infrastructure"
+              ERRORS=$((ERRORS + 1))
+            fi
           done
 
           # Core structure
@@ -66,6 +79,43 @@ jobs:
             exit 1
           fi
           echo "✅ All module structures valid."
+
+  dead-controller-check:
+    name: No unrouted controllers
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check every Interfaces controller is referenced by a route file
+        run: |
+          echo "Checking for controllers never referenced under any routes/ dir..."
+          # Route files live under api/routes/ (root) AND under each module's own
+          # routes/ (e.g. api/app/Modules/EdgeSync/routes/, .../SmartAttendance/routes/).
+          ROUTE_DIRS=$(find api/routes api/app/Modules -type d -name routes)
+          ERRORS=0
+          while IFS= read -r -d '' CONTROLLER_FILE; do
+            CLASS_BASENAME=$(basename "$CONTROLLER_FILE" .php)
+            FOUND=0
+            for ROUTE_DIR in $ROUTE_DIRS; do
+              if grep -rlq "$CLASS_BASENAME::class" "$ROUTE_DIR" 2>/dev/null; then
+                FOUND=1
+                break
+              fi
+            done
+            if [ $FOUND -eq 0 ]; then
+              echo "❌ Never routed: $CONTROLLER_FILE"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done < <(find api/app/Modules -type f -path '*/Interfaces/*Controller.php' -print0)
+
+          if [ $ERRORS -gt 0 ]; then
+            echo ""
+            echo "Found $ERRORS controller(s) with no matching route reference."
+            echo "Delete dead code or wire it up in routes/ (see PA2-ARCH-007)."
+            exit 1
+          fi
+          echo "✅ No unrouted controllers found."
 
   frontend-lint:
     name: Frontend — ESLint + TypeScript
