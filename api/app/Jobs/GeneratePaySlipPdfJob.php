@@ -11,11 +11,13 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use App\Support\I18nCatalog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -105,6 +107,12 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
         // Tenant context (search_path + current_company) is already active at
         // this point thanks to EnsureTenantContext — no need to bind it again.
         try {
+            // Queued job — runs outside the HTTP request lifecycle, so the
+            // SetLocale middleware never applies here.
+            App::setLocale(I18nCatalog::normalizeLocale(
+                $employee->preferred_language ?? $company->language
+            ));
+
             // Build PDF HTML via Blade template
             $html = view('pdf.payslip', [
                 'slip' => $slip,

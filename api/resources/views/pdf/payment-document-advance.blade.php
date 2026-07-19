@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}" dir="{{ \App\Support\I18nCatalog::isRtl(app()->getLocale()) ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <style>
@@ -15,24 +15,24 @@
 </head>
 <body>
     <div class="header">
-        <p class="title">Recu d'avance sur salaire</p>
-        <p class="muted">{{ $company?->name ?? 'Leopardo RH' }} - Reference #{{ $document->id }}</p>
+        <p class="title">{{ __('pdf.payment_advance_title') }}</p>
+        <p class="muted">{{ $company?->name ?? 'Leopardo RH' }} - {{ __('pdf.payment_document_reference', ['id' => $document->id]) }}</p>
     </div>
 
     <div class="box">
-        <strong>Collaborateur</strong><br>
-        {{ trim(($employee?->first_name ?? '').' '.($employee?->last_name ?? '')) ?: 'Non renseigne' }}<br>
+        <strong>{{ __('pdf.payment_document_collaborator') }}</strong><br>
+        {{ trim(($employee?->first_name ?? '').' '.($employee?->last_name ?? '')) ?: __('pdf.payment_document_not_specified') }}<br>
         <span class="muted">{{ $employee?->email }}</span>
     </div>
 
     <table>
-        <tr><th>Montant</th><td>{{ number_format((float) ($salaryAdvance?->amount ?? $metadata['amount'] ?? 0), 2, ',', ' ') }}</td></tr>
-        <tr><th>Motif</th><td>{{ $salaryAdvance?->reason ?? 'Non renseigne' }}</td></tr>
-        <tr><th>Reference paiement</th><td>{{ $salaryAdvance?->payment_reference ?? ($metadata['payment_reference'] ?? 'Non renseignee') }}</td></tr>
-        <tr><th>Paiement declare le</th><td>{{ $salaryAdvance?->payment_declared_at?->format('Y-m-d H:i') ?? ($metadata['payment_declared_at'] ?? 'Non renseigne') }}</td></tr>
-        <tr><th>Statut validation</th><td>{{ $salaryAdvance?->validation_status ?? 'payment_declared' }}</td></tr>
+        <tr><th>{{ __('pdf.payment_advance_amount') }}</th><td>{{ number_format((float) ($salaryAdvance?->amount ?? $metadata['amount'] ?? 0), 2, ',', ' ') }}</td></tr>
+        <tr><th>{{ __('pdf.payment_advance_reason') }}</th><td>{{ $salaryAdvance?->reason ?? __('pdf.payment_document_not_specified') }}</td></tr>
+        <tr><th>{{ __('pdf.payment_advance_payment_reference') }}</th><td>{{ $salaryAdvance?->payment_reference ?? ($metadata['payment_reference'] ?? __('pdf.payment_document_not_specified')) }}</td></tr>
+        <tr><th>{{ __('pdf.payment_advance_declared_on') }}</th><td>{{ $salaryAdvance?->payment_declared_at?->format('Y-m-d H:i') ?? ($metadata['payment_declared_at'] ?? __('pdf.payment_document_not_specified')) }}</td></tr>
+        <tr><th>{{ __('pdf.payment_advance_validation_status') }}</th><td>{{ $salaryAdvance?->validation_status ?? 'payment_declared' }}</td></tr>
     </table>
 
-    <p class="muted">Ce recu confirme la declaration de paiement. La confirmation de reception par l'employe reste disponible dans le journal de validation.</p>
+    <p class="muted">{{ __('pdf.payment_advance_footer') }}</p>
 </body>
 </html>
