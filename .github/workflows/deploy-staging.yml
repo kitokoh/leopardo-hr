@@ -128,11 +128,13 @@ jobs:
       - name: Deployment summary
         shell: bash
         run: |
-          echo "## Staging Deployment Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Step | Status |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| CI Gate | ${{ needs.gate.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| API Deploy | ${{ needs.deploy-staging-api.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "**Commit:** \`${{ needs.gate.outputs.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Staging Deployment Summary"
+            echo ""
+            echo "| Step | Status |"
+            echo "|------|--------|"
+            echo "| CI Gate | ${{ needs.gate.result }} |"
+            echo "| API Deploy | ${{ needs.deploy-staging-api.result }} |"
+            echo ""
+            echo "**Commit:** \`${{ needs.gate.outputs.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -46,14 +46,18 @@ jobs:
 
           if [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
             if [[ "${GITHUB_REF_NAME}" != "main" ]]; then
-              echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-              echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-              echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+              {
+                echo "should_deploy=false"
+                echo "ref=${GITHUB_REF_NAME}"
+                echo "sha=${GITHUB_SHA}"
+              } >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
-            echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-            echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            {
+              echo "should_deploy=pending-validation"
+              echo "ref=${GITHUB_REF_NAME}"
+              echo "sha=${GITHUB_SHA}"
+            } >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -64,13 +68,17 @@ jobs:
           # the subsequent privileged checkout scoped to code that was already
           # pushed to main by a trusted collaborator.
           if [[ "${WR_CONCLUSION}" == "success" && "${WR_EVENT}" == "push" && "${WR_HEAD_BRANCH}" == "main" && "${WR_HEAD_REPO}" == "${BASE_REPO}" ]]; then
-            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
-            echo "ref=main" >> "$GITHUB_OUTPUT"
-            echo "sha=${WR_HEAD_SHA}" >> "$GITHUB_OUTPUT"
+            {
+              echo "should_deploy=pending-validation"
+              echo "ref=main"
+              echo "sha=${WR_HEAD_SHA}"
+            } >> "$GITHUB_OUTPUT"
           else
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            echo "ref=" >> "$GITHUB_OUTPUT"
-            echo "sha=" >> "$GITHUB_OUTPUT"
+            {
+              echo "should_deploy=false"
+              echo "ref="
+              echo "sha="
+            } >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout deployment SHA
@@ -136,7 +144,7 @@ jobs:
             }
 
             const sha = `${{ steps.context.outputs.sha }}`;
-            const webChanged = `${{ steps.changes.outputs.web_changed }}` === 'true';
+            const webChanged = `${{ steps.changes.outputs.web }}` === 'true';
             const { owner, repo } = context.repo;
 
             const allRuns = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
@@ -190,13 +198,17 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ steps.context.outputs.should_deploy }}" == "pending-validation" ]]; then
-            echo "should_deploy=${{ steps.decision.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
-            echo "web_changed=${{ steps.changes.outputs.web_changed }}" >> "$GITHUB_OUTPUT"
-            echo "app_version=${{ steps.version.outputs.app_version }}" >> "$GITHUB_OUTPUT"
+            {
+              echo "should_deploy=${{ steps.decision.outputs.should_deploy }}"
+              echo "web_changed=${{ steps.changes.outputs.web }}"
+              echo "app_version=${{ steps.version.outputs.app_version }}"
+            } >> "$GITHUB_OUTPUT"
           else
-            echo "should_deploy=${{ steps.context.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
-            echo "web_changed=false" >> "$GITHUB_OUTPUT"
-            echo "app_version=" >> "$GITHUB_OUTPUT"
+            {
+              echo "should_deploy=${{ steps.context.outputs.should_deploy }}"
+              echo "web_changed=false"
+              echo "app_version="
+            } >> "$GITHUB_OUTPUT"
           fi
 
   deploy-api:
