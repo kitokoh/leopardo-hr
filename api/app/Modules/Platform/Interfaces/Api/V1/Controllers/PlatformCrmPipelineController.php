@@ -59,7 +59,7 @@ class PlatformCrmPipelineController extends Controller
         ]);
     }
 
-    private function calculateDaysLeft(?string $endDate): ?int
+    private function calculateDaysLeft(string|Carbon|null $endDate): ?int
     {
         if (! $endDate) {
             return null;

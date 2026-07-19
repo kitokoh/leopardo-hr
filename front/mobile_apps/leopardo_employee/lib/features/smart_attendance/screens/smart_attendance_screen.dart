@@ -267,7 +267,7 @@ class _ModeStatusCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _modeColor.withOpacity(0.15),
+                  color: _modeColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(_modeIcon, color: _modeColor, size: 22),
@@ -298,7 +298,7 @@ class _ModeStatusCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _modeColor.withOpacity(0.15),
+                    color: _modeColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -410,7 +410,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   boxShadow: isMonitoring
                       ? [
                           BoxShadow(
-                            color: _green.withOpacity(0.5),
+                            color: _green.withValues(alpha: 0.5),
                             blurRadius: 8,
                             spreadRadius: 2,
                           ),
@@ -436,9 +436,9 @@ class _GpsZoneStatusCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: _green.withOpacity(0.1),
+                color: _green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: _green.withOpacity(0.3)),
+                border: Border.all(color: _green.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -465,10 +465,10 @@ class _GpsZoneStatusCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFA726).withOpacity(0.1),
+                color: const Color(0xFFFFA726).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
                 border:
-                    Border.all(color: const Color(0xFFFFA726).withOpacity(0.3)),
+                    Border.all(color: const Color(0xFFFFA726).withValues(alpha: 0.3)),
               ),
               child: const Row(
                 children: [
@@ -508,7 +508,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      isMonitoring ? _red.withOpacity(0.8) : _accent,
+                      isMonitoring ? _red.withValues(alpha: 0.8) : _accent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -621,7 +621,7 @@ class _SessionCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: _statusColor.withOpacity(0.15),
+                        color: _statusColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -734,9 +734,9 @@ class _ErrorBanner extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEF5350).withOpacity(0.1),
+        color: const Color(0xFFEF5350).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFEF5350).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFFEF5350).withValues(alpha: 0.3)),
       ),
       child: Text(
         message,
@@ -763,7 +763,7 @@ class _EmptySessionsPanel extends StatelessWidget {
       child: Column(
         children: [
           Icon(Icons.history_toggle_off_rounded,
-              color: const Color(0xFF7A9CC0).withOpacity(0.5), size: 40),
+              color: const Color(0xFF7A9CC0).withValues(alpha: 0.5), size: 40),
           const SizedBox(height: 12),
           const Text(
             'Aucune session GPS pour le moment.',

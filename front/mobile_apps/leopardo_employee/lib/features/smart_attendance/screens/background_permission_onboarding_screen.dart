@@ -207,7 +207,7 @@ class _StepCard extends StatelessWidget {
           height: 28,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: const Color(0xFF14B8A6).withOpacity(0.15),
+            color: const Color(0xFF14B8A6).withValues(alpha: 0.15),
             shape: BoxShape.circle,
             border: Border.all(color: const Color(0xFF14B8A6), width: 1.5),
           ),
