@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\EdgeSync;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
-use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use Tests\Support\CreatesMvpSchema;
@@ -27,6 +27,7 @@ class EdgeSyncTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $company;
+
     private EdgeNode $node;
 
     protected function setUp(): void
@@ -35,20 +36,20 @@ class EdgeSyncTest extends TestCase
         $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create([
-            'slug'   => 'acme-test',
+            'slug' => 'acme-test',
             'status' => 'active',
         ]);
 
         $this->node = EdgeNode::create([
-            'company_id'        => $this->company->id,
-            'name'              => 'Site Principal',
-            'slug'              => 'site-principal-abc123',
-            'status'            => 'active',
-            'mode'              => 'hybrid',
-            'edge_version'      => '1.0.0',
-            'capabilities'      => ['features' => ['attendance', 'absence'], 'max_employees' => 100],
+            'company_id' => $this->company->id,
+            'name' => 'Site Principal',
+            'slug' => 'site-principal-abc123',
+            'status' => 'active',
+            'mode' => 'hybrid',
+            'edge_version' => '1.0.0',
+            'capabilities' => ['features' => ['attendance', 'absence'], 'max_employees' => 100],
             'license_expires_at' => now()->addDays(30),
-            'metadata'          => ['edge_token' => 'test-edge-token-xxx'],
+            'metadata' => ['edge_token' => 'test-edge-token-xxx'],
         ]);
     }
 
@@ -60,8 +61,8 @@ class EdgeSyncTest extends TestCase
         $admin = $this->actingAsCompanyAdmin($this->company);
 
         $response = $this->postJson('/api/v1/edge', [
-            'name'    => 'Entrepôt Nord',
-            'mode'    => 'hybrid',
+            'name' => 'Entrepôt Nord',
+            'mode' => 'hybrid',
             'capabilities' => ['max_employees' => 50],
         ]);
 
@@ -80,15 +81,15 @@ class EdgeSyncTest extends TestCase
     {
         $other = Company::factory()->create(['slug' => 'other-co', 'status' => 'active']);
         EdgeNode::create([
-            'company_id'        => $other->id,
-            'name'              => 'Other Node',
-            'slug'              => 'other-node-xyz',
-            'status'            => 'active',
-            'mode'              => 'hybrid',
-            'edge_version'      => '1.0.0',
-            'capabilities'      => [],
+            'company_id' => $other->id,
+            'name' => 'Other Node',
+            'slug' => 'other-node-xyz',
+            'status' => 'active',
+            'mode' => 'hybrid',
+            'edge_version' => '1.0.0',
+            'capabilities' => [],
             'license_expires_at' => now()->addDays(30),
-            'metadata'          => [],
+            'metadata' => [],
         ]);
 
         $admin = $this->actingAsCompanyAdmin($this->company);
@@ -112,15 +113,15 @@ class EdgeSyncTest extends TestCase
             'records' => [
                 [
                     'entity_type' => 'attendance_logs',
-                    'entity_id'   => 'local-uuid-001',
-                    'operation'   => 'create',
-                    'payload'     => [
-                        'id'                => 'local-uuid-001',
-                        'company_id'        => $this->company->id,
-                        'employee_id'       => 'emp-uuid-001',
-                        'check_in'          => now()->subHours(8)->toIso8601String(),
-                        'method'            => 'mobile',
-                        'status'            => 'present',
+                    'entity_id' => 'local-uuid-001',
+                    'operation' => 'create',
+                    'payload' => [
+                        'id' => 'local-uuid-001',
+                        'company_id' => $this->company->id,
+                        'employee_id' => 'emp-uuid-001',
+                        'check_in' => now()->subHours(8)->toIso8601String(),
+                        'method' => 'mobile',
+                        'status' => 'present',
                         'synced_from_offline' => true,
                     ],
                 ],
@@ -130,10 +131,10 @@ class EdgeSyncTest extends TestCase
         $response->assertOk()->assertJson(['queued' => 1]);
         $this->assertDatabaseHas('sync_queue', [
             'edge_node_id' => $this->node->id,
-            'entity_type'  => 'attendance_logs',
-            'entity_id'    => 'local-uuid-001',
-            'operation'    => 'create',
-            'status'       => 'pending',
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'local-uuid-001',
+            'operation' => 'create',
+            'status' => 'pending',
         ]);
     }
 
@@ -157,15 +158,15 @@ class EdgeSyncTest extends TestCase
 
         // Simulate a Cloud employee updated after last sync
         \DB::table('employees')->insert([
-            'company_id'    => $this->company->id,
-            'first_name'    => 'Moussa',
-            'last_name'     => 'Diallo',
-            'email'         => 'moussa@acme.test',
+            'company_id' => $this->company->id,
+            'first_name' => 'Moussa',
+            'last_name' => 'Diallo',
+            'email' => 'moussa@acme.test',
             'password_hash' => bcrypt('secret'),
-            'role'          => 'employee',
-            'status'        => 'active',
-            'created_at'    => now()->subDay()->toDateTimeString(),
-            'updated_at'    => now()->toDateTimeString(),
+            'role' => 'employee',
+            'status' => 'active',
+            'created_at' => now()->subDay()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
         ]);
 
         $this->node->update(['last_sync_at' => now()->subHours(2)]);
@@ -181,27 +182,41 @@ class EdgeSyncTest extends TestCase
     /** @test */
     public function it_processes_sync_queue_and_marks_synced(): void
     {
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+        ]);
+
         SyncQueue::create([
             'edge_node_id' => $this->node->id,
-            'entity_type'  => 'attendance_logs',
-            'entity_id'    => 'att-to-sync-001',
-            'operation'    => 'create',
-            'payload'      => [
-                'id'                  => 'att-to-sync-001',
-                'company_id'          => $this->company->id,
-                'employee_id'         => 'emp-001',
-                'check_in'            => now()->subHours(4)->toIso8601String(),
-                'method'              => 'mobile',
-                'status'              => 'present',
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'att-to-sync-001',
+            'operation' => 'create',
+            'payload' => [
+                'company_id' => $this->company->id,
+                'employee_id' => $employee->id,
+                'check_in' => now()->subHours(4)->toIso8601String(),
+                'method' => 'mobile',
+                'status' => 'present',
+                'session_number' => 1,
+                'date' => now()->toDateString(),
+                'work_type' => 'onsite',
+                'biometric_type' => 'none',
+                'hours_worked' => '0',
+                'overtime_hours' => '0',
+                'late_minutes' => 0,
+                'gps_lat' => '0',
+                'gps_lng' => '0',
                 'synced_from_offline' => true,
-                'updated_at'          => now()->toDateTimeString(),
+                'created_at' => now()->toDateTimeString(),
+                'updated_at' => now()->toDateTimeString(),
             ],
-            'status'        => 'pending',
+            'status' => 'pending',
             'attempt_count' => 0,
         ]);
 
         $service = app(SyncEngineService::class);
-        $log     = $service->sync($this->node);
+        $log = $service->sync($this->node);
 
         $this->assertEquals('success', $log->status);
         $this->assertGreaterThanOrEqual(0, $log->records_sent);
@@ -214,33 +229,33 @@ class EdgeSyncTest extends TestCase
     {
         // Insert an existing attendance log with same external_event_id
         \DB::table('attendance_logs')->insert([
-            'company_id'        => $this->company->id,
-            'employee_id'       => 1,
-            'check_in'          => now()->subHours(8)->toDateTimeString(),
+            'company_id' => $this->company->id,
+            'employee_id' => 1,
+            'check_in' => now()->subHours(8)->toDateTimeString(),
             'external_event_id' => 'duplicate-event-001',
-            'method'            => 'mobile',
-            'status'            => 'present',
-            'session_number'    => 1,
-            'date'              => now()->toDateString(),
-            'work_type'         => 'onsite',
-            'biometric_type'    => 'none',
+            'method' => 'mobile',
+            'status' => 'present',
+            'session_number' => 1,
+            'date' => now()->toDateString(),
+            'work_type' => 'onsite',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'hours_worked'      => '0',
-            'overtime_hours'    => '0',
-            'late_minutes'      => 0,
-            'gps_lat'           => '0',
-            'gps_lng'           => '0',
-            'created_at'        => now()->toDateTimeString(),
-            'updated_at'        => now()->toDateTimeString(),
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
+            'gps_lat' => '0',
+            'gps_lng' => '0',
+            'created_at' => now()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
         ]);
 
         $item = SyncQueue::create([
             'edge_node_id' => $this->node->id,
-            'entity_type'  => 'attendance_logs',
-            'entity_id'    => 'duplicate-event-001',
-            'operation'    => 'create',
-            'payload'      => ['external_event_id' => 'duplicate-event-001'],
-            'status'       => 'pending',
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'duplicate-event-001',
+            'operation' => 'create',
+            'payload' => ['external_event_id' => 'duplicate-event-001'],
+            'status' => 'pending',
             'attempt_count' => 0,
         ]);
 
@@ -257,25 +272,25 @@ class EdgeSyncTest extends TestCase
     {
         // Insert an already-approved absence in Cloud
         \DB::table('absences')->insert([
-            'company_id'     => $this->company->id,
-            'employee_id'    => 1,
+            'company_id' => $this->company->id,
+            'employee_id' => 1,
             'absence_type_id' => 1,
-            'start_date'     => now()->addDay()->toDateString(),
-            'end_date'       => now()->addDays(2)->toDateString(),
-            'status'         => 'approved',
-            'created_at'     => now()->toDateTimeString(),
-            'updated_at'     => now()->toDateTimeString(),
+            'start_date' => now()->addDay()->toDateString(),
+            'end_date' => now()->addDays(2)->toDateString(),
+            'status' => 'approved',
+            'created_at' => now()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
         ]);
 
         $absenceId = \DB::table('absences')->first()->id;
 
         SyncQueue::create([
             'edge_node_id' => $this->node->id,
-            'entity_type'  => 'absences',
-            'entity_id'    => (string) $absenceId,
-            'operation'    => 'update',
-            'payload'      => ['status' => 'pending', 'updated_at' => now()->toDateTimeString()],
-            'status'       => 'pending',
+            'entity_type' => 'absences',
+            'entity_id' => (string) $absenceId,
+            'operation' => 'update',
+            'payload' => ['status' => 'pending', 'updated_at' => now()->toDateTimeString()],
+            'status' => 'pending',
             'attempt_count' => 0,
         ]);
 
@@ -293,7 +308,7 @@ class EdgeSyncTest extends TestCase
     public function it_validates_a_signed_license(): void
     {
         // Skip if no license keys configured (CI without keys)
-        if (!config('edge.license_private_key')) {
+        if (! config('edge.license_private_key')) {
             $this->markTestSkipped('Edge license keys not configured.');
         }
 
@@ -309,7 +324,7 @@ class EdgeSyncTest extends TestCase
     public function it_rejects_expired_license(): void
     {
         // Skip if no license keys configured (CI without keys)
-        if (!config('edge.license_private_key')) {
+        if (! config('edge.license_private_key')) {
             $this->markTestSkipped('Edge license keys not configured.');
         }
 
@@ -336,9 +351,9 @@ class EdgeSyncTest extends TestCase
         // App\Core\Auth\Domain\Models\User (table `users`) n'a pas de colonne
         // company_id/role : ce sont les colonnes du modele tenant Employee.
         // C'est Employee qui porte le role admin dans ce codebase.
-        $admin = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        $admin = Employee::factory()->create([
             'company_id' => $company->id,
-            'role'       => 'admin',
+            'role' => 'admin',
         ]);
 
         return $this->actingAs($admin, 'sanctum');
@@ -349,4 +364,3 @@ class EdgeSyncTest extends TestCase
         $this->withToken('test-edge-token-xxx');
     }
 }
-

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +34,9 @@ class EdgeConflictResolutionTest extends TestCase
     use CreatesMvpSchema;
 
     private Company $company;
+
     private Employee $employee;
+
     private Schedule $schedule;
 
     protected function setUp(): void
@@ -44,21 +46,21 @@ class EdgeConflictResolutionTest extends TestCase
         $this->createEdgeNodesTable();
 
         $this->company = Company::factory()->create([
-            'schema_name'  => 'shared_tenants',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
+            'status' => 'active',
         ]);
 
         $this->schedule = Schedule::factory()->create([
             'company_id' => $this->company->id,
-            'name'       => 'Journée',
+            'name' => 'Journée',
             'start_time' => '08:00:00',
-            'end_time'   => '17:00:00',
+            'end_time' => '17:00:00',
         ]);
 
         $this->employee = Employee::factory()->create([
-            'company_id'  => $this->company->id,
-            'role'        => 'employee',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
             'schedule_id' => $this->schedule->id,
         ]);
     }
@@ -109,51 +111,51 @@ class EdgeConflictResolutionTest extends TestCase
      */
     public function test_conflict_detection_by_unique_session_key(): void
     {
-        $date          = Carbon::today()->toDateString();
+        $date = Carbon::today()->toDateString();
         $sessionNumber = 1;
 
         // Log Edge (créé hors-ligne)
         $edgeLog = AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => $date,
-            'session_number'      => $sessionNumber,
-            'check_in'            => Carbon::today()->setTime(8, 3, 0)->toDateTimeString(),
-            'method'              => 'badge',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => $date,
+            'session_number' => $sessionNumber,
+            'check_in' => Carbon::today()->setTime(8, 3, 0)->toDateTimeString(),
+            'method' => 'badge',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 3,
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 3,
         ]);
 
         // Log Cloud (arrivé via correction manager pendant la coupure)
         // Dans la stratégie "Cloud wins", le Cloud log a priority (check_in corrigé à 08:00)
         $cloudLog = AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => $date,
-            'session_number'      => $sessionNumber + 10, // session_number différent pour éviter doublon unique en DB
-            'check_in'            => Carbon::today()->setTime(8, 0, 0)->toDateTimeString(),
-            'method'              => 'manual',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => $date,
+            'session_number' => $sessionNumber + 10, // session_number différent pour éviter doublon unique en DB
+            'check_in' => Carbon::today()->setTime(8, 0, 0)->toDateTimeString(),
+            'method' => 'manual',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => true,
-            'status'              => 'present',
-            'hours_worked'        => '9',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 0,
+            'status' => 'present',
+            'hours_worked' => '9',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
         ]);
 
-        // Détection conflit : même employee + date + (session ≈ 1)
+        // Détection conflit : même employee + date (les deux versions doivent coexister,
+        // quel que soit le session_number utilisé pour éviter le doublon unique en DB)
         $conflictQuery = AttendanceLog::where('company_id', $this->company->id)
             ->where('employee_id', $this->employee->id)
             ->whereDate('date', $date)
-            ->where('session_number', '<=', 5)  // tolère session 1 ou 11
             ->get();
 
         $this->assertCount(2, $conflictQuery, 'Les deux versions (Edge + Cloud) doivent coexister pendant résolution');
@@ -177,31 +179,31 @@ class EdgeConflictResolutionTest extends TestCase
 
         // Log Edge (moins précis — 08:07)
         $edgeLog = AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => $date,
-            'session_number'      => 1,
-            'check_in'            => Carbon::today()->setTime(8, 7, 0)->toDateTimeString(),
-            'method'              => 'qr_code',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => $date,
+            'session_number' => 1,
+            'check_in' => Carbon::today()->setTime(8, 7, 0)->toDateTimeString(),
+            'method' => 'qr_code',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 7,
-            'punch_note'          => 'OFFLINE_EDGE_VERSION',
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 7,
+            'punch_note' => 'OFFLINE_EDGE_VERSION',
         ]);
 
         // Stratégie Cloud wins : le Cloud pousse la version corrigée (08:00, late_minutes=0)
         // On simule la résolution en mettant à jour le log Edge avec les données Cloud
         $edgeLog->update([
-            'check_in'            => Carbon::today()->setTime(8, 0, 0)->toDateTimeString(),
-            'late_minutes'        => 0,
+            'check_in' => Carbon::today()->setTime(8, 0, 0)->toDateTimeString(),
+            'late_minutes' => 0,
             'synced_from_offline' => true,
-            'punch_note'          => 'CLOUD_WIN_RESOLVED',
-            'correction_note'     => 'Conflit Edge/Cloud résolu — version Cloud appliquée',
+            'punch_note' => 'CLOUD_WIN_RESOLVED',
+            'correction_note' => 'Conflit Edge/Cloud résolu — version Cloud appliquée',
         ]);
 
         $resolved = AttendanceLog::find($edgeLog->id);
@@ -210,7 +212,7 @@ class EdgeConflictResolutionTest extends TestCase
         $this->assertSame(0, $resolved->late_minutes, 'La valeur Cloud (0 min de retard) doit prévaloir');
         $this->assertSame(
             Carbon::today()->setTime(8, 0, 0)->toDateTimeString(),
-            $resolved->check_in,
+            $resolved->check_in->toDateTimeString(),
             'Le check_in Cloud (08:00) doit prévaloir'
         );
         $this->assertNotNull($resolved->correction_note, "L'audit trail doit documenteer la résolution");
@@ -226,30 +228,30 @@ class EdgeConflictResolutionTest extends TestCase
 
         // Log Edge original
         $log = AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => $date,
-            'session_number'      => 1,
-            'check_in'            => Carbon::today()->setTime(8, 12, 0)->toDateTimeString(),
-            'method'              => 'badge',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'none',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => $date,
+            'session_number' => 1,
+            'check_in' => Carbon::today()->setTime(8, 12, 0)->toDateTimeString(),
+            'method' => 'badge',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'none',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 12,
-            'punch_meta'          => json_encode([
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 12,
+            'punch_meta' => json_encode([
                 'original_edge_check_in' => Carbon::today()->setTime(8, 12, 0)->toIso8601String(),
-                'edge_node_id'           => 'edge-conflict-001',
-                'conflict_detected'      => true,
-                'cloud_check_in'         => Carbon::today()->setTime(8, 0, 0)->toIso8601String(),
+                'edge_node_id' => 'edge-conflict-001',
+                'conflict_detected' => true,
+                'cloud_check_in' => Carbon::today()->setTime(8, 0, 0)->toIso8601String(),
             ]),
         ]);
 
         // Vérifier que punch_meta contient les métadonnées d'audit
-        $reloaded  = AttendanceLog::find($log->id);
+        $reloaded = AttendanceLog::find($log->id);
         $punchMeta = json_decode($reloaded->punch_meta, true);
 
         $this->assertArrayHasKey('original_edge_check_in', $punchMeta, 'Audit trail : check_in Edge original conservé');
@@ -267,30 +269,29 @@ class EdgeConflictResolutionTest extends TestCase
         $date = Carbon::today()->toDateString();
 
         $log = AttendanceLog::create([
-            'company_id'          => $this->company->id,
-            'employee_id'         => $this->employee->id,
-            'schedule_id'         => $this->schedule->id,
-            'date'                => $date,
-            'session_number'      => 1,
-            'check_in'            => Carbon::today()->setTime(7, 58, 0)->toDateTimeString(),
-            'method'              => 'biometric',
-            'work_type'           => 'presentiel',
-            'biometric_type'      => 'fingerprint',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'schedule_id' => $this->schedule->id,
+            'date' => $date,
+            'session_number' => 1,
+            'check_in' => Carbon::today()->setTime(7, 58, 0)->toDateTimeString(),
+            'method' => 'biometric',
+            'work_type' => 'presentiel',
+            'biometric_type' => 'fingerprint',
             'synced_from_offline' => false,
-            'status'              => 'present',
-            'hours_worked'        => '0',
-            'overtime_hours'      => '0',
-            'late_minutes'        => 0,
+            'status' => 'present',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
         ]);
 
         // Sync sans conflit = simple marquage
         $log->update(['synced_from_offline' => true]);
 
         $this->assertDatabaseHas('attendance_logs', [
-            'id'                  => $log->id,
+            'id' => $log->id,
             'synced_from_offline' => true,
-            'correction_note'     => null,  // pas d'audit trail conflit
+            'correction_note' => null,  // pas d'audit trail conflit
         ]);
     }
 }
-
