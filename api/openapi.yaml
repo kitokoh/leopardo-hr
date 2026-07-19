@@ -8004,7 +8004,7 @@ paths:
                   data:
                     $ref: "#/components/schemas/AttendanceModeSettings"
         "401":
-          $ref: "#/components/responses/Unauthenticated"
+          $ref: "#/components/responses/Error401"
     put:
       tags: ["SmartAttendance"]
       summary: "Mettre à jour la configuration GPS (admin)"
@@ -8137,7 +8137,7 @@ paths:
                   data:
                     $ref: "#/components/schemas/GeoAttendanceSession"
         "404":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/Error404"
 
   /smart-attendance/sessions/{id}/validate:
     post:
@@ -8176,9 +8176,9 @@ paths:
                   data:
                     $ref: "#/components/schemas/GeoAttendanceSession"
         "403":
-          $ref: "#/components/responses/Forbidden"
+          $ref: "#/components/responses/Error403"
         "404":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
 
