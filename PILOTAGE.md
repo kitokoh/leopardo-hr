@@ -216,7 +216,7 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | 3 | `CHANGELOG.md` | Historique des changements (121 KB) |
 | 4 | `LEOPARDO_STRATEGIC_ANALYSIS.md` | Analyse stratégique complète |
 | 5 | `docs/CONTEXT/` | Contexte produit/technique/opérationnel |
-| 6 | `docs/PLAN_ACTION/` | 72 plans d'action livrés |
+| 6 | `docs/archive/PLAN_ACTION/` | 72 plans d'action livrés |
 | 7 | `docs/GOTO_MARKET/` | Stratégie commerciale |
 | 8 | `api/openapi.yaml` | Spécification API (332 KB) |
 
@@ -234,8 +234,8 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | **Scope réel livré** (dépasse le MVP verrouillé décrit ci-dessous) | `docs/REFERENTIEL_PRODUIT/ROADMAP.md` + `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md` | À consulter en priorité sur la section « SCOPE MVP VERROUILLÉ » de ce fichier, qui décrit un périmètre initial déjà dépassé |
 | Architecture backend (modules DDD, conventions, TODOs) | `api/ARCHITECTURE.md` | |
 | Architecture système/monorepo | `docs/architecture/ARCHITECTURE.md` + `ARCHITECTURE.md` (racine) | |
-| Plans d'action historiques (01-72, tous livrés) | `docs/PLAN_ACTION/` | **Clos** — conservé pour traçabilité, voir bandeau dans `00_SOMMAIRE.md` |
-| Plan d'action actif | `docs/PLAN_ACTION2/` | Prend le relais de `docs/PLAN_ACTION/` |
+| Plans d'action historiques (01-72, tous livrés) | `docs/archive/PLAN_ACTION/` | **Clos** — conservé pour traçabilité, voir bandeau dans `00_SOMMAIRE.md` |
+| Plan d'action actif | `docs/PLAN_ACTION2/` | Prend le relais de `docs/archive/PLAN_ACTION/` |
 | Rapports de validation/QA datés | `docs/validation/*_YYYY_MM_DD.md` | Snapshots figés, jamais mis à jour — voir `docs/validation/README.md` |
 | Contrat API | `api/openapi.yaml` | Spec canonique (référencée par `dev-hub/sdk/MANIFEST.json`). Le second fichier `openapi/openapi.yaml` (racine) qui divergeait a été supprimé (voir `chore(monorepo): fix duplicated mobile CI, dedupe OpenAPI spec...` #840) ; `api/openapi.yaml` est désormais la seule spec présente dans le repo. |
 

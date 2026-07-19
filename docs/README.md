@@ -96,7 +96,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`PROMPTS_EXECUTION/`](PROMPTS_EXECUTION/) | Archive des prompts d'exécution AI (v2 legacy, v3 actif) |
-| [`PLAN_ACTION/`](PLAN_ACTION/) | Plans d'action passés |
+| [`archive/PLAN_ACTION/`](archive/PLAN_ACTION/) | Plans d'action passés |
 | [`PLAN_ACTION2/`](PLAN_ACTION2/) | Plans d'action post-audit 2026 |
 | [`notes/`](notes/) | Notes et archives |
 
