@@ -26,7 +26,7 @@ Leopardo RH is not just a tool; it's a **High-Performance Ecosystem** designed t
 *   🤖 **AI-Native Intelligence:** Predictive workforce analytics, automated anomaly detection, and LLM-driven HR insights.
 *   💰 **Automated Payroll Engine:** One-click payroll calculation with multi-country regulatory compliance (DZ, MA, FR, TR).
 *   🕒 **Smart Attendance & Kiosk:** Real-time biometric verification via ZKTeco and GPS-fenced mobile attendance.
-*   📱 **Omnichannel Experience:** Dedicated native mobile apps for Employees, Managers, and Platform Admins.
+*   📱 **Omnichannel Experience:** Dedicated native mobile apps for Employees, Managers/HR, and Platform Admins (see [Mobile Apps Guide](docs/mobile/README.md)).
 
 ---
 
@@ -98,7 +98,7 @@ graph TB
 | **API Backend** | [Gateway](https://gestionemployerbackend.onrender.com) | Laravel 12, PostgreSQL |
 | **Corporate Web** | [Live Preview](https://gestionemployer-backend.vercel.app) | Next.js 15, Tailwind CSS |
 | **Admin Panel** | [Dashboard](https://leo-admin.pages.dev) | Cloudflare Pages |
-| **Mobile Suite** | [Employee / Manager / Admin](https://github.com/kitokoh/leopardo-hr#mobile-ecosystem) | Flutter 3.x, Riverpod |
+| **Mobile Suite** | [Employee / Manager / HR / Platform Admin](docs/mobile/README.md) | Flutter 3.x, Riverpod |
 
 ---
 
