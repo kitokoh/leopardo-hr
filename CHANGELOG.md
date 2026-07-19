@@ -3,6 +3,17 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 
+## [4.23.3] - 2026-07-19
+
+### Security
+- **Resolution des 34 alertes Dependabot** (11 high, 16 moderate, 7 low) ouvertes depuis l'activation :
+  - `api` (composer) : `symfony/yaml` 8.0.8 -> 8.1.1 (ReDoS `Parser::cleanup()`, exponential memory allocation via alias recursion).
+  - `api` (npm, tooling Vite assets) : `form-data` corrige (CRLF injection via noms de champs/fichiers multipart non echappes).
+  - `front/web` (vitrine Next.js) : `npm audit fix` (`form-data`, `ws`, `js-yaml`) + `postcss` fixe a `>=8.5.10` via `overrides` (XSS `</style>` non echappe).
+  - `front/admin-dashboard` (Vue/Vite) : `npm audit fix` (`form-data`, `ws`, `js-yaml`) ; `vite` 5.4.21 -> 6.4.3 et `@vitejs/plugin-vue` 4.5.2 -> 5.2.4 (esbuild dev-server SSRF, path traversal `.map`, fuite hash NTLMv2 sur Windows) ; suppression de la dependance `vue-echarts` non utilisee (aucun import dans `src/`), ce qui a permis de monter `echarts` 5.6.0 -> 6.1.0 (XSS).
+  - `front/web-offline` (PWA offline, export statique) : `next` 14.2 -> 16.2.10, `eslint` 8 -> 9, `eslint-config-next` correspondant (SSRF via upgrade WebSocket, bypass middleware i18n, DoS Server Components, XSS via CSP nonces/scripts `beforeInteractive`, cache poisoning, HTTP request smuggling dans les rewrites, croissance illimitee du cache d'images) ; `postcss` fixe a `>=8.5.10` via `overrides` ; ajout d'un `.gitignore` manquant pour ce package.
+  - Verification : `npm audit --audit-level=low` et `composer audit` a 0 resultat sur tous les packages concernes ; `npm run build` verifie localement pour les 4 packages frontend.
+
 ## [4.23.2] - 2026-07-16
 
 ### Fixed
