@@ -124,13 +124,15 @@ class AuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $this->changePasswordAction->execute(
+        $tokenResult = $this->changePasswordAction->execute(
             employee: $employee,
             currentPassword: $request->validated('current_password'),
             newPassword: $request->validated('new_password'),
         );
 
-        return new JsonResponse(['status' => 'ok']);
+        // All previous Sanctum tokens were revoked by the action; a fresh one
+        // for the current device is returned so the caller stays logged in.
+        return new JsonResponse(['status' => 'ok', ...($tokenResult ?? [])]);
     }
 
     public function refreshToken(Request $request): JsonResponse
