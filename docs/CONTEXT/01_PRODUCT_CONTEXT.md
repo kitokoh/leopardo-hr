@@ -16,8 +16,9 @@ Leopardo HR est un **Mobile-First Company OS** pour PME terrain. Le produit reli
 
 - `front/mobile_apps/leopardo_employee`: app employe.
 - `front/mobile_apps/leopardo_manager`: app manager/RH.
+- `front/mobile_apps/leopardo_hr`: app RH dediee (manager/RH, cf. `front/mobile_apps/leopardo_hr/pubspec.yaml`).
 - `front/mobile_apps/leopardo_platform_admin`: app super-admin plateforme.
-- `front/mobile_apps/leopardo_core`: code partage mobile.
+- `front/mobile_apps/leopardo_core`: code partage mobile (package Flutter, pas une app autonome), consomme par les 4 apps ci-dessus.
 - `front/web`: vitrine/portail client web.
 - `front/admin-dashboard`: dashboard plateforme web.
 - `api`: backend Laravel.
