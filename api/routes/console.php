@@ -122,6 +122,12 @@ Schedule::command('growth:approve-commissions')
     ->daily()
     ->at('04:00');
 
+// Module Marketing — publication des social_posts planifies devenus dus
+Schedule::command('marketing:publish-scheduled-posts')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
