@@ -177,13 +177,16 @@ GitHub Actions workflows:
 
 | Workflow | Trigger | Checks |
 |----------|---------|--------|
-| `backend.yml` | `api/**` changes | PHPUnit, PHPStan, Pint |
+| `tests.yml` | `api/**` or `front/admin-dashboard/**` changes | PHPUnit/Pest, PHPStan, Pint + admin-dashboard lint/build |
 | `coverage-gate.yml` | `api/**` changes | Coverage >= threshold |
 | `mobile-apps-ci.yml` | `front/mobile_apps/**` changes | Flutter analyze + test + APK |
-| `web-ci.yml` | `admin-dashboard/**` changes | ESLint + Vite build |
+| `web-ci.yml` | `front/admin-dashboard/**` changes | ESLint + Vite build |
+| `web-marketing-ci.yml` | `front/web/**` changes | Lint + Next.js build |
 | `deploy-staging.yml` | Merge to `main` | Auto deploy staging |
 | `e2e-staging.yml` | After staging deploy | Playwright E2E |
-| `release.yml` | Git tag `v*` | GitHub Release + APK |
+| `release.yml` | Git tag `v*` | GitHub Release (mobile APKs are built/distributed separately by `mobile-distribute.yml`) |
+
+> Il n'existe pas de fichier `backend.yml` distinct dans `.github/workflows/` : les checks backend PHPUnit/PHPStan/Pint sont dans `tests.yml`.
 
 ## Contributing
 
