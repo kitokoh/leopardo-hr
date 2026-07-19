@@ -224,3 +224,12 @@
 | PA2-ARCH-003 | P2 | Reduire couplage direct HR vers autres modules | API | dependances HR->Onboarding/Training/Recruitment/Cabinet passees par evenements ou contrats d'interface explicites, mesure avant/apres |
 | PA2-ARCH-004 | P2 | Versionnement temporel des regles pays paie | API/Payroll | taux/baremes pays associes a une date d'effet, recalcul retroactif possible pour audit |
 | PA2-ARCH-005 | P2 | Reduire baseline PHPStan | API | plan de reduction par module, suivi du delta a chaque PR touchant un module ancien |
+
+## Extension v1.3 - Audit structure modules API 2026-07-19 (voir `09_AUDIT_MODULES_API_STRUCTURE.md`)
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-ARCH-006 | P1 | Etendre module-structure-check a SmartAttendance/EdgeSync/Marketing | CI, `.github/workflows/architecture-check.yml` | boucle generee depuis `app/Modules/*` (pas de liste codee en dur); statut de EdgeSync/Infrastructure et Marketing/Interfaces tranche (mise en conformite ou derogation documentee dans ARCHITECTURE.md) |
+| PA2-ARCH-007 | P1 | Supprimer les controllers dupliques jamais routes | API | Training/TrainingController et Onboarding/OnboardingQrController migres, doublon HR supprime; Planning/ExpenseClaimController et Billing/EstimationController supprimes; garde CI detectant un controller jamais reference dans routes/ |
+| PA2-ARCH-008 | P1 | Point d'enregistrement unique pour les Gate::policy | API/Providers | plus qu'un seul provider enregistre chaque policy; divergence Invoice -> BillingPolicy vs InvoicePolicy tranchee explicitement; test unitaire verifiant l'absence de double enregistrement |
+| PA2-ARCH-009 | P2 | Retrofit declare(strict_types=1) sur modules anciens | API | HR/Payroll/Attendance/Cameras a 100%; garde CI incremental refusant tout nouveau fichier sans la directive |
