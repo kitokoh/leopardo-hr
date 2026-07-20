@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { CheckCircle2, Settings } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { GeoSessionStatusBadge } from './_components/GeoSessionStatusBadge';
@@ -157,7 +158,7 @@ export default function SmartAttendanceDashboardPage() {
       <ModulePageShell
         title="Smart Attendance"
         subtitle="Suivi intelligent de présence par géolocalisation — validation des sessions en attente et statistiques du jour."
-        accentClassName="bg-gradient-to-br from-blue-500/10 via-white to-white"
+        accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
       >
         {error ? (
           <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -178,9 +179,9 @@ export default function SmartAttendanceDashboardPage() {
           </Link>
           <Link
             href="/smart-attendance/settings"
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 shadow-sm"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 shadow-sm"
           >
-            ⚙️ Paramètres
+            <Settings className="h-4 w-4" aria-hidden="true" /> Paramètres
           </Link>
         </div>
 
@@ -198,8 +199,8 @@ export default function SmartAttendanceDashboardPage() {
           {loading ? (
             <TableSkeleton />
           ) : pendingSessions.length === 0 ? (
-            <div className="px-6 py-10 text-center text-sm text-slate-500">
-              Aucune session en attente de validation. ✅
+            <div className="flex items-center justify-center gap-2 px-6 py-10 text-center text-sm text-slate-500">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" /> Aucune session en attente de validation.
             </div>
           ) : (
             <div className="overflow-x-auto">
