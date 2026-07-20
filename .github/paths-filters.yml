@@ -1,0 +1,27 @@
+# Centralized path filters for CI change-detection (Audit §3.3 / Plan P2).
+#
+# Consumed by dorny/paths-filter in:
+#   - tests.yml            (job: detect-changes)
+#   - deploy-main.yml       (job: prepare, step: Detect changed areas for deployment gating)
+#
+# Keeping a single source of truth here avoids the two workflows drifting out
+# of sync the way the hand-rolled `git diff` + `grep -E` regexes did before
+# this file existed (deploy-main.yml's superset silently diverged from
+# tests.yml's narrower pattern).
+#
+# `web` intentionally stays a superset covering both workflows' prior
+# behavior (admin-dashboard sources + the CI/deploy workflow files that can
+# affect it + the two doc files deploy-main.yml already tracked). This is a
+# strictly wider trigger surface than tests.yml used before, which is the
+# safe direction (more CI runs, never fewer) — call this out explicitly to
+# reviewers since it is a deliberate, if minor, behavior change.
+api:
+  - 'api/**'
+  - '.github/workflows/tests.yml'
+  - '.github/workflows/phpstan-baseline.yml'
+web:
+  - 'front/admin-dashboard/**'
+  - '.github/workflows/web-ci.yml'
+  - '.github/workflows/deploy-main.yml'
+  - 'docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md'
+  - 'docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md'
