@@ -21,8 +21,6 @@ class TrialDayOneMail extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public string $locale;
-
     public function __construct(
         public readonly Company $company,
         public readonly string  $managerName,
