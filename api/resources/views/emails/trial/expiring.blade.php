@@ -1,5 +1,10 @@
-<h1>Bonjour {{ $managerName }},</h1>
-<p>Votre essai gratuit de Leopardo RH expire dans <strong>3 jours</strong>.</p>
-<p>Pour continuer à bénéficier de toutes les fonctionnalités (Pointage, Plannings, Paie), pensez à activer votre abonnement.</p>
-<a href="{{ $appUrl }}/settings/billing" style="display:inline-block;padding:10px 20px;background:#f59e0b;color:white;text-decoration:none;border-radius:5px;">Activer mon abonnement</a>
-<p>L'équipe {{ $appName }}</p>
+@php
+    $__dir = \App\Support\I18nCatalog::isRtl($locale ?? app()->getLocale()) ? 'rtl' : 'ltr';
+@endphp
+<div dir="{{ $__dir }}">
+<h1>{{ str_replace(':name', $managerName, trans('emails.trial_day3_heading')) }}</h1>
+<p>{!! str_replace(':appName', $appName, e(trans('emails.trial_expiring_intro'))) !!}</p>
+<p>{{ __('emails.trial_expiring_body') }}</p>
+<a href="{{ $appUrl }}/settings/billing" style="display:inline-block;padding:10px 20px;background:#f59e0b;color:white;text-decoration:none;border-radius:5px;">{{ __('emails.trial_expiring_button') }}</a>
+<p>{{ str_replace(':company', $appName, trans('emails.team_signature')) }}</p>
+</div>
