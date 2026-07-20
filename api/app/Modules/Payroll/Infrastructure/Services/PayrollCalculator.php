@@ -57,8 +57,15 @@ class PayrollCalculator
 
     public function calculateRun(PayrollRun $run): PayrollRun
     {
-        $rules = $this->getRules($run->country_code);
         $companyId = $run->company_id;
+        $rules = $this->getRules($run->country_code);
+        // Scope the rules to this company so any company-specific TaxSlab
+        // overrides configured via TaxSlabController are actually applied
+        // (see AbstractCountryRules::forCompany()). Falls back to global
+        // (company_id IS NULL) rows, then to the hardcoded defaults.
+        if ($rules instanceof \App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules) {
+            $rules = $rules->forCompany($companyId);
+        }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, Employee> $employees */
         $employees = Employee::where('company_id', $companyId)
