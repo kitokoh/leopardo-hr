@@ -12,7 +12,8 @@ export type ClientModuleKey =
   | 'reports'
   | 'partner'
   | 'billing'
-  | 'integrations';
+  | 'integrations'
+  | 'marketing';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -154,6 +155,16 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Integrations',
   },
+  {
+    key: 'marketing',
+    href: '/social-marketing',
+    label: 'Marketing',
+    group: 'general',
+    capabilityKeys: ['marketing', 'can_view_marketing'],
+    featureKeys: ['marketing', 'social_marketing'],
+    allowedRoles: ['manager'],
+    upgradeLabel: 'Marketing & reseaux sociaux',
+  },
 ];
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -168,6 +179,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/reports': 'reports',
   '/billing': 'billing',
   '/settings/developer': 'integrations',
+  '/social-marketing': 'marketing',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
@@ -185,6 +197,10 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
     const managerRole = (user?.manager_role ?? '').toLowerCase();
     if (module.key === 'billing' || module.key === 'integrations') {
       return managerRole === 'principal';
+    }
+
+    if (module.key === 'marketing') {
+      return ['principal', 'marketing'].includes(managerRole);
     }
 
     return true;
