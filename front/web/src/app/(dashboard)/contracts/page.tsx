@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
+import { ModulePageShell } from '@/components/module-page-shell';
 import {
   FileText,
   Search,
@@ -66,13 +67,13 @@ export default function ContractsPage() {
 
   const statusBadge = (status: string) => {
     const styles: Record<string, string> = {
-      active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-      suspended: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      terminated: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-      draft: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+      active: 'bg-emerald-50 text-emerald-700',
+      suspended: 'bg-amber-50 text-amber-700',
+      terminated: 'bg-red-50 text-red-700',
+      draft: 'bg-slate-100 text-slate-600',
     };
     const labels: Record<string, string> = { active: 'Actif', suspended: 'Suspendu', terminated: 'Termine', draft: 'Brouillon' };
-    return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
+    return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
   };
 
   const downloadPdf = async (id: number) => {
@@ -90,34 +91,53 @@ export default function ContractsPage() {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Contrats</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Gestion des contrats employes</p>
-      </div>
+  const statCards = [
+    { label: 'Actifs', value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Expirant bientot', value: stats.expiring, icon: AlertTriangle, accent: 'text-amber-600 bg-amber-50' },
+    { label: 'Suspendus', value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
+    { label: 'Total', value: stats.total, icon: FileText, accent: 'text-brand-600 bg-brand-50' },
+  ];
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {[
-          { label: 'Actifs', value: stats.active, icon: CheckCircle2, color: 'text-emerald-600' },
-          { label: 'Expirant bientot', value: stats.expiring, icon: AlertTriangle, color: 'text-amber-600' },
-          { label: 'Suspendus', value: stats.suspended, icon: Clock, color: 'text-red-500' },
-          { label: 'Total', value: stats.total, icon: FileText, color: 'text-blue-600' },
-        ].map((stat, i) => (
-          <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-            <stat.icon className={`h-5 w-5 ${stat.color} mb-2`} />
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
-            <p className="text-xs text-slate-500">{stat.label}</p>
+  return (
+    <ModulePageShell
+      title="Contrats"
+      subtitle="Gestion des contrats employes : suivi des statuts, echeances et export PDF, branche directement sur l'API RH."
+      accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
+    >
+      <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {statCards.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="rounded-2xl border border-app-border bg-white p-5 shadow-sm"
+          >
+            <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl ${stat.accent}`}>
+              <stat.icon className="h-5 w-5" />
+            </div>
+            <p className="text-2xl font-black text-slate-950">{stat.value}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
           </motion.div>
         ))}
-      </div>
+      </section>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500" />
+          <input
+            type="text"
+            placeholder="Rechercher un employe ou un type de contrat..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
         </div>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white">
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          className="rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm font-medium text-slate-700"
+        >
           <option value="all">Tous les statuts</option>
           <option value="active">Actif</option>
           <option value="suspended">Suspendu</option>
@@ -125,40 +145,47 @@ export default function ContractsPage() {
         </select>
       </div>
 
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
+      <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
+        <div className="border-b border-app-border px-6 py-4">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Contrats</h2>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                <th className="px-4 py-3 text-left font-medium text-slate-500">Employe</th>
-                <th className="px-4 py-3 text-left font-medium text-slate-500">Type</th>
-                <th className="px-4 py-3 text-left font-medium text-slate-500">Debut</th>
-                <th className="px-4 py-3 text-left font-medium text-slate-500">Fin</th>
-                <th className="px-4 py-3 text-center font-medium text-slate-500">Statut</th>
-                <th className="px-4 py-3 text-center font-medium text-slate-500">Actions</th>
+              <tr className="border-b border-app-border bg-slate-50/50">
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employe</th>
+                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Type</th>
+                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Debut</th>
+                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Fin</th>
+                <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
+                <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-app-border">
               {loading ? (
-                <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400">Chargement...</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Chargement des contrats...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400">Aucun contrat trouve</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Aucun contrat trouve.</td></tr>
               ) : filtered.map(c => (
-                <tr key={c.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                  <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{c.employee_name}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400 uppercase text-xs font-semibold">{c.type}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400 flex items-center gap-1"><Calendar className="h-3 w-3" />{c.start_date}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{c.end_date || 'Indefini'}</td>
-                  <td className="px-4 py-3 text-center">{statusBadge(c.status)}</td>
-                  <td className="px-4 py-3 text-center">
-                    <button onClick={() => downloadPdf(c.id)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-emerald-600" title="Telecharger PDF"><Download className="h-4 w-4" /></button>
+                <tr key={c.id} className="transition-colors hover:bg-slate-50/60">
+                  <td className="px-6 py-4 font-bold text-slate-950">{c.employee_name}</td>
+                  <td className="px-4 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">{c.type}</td>
+                  <td className="px-4 py-4 text-slate-600">
+                    <span className="inline-flex items-center gap-1"><Calendar className="h-3 w-3 text-slate-400" />{c.start_date}</span>
+                  </td>
+                  <td className="px-4 py-4 text-slate-600">{c.end_date || 'Indefini'}</td>
+                  <td className="px-4 py-4 text-center">{statusBadge(c.status)}</td>
+                  <td className="px-6 py-4 text-right">
+                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Telecharger PDF">
+                      <Download className="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+      </section>
+    </ModulePageShell>
   );
 }

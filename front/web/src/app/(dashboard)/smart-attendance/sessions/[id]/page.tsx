@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { Check, LogIn, LogOut, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { GeoSessionStatusBadge } from '../../_components/GeoSessionStatusBadge';
@@ -145,7 +146,7 @@ export default function SmartAttendanceSessionDetailPage() {
       <ModulePageShell
         title="Détail de session"
         subtitle="Informations complètes de la session de présence géolocalisée."
-        accentClassName="bg-gradient-to-br from-blue-500/10 via-white to-white"
+        accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
       >
         {/* Back */}
         <div className="flex items-center gap-4">
@@ -219,7 +220,9 @@ export default function SmartAttendanceSessionDetailPage() {
               <div className="flex items-start gap-0">
                 {/* Check in */}
                 <div className="flex flex-col items-center">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-lg">▶</div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                    <LogIn className="h-5 w-5" aria-hidden="true" />
+                  </div>
                   <div className="mt-2 h-12 w-0.5 bg-slate-200" />
                 </div>
                 <div className="ml-4 mt-1">
@@ -230,7 +233,9 @@ export default function SmartAttendanceSessionDetailPage() {
 
               <div className="flex items-start gap-0 mt-2">
                 <div className="flex flex-col items-center">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 text-lg">■</div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                    <LogOut className="h-5 w-5" aria-hidden="true" />
+                  </div>
                 </div>
                 <div className="ml-4 mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Départ</p>
@@ -329,16 +334,16 @@ export default function SmartAttendanceSessionDetailPage() {
                   <button
                     type="button"
                     onClick={() => setModal('approve')}
-                    className="rounded-xl bg-emerald-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-emerald-500"
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-emerald-500"
                   >
-                    ✓ Approuver
+                    <Check className="h-4 w-4" aria-hidden="true" /> Approuver
                   </button>
                   <button
                     type="button"
                     onClick={() => setModal('reject')}
-                    className="rounded-xl bg-red-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-red-500"
+                    className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-red-500"
                   >
-                    ✕ Refuser
+                    <X className="h-4 w-4" aria-hidden="true" /> Refuser
                   </button>
                 </div>
               </section>
