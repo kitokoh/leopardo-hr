@@ -44,24 +44,72 @@ jobs:
   analyze-backend:
     name: CodeQL (Backend)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
 
     steps:
-      - name: Backend CodeQL compatibility note
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # Audit §2.3 / Plan P1: GitHub CodeQL has no native PHP support in this
+      # workflow environment, so this job used to be a no-op status stub.
+      # Semgrep OSS (LGPL 2.1 engine, `p/php` + `p/security-audit` rulesets are
+      # Semgrep Community Edition rules under the Semgrep Rules License — free
+      # for internal use, which is exactly this use case) provides real PHP
+      # SAST coverage without requiring a paid Semgrep AppSec Platform account
+      # or SEMGREP_APP_TOKEN. Findings are uploaded as SARIF so they show up
+      # in the GitHub Security tab like CodeQL results would.
+      - name: Run Semgrep (PHP SAST)
+        id: semgrep
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Pinned by digest (semgrep/semgrep:1.170.0) rather than a mutable
+          # tag, consistent with the SHA-pinning direction from Audit §2.1.
+          docker run --rm \
+            -v "${PWD}:/src" \
+            semgrep/semgrep@sha256:c98f8829eea377274ee4b10656458b078b88232469b2ff913f091c2317347c9d \
+            semgrep scan \
+              --config p/php \
+              --config p/security-audit \
+              --sarif \
+              --output /src/semgrep-backend.sarif \
+              api/app api/routes api/config
+
+        # Note: continue-on-error here means findings never fail the PR by
+        # themselves today (matching the previous stub's non-blocking status);
+        # tightening this to fail on high-severity findings is a follow-up
+        # decision for the team once a baseline of existing findings has been
+        # triaged, to avoid retroactively blocking unrelated PRs on day one.
+      - name: Upload Semgrep SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@eec0bff2f6c15bf3f1e8a0152f94d17664a06a06 # v4
+        with:
+          sarif_file: semgrep-backend.sarif
+          category: semgrep-php
+
+      - name: Backend SAST summary
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
           cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
           ## CodeQL (Backend)
 
-          This repository's backend is PHP, but GitHub CodeQL does not recognize `php`
-          as a supported language in this workflow environment.
+          GitHub CodeQL does not recognize `php` as a supported language in this
+          workflow environment. Real PHP SAST coverage is provided instead by
+          Semgrep OSS (`p/php` + `p/security-audit` rulesets), with findings
+          uploaded to the GitHub Security tab (category `semgrep-php`).
 
-          Backend security coverage remains enforced through:
+          Backend security coverage overall:
+          - Semgrep (PHP SAST) — this job
           - Backend Security (Composer Audit)
           - Dependency Review (PR Security)
 
-          This compatibility job exists to publish the required `CodeQL (Backend)` status
-          expected by branch protection without failing the PR on unsupported language setup.
+          This job continues to publish the required `CodeQL (Backend)` status
+          expected by branch protection.
           EOF
-
-          echo "CodeQL PHP backend analysis is not supported in this workflow environment."
+          echo "Semgrep step outcome: ${{ steps.semgrep.outcome }}"

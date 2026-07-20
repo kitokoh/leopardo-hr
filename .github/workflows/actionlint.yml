@@ -1,0 +1,41 @@
+name: Actionlint
+
+# Audit Plan P4: dedicated lint on PRs touching .github/workflows/**, so a
+# regression like the tests.yml orphaned mobile_* fragment (Audit §1.1) is
+# caught at review time instead of silently shipping dead/broken steps.
+# actionlint bundles shellcheck integration, so `run:` blocks get basic
+# shell linting too.
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/paths-filters.yml'
+  push:
+    branches: [main, develop]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.github/paths-filters.yml'
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: actionlint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    name: actionlint (+ shellcheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Run actionlint
+        uses: reviewdog/action-actionlint@e0207a28405ecad11953ba625a95d92f7889572a # v1
+        with:
+          fail_level: error
