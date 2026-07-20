@@ -21,9 +21,9 @@ class IssueAccessTokenDTO
     {
         return new self(
             expires_in_minutes: $request->integer('expires_in_minutes', 60),
-            label: $request->string('label'),
-            granted_to_email: $request->string('granted_to_email'),
-            granted_to_name: $request->string('granted_to_name'),
+            label: $request->string('label')->toString(),
+            granted_to_email: $request->string('granted_to_email')->toString(),
+            granted_to_name: $request->string('granted_to_name')->toString(),
             permissions: $request->input('permissions', ['view' => true]),
             ip_whitelist: $request->input('ip_whitelist'),
         );
