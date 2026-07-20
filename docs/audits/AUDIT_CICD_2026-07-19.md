@@ -2,7 +2,7 @@
 
 > Périmètre : les 28 workflows GitHub Actions sous `.github/workflows/`, `dependabot.yml`, et leur cohérence avec la structure réelle du monorepo.
 > Méthode : lecture exhaustive de chaque fichier + validation outillée (`actionlint` v1.7.12 avec intégration `shellcheck` 0.10.0) + vérification croisée avec l'arborescence du repo et l'historique git.
-> Ne pas confondre avec `AUDIT.md` (audit fonctionnel du 2026-07-01, section 6 uniquement CI) : ce document est un audit CI/CD dédié, plus profond et à jour au 2026-07-19.
+> Ne pas confondre avec `docs/audits/AUDIT.md` (audit fonctionnel du 2026-07-01, section 6 uniquement CI) : ce document est un audit CI/CD dédié, plus profond et à jour au 2026-07-19.
 
 ---
 
@@ -19,12 +19,12 @@
 | Action obsolète | `treosh/lighthouse-ci-action@v10` tourne sur un runtime Node trop ancien pour GitHub Actions (détecté par actionlint) | 🟡 Moyen |
 | `trufflehog@main` | Scan de secrets épinglé sur la branche `main` du projet tiers, donc non reproductible et vecteur d'attaque potentiel si le repo amont est compromis | 🟠 Élevé |
 | Versions d'actions incohérentes | Mélange `actions/checkout@v4` et `@v5`, `actions/upload-artifact@v4` et `@v5` dans des workflows différents | 🟡 Moyen |
-| Secret réel dans l'historique | `AUDIT.md` documente un mot de passe Redis Upstash committé en clair dans l'historique git (repo public) — toujours non résolu | 🔴 Critique (déjà connu, non-CI mais impacte la sécurité globale) |
+| Secret réel dans l'historique | `docs/audits/AUDIT.md` documente un mot de passe Redis Upstash committé en clair dans l'historique git (repo public) — toujours non résolu | 🔴 Critique (déjà connu, non-CI mais impacte la sécurité globale) |
 | CodeQL PHP non couvert | Le job "CodeQL (Backend)" est un stub qui ne fait qu'écrire un message — aucune analyse statique de sécurité réelle sur le code PHP (SAST) | 🟠 Élevé |
 | Complexité `tests.yml` | 983 lignes, 9 jobs, logique de détection de changements dupliquée avec `deploy-main.yml` (patterns de chemin divergents à surveiller) | 🟡 Moyen |
 | Déploiement en cascade fragile | `deploy-main.yml` se déclenche sur `workflow_run` de `tests.yml`/`web-ci.yml` ; `deploy-staging.yml` se déclenche indépendamment sur push vers `main` avec sa propre logique de polling (jusqu'à 10 min) — deux pipelines de déploiement parallèles et faiblement coordonnés | 🟡 Moyen |
 | `owasp-zap.yml` / `e2e-staging.yml` déclenchés par `workflow_run` sur "Deploy - Leopardo RH" | Cohérent, mais aucun des deux ne vérifie `conclusion == 'success'` du déploiement `deploy-api` spécifiquement (seulement du workflow parent) | 🟡 Moyen |
-| Secrets vs Variables | Bon usage global de `vars.*` pour les seuils non sensibles, mais pas de documentation centralisée des secrets requis par workflow (dispersés dans `AUDIT.md`) | 🟢 Faible |
+| Secrets vs Variables | Bon usage global de `vars.*` pour les seuils non sensibles, mais pas de documentation centralisée des secrets requis par workflow (dispersés dans `docs/audits/AUDIT.md`) | 🟢 Faible |
 | Bonnes pratiques présentes | `concurrency` avec `cancel-in-progress` cohérent, `permissions` least-privilege déclarées sur presque tous les workflows top-level, path filters sur la plupart des CI, `continue-on-error` + gates explicites bien utilisés dans `tests.yml`, secrets validés avant usage (`database-backup.yml`, `deploy-main.yml`) | 🟢 Positif |
 
 **Total : 3 bugs actifs cassant des jobs, 1 dette de sécurité supply-chain notable, 1 duplication structurelle majeure, plusieurs incohérences de versioning.**
@@ -150,9 +150,9 @@ Ce job ne fait qu'écrire un message dans le step summary — **aucune analyse S
 
 ### 2.4 Secret réel déjà exposé dans l'historique git (rappel, hors périmètre CI strict)
 
-`AUDIT.md` (section finale) documente qu'un vrai mot de passe Upstash Redis a été committé en clair dans l'historique et reste récupérable par quiconque clone le repo public. Ce n'est pas un bug de configuration CI, mais cela affaiblit directement la valeur du `secret-scan.yml` (TruffleHog scanne les futurs commits, pas l'historique déjà public) : le secret exposé n'est plus détectable comme "nouveau" par TruffleHog une fois qu'il est déjà dans main depuis longtemps, sauf scan explicite `--since-commit` sur tout l'historique.
+`docs/audits/AUDIT.md` (section finale) documente qu'un vrai mot de passe Upstash Redis a été committé en clair dans l'historique et reste récupérable par quiconque clone le repo public. Ce n'est pas un bug de configuration CI, mais cela affaiblit directement la valeur du `secret-scan.yml` (TruffleHog scanne les futurs commits, pas l'historique déjà public) : le secret exposé n'est plus détectable comme "nouveau" par TruffleHog une fois qu'il est déjà dans main depuis longtemps, sauf scan explicite `--since-commit` sur tout l'historique.
 
-**Recommandation immédiate (hors CI, déjà notée dans AUDIT.md, toujours non cochée)** : rotation du mot de passe Upstash + purge d'historique coordonnée (BFG/filter-repo).
+**Recommandation immédiate (hors CI, déjà notée dans `docs/audits/AUDIT.md`, toujours non cochée)** : rotation du mot de passe Upstash + purge d'historique coordonnée (BFG/filter-repo).
 
 ---
 
@@ -224,6 +224,6 @@ Les deux se déclenchent sur `workflow_run` de `"Deploy - Leopardo RH"` avec `ty
 
 ## 6. Références croisées
 
-- Audit fonctionnel précédent : `AUDIT.md` (section 6, 2026-07-01/07-05) — les points CI qu'il listait (paths filter, pattern `web_changed`) ont bien été corrigés depuis ; ce document ne les retraite pas.
+- Audit fonctionnel précédent : `docs/audits/AUDIT.md` (section 6, 2026-07-01/07-05) — les points CI qu'il listait (paths filter, pattern `web_changed`) ont bien été corrigés depuis ; ce document ne les retraite pas.
 - Audit sécurité API en cours sur la branche `audit/api-security-2026-07-19` (hors périmètre CI, complémentaire).
 - Sortie brute `actionlint` : voir `docs/validation/actionlint-2026-07-19.txt` (généré par cet audit, à archiver).

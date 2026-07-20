@@ -87,7 +87,7 @@ Index de la documentation technique et stratégique du projet.
 | [`REFERENTIEL_PRODUIT/`](REFERENTIEL_PRODUIT/) | Référentiel produit |
 | [`../PILOTAGE.md`](../PILOTAGE.md) | Pilotage projet (filières actives) |
 | [`GOTO_MARKET/`](GOTO_MARKET/) | Stratégie go-to-market |
-| [`../LEOPARDO_STRATEGIC_ANALYSIS.md`](../LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique |
+| [`GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md`](GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique |
 
 ---
 

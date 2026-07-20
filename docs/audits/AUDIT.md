@@ -108,7 +108,7 @@ Le déploiement via Render webhook (`RENDER_DEPLOY_HOOK_URL`) déclenche un re-d
 > Sans worker actif, les jobs (pushs, emails, documents PDF) restent en attente indéfiniment.
 
 #### 2.3 Redis Upstash — credentials engagées dans `.env.example` public
-Le `.env.example` contenait une URL Redis Upstash **avec mot de passe en clair** (valeur réelle retirée de ce document le 2026-07-19, voir `SECURITY_INCIDENT_REDIS_2026-07.md` pour le détail de la remédiation et le statut de rotation) :
+Le `.env.example` contenait une URL Redis Upstash **avec mot de passe en clair** (valeur réelle retirée de ce document le 2026-07-19, voir `docs/security/SECURITY_INCIDENT_REDIS_2026-07.md` pour le détail de la remédiation et le statut de rotation) :
 ```
 REDIS_URL=rediss://default:<REDACTED>@<REDACTED_HOST>.upstash.io:6379
 ```
@@ -519,7 +519,7 @@ REDIS_PASSWORD=NOUVEAU_MDP
 [x] front/web/.env.local.example créé (STRIPE_SECRET_KEY, LEOPARDO_API_URL, NEXT_PUBLIC_API_URL, etc.)
 [~] 🔴 URGENT — Rotation du mot de passe Redis Upstash. Un vrai mot de passe Upstash a été committé
     en clair dans l'historique git (valeur retirée de ce document le 2026-07-19 — voir
-    `SECURITY_INCIDENT_REDIS_2026-07.md` pour la référence de commit exacte et le statut de remédiation)
+    `docs/security/SECURITY_INCIDENT_REDIS_2026-07.md` pour la référence de commit exacte et le statut de remédiation)
     et reste récupérable par quiconque clone le repo (repo public) tant que l'historique n'est pas purgé.
     Documentation nettoyée le 2026-07-19 (ce fichier + PLAN_ACTION*) : le mot de passe en clair n'apparaît
     plus dans aucun fichier Markdown suivi. Reste à faire, hors du périmètre code (action manuelle) :

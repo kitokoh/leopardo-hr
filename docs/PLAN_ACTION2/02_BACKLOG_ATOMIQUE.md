@@ -54,6 +54,10 @@
 | PA2-MOB-008 | P1 | Mon compte premium portable | employee/manager | parcours professionnel, contacts personnels, placard numerique, QR, biometrie |
 | PA2-MOB-009 | P1 | Mobile admin creation/activation client | platform admin | creer entreprise, activer, voir abonnement, pays/devise/langue |
 | PA2-MOB-010 | P2 | Design system mobile 2026 | core + apps | composants unifies, contrastes lisibles, boutons actionnables, dark mode coherent |
+| PA2-MOB-011 | P1 | Eliminer les litteraux hex dupliques dans les ecrans pointage | `leopardo_employee`/`leopardo_manager`/`leopardo_hr` (attendance, smart_attendance), `leopardo_platform_admin/lib/main.dart` | zero `Color(0x...)` litteral hors `AppColors`/`AppTheme`; couleurs Material non gouvernees mappees ou ajoutees au token system; garde CI anti-recidive |
+| PA2-MOB-012 | P1 | Trancher la politique de theme clair/sombre | `leopardo_core/lib/core/theme/app_theme.dart`, 4 apps `app.dart`/`platform_admin_app.dart` | decision ecrite (sombre = experience principale documentee, ou `ThemeMode.system` + reglage utilisateur); les 4 apps alignees sur la meme decision |
+| PA2-MOB-013 | P2 | Aligner `leopardo_platform_admin` sur le vocabulaire de composants partages | `leopardo_platform_admin/lib/src/features/companies`, `leopardo_core/lib/core/widgets` | usage de `LeopardoBadge`/`LeopardoQrCard`/`ShimmerLoading` a parite avec les 3 autres apps sur les ecrans liste/detail/creation |
+| PA2-MOB-014 | P1 | Auditer et clore explicitement le statut reel de PA2-MOB-006 a 009 | `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md`, `CHANGELOG.md` | statut explicite (fait/partiel/non demarre) pour chaque ticket avec preuve CHANGELOG; PA2-MOB-009 verifie en priorite (code applicatif semble deja livre) |
 
 ## Kiosk et terrain
 
