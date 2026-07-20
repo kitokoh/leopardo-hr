@@ -55,7 +55,9 @@ L'ordre de boot des deux providers dans `bootstrap/providers.php` determine sile
 
 ## 5. Adoption inegale de `declare(strict_types=1)`
 
-`CONVENTIONS.md` impose `declare(strict_types=1)` partout. Les modules les plus recents (`Expense`, `Training`, `SmartAttendance`, `Marketing`) sont a 100% conformes — la regle est connue et appliquee sur le code neuf. Elle n'a en revanche jamais ete retrofittee sur le code plus ancien : `HR` (46/77 fichiers sans, 60%), `Cameras` (20/26, 77%), `Attendance` (24/42, 57%), `Payroll` (30/71, 42%). Risque faible (typage strict absent, pas un bug en soi) mais ecart mesurable et facile a corriger mecaniquement.
+`CONVENTIONS.md` impose `declare(strict_types=1)` partout. Les modules les plus recents (`Expense`, `Training`, `SmartAttendance`, `Marketing`) sont a 100% conformes — la regle est connue et appliquee sur le code neuf. Au moment de cet audit elle n'avait jamais ete retrofittee sur le code plus ancien : `HR` (46/77 fichiers sans, 60%), `Cameras` (20/26, 77%), `Attendance` (24/42, 57%), `Payroll` (30/71, 42%). Risque faible (typage strict absent, pas un bug en soi) mais ecart mesurable et facile a corriger mecaniquement.
+
+> Mise a jour 2026-07-20 (PA2-ARCH-009, fait) : les 4 modules sont desormais a 100% (`HR` 74/74, `Payroll` 71/71, `Attendance` 42/42, `Cameras` 26/26 — les totaux different legerement des comptes ci-dessus car le retrofit controllers precedent, commit `d27cc2bc`, avait deja corrige une partie des controllers de ces memes modules). Garde CI incremental ajoute (`dev-hub/tools/check-strict-types-new-files.sh`) pour empecher toute recidive sur les fichiers ajoutes ; voir `CHANGELOG.md` et `02_BACKLOG_ATOMIQUE.md`.
 
 ---
 
@@ -70,7 +72,7 @@ Format identique a `02_BACKLOG_ATOMIQUE.md` / `08_AUDIT_ARCHITECTURE_TECH.md`. C
 | PA2-ARCH-006 | P1 | Etendre `module-structure-check` a SmartAttendance/EdgeSync (Marketing deja fait) | CI, `.github/workflows/architecture-check.yml` | boucle generee depuis `app/Modules/*` (pas de liste codee en dur) ; statut de `EdgeSync/Infrastructure` tranche (mise en conformite ou derogation documentee dans `ARCHITECTURE.md`) |
 | PA2-ARCH-007 | P1 | Supprimer les controllers dupliques jamais routes | API | `Training/TrainingController`, `Onboarding/OnboardingQrController` migres et le doublon HR supprime ; `Planning/ExpenseClaimController` et `Billing/EstimationController` supprimes (aucune migration en cours) ; garde CI detectant un controller jamais reference dans `routes/` |
 | PA2-ARCH-008 | P1 | Point d'enregistrement unique pour les Gate::policy | API/Providers | plus qu'un seul provider enregistre chaque policy (recommande : par ServiceProvider de module) ; divergence `Invoice` -> `BillingPolicy` vs `InvoicePolicy` tranchee explicitement ; test unitaire verifiant l'absence de double enregistrement |
-| PA2-ARCH-009 | P2 | Retrofit `declare(strict_types=1)` sur modules anciens | API | HR/Payroll/Attendance/Cameras a 100% ; garde CI incremental refusant tout nouveau fichier sans la directive |
+| PA2-ARCH-009 | P2 | Retrofit `declare(strict_types=1)` sur modules anciens | API | **Fait (2026-07-20)** : HR/Payroll/Attendance/Cameras a 100% ; garde CI incremental refusant tout nouveau fichier sans la directive |
 
 ---
 
@@ -82,5 +84,5 @@ Format identique a `02_BACKLOG_ATOMIQUE.md` / `08_AUDIT_ARCHITECTURE_TECH.md`. C
 | Code mort (controllers dupliques non routes) | Resolu (PA2-ARCH-007) : 7 controllers orphelins supprimes (4 catalogues + 3 trouves par le nouveau garde CI), garde CI permanent ajoute | Moyen → Resolu |
 | Policies dupliquees entre providers | Divergence reelle sur `Invoice` (BillingPolicy vs InvoicePolicy) | Moyen |
 | Controllers epais / deficit Actions | Confirme au-dela des 4 modules deja notes dans `ARCHITECTURE.md` | Faible-moyen (dette, non bloquant demo) |
-| `declare(strict_types=1)` | Bien applique sur code neuf, absent sur ~40-60% du code ancien | Faible |
+| `declare(strict_types=1)` | Retrofitte a 100% sur les 4 modules cibles (PA2-ARCH-009, 2026-07-20) + garde CI incremental anti-recidive | Faible → Resolu |
 | Namespaces PSR-4 | Conformes partout (0 anomalie hors fichiers sans namespace legitimes : routes/migrations) | OK |
