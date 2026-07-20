@@ -171,4 +171,66 @@ test.describe('Client web feature gates', () => {
     const events = await analyticsEvents(page);
     expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
   });
+
+  test('marketing manager can access the marketing module', async ({ page }) => {
+    await page.route('**/api/v1/marketing/social-account', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'SOCIAL_ACCOUNT_NOT_FOUND',
+          message: "Aucun compte social connecte pour l'entreprise.",
+        }),
+      });
+    });
+    await page.route('**/api/v1/marketing/social-posts**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [], meta: { current_page: 1, last_page: 1 } }),
+      });
+    });
+
+    await seedSession(page, {
+      manager_role: 'marketing',
+      capabilities: {
+        marketing: true,
+      },
+      company: {
+        id: 'company-1',
+        name: 'TechCorp Algerie SARL',
+        features: {
+          marketing: true,
+        },
+      },
+    });
+
+    await page.goto('/social-marketing', { waitUntil: 'domcontentloaded' });
+
+    await expect(page).toHaveURL(/\/social-marketing$/);
+    await expect(page.locator('body')).toContainText('Connecter mon compte');
+    await expect(page.locator('body')).not.toContainText('Module non inclus');
+  });
+
+  test('non-marketing manager role is locked out of the marketing module', async ({ page }) => {
+    await seedSession(page, {
+      manager_role: 'rh',
+      capabilities: {
+        marketing: true,
+      },
+      company: {
+        id: 'company-1',
+        name: 'TechCorp Algerie SARL',
+        features: {
+          marketing: true,
+        },
+      },
+    });
+
+    await page.goto('/social-marketing', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByText('Module non inclus').first()).toBeVisible();
+    const events = await analyticsEvents(page);
+    expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
+  });
 });

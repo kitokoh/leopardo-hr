@@ -2,7 +2,7 @@
 
 Statut : complet pour publication
 Auteur : audit externe KiloClaw (agent Aria), à la demande de kitokoh — angle "qu'est-ce qui a échappé aux audits précédents / qu'est-ce qui est réellement encore ouvert"
-Périmètre : vérification croisée de tous les audits internes existants (`AUDIT.md`, `AUDIT_CICD_2026-07-19.md`, `docs/PLAN_ACTION2/08_*`, `09_*`, `10_*`, `docs/security/*`) contre l'état réel du code sur `main` au 2026-07-19, plus vérifications live (endpoints prod, GitHub API, git log).
+Périmètre : vérification croisée de tous les audits internes existants (`docs/audits/AUDIT.md`, `docs/audits/AUDIT_CICD_2026-07-19.md`, `docs/PLAN_ACTION2/08_*`, `09_*`, `10_*`, `docs/security/*`) contre l'état réel du code sur `main` au 2026-07-19, plus vérifications live (endpoints prod, GitHub API, git log).
 
 Ce document ne répète pas ce que les audits précédents documentent déjà correctement. Il fait trois choses :
 1. Confirme, avec preuve dans le code actuel, quels points signalés comme "ouverts" dans les audits précédents sont **réellement encore ouverts** aujourd'hui (beaucoup ont déjà été corrigés depuis leur publication — attention à ne pas re-traiter du travail déjà fait).
@@ -13,10 +13,10 @@ Ce document ne répète pas ce que les audits précédents documentent déjà co
 
 ## 1. Sécurité — traité aujourd'hui (2026-07-19, PR #898)
 
-Le mot de passe Redis Upstash réel, documenté comme fuite depuis le 2026-07-01 dans `AUDIT.md` (case `[ ]` jamais cochée malgré 3 revues successives qui le confirmaient), a été retiré de tous les fichiers Markdown suivis dans ce même passage :
+Le mot de passe Redis Upstash réel, documenté comme fuite depuis le 2026-07-01 dans `docs/audits/AUDIT.md` (case `[ ]` jamais cochée malgré 3 revues successives qui le confirmaient), a été retiré de tous les fichiers Markdown suivis dans ce même passage :
 
-- `AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/08_SCALABILITE_REDIS.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/01_ROADMAP_30J.md`, `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md` : hostname + mot de passe réel remplacés par des placeholders génériques.
-- Nouveau fichier `SECURITY_INCIDENT_REDIS_2026-07.md` : suivi centralisé, procédure exacte de rotation Upstash + purge d'historique git (`BFG`/`git filter-repo`), et explication de pourquoi ces deux actions restent manuelles (accès dashboard tiers + `push --force` destructif sur branche partagée active, décision qui doit rester humaine).
+- `docs/audits/AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/08_SCALABILITE_REDIS.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/01_ROADMAP_30J.md`, `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md` : hostname + mot de passe réel remplacés par des placeholders génériques.
+- Nouveau fichier `docs/security/SECURITY_INCIDENT_REDIS_2026-07.md` : suivi centralisé, procédure exacte de rotation Upstash + purge d'historique git (`BFG`/`git filter-repo`), et explication de pourquoi ces deux actions restent manuelles (accès dashboard tiers + `push --force` destructif sur branche partagée active, décision qui doit rester humaine).
 - PR ouverte : `security/redis-secret-redaction` → **#898**.
 
 **Important : le nettoyage de la doc ne corrige PAS le risque réel.** Le secret reste valide et récupérable dans l'historique git tant que la rotation Upstash + la purge d'historique ne sont pas faites. C'est la seule action **vraiment P0-P0** de tout ce document — tout le reste peut attendre quelques jours, celle-ci ne devrait pas.
@@ -27,7 +27,7 @@ Le mot de passe Redis Upstash réel, documenté comme fuite depuis le 2026-07-01
 
 ## 2. Vérification croisée : qu'est-ce qui est VRAIMENT encore ouvert dans les audits existants
 
-Beaucoup de points listés comme "ouverts" dans `AUDIT.md`/`08_*`/`09_*`/`docs/security/AUDIT_API_2026-07-19.md` ont déjà été corrigés par des commits/PR postérieurs à la publication de ces audits. Vérification directe dans le code de `main` :
+Beaucoup de points listés comme "ouverts" dans `docs/audits/AUDIT.md`/`08_*`/`09_*`/`docs/security/AUDIT_API_2026-07-19.md` ont déjà été corrigés par des commits/PR postérieurs à la publication de ces audits. Vérification directe dans le code de `main` :
 
 | Ticket / finding | Statut réel vérifié dans le code | Preuve |
 |---|---|---|
@@ -46,7 +46,7 @@ Beaucoup de points listés comme "ouverts" dans `AUDIT.md`/`08_*`/`09_*`/`docs/s
 | PA2-I18N-005 (PDF légaux non localisés) | ✅ **Corrigé** | `payslip.blade.php` : `<html lang="{{ app()->getLocale() }}" dir="...isRtl(...)">`, `PaySlipPdfGenerator.php` appelle `App::setLocale(...)` avant rendu |
 | **PA2-I18N-006 (emails transactionnels non localisés)** | ⚠️ **Partiellement corrigé** | Seul `cabinet-share.blade.php` (5 occurrences `__(`) utilise le catalogue. Les 16 autres templates vérifiés (`welcome-employee`, `password-reset`, `subscription-confirmed`, `trial-welcome`, `trial-verification`, `trial-expiring`, `invitation`, `user-invitation`, `role-assignment`, `payment-failed`, `invoice-sent`, `license-expiring`, `newsletter-welcome`, `demo-confirmation`, `welcome-onboarding`, `welcome`) ont chacun **0 occurrence** de `__(`. Le ticket original visait "16+ templates" — 1 seul est traité, 16 restent en français codé en dur. |
 | **PA2-I18N-011 (mélange de langues figé dans les données vitrine)** | ❌ **Toujours ouvert, mais moins grave que documenté** | `pricing.ts` a en réalité une structure `Record<AppLocale, PricingPlan[]>` propre avec un bloc `tr:` dédié séparé du bloc `fr:` — donc pas un vrai "mélange dans le même objet" comme décrit dans `10_AUDIT_I18N_MULTILINGUE.md`. En revanche, une régression réelle et différente a été trouvée : `MarketingReadinessSection.tsx` contient une entrée `tr:` avec le texte `'Kucuk baslayin, ekip buyudukce gelismis modulleri acin.'` — turc **sans caractères diacritiques ni accents**, mélangé au reste du fichier qui a un vrai bloc `fr:`/`en:`/`ar:` à côté. Le contenu proprement dit est bien scindé par langue (pas un vrai "mélange visible à un utilisateur fr"), mais la qualité de la traduction turque de ce composant spécifique est dégradée (accents manquants : `baslayin` au lieu de `başlayın`), signe d'un contenu généré rapidement sans passage par le glossaire verrouillé mentionné dans l'audit i18n. Le ticket `PA2-I18N-011` doit être reformulé : le vrai problème n'est pas un mélange de langues dans le même objet de données (semble déjà résolu), mais une qualité de traduction turque incohérente sur au moins ce composant, à vérifier plus largement. |
-| `dependabot.yml` chemin `pub`/mobile inexistant (`AUDIT_CICD_2026-07-19.md`) | ✅ **Corrigé** | 5 entrées `pub` pointent vers les vrais dossiers `front/mobile_apps/leopardo_{core,employee,manager,hr,platform_admin}` ; `npm` étendu à `front/web` |
+| `dependabot.yml` chemin `pub`/mobile inexistant (`docs/audits/AUDIT_CICD_2026-07-19.md`) | ✅ **Corrigé** | 5 entrées `pub` pointent vers les vrais dossiers `front/mobile_apps/leopardo_{core,employee,manager,hr,platform_admin}` ; `npm` étendu à `front/web` |
 | `release.yml` référence `front/mobile` supprimé | ✅ **Corrigé** | Commentaire confirmant le retrait, plus de référence au dossier supprimé |
 | `tests.yml` fragment de script orphelin (`steps.mobile_*`) | ✅ **Corrigé** | Aucune occurrence de `mobile_smoke_build`/`mobile_analyze`/`mobile_coverage_gate` dans `tests.yml` |
 
@@ -63,7 +63,7 @@ Voir section 1. Seule action non-code de ce document, mais la plus urgente. Sans
 
 **AUDIT-P0-2 — Scope RBAC "superviseur = assigned-only" toujours non implémenté (confirme `PA2-SEC-003` déjà dans le backlog, avec preuve à jour)**
 - **Constat** : `manager_role = 'superviseur'` se comporte identiquement à `principal`/`rh` sur toutes les policies testées (`EmployeePolicy`, `AttendancePolicy`, `EvaluationPolicy`, `SchedulePolicy`) — aucune notion d'assignation explicite (liste d'employés/départements assignés) n'existe dans le schéma DB ni dans le code.
-- **Impact commercial** : `RBAC_SYSTEM.md` documente ce rôle comme argument de vente ("Supervisor : View-only access for reporting and monitoring, scope Assigned-only") — probablement utile pour le secteur "Sécurité privée" ciblé en priorité #1 par `LEOPARDO_STRATEGIC_ANALYSIS.md` (superviseurs de site qui ne doivent voir que leur périmètre). Vendre une fonctionnalité RBAC qui n'existe pas dans le code à un premier client pilote est un risque de confiance et de conformité (CNIL/RGPD si le superviseur accède à des données RH hors de son périmètre légitime).
+- **Impact commercial** : `RBAC_SYSTEM.md` documente ce rôle comme argument de vente ("Supervisor : View-only access for reporting and monitoring, scope Assigned-only") — probablement utile pour le secteur "Sécurité privée" ciblé en priorité #1 par `docs/GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md` (superviseurs de site qui ne doivent voir que leur périmètre). Vendre une fonctionnalité RBAC qui n'existe pas dans le code à un premier client pilote est un risque de confiance et de conformité (CNIL/RGPD si le superviseur accède à des données RH hors de son périmètre légitime).
 - **Action recommandée** : soit implémenter un scoping réel (table de pivot `supervisor_assignments` ou réutiliser `department_id` en mode restreint), soit **retirer ce rôle de la doc commerciale et du RBAC vendu tant qu'il n'est pas implémenté** — la seconde option est plus rapide et évite une promesse non tenue en pilote client.
 - Déjà dans le backlog comme `PA2-SEC-003`/`PA2-SEC-004` (tests de régression RBAC) — ce document confirme juste que c'est encore et bien ouvert, avec preuve de code à date.
 

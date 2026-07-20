@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Attendance\Application\Actions;
 
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;

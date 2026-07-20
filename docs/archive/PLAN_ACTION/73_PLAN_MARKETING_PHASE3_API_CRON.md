@@ -2,7 +2,7 @@
 
 Date : 2026-07-19
 Statut : en execution iterative
-Reference : `MARKETING_MODULE_PLAN.md` (racine du repo), Phases 0-2 deja mergees
+Reference : `docs/modules/MARKETING_MODULE_PLAN.md`, Phases 0-2 deja mergees
 (#856, #857, #858).
 
 ## Contexte / audit
@@ -45,7 +45,7 @@ sociaux) au 2026-07-19 :
     la planification par l'action de creation.
 
 Ce plan couvre uniquement la **Phase 3** (cron + API), scope explicite du
-`MARKETING_MODULE_PLAN.md`. Phases 4 (UI web) et 5 (onglet mobile
+`docs/modules/MARKETING_MODULE_PLAN.md`. Phases 4 (UI web) et 5 (onglet mobile
 `leopardo_manager`) restent hors scope de ce plan et seront traitees dans
 des plans separes une fois l'API disponible.
 
@@ -156,7 +156,7 @@ des plans separes une fois l'API disponible.
   ajouter `Marketing` a la liste des modules verifies (le module aura
   desormais ses 5 couches : Application, Domain, Infrastructure,
   Interfaces, Providers).
-- Mettre a jour `MARKETING_MODULE_PLAN.md` : passer la ligne Phase 3 a
+- Mettre a jour `docs/modules/MARKETING_MODULE_PLAN.md` : passer la ligne Phase 3 a
   "Mergee" avec le detail livre, inchange pour Phase 4/5 (`A faire`).
 - Executer la suite complete `php artisan test tests/Feature/Marketing`
   (attendu : 21 tests Phase 1/2 + nouveaux tests Phase 3, tous verts) avant
@@ -172,4 +172,4 @@ des plans separes une fois l'API disponible.
   (contrainte d'environnement) : les commits sont pousses directement sur
   la branche de travail dediee ; un merge sur `main` reste une decision
   humaine separee, conformement au process de livraison documente dans
-  `MARKETING_MODULE_PLAN.md` ("branche → PR → CI verte → merge").
+  `docs/modules/MARKETING_MODULE_PLAN.md` ("branche → PR → CI verte → merge").

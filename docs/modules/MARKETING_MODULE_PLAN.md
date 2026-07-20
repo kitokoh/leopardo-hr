@@ -14,7 +14,7 @@ livrée par PR séparée, avec CI verte, puis mergée sur `main`.
 | 1 | Schéma DB + modèles (`social_accounts`, `social_posts`) | ✅ Mergée | #857 |
 | 2 | Policies, Actions, client Ayrshare, tests | ✅ Mergée | #858 |
 | 3 | Cron de publication planifiée + contrôleurs/routes API | ✅ Prête (branche `codex/marketing-phase3-api-cron`) | — |
-| 4 | UI web dashboard Marketing | ⏳ À faire | — |
+| 4 | UI web dashboard Marketing | ✅ Prête (branche `codex/marketing-phase4-web-ui`) | — |
 | 5 | Onglet Marketing dans l'app mobile `leopardo_manager` | ⏳ À faire | — |
 
 ---
@@ -153,11 +153,53 @@ Plan détaillé : `docs/archive/PLAN_ACTION/73_PLAN_MARKETING_PHASE3_API_CRON.md
   d'intégration Sentry explicite ajoutée — le reste du projet n'a pas de
   pattern établi pour ça sur les autres `Schedule::command()`).
 
-## Phase 4 — UI Web (à faire)
+## Phase 4 — UI Web (prête, branche `codex/marketing-phase4-web-ui`)
 
-- [ ] Dashboard Marketing (liste comptes connectés, calendrier de posts).
-- [ ] Formulaire de connexion de compte (flow Ayrshare `generateJWT`).
-- [ ] Formulaire de création/planification de post (upload média S3).
+Plan détaillé : `docs/archive/PLAN_ACTION/74_PLAN_MARKETING_PHASE4_WEB_UI.md`.
+
+- [x] `src/lib/client-features.ts` : nouveau module `marketing` (href
+      `/social-marketing` — collision de route évitée avec la page
+      vitrine publique `(landing)/marketing`), entrée `CLIENT_MODULES`,
+      `ROUTE_TO_MODULE`, et cas spécial dans `hasRoleAccess()` limitant
+      l'accès manager aux `manager_role` `principal` ou `marketing`
+      (même pattern que `billing`/`integrations`).
+- [x] `src/app/(dashboard)/social-marketing/page.tsx` (nouveau) :
+  - Panneau compte social : état "non connecté" (404
+    `SOCIAL_ACCOUNT_NOT_FOUND` traité comme état normal, pas une
+    erreur) avec formulaire de connexion (`display_name` →
+    `POST /marketing/social-account/connect`), ou état "connecté"
+    (plateformes liées, statut, bouton "Déconnecter" →
+    `POST /marketing/social-account/disconnect`).
+  - Stats rapides (total / planifiées / publiées / échecs) une fois le
+    compte connecté.
+  - Formulaire de création de post : contenu texte, sélection de
+    plateformes cibles (liste `SUPPORTED_PLATFORMS` dupliquée en dur,
+    à garder synchronisée manuellement avec
+    `StoreSocialPostRequest::supportedPlatforms()` côté API — pas
+    d'endpoint de découverte des plateformes), date de planification
+    optionnelle. `POST /marketing/social-posts`.
+  - Liste des posts (`GET /marketing/social-posts`, pagination
+    "Charger plus"), actions rapides "Publier maintenant"
+    (`POST .../publish`) et "Supprimer" (`DELETE ...`) visibles
+    uniquement sur les posts `draft`/`scheduled`, cohérent avec
+    `SocialPostPolicy`.
+  - Pas d'upload média : les posts sont texte + plateformes uniquement
+    (l'API accepte `media_paths` en URLs déjà hébergées, aucun
+    composant d'upload direct existant dans `front/web` — hors scope,
+    lot ultérieur si demandé).
+  - Réutilise `apiFetch` (`src/lib/api-client.ts`) et `ModulePageShell`
+    tels quels, pas de nouveau client HTTP ni design system.
+- [x] `e2e/client-feature-gates.spec.ts` : deux nouveaux tests —
+      accès manager `marketing` au module (`/social-marketing`), et
+      blocage rôle pour un manager non `marketing`/`principal`.
+- [x] Vérification : `npm run lint` (0 warning), `npm run build`
+      (Next.js, Turbopack — 0 erreur TypeScript), `npx tsc --noEmit`,
+      et `client-feature-gates.spec.ts` (6/6, dont les 2 nouveaux tests)
+      + smokes existants (`auth-client-smoke`, `manager-workday-smoke`,
+      `client-visual-smoke`) tous verts en local (chromium).
+- Hors scope Phase 4 (reporté) : upload média direct (S3), calendrier
+  visuel des posts planifiés (la liste triée par date de création
+  suffit pour ce lot).
 
 ## Phase 5 — Mobile (à faire)
 
