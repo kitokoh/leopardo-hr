@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
