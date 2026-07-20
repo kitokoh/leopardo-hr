@@ -20,6 +20,11 @@ return [
     'updated' => 'Çalışan başarıyla güncellendi.',
     'archived' => 'Çalışan başarıyla arşivlendi.',
     'invited' => 'Davet başarıyla gönderildi.',
+    'role_assign_forbidden' => 'Sadece şirket yöneticisi rol atayabilir.',
+    'role_assign_not_in_company' => 'Çalışan şirketinizde bulunamadı.',
+    'role_assigned' => "':role' rolü başarıyla atandı. Uygulama indirme bağlantılarını içeren bir e-posta gönderildi.",
+    'role_removed' => 'Rol kaldırıldı. Çalışan artık normal bir çalışandır.',
+    'team_roles_forbidden' => 'Sadece şirket yöneticisi ekip rollerini görüntüleyebilir.',
 
     // Labels
     'first_name' => 'Ad',

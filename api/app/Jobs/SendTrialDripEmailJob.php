@@ -82,14 +82,16 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
 
         $name = trim($manager->first_name.' '.$manager->last_name);
         $email = $manager->email;
+        $locale = $manager->preferred_language;
 
         $mailable = match ($this->dayNumber) {
-            1 => new TrialDayOneMail($this->company, $name, $email),
-            3 => new TrialDayThreeMail($this->company, $name),
+            1 => new TrialDayOneMail($this->company, $name, $email, $locale),
+            3 => new TrialDayThreeMail($this->company, $name, $locale),
             7 => new TrialDaySevenMail(
                 $this->company,
                 $name,
                 Employee::where('company_id', $this->company->id)->count(),
+                $locale,
             ),
             default => null,
         };

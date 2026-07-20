@@ -27,12 +27,12 @@ class RoleAssignmentController extends Controller
 
         // Only principal can assign roles
         if (! $actor->isPrincipal()) {
-            return response()->json(['message' => 'Only the company admin can assign roles.'], 403);
+            return response()->json(['message' => __('employees.role_assign_forbidden')], 403);
         }
 
         // Must be same company
         if ($actor->company_id !== $employee->company_id) {
-            return response()->json(['message' => 'Employee not found in your company.'], 404);
+            return response()->json(['message' => __('employees.role_assign_not_in_company')], 404);
         }
 
         $validated = $request->validate([
@@ -62,8 +62,8 @@ class RoleAssignmentController extends Controller
 
         return response()->json([
             'message' => $newRole
-                ? "Role '{$newRole}' assigned successfully. An email with app download links has been sent."
-                : "Role removed. Employee is now a regular employee.",
+                ? __('employees.role_assigned', ['role' => $newRole])
+                : __('employees.role_removed'),
             'data' => [
                 'employee_id' => $employee->id,
                 'role'        => $employee->role,
@@ -85,7 +85,7 @@ class RoleAssignmentController extends Controller
         $actor = $request->user();
 
         if (! $actor->isPrincipal()) {
-            return response()->json(['message' => 'Only the company admin can view team roles.'], 403);
+            return response()->json(['message' => __('employees.team_roles_forbidden')], 403);
         }
 
         $employees = Employee::where('company_id', $actor->company_id)
@@ -102,7 +102,7 @@ class RoleAssignmentController extends Controller
                 'manager_role' => $e->manager_role,
                 'role_label'   => $e->manager_role
                     ? RoleInvitationService::getRoleLabel($e->manager_role)
-                    : ($e->isManager() ? 'Manager' : 'Employé'),
+                    : ($e->isManager() ? __('employees.role_manager') : __('employees.role_employee')),
                 'status'       => $e->status,
                 'photo_path'   => $e->photo_path,
             ]),

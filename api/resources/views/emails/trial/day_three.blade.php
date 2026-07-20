@@ -1,22 +1,22 @@
 @component('mail::message')
-# Avez-vous essayé le pointage mobile, {{ $managerName }} ?
+# {{ str_replace(':name', $managerName, trans('emails.trial_day3_mail_heading')) }}
 
-Vous êtes sur Leopardo RH depuis 3 jours. Voici une astuce pour tirer le meilleur parti de la plateforme :
+{{ __('emails.trial_day3_mail_intro') }}
 
-Le **pointage mobile** permet à vos employés de badger directement depuis leur téléphone, avec géolocalisation optionnelle.
+{{ __('emails.trial_day3_mail_body') }}
 
 @component('mail::button', ['url' => $checkInUrl])
-Configurer le pointage
+{{ __('emails.trial_day3_mail_button') }}
 @endcomponent
 
-Vous pouvez aussi télécharger nos applications mobiles pour Android et iOS :
+{{ __('emails.trial_day3_mail_apps_intro') }}
 
 @component('mail::button', ['url' => $mobileAppsUrl])
-Télécharger les applications
+{{ __('emails.trial_day3_mail_apps_button') }}
 @endcomponent
 
-Besoin d'aide ? Répondez directement à cet email.
+{{ __('emails.trial_day3_mail_help') }}
 
-Cordialement,
-L'équipe Leopardo RH
+{{ __('emails.regards') }}
+{{ str_replace(':company', 'Leopardo RH', trans('emails.team_signature')) }}
 @endcomponent
