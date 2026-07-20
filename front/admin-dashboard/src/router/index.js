@@ -267,6 +267,15 @@ const routes = [
           title: 'Edge Nodes',
           icon: 'ServerIcon'
         }
+      },
+      {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('@/views/settings/SettingsView.vue'),
+        meta: {
+          title: 'Mon compte',
+          icon: 'UserCircleIcon'
+        }
       }
     ]
   },
