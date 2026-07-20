@@ -25,4 +25,8 @@ return [
     'daily_summary' => 'Günlük özet',
     'monthly_summary' => 'Aylık özet',
     'history' => 'Geçmiş',
+
+    // Konum oturumları (SmartAttendance)
+    'geo_session_approved' => 'Oturum onaylandi. Devam kaydi olusturuldu.',
+    'geo_session_rejected' => 'Oturum reddedildi.',
 ];
