@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
+import { ModulePageShell } from '@/components/module-page-shell';
 import {
   BarChart3,
   Download,
@@ -30,7 +31,7 @@ const reports: ReportConfig[] = [
     title: 'Resume Presences',
     description: 'Rapport mensuel des presences, retards et absences par employe.',
     icon: Clock,
-    color: 'text-blue-600',
+    color: 'text-security-dark bg-security-light',
     endpoint: '/reports/attendance-summary',
     params: [
       { key: 'month', label: 'Mois', type: 'month' },
@@ -41,7 +42,7 @@ const reports: ReportConfig[] = [
     title: 'Resume Paie',
     description: 'Total brut/net, cotisations et charges par periode de paie.',
     icon: DollarSign,
-    color: 'text-emerald-600',
+    color: 'text-emerald-600 bg-emerald-50',
     endpoint: '/reports/payroll-summary',
     params: [
       { key: 'period', label: 'Periode', type: 'month' },
@@ -52,7 +53,7 @@ const reports: ReportConfig[] = [
     title: 'Soldes Conges',
     description: 'Etat des soldes de conges pour tous les employes.',
     icon: Calendar,
-    color: 'text-purple-600',
+    color: 'text-ia-dark bg-ia-light',
     endpoint: '/reports/leave-balances',
     params: [
       { key: 'year', label: 'Annee', type: 'number' },
@@ -63,7 +64,7 @@ const reports: ReportConfig[] = [
     title: 'Effectifs',
     description: 'Evolution des effectifs, entrees et sorties par periode.',
     icon: Users,
-    color: 'text-amber-600',
+    color: 'text-amber-600 bg-amber-50',
     endpoint: '/reports/headcount',
     params: [
       { key: 'from', label: 'Du', type: 'date' },
@@ -75,7 +76,7 @@ const reports: ReportConfig[] = [
     title: 'Suivi Formations',
     description: 'Taux de participation et completion des formations.',
     icon: TrendingUp,
-    color: 'text-cyan-600',
+    color: 'text-brand-600 bg-brand-50',
     endpoint: '/reports/training-progress',
     params: [
       { key: 'year', label: 'Annee', type: 'number' },
@@ -86,7 +87,7 @@ const reports: ReportConfig[] = [
     title: 'Echeances Contrats',
     description: 'Contrats arrivant a echeance dans les 30, 60, 90 prochains jours.',
     icon: FileText,
-    color: 'text-red-500',
+    color: 'text-red-500 bg-red-50',
     endpoint: '/reports/contract-expiry',
     params: [
       { key: 'days', label: 'Jours', type: 'number' },
@@ -130,12 +131,11 @@ export default function ReportsPage() {
   }, [params]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Rapports</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Generez et telechargez vos rapports RH</p>
-      </div>
-
+    <ModulePageShell
+      title="Rapports"
+      subtitle="Generez et telechargez vos rapports RH : presences, paie, conges, effectifs, formations et contrats."
+      accentClassName="bg-gradient-to-br from-ia/10 via-white to-white"
+    >
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {reports.map((report, i) => (
           <motion.div
@@ -143,27 +143,27 @@ export default function ReportsPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 flex flex-col"
+            className="flex flex-col rounded-2xl border border-app-border bg-white p-5 shadow-sm"
           >
-            <div className="flex items-start gap-3 mb-3">
-              <div className={`rounded-lg p-2 bg-slate-50 dark:bg-slate-700`}>
-                <report.icon className={`h-5 w-5 ${report.color}`} />
+            <div className="mb-3 flex items-start gap-3">
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${report.color}`}>
+                <report.icon className="h-5 w-5" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm">{report.title}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{report.description}</p>
+                <h3 className="text-sm font-bold text-slate-950">{report.title}</h3>
+                <p className="mt-0.5 text-xs text-slate-500">{report.description}</p>
               </div>
             </div>
 
-            <div className="space-y-2 mb-4 flex-1">
+            <div className="mb-4 flex-1 space-y-2">
               {report.params.map(p => (
                 <div key={p.key}>
-                  <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{p.label}</label>
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-400">{p.label}</label>
                   <input
                     type={p.type}
                     value={params[report.id]?.[p.key] || ''}
                     onChange={e => updateParam(report.id, p.key, e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+                    className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               ))}
@@ -172,7 +172,7 @@ export default function ReportsPage() {
             <button
               onClick={() => generateReport(report)}
               disabled={generating === report.id}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
             >
               {generating === report.id ? (
                 <>
@@ -188,13 +188,13 @@ export default function ReportsPage() {
             </button>
 
             {results[report.id] && (
-              <p className={`text-xs mt-2 ${results[report.id].includes('Erreur') ? 'text-red-500' : 'text-emerald-600'}`}>
+              <p className={`mt-2 text-xs font-medium ${results[report.id].includes('Erreur') ? 'text-red-500' : 'text-emerald-600'}`}>
                 {results[report.id]}
               </p>
             )}
           </motion.div>
         ))}
       </div>
-    </div>
+    </ModulePageShell>
   );
 }

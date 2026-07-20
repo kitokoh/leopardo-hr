@@ -96,7 +96,7 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
     className={`relative group ${className}`}
   >
     <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 blur transition duration-500 group-hover:opacity-20" />
-    <div className="relative overflow-hidden rounded-2xl border border-slate-200/50 bg-white/80 shadow-lg backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/80">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200/50 bg-white/80 shadow-lg backdrop-blur-xl">
       {children}
     </div>
   </motion.div>
@@ -224,8 +224,8 @@ export default function DashboardPage() {
       change: `${summary?.employees_total ?? 0} total`,
       trend: 'up',
       icon: Users,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      color: 'from-security to-security-dark',
+      bgColor: 'bg-security-light',
     },
     {
       title: 'Presents aujourd hui',
@@ -235,8 +235,8 @@ export default function DashboardPage() {
         : '0%',
       trend: 'up',
       icon: CheckCircle2,
-      color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
+      color: 'from-rh to-rh-dark',
+      bgColor: 'bg-rh-light',
     },
     {
       title: 'Absences en attente',
@@ -244,8 +244,8 @@ export default function DashboardPage() {
       change: 'a traiter',
       trend: 'down',
       icon: Clock,
-      color: 'from-amber-500 to-amber-600',
-      bgColor: 'bg-amber-50 dark:bg-amber-900/20',
+      color: 'from-finance to-finance-dark',
+      bgColor: 'bg-finance-light',
     },
     {
       title: 'Departements',
@@ -253,8 +253,8 @@ export default function DashboardPage() {
       change: 'actifs',
       trend: 'up',
       icon: Clock,
-      color: 'from-violet-500 to-violet-600',
-      bgColor: 'bg-violet-50 dark:bg-violet-900/20',
+      color: 'from-ia to-ia-dark',
+      bgColor: 'bg-ia-light',
     },
   ];
 
@@ -288,8 +288,8 @@ export default function DashboardPage() {
         className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center"
       >
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Tableau de bord</h1>
-          <p className="mt-1 text-slate-500 dark:text-slate-400">
+          <h1 className="text-3xl font-black text-slate-950">Tableau de bord</h1>
+          <p className="mt-1 text-slate-500">
             {loading ? 'Chargement des donnees tenant...' : 'Bienvenue ! Voici ce qui se passe aujourd hui.'}
           </p>
           {loadError ? (
@@ -305,11 +305,11 @@ export default function DashboardPage() {
             <input
               type="text"
               placeholder="Rechercher..."
-              className="w-64 rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800"
+              className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
-          <button className="relative rounded-xl border border-slate-200 bg-white p-2 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
-            <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+          <button className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-slate-50">
+            <Bell className="h-5 w-5 text-slate-600" />
             <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
           </button>
         </div>
@@ -337,8 +337,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-200">Actions prioritaires</p>
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-200">Actions prioritaires</p>
           <div className="mt-4 grid gap-3 text-sm">
             <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
             <PriorityAction label="Verifier les presences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
@@ -359,7 +359,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl text-3xl font-black ${
-              readiness.go_live_ready ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+              readiness.go_live_ready ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
             }`}>
               {readiness.score}
             </div>
@@ -382,19 +382,19 @@ export default function DashboardPage() {
                 <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bgColor}`}>
                   <stat.icon className={`h-6 w-6 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`} style={{ color: 'inherit' }} />
                 </div>
-                <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+                <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${
                   stat.trend === 'up'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'bg-red-50 text-red-700'
                 }`}>
                   {stat.trend === 'up' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                   {stat.change}
                 </div>
               </div>
-              <div className="mb-1 text-3xl font-bold text-slate-900 dark:text-white">
+              <div className="mb-1 text-3xl font-black text-slate-950">
                 <AnimatedNumber value={stat.value} suffix={stat.suffix ?? ''} />
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{stat.title}</p>
+              <p className="text-sm text-slate-500">{stat.title}</p>
             </div>
           </GlassCard>
         ))}
@@ -405,31 +405,31 @@ export default function DashboardPage() {
           <div className="p-6">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rh to-rh-dark">
                   <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white">Activite recente</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Dernieres actions de votre equipe</p>
+                  <h3 className="font-bold text-slate-950">Activite recente</h3>
+                  <p className="text-sm text-slate-500">Dernieres actions de votre equipe</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('today')}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-3 py-1.5 text-sm font-bold transition-colors ${
                     activeTab === 'today'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   Aujourd&apos;hui
                 </button>
                 <button
                   onClick={() => setActiveTab('week')}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-3 py-1.5 text-sm font-bold transition-colors ${
                     activeTab === 'week'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
+                      ? 'bg-emerald-50 text-emerald-700'
+                      : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   Cette semaine
@@ -439,7 +439,7 @@ export default function DashboardPage() {
 
             <div className="space-y-3">
               {activityRows.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-slate-200 p-6 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
                   Aucune activite recente a afficher pour ce tenant.
                 </div>
               ) : activityRows.map((activity, index) => (
@@ -448,25 +448,25 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
-                  className="group flex cursor-pointer items-center gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  className="group flex cursor-pointer items-center gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-sm font-bold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-sm font-bold text-emerald-700">
                     {activity.avatar}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-slate-900 dark:text-white">{activity.name}</p>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="font-bold text-slate-950">{activity.name}</p>
+                    <p className="text-sm text-slate-500">
                       {activity.action} • {activity.time}
                     </p>
                   </div>
-                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
                     Journal
                   </span>
                 </motion.div>
               ))}
             </div>
 
-            <button className="mt-4 w-full rounded-xl border border-slate-200 py-3 font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800">
+            <button className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-slate-50">
               Voir toute l&apos;activite
             </button>
           </div>
@@ -474,28 +474,28 @@ export default function DashboardPage() {
 
         <div className="space-y-6">
           <GlassCard delay={0.5}>
-            <div className="bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 p-6">
+            <div className="bg-gradient-to-br from-ia/5 to-ia-light p-6">
               <div className="mb-4 flex items-start gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/30">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ia to-ia-dark shadow-lg shadow-ia/30">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-900 dark:text-white">Leo IA</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Assistant intelligent</p>
+                  <h4 className="font-bold text-slate-950">Leo IA</h4>
+                  <p className="text-xs text-slate-500">Assistant intelligent</p>
                 </div>
               </div>
 
-              <div className="mb-4 rounded-xl bg-white/50 p-4 dark:bg-slate-900/50">
-                <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              <div className="mb-4 rounded-xl bg-white/50 p-4">
+                <p className="text-sm leading-relaxed text-slate-700">
                   &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
                 </p>
               </div>
 
               <div className="flex gap-2">
-                <button className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-2.5 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-violet-500/30">
+                <button className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30">
                   Oui, envoyer
                 </button>
-                <button className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800">
+                <button className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50">
                   Plus tard
                 </button>
               </div>
@@ -504,22 +504,22 @@ export default function DashboardPage() {
 
           <GlassCard delay={0.6}>
             <div className="p-6">
-              <h4 className="mb-4 font-semibold text-slate-900 dark:text-white">Actions rapides</h4>
+              <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-blue-500' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-emerald-500' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-violet-500' },
-                  { icon: Download, label: 'Export', color: 'bg-amber-500' },
+                  { icon: Users, label: 'Nouvel employe', color: 'bg-security' },
+                  { icon: Calendar, label: 'Conges', color: 'bg-rh' },
+                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia' },
+                  { icon: Download, label: 'Export', color: 'bg-finance' },
                 ].map((action) => (
                   <button
                     key={action.label}
-                    className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
+                    className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-slate-50"
                   >
                     <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.color} transition-transform group-hover:scale-110`}>
                       <action.icon className="h-5 w-5 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{action.label}</span>
+                    <span className="text-xs font-bold text-slate-600">{action.label}</span>
                   </button>
                 ))}
               </div>
@@ -529,8 +529,8 @@ export default function DashboardPage() {
           <GlassCard delay={0.7}>
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h4 className="font-semibold text-slate-900 dark:text-white">Presence hebdo</h4>
-                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">+12%</span>
+                <h4 className="font-bold text-slate-950">Presence hebdo</h4>
+                <span className="text-xs font-bold text-emerald-600">+12%</span>
               </div>
               <div className="flex h-32 items-end gap-2">
                 {[65, 80, 75, 90, 85, 70, 88].map((height, index) => (
@@ -559,7 +559,7 @@ function PriorityAction({ label, value, href }: { label: string; value: number; 
   return (
     <Link href={href} className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3 transition hover:bg-white/15">
       <span>{label}</span>
-      <span className="inline-flex items-center gap-2 font-bold text-teal-100">
+      <span className="inline-flex items-center gap-2 font-bold text-brand-100">
         {value}
         <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </span>
