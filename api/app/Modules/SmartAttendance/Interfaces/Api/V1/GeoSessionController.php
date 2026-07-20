@@ -142,7 +142,7 @@ class GeoSessionController extends Controller
         );
 
         return response()->json([
-            'message' => 'Session approuvée. Le pointage a été créé.',
+            'message' => __('attendance.geo_session_approved'),
             'data'    => $this->formatSession($session),
         ]);
     }
@@ -172,7 +172,7 @@ class GeoSessionController extends Controller
         );
 
         return response()->json([
-            'message' => 'Session refusée.',
+            'message' => __('attendance.geo_session_rejected'),
             'data'    => $this->formatSession($session),
         ]);
     }
