@@ -20,11 +20,11 @@ class CreateCameraDTO
     public static function fromRequest(StoreCameraRequest $request): self
     {
         return new self(
-            name: $request->string('name'),
-            rtsp_url: $request->string('rtsp_url'),
-            location: $request->string('location'),
+            name: $request->string('name')->toString(),
+            rtsp_url: $request->string('rtsp_url')->toString(),
+            location: $request->string('location')->toString(),
             sort_order: $request->integer('sort_order', 0),
-            stream_path_override: $request->string('stream_path_override'),
+            stream_path_override: $request->string('stream_path_override')->toString(),
             metadata: $request->input('metadata', []),
         );
     }
