@@ -4,7 +4,7 @@ Statut: complete pour publication
 Auteur: audit externe KiloClaw (agent), a la demande de kitokoh  
 Perimetre: architecture backend modulaire, RBAC/policies reelles, dependances composer, moteur paie multi-pays, secrets git.
 
-Ce document est un audit technique complementaire a `AUDIT.md` (integrations tierces: FCM, Redis, email, Stripe/Chargily, Google OAuth, CI/CD).
+Ce document est un audit technique complementaire a `docs/audits/AUDIT.md` (integrations tierces: FCM, Redis, email, Stripe/Chargily, Google OAuth, CI/CD).
 Les tickets d'action issus de cet audit sont listes en fin de fichier et repris dans `02_BACKLOG_ATOMIQUE.md` / `03_GITHUB_PROJECT_IMPORT.csv` sous les prefixes `PA2-SEC-*` et `PA2-ARCH-*`.
 
 ---
@@ -81,7 +81,7 @@ Un chef de departement (`manager_role = 'dept'`) ou un superviseur (`manager_rol
 
 ## 4. Secret Redis en clair — rappel de criticite (deja documente, toujours ouvert)
 
-Confirme a nouveau lors de cet audit : `AUDIT.md` reference lui-meme un mot de passe Upstash reel commite dans l'historique git public (hostname et mot de passe retires de la documentation le 2026-07-19, voir `SECURITY_INCIDENT_REDIS_2026-07.md`), et la case correspondante dans sa propre checklist finale restait **non cochee** avant cette meme date. Aucune preuve dans le code ou les commits recents d'une rotation Upstash effectuee — cette action reste a faire manuellement (hors perimetre code). Ce point est repris ici en P0 dans le backlog ci-dessous parce qu'il n'a pas de ticket PA2 dedie a ce jour — seulement une note dans un fichier d'audit que personne n'est oblige de relire.
+Confirme a nouveau lors de cet audit : `docs/audits/AUDIT.md` reference lui-meme un mot de passe Upstash reel commite dans l'historique git public (hostname et mot de passe retires de la documentation le 2026-07-19, voir `docs/security/SECURITY_INCIDENT_REDIS_2026-07.md`), et la case correspondante dans sa propre checklist finale restait **non cochee** avant cette meme date. Aucune preuve dans le code ou les commits recents d'une rotation Upstash effectuee — cette action reste a faire manuellement (hors perimetre code). Ce point est repris ici en P0 dans le backlog ci-dessous parce qu'il n'a pas de ticket PA2 dedie a ce jour — seulement une note dans un fichier d'audit que personne n'est oblige de relire.
 
 ---
 
