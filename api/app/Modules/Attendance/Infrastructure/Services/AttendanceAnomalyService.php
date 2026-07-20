@@ -2,8 +2,9 @@
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -13,17 +14,19 @@ class AttendanceAnomalyService
      * @param  array{employee_id?: int|null, date_from?: string|null, date_to?: string|null, per_page?: int|null}  $filters
      * @return array<string, mixed>
      */
-    public function summarize(string $companyId, array $filters = [], ?int $departmentId = null): array
+    public function summarize(string $companyId, array $filters = [], ?Employee $scopeActor = null): array
     {
         $company = Company::query()->find($companyId);
         $dateTo = Carbon::parse($filters['date_to'] ?? now('UTC')->toDateString())->toDateString();
         $dateFrom = Carbon::parse($filters['date_from'] ?? Carbon::parse($dateTo)->subDays(30)->toDateString())->toDateString();
         $limit = max(1, min(100, (int) ($filters['per_page'] ?? 50)));
 
-        $departmentEmployeeIds = $departmentId !== null
-            ? \App\Core\Auth\Domain\Models\Employee::query()
+        // manager_role=dept is scoped to their own department only (PA2-SEC-002);
+        // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
+        $departmentEmployeeIds = $scopeActor !== null && $scopeActor->isTeamScoped()
+            ? Employee::query()
                 ->where('company_id', $companyId)
-                ->where('department_id', $departmentId)
+                ->visibleToManager($scopeActor)
                 ->pluck('id')
             : null;
 
@@ -304,4 +307,3 @@ class AttendanceAnomalyService
         };
     }
 }
-

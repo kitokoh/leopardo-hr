@@ -2,9 +2,9 @@
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -12,15 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AttendanceMonthlyReportService
 {
-    public function build(Company $company, string $month, ?int $departmentId = null): array
+    public function build(Company $company, string $month, ?Employee $scopeActor = null): array
     {
         $start = Carbon::createFromFormat('Y-m-d', $month.'-01', $company->timezone)->startOfMonth();
         $end = $start->copy()->endOfMonth();
 
+        // manager_role=dept is scoped to their own department only (PA2-SEC-002);
+        // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
+        $isScoped = $scopeActor !== null && $scopeActor->isTeamScoped();
+
         $employees = Employee::query()
             ->select(['id', 'company_id', 'department_id', 'first_name', 'last_name', 'matricule', 'status', 'salary_type', 'salary_base', 'hourly_rate'])
             ->where('company_id', $company->id)
-            ->when($departmentId !== null, fn ($query) => $query->where('department_id', $departmentId))
+            ->when($isScoped, fn ($query) => $query->visibleToManager($scopeActor))
             ->orderBy('id')
             ->get();
 
@@ -40,7 +44,7 @@ class AttendanceMonthlyReportService
             ])
             ->where('company_id', $company->id)
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
-            ->when($departmentId !== null, fn ($query) => $query->whereIn('employee_id', $employees->pluck('id')))
+            ->when($isScoped, fn ($query) => $query->whereIn('employee_id', $employees->pluck('id')))
             ->get();
 
         $logsByEmployee = $logs->groupBy('employee_id');
@@ -186,4 +190,3 @@ class AttendanceMonthlyReportService
         return round((float) $employee->salary_base / 173.33, 2);
     }
 }
-
