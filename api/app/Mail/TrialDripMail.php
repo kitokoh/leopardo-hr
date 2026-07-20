@@ -14,7 +14,7 @@ class TrialDripMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public readonly string $locale;
+    public string $locale;
 
     public function __construct(
         public Company $company,
