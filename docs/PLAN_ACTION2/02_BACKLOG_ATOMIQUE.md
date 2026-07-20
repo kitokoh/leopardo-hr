@@ -243,7 +243,7 @@
 | PA2-ARCH-006 | P1 | Etendre module-structure-check a SmartAttendance/EdgeSync/Marketing | CI, `.github/workflows/architecture-check.yml` | boucle generee depuis `app/Modules/*` (pas de liste codee en dur); statut de EdgeSync/Infrastructure et Marketing/Interfaces tranche (mise en conformite ou derogation documentee dans ARCHITECTURE.md) |
 | PA2-ARCH-007 | P1 | Supprimer les controllers dupliques jamais routes | API | Training/TrainingController et Onboarding/OnboardingQrController migres, doublon HR supprime; Planning/ExpenseClaimController et Billing/EstimationController supprimes; garde CI detectant un controller jamais reference dans routes/ |
 | PA2-ARCH-008 | P1 | Point d'enregistrement unique pour les Gate::policy | API/Providers | plus qu'un seul provider enregistre chaque policy; divergence Invoice -> BillingPolicy vs InvoicePolicy tranchee explicitement; test unitaire verifiant l'absence de double enregistrement |
-| PA2-ARCH-009 | P2 | Retrofit declare(strict_types=1) sur modules anciens | API | HR/Payroll/Attendance/Cameras a 100%; garde CI incremental refusant tout nouveau fichier sans la directive |
+| PA2-ARCH-009 | P2 | Retrofit declare(strict_types=1) sur modules anciens | API | **Fait (2026-07-20)** : HR/Payroll/Attendance/Cameras a 100% (81 fichiers corriges) ; garde CI incremental `dev-hub/tools/check-strict-types-new-files.sh` refusant tout nouveau fichier ajoute sans la directive, branche dans `architecture-check.yml` |
 
 ## Extension v1.5 - Plan d'action en vigueur 2026-07-20 (voir `13_PLAN_ACTION_EN_VIGUEUR_2026-07-20.md`)
 
