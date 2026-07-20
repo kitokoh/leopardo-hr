@@ -1,6 +1,6 @@
 # 🛠️ Plan d'action CI/CD — Leopardo RH
 
-> Compagnon de `AUDIT_CICD_2026-07-19.md`. Chaque item référence la section de l'audit.
+> Compagnon de `docs/audits/AUDIT_CICD_2026-07-19.md`. Chaque item référence la section de l'audit.
 > Statut : `[ ]` à faire, `[x]` fait dans cette PR, `[~]` fait partiellement / nécessite une action manuelle hors-repo (secrets, settings GitHub).
 
 ---
@@ -22,7 +22,7 @@
 - [x] **(Audit §2.3)** Combler le trou SAST PHP :
   - `phpstan-strict.neon` (level 8, `app/Core`/`app/Modules`/`app/Shared`) est désormais exécuté par un nouveau job `phpstan-strict` dans `architecture-check.yml`, en complément de `phpstan-modules`. Volontairement non bloquant (`continue-on-error`) tant qu'aucun baseline des findings existants n'a été généré — sinon la première exécution bloquerait rétroactivement des PR sans rapport.
   - `codeql.yml` (job `analyze-backend`) exécute désormais réellement Semgrep OSS (`p/php` + `p/security-audit`, image `semgrep/semgrep` épinglée par digest) au lieu du stub texte précédent, avec upload SARIF vers l'onglet Security GitHub (catégorie `semgrep-php`). Également non bloquant pour la même raison (pas de baseline existant) — décision de durcissement à prendre par l'équipe une fois les findings triés.
-- [ ] **(Audit §2.4, hors CI)** Rotation immédiate du mot de passe Redis Upstash exposé dans l'historique git + purge d'historique coordonnée avec l'équipe (BFG Repo-Cleaner ou `git filter-repo`). Action déjà notée dans `AUDIT.md`, toujours non cochée — à traiter en priorité absolue en dehors de ce plan CI mais mentionnée ici car elle affaiblit la valeur de `secret-scan.yml`.
+- [ ] **(Audit §2.4, hors CI)** Rotation immédiate du mot de passe Redis Upstash exposé dans l'historique git + purge d'historique coordonnée avec l'équipe (BFG Repo-Cleaner ou `git filter-repo`). Action déjà notée dans `docs/audits/AUDIT.md`, toujours non cochée — à traiter en priorité absolue en dehors de ce plan CI mais mentionnée ici car elle affaiblit la valeur de `secret-scan.yml`.
 
 ## Priorité P2 — Réduction de dette / duplication (implémenté le 2026-07-19)
 
@@ -48,7 +48,7 @@
 
 ## Ce qui a été livré dans cette PR (2026-07-19)
 
-1. `AUDIT_CICD_2026-07-19.md` — audit complet (ce document est son plan associé).
+1. `docs/audits/AUDIT_CICD_2026-07-19.md` — audit complet (ce document est son plan associé).
 2. Correctifs P0 (commit 1) :
    - `tests.yml` : suppression du fragment orphelin `mobile_*`.
    - `release.yml` : suppression du job legacy `build-artifacts` pointant vers `front/mobile` (dossier supprimé).
