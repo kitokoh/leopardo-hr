@@ -18,7 +18,7 @@ class RoleAssignmentMail extends Mailable
 
     public readonly array $appLinks;
     public readonly string $roleLabel;
-    public readonly string $locale;
+    public string $locale;
 
     public function __construct(
         public readonly Company $company,
