@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Attendance\Application\DTOs;
 
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;

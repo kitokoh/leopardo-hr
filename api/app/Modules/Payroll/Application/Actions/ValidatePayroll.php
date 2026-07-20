@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Payroll\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
