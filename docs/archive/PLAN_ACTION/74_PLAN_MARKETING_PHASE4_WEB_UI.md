@@ -1,7 +1,15 @@
 # Plan 74 — Module Marketing, Phase 4 : UI web dashboard
 
 Date : 2026-07-19
-Statut : en execution iterative
+Statut : livre (lots 74.1 a 74.3 termines, branche
+`codex/marketing-phase4-web-ui`)
+
+> Ecart vs plan initial : la route dashboard est `/social-marketing`
+> et non `/marketing`. La page vitrine publique existante
+> `src/app/(landing)/marketing/page.tsx` occupe deja `/marketing` (Next.js
+> App Router refuse deux pages paralleles resolvant le meme chemin,
+> erreur de build Turbopack a la construction). `client-features.ts`,
+> la page dashboard et les tests e2e utilisent donc `/social-marketing`.
 Reference : `docs/modules/MARKETING_MODULE_PLAN.md`, Phase 3 livree
 (branche `codex/marketing-phase3-api-cron`, non mergee).
 
