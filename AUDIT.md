@@ -108,9 +108,9 @@ Le déploiement via Render webhook (`RENDER_DEPLOY_HOOK_URL`) déclenche un re-d
 > Sans worker actif, les jobs (pushs, emails, documents PDF) restent en attente indéfiniment.
 
 #### 2.3 Redis Upstash — credentials engagées dans `.env.example` public
-Le `.env.example` contient une URL Redis Upstash **avec mot de passe en clair** :
+Le `.env.example` contenait une URL Redis Upstash **avec mot de passe en clair** (valeur réelle retirée de ce document le 2026-07-19, voir `SECURITY_INCIDENT_REDIS_2026-07.md` pour le détail de la remédiation et le statut de rotation) :
 ```
-REDIS_URL=rediss://default:REDACTED@REDACTED.upstash.io:6379
+REDIS_URL=rediss://default:<REDACTED>@<REDACTED_HOST>.upstash.io:6379
 ```
 Ce fichier est public sur GitHub. **Changer immédiatement ce mot de passe** dans Upstash Dashboard > Reset Password, puis mettre à jour les secrets Render et `.env.example` avec un placeholder.
 
@@ -517,11 +517,14 @@ REDIS_PASSWORD=NOUVEAU_MDP
     contre un jeton SSE à usage unique via POST /api/v1/notifications/sse-token avant d'ouvrir l'EventSource
     (endpoint backend SseTokenController déjà présent, coté frontend corrigé le 2026-07-05)
 [x] front/web/.env.local.example créé (STRIPE_SECRET_KEY, LEOPARDO_API_URL, NEXT_PUBLIC_API_URL, etc.)
-[ ] 🔴 URGENT — Rotation du mot de passe Redis Upstash. Le fichier actuel contient un placeholder,
-    MAIS un vrai mot de passe Upstash a été committé en clair dans l'historique git
-    (`REDIS_URL=rediss://default:REDACTED_UPSTASH_PASSWORD@REDACTED.upstash.io`)
-    et reste récupérable par quiconque clone le repo (repo public). Action requise immediatement dans le
-    dashboard Upstash : reset password, puis mettre à jour la variable REDIS_URL/REDIS_PASSWORD sur Render.
+[~] 🔴 URGENT — Rotation du mot de passe Redis Upstash. Un vrai mot de passe Upstash a été committé
+    en clair dans l'historique git (valeur retirée de ce document le 2026-07-19 — voir
+    `SECURITY_INCIDENT_REDIS_2026-07.md` pour la référence de commit exacte et le statut de remédiation)
+    et reste récupérable par quiconque clone le repo (repo public) tant que l'historique n'est pas purgé.
+    Documentation nettoyée le 2026-07-19 (ce fichier + PLAN_ACTION*) : le mot de passe en clair n'apparaît
+    plus dans aucun fichier Markdown suivi. Reste à faire, hors du périmètre code (action manuelle) :
+    reset password dans le dashboard Upstash, mise à jour REDIS_URL/REDIS_PASSWORD sur Render, puis purge
+    de l'historique git (BFG/filter-repo) une fois la rotation confirmée — voir le rapport pour le détail.
     L'historique git lui-même ne peut pas être nettoyé sans rewrite (BFG/filter-repo) coordonné avec l'équipe.
 [ ] Ajouter les secrets GitHub Actions listés ci-dessus dans Settings > Secrets — action manuelle GitHub,
     hors du périmètre code (aucun moyen de vérifier depuis le repo si déjà fait)
