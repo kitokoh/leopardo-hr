@@ -1241,3 +1241,15 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 
 **Endpoints non affectés**
 - Aucune route sous `api/routes/` n'est ajoutée ou modifiée par cette phase (seul le contrôleur pré-existant `dashboard/marketing` reste inchangé). Les prochaines phases exposeront les endpoints REST `SocialAccount`/`SocialPost` consommant ces policies.
+
+## Platform Super-Admin — Self-service profil, mot de passe, 2FA
+
+**Nouvelles routes** sous `Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')` dans `api/routes/api.php` (`App\Core\Auth\Interfaces\Api\V1\PlatformAuthController`) :
+
+- `PATCH /api/v1/platform/auth/profile` : met à jour `name`/`email` du super-admin authentifié (champs `sometimes`). Rejette avec `422 EMAIL_ALREADY_TAKEN` si l'email cible appartient déjà à un autre `super_admins.id`.
+  - Scénario à valider : `PlatformAuthTest::test_super_admin_can_update_own_profile`, `PlatformAuthTest::test_super_admin_profile_update_rejects_email_already_taken`.
+- `POST /api/v1/platform/auth/change-password` : requiert `current_password` + `new_password`/`new_password_confirmation` (min 8). Vérifie le mot de passe actuel (`401 INVALID_PASSWORD` sinon), met à jour `password_hash`, puis révoque tous les tokens Sanctum actifs du compte sauf celui de la requête courante (durcissement anti-session-hijack après changement de mot de passe).
+  - Scénario à valider : `PlatformAuthTest::test_super_admin_can_change_own_password`, `PlatformAuthTest::test_change_password_rejects_wrong_current_password`.
+
+**Endpoints non affectés**
+- Aucun changement sur `login`, `me`, `logout`, `2fa/setup|enable|disable` ni sur les guards `super_admin_web`/`super_admin_api` existants. `PlatformAuthTest` complet vérifié : 12/12 passants.
