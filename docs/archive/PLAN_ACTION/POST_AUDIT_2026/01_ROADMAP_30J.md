@@ -46,7 +46,7 @@
 ```
 QUEUE_CONNECTION=redis
 REDIS_CLIENT=predis
-REDIS_HOST=noted-tomcat-92597.upstash.io
+REDIS_HOST=<votre_host>.upstash.io  # voir dashboard Upstash — ne pas committer le hostname reel, cf. SECURITY_INCIDENT_REDIS_2026-07.md
 REDIS_PORT=6379
 REDIS_PASSWORD=<upstash_password>
 REDIS_CACHE_DB=1
