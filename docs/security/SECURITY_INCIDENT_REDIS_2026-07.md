@@ -2,7 +2,7 @@
 
 Statut : **ROTATION UPSTASH + PURGE HISTORIQUE GIT NON EFFECTUÉES — action manuelle requise**
 Sévérité : Critique
-Ouvert depuis : au moins 2026-07-01 (première mention dans `AUDIT.md`)
+Ouvert depuis : au moins 2026-07-01 (première mention dans `docs/audits/AUDIT.md`)
 Documentation nettoyée le : 2026-07-19
 
 ---
@@ -10,12 +10,12 @@ Documentation nettoyée le : 2026-07-19
 ## 1. Résumé
 
 Un mot de passe Redis Upstash réel a été committé en clair dans plusieurs fichiers Markdown
-du dépôt (`AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/08_SCALABILITE_REDIS.md`,
+du dépôt (`docs/audits/AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/08_SCALABILITE_REDIS.md`,
 `docs/PLAN_ACTION/POST_AUDIT_2026/01_ROADMAP_30J.md`, `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`).
 Le dépôt GitHub `kitokoh/leopardo-hr` est **public** (5 étoiles, 1 fork au moment de cet audit) :
 n'importe qui pouvant lire l'historique git a accès à ce mot de passe depuis sa date de commit.
 
-Ce document a été détecté lors de plusieurs audits précédents (`AUDIT.md` section 2.3,
+Ce document a été détecté lors de plusieurs audits précédents (`docs/audits/AUDIT.md` section 2.3,
 `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md` section 4) mais la case de remédiation
 restait **non cochée** sans preuve de rotation effective.
 
@@ -60,7 +60,7 @@ git filter-repo --replace-text redis-secrets.txt
 git push --force --all
 git push --force --tags
 ```
-`redis-secrets.txt` doit contenir le mot de passe réel (récupérable via `git log -p -- AUDIT.md`
+`redis-secrets.txt` doit contenir le mot de passe réel (récupérable via `git log -p --follow -- docs/audits/AUDIT.md`
 sur une copie locale) à remplacer par `***REMOVED***`.
 
 ⚠️ Un `push --force` sur `main` réécrit l'historique partagé : **coordonner avec toute l'équipe/
@@ -74,7 +74,7 @@ de re-cloner après la purge.
 - [ ] Confirmer que `secret-scan.yml` (TruffleHog) ne référence plus l'ancien secret comme "connu"
 - [ ] Vérifier qu'aucun autre fichier (logs Render, configuration locale de dev, `.env` non commité
       de contributeurs) ne contient encore l'ancienne valeur
-- [ ] Cocher définitivement ce point dans `AUDIT.md` avec la date et la preuve de rotation
+- [ ] Cocher définitivement ce point dans `docs/audits/AUDIT.md` avec la date et la preuve de rotation
 
 ## 4. Pourquoi ce n'a pas été fait automatiquement dans ce même passage
 
