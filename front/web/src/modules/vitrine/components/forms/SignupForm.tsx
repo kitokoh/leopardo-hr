@@ -350,7 +350,7 @@ export function SignupForm({
 
               <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                 Vous avez deja un compte?{' '}
-                <a href="/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
+                <a href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                   Se connecter
                 </a>
               </p>
@@ -462,29 +462,91 @@ export function SignupForm({
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
                 <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <h3 className="text-lg font-black text-emerald-900 dark:text-emerald-100">
-                  Votre demande est confirmée !
+                  Votre espace est pret !
                 </h3>
               </div>
 
               <div className="space-y-4 p-5">
-                <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100 text-center dark:bg-slate-800/60 dark:ring-slate-700">
-                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Votre adresse email a bien été vérifiée.
-                  </p>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                    Un conseiller Leopardo vous contactera sous 24h pour activer votre espace de test personnalisé.
-                  </p>
+                <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800/60 dark:ring-slate-700">
+                  <div className="flex items-center gap-2 text-center justify-center mb-3">
+                    <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      Votre adresse email a bien été vérifiée.
+                    </p>
+                  </div>
+                  {provisionedData?.manager ? (
+                    <>
+                      <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        Identifiants de connexion
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Email</span>
+                          <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">
+                            {provisionedData.manager.email}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm text-slate-600 dark:text-slate-300">Mot de passe</span>
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-900 dark:bg-slate-700 dark:text-white">
+                              {provisionedData.manager.temp_password}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => copyPassword(provisionedData.manager!.temp_password)}
+                              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                              title="Copier le mot de passe"
+                            >
+                              <ClipboardCopy className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {copied && (
+                          <p className="text-right text-xs font-medium text-emerald-600">Copie !</p>
+                        )}
+                      </div>
+                      <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                        Ces identifiants ont aussi ete envoyes par email a {provisionedData.manager.email}.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Vos identifiants de connexion viennent de vous etre envoyes par email.
+                    </p>
+                  )}
                 </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row mt-4">
+                {provisionedData?.trial && (
+                  <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+                    Essai gratuit de{' '}
+                    <span className="font-bold text-emerald-600">
+                      {provisionedData.trial.days} jours
+                    </span>{' '}
+                    — aucune carte bancaire requise.
+                  </p>
+                )}
+
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <a
-                    href="/download"
+                    href="/auth/login"
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700"
                   >
+                    <LogIn className="h-4 w-4" />
+                    Se connecter
+                  </a>
+                  <a
+                    href="/download"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  >
                     <Download className="h-4 w-4" />
-                    Découvrir l'app mobile
+                    Telecharger l'app
                   </a>
                 </div>
+
+                <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+                  Changez votre mot de passe des la premiere connexion.
+                </p>
               </div>
             </div>
           </motion.div>
