@@ -219,7 +219,7 @@ Schema::table('notifications', function (Blueprint $table) {
 | Variable | Valeur | Description |
 |---|---|---|
 | `REDIS_CLIENT` | `predis` | **CRITIQUE** — Upstash nécessite predis, pas phpredis |
-| `REDIS_HOST` | `<votre_host>.upstash.io` (voir dashboard Upstash — ne pas committer le hostname reel, cf. `SECURITY_INCIDENT_REDIS_2026-07.md`) | Host Upstash Redis |
+| `REDIS_HOST` | `<votre_host>.upstash.io` (voir dashboard Upstash — ne pas committer le hostname reel, cf. `docs/security/SECURITY_INCIDENT_REDIS_2026-07.md`) | Host Upstash Redis |
 | `REDIS_PORT` | `6379` | Port Redis (TLS) |
 | `REDIS_PASSWORD` | `<upstash_password>` | Mot de passe Upstash (dans les credentials Upstash console) |
 | `REDIS_DB` | `0` | Database par défaut |
