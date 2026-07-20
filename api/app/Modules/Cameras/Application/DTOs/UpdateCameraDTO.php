@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cameras\Application\DTOs;
 
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\UpdateCameraRequest;
@@ -19,11 +21,11 @@ class UpdateCameraDTO
     public static function fromRequest(UpdateCameraRequest $request): self
     {
         return new self(
-            name: $request->has('name') ? $request->string('name') : null,
-            rtsp_url: $request->has('rtsp_url') ? $request->string('rtsp_url') : null,
-            location: $request->has('location') ? $request->string('location') : null,
+            name: $request->has('name') ? $request->string('name')->toString() : null,
+            rtsp_url: $request->has('rtsp_url') ? $request->string('rtsp_url')->toString() : null,
+            location: $request->has('location') ? $request->string('location')->toString() : null,
             sort_order: $request->has('sort_order') ? $request->integer('sort_order') : null,
-            stream_path_override: $request->has('stream_path_override') ? $request->string('stream_path_override') : null,
+            stream_path_override: $request->has('stream_path_override') ? $request->string('stream_path_override')->toString() : null,
             metadata: $request->has('metadata') ? $request->input('metadata') : null,
             is_active: $request->has('is_active') ? $request->boolean('is_active') : null,
         );
