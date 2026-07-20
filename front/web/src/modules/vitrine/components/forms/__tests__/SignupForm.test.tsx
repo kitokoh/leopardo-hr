@@ -46,7 +46,7 @@ describe('SignupForm Component', () => {
 
     it('should render submit button', () => {
       render(<SignupForm />);
-      expect(screen.getByRole('button', { name: /recevoir mon acces/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /recevoir mon code de verification/i })).toBeInTheDocument();
     });
   });
 
@@ -55,7 +55,7 @@ describe('SignupForm Component', () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'invalid-email');
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon acces/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
       
       await waitFor(() => {
         expect(screen.getByText(/email invalide|valid email/i)).toBeInTheDocument();
@@ -64,11 +64,11 @@ describe('SignupForm Component', () => {
 
     it('should show error for empty email', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText(/required|email/i)).toBeInTheDocument();
+        expect(screen.getByText(/email (invalide|trop court)/i)).toBeInTheDocument();
       });
     });
 
@@ -76,11 +76,11 @@ describe('SignupForm Component', () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
-      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText(/entreprise|company/i)).toBeInTheDocument();
+        expect(screen.getByText(/entreprise doit contenir/i)).toBeInTheDocument();
       });
     });
 
@@ -91,11 +91,11 @@ describe('SignupForm Component', () => {
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
       await userEvent.type(screen.getByRole('textbox', { name: /telephone/i }), 'not-a-phone');
 
-      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText(/telephone|phone/i)).toBeInTheDocument();
+        expect(screen.getByText(/numero de telephone invalide/i)).toBeInTheDocument();
       });
     });
   });
@@ -107,7 +107,7 @@ describe('SignupForm Component', () => {
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
 
-      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
       expect(submitButton).not.toBeDisabled();
     });
   });
@@ -147,7 +147,7 @@ describe('SignupForm Component', () => {
 
     it('should show loading state during submission', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');
     });
