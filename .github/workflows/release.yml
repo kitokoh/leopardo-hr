@@ -136,4 +136,4 @@ jobs:
   # tag v* faisait donc echouer ce job (working-directory inexistant).
   # Les APKs multi-app store-ready sont deja construits et distribues par
   # mobile-distribute.yml (Firebase App Distribution) et par le job
-  # distribute-mobile de deploy-main.yml. Voir AUDIT_CICD_2026-07-19.md section 1.2.
+  # distribute-mobile de deploy-main.yml. Voir docs/audits/AUDIT_CICD_2026-07-19.md section 1.2.

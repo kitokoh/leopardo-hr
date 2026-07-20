@@ -5,7 +5,7 @@ description: >
   (public + shared_tenants) against the postgres/redis service containers
   already running in the calling job. Extracted from the near-identical
   copy-pasted blocks in tests.yml (x2), coverage-gate.yml and
-  backend-jobs-ci.yml — see AUDIT_CICD_2026-07-19.md section 3.1.
+  backend-jobs-ci.yml — see docs/audits/AUDIT_CICD_2026-07-19.md section 3.1.
 
   IMPORTANT: this is a composite action, not a reusable workflow. It must be
   called with `uses: ./.github/actions/setup-backend-db` from a job that
