@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cameras\Application\DTOs;
 
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraRequest;
