@@ -2,7 +2,7 @@
 
 Date : 2026-07-19
 Statut : en execution iterative
-Reference : `MARKETING_MODULE_PLAN.md` (racine du repo), Phase 3 livree
+Reference : `docs/modules/MARKETING_MODULE_PLAN.md`, Phase 3 livree
 (branche `codex/marketing-phase3-api-cron`, non mergee).
 
 ## Contexte / audit
@@ -105,7 +105,7 @@ manager) :
 - `npm run lint` (ESLint, `--max-warnings 0`) sur `front/web`.
 - `npm run build` (Next.js) pour valider le typage TypeScript strict et
   l'absence d'erreur de build.
-- Mise a jour `MARKETING_MODULE_PLAN.md` : Phase 4 passee a "Prete" avec
+- Mise a jour `docs/modules/MARKETING_MODULE_PLAN.md` : Phase 4 passee a "Prete" avec
   detail livre ; note explicite sur l'absence d'upload media (hors
   scope, cf. audit ci-dessus).
 

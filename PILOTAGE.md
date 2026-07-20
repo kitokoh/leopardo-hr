@@ -60,7 +60,7 @@ Accomplis      :
   ✅ StripeService + BillingController — Checkout + CustomerPortal
   ✅ PlatformCrmPipelineController — pipeline lead→trial→actif
   ✅ Sentry Laravel DSN prêt dans composer.json
-  🔑 À faire : renseigner les clés sur Render (voir KEYS_A_CONFIGURER.md)
+  🔑 À faire : renseigner les clés sur Render (voir docs/deployment/KEYS_A_CONFIGURER.md)
 Objectif 30j   : 3-5 clients payants, MRR 150-250€
 ```
 
@@ -214,7 +214,7 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | 1 | `PILOTAGE.md` (ce fichier) | État projet, priorités, règles |
 | 2 | `AGENTS.md` | Règles opérationnelles agents (123 KB) |
 | 3 | `CHANGELOG.md` | Historique des changements (121 KB) |
-| 4 | `LEOPARDO_STRATEGIC_ANALYSIS.md` | Analyse stratégique complète |
+| 4 | `docs/GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md` | Analyse stratégique complète |
 | 5 | `docs/CONTEXT/` | Contexte produit/technique/opérationnel |
 | 6 | `docs/archive/PLAN_ACTION/` | 72 plans d'action livrés |
 | 7 | `docs/GOTO_MARKET/` | Stratégie commerciale |
