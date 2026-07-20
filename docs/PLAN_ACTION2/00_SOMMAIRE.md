@@ -32,6 +32,7 @@ Le but n'est plus de prouver que Leopardo fonctionne. Le but est de le rendre:
 | `09_AUDIT_MODULES_API_STRUCTURE.md` | Audit structure modules 2026-07-19 : garde CI incomplet, code mort/controllers dupliques non routes, policies enregistrees deux fois, controllers epais, strict_types. Source des tickets `PA2-ARCH-006` a `009` |
 | `10_AUDIT_I18N_MULTILINGUE.md` | Audit i18n multilingue reel 2026-07-19 : infra catalogue/CI correcte mais texte encore code en dur (PDF, emails, mobile x3, web, admin, kiosk), formats date/devise fixes en fr-FR, melange de langues fige dans les donnees vitrine. Source des tickets `PA2-I18N-005` a `015` |
 | `11_AUDIT_VITRINE_ACQUISITION.md` | Audit vitrine acquisition/conversion 2026-07-19 : design system mature et CI verte, mais preuve produit reelle jamais branchee, preuve sociale cassee/a clarifier (avatars 404, marques a statut non prouve), et domaine de production non possede (`leopardo.com` appartient a un tiers, vraie vitrine cachee derriere SSO Vercel). Source des tickets `PA2-MKT-008` a `014` |
+| `12_AUDIT_MOBILE_DESIGN_UX.md` | Audit design/UX mobile 2026-07-20 : palette dark theme dupliquee en litteraux hex dans les ecrans de pointage (contournement des tokens `AppColors`/`AppTheme`), theme sombre force en permanence sans choix utilisateur en contradiction avec le commentaire du code, `leopardo_platform_admin` sans usage des composants partages `leopardo_core`, et tickets `PA2-MOB-006` a `010` sans aucune preuve de livraison dans `CHANGELOG.md`. Source des tickets `PA2-MOB-011` a `014` |
 
 ## Axes couverts
 
