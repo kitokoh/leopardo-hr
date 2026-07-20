@@ -2,7 +2,7 @@
 
 > Statut : proposition / revue externe, non affiliee a l'equipe du projet.
 > Perimetre : lecture publique du repo (clone HTTPS anonyme), lecture de la documentation
-> interne existante (`AUDIT.md`, `AUDIT_CICD_2026-07-19.md`, `docs/PLAN_ACTION2/*`,
+> interne existante (`docs/audits/AUDIT.md`, `docs/audits/AUDIT_CICD_2026-07-19.md`, `docs/PLAN_ACTION2/*`,
 > `docs/security/AUDIT_API_2026-07-19.md`), verification API GitHub publique (issues, PRs,
 > Dependabot alerts, CodeQL alerts, workflow runs), et **un test en direct en lecture (GET)**
 > sur l'endpoint public de production `gestionemployerbackend.onrender.com`.
@@ -39,7 +39,7 @@ supplementaire (statut reel de l'endpoint `/api/v1/demo-users` au moment de la r
   baseline, 75/92 modeles Eloquent encore des shims `class_alias` en attente de migration.
 - Aucune traction commerciale externe verifiable a ce jour (5 stars, 1 fork, pas de temoignage
   client dans le repo) malgre une strategie GTM tres detaillee (19 sections dans
-  `LEOPARDO_STRATEGIC_ANALYSIS.md`). Le risque principal reste l'execution commerciale, pas la
+  `docs/GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md`). Le risque principal reste l'execution commerciale, pas la
   technique.
 
 ---
@@ -55,7 +55,7 @@ Trois PR ouvertes le jour meme, en reponse quasi directe a l'audit initial :
 | #875 | Durcissement supply-chain CI (pin SHA `trufflehog`, uniformisation `checkout@v5`/`upload-artifact@v5`, dedup ~360 lignes setup PHP/Postgres/Redis et Flutter/Java via composite actions) | Ouverte |
 
 Le fragment de script orphelin dans `tests.yml` et la reference morte `front/mobile` dans
-`release.yml` (signales dans `AUDIT_CICD_2026-07-19.md`) **ne sont plus presents** dans le
+`release.yml` (signales dans `docs/audits/AUDIT_CICD_2026-07-19.md`) **ne sont plus presents** dans le
 code de `main` au moment de cette redaction — ces deux points sont donc consideres resolus.
 
 ---
@@ -145,9 +145,9 @@ perimetre d'un audit passif en lecture) ; se referer directement a
    `module-structure-check` a `SmartAttendance`/`EdgeSync` (PA2-ARCH-006).
 4. **Discipline produit** : suspendre l'ajout de nouvelle surface fonctionnelle (ex. module
    Marketing/Ayrshare tout juste ajoute) au profit de la conversion commerciale, conformement
-   a la propre analyse strategique du projet (`LEOPARDO_STRATEGIC_ANALYSIS.md`, section 19).
+   a la propre analyse strategique du projet (`docs/GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md`, section 19).
 5. **Historique git** : la fuite historique du mot de passe Redis Upstash (deja documentee
-   dans `AUDIT.md`) reste recuperable dans l'historique tant qu'un nettoyage
+   dans `docs/audits/AUDIT.md`) reste recuperable dans l'historique tant qu'un nettoyage
    (`git filter-repo`/BFG) coordonne avec l'equipe n'a pas ete effectue.
 
 ---
