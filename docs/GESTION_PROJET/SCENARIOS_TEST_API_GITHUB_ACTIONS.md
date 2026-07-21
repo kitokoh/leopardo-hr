@@ -130,6 +130,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Employee ne peut acceder qu'a ses propres donnees
 - Finance peut consulter paie si activee
 - Toute elevation de privilege est refusee en `403`
+- **`manager_role=superviseur` scope equipe (PA2-SEC-003, `SupervisorScopedRbacTest`)** : un manager `superviseur` ne voit/agit que sur l'equipe dont il est le `manager_id` direct (lui-meme inclus), miroir du scoping `manager_role=dept` (PA2-SEC-002) mais au niveau rapport direct plutot que departement. Couvre `Employee::isSuperviseur()/isSupervisorScoped()/managesEmployeeDirectly()/managesTeamMemberOf()`, le scope reutilisable `Employee::scopeVisibleToManager()` (fail-closed : aucun rapport direct = aucun resultat, jamais un fallback company-wide), et son branchement dans `EmployeePolicy`, `AttendancePolicy`, `EvaluationPolicy` + les controllers `EmployeeController`, `EvaluationController`, `AttendanceController`, `ScheduleController#assignEmployees`. `AttendanceAnomalyService::summarize()` et `AttendanceMonthlyReportService::build()` recoivent l'Employee agissant (plus un `departmentId` brut) pour propager ce scoping. `DepartmentController`/`DepartmentPolicy` restent company-wide pour un superviseur (pas de departement propre).
 
 ### 4. Isolation multitenant
 
