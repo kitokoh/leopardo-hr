@@ -42,6 +42,7 @@ Title,Priority,Area,Surface,Dependencies,Acceptance Criteria
 "PA2-KIO-002 Punch kiosk biometrie/QR","P1","Kiosk","kiosk; API","PA2-KIO-001","Punch device QR fallback audit sync retry"
 "PA2-KIO-003 UI kiosk terrain moderne","P1","Kiosk","front/zkteco-kiosk","PA2-KIO-001","Gros boutons statut sync erreur actionnable"
 "PA2-KIO-004 Enrolement biometrie mobile vers kiosk","P2","Kiosk","mobile; API","PA2-MOB-008","Consentement reference biometrie statut visible"
+"PA2-KIO-005 Mode pointage photo obligatoire par tenant (issue #761)","P2","Kiosk","API; mobile employee; front/zkteco-kiosk","PA2-KIO-001","Config tenant kiosk/photo; photo obligatoire arrivee/depart si active; stockage+retention+miniature historique; pas de reconnaissance faciale"
 "PA2-API-001 Reponses JSON standard","P0","API","API","","success/data/meta/error pagination tests contrat"
 "PA2-API-002 RBAC multi-tenant preuve","P0","Security","API tests","","Tests fuite tenant employee manager admin kiosk"
 "PA2-API-003 Matrice frontend/API complete","P0","API","docs; tests","PA2-API-001","Chaque bouton critique a endpoint ou justification"
