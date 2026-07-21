@@ -50,18 +50,21 @@ class RoleInvitationService
     }
 
     /**
-     * Returns the label for the manager_role in French.
+     * Returns the label for the manager_role, translated according to the
+     * currently active application locale (see App::setLocale() callers).
      */
     public static function getRoleLabel(string $managerRole): string
     {
-        return match($managerRole) {
-            'principal'  => 'Administrateur de l\'entreprise',
-            'rh'         => 'Responsable RH',
-            'comptable'  => 'Responsable Comptable',
-            'marketing'  => 'Responsable Marketing',
-            'dept'       => 'Chef de département',
-            default      => 'Manager',
+        $key = match ($managerRole) {
+            'principal' => 'role_label_principal',
+            'rh' => 'role_label_rh',
+            'comptable' => 'role_label_comptable',
+            'marketing' => 'role_label_marketing',
+            'dept' => 'role_label_dept',
+            default => 'role_label_default',
         };
+
+        return __("emails.{$key}");
     }
 }
 

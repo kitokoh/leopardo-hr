@@ -1,17 +1,24 @@
-<div style="font-family: Arial, sans-serif; color: #0f172a;">
-    <h2>Bienvenue sur Leopardo RH</h2>
-    <p>Bonjour {{ trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')) }},</p>
-    <p>Votre compte a ete prepare pour la societe <strong>{{ $company->name }}</strong>.</p>
-    <p>Role: <strong>{{ $employee->role }}</strong>@if($employee->manager_role) ({{ $employee->manager_role }}) @endif</p>
-    <p>Email de connexion: <strong>{{ $employee->email }}</strong></p>
-    <p>Invitation envoyee par: <strong>{{ $invitedByEmail }}</strong></p>
-    <p>Ville / pays: <strong>{{ $company->city }}</strong>, <strong>{{ $company->country }}</strong></p>
-    <p>Langue de base: <strong>{{ strtoupper($company->language ?? 'fr') }}</strong> - Fuseau: <strong>{{ $company->timezone ?? 'Africa/Algiers' }}</strong></p>
-    <p>Prochaine etape recommandee: <strong>telecharger l application mobile Leopardo RH</strong>, vous connecter avec cet email, puis completer votre profil et votre demande de biometrie si votre entreprise utilise le pointage modernise.</p>
+@php
+    $__locale = $locale ?? app()->getLocale();
+    $__dir = \App\Support\I18nCatalog::isRtl($__locale) ? 'rtl' : 'ltr';
+    $__roleLabel = $employee->manager_role
+        ? \App\Modules\HR\Infrastructure\Services\RoleInvitationService::getRoleLabel($employee->manager_role)
+        : ($employee->role === 'manager' ? __('employees.role_manager') : __('employees.role_employee'));
+@endphp
+<div dir="{{ $__dir }}" style="font-family: Arial, sans-serif; color: #0f172a;">
+    <h2>{{ __('emails.user_invitation_title') }}</h2>
+    <p>{{ str_replace(':name', trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')), trans('emails.user_invitation_greeting')) }}</p>
+    <p>{!! str_replace(':company', '<strong>'.e($company->name).'</strong>', e(trans('emails.user_invitation_intro'))) !!}</p>
+    <p>{!! str_replace(':role', '<strong>'.e($__roleLabel).'</strong>', e(trans('emails.user_invitation_role_line'))) !!}</p>
+    <p>{!! str_replace(':email', '<strong>'.e($employee->email).'</strong>', e(trans('emails.user_invitation_email_line'))) !!}</p>
+    <p>{!! str_replace(':invitedBy', '<strong>'.e($invitedByEmail).'</strong>', e(trans('emails.user_invitation_invited_by_line'))) !!}</p>
+    <p>{!! str_replace([':city', ':country'], ['<strong>'.e($company->city).'</strong>', '<strong>'.e($company->country).'</strong>'], e(trans('emails.user_invitation_location_line'))) !!}</p>
+    <p>{!! str_replace([':language', ':timezone'], ['<strong>'.e(strtoupper($company->language ?? 'fr')).'</strong>', '<strong>'.e($company->timezone ?? 'Africa/Algiers').'</strong>'], e(trans('emails.user_invitation_locale_line'))) !!}</p>
+    <p>{{ __('emails.user_invitation_next_step') }}</p>
     <p>
-        Activez votre compte et definissez votre mot de passe en cliquant ici:
+        {{ __('emails.user_invitation_activate_line') }}
         <a href="{{ $activationUrl }}">{{ $activationUrl }}</a>
     </p>
-    <p>Ce lien expire dans 7 jours.</p>
-    <p>Une fois le compte active, vous pourrez completer vos informations personnelles, vos contacts d urgence et, si besoin, soumettre vos informations biometrie. Leur activation effective restera soumise a l accord du manager ou du RH.</p>
+    <p>{{ __('emails.user_invitation_expiry') }}</p>
+    <p>{{ __('emails.user_invitation_footer') }}</p>
 </div>
