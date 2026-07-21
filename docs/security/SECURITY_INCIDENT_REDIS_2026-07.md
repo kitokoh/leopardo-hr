@@ -19,19 +19,31 @@ Ce document a été détecté lors de plusieurs audits précédents (`docs/audit
 `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md` section 4) mais la case de remédiation
 restait **non cochée** sans preuve de rotation effective.
 
-## 2. Ce qui a été fait aujourd'hui (2026-07-19)
+## 2. Ce qui a été fait
 
-- Retrait de la valeur en clair (mot de passe + hostname réel `noted-tomcat-92597.upstash.io`)
-  de tous les fichiers Markdown suivis dans le dépôt, remplacée par des placeholders génériques.
+- 2026-07-19 : retrait de la valeur en clair (mot de passe) de la plupart des fichiers Markdown
+  suivis dans le dépôt, remplacée par des placeholders génériques. **Incomplet** : le hostname
+  réel (un identifiant Upstash, sensible même sans le mot de passe puisqu'il cible l'instance
+  exacte pour toute tentative de brute-force/reconnaissance) est resté en clair dans
+  `docs/audits/AUDIT.md` et dans ce même fichier jusqu'au 2026-07-21 (PA2-SEC-001), malgré
+  l'affirmation de nettoyage complet ci-dessus — vérifié par grep sur l'arbre de travail avant
+  correction.
+- 2026-07-21 (PA2-SEC-001) : hostname réel retiré des deux fichiers restants, remplacé par
+  `<votre_host>.upstash.io` pour rester cohérent avec `api/.env.example`. Ce fichier corrigé pour
+  ne plus jamais afficher la valeur réelle, y compris à titre de preuve d'incident (le hash court
+  ci-dessous suffit à tracer la référence sans la reproduire).
 - Ce fichier créé comme référence centrale de l'incident.
 - **Aucune modification de code applicatif** — `api/.env.example` utilisait déjà des placeholders
   (`VOTRE_HOST.upstash.io` / `VOTRE_PASSWORD_UPSTASH`), il n'a pas eu besoin de correction.
+- **La rotation réelle du mot de passe Upstash et la purge de l'historique git restent non
+  effectuées** (voir section 3) : ce nettoyage de documentation est cosmétique tant que ces deux
+  actions manuelles ne sont pas réalisées par le/la propriétaire du dépôt.
 
 ## 3. Ce qui N'A PAS été fait et reste requis (actions manuelles, hors périmètre agent/code)
 
 ### 3.1 Rotation immédiate du mot de passe Upstash — 🔴 P0, à faire en premier
 1. Se connecter à https://console.upstash.com
-2. Sélectionner la base Redis concernée (ex-hostname `noted-tomcat-92597`)
+2. Sélectionner la base Redis concernée (identifiant visible dans le dashboard Upstash/Render, ne plus le documenter en clair ici)
 3. Settings → Reset Password (ou régénérer les credentials complets si l'option existe)
 4. Mettre à jour immédiatement sur Render : `REDIS_URL` / `REDIS_HOST` / `REDIS_PASSWORD`
    dans Environment Variables du service API + du service Background Worker
