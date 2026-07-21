@@ -21,8 +21,8 @@ class EmployeePolicy
             return false;
         }
 
-        if ($actor->isDepartmentScoped()) {
-            return $actor->managesDepartmentOf($employee);
+        if ($actor->isTeamScoped()) {
+            return $actor->managesTeamMemberOf($employee);
         }
 
         return true;
