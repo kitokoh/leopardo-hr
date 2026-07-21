@@ -3,8 +3,10 @@
 @php
     $map = [
         'present' => ['color' => 'success', 'label' => 'Présent'],
-        'late' => ['color' => 'warning', 'label' => 'En retard'],
-        'absent' => ['color' => 'danger', 'label' => 'Absent'],
+        'ontime' => ['color' => 'success', 'label' => __('attendance.status_ontime')],
+        'late' => ['color' => 'warning', 'label' => __('attendance.status_late')],
+        'absent' => ['color' => 'danger', 'label' => __('attendance.status_absent')],
+        'incomplete' => ['color' => 'warning', 'label' => __('attendance.status_incomplete')],
         'early_leave' => ['color' => 'warning', 'label' => 'Parti tôt'],
         'half_day' => ['color' => 'info', 'label' => 'Demi-journée'],
         'holiday' => ['color' => 'info', 'label' => 'Férié'],
