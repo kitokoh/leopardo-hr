@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Modules\HR\Domain\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Domain\Models\Department;
 
 class DepartmentPolicy
 {
@@ -24,6 +24,10 @@ class DepartmentPolicy
             return $actor->department_id !== null && $actor->department_id === $department->id;
         }
 
+        // A superviseur has no department of their own to scope on; their
+        // visibility is defined by directly assigned employees, not by
+        // department membership (PA2-SEC-003), so department listings stay
+        // company-wide for them like other non-dept manager roles.
         return true;
     }
 
@@ -51,4 +55,3 @@ class DepartmentPolicy
             && $actor->hasManagerRole('principal', 'rh');
     }
 }
-
