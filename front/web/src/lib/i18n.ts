@@ -303,6 +303,22 @@ export function getLocaleDirection(locale: AppLocale, isRtl?: boolean): 'ltr' | 
   return isRtl === true || locale === 'ar' ? 'rtl' : 'ltr';
 }
 
+const INTL_LOCALE_MAP: Record<AppLocale, string> = {
+  fr: 'fr-FR',
+  ar: 'ar-SA',
+  tr: 'tr-TR',
+  en: 'en-US',
+};
+
+/**
+ * Resout un code de locale applicatif (fr/ar/tr/en) vers un tag BCP-47
+ * pret pour `Intl.NumberFormat`/`Intl.DateTimeFormat` (ex: 'fr' -> 'fr-FR').
+ * Utiliser cette fonction plutot que de coder 'fr-FR' en dur dans les pages.
+ */
+export function toIntlLocale(locale: AppLocale): string {
+  return INTL_LOCALE_MAP[locale] ?? INTL_LOCALE_MAP.fr;
+}
+
 export function getCopy(locale: AppLocale) {
   return copy[locale];
 }
