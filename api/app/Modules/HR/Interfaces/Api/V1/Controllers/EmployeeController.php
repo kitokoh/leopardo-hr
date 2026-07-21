@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Shared\Attributes\ApiFeature;
-use App\Shared\Attributes\RequiresPermission;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\EmployeeResource;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
-use App\Http\Controllers\Controller;
+use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use App\Modules\HR\Interfaces\Api\V1\Requests\ArchiveEmployeeRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEmployeeRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
-use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
-use App\Modules\HR\Infrastructure\Services\EmployeeService;
+use App\Shared\Attributes\ApiFeature;
+use App\Shared\Attributes\RequiresPermission;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -86,10 +86,11 @@ class EmployeeController extends Controller
             ])
             ->select($this->employeeIndexColumns());
 
-        if ($actor->isDepartmentScoped()) {
-            // manager_role=dept is scoped to their own department only (PA2-SEC-002).
-            // Fail closed: an actor without a department sees nothing rather than everything.
-            $query->where('department_id', $actor->department_id ?? -1);
+        if ($actor->isTeamScoped()) {
+            // manager_role=dept is scoped to their own department only (PA2-SEC-002);
+            // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
+            // Fail closed: an actor without an assigned scope sees nothing rather than everything.
+            $query->visibleToManager($actor);
         }
 
         if (! empty($validated['status'])) {
@@ -394,4 +395,3 @@ class EmployeeController extends Controller
         ]);
     }
 }
-
