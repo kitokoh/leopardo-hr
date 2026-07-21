@@ -218,7 +218,7 @@
 | PA2-AUTO-005 | P1 | Rapport hebdo avancement | GitHub Actions/docs | liste merges, bloques, stale, prochains P0 |
 | PA2-AUTO-006 | P1 | Template PR PA2 | `.github` | **Fait** : `.github/PULL_REQUEST_TEMPLATE.md` ajoute ID PA2, surfaces touchees, contrat API, risques residuels, screenshots obligatoires si surface UI cochee |
 | PA2-AUTO-007 | P2 | Dashboard readiness tickets | docs/admin | mapping tickets vers release pilote |
-| PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | comment choisir un ticket, eviter duplication, demander review |
+| PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | **Fait** : nouvelle section "Regles agents juniors" dans `AGENTS.md` (choix de ticket, anti-duplication, demande de review) |
 | PA2-AUTO-009 | P2 | Nettoyage branches stale | docs/scripts | listing branches fusionnees/stale, suppression manuelle controlee |
 | PA2-AUTO-010 | P2 | Audit post-merge automatique | GitHub Actions | verifie changelog, matrice, OpenAPI, i18n selon fichiers touches |
 | PA2-AUTO-011 | P0 | ~~Garde-fou collision de claim multi-agent~~ Fait le 2026-07-21: `dev-hub/tools/check-plan-action2-claim.sh` + workflow `.github/workflows/plan-action2-claim-guard.yml` | GitHub Actions, `dev-hub/tools` | FAIT: toute PR referencant un ID `PA2-*` echoue si une autre PR ouverte reference le meme ID, ou si l'issue GitHub du ticket est assignee a un autre agent que l'auteur de la PR ; avertissement (non bloquant) si l'issue n'a aucun assignee, conformement au protocole de claim de `01_MODE_EXECUTION_MULTI_AGENT.md` |
