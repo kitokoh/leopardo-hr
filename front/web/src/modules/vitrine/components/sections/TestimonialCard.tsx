@@ -2,16 +2,32 @@
 
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
-import Image from 'next/image';
 
 export interface TestimonialCardProps {
   quote: string;
   author: string;
   role: string;
   company: string;
-  avatar: string;
+  /**
+   * Optional real photo path. PA2-MKT-010: the previous default values
+   * (`/avatars/avatar-1.webp` … `avatar-4.webp`) never existed on disk,
+   * so every testimonial card rendered a broken image icon in production.
+   * When no real photo is supplied (the common case today), the card
+   * falls back to an initials avatar instead of attempting to load a
+   * file that may not exist — see `getInitials()` below.
+   */
+  avatar?: string;
   rating: number;
   index?: number;
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
 }
 
 export function TestimonialCard({
@@ -53,14 +69,22 @@ export function TestimonialCard({
 
         {/* Author */}
         <div className="flex items-center gap-4">
-          <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-            <Image
-              src={avatar}
-              alt={author}
-              fill
-              className="object-cover"
-            />
-          </div>
+          {avatar ? (
+            <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+              <img
+                src={avatar}
+                alt={author}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
+          ) : (
+            <div
+              className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white text-sm font-black flex-shrink-0"
+              aria-hidden="true"
+            >
+              {getInitials(author)}
+            </div>
+          )}
           <div>
             <div className="font-bold text-slate-900 dark:text-white">{author}</div>
             <div className="text-sm text-slate-500 dark:text-slate-400">
