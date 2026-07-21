@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import {
   DollarSign,
   Download,
@@ -14,6 +15,8 @@ import {
   ChevronRight,
   Eye,
 } from 'lucide-react';
+
+const emptySubscribe = () => () => {};
 
 interface PaySlip {
   id: number;
@@ -37,6 +40,7 @@ interface PayrollRun {
 }
 
 export default function PayrollPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [payslips, setPayslips] = useState<PaySlip[]>([]);
   const [runs, setRuns] = useState<PayrollRun[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +77,7 @@ export default function PayrollPage() {
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(val || 0);
+    new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency: 'EUR' }).format(val || 0);
 
   const downloadPdf = async (id: number) => {
     try {
