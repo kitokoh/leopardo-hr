@@ -124,7 +124,7 @@
     <DataTable
       v-else-if="activeTab === 'runs'"
       :columns="runColumns"
-      :rows="runs"
+      :rows="filteredRuns"
       :loading="loading"
       :error="error"
       :search-keys="['reference', 'period']"
@@ -134,6 +134,36 @@
       exportable
       @export="exportRuns"
     >
+      <template #filters>
+        <div class="flex items-center gap-2">
+          <label for="payroll-run-month" class="sr-only">Mois</label>
+          <select
+            id="payroll-run-month"
+            v-model="runFilterMonth"
+            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 py-2 pl-3 pr-8 text-sm text-slate-900 dark:text-white focus:border-brand-500 focus:ring-brand-500"
+          >
+            <option value="">Tous les mois</option>
+            <option v-for="(label, idx) in monthLabels" :key="idx" :value="idx">{{ label }}</option>
+          </select>
+          <label for="payroll-run-year" class="sr-only">Année</label>
+          <select
+            id="payroll-run-year"
+            v-model="runFilterYear"
+            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 py-2 pl-3 pr-8 text-sm text-slate-900 dark:text-white focus:border-brand-500 focus:ring-brand-500"
+          >
+            <option value="">Toutes les années</option>
+            <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
+          </select>
+          <button
+            v-if="runFilterMonth !== '' || runFilterYear !== ''"
+            type="button"
+            class="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            @click="runFilterMonth = ''; runFilterYear = ''"
+          >
+            Réinitialiser
+          </button>
+        </div>
+      </template>
       <template #cell-status="{ value }">
         <StatusBadge :status="value" :map="runStatusMap" />
       </template>
@@ -198,6 +228,15 @@ const stats = ref({ runs_this_month: 0, slips_generated: 0, total_net: 0, pendin
 
 const structures = ref([])
 
+const monthLabels = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+]
+
+const initialDate = new Date()
+const runFilterMonth = ref(initialDate.getMonth())
+const runFilterYear = ref(initialDate.getFullYear())
+
 const tabs = [
   { key: 'structures', label: 'Structures salariales' },
   { key: 'runs', label: 'Runs de paie' },
@@ -241,6 +280,24 @@ const runStatusMap = {
   paid: { label: 'Paye', color: 'green' },
   cancelled: { label: 'Annule', color: 'red' },
 }
+
+const availableYears = computed(() => {
+  const years = new Set(runs.value
+    .map(r => (r.period_start ? new Date(r.period_start).getFullYear() : null))
+    .filter(y => y !== null && !Number.isNaN(y)))
+  years.add(runFilterYear.value)
+  return [...years].sort((a, b) => b - a)
+})
+
+const filteredRuns = computed(() => {
+  return runs.value.filter(run => {
+    if (!run.period_start) return runFilterMonth.value === '' && runFilterYear.value === ''
+    const d = new Date(run.period_start)
+    const monthMatches = runFilterMonth.value === '' || d.getMonth() === Number(runFilterMonth.value)
+    const yearMatches = runFilterYear.value === '' || d.getFullYear() === Number(runFilterYear.value)
+    return monthMatches && yearMatches
+  })
+})
 
 const formattedMasse = computed(() => formatCurrency(stats.value.total_net))
 
@@ -410,7 +467,7 @@ function downloadCsv(filename, headerRow, lines) {
 
 function exportRuns() {
   const header = ['reference', 'periode', 'employes', 'net_total', 'statut']
-  const lines = runs.value.map(r =>
+  const lines = filteredRuns.value.map(r =>
     [r.reference, r.period, r.employees_count, r.total_net, r.status].map(escapeCsvCell).join(';'),
   )
   downloadCsv('payroll-runs.csv', header, lines)
