@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\AttendanceCorrectionAdminController;
 use App\Http\Controllers\Web\BiometricAdminController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\InvitationController;
@@ -106,6 +107,14 @@ Route::middleware(['auth:web', 'tenant', 'manager_role:principal,rh'])->group(fu
         Route::get('/invitations', [InvitationManagementController::class, 'index'])->name('invitations.index');
         Route::post('/invitations/{invitation}/resend', [InvitationManagementController::class, 'resend'])->name('invitations.resend');
     });
+
+    Route::get('/attendance-corrections', [AttendanceCorrectionAdminController::class, 'index'])->name('attendance-corrections.index');
+    Route::post('/attendance-corrections/{correction}/approve', [AttendanceCorrectionAdminController::class, 'approve'])
+        ->whereNumber('correction')
+        ->name('attendance-corrections.approve');
+    Route::post('/attendance-corrections/{correction}/reject', [AttendanceCorrectionAdminController::class, 'reject'])
+        ->whereNumber('correction')
+        ->name('attendance-corrections.reject');
 });
 
 // Biometrie / bornes : Principal et Superviseur.
