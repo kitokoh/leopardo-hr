@@ -129,9 +129,11 @@ jobs:
             BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
           fi
 
-          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
-          echo "BUILD_NAME=$BUILD_NAME" >> "$GITHUB_ENV"
-          echo "BUILD_NUMBER=${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+          {
+            echo "TARGET=$TARGET"
+            echo "BUILD_NAME=$BUILD_NAME"
+            echo "BUILD_NUMBER=${GITHUB_RUN_NUMBER}"
+          } >> "$GITHUB_ENV"
           echo "target=$TARGET" >> "$GITHUB_OUTPUT"
 
       - name: Validate required secrets for staging distribution
@@ -326,6 +328,15 @@ jobs:
             fi
 
             set +e
+            # PA2-OPS-002: single quotes here are intentional, not a bug. The
+            # JS template literals (`${...}`) below are Node.js string
+            # interpolation evaluated inside the node process, not shell
+            # interpolation; the values come from process.env.BUILD_NUMBER /
+            # process.env.APP_NAME (set via this step's `env:` block above),
+            # never from unescaped shell variables. Double-quoting the -e
+            # script would let bash expand `$...` before Node ever sees it,
+            # which is exactly what we must avoid here.
+            # shellcheck disable=SC2016
             node -e 'const fs = require("fs"); const payload = JSON.parse(fs.readFileSync("firebase-releases.json", "utf8")); const expectedBuild = process.env.BUILD_NUMBER; const appName = process.env.APP_NAME; const releases = Array.isArray(payload.result) ? payload.result : (Array.isArray(payload.result?.releases) ? payload.result.releases : []); const match = releases.find((release) => String(release.buildVersion) === String(expectedBuild)); if (!match) { console.error(`Firebase App Distribution release not visible yet for ${appName} build ${expectedBuild}.`); console.error(`Visible build versions: ${releases.map((release) => release.buildVersion).join(", ") || "none"}`); process.exit(2); } console.log(`Firebase App Distribution release visible for ${appName}: ${match.name || match.displayVersion || match.buildVersion}`);'
             node_status=$?
             set -e
