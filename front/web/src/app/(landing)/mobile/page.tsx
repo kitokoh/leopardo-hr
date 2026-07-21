@@ -39,6 +39,9 @@ interface LangCopy {
   android: string;
   ios: string;
   soon: string;
+  waitingPrefix: string;
+  installGuide: string;
+  demoCta: string;
 }
 
 const copy: Record<Lang, LangCopy> = {
@@ -54,6 +57,9 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'Bientôt disponible',
+    waitingPrefix: 'En attendant, demandez une démo ou consultez notre',
+    installGuide: "guide d'installation",
+    demoCta: 'Demander une démo',
   },
   en: {
     badge: 'Mobile applications',
@@ -67,6 +73,9 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'Coming soon',
+    waitingPrefix: 'In the meantime, request a demo or check out our',
+    installGuide: 'installation guide',
+    demoCta: 'Request a demo',
   },
   tr: {
     badge: 'Mobil uygulamalar',
@@ -80,6 +89,9 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'Çok yakında',
+    waitingPrefix: 'Bu arada bir demo talep edin veya',
+    installGuide: 'kurulum kılavuzumuza',
+    demoCta: 'Demo talep et',
   },
   ar: {
     badge: 'التطبيقات المحمولة',
@@ -93,6 +105,9 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'قريباً',
+    waitingPrefix: 'في الوقت الحالي، اطلب عرضاً توضيحياً أو اطّلع على',
+    installGuide: 'دليل التركيب',
+    demoCta: 'اطلب عرضاً توضيحياً',
   },
 };
 
@@ -420,11 +435,10 @@ export default function MobilePage() {
           </div>
 
           <p className="mt-8 text-sm text-slate-400 dark:text-slate-500">
-            {/* Placeholder note */}
             {/* TODO: replace placeholders with real store links */}
-            En attendant, demandez une démo ou consultez notre{' '}
+            {t.waitingPrefix}{' '}
             <Link href="/docs#mobile-install" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-              guide d'installation
+              {t.installGuide}
             </Link>
             .
           </p>
@@ -434,7 +448,7 @@ export default function MobilePage() {
               href="/demo"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 transition-opacity"
             >
-              Demander une démo
+              {t.demoCta}
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>

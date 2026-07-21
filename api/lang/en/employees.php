@@ -20,6 +20,11 @@ return [
     'updated' => 'Employee updated successfully.',
     'archived' => 'Employee archived successfully.',
     'invited' => 'Invitation sent successfully.',
+    'role_assign_forbidden' => 'Only the company admin can assign roles.',
+    'role_assign_not_in_company' => 'Employee not found in your company.',
+    'role_assigned' => "Role ':role' assigned successfully. An email with app download links has been sent.",
+    'role_removed' => 'Role removed. Employee is now a regular employee.',
+    'team_roles_forbidden' => 'Only the company admin can view team roles.',
 
     // Labels
     'first_name' => 'First name',

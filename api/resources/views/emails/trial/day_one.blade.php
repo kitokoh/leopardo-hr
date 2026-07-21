@@ -1,20 +1,20 @@
 @component('mail::message')
-# Bienvenue sur Leopardo RH, {{ $managerName }} 👋
+# {{ str_replace(':name', $managerName, trans('emails.trial_day1_heading')) }}
 
-Votre espace **{{ $company->name }}** est prêt. Voici vos premières étapes pour bien démarrer :
+{!! str_replace(':company', $company->name, trans('emails.trial_day1_intro')) !!}
 
 @component('mail::panel')
-1. Connectez-vous à votre tableau de bord
-2. Ajoutez vos premiers employés
-3. Configurez vos horaires et sites
+1. {{ __('emails.trial_day1_step1') }}
+2. {{ __('emails.trial_day1_step2') }}
+3. {{ __('emails.trial_day1_step3') }}
 @endcomponent
 
 @component('mail::button', ['url' => $loginUrl])
-Ouvrir mon tableau de bord
+{{ __('emails.trial_day1_button') }}
 @endcomponent
 
-Besoin d'aide pour démarrer ? Consultez notre [documentation]({{ $docsUrl }}) ou répondez directement à cet email.
+{!! str_replace(':docsUrl', $docsUrl, trans('emails.trial_day1_help')) !!}
 
-Cordialement,
-L'équipe Leopardo RH
+{{ __('emails.regards') }}
+{{ str_replace(':company', 'Leopardo RH', trans('emails.team_signature')) }}
 @endcomponent

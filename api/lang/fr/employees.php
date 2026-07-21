@@ -20,6 +20,11 @@ return [
     'updated' => 'Employé mis à jour avec succès.',
     'archived' => 'Employé archivé avec succès.',
     'invited' => 'Invitation envoyée avec succès.',
+    'role_assign_forbidden' => 'Seul l\'administrateur de l\'entreprise peut assigner des rôles.',
+    'role_assign_not_in_company' => 'Employé introuvable dans votre entreprise.',
+    'role_assigned' => 'Rôle \':role\' assigné avec succès. Un email avec les liens de téléchargement de l\'application a été envoyé.',
+    'role_removed' => 'Rôle retiré. L\'employé est désormais un employé standard.',
+    'team_roles_forbidden' => 'Seul l\'administrateur de l\'entreprise peut consulter les rôles de l\'équipe.',
 
     // Labels
     'first_name' => 'Prénom',

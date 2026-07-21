@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\HR\Application\DTOs;
 
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
