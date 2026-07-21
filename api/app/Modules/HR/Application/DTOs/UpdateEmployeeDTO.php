@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Application\DTOs;
 
-use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 use Illuminate\Http\Request;
 
 final readonly class UpdateEmployeeDTO
@@ -19,6 +19,8 @@ final readonly class UpdateEmployeeDTO
         public ?string $preferred_name = null,
         public ?string $phone = null,
         public ?string $personal_email = null,
+        public ?string $iban = null,
+        public ?string $bank_account = null,
         public ?string $recovery_email = null,
         public ?string $personal_phone = null,
         public ?string $role = null,
@@ -68,6 +70,8 @@ final readonly class UpdateEmployeeDTO
             'preferred_name' => $this->preferred_name,
             'phone' => $this->phone,
             'personal_email' => $this->personal_email,
+            'iban' => $this->iban,
+            'bank_account' => $this->bank_account,
             'recovery_email' => $this->recovery_email,
             'personal_phone' => $this->personal_phone,
             'role' => $this->role,
