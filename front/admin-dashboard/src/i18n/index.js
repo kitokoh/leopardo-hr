@@ -30,6 +30,16 @@ export function resolveDirection(locale) {
   return rtlLocales.has(normalizeLocale(locale)) ? 'rtl' : 'ltr';
 }
 
+/**
+ * Resout un code de locale applicatif (fr/ar/tr/en) vers un tag BCP-47
+ * pret pour `Intl.NumberFormat`/`Intl.DateTimeFormat` (ex: 'fr' -> 'fr-FR').
+ * Utiliser cette fonction plutot que de coder 'fr-FR' en dur dans les vues.
+ */
+export function toIntlLocale(locale) {
+  const normalized = normalizeLocale(locale);
+  return localeVariants[normalized]?.[0] ?? localeVariants[defaultLocale][0];
+}
+
 export function translate(locale, key, fallback = '') {
   const normalized = normalizeLocale(locale);
   const dictionary = messages[normalized] || messages[defaultLocale];
