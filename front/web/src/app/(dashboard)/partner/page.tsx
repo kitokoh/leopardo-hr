@@ -14,6 +14,7 @@ type Commission = {
 };
 
 type PartnerData = {
+  referral_code?: string;
   stats: {
     total_conversions: number;
     total_earned: number;
@@ -26,10 +27,12 @@ type PartnerData = {
 export default function PartnerDashboard() {
   const [data, setData] = useState<PartnerData | null>(null);
   const [status, setStatus] = useState('loading'); // 'not_applied', 'pending', 'approved', 'loading'
+  const [copied, setCopied] = useState(false);
+  const [payoutPending, setPayoutPending] = useState(false);
 
   const fetchData = async () => {
     try {
-      const response = await apiFetch('/partner/stats');
+      const response = await apiFetch('/growth/partner/stats');
       const payload = await response.json();
 
       // If the API returns success, we are an approved partner
@@ -52,13 +55,49 @@ export default function PartnerDashboard() {
 
   const handleApply = async (type: string) => {
     try {
-      await apiFetch('/partner/apply', {
+      await apiFetch('/growth/partner/apply', {
         method: 'POST',
         body: JSON.stringify({ type })
       });
       setStatus('pending');
     } catch (error) {
       alert("Erreur lors de la candidature : " + (error as Error).message);
+    }
+  };
+
+  const referralLink = data?.referral_code
+    ? `${process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo-rh.com'}/p/${data.referral_code}`
+    : null;
+
+  const handleCopyLink = async () => {
+    if (!referralLink) return;
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert('Impossible de copier le lien. Copiez-le manuellement.');
+    }
+  };
+
+  const handleRequestPayout = async () => {
+    const available = data?.stats?.approved_upcoming || 0;
+    if (available < 100) {
+      alert('Solde insuffisant pour demander un virement (minimum 1,00 \u20ac).');
+      return;
+    }
+    setPayoutPending(true);
+    try {
+      await apiFetch('/growth/partner/payout', {
+        method: 'POST',
+        body: JSON.stringify({ amount: available, currency: 'EUR' }),
+      });
+      alert('Demande de virement envoyee avec succes.');
+      fetchData();
+    } catch (error) {
+      alert('Erreur lors de la demande de virement : ' + (error as Error).message);
+    } finally {
+      setPayoutPending(false);
     }
   };
 
@@ -174,10 +213,11 @@ export default function PartnerDashboard() {
                 Verifiez que vos coordonnees bancaires sont a jour.
               </p>
               <button
-                onClick={() => alert("Fonctionnalite en cours de deploiement.")}
-                className="w-full rounded-xl bg-slate-950 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                onClick={handleRequestPayout}
+                disabled={payoutPending}
+                className="w-full rounded-xl bg-slate-950 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
-                Demander un virement
+                {payoutPending ? 'Envoi...' : 'Demander un virement'}
               </button>
             </div>
           </section>
@@ -188,10 +228,14 @@ export default function PartnerDashboard() {
               <h3 className="text-xs font-bold uppercase tracking-widest">Lien de parrainage</h3>
             </div>
             <div className="mb-4 break-all rounded-xl bg-white/10 p-3 font-mono text-xs">
-              https://leopardo-rh.com/p/DEFAULT
+              {referralLink || 'Lien indisponible'}
             </div>
-            <button className="w-full rounded-xl bg-white py-2 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-50">
-              Copier mon lien
+            <button
+              onClick={handleCopyLink}
+              disabled={!referralLink}
+              className="w-full rounded-xl bg-white py-2 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-50 disabled:opacity-50"
+            >
+              {copied ? 'Copie !' : 'Copier mon lien'}
             </button>
           </section>
         </div>
