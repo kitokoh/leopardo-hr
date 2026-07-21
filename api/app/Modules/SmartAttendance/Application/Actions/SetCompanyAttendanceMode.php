@@ -20,6 +20,7 @@ class SetCompanyAttendanceMode
 
         $settings->fill([
             'forced_mode'             => $data['forced_mode'] ?? null,
+            'punch_photo_mode'        => $data['punch_photo_mode'] ?? null,
             'gps_enabled'             => $data['gps_enabled'] ?? false,
             'latitude'                => $data['latitude'] ?? null,
             'longitude'               => $data['longitude'] ?? null,

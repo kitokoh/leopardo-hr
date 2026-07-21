@@ -288,6 +288,7 @@ trait CreatesMvpSchema
             $table->string('external_event_id', 100)->nullable()->unique();
             $table->string('biometric_type', 20)->nullable();
             $table->boolean('synced_from_offline')->default(false);
+            $table->string('punch_photo_path', 255)->nullable();
             $table->string('status', 20)->default('incomplete');
             $table->decimal('hours_worked', 5, 2)->nullable();
             $table->decimal('overtime_hours', 5, 2)->default(0);

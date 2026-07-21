@@ -17,6 +17,7 @@ class SetCompanyModeRequest extends FormRequest
     {
         return [
             'forced_mode'             => ['nullable', 'string', 'in:gps_auto,qr,manual,mixed'],
+            'punch_photo_mode'        => ['nullable', 'string', 'in:kiosk,photo_required'],
             'gps_enabled'             => ['boolean'],
             'latitude'                => ['nullable', 'numeric', 'between:-90,90'],
             'longitude'               => ['nullable', 'numeric', 'between:-180,180'],
