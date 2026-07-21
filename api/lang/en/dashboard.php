@@ -10,4 +10,10 @@ return [
     'biometrics_kiosks' => 'Biometrics / Kiosks',
     'invitations' => 'Invitations',
     'create_hr_employee' => 'Create HR / Employee',
+    'column_name' => 'Name',
+    'column_arrival' => 'Check-in',
+    'column_departure' => 'Check-out',
+    'column_hours' => 'Hours',
+    'column_due' => 'Due',
+    'column_details' => 'View details →',
 ];
