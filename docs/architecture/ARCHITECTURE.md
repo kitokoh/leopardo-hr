@@ -120,7 +120,7 @@ For detailed implementation, see [Multi-Tenancy Documentation](MULTITENANCY.md).
 - **Laravel 11 / PHP 8.4:** Robust ecosystem for rapid enterprise development.
 - **PostgreSQL 16:** Advanced JSONB support and schema-based multi-tenancy.
 - **Redis:** High-speed queue and cache management.
-- **Next.js 15:** Server-side rendering for optimal dashboard performance (`front/web`, deployed on Vercel).
+- **Next.js 16:** Server-side rendering for optimal dashboard performance (`front/web`, deployed on Vercel).
 - **Vue 3 / Vite:** Platform admin dashboard (`front/admin-dashboard`).
 - **Flutter:** Single codebase for native-performance mobile apps (`front/mobile_apps/*`).
 

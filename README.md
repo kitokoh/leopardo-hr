@@ -11,7 +11,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/kitokoh/leopardo-hr?style=for-the-badge&label=License" alt="License"></a>
   <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php" alt="PHP 8.4">
   <img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter" alt="Flutter 3.x">
-  <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js 15">
+  <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" alt="Next.js 16">
 </p>
 
 ---
@@ -60,7 +60,7 @@ Leopardo RH is engineered for 99.9% uptime and extreme data integrity.
 ```mermaid
 graph TB
     subgraph "Omnichannel Layer"
-        Web[Next.js 15 Dashboard]
+        Web[Next.js 16 Dashboard]
         Mobile[Flutter Native Suite]
         Kiosk[ZKTeco Cloud Bridge]
     end
@@ -96,7 +96,7 @@ graph TB
 | Module | Access Point | Technology Stack |
 | :--- | :--- | :--- |
 | **API Backend** | [Gateway](https://gestionemployerbackend.onrender.com) | Laravel 12, PostgreSQL |
-| **Corporate Web** | [Live Preview](https://gestionemployer-backend.vercel.app) | Next.js 15, Tailwind CSS |
+| **Corporate Web** | [Live Preview](https://gestionemployer-backend.vercel.app) | Next.js 16, Tailwind CSS |
 | **Admin Panel** | [Dashboard](https://leo-admin.pages.dev) | Cloudflare Pages |
 | **Mobile Suite** | [Employee / Manager / HR / Platform Admin](docs/mobile/README.md) | Flutter 3.x, Riverpod |
 
