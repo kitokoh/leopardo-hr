@@ -16,6 +16,7 @@ return [
     'ALREADY_CHECKED_IN' => 'Bugün zaten giriş kaydınızı yaptınız.',
     'MISSING_CHECK_IN' => 'Çıkış yapmadan önce giriş kaydı yapmalısınız.',
     'ALREADY_CHECKED_OUT' => 'Bugün zaten çıkış kaydınızı yaptınız.',
+    'PUNCH_PHOTO_REQUIRED' => 'Şirketinizde giriş/çıkış için fotoğraf zorunludur.',
 
     // Finance
     'PLAN_CAMERAS_REQUIRED' => 'Planınız kamera modülünü içermiyor. Business planına yükseltin.',

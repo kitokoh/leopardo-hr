@@ -16,6 +16,7 @@ return [
     'ALREADY_CHECKED_IN' => 'لقد سجلت حضورك بالفعل اليوم.',
     'MISSING_CHECK_IN' => 'يجب تسجيل الحضور أولاً قبل تسجيل الانصراف.',
     'ALREADY_CHECKED_OUT' => 'لقد سجلت انصرافك بالفعل اليوم.',
+    'PUNCH_PHOTO_REQUIRED' => 'الصورة مطلوبة لتسجيل الحضور أو الانصراف في شركتك.',
 
     // Finance
     'PLAN_CAMERAS_REQUIRED' => 'خطتك لا تتضمن وحدة الكاميرات. قم بالترقية إلى خطة Business.',

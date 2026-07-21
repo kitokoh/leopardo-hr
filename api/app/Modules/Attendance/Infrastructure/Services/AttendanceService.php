@@ -9,11 +9,14 @@ use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
+use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Schedule;
+use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 class AttendanceService
 {
@@ -40,6 +43,9 @@ class AttendanceService
         if ($open) {
             throw new AlreadyCheckedInException;
         }
+
+        $this->ensurePunchPhotoProvided($company, $dto);
+        $photoPath = $this->storePunchPhoto($company, $employee, $dto);
 
         $sessionNumber = $this->nextSessionNumber($employee, $today);
 
@@ -69,6 +75,7 @@ class AttendanceService
             'work_type' => $dto->work_type,
             'punch_note' => $dto->punch_note,
             'punch_meta' => $punchMeta,
+            'punch_photo_path' => $photoPath,
             'status' => $status,
             'late_minutes' => $lateMinutes,
             'gps_lat' => $dto->gps_lat,
@@ -99,6 +106,9 @@ class AttendanceService
             throw new MissingCheckInException;
         }
 
+        $this->ensurePunchPhotoProvided($company, $dto);
+        $photoPath = $this->storePunchPhoto($company, $employee, $dto);
+
         $schedule = $log->schedule_id
             ? $log->schedule
             : $this->resolveSchedule($employee);
@@ -126,6 +136,9 @@ class AttendanceService
         $log->gps_lng = $dto->gps_lng ?? $log->gps_lng;
         $log->method = $dto->method;
         $log->punch_note = $dto->punch_note ?? $log->punch_note;
+        if ($photoPath !== null) {
+            $log->punch_photo_path = $photoPath;
+        }
         if ($dto->work_type !== 'normal') {
             $log->punch_meta = array_merge($log->punch_meta ?? [], [
                 'closed_with' => $dto->work_type,
@@ -348,6 +361,50 @@ class AttendanceService
             gps_accuracy: null,
             method: $method,
         );
+    }
+
+    /**
+     * Verifie que la photo obligatoire (mode photo_required) a bien ete fournie
+     * pour ce pointage mobile. Le mode kiosque physique (source_device_code) et
+     * les imports externes ne sont jamais concernes par cette contrainte.
+     */
+    private function ensurePunchPhotoProvided(Company $company, CheckInDTO $dto): void
+    {
+        if ($dto->source_device_code !== null || $dto->synced_from_offline) {
+            return;
+        }
+
+        if (! Schema::hasTable('attendance_mode_settings')) {
+            return;
+        }
+
+        $settings = AttendanceModeSettings::where('company_id', $company->id)->first();
+
+        if (! $settings || ! $settings->requiresPunchPhoto()) {
+            return;
+        }
+
+        if ($dto->punch_photo === null) {
+            throw new PunchPhotoRequiredException;
+        }
+    }
+
+    /**
+     * Stocke la photo de pointage envoyee (si presente) et retourne son chemin
+     * de stockage relatif, ou null si aucune photo n'a ete fournie.
+     */
+    private function storePunchPhoto(Company $company, Employee $employee, CheckInDTO $dto): ?string
+    {
+        if ($dto->punch_photo === null) {
+            return null;
+        }
+
+        $path = $dto->punch_photo->store(
+            sprintf('attendance/punch-photos/%s/%d', $employee->company_id ?? $company->id, $employee->id),
+            'local',
+        );
+
+        return $path === false ? null : $path;
     }
 
     /**

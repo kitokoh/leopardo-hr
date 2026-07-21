@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
  * @property int         $id
  * @property string      $company_id
  * @property string|null $forced_mode         null | gps_auto | qr | manual | mixed
+ * @property string|null $punch_photo_mode    null | kiosk | photo_required — mode de pointage mobile (clic vs photo obligatoire)
  * @property bool        $gps_enabled
  * @property float|null  $latitude
  * @property float|null  $longitude
@@ -30,6 +31,7 @@ class AttendanceModeSettings extends Model
     protected $fillable = [
         'company_id',
         'forced_mode',
+        'punch_photo_mode',
         'gps_enabled',
         'latitude',
         'longitude',
@@ -62,5 +64,11 @@ class AttendanceModeSettings extends Model
     public function effectiveMode(): ?string
     {
         return $this->forced_mode;
+    }
+
+    /** Retourne true si l'entreprise exige une photo à chaque pointage mobile (arrivée + départ) */
+    public function requiresPunchPhoto(): bool
+    {
+        return $this->punch_photo_mode === 'photo_required';
     }
 }
