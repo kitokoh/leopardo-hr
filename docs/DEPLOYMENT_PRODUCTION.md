@@ -4,7 +4,9 @@
 
 L'environnement production est l'environnement public où les utilisateurs finaux accèdent à la vitrine. Les déploiements en production doivent être soigneusement planifiés et testés.
 
-**URL Production**: https://leopardo.com
+**URL Production actuelle** : https://gestionemployer-backend.vercel.app (sous-domaine `vercel.app`, réellement en ligne — voir `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` pour la liste à jour de toutes les URLs de la plateforme).
+
+`leopardo.com` **n'est pas un domaine possédé par ce projet** (il sert actuellement le site d'une entreprise américaine de construction sans rapport) et ne doit pas être utilisé tant qu'il n'a pas été réellement acheté et configuré. La section ci-dessous décrit la procédure générique pour brancher un futur domaine personnalisé une fois acheté ; remplacer `leopardo.com` par le domaine réel au moment de l'exécuter.
 
 ## Configuration Vercel Production
 
@@ -27,20 +29,20 @@ vercel --prod --name leopardo
 Dans le dashboard Vercel (https://vercel.com/dashboard):
 
 1. Aller à **Settings** → **Environment Variables**
-2. Ajouter les variables suivantes:
+2. Ajouter les variables suivantes (valeurs d'exemple à adapter au domaine réellement configuré — aujourd'hui `gestionemployer-backend.vercel.app`, pas `leopardo.com` qui n'est pas possédé):
 
 ```
-NEXT_PUBLIC_API_URL=https://api.leopardo.com/api/v1
+NEXT_PUBLIC_API_URL=https://gestionemployerbackend.onrender.com/api/v1
 NEXT_PUBLIC_GA_ID=G-PRODUCTION123456
 NEXT_PUBLIC_MIXPANEL_TOKEN=production_token_abc789
 SENDGRID_API_KEY=<votre_clé_sendgrid_production>
-NEXT_PUBLIC_SITE_URL=https://leopardo.com
+NEXT_PUBLIC_SITE_URL=https://gestionemployer-backend.vercel.app
 NEXT_PUBLIC_SITE_NAME=Leopardo
 NEXT_PUBLIC_ENVIRONMENT=production
 NEXT_PUBLIC_SHOW_STAGING_BANNER=false
 DATABASE_URL=<votre_url_db_production>
 NEXTAUTH_SECRET=<votre_secret_nextauth_production>
-NEXTAUTH_URL=https://leopardo.com
+NEXTAUTH_URL=https://gestionemployer-backend.vercel.app
 NEXT_PUBLIC_SENTRY_DSN=<votre_sentry_dsn_production>
 NEXT_PUBLIC_ENABLE_ERROR_TRACKING=true
 NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING=true
@@ -48,10 +50,12 @@ NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING=true
 
 ### 3. Configurer le domaine personnalisé
 
-#### Option A: Domaine principal (leopardo.com)
+#### Option A: Domaine personnalisé (une fois réellement acheté, ex. `leopardo.com` si acquis)
+
+> Ne pas suivre cette section tant qu'aucun domaine n'est réellement acheté pour ce projet — `leopardo.com` appartient aujourd'hui à une entreprise tierce sans rapport et ne doit pas être configuré ici.
 
 1. Dans Vercel Dashboard → **Domains**
-2. Ajouter le domaine `leopardo.com`
+2. Ajouter le domaine réellement acheté (ex. `leopardo.com` si acquis)
 3. Configurer les DNS records:
 
 ```
@@ -72,7 +76,7 @@ Name: @
 Value: cname.vercel-dns.com
 ```
 
-#### Option B: Sous-domaine (www.leopardo.com)
+#### Option B: Sous-domaine (www.<domaine-reellement-achete>)
 
 ```
 Type: CNAME

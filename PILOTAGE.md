@@ -85,7 +85,7 @@ Objectif 30j   : 3-5 clients payants, MRR 150-250€
 
 ```
 API           : gestionemployerbackend.onrender.com (Render Web Service)
-Vitrine       : leopardo-hr.vercel.app (Vercel)
+Vitrine       : gestionemployer-backend.vercel.app (Vercel) — voir docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md pour l'URL a jour
 Admin         : Cloudflare Pages
 BDD           : PostgreSQL 16 (Render managed)
 Cache/Queues  : Upstash Redis (TLS) — queues: default, pdf, notifications, payroll, webhooks
