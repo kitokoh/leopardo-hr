@@ -78,6 +78,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction');
     Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction');
     Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog');
+    Route::get('/attendance/{attendanceLog}/punch-photo', [AttendanceController::class, 'punchPhoto'])->whereNumber('attendanceLog')->name('attendance.punch-photo');
 
     // ── Invitations ───────────────────────────────────────────────────────────
     Route::get('/invitations', [InvitationController::class, 'index']);

@@ -31,6 +31,7 @@ trait CreatesSmartAttendanceSchema
                 $table->increments('id');
                 $table->uuid('company_id')->unique()->index();
                 $table->string('forced_mode', 20)->nullable();
+                $table->string('punch_photo_mode', 20)->nullable();
                 $table->boolean('gps_enabled')->default(false);
                 $table->decimal('latitude', 10, 8)->nullable();
                 $table->decimal('longitude', 11, 8)->nullable();

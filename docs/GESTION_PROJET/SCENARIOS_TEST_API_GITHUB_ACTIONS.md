@@ -172,6 +172,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `PUT /attendance/{attendanceLog}` reste reserve aux managers `principal` et `rh` pour modifier directement un log du tenant courant, avec refus des employes et des managers non autorises.
 - `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
 - Chaque anomalie attendance expose une action manager recommandee et un flag `requires_manager_action`
+- **Mode de pointage mobile configurable (issue #761, `PunchPhotoTest`)** : `AttendanceModeSettings.punch_photo_mode` (`null`/`kiosk`/`photo_required`), lu/ecrit via `GET/PUT /smart-attendance/mode-settings` et resolu pour l'employe connecte via `GET /smart-attendance/config` (`requires_punch_photo`). `POST /attendance/check-in`/`check-out` acceptent un champ multipart optionnel `punch_photo` (image, 5 Mo max) ; en mode `photo_required` sans photo fournie (hors flux kiosque physique `AttendanceKiosk` et hors import externe/offline), rejet `422 PUNCH_PHOTO_REQUIRED` (fr/en/ar/tr). Nouvel endpoint `GET /attendance/{attendanceLog}/punch-photo` (memes regles d'autorisation que la consultation du log) pour recuperer la photo stockee (`attendance/punch-photos/{company_id}/{employee_id}/...`, `AttendanceLog.punch_photo_path`, expose via `AttendanceLogResource.punch_photo_url`).
 
 ### 6.b Taches terrain apres pointage
 
