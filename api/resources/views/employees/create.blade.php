@@ -26,19 +26,25 @@
                 <div>
                     <label class="mb-2 block text-sm text-slate-300">Role</label>
                     <select name="role" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
-                        <option value="employee">Employe</option>
-                        <option value="manager">Manager / RH</option>
+                        <option value="employee" @selected(old('role', 'employee') === 'employee')>Employe</option>
+                        <option value="manager" @selected(old('role') === 'manager')>Manager / RH</option>
                     </select>
+                    @error('role')
+                        <div class="mt-1 text-sm text-rose-400">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div>
                     <label class="mb-2 block text-sm text-slate-300">Type manager</label>
                     <select name="manager_role" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
-                        <option value="">Aucun</option>
-                        <option value="rh">RH</option>
-                        <option value="dept">Responsable departement</option>
-                        <option value="comptable">Comptable</option>
-                        <option value="superviseur">Superviseur</option>
+                        <option value="" @selected(old('manager_role') === null || old('manager_role') === '')>Aucun</option>
+                        <option value="rh" @selected(old('manager_role') === 'rh')>RH</option>
+                        <option value="dept" @selected(old('manager_role') === 'dept')>Responsable departement</option>
+                        <option value="comptable" @selected(old('manager_role') === 'comptable')>Comptable</option>
+                        <option value="superviseur" @selected(old('manager_role') === 'superviseur')>Superviseur</option>
                     </select>
+                    @error('manager_role')
+                        <div class="mt-1 text-sm text-rose-400">{{ $message }}</div>
+                    @enderror
                 </div>
                 <x-platform.input name="date_of_birth" label="Date de naissance" type="date" :value="old('date_of_birth')" />
                 <x-platform.input name="place_of_birth" label="Lieu de naissance" :value="old('place_of_birth')" />
@@ -49,6 +55,9 @@
                         <option value="M" @selected(old('gender') === 'M')>Masculin</option>
                         <option value="F" @selected(old('gender') === 'F')>Feminin</option>
                     </select>
+                    @error('gender')
+                        <div class="mt-1 text-sm text-rose-400">{{ $message }}</div>
+                    @enderror
                 </div>
                 <x-platform.input name="nationality" label="Nationalite ISO2" :value="old('nationality', 'DZ')" />
                 <x-platform.input name="marital_status" label="Situation familiale" :value="old('marital_status')" />
