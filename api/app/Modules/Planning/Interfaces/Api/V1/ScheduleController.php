@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ScheduleResource;
 use App\Modules\HR\Interfaces\Api\V1\Requests\AssignScheduleEmployeesRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreScheduleRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateScheduleRequest;
-use App\Http\Resources\Api\V1\ScheduleResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -126,10 +126,12 @@ class ScheduleController extends Controller
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
             ->when(
-                $actor->isDepartmentScoped(),
+                $actor->isTeamScoped(),
                 // manager_role=dept can only assign schedules to employees in their own
-                // department (PA2-SEC-002); fail closed when the actor has no department.
-                fn ($query) => $query->where('department_id', $actor->department_id ?? -1)
+                // department (PA2-SEC-002); manager_role=superviseur only to their own
+                // directly assigned team (PA2-SEC-003). Fail closed when the actor has
+                // no assigned scope.
+                fn ($query) => $query->visibleToManager($actor)
             )
             ->whereIn('id', $employeeIds)
             ->get(['id']);
@@ -178,5 +180,3 @@ class ScheduleController extends Controller
         return response()->json(['message' => 'Schedule deleted successfully']);
     }
 }
-
-

@@ -67,8 +67,10 @@ class EvaluationPolicy
     }
 
     /**
-     * PA2-SEC-002: manager_role=dept may only act on evaluations for employees
-     * within their own department. Company-wide manager roles are unaffected.
+     * PA2-SEC-002 / PA2-SEC-003: manager_role=dept may only act on
+     * evaluations for employees within their own department, and
+     * manager_role=superviseur only for their own directly assigned team.
+     * Company-wide manager roles are unaffected.
      */
     private function managesEvaluatedEmployee(Employee $actor, Evaluation $evaluation): bool
     {
@@ -76,13 +78,12 @@ class EvaluationPolicy
             return false;
         }
 
-        if (! $actor->isDepartmentScoped()) {
+        if (! $actor->isTeamScoped()) {
             return true;
         }
 
         $target = $evaluation->employee;
 
-        return $target !== null && $actor->managesDepartmentOf($target);
+        return $target !== null && $actor->managesTeamMemberOf($target);
     }
 }
-
