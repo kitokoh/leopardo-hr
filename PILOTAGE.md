@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.16.254 | 2026-07-12
+# PROGRAM_VERSION = 4.23.5 | 2026-07-19
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -47,10 +47,11 @@ Règle :
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-07-12
-Version        : 4.16.254
+Date MAJ       : 2026-07-19
+Version        : 4.23.5
 Phase active   : LOT P0/P1/P3 — Solidification & Scale (clés à configurer sur Render)
-Dernière release: 2026-07-12 — PR #852 feat/p1-p3-solidification-scale mergée
+Dernière release: 2026-07-19 — [4.23.5] (voir CHANGELOG.md) ; des changements docs-only postérieurs
+                  non tagués vivent sous `## [Unreleased]` en tête de CHANGELOG.md au 2026-07-20/21
 Accomplis      :
   ✅ Exports comptables CSV (Journal, Livre de paie, OD)
   ✅ Templates sectoriels BTP + Sécurité (ApplySectorTemplate)
