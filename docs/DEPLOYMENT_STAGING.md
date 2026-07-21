@@ -10,7 +10,7 @@
 
 L'environnement staging est un environnement de pré-production qui reflète exactement la configuration de production. Il est utilisé pour tester les nouvelles fonctionnalités, les intégrations et les performances avant le déploiement en production.
 
-**URL Staging (cible, domaine non acheté)**: https://staging.leopardo.com
+**URL Staging** : non deploye a ce jour. `staging.leopardo.com` ci-dessous est un exemple de convention de nommage a appliquer une fois un vrai domaine achete (voir la note equivalente dans `docs/DEPLOYMENT_PRODUCTION.md` et `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md`) ; `leopardo.com` n'est pas possede par ce projet et ne doit pas etre configure tel quel dans Vercel.
 
 ## Configuration Vercel Staging
 
