@@ -88,7 +88,7 @@
 | Supprimer `app/Models/` doublons (75 modèles) | P1 | Élevé | 🔧 En cours |
 | Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | 🔧 En cours |
 | Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ⏳ À faire |
-| Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ⏳ À faire |
+| Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ✅ Fait — voir `api/ARCHITECTURE.md` «Nettoyage complet» et `api/app/Core/Tenant/README.md` |
 | Tests Feature pour Growth, Platform, Onboarding, Training | P1 | Moyen | ⏳ À faire |
 | PHPStan level 5+ via `phpstan-baseline.neon` | P2 | Moyen | ⏳ À faire |
 | OpenAPI/Swagger (`dedoc/scramble`) | P2 | Faible | ⏳ À faire |

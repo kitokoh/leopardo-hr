@@ -10,9 +10,13 @@
 ## Règle unique de contribution backend
 
 > **Tout nouveau code métier va dans `api/app/Modules/<NomModule>/`.**
-> `api/app/Http/Controllers/Api/V1/` est vide (sauf `EdgeController`, `EdgeDownloadController`, `SSO/`).
-> `api/app/Services/` est vide (sauf les sous-dossiers non migrés : `Cache/`, `SSO/`, `Security/`, `Tracking/`, `Communication/`, `Payroll/`).
-> `api/app/Models/` contient encore les modèles partagés en cours de migration vers `Domain/Models/`.
+> `api/app/Http/Controllers/Api/V1/` n'existe plus du tout (`EdgeController`/`EdgeDownloadController`
+> vivent désormais dans `Modules/EdgeSync/Interfaces/Api/V1/`).
+> `api/app/Services/` ne contient plus que le shim `TenantManager.php` (`@deprecated`, alias vers
+> `App\Core\Tenant\TenantManager`) et des sous-dossiers de services spécialisés non encore migrés :
+> `Cache/`, `SSO/`, `Security/`, `Tracking/`, `Communication/`, `Payroll/`.
+> `api/app/Models/` n'existe plus du tout — tous les modèles vivent sous `Modules/<Name>/Domain/Models/`
+> ou `Core/<Name>/Domain/Models/`.
 
 ---
 
@@ -51,7 +55,7 @@
 | `App\Http\Controllers\Api\V1\AttendanceController` | `App\Modules\Attendance\Interfaces\Api\V1\AttendanceController` |
 | `App\Http\Controllers\Api\V1\KioskController` | `App\Modules\Attendance\Interfaces\Api\V1\KioskController` |
 | `App\Services\AttendanceService` | `App\Modules\Attendance\Infrastructure\Services\AttendanceService` |
-| `App\DTOs\CheckInDTO` | `App\Modules\Attendance\Application\DTOs\CheckInDTO` _(en cours)_ |
+| `App\DTOs\CheckInDTO` | `App\Modules\Attendance\Application\DTOs\CheckInDTO` |
 
 ### Module Billing
 
@@ -67,7 +71,7 @@
 
 Voir `api/ARCHITECTURE.md` section **"TODO restants"** pour la liste complète et priorisée.
 
-Les points principaux :
-- `api/app/Models/` — 75 modèles à déplacer dans `Modules/*/Domain/Models/` (migration progressive)
-- `api/app/DTOs/` racine — 3 DTOs à finaliser
-- `api/app/Services/{Cache,SSO,Security,Tracking,Communication,Payroll}/` — sous-dossiers spécialisés à décider
+`api/app/Models/` et `api/app/DTOs/` racine sont déjà entièrement supprimés (voir bilan «Nettoyage
+complet» dans `api/ARCHITECTURE.md`). Ce qui reste réellement en coexistence :
+- `api/app/Services/{Cache,SSO,Security,Tracking,Communication,Payroll}/` — sous-dossiers spécialisés à décider (migrer ou garder)
+- `api/app/Exceptions/` — base `DomainException` partagée, encore étendue par certains modules
