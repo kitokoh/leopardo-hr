@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cameras\Domain;
 
 use App\Core\Auth\Domain\Models\Employee;

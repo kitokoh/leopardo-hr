@@ -243,7 +243,18 @@
 | PA2-ARCH-006 | P1 | Etendre module-structure-check a SmartAttendance/EdgeSync/Marketing | CI, `.github/workflows/architecture-check.yml` | boucle generee depuis `app/Modules/*` (pas de liste codee en dur); statut de EdgeSync/Infrastructure et Marketing/Interfaces tranche (mise en conformite ou derogation documentee dans ARCHITECTURE.md) |
 | PA2-ARCH-007 | P1 | Supprimer les controllers dupliques jamais routes | API | Training/TrainingController et Onboarding/OnboardingQrController migres, doublon HR supprime; Planning/ExpenseClaimController et Billing/EstimationController supprimes; garde CI detectant un controller jamais reference dans routes/ |
 | PA2-ARCH-008 | P1 | Point d'enregistrement unique pour les Gate::policy | API/Providers | plus qu'un seul provider enregistre chaque policy; divergence Invoice -> BillingPolicy vs InvoicePolicy tranchee explicitement; test unitaire verifiant l'absence de double enregistrement |
-| PA2-ARCH-009 | P2 | Retrofit declare(strict_types=1) sur modules anciens | API | HR/Payroll/Attendance/Cameras a 100%; garde CI incremental refusant tout nouveau fichier sans la directive |
+| PA2-ARCH-009 | P2 | Retrofit declare(strict_types=1) sur modules anciens | API | **Fait (2026-07-20)** : HR/Payroll/Attendance/Cameras a 100% (81 fichiers corriges) ; garde CI incremental `dev-hub/tools/check-strict-types-new-files.sh` refusant tout nouveau fichier ajoute sans la directive, branche dans `architecture-check.yml` |
+
+## Extension v1.5 - Plan d'action en vigueur 2026-07-20 (voir `13_PLAN_ACTION_EN_VIGUEUR_2026-07-20.md`)
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-OPS-001 | P0 | Corriger l'echec de deploiement Vercel sur `main` | `front/web`, Vercel | dernier commit de `main` deploie avec succes sur Vercel (`GET /repos/.../commits/main/status` = `success`) ; log de l'echec (`dpl_7KBuu8SF3T62PVQ89ZApAFF6towQ`) analyse et cause racine documentee dans la PR |
+| PA2-OPS-002 | P0 | Corriger les findings actionlint/shellcheck sur `mobile-distribute.yml` | `.github/workflows/mobile-distribute.yml` | `SC2129` (ligne ~109, redirections groupees) et `SC2016` (ligne ~276, intention single-quote clarifiee/corrigee) resolus ; check `actionlint (+ shellcheck)` vert sur `main` |
+| PA2-OPS-003 | P0 | Elargir les status checks obligatoires sur `main` | GitHub branch protection | `required_status_checks.contexts` inclut au minimum PHPStan Strict, Module Structure Validator, Frontend ESLint/TypeScript et actionlint (une fois vert), en plus du check existant ; documente dans `07_SUPERVISION_GITHUB_PROJECT.md` |
+| PA2-OPS-004 | P1 | Unifier la documentation d'URL de production | `PILOTAGE.md`, `docs/DEPLOYMENT_PRODUCTION.md`, `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` | une seule URL de production citee et coherente entre les 3 fichiers, correspondant a l'URL reellement en ligne verifiee (`gestionemployer-backend.vercel.app` ou domaine achete) ; `leopardo.com` retire tant qu'il n'est pas achete ; `leopardo-hr.vercel.app` (404 verifie) retire de `PILOTAGE.md` |
+| PA2-OPS-005 | P1 | Trier l'issue GitHub #761 (pointage kiosque par clic ou photo) | Issue #761, `02_BACKLOG_ATOMIQUE.md` | issue liee explicitement a un ticket `PA2-KIO-*` existant ou nouveau `PA2-KIO-005` cree ; decision produit ecrite (mode photo optionnel par entreprise, ou report justifie) ; issue commentee avec le lien vers le ticket |
+| PA2-OPS-006 | P2 | Stabiliser `Mobile Apps CI - Flutter` sur `main` | `.github/workflows/mobile-apps-ci.yml`, mobile apps | taux d'echec du workflow sur les 5 derniers runs de `main` ramene a 0 (ou echecs restants documentes comme flaky avec ticket de suivi) avant tout engagement de date pilote mobile |
 
 ## Extension v1.4 - Audit i18n multilingue reel 2026-07-19 (voir `10_AUDIT_I18N_MULTILINGUE.md`)
 
