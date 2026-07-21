@@ -29,4 +29,24 @@ return [
     // Sessions geo (SmartAttendance)
     'geo_session_approved' => 'Session approuvée. Le pointage a été créé.',
     'geo_session_rejected' => 'Session refusée.',
+
+    // Corrections de pointage (validation manager/RH)
+    'corrections_title' => 'Corrections de pointage',
+    'corrections_subtitle' => 'Validez ou refusez les demandes de correction envoyees par les collaborateurs.',
+    'corrections_empty' => 'Aucune demande de correction pour le moment.',
+    'correction_reason_label' => 'Motif du collaborateur',
+    'correction_requested_check_in' => 'Arrivee demandee',
+    'correction_requested_check_out' => 'Depart demande',
+    'correction_status_pending' => 'En attente',
+    'correction_status_applied' => 'Appliquee',
+    'correction_status_rejected' => 'Refusee',
+    'correction_approve' => 'Approuver',
+    'correction_reject' => 'Refuser',
+    'correction_applied' => 'Correction appliquee au pointage.',
+    'correction_rejected' => 'Correction refusee.',
+    'correction_already_processed' => 'Cette demande de correction a deja ete traitee.',
+    'correction_filter_pending' => 'En attente',
+    'correction_filter_applied' => 'Appliquees',
+    'correction_filter_rejected' => 'Refusees',
+    'correction_filter_all' => 'Toutes',
 ];

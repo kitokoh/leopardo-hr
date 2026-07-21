@@ -43,6 +43,9 @@
                                 <a href="{{ route('hr.invitations.index') }}" class="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700">
                                     Invitations
                                 </a>
+                                <a href="{{ route('attendance-corrections.index') }}" class="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700">
+                                    {{ __('attendance.corrections_title') }}
+                                </a>
                             @endif
                             @if ($me->hasManagerRole('principal', 'superviseur'))
                                 <a href="{{ route('biometrics.index') }}" class="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700">
