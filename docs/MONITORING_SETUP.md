@@ -1,5 +1,10 @@
 # Monitoring & Alertes - Guide Complet
 
+> ⚠️ `leopardo.com` et les adresses `*@leopardo.com` citées dans ce guide sont des cibles
+> aspirationnelles — le domaine n'est pas possede pour ce produit (voir
+> `docs/DEPLOYMENT_PRODUCTION.md`, ticket `PA2-MKT-008`). Adapter au domaine/adresses reels avant
+> de configurer quoi que ce soit en production.
+
 ## Vue d'ensemble
 
 Le système de monitoring de la vitrine Leopardo utilise plusieurs services pour assurer la qualité, la performance et la sécurité:

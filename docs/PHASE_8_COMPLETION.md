@@ -1,5 +1,13 @@
 # Phase 8: Déploiement & Monitoring - Rapport de Complétion
 
+> ⚠️ **Rapport historique figé (implementation initiale du 2026-07-18)** — ne décrit pas l'état
+> actuel des workflows CI/CD. Les fichiers `test.yml`/`lint.yml`/`build.yml` mentionnés
+> ci-dessous n'existent plus sous ces noms dans `.github/workflows/` ; les checks équivalents
+> vivent aujourd'hui dans `tests.yml` (backend), `web-marketing-ci.yml` (vitrine Next.js) et
+> `web-ci.yml` (admin Vue). Le domaine `leopardo.com` cité dans ce rapport n'est pas possédé
+> pour ce produit (voir `docs/DEPLOYMENT_PRODUCTION.md`). Pour l'état réel des workflows, voir
+> `DEVELOPMENT.md` section CI/CD et `.github/workflows/README.md`.
+
 ## Statut: ✅ COMPLÉTÉ
 
 Toutes les 4 tâches de Phase 8 ont été complétées avec succès.
