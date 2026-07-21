@@ -1,5 +1,11 @@
 # Résumé Déploiement & Monitoring - Phase 8
 
+> ⚠️ **Rapport historique figé (2026-07-18)** — la structure `.github/workflows/` decrite plus bas
+> (`test.yml`, `lint.yml`, `build.yml`) ne reflète plus les noms de fichiers reels du repo, et
+> `leopardo.com`/`staging.leopardo.com` ne sont pas des domaines possedes pour ce produit (voir
+> `docs/DEPLOYMENT_PRODUCTION.md` et `docs/PHASE_8_COMPLETION.md`). Pour l'etat courant, voir
+> `PILOTAGE.md` et `.github/workflows/README.md`.
+
 ## Vue d'ensemble
 
 La Phase 8 (Déploiement & Monitoring) complète la restructuration de la vitrine Leopardo en mettant en place:
