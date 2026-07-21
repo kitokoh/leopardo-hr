@@ -29,4 +29,24 @@ return [
     // Geo sessions (SmartAttendance)
     'geo_session_approved' => 'Session approved. The attendance record has been created.',
     'geo_session_rejected' => 'Session rejected.',
+
+    // Attendance corrections (manager/HR review)
+    'corrections_title' => 'Attendance corrections',
+    'corrections_subtitle' => 'Approve or reject correction requests submitted by employees.',
+    'corrections_empty' => 'No correction request at the moment.',
+    'correction_reason_label' => 'Employee reason',
+    'correction_requested_check_in' => 'Requested check-in',
+    'correction_requested_check_out' => 'Requested check-out',
+    'correction_status_pending' => 'Pending',
+    'correction_status_applied' => 'Applied',
+    'correction_status_rejected' => 'Rejected',
+    'correction_approve' => 'Approve',
+    'correction_reject' => 'Reject',
+    'correction_applied' => 'Correction applied to the attendance record.',
+    'correction_rejected' => 'Correction rejected.',
+    'correction_already_processed' => 'This correction request has already been processed.',
+    'correction_filter_pending' => 'Pending',
+    'correction_filter_applied' => 'Applied',
+    'correction_filter_rejected' => 'Rejected',
+    'correction_filter_all' => 'All',
 ];
