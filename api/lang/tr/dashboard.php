@@ -10,4 +10,10 @@ return [
     'biometrics_kiosks'   => 'Biyometri / kiosk',
     'invitations'         => 'Davetler',
     'create_hr_employee'  => 'İK / çalışan oluştur',
+    'column_name'         => 'Ad',
+    'column_arrival'      => 'Giriş',
+    'column_departure'    => 'Çıkış',
+    'column_hours'        => 'Saat',
+    'column_due'          => 'Tutar',
+    'column_details'      => 'Detayları gör →',
 ];
