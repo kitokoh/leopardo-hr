@@ -85,7 +85,10 @@ Objectif 30j   : 3-5 clients payants, MRR 150-250€
 
 ```
 API           : gestionemployerbackend.onrender.com (Render Web Service)
-Vitrine       : leopardo-hr.vercel.app (Vercel)
+Vitrine       : gestionemployer-backend.vercel.app (Vercel) — `leopardo-hr.vercel.app` renvoyait 404
+                (verifie 2026-07-21) et a ete retire ; `leopardo.com` n'est PAS possede pour ce
+                produit (nom de domaine tiers), voir `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md`
+                tickets PA2-MKT-008/PA2-OPS-004 et `docs/DEPLOYMENT_PRODUCTION.md`
 Admin         : Cloudflare Pages
 BDD           : PostgreSQL 16 (Render managed)
 Cache/Queues  : Upstash Redis (TLS) — queues: default, pdf, notifications, payroll, webhooks
