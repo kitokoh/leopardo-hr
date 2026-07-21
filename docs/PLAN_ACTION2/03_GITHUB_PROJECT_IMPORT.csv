@@ -141,6 +141,7 @@ Title,Priority,Area,Surface,Dependencies,Acceptance Criteria
 "PA2-AUTO-008 Regles agents juniors","P2","Automation","AGENTS.md; docs","PA2-AUTO-001","Choisir ticket eviter duplication demander review"
 "PA2-AUTO-009 Nettoyage branches stale","P2","Automation","docs; scripts","PA2-AUTO-001","Listing branches fusionnees stale suppression manuelle controlee"
 "PA2-AUTO-010 Audit post-merge automatique","P2","Automation","GitHub Actions","PA2-AUTO-001","Verifie changelog matrice OpenAPI i18n selon fichiers touches"
+"PA2-AUTO-011 Garde-fou collision de claim multi-agent","P0","Automation","GitHub Actions; dev-hub/tools","PA2-AUTO-001","Toute PR referencant PA2-* echoue si une autre PR ouverte reference le meme ID ou si l issue est assignee a un autre agent que l auteur; avertissement non bloquant si issue sans assignee"
 "PA2-SEC-001 Rotation secret Redis Upstash expose en historique git","P0","Security","Infra; Render","","Mot de passe Upstash tourne REDIS_URL/REDIS_PASSWORD mis a jour sur Render ancien secret invalide verifie"
 "PA2-SEC-002 RBAC scope departement reel pour manager_role=dept","P0","Security","API; Policies","","EmployeePolicy AttendancePolicy SchedulePolicy EvaluationPolicy DepartmentPolicy filtrent par department_id/manager_id quand manager_role=dept avec tests dedies"
 "PA2-SEC-003 RBAC scope superviseur assigned-only reel","P1","Security","API; Policies","PA2-SEC-002","manager_role=superviseur limite a une liste explicite d employes/departements assignes pas company-wide"

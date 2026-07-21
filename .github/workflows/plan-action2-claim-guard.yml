@@ -1,0 +1,32 @@
+name: PLAN_ACTION2 Claim Guard
+
+# PA2-AUTO-011: garde-fou GitHub-native pour eviter que deux agents
+# travaillent le meme ticket PA2-* sans le savoir (suite de
+# docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md). Verifie:
+#   1. qu'aucune autre PR ouverte ne reference deja le meme ID PA2-*;
+#   2. que l'issue GitHub du ticket (si trouvee) est assignee a l'auteur
+#      de la PR, ou avertit si elle n'a aucun assignee.
+# Ne bloque pas les PR qui ne referencent aucun ID PA2-* (hors perimetre).
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  claim-guard:
+    name: Check PA2 claim collisions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run claim collision check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/check-plan-action2-claim.sh
+          dev-hub/tools/check-plan-action2-claim.sh "${{ github.repository }}" "${{ github.event.pull_request.number }}"
