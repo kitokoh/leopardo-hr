@@ -50,7 +50,12 @@ If you prefer running Laravel directly:
 
 ## 📱 Mobile App (Flutter)
 
-1.  Navigate to the mobile directory (e.g., `front/mobile`).
+> The legacy monolithic mobile app (`front/mobile/`) was removed from the repo (PR #754). Launch
+> mobile apps now live under `front/mobile_apps/*` (see `front/mobile_apps/README.md`):
+> `leopardo_core` (shared package), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`,
+> `leopardo_platform_admin`.
+
+1.  Navigate to the app you want, e.g. `front/mobile_apps/leopardo_employee/`.
 2.  Run `flutter pub get`.
 3.  Launch with `flutter run`.
 

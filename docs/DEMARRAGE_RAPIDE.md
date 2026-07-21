@@ -42,7 +42,12 @@ Le dashboard est intégré au projet Laravel (Blade + Tailwind).
 
 ## 3. 📱 Application Mobile (Flutter)
 
-1.  Ouvrez un terminal dans le dossier `front/mobile/`.
+> Le mobile historique `front/mobile/` a été retiré du dépôt (PR #754). Les apps mobiles de
+> lancement vivent sous `front/mobile_apps/*` (voir `front/mobile_apps/README.md`) : `leopardo_core`
+> (package partagé), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`,
+> `leopardo_platform_admin`.
+
+1.  Ouvrez un terminal dans l'app mobile voulue, par ex. `front/mobile_apps/leopardo_employee/`.
 2.  Installez les dépendances :
     ```bash
     flutter pub get
@@ -69,7 +74,7 @@ Utilisez ces comptes pour tester les différentes fonctionnalités du MVP. Le mo
 ## 📂 Structure du Projet
 
 - `/api` : Backend Laravel 11.
-- `/mobile` : Application Flutter.
+- `/front/mobile_apps` : Applications Flutter (employee, manager, HR, platform admin, package `leopardo_core` partagé).
 - `/docs` : Documentation complète du projet (specs, ADR, contrats API).
 - `PILOTAGE.md` : **Source de vérité** de l'état actuel du projet.
 
