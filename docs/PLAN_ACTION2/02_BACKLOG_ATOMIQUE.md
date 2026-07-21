@@ -213,7 +213,7 @@
 |---|---|---|---|---|
 | PA2-AUTO-001 | P0 | Import GitHub Project fiable | docs/scripts | CSV valide, ID uniques, colonnes compatibles Project |
 | PA2-AUTO-002 | P0 | Validation dependances tickets | dev-hub/tools | script refuse dependance inconnue ou cycle evident |
-| PA2-AUTO-003 | P1 | Generation issues depuis CSV | scripts/docs | dry-run, labels, milestone/release, owner optionnel |
+| PA2-AUTO-003 | P1 | Generation issues depuis CSV | scripts/docs | **Fait** : `scripts/generate-plan-action2-issues.sh` (dry-run par defaut, `--apply`, `--milestone`, `--owner`, `--label-filter`) |
 | PA2-AUTO-004 | P1 | Check PR avec ID PA2 | GitHub Actions | PR produit sans ID PA2 signalee sauf docs/chore explicite |
 | PA2-AUTO-005 | P1 | Rapport hebdo avancement | GitHub Actions/docs | liste merges, bloques, stale, prochains P0 |
 | PA2-AUTO-006 | P1 | Template PR PA2 | `.github` | surfaces, risques, tests, contrat API, screenshots si UI |
