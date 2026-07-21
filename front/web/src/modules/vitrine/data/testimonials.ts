@@ -4,7 +4,13 @@ export type Testimonial = {
   name: string
   role: string
   company: string
-  avatar: string
+  /**
+   * PA2-MKT-010: no real customer photos exist yet. Omit avatar entirely
+   * (TestimonialCard falls back to an initials avatar) instead of
+   * pointing at placeholder files that were never added to
+   * public/avatars, which rendered as a broken image icon in production.
+   */
+  avatar?: string
   content: string
   rating: number
 }
@@ -15,7 +21,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'DRH',
       company: 'TechAfrika',
-      avatar: '/avatars/avatar-1.webp',
       content: 'Leopardo RH a transforme notre gestion du personnel. Le gain de temps est phenomenal, surtout sur la paie et le pointage.',
       rating: 5,
     },
@@ -23,7 +28,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Mehdi Benali',
       role: 'CEO',
       company: 'Atlas Digital',
-      avatar: '/avatars/avatar-2.webp',
       content: "L'interface est intuitive et le support est excellent. Nos equipes l'ont adoptee tres vite.",
       rating: 5,
     },
@@ -31,7 +35,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Fatou Sow',
       role: 'Responsable RH',
       company: 'SenLogistics',
-      avatar: '/avatars/avatar-3.webp',
       content: 'Le pointage biometrisque et les anomalies manager ont change notre discipline terrain.',
       rating: 5,
     },
@@ -39,7 +42,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Ibrahim Toure',
       role: 'Directeur Operations',
       company: 'BuildAfrica',
-      avatar: '/avatars/avatar-4.webp',
       content: 'Le mode hors ligne est crucial pour nos sites. La synchronisation automatique nous rassure enormement.',
       rating: 5,
     },
@@ -49,7 +51,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'HR Director',
       company: 'TechAfrika',
-      avatar: '/avatars/avatar-1.webp',
       content: 'Leopardo RH transformed our people operations. The time savings on payroll and attendance are dramatic.',
       rating: 5,
     },
@@ -57,7 +58,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Mehdi Benali',
       role: 'CEO',
       company: 'Atlas Digital',
-      avatar: '/avatars/avatar-2.webp',
       content: 'The product is intuitive and the support team is sharp. Adoption across the company was extremely fast.',
       rating: 5,
     },
@@ -65,7 +65,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Fatou Sow',
       role: 'HR Manager',
       company: 'SenLogistics',
-      avatar: '/avatars/avatar-3.webp',
       content: 'Biometric attendance and anomaly tracking gave our managers the field visibility they were missing.',
       rating: 5,
     },
@@ -73,7 +72,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Ibrahim Toure',
       role: 'Operations Director',
       company: 'BuildAfrica',
-      avatar: '/avatars/avatar-4.webp',
       content: 'Offline mode is essential for our sites. Automatic sync removed a lot of operational stress.',
       rating: 5,
     },
@@ -83,7 +81,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'IK Direktoru',
       company: 'TechAfrika',
-      avatar: '/avatars/avatar-1.webp',
       content: 'Leopardo RH, personel operasyonlarimizi donusturdu. Bordro ve devam takibinde buyuk zaman kazandik.',
       rating: 5,
     },
@@ -91,7 +88,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Mehdi Benali',
       role: 'CEO',
       company: 'Atlas Digital',
-      avatar: '/avatars/avatar-2.webp',
       content: 'Arayuz cok sezgisel ve destek ekibi cok guclu. Sirket genelinde benimsenmesi hizli oldu.',
       rating: 5,
     },
@@ -99,7 +95,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Fatou Sow',
       role: 'IK Muduru',
       company: 'SenLogistics',
-      avatar: '/avatars/avatar-3.webp',
       content: 'Biyometrik takip ve anomali gorunurlugu saha disiplinimizi ciddi bicimde iyilestirdi.',
       rating: 5,
     },
@@ -107,7 +102,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Ibrahim Toure',
       role: 'Operasyon Direktoru',
       company: 'BuildAfrica',
-      avatar: '/avatars/avatar-4.webp',
       content: 'Cevrimdisi mod sahalarimiz icin kritik. Otomatik esitleme buyuk rahatlik sagliyor.',
       rating: 5,
     },
@@ -117,7 +111,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'مديرة الموارد البشرية',
       company: 'TechAfrika',
-      avatar: '/avatars/avatar-1.webp',
       content: 'Leopardo RH غير طريقة ادارتنا للموظفين، خاصة في الرواتب والحضور.',
       rating: 5,
     },
@@ -125,7 +118,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Mehdi Benali',
       role: 'الرئيس التنفيذي',
       company: 'Atlas Digital',
-      avatar: '/avatars/avatar-2.webp',
       content: 'الواجهة واضحة جدا وفريق الدعم ممتاز، وتم اعتماد النظام بسرعة داخل الشركة.',
       rating: 5,
     },
@@ -133,7 +125,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Fatou Sow',
       role: 'مسؤولة الموارد البشرية',
       company: 'SenLogistics',
-      avatar: '/avatars/avatar-3.webp',
       content: 'الحضور البيومتري ومتابعة الانحرافات اعطت المدراء رؤية ميدانية فورية.',
       rating: 5,
     },
@@ -141,7 +132,6 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Ibrahim Toure',
       role: 'مدير العمليات',
       company: 'BuildAfrica',
-      avatar: '/avatars/avatar-4.webp',
       content: 'الوضع دون اتصال ضروري لمواقعنا، والمزامنة التلقائية خففت الضغط التشغيلي كثيرا.',
       rating: 5,
     },
