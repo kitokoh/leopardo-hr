@@ -81,7 +81,7 @@ api/                    # Backend Laravel 12 (PHP 8.4)
 
 front/                  # Frontends
 ├── admin-dashboard/    # Dashboard super-admin plateforme (Vue.js 3)
-├── web/                # Vitrine + dashboard SaaS public (Next.js 15)
+├── web/                # Vitrine + dashboard SaaS public (Next.js 16)
 ├── web-offline/        # PWA offline-first bridge Edge (Next.js)
 ├── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin
 └── zkteco-kiosk/       # Kiosque pointage biometrique (HTML/JS)
