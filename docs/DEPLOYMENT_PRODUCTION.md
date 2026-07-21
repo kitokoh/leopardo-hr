@@ -4,7 +4,7 @@
 
 L'environnement production est l'environnement public où les utilisateurs finaux accèdent à la vitrine. Les déploiements en production doivent être soigneusement planifiés et testés.
 
-**URL Production**: https://leopardo.com
+**URL Production**: https://gestionemployer-backend.vercel.app (domaine officiel `leopardo.com` non achete ; ne pas le citer comme URL production tant qu'il ne l'est pas — voir `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` PA2-MKT-008/PA2-OPS-004)
 
 ## Configuration Vercel Production
 
@@ -30,28 +30,33 @@ Dans le dashboard Vercel (https://vercel.com/dashboard):
 2. Ajouter les variables suivantes:
 
 ```
-NEXT_PUBLIC_API_URL=https://api.leopardo.com/api/v1
+# Valeurs actuelles reellement en ligne (domaine officiel `leopardo.com` pas encore achete) :
+NEXT_PUBLIC_API_URL=https://gestionemployerbackend.onrender.com/api/v1
 NEXT_PUBLIC_GA_ID=G-PRODUCTION123456
 NEXT_PUBLIC_MIXPANEL_TOKEN=production_token_abc789
 SENDGRID_API_KEY=<votre_clé_sendgrid_production>
-NEXT_PUBLIC_SITE_URL=https://leopardo.com
+NEXT_PUBLIC_SITE_URL=https://gestionemployer-backend.vercel.app
 NEXT_PUBLIC_SITE_NAME=Leopardo
 NEXT_PUBLIC_ENVIRONMENT=production
 NEXT_PUBLIC_SHOW_STAGING_BANNER=false
 DATABASE_URL=<votre_url_db_production>
 NEXTAUTH_SECRET=<votre_secret_nextauth_production>
-NEXTAUTH_URL=https://leopardo.com
+NEXTAUTH_URL=https://gestionemployer-backend.vercel.app
 NEXT_PUBLIC_SENTRY_DSN=<votre_sentry_dsn_production>
 NEXT_PUBLIC_ENABLE_ERROR_TRACKING=true
 NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING=true
 ```
 
+Si/quand `leopardo.com` (ou un autre domaine officiel) est achete et pointe reellement vers ce projet Vercel, remplacer les valeurs ci-dessus et suivre la section "Configurer le domaine personnalise" plus bas.
+
 ### 3. Configurer le domaine personnalisé
 
-#### Option A: Domaine principal (leopardo.com)
+#### Option A: Domaine principal (une fois achete, ex. `leopardo-rh.com`)
+
+Cette section est un guide generique pour brancher un futur domaine officiel sur ce projet Vercel. Ne pas utiliser `leopardo.com` comme exemple : ce domaine appartient a une entreprise americaine de construction sans rapport avec ce produit et n'a jamais ete achete pour Leopardo RH (voir `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` pour les noms de domaine recommandes, ex. `www.leopardo-rh.com`).
 
 1. Dans Vercel Dashboard → **Domains**
-2. Ajouter le domaine `leopardo.com`
+2. Ajouter le domaine achete (ex. `leopardo-rh.com`)
 3. Configurer les DNS records:
 
 ```
@@ -72,7 +77,7 @@ Name: @
 Value: cname.vercel-dns.com
 ```
 
-#### Option B: Sous-domaine (www.leopardo.com)
+#### Option B: Sous-domaine (ex. www.leopardo-rh.com)
 
 ```
 Type: CNAME
