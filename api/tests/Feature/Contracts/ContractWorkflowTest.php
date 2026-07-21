@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Contracts;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\ContractAmendment;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -350,6 +350,111 @@ class ContractWorkflowTest extends TestCase
         $response->assertJsonCount(1, 'data');
     }
 
+    public function test_self_service_my_active_contract_returns_the_currently_active_one(): void
+    {
+        [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        Sanctum::actingAs($employee);
+
+        Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'contract_type' => 'cdd',
+            'start_date' => now()->subYears(2)->toDateString(),
+            'end_date' => now()->subYear()->toDateString(),
+            'base_salary' => 40000,
+            'status' => 'expired',
+            'created_by' => $manager->id,
+        ]);
+        $activeContract = Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'contract_type' => 'cdi',
+            'start_date' => now()->subMonths(3)->toDateString(),
+            'end_date' => null,
+            'base_salary' => 60000,
+            'status' => 'active',
+            'created_by' => $manager->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/me/contract');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.id', $activeContract->id);
+        $response->assertJsonPath('data.status', 'active');
+    }
+
+    public function test_self_service_my_active_contract_falls_back_to_most_recent_when_none_active(): void
+    {
+        [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        Sanctum::actingAs($employee);
+
+        Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'contract_type' => 'cdd',
+            'start_date' => now()->subYears(2)->toDateString(),
+            'end_date' => now()->subYears(1)->toDateString(),
+            'base_salary' => 40000,
+            'status' => 'expired',
+            'created_by' => $manager->id,
+        ]);
+        $mostRecent = Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'contract_type' => 'cdd',
+            'start_date' => now()->subMonths(6)->toDateString(),
+            'end_date' => now()->subMonths(1)->toDateString(),
+            'base_salary' => 45000,
+            'status' => 'expired',
+            'created_by' => $manager->id,
+        ]);
+
+        $response = $this->getJson('/api/v1/me/contract');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.id', $mostRecent->id);
+    }
+
+    public function test_self_service_my_active_contract_returns_404_when_none_exist(): void
+    {
+        [, , $employee] = $this->makeManagerAndCompany();
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/contract');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_self_service_my_active_contract_is_scoped_to_the_actor(): void
+    {
+        [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        $coworker = Employee::query()->create([
+            'company_id' => $company->id,
+            'matricule' => 'EMP-C04',
+            'first_name' => 'Coworker',
+            'last_name' => 'Two',
+            'email' => 'coworker2@contract-co.test',
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $coworker->id,
+            'contract_type' => 'cdi',
+            'start_date' => now()->subMonths(1)->toDateString(),
+            'base_salary' => 55000,
+            'status' => 'active',
+            'created_by' => $manager->id,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/contract');
+
+        $response->assertStatus(404);
+    }
+
     public function test_expiring_contracts_are_tenant_scoped(): void
     {
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
@@ -420,4 +525,3 @@ class ContractWorkflowTest extends TestCase
         $this->getJson("/api/v1/contracts/{$contract->id}/amendments")->assertForbidden();
     }
 }
-
