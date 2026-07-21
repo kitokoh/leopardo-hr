@@ -12,6 +12,12 @@ export interface FeaturesSectionProps {
   };
   features: FeatureCardProps[];
   columns?: 2 | 3 | 4;
+  /**
+   * Optional anchor id so in-page links (e.g. Footer "Fonctionnalites"
+   * link to `/#fonctionnalites`) resolve to a real DOM node instead of
+   * a dead hash fragment. See PA2-MKT-013.
+   */
+  id?: string;
 }
 
 export function FeaturesSection({
@@ -20,6 +26,7 @@ export function FeaturesSection({
   badge,
   features,
   columns = 3,
+  id,
 }: FeaturesSectionProps) {
   const gridColsClass = {
     2: 'md:grid-cols-2',
@@ -28,7 +35,7 @@ export function FeaturesSection({
   }[columns];
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section id={id} className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 via-white to-slate-50/50 dark:from-slate-900/50 dark:via-slate-950 dark:to-slate-900/50" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

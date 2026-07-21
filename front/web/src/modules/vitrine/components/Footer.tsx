@@ -14,9 +14,17 @@ import { NewsletterForm } from './NewsletterForm'
 function getFooterHref(sectionIndex: number, linkIndex: number): string {
   const key = `${sectionIndex}-${linkIndex}`
   const routes: Record<string, string> = {
-    '0-0': '#fonctionnalites',
+    // PA2-MKT-013: the Footer renders on every landing page (26+ routes),
+    // not just `/`. A bare `#fonctionnalites` hash only ever resolves
+    // against the *current* page's DOM, so on any page other than the
+    // homepage it pointed at a non-existent anchor. `/#fonctionnalites`
+    // navigates to the homepage first, where the Features section now
+    // carries a matching `id="fonctionnalites"` (see FeaturesSection).
+    '0-0': '/#fonctionnalites',
     '0-1': '/pricing',
     '0-2': '/integrations',
+    // `/integrations#api` also had no matching `id="api"` on that page;
+    // the integrations page now exposes one on its main section.
     '0-3': '/integrations#api',
     '0-4': '/changelog',
     '0-5': '/download',
