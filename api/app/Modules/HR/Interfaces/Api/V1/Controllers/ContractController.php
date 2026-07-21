@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
+use App\Modules\Cabinet\Infrastructure\Services\ContractPdfGenerator;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\ContractAmendment;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cabinet\Infrastructure\Services\ContractPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -352,6 +352,47 @@ class ContractController extends Controller
         return ContractResource::collection($contracts)->response();
     }
 
+    /**
+     * Return the authenticated employee's active contract, i.e. the one
+     * whose period covers today (status active/suspended, start_date <= now
+     * and end_date null or >= now). Falls back to the most recently started
+     * contract when none is currently active, so the endpoint still returns
+     * something useful for employees between contracts.
+     */
+    public function myActiveContract(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $baseQuery = Contract::query()
+            ->where('company_id', $actor->company_id)
+            ->where('employee_id', $actor->id)
+            ->with(['department:id,name', 'position:id,name']);
+
+        $today = now()->toDateString();
+
+        $contract = (clone $baseQuery)
+            ->whereIn('status', ['active', 'suspended'])
+            ->where('start_date', '<=', $today)
+            ->where(function ($query) use ($today) {
+                $query->whereNull('end_date')->orWhere('end_date', '>=', $today);
+            })
+            ->orderByDesc('start_date')
+            ->first();
+
+        if ($contract === null) {
+            $contract = (clone $baseQuery)
+                ->orderByDesc('start_date')
+                ->first();
+        }
+
+        if ($contract === null) {
+            return response()->json(['message' => 'No contract found for this employee.'], 404);
+        }
+
+        return (new ContractResource($contract))->response();
+    }
+
     public function generatePdf(Request $request, Contract $contract, ContractPdfGenerator $generator)
     {
         /** @var Employee $actor */
@@ -371,4 +412,3 @@ class ContractController extends Controller
         ]);
     }
 }
-
