@@ -23,6 +23,10 @@ interface ReportConfig {
   color: string;
   endpoint: string;
   params: { key: string; label: string; type: string }[];
+  /** True when the backend renders a real PDF for this report (format=pdf). Otherwise the raw JSON data is exported as a .json file. */
+  supportsPdf?: boolean;
+  /** Build the querystring from the collected param values (defaults to simple key=value join). */
+  buildQuery?: (values: Record<string, string>) => string;
 }
 
 const reports: ReportConfig[] = [
@@ -32,10 +36,16 @@ const reports: ReportConfig[] = [
     description: 'Rapport mensuel des presences, retards et absences par employe.',
     icon: Clock,
     color: 'text-security-dark bg-security-light',
-    endpoint: '/reports/attendance-summary',
+    endpoint: '/attendance/monthly-report',
     params: [
       { key: 'month', label: 'Mois', type: 'month' },
     ],
+    supportsPdf: true,
+    buildQuery: values => {
+      const qs = new URLSearchParams({ format: 'pdf' });
+      if (values.month) qs.set('month', values.month);
+      return qs.toString();
+    },
   },
   {
     id: 'payroll-summary',
@@ -47,6 +57,15 @@ const reports: ReportConfig[] = [
     params: [
       { key: 'period', label: 'Periode', type: 'month' },
     ],
+    buildQuery: values => {
+      const qs = new URLSearchParams();
+      if (values.period) {
+        const [year, month] = values.period.split('-');
+        if (year) qs.set('year', year);
+        if (month) qs.set('month', String(Number(month)));
+      }
+      return qs.toString();
+    },
   },
   {
     id: 'leave-balances',
@@ -54,7 +73,7 @@ const reports: ReportConfig[] = [
     description: 'Etat des soldes de conges pour tous les employes.',
     icon: Calendar,
     color: 'text-ia-dark bg-ia-light',
-    endpoint: '/reports/leave-balances',
+    endpoint: '/leave-balances',
     params: [
       { key: 'year', label: 'Annee', type: 'number' },
     ],
@@ -62,14 +81,11 @@ const reports: ReportConfig[] = [
   {
     id: 'headcount',
     title: 'Effectifs',
-    description: 'Evolution des effectifs, entrees et sorties par periode.',
+    description: 'Repartition des effectifs actifs par departement, type de contrat et genre.',
     icon: Users,
     color: 'text-amber-600 bg-amber-50',
     endpoint: '/reports/headcount',
-    params: [
-      { key: 'from', label: 'Du', type: 'date' },
-      { key: 'to', label: 'Au', type: 'date' },
-    ],
+    params: [],
   },
   {
     id: 'training-progress',
@@ -77,10 +93,8 @@ const reports: ReportConfig[] = [
     description: 'Taux de participation et completion des formations.',
     icon: TrendingUp,
     color: 'text-brand-600 bg-brand-50',
-    endpoint: '/reports/training-progress',
-    params: [
-      { key: 'year', label: 'Annee', type: 'number' },
-    ],
+    endpoint: '/reports/training-completion',
+    params: [],
   },
   {
     id: 'contract-expiry',
@@ -88,7 +102,7 @@ const reports: ReportConfig[] = [
     description: 'Contrats arrivant a echeance dans les 30, 60, 90 prochains jours.',
     icon: FileText,
     color: 'text-red-500 bg-red-50',
-    endpoint: '/reports/contract-expiry',
+    endpoint: '/contracts/expiring',
     params: [
       { key: 'days', label: 'Jours', type: 'number' },
     ],
@@ -112,14 +126,29 @@ export default function ReportsPage() {
     setResults(prev => ({ ...prev, [report.id]: '' }));
     try {
       const queryParams = params[report.id] || {};
-      const qs = Object.entries(queryParams).filter(([, v]) => v).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+      const qs = report.buildQuery
+        ? report.buildQuery(queryParams)
+        : Object.entries(queryParams).filter(([, v]) => v).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
       const url = `${report.endpoint}${qs ? `?${qs}` : ''}`;
       const res = await apiFetch(url);
-      const blob = await res.blob();
+
+      let blob: Blob;
+      let extension: string;
+      if (report.supportsPdf) {
+        // Backend renders a real PDF for this report.
+        blob = await res.blob();
+        extension = 'pdf';
+      } else {
+        // Backend returns JSON only (no PDF renderer exists for this report yet);
+        // export the raw data as pretty-printed JSON instead of faking a PDF download.
+        const json = await res.json();
+        blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+        extension = 'json';
+      }
       const downloadUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = downloadUrl;
-      a.download = `${report.id}-${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.download = `${report.id}-${new Date().toISOString().slice(0, 10)}.${extension}`;
       a.click();
       URL.revokeObjectURL(downloadUrl);
       setResults(prev => ({ ...prev, [report.id]: 'Rapport telecharge avec succes.' }));
