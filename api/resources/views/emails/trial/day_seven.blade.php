@@ -1,22 +1,22 @@
 @component('mail::message')
-# Votre essai se termine bientôt, {{ $managerName }}
+# {{ str_replace(':name', $managerName, trans('emails.trial_day7_heading')) }}
 
-Vous gérez actuellement **{{ $employeeCount }}** employé(s) sur **{{ $company->name }}** avec Leopardo RH.
+{!! str_replace([':count', ':company'], [(string) $employeeCount, $company->name], trans('emails.trial_day7_intro')) !!}
 
-Pour continuer à profiter de toutes les fonctionnalités sans interruption, passez à un plan payant dès maintenant.
+{{ __('emails.trial_day7_body') }}
 
 @component('mail::button', ['url' => $upgradeUrl])
-Passer à un plan payant
+{{ __('emails.trial_day7_upgrade_button') }}
 @endcomponent
 
-Vous voulez comparer nos offres avant de vous décider ?
+{{ __('emails.trial_day7_compare_intro') }}
 
 @component('mail::button', ['url' => $pricingUrl])
-Voir les tarifs
+{{ __('emails.trial_day7_pricing_button') }}
 @endcomponent
 
-Une question ? Répondez directement à cet email, notre équipe est là pour vous aider.
+{{ __('emails.trial_day7_help') }}
 
-Cordialement,
-L'équipe Leopardo RH
+{{ __('emails.regards') }}
+{{ str_replace(':company', 'Leopardo RH', trans('emails.team_signature')) }}
 @endcomponent
