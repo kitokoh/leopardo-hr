@@ -41,3 +41,17 @@ PA2-AUTO-003 : génère les issues GitHub manquantes à partir du CSV canonique
 ```
 
 Voir `--help` pour toutes les options (`--milestone`, `--owner`, `--csv`).
+
+## list-stale-branches.sh
+
+PA2-AUTO-009 : liste les branches distantes deja fusionnees dans `main` (safe a supprimer) et les branches non fusionnees inactives depuis N jours (a examiner manuellement). Ne supprime rien par defaut.
+
+```bash
+# Lister uniquement (aucune ecriture)
+./scripts/list-stale-branches.sh
+
+# Proposer la suppression interactive (confirmation y/N par branche) des branches fusionnees
+./scripts/list-stale-branches.sh --delete-merged
+```
+
+Voir `--help` pour toutes les options (`--remote`, `--base`, `--stale-days`).
