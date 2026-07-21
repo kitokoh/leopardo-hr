@@ -137,7 +137,8 @@ export default function IntegrationsPage() {
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      {/* id="api": PA2-MKT-013 — Footer's "API" link points to /integrations#api */}
+      <section id="api" className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 via-white to-white dark:from-emerald-950/20 dark:via-slate-950 dark:to-slate-950" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
