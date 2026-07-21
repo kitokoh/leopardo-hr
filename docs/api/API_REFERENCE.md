@@ -17,6 +17,7 @@ Our API follows REST principles, uses JSON for communication, and returns standa
 -   **OpenAPI 3.0 Spec:** [Download api/openapi.yaml](../../api/openapi.yaml)
 -   **Swagger UI:** Access `/docs` on any running instance to explore and test the API in real-time.
 -   **Postman Collection:** A pre-configured collection is available in the [`/postman`](../../postman/) directory.
+-   **Error Codes:** See [ERROR_CODES.md](./ERROR_CODES.md) for the full list of custom error codes, their HTTP status, and JSON response shape.
 
 ---
 
