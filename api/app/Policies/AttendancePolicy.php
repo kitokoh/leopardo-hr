@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 
 class AttendancePolicy
 {
@@ -32,8 +32,8 @@ class AttendancePolicy
             return false;
         }
 
-        if ($actor->isDepartmentScoped()) {
-            return $actor->managesDepartmentOf($target);
+        if ($actor->isTeamScoped()) {
+            return $actor->managesTeamMemberOf($target);
         }
 
         return true;
@@ -44,4 +44,3 @@ class AttendancePolicy
         return $actor->hasManagerRole('principal', 'rh');
     }
 }
-
