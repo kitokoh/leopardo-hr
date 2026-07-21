@@ -4,6 +4,18 @@
 
 Un agent prend un ticket `PA2-*`, le livre completement, ouvre une PR courte, attend les checks, puis merge. Un agent ne doit pas prendre un second ticket dependant tant que le premier n'est pas merge ou explicitement marque bloque.
 
+**Un agent ne doit jamais committer directement sur `main` pour signaler qu'il prend une tache.** `main` reste reserve aux merges de PR completes et verifiees par CI (voir section "Signal de prise de tache" ci-dessous pour le mecanisme correct).
+
+## Signal de prise de tache (claim)
+
+Pour eviter que deux agents travaillent sur le meme ticket, ou qu'un agent perde une tache deja livree, utiliser uniquement les mecanismes GitHub natifs suivants, jamais un commit direct sur `main` :
+
+1. **Prise (claim)** : l'agent s'auto-assigne l'issue GitHub correspondant au ticket `PA2-X` (`gh issue edit <N> --add-assignee <moi>`). C'est le signal officiel "je prends cette tache".
+2. **En cours** : l'agent cree sa branche `codex/pa2-<id-court>-<slug>` puis ouvre immediatement une PR en **draft** (`gh pr create --draft`) qui referme l'issue au merge (`Closes #N` dans la description). La PR draft est visible de tous via `gh pr list --draft` et montre l'avancement sans jamais toucher `main`.
+3. **Termine** : une fois le travail complet, l'agent passe la PR en "Ready for review" (`gh pr ready`), attend les checks CI obligatoires, puis merge. Le merge sur `main` est la **seule preuve de livraison** valable.
+4. **Disponibilite** : un ticket sans issue assignee ni PR draft ouverte est considere disponible pour n'importe quel agent. Avant de prendre un ticket, verifier `gh issue view <N>` (champ assignee) et `gh pr list --search "PA2-X"` pour eviter un doublon.
+5. **Abandon/blocage** : si un agent doit abandonner une tache prise, il retire son assignation de l'issue et ferme ou marque la PR draft comme bloquee (commentaire explicite), pour liberer le ticket.
+
 ## Format de branche
 
 Utiliser:
