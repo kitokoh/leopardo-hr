@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/mdx';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
 
 function localizedAlternates(path: string) {
