@@ -16,6 +16,7 @@ return [
     'ALREADY_CHECKED_IN' => 'You have already checked in today.',
     'MISSING_CHECK_IN' => 'Please check in first before checking out.',
     'ALREADY_CHECKED_OUT' => 'You have already checked out today.',
+    'PUNCH_PHOTO_REQUIRED' => 'A photo is required to punch in or out at your company.',
 
     // Finance
     'PLAN_CAMERAS_REQUIRED' => 'Your plan does not include the cameras module. Upgrade to Business.',

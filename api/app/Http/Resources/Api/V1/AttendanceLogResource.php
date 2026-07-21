@@ -44,6 +44,7 @@ class AttendanceLogResource extends JsonResource
             'work_type' => $this->work_type ?? 'normal',
             'punch_note' => $this->punch_note,
             'punch_meta' => $this->punch_meta,
+            'punch_photo_url' => $this->punch_photo_path ? route('attendance.punch-photo', $this->id) : null,
             'source_device_code' => $this->source_device_code,
             'hours_worked' => $this->hours_worked,
             'overtime_hours' => $this->overtime_hours,

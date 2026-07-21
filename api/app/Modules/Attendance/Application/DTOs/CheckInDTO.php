@@ -6,6 +6,7 @@ namespace App\Modules\Attendance\Application\DTOs;
 
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
+use Illuminate\Http\UploadedFile;
 
 final readonly class CheckInDTO
 {
@@ -23,6 +24,7 @@ final readonly class CheckInDTO
         public string $work_type = 'normal',
         public ?string $punch_note = null,
         public ?string $device_timezone = null,
+        public ?UploadedFile $punch_photo = null,
     ) {}
 
     public static function fromRequest(CheckInRequest|CheckOutRequest $request): self
@@ -37,6 +39,7 @@ final readonly class CheckInDTO
             work_type: $validated['work_type'] ?? 'normal',
             punch_note: $validated['punch_note'] ?? null,
             device_timezone: $validated['device_timezone'] ?? null,
+            punch_photo: $request->file('punch_photo'),
         );
     }
 }

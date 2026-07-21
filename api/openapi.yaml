@@ -1558,12 +1558,27 @@ paths:
     post:
       tags: ["Attendance"]
       summary: "Check-in"
+      description: |
+        Pointage d'arrivee. Si l'entreprise impose le mode `photo_required`
+        (voir `AttendanceModeSettings.punch_photo_mode`), le champ multipart
+        `punch_photo` est obligatoire, sinon la requete est rejetee avec
+        l'erreur `PUNCH_PHOTO_REQUIRED`.
       requestBody:
         required: false
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GpsPayload"
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/GpsPayload"
+                - type: object
+                  properties:
+                    punch_photo:
+                      type: string
+                      format: binary
+                      description: "Photo de pointage (obligatoire si l'entreprise impose punch_photo_mode=photo_required). Image, 5 Mo max."
       responses:
         "201":
           description: "Pointage cree"
@@ -1575,7 +1590,7 @@ paths:
                   data:
                     $ref: "#/components/schemas/AttendanceLog"
         "422":
-          description: "Erreur metier ou validation"
+          description: "Erreur metier ou validation (dont PUNCH_PHOTO_REQUIRED)"
           content:
             application/json:
               schema:
@@ -1587,12 +1602,25 @@ paths:
     post:
       tags: ["Attendance"]
       summary: "Check-out"
+      description: |
+        Pointage de depart. Meme contrainte photo obligatoire que le check-in
+        quand `punch_photo_mode=photo_required`.
       requestBody:
         required: false
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GpsPayload"
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/GpsPayload"
+                - type: object
+                  properties:
+                    punch_photo:
+                      type: string
+                      format: binary
+                      description: "Photo de pointage (obligatoire si l'entreprise impose punch_photo_mode=photo_required). Image, 5 Mo max."
       responses:
         "200":
           description: "Pointage mis a jour"
@@ -1604,13 +1632,34 @@ paths:
                   data:
                     $ref: "#/components/schemas/AttendanceLog"
         "422":
-          description: "Erreur metier ou validation"
+          description: "Erreur metier ou validation (dont PUNCH_PHOTO_REQUIRED)"
           content:
             application/json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/ErrorResponse"
                   - $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /attendance/{attendanceLog}/punch-photo:
+    get:
+      tags: ["Attendance"]
+      summary: "Telecharger la photo de pointage d'un log"
+      parameters:
+        - name: attendanceLog
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier image de la photo de pointage"
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: "Log introuvable ou aucune photo enregistree"
 
   /attendance/corrections:
     get:
@@ -7989,20 +8038,35 @@ paths:
   /smart-attendance/config:
     get:
       tags: ["SmartAttendance"]
-      summary: "Lire la configuration GPS de l'entreprise"
-      description: "Retourne les paramètres de géofencing (lat, lng, rayon, mode forcé)."
+      summary: "Lire la configuration de mode active pour l'employe connecte"
+      description: "Resout le mode de pointage effectif (GPS/QR/manuel) et indique si une photo de pointage est obligatoire (punch_photo_mode=photo_required)."
       security:
         - BearerAuth: []
       responses:
         "200":
-          description: "Configuration GPS"
+          description: "Configuration de mode active"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/AttendanceModeSettings"
+                    type: object
+                    properties:
+                      mode: { type: string, enum: [manual, gps_auto, qr, mixed] }
+                      can_override: { type: boolean }
+                      gps_enabled: { type: boolean }
+                      geofence:
+                        type: object
+                        nullable: true
+                        properties:
+                          latitude: { type: number, nullable: true }
+                          longitude: { type: number, nullable: true }
+                          radius_meters: { type: integer, nullable: true }
+                      requires_consent: { type: boolean }
+                      requires_punch_photo:
+                        type: boolean
+                        description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
         "401":
           $ref: "#/components/responses/Error401"
     put:
@@ -8367,6 +8431,7 @@ components:
         id: { type: integer }
         company_id: { type: string, format: uuid }
         forced_mode: { type: string, enum: [manual, gps, qr], nullable: true }
+        punch_photo_mode: { type: string, enum: [kiosk, photo_required], nullable: true, description: "Mode de pointage mobile : kiosque (clic simple) ou photo obligatoire a chaque pointage." }
         gps_enabled: { type: boolean }
         latitude: { type: number, format: double, nullable: true }
         longitude: { type: number, format: double, nullable: true }
@@ -8379,6 +8444,7 @@ components:
       properties:
         gps_enabled: { type: boolean }
         forced_mode: { type: string, enum: [manual, gps, qr], nullable: true }
+        punch_photo_mode: { type: string, enum: [kiosk, photo_required], nullable: true }
         latitude: { type: number, format: double }
         longitude: { type: number, format: double }
         radius_meters: { type: integer, minimum: 50, maximum: 5000 }
@@ -11040,6 +11106,10 @@ components:
         punch_meta:
           type: object
           nullable: true
+        punch_photo_url:
+          type: string
+          nullable: true
+          description: "URL de telechargement de la photo de pointage, si une photo a ete fournie."
         source_device_code:
           type: string
           nullable: true

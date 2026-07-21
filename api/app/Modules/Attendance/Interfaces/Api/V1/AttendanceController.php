@@ -25,8 +25,10 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttendanceController extends Controller
 {
@@ -510,6 +512,32 @@ class AttendanceController extends Controller
         $attendanceLog = $this->attendanceService->recalculateLog($attendanceLog);
 
         return (new AttendanceLogResource($attendanceLog))->response();
+    }
+
+    /**
+     * GET /api/v1/attendance/{attendanceLog}/punch-photo
+     * Retourne la photo de pointage associee a un log (mode photo_required).
+     * Accessible a l'employe concerne et aux managers autorises a voir ce log.
+     */
+    public function punchPhoto(Request $request, AttendanceLog $attendanceLog): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $target = Employee::query()->findOrFail($attendanceLog->employee_id);
+        $this->authorize('viewForEmployee', [AttendanceLog::class, $target]);
+
+        if (! $attendanceLog->punch_photo_path) {
+            abort(404);
+        }
+
+        $disk = Storage::disk('local');
+
+        if (! $disk->exists($attendanceLog->punch_photo_path)) {
+            abort(404);
+        }
+
+        return $disk->download($attendanceLog->punch_photo_path);
     }
 
     private function ensureCorrectionBelongsToActorCompany(AttendanceCorrectionRequest $correction, Employee $actor): void
