@@ -4,16 +4,18 @@
 
 > **Tout nouveau code métier va dans `api/app/Modules/<NomDuModule>/`.**
 
-Les dossiers legacy suivants sont en cours de migration — ne pas y ajouter de nouveau code :
+⚠️ **`api/app/Http/Controllers/Api/V1/` et `api/app/Models/` sont entièrement supprimés** (bilan
+PR #824 + phase 2, voir `api/ARCHITECTURE.md` section «Nettoyage complet») — pas de code legacy
+à y éviter, ces dossiers n'existent plus du tout.
+
+Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 
 | Dossier legacy | Remplacé par |
 |---|---|
-| `api/app/Http/Controllers/Api/V1/` | `Modules/<Name>/Interfaces/Api/V1/Controllers/` |
-| `api/app/Services/` | `Modules/<Name>/Infrastructure/Services/` |
-| `api/app/Models/` | `Modules/<Name>/Domain/Models/` |
-| `api/app/Exceptions/` | `Modules/<Name>/Domain/Exceptions/` |
+| `api/app/Services/` (reste TenantManager.php shim + Cache/Communication/Payroll/SSO/Security/Tracking) | `Modules/<Name>/Infrastructure/Services/` |
+| `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (12 modules)
+## Modules existants (19 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -22,13 +24,23 @@ Les dossiers legacy suivants sont en cours de migration — ne pas y ajouter de 
 | `Billing` | Abonnements, webhooks Stripe, facturation |
 | `Cabinet` | Gestion documentaire, partage |
 | `Cameras` | Surveillance, streaming |
+| `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
+| `Growth` | Programme partenaires, référencement, payout |
 | `HR` | Employés, départements, contrats, évaluations, formations |
+| `Marketing` | Vitrine, leads, campagnes |
 | `Notification` | Notifications in-app, dispatch FCM/APNs |
+| `Onboarding` | Provisioning entreprise, QR onboarding |
 | `Payroll` | Paie, bulletins, avances, loans |
 | `Planning` | Planning, congés approbation side-manager |
+| `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
+| `SmartAttendance` | Pointage intelligent / variantes avancées d'Attendance |
+| `Training` | Formations, sessions, suivis |
+
+> Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
+> (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.
 
 ## Créer un nouveau module
 
@@ -86,8 +98,12 @@ Après `php artisan make:module`, vérifier :
 
 ## Coexistence legacy / nouveau
 
-Pendant la phase de migration :
-- Les controllers legacy dans `app/Http/Controllers/Api/V1/` continuent de fonctionner
-- Ne pas les modifier : les routes existantes pointent vers eux
-- Pour une nouvelle feature sur un domaine déjà en legacy : créer/étendre le module DDD correspondant
-- Une fois le module DDD validé en production → migration du legacy dans une PR dédiée
+Les controllers (`app/Http/Controllers/Api/V1/`) et modèles (`app/Models/`) legacy ont déjà été
+entièrement supprimés (PR #824 + phase 2) — toutes les routes pointent vers les modules DDD.
+Ce qui reste en coexistence partielle aujourd'hui :
+- `app/Services/` (shim `TenantManager.php` + services spécialisés non encore migrés)
+- `app/Exceptions/` (base `DomainException` partagée, encore étendue par certains modules)
+
+Pour une nouvelle feature sur un domaine déjà migré : étendre le module DDD correspondant. Pour un
+service encore dans `app/Services/` : vérifier s'il doit être migré vers
+`Modules/<Name>/Infrastructure/Services/` avant d'y ajouter de la logique.
