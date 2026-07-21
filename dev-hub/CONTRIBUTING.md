@@ -83,4 +83,4 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
-Need help? Join our [Community Discord](https://discord.gg/leopardo-rh) or check [../SUPPORT.md](../SUPPORT.md).
+Need help? Check [../SUPPORT.md](../SUPPORT.md) (the Discord invite there is not live yet, see the notice at the top of that file).

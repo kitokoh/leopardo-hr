@@ -10,7 +10,7 @@ Leopardo HR est un monorepo multi-stack couvrant :
 leopardo-hr/
 ├── api/                    # Backend Laravel (PHP 8.4) — cœur métier HRMS
 ├── front/
-│   ├── web/                # Next.js 15 — landing page + dashboard SaaS (déployé sur Vercel)
+│   ├── web/                # Next.js 16 — landing page + dashboard SaaS (déployé sur Vercel)
 │   ├── web-offline/        # Next.js — PWA offline-first pour le bridge Edge (http://leopardo.local)
 │   ├── admin-dashboard/    # Vue.js 3 — interface super-admin plateforme
 │   ├── mobile_apps/        # Flutter — 5 applications mobiles (voir melos.yaml)
