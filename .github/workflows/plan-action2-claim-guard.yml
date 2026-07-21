@@ -7,6 +7,12 @@ name: PLAN_ACTION2 Claim Guard
 #   2. que l'issue GitHub du ticket (si trouvee) est assignee a l'auteur
 #      de la PR, ou avertit si elle n'a aucun assignee.
 # Ne bloque pas les PR qui ne referencent aucun ID PA2-* (hors perimetre).
+#
+# PA2-AUTO-004: en complement, verifie que la PR reference bien un ID PA2-*
+# du tout (sauf docs/chore explicite ou opt-out "PA2: none"). Non-bloquant
+# par defaut (::warning) tant que le taux de faux positifs sur des PR
+# reelles n'a pas ete observe ; passer PA2_ID_CHECK_STRICT=1 en variable de
+# repo pour le rendre bloquant.
 
 on:
   pull_request:
@@ -30,3 +36,19 @@ jobs:
         run: |
           chmod +x dev-hub/tools/check-plan-action2-claim.sh
           dev-hub/tools/check-plan-action2-claim.sh "${{ github.repository }}" "${{ github.event.pull_request.number }}"
+
+  pa2-id-check:
+    name: Check PR references a PA2 ticket ID
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run PA2 ID presence check
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PA2_ID_CHECK_STRICT: ${{ vars.PA2_ID_CHECK_STRICT }}
+        run: |
+          chmod +x dev-hub/tools/check-pr-has-pa2-id.sh
+          printf '%s' "$PR_BODY" > /tmp/pr-body.txt
+          dev-hub/tools/check-pr-has-pa2-id.sh "$PR_TITLE" /tmp/pr-body.txt

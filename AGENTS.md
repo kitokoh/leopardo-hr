@@ -14,6 +14,33 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 - Chaque changement de comportement, migration, CI ou procedure doit avoir une entree `CHANGELOG.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
 
+## Regles agents juniors (PA2-AUTO-008)
+
+Cette section s'adresse a tout agent (junior ou senior) qui commence une session sur ce depot sans contexte prealable. Elle resume comment choisir un ticket, eviter de dupliquer le travail d'un autre agent, et quand demander une review avant de merger.
+
+### Choisir un ticket
+
+- La source de verite du backlog est `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` (tickets `PA2-<AREA>-<NNN>`), reflete dans les issues GitHub du meme nom.
+- Preferer les tickets `P0`/`P1` non deja marques `Fait`/`FAIT` dans le backlog, et sans dependance non livree (`Dependencies` dans `docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv` ou colonne `Definition of Done` du backlog).
+- Verifier `gh issue view <numero>` : si l'issue est deja fermee ou si un commit/PR mergee la reference deja (`git log --all --oneline --grep="PA2-XXX-NNN"`), ne pas la re-prendre ; si le travail semble deja livre mais l'issue GitHub reste ouverte, fermer l'issue avec un commentaire citant les commits/PR concernes plutot que de dupliquer le travail.
+- Prendre un seul ticket a la fois par agent tant qu'il n'est pas merge ou explicitement bloque (voir `docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md`).
+
+### Eviter la duplication (protocole de claim)
+
+Le protocole complet de claim multi-agent (issue auto-assignee, branche `codex/pa2-<id-court>-<slug>`, PR draft, garde CI `plan-action2-claim-guard.yml` / PA2-AUTO-011) est documente dans `docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md`. Points cles a ne jamais oublier :
+
+- S'auto-assigner l'issue GitHub du ticket (`gh issue edit <N> --add-assignee @me`) avant de coder — c'est le signal officiel de prise de tache.
+- Ne jamais committer directement sur `main` pour signaler une prise de tache.
+- Avant de commencer, verifier `gh issue view <N>` (champ assignee) et `gh pr list --search "PA2-XXX-NNN"` : un ticket avec une issue deja assignee a quelqu'un d'autre, ou une PR ouverte referencant le meme ID, est deja pris.
+- Le titre ou la description de la PR doit contenir l'ID `PA2-XXX-NNN` du ticket livre (garde CI non bloquante `PA2-AUTO-004`, `dev-hub/tools/check-pr-has-pa2-id.sh`) ; pour une PR docs/chore hors backlog PA2, prefixer le titre par `docs:`/`chore:` ou ajouter `PA2: none` dans la description.
+
+### Demander une review
+
+- Une fois le travail complet et les checks CI obligatoires verts, passer la PR draft en "Ready for review" (`gh pr ready`) plutot que de merger seul sans aucune visibilite, meme si l'agent a les droits techniques de merge.
+- Documenter dans la description de la PR : objectif, surfaces touchees, verification effectuee, risques residuels (voir `.github/PULL_REQUEST_TEMPLATE.md`, sections "Surfaces touchees" / "Contrat API" / "Risques residuels", ajoutees par PA2-AUTO-006).
+- Pour tout changement touchant RBAC, paiement/avance, secrets/infra, ou un contrat API deja consomme par un client (web/mobile/kiosk), demander explicitement une review humaine avant merge plutot que de se fier uniquement aux checks automatises.
+- En cas de doute ou de blocage reel (dependance non livree, decision produit manquante), documenter le blocage dans la PR ou l'issue et retirer son assignation plutot que de livrer un correctif partiel non signale.
+
 ## Strategie CI rapide
 
 Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Actions comme source de verite au lieu d'insister sur les checks locaux Windows.
