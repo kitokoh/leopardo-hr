@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Rules\GlobalEmailUnique;
+use App\Rules\ValidIban;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -59,6 +60,8 @@ class UpdateEmployeeRequest extends FormRequest
             'status' => ['sometimes', 'nullable', 'in:active,suspended'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
             'personal_email' => ['sometimes', 'nullable', 'email', 'max:150'],
+            'iban' => ['sometimes', 'nullable', 'string', 'max:34', new ValidIban],
+            'bank_account' => ['sometimes', 'nullable', 'string', 'max:34'],
             'middle_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'preferred_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'date_of_birth' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
@@ -138,4 +141,3 @@ class UpdateEmployeeRequest extends FormRequest
         DB::statement('SET search_path TO shared_tenants,public');
     }
 }
-
