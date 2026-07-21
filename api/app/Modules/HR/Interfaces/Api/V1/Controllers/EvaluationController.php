@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\EvaluationResource;
+use App\Modules\HR\Domain\Models\Evaluation;
 use App\Modules\HR\Interfaces\Api\V1\Requests\EvaluationIndexRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEvaluationRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEvaluationRequest;
-use App\Http\Resources\Api\V1\EvaluationResource;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Domain\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -56,13 +56,14 @@ class EvaluationController extends Controller
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
         } else {
-            if ($actor->isDepartmentScoped()) {
-                // manager_role=dept is scoped to their own department only (PA2-SEC-002).
-                $departmentEmployeeIds = Employee::query()
+            if ($actor->isTeamScoped()) {
+                // manager_role=dept is scoped to their own department only (PA2-SEC-002);
+                // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
+                $scopedEmployeeIds = Employee::query()
                     ->where('company_id', $actor->company_id)
-                    ->where('department_id', $actor->department_id ?? -1)
+                    ->visibleToManager($actor)
                     ->pluck('id');
-                $query->whereIn('employee_id', $departmentEmployeeIds);
+                $query->whereIn('employee_id', $scopedEmployeeIds);
             }
             if ($request->filled('employee_id')) {
                 $query->where('employee_id', $request->integer('employee_id'));
@@ -94,14 +95,15 @@ class EvaluationController extends Controller
 
         $data = $request->validated();
 
-        if ($actor->isDepartmentScoped()) {
+        if ($actor->isTeamScoped()) {
             // manager_role=dept can only evaluate employees within their own
-            // department (PA2-SEC-002).
+            // department (PA2-SEC-002); manager_role=superviseur only within
+            // their own directly assigned team (PA2-SEC-003).
             $target = Employee::query()
                 ->where('company_id', $actor->company_id)
                 ->findOrFail($data['employee_id']);
 
-            if (! $actor->managesDepartmentOf($target)) {
+            if (! $actor->managesTeamMemberOf($target)) {
                 abort(403);
             }
         }
@@ -198,4 +200,3 @@ class EvaluationController extends Controller
         return response()->json(['message' => 'Evaluation deleted successfully']);
     }
 }
-
