@@ -216,7 +216,7 @@
 | PA2-AUTO-003 | P1 | Generation issues depuis CSV | scripts/docs | **Fait** : `scripts/generate-plan-action2-issues.sh` (dry-run par defaut, `--apply`, `--milestone`, `--owner`, `--label-filter`) |
 | PA2-AUTO-004 | P1 | Check PR avec ID PA2 | GitHub Actions | **Fait** : `dev-hub/tools/check-plan-action2-pr-id.sh` (non bloquant, `::warning`), branche dans `plan-action2-claim-guard.yml`, exempte `docs:`/`chore:` |
 | PA2-AUTO-005 | P1 | Rapport hebdo avancement | GitHub Actions/docs | liste merges, bloques, stale, prochains P0 |
-| PA2-AUTO-006 | P1 | Template PR PA2 | `.github` | surfaces, risques, tests, contrat API, screenshots si UI |
+| PA2-AUTO-006 | P1 | Template PR PA2 | `.github` | **Fait** : `.github/PULL_REQUEST_TEMPLATE.md` ajoute ID PA2, surfaces touchees, contrat API, risques residuels, screenshots obligatoires si surface UI cochee |
 | PA2-AUTO-007 | P2 | Dashboard readiness tickets | docs/admin | mapping tickets vers release pilote |
 | PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | comment choisir un ticket, eviter duplication, demander review |
 | PA2-AUTO-009 | P2 | Nettoyage branches stale | docs/scripts | listing branches fusionnees/stale, suppression manuelle controlee |
