@@ -4,7 +4,7 @@
  * Validates: Requirements 2.1, 2.2
  */
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 
 export interface PageMetadata {
   title: string;

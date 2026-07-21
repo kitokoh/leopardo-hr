@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 
 export async function GET() {
   const robotsTxt = `# Robots.txt for Leopardo

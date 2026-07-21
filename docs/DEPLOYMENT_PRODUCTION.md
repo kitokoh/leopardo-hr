@@ -12,7 +12,9 @@
 
 L'environnement production est l'environnement public où les utilisateurs finaux accèdent à la vitrine. Les déploiements en production doivent être soigneusement planifiés et testés.
 
-**URL Production**: https://gestionemployer-backend.vercel.app (domaine officiel `leopardo.com` non achete ; ne pas le citer comme URL production tant qu'il ne l'est pas — voir `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` PA2-MKT-008/PA2-OPS-004)
+**URL Production actuelle** : https://gestionemployer-backend.vercel.app (sous-domaine `vercel.app`, réellement en ligne — voir `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` pour la liste à jour de toutes les URLs de la plateforme, et `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` PA2-MKT-008/PA2-OPS-004).
+
+`leopardo.com` **n'est pas un domaine possédé par ce projet** (il sert actuellement le site d'une entreprise américaine de construction sans rapport) et ne doit pas être utilisé tant qu'il n'a pas été réellement acheté et configuré. La section ci-dessous décrit la procédure générique pour brancher un futur domaine personnalisé une fois acheté ; remplacer `leopardo.com` par le domaine réel au moment de l'exécuter.
 
 ## Configuration Vercel Production
 
@@ -35,7 +37,7 @@ vercel --prod --name leopardo
 Dans le dashboard Vercel (https://vercel.com/dashboard):
 
 1. Aller à **Settings** → **Environment Variables**
-2. Ajouter les variables suivantes:
+2. Ajouter les variables suivantes (valeurs d'exemple à adapter au domaine réellement configuré — aujourd'hui `gestionemployer-backend.vercel.app`, pas `leopardo.com` qui n'est pas possédé):
 
 ```
 # Valeurs actuelles reellement en ligne (domaine officiel `leopardo.com` pas encore achete) :

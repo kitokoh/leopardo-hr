@@ -6,7 +6,7 @@ import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 
 export const metadata: Metadata = {
   title: {
