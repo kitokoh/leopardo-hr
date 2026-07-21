@@ -1,12 +1,16 @@
 name: Backend Coverage Gate
 
+# PA2-OPS-003: `pull_request.paths` intentionally removed (same fix as
+# actionlint.yml). This job is a required status check on `main` (branch
+# protection, "Backend Coverage (PHP 8.4 + PostgreSQL 16)"), and a required
+# check gated behind a `paths:` filter never posts a status on PRs that
+# don't touch those paths — GitHub then treats the check as permanently
+# pending and blocks merging that PR indefinitely (discovered in practice
+# on PR #1125 / PR #1126, both blocked despite every other check passing).
 on:
   workflow_dispatch:
   pull_request:
     branches: [main, develop]
-    paths:
-      - 'api/**'
-      - '.github/workflows/coverage-gate.yml'
 
 permissions:
   contents: read
