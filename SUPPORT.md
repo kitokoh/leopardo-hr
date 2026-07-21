@@ -1,5 +1,11 @@
 # Support Guide — Leopardo RH
 
+> ⚠️ **The `leopardo-rh.com` domain, `@leopardo-rh.com` addresses, Discord invite, and X/Twitter
+> handle below are not live yet** — `leopardo-rh.com` is a recommended future domain, not yet
+> purchased (see `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md`); the Discord invite
+> code returns "Unknown Invite" and `@LeopardoRH` on X returns 404 (both verified). For real
+> support today, use GitHub Issues below.
+
 We are committed to providing the best support for developers, enterprises, and contributors using the Leopardo RH platform.
 
 ## 🛠 Technical Support

@@ -20,4 +20,4 @@ Le mobile historique (`front/mobile/`) a ete retire du depot.
 
 ---
 
-For technical support, join our [Discord Community](https://discord.gg/leopardo-rh).
+For technical support, see [SUPPORT.md](../../SUPPORT.md) (the Discord invite is not live yet).
