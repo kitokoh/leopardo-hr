@@ -1,5 +1,13 @@
 # Déploiement Production - Guide Complet
 
+> ⚠️ **`leopardo.com` n'est PAS possédé pour ce produit** — c'est un nom de domaine tiers déjà
+> détenu par une autre entreprise (vérifié par requête HTTP réelle, voir
+> `docs/PLAN_ACTION2/11_AUDIT_VITRINE_ACQUISITION.md`, ticket `PA2-MKT-008`). L'URL réellement
+> en ligne aujourd'hui est `https://gestionemployer-backend.vercel.app/` (voir `PILOTAGE.md` et
+> `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md`). Ce guide décrit la procédure cible
+> pour le jour où un domaine sera effectivement acheté — ne pas le suivre comme si `leopardo.com`
+> était déjà configurable.
+
 ## Vue d'ensemble
 
 L'environnement production est l'environnement public où les utilisateurs finaux accèdent à la vitrine. Les déploiements en production doivent être soigneusement planifiés et testés.

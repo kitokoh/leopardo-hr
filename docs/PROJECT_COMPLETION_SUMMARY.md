@@ -1,5 +1,10 @@
 # Restructuration de la Vitrine Leopardo - Résumé de Complétion
 
+> ⚠️ **Rapport historique figé (2026-07-18)** — la structure `.github/workflows/` decrite plus bas
+> (`test.yml`, `lint.yml`, `build.yml`) ne reflète plus les noms de fichiers reels du repo (voir
+> `docs/PHASE_8_COMPLETION.md` pour le detail des renommages). Pour l'etat courant, voir
+> `PILOTAGE.md` et `.github/workflows/README.md`.
+
 ## 🎉 Projet Complété avec Succès!
 
 La restructuration complète de la vitrine Leopardo a été achevée avec succès. Le projet a suivi un plan d'implémentation en 8 phases, couvrant l'infrastructure, le design system, les composants, les pages, les intégrations, le SEO, les tests et le déploiement.

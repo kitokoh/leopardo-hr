@@ -1,10 +1,16 @@
 # Déploiement Staging - Guide Complet
 
+> ⚠️ **`staging.leopardo.com` ne résout pas** (DNS non configuré, `leopardo.com` n'est pas possédé
+> pour ce produit — voir `docs/DEPLOYMENT_PRODUCTION.md` et
+> `docs/PLAN_ACTION2/11_AUDIT_VITRINE_ACQUISITION.md`, ticket `PA2-MKT-008`). Ce guide décrit la
+> procédure cible pour le jour où un domaine sera acheté — ne pas le suivre comme si ce
+> sous-domaine était déjà opérationnel.
+
 ## Vue d'ensemble
 
 L'environnement staging est un environnement de pré-production qui reflète exactement la configuration de production. Il est utilisé pour tester les nouvelles fonctionnalités, les intégrations et les performances avant le déploiement en production.
 
-**URL Staging**: https://staging.leopardo.com
+**URL Staging (cible, domaine non acheté)**: https://staging.leopardo.com
 
 ## Configuration Vercel Staging
 
