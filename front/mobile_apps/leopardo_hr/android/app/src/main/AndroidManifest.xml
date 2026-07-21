@@ -8,11 +8,11 @@
     <!-- Requis pour le service Firebase Messaging en arrière-plan -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
-        android:label="Leopardo Manager"
+        android:label="Leopardo RH"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.leopardo.manager.MainActivity"
+            android:name="com.leopardo.rh.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
@@ -28,6 +28,15 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            <!-- PA2-MOB: certains appareils Android (GPU Adreno/Mali/PowerVR plus anciens
+                 ou pilotes OEM specifiques) affichent un ecran vert plein/corrompu et
+                 l'app se ferme au demarrage avec le moteur de rendu Impeller (bug connu
+                 flutter/flutter#152998, #159935, #161486, #179921). Revient au moteur
+                 Skia, universellement compatible, en attendant que ces bugs Impeller
+                 soient corriges upstream sur toutes les GPU concernees. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.EnableImpeller"
+              android:value="false" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
