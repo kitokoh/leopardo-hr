@@ -128,6 +128,7 @@ class PartnerDashboardController extends Controller
             ->get();
 
         return new JsonResponse([
+            'referral_code' => $partner->referral_code,
             'stats' => [
                 'total_conversions' => $partner->referredCompanies()->count(),
                 'total_earned'      => (int) ($stats->total_earned ?? 0),
