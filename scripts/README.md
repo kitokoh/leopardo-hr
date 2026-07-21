@@ -25,3 +25,19 @@ git commit -m "chore(cleanup): remove legacy HR flat files"
 ```
 
 **Ordre recommandé** : HR → Payroll → Attendance → Planning → Recruitment → Cabinet → Fleet → Billing
+
+## generate-plan-action2-issues.sh
+
+PA2-AUTO-003 : génère les issues GitHub manquantes à partir du CSV canonique
+`docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv`. Dry-run par défaut.
+
+```bash
+# Voir ce qui serait créé (aucune écriture)
+./scripts/generate-plan-action2-issues.sh --repo kitokoh/leopardo-hr
+
+# Créer réellement les issues manquantes pour un sous-ensemble PA2-I18N-*
+./scripts/generate-plan-action2-issues.sh --repo kitokoh/leopardo-hr \
+  --label-filter PA2-I18N --apply --owner kitokoh
+```
+
+Voir `--help` pour toutes les options (`--milestone`, `--owner`, `--csv`).
