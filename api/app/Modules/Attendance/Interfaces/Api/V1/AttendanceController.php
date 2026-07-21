@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\Modules\Attendance\Application\DTOs\CheckInDTO;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\AttendanceLogResource;
+use App\Http\Resources\Api\V1\AttendanceTodayResource;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
+use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceIndexRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceMonthlyReportRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
-use App\Http\Resources\Api\V1\AttendanceLogResource;
-use App\Http\Resources\Api\V1\AttendanceTodayResource;
-use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
-use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
@@ -106,8 +106,8 @@ class AttendanceController extends Controller
                 ->where('company_id', $actor->company_id)
                 ->where('status', 'active')
                 ->when(
-                    $actor->isDepartmentScoped(),
-                    fn ($query) => $query->where('department_id', $actor->department_id ?? -1)
+                    $actor->isTeamScoped(),
+                    fn ($query) => $query->visibleToManager($actor)
                 )
                 ->orderBy('id')
                 ->paginate(max(1, min(100, $perPage)));
@@ -202,13 +202,14 @@ class AttendanceController extends Controller
             // AttendanceLog has no global company scope, so we must add the WHERE clause explicitly.
             $query->where('company_id', $actor->company_id);
 
-            if ($actor->isDepartmentScoped()) {
-                // manager_role=dept is scoped to their own department only (PA2-SEC-002).
-                $departmentEmployeeIds = Employee::query()
+            if ($actor->isTeamScoped()) {
+                // manager_role=dept is scoped to their own department only (PA2-SEC-002);
+                // manager_role=superviseur is scoped to their own assigned team (PA2-SEC-003).
+                $scopedEmployeeIds = Employee::query()
                     ->where('company_id', $actor->company_id)
-                    ->where('department_id', $actor->department_id ?? -1)
+                    ->visibleToManager($actor)
                     ->pluck('id');
-                $query->whereIn('employee_id', $departmentEmployeeIds);
+                $query->whereIn('employee_id', $scopedEmployeeIds);
             }
         }
 
@@ -246,7 +247,7 @@ class AttendanceController extends Controller
             $anomalyService->summarize(
                 $actor->company_id,
                 $request->validated(),
-                $actor->isDepartmentScoped() ? ($actor->department_id ?? -1) : null,
+                $actor,
             )
         );
     }
@@ -267,7 +268,7 @@ class AttendanceController extends Controller
         $report = $reportService->build(
             $company,
             $month,
-            $actor->isDepartmentScoped() ? ($actor->department_id ?? -1) : null,
+            $actor,
         );
 
         return match ($format) {
@@ -599,4 +600,3 @@ class AttendanceController extends Controller
         ];
     }
 }
-

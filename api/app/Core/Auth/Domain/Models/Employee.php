@@ -4,22 +4,26 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Domain\Models;
 
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Site;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\Department;
-use App\Modules\Notification\Domain\Models\Notification;
-use App\Modules\Notification\Domain\Models\NotificationPreference;
+use App\Modules\HR\Domain\Models\OnboardingProgress;
 use App\Modules\HR\Domain\Models\Position;
 use App\Modules\HR\Domain\Models\PrivacyRequest;
+use App\Modules\Notification\Domain\Models\Notification;
+use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Core\Tenant\Domain\Models\Site;
 use App\Traits\BelongsToCompany;
+use Carbon\CarbonInterface;
 use Database\Factories\EmployeeFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -74,8 +78,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $biometric_face_reference_path
  * @property string|null $biometric_fingerprint_reference_path
  * @property Carbon|null $biometric_consent_at
- * @property \Carbon\CarbonInterface|null $email_verified_at
- * @property \Carbon\CarbonInterface|null $invitation_accepted_at
+ * @property CarbonInterface|null $email_verified_at
+ * @property CarbonInterface|null $invitation_accepted_at
  * @property string|null $emergency_contact_name
  * @property string|null $emergency_contact_phone
  * @property string|null $emergency_contact_relation
@@ -93,7 +97,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Position|null $position
  * @property-read Schedule|null $schedule
  * @property-read Site|null $site
- * @mixin \Illuminate\Database\Eloquent\Builder
+ *
+ * @mixin Builder
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static> query()
  * @method static static create(array<string, mixed> $attributes = [])
  * @method static static|null find(mixed $id, array<int, string> $columns = ['*'])
@@ -260,6 +266,11 @@ class Employee extends Authenticatable implements HasApiTokensContract
         return $this->hasManagerRole('dept');
     }
 
+    public function isSuperviseur(): bool
+    {
+        return $this->hasManagerRole('superviseur');
+    }
+
     /**
      * Whether this actor's manager scope is limited to a single department
      * (currently only `manager_role = 'dept'`). Company-wide roles
@@ -269,6 +280,17 @@ class Employee extends Authenticatable implements HasApiTokensContract
     public function isDepartmentScoped(): bool
     {
         return $this->isDept();
+    }
+
+    /**
+     * Whether this actor's manager scope is limited to their own directly
+     * assigned team (`manager_role = 'superviseur'`). Per RBAC_SYSTEM.md,
+     * a superviseur only ever sees "son equipe assignee", never the whole
+     * company (PA2-SEC-003).
+     */
+    public function isSupervisorScoped(): bool
+    {
+        return $this->isSuperviseur();
     }
 
     /**
@@ -287,6 +309,77 @@ class Employee extends Authenticatable implements HasApiTokensContract
     }
 
     /**
+     * Whether $target is directly assigned to this supervisor via
+     * `manager_id` (the existing hierarchy FK; see PA2-SEC-003). A
+     * superviseur's "equipe assignee" is defined as employees whose
+     * manager_id points back to them. Self is always included so a
+     * superviseur can act on their own records.
+     */
+    public function managesEmployeeDirectly(self $target): bool
+    {
+        if ($this->id === $target->id) {
+            return true;
+        }
+
+        return $target->manager_id !== null && $target->manager_id === $this->id;
+    }
+
+    /**
+     * Whether this actor's visibility is limited to an explicit subset of
+     * employees (department for `dept`, direct reports for `superviseur`)
+     * rather than the whole company. Company-wide roles (principal, rh,
+     * comptable, marketing) and self-service employees are not team-scoped.
+     */
+    public function isTeamScoped(): bool
+    {
+        return $this->isDept() || $this->isSuperviseur();
+    }
+
+    /**
+     * Dispatches to the correct "manages" check for whichever team-scoped
+     * role the actor holds. Callers should guard with isTeamScoped() (or
+     * accept that non-team-scoped actors always return true here).
+     */
+    public function managesTeamMemberOf(self $target): bool
+    {
+        if ($this->isDept()) {
+            return $this->managesDepartmentOf($target);
+        }
+
+        if ($this->isSuperviseur()) {
+            return $this->managesEmployeeDirectly($target);
+        }
+
+        return true;
+    }
+
+    /**
+     * Constrains an Employee query builder to the employees this actor is
+     * allowed to see when they hold a team-scoped manager_role. No-op for
+     * company-wide roles. Fails closed: a dept manager without a
+     * department, or a superviseur (who by definition has no direct
+     * reports until manager_id is set on someone), sees nobody rather
+     * than everybody.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeVisibleToManager(Builder $query, self $actor): Builder
+    {
+        if ($actor->isDept()) {
+            return $query->where('department_id', $actor->department_id ?? -1);
+        }
+
+        if ($actor->isSuperviseur()) {
+            return $query->where(function ($scope) use ($actor): void {
+                $scope->where('manager_id', $actor->id)->orWhere('id', $actor->id);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
      * Route d'accueil suggeree selon le role/sous-role de l'employe.
      */
     public function homeRoute(): string
@@ -297,11 +390,11 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
         return match ($this->manager_role) {
             'principal' => 'dashboard',
-            'rh'        => 'dashboard',
+            'rh' => 'dashboard',
             'comptable' => 'dashboard',
             'marketing' => 'dashboard',
-            'dept'      => 'dashboard',
-            default     => 'dashboard',
+            'dept' => 'dashboard',
+            default => 'dashboard',
         };
     }
 
@@ -335,9 +428,9 @@ class Employee extends Authenticatable implements HasApiTokensContract
         return $this->belongsTo(Site::class, 'site_id');
     }
 
-    public function onboardingProgress(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function onboardingProgress(): HasOne
     {
-        return $this->hasOne(\App\Modules\HR\Domain\Models\OnboardingProgress::class);
+        return $this->hasOne(OnboardingProgress::class);
     }
 
     /** @return HasMany<BiometricEnrollmentRequest, $this> */
@@ -456,4 +549,3 @@ class Employee extends Authenticatable implements HasApiTokensContract
             : 'employee';
     }
 }
-

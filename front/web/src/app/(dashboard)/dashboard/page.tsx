@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getDisplayName, getPreferredLocale, getStoredUser, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
+import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
 
 const emptySubscribe = () => () => {};
@@ -263,7 +263,7 @@ export default function DashboardPage() {
         key: String(activity.id),
         name: activity.auditable_type?.split('\\').pop() ?? 'Systeme',
         action: activity.action,
-        time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '--:--',
+        time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString(toIntlLocale(locale), { hour: '2-digit', minute: '2-digit' }) : '--:--',
         avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
       }))
     : [];
