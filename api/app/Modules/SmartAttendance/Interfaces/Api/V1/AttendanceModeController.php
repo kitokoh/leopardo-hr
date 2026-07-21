@@ -44,15 +44,16 @@ class AttendanceModeController extends Controller
 
         return response()->json([
             'data' => [
-                'mode'             => $config->mode,
-                'can_override'     => $config->canOverride,
-                'gps_enabled'      => $config->gpsEnabled,
-                'geofence'         => $config->gpsEnabled ? [
+                'mode'                 => $config->mode,
+                'can_override'         => $config->canOverride,
+                'gps_enabled'          => $config->gpsEnabled,
+                'geofence'             => $config->gpsEnabled ? [
                     'latitude'       => $config->geofenceLat,
                     'longitude'      => $config->geofenceLng,
                     'radius_meters'  => $config->geofenceRadius,
                 ] : null,
-                'requires_consent' => $config->requiresConsent,
+                'requires_consent'     => $config->requiresConsent,
+                'requires_punch_photo' => $config->requiresPunchPhoto,
             ],
         ]);
     }
@@ -114,6 +115,7 @@ class AttendanceModeController extends Controller
         return response()->json([
             'data' => $settings ? [
                 'forced_mode'             => $settings->forced_mode,
+                'punch_photo_mode'        => $settings->punch_photo_mode,
                 'gps_enabled'             => $settings->gps_enabled,
                 'latitude'                => $settings->latitude,
                 'longitude'               => $settings->longitude,
@@ -143,6 +145,7 @@ class AttendanceModeController extends Controller
             'message' => 'Configuration mise à jour.',
             'data'    => [
                 'forced_mode'             => $settings->forced_mode,
+                'punch_photo_mode'        => $settings->punch_photo_mode,
                 'gps_enabled'             => $settings->gps_enabled,
                 'radius_meters'           => $settings->radius_meters,
                 'allow_employee_override' => $settings->allow_employee_override,
