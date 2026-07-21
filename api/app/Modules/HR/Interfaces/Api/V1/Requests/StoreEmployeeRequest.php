@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Rules\GlobalEmailUnique;
+use App\Rules\ValidIban;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -54,6 +55,8 @@ class StoreEmployeeRequest extends FormRequest
             'manager_role' => ['nullable', 'in:principal,rh,dept,comptable,superviseur,marketing'],
             'phone' => ['nullable', 'string', 'max:30'],
             'personal_email' => ['nullable', 'email', 'max:150'],
+            'iban' => ['nullable', 'string', 'max:34', new ValidIban],
+            'bank_account' => ['nullable', 'string', 'max:34'],
             'middle_name' => ['nullable', 'string', 'max:100'],
             'preferred_name' => ['nullable', 'string', 'max:100'],
             'date_of_birth' => ['nullable', 'date_format:Y-m-d'],
@@ -129,4 +132,3 @@ class StoreEmployeeRequest extends FormRequest
         DB::statement('SET search_path TO shared_tenants,public');
     }
 }
-
