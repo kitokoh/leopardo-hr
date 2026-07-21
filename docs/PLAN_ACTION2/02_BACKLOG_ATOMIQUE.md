@@ -221,6 +221,7 @@
 | PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | comment choisir un ticket, eviter duplication, demander review |
 | PA2-AUTO-009 | P2 | Nettoyage branches stale | docs/scripts | listing branches fusionnees/stale, suppression manuelle controlee |
 | PA2-AUTO-010 | P2 | Audit post-merge automatique | GitHub Actions | verifie changelog, matrice, OpenAPI, i18n selon fichiers touches |
+| PA2-AUTO-011 | P0 | ~~Garde-fou collision de claim multi-agent~~ Fait le 2026-07-21: `dev-hub/tools/check-plan-action2-claim.sh` + workflow `.github/workflows/plan-action2-claim-guard.yml` | GitHub Actions, `dev-hub/tools` | FAIT: toute PR referencant un ID `PA2-*` echoue si une autre PR ouverte reference le meme ID, ou si l'issue GitHub du ticket est assignee a un autre agent que l'auteur de la PR ; avertissement (non bloquant) si l'issue n'a aucun assignee, conformement au protocole de claim de `01_MODE_EXECUTION_MULTI_AGENT.md` |
 
 ## Extension v1.2 - Audit architecture technique 2026-07-16 (voir `08_AUDIT_ARCHITECTURE_TECH.md`)
 
