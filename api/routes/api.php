@@ -71,9 +71,13 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
     });
 
-    // Stripe webhook (public, verified by signature)
-    Route::post('/webhooks/stripe', StripeWebhookController::class);
-    Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
+    // Stripe/Chargily webhooks (public, verified by provider signature inside
+    // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
+    // these routes sit outside the authenticated 'api' middleware group below.
+    Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
+        Route::post('/webhooks/stripe', StripeWebhookController::class);
+        Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
+    });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);

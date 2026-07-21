@@ -57,5 +57,19 @@ class SensitiveRateLimitTest extends TestCase
         $this->getJson('/api/v1/privacy/export')->assertOk();
         $this->getJson('/api/v1/privacy/export')->assertStatus(429);
     }
+
+    public function test_inbound_webhooks_are_rate_limited_per_ip(): void
+    {
+        config(['security.rate_limits.webhooks_inbound_per_minute' => 2]);
+
+        $payload = [
+            'type' => 'customer.created',
+            'data' => ['object' => ['id' => 'cus_rate_limit_test']],
+        ];
+
+        $this->postJson('/api/v1/webhooks/stripe', $payload)->assertOk();
+        $this->postJson('/api/v1/webhooks/stripe', $payload)->assertOk();
+        $this->postJson('/api/v1/webhooks/stripe', $payload)->assertStatus(429);
+    }
 }
 

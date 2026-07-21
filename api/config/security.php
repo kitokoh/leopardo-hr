@@ -8,6 +8,7 @@ return [
         'platform_per_minute' => (int) env('RATE_LIMIT_PLATFORM_PER_MINUTE', 60),
         'ai_per_minute' => (int) env('RATE_LIMIT_AI_PER_MINUTE', 20),
         'client_analytics_per_minute' => (int) env('RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE', 120),
+        'webhooks_inbound_per_minute' => (int) env('RATE_LIMIT_WEBHOOKS_INBOUND_PER_MINUTE', 60),
     ],
 
     'plan_rate_limits' => [

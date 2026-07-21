@@ -154,6 +154,17 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('security.rate_limits.client_analytics_per_minute', 120))
                 ->by('client-analytics:'.$key);
         });
+
+        // PA2-API-005 — Inbound partner/provider webhooks (Stripe, Chargily) are
+        // public and unauthenticated by nature (verified by signature inside the
+        // controller, not by Sanctum), so they need their own throttle bucket
+        // instead of relying on the generic 'api' limiter which only applies to
+        // authenticated routes further down the group. Keyed by IP since the
+        // caller is a third-party payment provider, not a tenant.
+        RateLimiter::for('webhooks-inbound', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
+                ->by('webhooks-inbound:'.$request->ip());
+        });
     }
 
     private function resolvePlanLimit(string $plan): int
