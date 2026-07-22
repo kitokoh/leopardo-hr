@@ -71,6 +71,11 @@
 </template>
 
 <script setup>
+import { useLocaleStore } from '@/stores/locale';
+import { toIntlLocale } from '@/i18n/index.js';
+
+const localeStore = useLocaleStore();
+
 const props = defineProps({
   node: { type: Object, required: true },
 });
@@ -78,7 +83,7 @@ const props = defineProps({
 defineEmits(['close', 'sync']);
 
 function formatDate(iso) {
-  return new Date(iso).toLocaleString('fr-FR', {
+  return new Date(iso).toLocaleString(toIntlLocale(localeStore.current), {
     day: '2-digit', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });

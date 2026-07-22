@@ -87,6 +87,10 @@ import {
   UserPlusIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   title: {
@@ -227,6 +231,6 @@ const formattedValue = computed(() => {
     return props.value.toFixed(1)
   }
 
-  return props.value.toLocaleString('fr-FR')
+  return props.value.toLocaleString(toIntlLocale(localeStore.current))
 })
 </script>

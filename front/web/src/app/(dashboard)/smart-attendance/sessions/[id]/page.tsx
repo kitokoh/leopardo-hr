@@ -1,14 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Check, LogIn, LogOut, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { GeoSessionStatusBadge } from '../../_components/GeoSessionStatusBadge';
 import { ApproveSessionModal } from '../../_components/ApproveSessionModal';
 import { RejectSessionModal } from '../../_components/RejectSessionModal';
+
+const emptySubscribe = () => () => {};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,9 +49,9 @@ type SessionPayload = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatDateTime(iso?: string | null): string {
+function formatDateTime(iso: string | null | undefined, locale: AppLocale): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleString('fr-FR', {
+  return new Date(iso).toLocaleString(toIntlLocale(locale), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -80,6 +83,7 @@ function mapsLink(lat?: number | null, lng?: number | null): string | null {
 type ModalType = 'approve' | 'reject' | null;
 
 export default function SmartAttendanceSessionDetailPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const { id } = useParams<{ id: string }>();
   const [session, setSession] = useState<GeoSessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -227,7 +231,7 @@ export default function SmartAttendanceSessionDetailPage() {
                 </div>
                 <div className="ml-4 mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Arrivée détectée</p>
-                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_in_time)}</p>
+                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_in_time, locale)}</p>
                 </div>
               </div>
 
@@ -239,7 +243,7 @@ export default function SmartAttendanceSessionDetailPage() {
                 </div>
                 <div className="ml-4 mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Départ</p>
-                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_out_time)}</p>
+                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_out_time, locale)}</p>
                   {session.duration_minutes != null ? (
                     <p className="text-sm text-slate-500">Durée : {formatDuration(session.duration_minutes)}</p>
                   ) : null}
@@ -314,7 +318,7 @@ export default function SmartAttendanceSessionDetailPage() {
                               {ev.event_type}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-slate-700">{formatDateTime(ev.recorded_at)}</td>
+                          <td className="px-4 py-3 text-slate-700">{formatDateTime(ev.recorded_at, locale)}</td>
                           <td className="px-4 py-3 font-mono text-slate-700">{ev.latitude?.toFixed(6) ?? '—'}</td>
                           <td className="px-4 py-3 font-mono text-slate-700">{ev.longitude?.toFixed(6) ?? '—'}</td>
                           <td className="px-4 py-3 text-slate-700">{ev.accuracy?.toFixed(1) ?? '—'}</td>
