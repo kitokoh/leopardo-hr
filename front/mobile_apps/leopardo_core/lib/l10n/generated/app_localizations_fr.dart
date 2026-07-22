@@ -233,4 +233,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profileLanguageSave => 'Mettre a jour la langue';
+
+  @override
+  String get aiChatTitle => 'Assistant IA';
+
+  @override
+  String get aiChatBackTooltip => 'Retour';
+
+  @override
+  String get aiChatSendTooltip => 'Envoyer';
+
+  @override
+  String get aiChatInputHint => 'Tapez votre message...';
+
+  @override
+  String get aiChatEmptyStateTitle => 'Posez vos questions RH';
+
+  @override
+  String get aiChatErrorMessage =>
+      'Erreur : impossible de contacter l assistant.';
 }

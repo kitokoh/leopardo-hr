@@ -67,5 +67,11 @@
   "profileOpenSettings": "Hesap ayarlarini ac",
   "profileLanguageUpdated": "Dil guncellendi.",
   "profileLanguageSaving": "Guncelleniyor...",
-  "profileLanguageSave": "Dili guncelle"
+  "profileLanguageSave": "Dili guncelle",
+  "aiChatTitle": "Yapay Zeka Asistani",
+  "aiChatBackTooltip": "Geri",
+  "aiChatSendTooltip": "Gonder",
+  "aiChatInputHint": "Mesajinizi yazin...",
+  "aiChatEmptyStateTitle": "IK sorularinizi sorun",
+  "aiChatErrorMessage": "Hata: asistana ulasilamadi."
 }

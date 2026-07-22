@@ -226,4 +226,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileLanguageSave => 'تحديث اللغة';
+
+  @override
+  String get aiChatTitle => 'مساعد الذكاء الاصطناعي';
+
+  @override
+  String get aiChatBackTooltip => 'رجوع';
+
+  @override
+  String get aiChatSendTooltip => 'إرسال';
+
+  @override
+  String get aiChatInputHint => 'اكتب رسالتك...';
+
+  @override
+  String get aiChatEmptyStateTitle => 'اطرح أسئلتك المتعلقة بالموارد البشرية';
+
+  @override
+  String get aiChatErrorMessage => 'خطأ: تعذر الاتصال بالمساعد.';
 }

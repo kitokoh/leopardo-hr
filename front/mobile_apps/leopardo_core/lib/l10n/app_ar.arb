@@ -67,5 +67,11 @@
   "profileOpenSettings": "فتح اعدادات الحساب",
   "profileLanguageUpdated": "تم تحديث اللغة.",
   "profileLanguageSaving": "جارٍ التحديث...",
-  "profileLanguageSave": "تحديث اللغة"
+  "profileLanguageSave": "تحديث اللغة",
+  "aiChatTitle": "مساعد الذكاء الاصطناعي",
+  "aiChatBackTooltip": "رجوع",
+  "aiChatSendTooltip": "إرسال",
+  "aiChatInputHint": "اكتب رسالتك...",
+  "aiChatEmptyStateTitle": "اطرح أسئلتك المتعلقة بالموارد البشرية",
+  "aiChatErrorMessage": "خطأ: تعذر الاتصال بالمساعد."
 }

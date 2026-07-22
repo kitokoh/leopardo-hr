@@ -231,4 +231,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLanguageSave => 'Update language';
+
+  @override
+  String get aiChatTitle => 'AI Assistant';
+
+  @override
+  String get aiChatBackTooltip => 'Back';
+
+  @override
+  String get aiChatSendTooltip => 'Send';
+
+  @override
+  String get aiChatInputHint => 'Type your message...';
+
+  @override
+  String get aiChatEmptyStateTitle => 'Ask your HR questions';
+
+  @override
+  String get aiChatErrorMessage => 'Error: unable to reach the assistant.';
 }

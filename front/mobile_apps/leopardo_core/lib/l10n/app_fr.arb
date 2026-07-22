@@ -67,5 +67,11 @@
   "profileOpenSettings": "Ouvrir les parametres du compte",
   "profileLanguageUpdated": "Langue mise a jour.",
   "profileLanguageSaving": "Mise a jour...",
-  "profileLanguageSave": "Mettre a jour la langue"
+  "profileLanguageSave": "Mettre a jour la langue",
+  "aiChatTitle": "Assistant IA",
+  "aiChatBackTooltip": "Retour",
+  "aiChatSendTooltip": "Envoyer",
+  "aiChatInputHint": "Tapez votre message...",
+  "aiChatEmptyStateTitle": "Posez vos questions RH",
+  "aiChatErrorMessage": "Erreur : impossible de contacter l assistant."
 }

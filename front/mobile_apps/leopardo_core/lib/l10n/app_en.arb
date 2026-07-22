@@ -67,5 +67,11 @@
   "profileOpenSettings": "Open account settings",
   "profileLanguageUpdated": "Language updated.",
   "profileLanguageSaving": "Updating...",
-  "profileLanguageSave": "Update language"
+  "profileLanguageSave": "Update language",
+  "aiChatTitle": "AI Assistant",
+  "aiChatBackTooltip": "Back",
+  "aiChatSendTooltip": "Send",
+  "aiChatInputHint": "Type your message...",
+  "aiChatEmptyStateTitle": "Ask your HR questions",
+  "aiChatErrorMessage": "Error: unable to reach the assistant."
 }
