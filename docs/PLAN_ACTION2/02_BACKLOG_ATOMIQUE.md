@@ -151,7 +151,7 @@
 | PA2-COUNTRY-004 | P1 | Regles Algerie solides | API | DZD, Africa/Algiers, jours repos, seuils heures supp et cycle paie pilotes |
 | PA2-COUNTRY-005 | P1 | Regles Maroc et Tunisie | API | MAD/TND, timezone, jours repos, feries placeholders, cycles supportes |
 | PA2-COUNTRY-006 | P1 | Regles France et Turquie | API | EUR/TRY, timezone, langue, seuils prudents et avertissement conformite |
-| PA2-COUNTRY-007 | P1 | Regles CEMAC | API | XAF, pays membres, timezone par defaut, extension sous-code pays |
+| PA2-COUNTRY-007 | P1 | ~~Regles~~ Fait le 2026-07-22: `CemacPayrollRules` (XAF, CNPS/CNSS, IRPP placeholder) couvrant les 6 pays membres (CM/CF/TD/CG/GA/GQ) via `forMemberCountry()`, `countryCode()` retournant toujours un vrai code ISO 3166-1 (jamais le libelle de zone) | API | FAIT: XAF, 6 pays membres exposes individuellement (`CountryRulesInterface::countryCode()` = CM/CF/TD/CG/GA/GQ), timezone par defaut par pays membre, `CountryDefaults` complete (CF/GQ ajoutes) |
 | PA2-COUNTRY-008 | P1 | Regles CEDEAO | API | XOF par defaut pour pays UEMOA, support extension monnaies locales |
 | PA2-COUNTRY-009 | P2 | Regles Canada par province | API | CAD, province optionnelle, timezone et placeholders overtime provinciaux |
 | PA2-COUNTRY-010 | P2 | Seeders HR models multi-pays | API seeders | modeles RH par pays sans casser demos existantes |

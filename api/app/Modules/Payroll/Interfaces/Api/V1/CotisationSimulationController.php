@@ -81,6 +81,24 @@ class CotisationSimulationController extends Controller
         ],
     ];
 
+    /**
+     * CEMAC (PA2-COUNTRY-007) shares the same CNPS/CNSS-style rates and
+     * placeholder progressive schedule across all six member states
+     * (see CemacPayrollRules), so every member code maps to one shared
+     * rate table instead of duplicating it six times.
+     */
+    private const CEMAC_RATES = [
+        'employee' => ['cnps_cnss' => 0.042],
+        'employer' => ['cnps_cnss' => 0.162],
+        'irpp_brackets' => [
+            ['min' => 0, 'max' => 500000, 'rate' => 0],
+            ['min' => 500001, 'max' => 1000000, 'rate' => 0.10],
+            ['min' => 1000001, 'max' => 2500000, 'rate' => 0.20],
+            ['min' => 2500001, 'max' => 5000000, 'rate' => 0.30],
+            ['min' => 5000001, 'max' => PHP_INT_MAX, 'rate' => 0.35],
+        ],
+    ];
+
     public function simulate(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -92,12 +110,13 @@ class CotisationSimulationController extends Controller
 
         $validated = $request->validate([
             'gross_salary' => 'required|numeric|min:0',
-            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN',
+            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN,CM,CF,TD,CG,GA,GQ',
         ]);
 
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
-        $rates = self::COUNTRY_RATES[$countryCode] ?? self::COUNTRY_RATES['DZ'];
+        $rates = self::COUNTRY_RATES[$countryCode]
+            ?? (in_array($countryCode, \App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules::MEMBER_COUNTRY_CODES, true) ? self::CEMAC_RATES : self::COUNTRY_RATES['DZ']);
 
         $employeeContributions = [];
         $totalEmployeeRate = 0.0;
