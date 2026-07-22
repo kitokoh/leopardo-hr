@@ -52,5 +52,11 @@
   "emailsAbsenceRejectedGreeting": "Bonjour :name,",
   "emailsAbsenceRejectedBody": "Votre demande d absence pour :period a ete refusee.",
   "emailsAbsenceRejectedAction": "Voir la demande",
-  "emailsAbsenceRejectedFooter": "Consultez votre manager si vous avez besoin d un complement."
+  "emailsAbsenceRejectedFooter": "Consultez votre manager si vous avez besoin d un complement.",
+  "aiChatTitle": "Assistant IA",
+  "aiChatBackTooltip": "Retour",
+  "aiChatSendTooltip": "Envoyer",
+  "aiChatInputHint": "Tapez votre message...",
+  "aiChatEmptyStateTitle": "Posez vos questions RH",
+  "aiChatErrorMessage": "Erreur : impossible de contacter l assistant."
 }
