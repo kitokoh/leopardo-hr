@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
 
 /// Écran de sélection du mode de pointage préféré pour l'employé.
@@ -24,11 +25,11 @@ class AttendanceModePickerScreen extends ConsumerStatefulWidget {
 class _AttendanceModePickerScreenState
     extends ConsumerState<AttendanceModePickerScreen> {
   // Couleurs de l'app (cohérentes avec AttendanceScreen)
-  static const Color _bg = Color(0xFF0B1120);
-  static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _border = Color(0xFF1A2B44);
-  static const Color _accent = Color(0xFF2196F3);
+  static const Color _bg = AppColors.mobileDarkBg;
+  static const Color _text = AppColors.mobileDarkText;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _border = AppColors.mobileDarkBorder;
+  static const Color _accent = AppColors.mobileAccentBlue;
 
   late String _selectedMode;
   bool _isSaving = false;
@@ -46,7 +47,7 @@ class _AttendanceModePickerScreenState
           'id': 'gps_auto',
           'label': 'GPS Automatique',
           'icon': Icons.location_on_rounded,
-          'color': const Color(0xFF4CAF50),
+          'color': AppColors.mobileAccentGreen,
           'description':
               'Votre présence est détectée automatiquement dès que vous entrez '
                   'dans la zone de l\'entreprise. Aucune action requise de votre part.',
@@ -56,7 +57,7 @@ class _AttendanceModePickerScreenState
           'id': 'qr_code',
           'label': 'QR Code',
           'icon': Icons.qr_code_scanner_rounded,
-          'color': const Color(0xFF9C27B0),
+          'color': AppColors.mobileAccentPurple,
           'description':
               'Scannez le QR Code affiché à l\'entrée de l\'entreprise pour '
                   'pointer votre arrivée et votre départ.',
@@ -166,15 +167,15 @@ class _AttendanceModePickerScreenState
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF44336).withValues(alpha: 0.15),
+                    color: AppColors.mobileAccentRed.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: const Color(0xFFF44336).withValues(alpha: 0.4)),
+                        color: AppColors.mobileAccentRed.withValues(alpha: 0.4)),
                   ),
                   child: Text(
                     _error!,
                     style:
-                        const TextStyle(color: Color(0xFFEF9A9A), fontSize: 13),
+                        const TextStyle(color: AppColors.mobileAccentRedSoft, fontSize: 13),
                   ),
                 ),
               ),
@@ -234,10 +235,10 @@ class _ModeCard extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _border = Color(0xFF1A2B44);
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _text = AppColors.mobileDarkText;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _border = AppColors.mobileDarkBorder;
 
   const _ModeCard({
     required this.modeId,
