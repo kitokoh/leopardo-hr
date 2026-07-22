@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/services/api'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 export const useDashboardStore = defineStore('dashboard', () => {
+  const localeStore = useLocaleStore()
+
   // State
   const stats = ref({
     totalUsers: 0,
@@ -22,7 +26,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   // Getters
   const formattedRevenue = computed(() => {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
       style: 'currency',
       currency: 'EUR'
     }).format(stats.value.monthlyRevenue)

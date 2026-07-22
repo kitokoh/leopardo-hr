@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'app.dart';
 
@@ -105,14 +106,14 @@ class _StartupRuntimeError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: const Color(0xFF0B1120),
+      color: AppColors.mobileDarkBg,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
             'Erreur d affichage Leopardo Employee\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFFE2EAF6), fontSize: 13),
+            style: const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
           ),
         ),
       ),

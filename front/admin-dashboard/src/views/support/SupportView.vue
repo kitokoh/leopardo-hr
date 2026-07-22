@@ -210,8 +210,11 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const toast = useToast()
+const localeStore = useLocaleStore()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const savingId = ref(null)
@@ -314,7 +317,7 @@ function statusLabel(status) {
 function formatDate(value) {
   if (!value) return 'Non renseigné'
 
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(value))

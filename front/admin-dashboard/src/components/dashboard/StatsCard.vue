@@ -70,6 +70,10 @@ import {
   ArrowUpIcon,
   ArrowDownIcon
 } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   title: {
@@ -171,6 +175,6 @@ const formattedValue = computed(() => {
     return (props.value / 1000).toFixed(1) + 'K'
   }
 
-  return props.value.toLocaleString('fr-FR')
+  return props.value.toLocaleString(toIntlLocale(localeStore.current))
 })
 </script>
