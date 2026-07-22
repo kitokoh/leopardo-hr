@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { GeoSessionStatusBadge } from '../_components/GeoSessionStatusBadge';
 
 const emptySubscribe = () => () => {};
@@ -43,10 +43,10 @@ type Filters = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatDateTime(iso: string | null | undefined, locale: AppLocale): string {
+function formatDateTime(iso: string | null | undefined, intlLocale: string): string {
   if (!iso) return '—';
   const d = new Date(iso);
-  return d.toLocaleString(toIntlLocale(locale), {
+  return d.toLocaleString(intlLocale, {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',
@@ -71,8 +71,19 @@ function buildQuery(filters: Filters, page: number): string {
   return params.toString();
 }
 
-function sessionsToCSV(sessions: GeoSession[]): string {
-  const header = ['ID', 'Employé', 'Matricule', 'Arrivée', 'Départ', 'Durée (min)', 'Statut'];
+function sessionsToCSV(
+  sessions: GeoSession[],
+  labels: ReturnType<typeof getCopy>['smartAttendanceSessionsPage'],
+): string {
+  const header = [
+    labels.csvHeaderId,
+    labels.csvHeaderEmployee,
+    labels.csvHeaderMatricule,
+    labels.csvHeaderCheckIn,
+    labels.csvHeaderCheckOut,
+    labels.csvHeaderDuration,
+    labels.csvHeaderStatus,
+  ];
   const rows = sessions.map((s) => [
     String(s.id),
     s.employee_name ?? '',
@@ -89,6 +100,9 @@ function sessionsToCSV(sessions: GeoSession[]): string {
 
 export default function SmartAttendanceSessionsPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).smartAttendanceSessionsPage;
+  const statusLabels = getCopy(locale).smartAttendancePage;
+  const intlLocale = toIntlLocale(locale);
   const [sessions, setSessions] = useState<GeoSession[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,11 +131,11 @@ export default function SmartAttendanceSessionsPage() {
       setMeta(payload.meta ?? null);
       setError(null);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les sessions.');
+      setError(err instanceof ApiError ? err.message : labels.loadError);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [labels.loadError]);
 
   useEffect(() => {
     void load(filters, page);
@@ -140,7 +154,7 @@ export default function SmartAttendanceSessionsPage() {
   };
 
   const exportCSV = () => {
-    const csv = sessionsToCSV(sessions);
+    const csv = sessionsToCSV(sessions, labels);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -152,8 +166,8 @@ export default function SmartAttendanceSessionsPage() {
 
   return (
     <ModulePageShell
-      title="Sessions de présence"
-      subtitle="Liste complète des sessions Smart Attendance avec filtres avancés et pagination."
+      title={labels.title}
+      subtitle={labels.subtitle}
       accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
     >
       {/* Back link */}
@@ -162,7 +176,7 @@ export default function SmartAttendanceSessionsPage() {
           href="/smart-attendance"
           className="text-sm font-bold text-slate-500 transition hover:text-slate-900"
         >
-          ← Tableau de bord
+          {labels.backToDashboard}
         </Link>
       </div>
 
@@ -172,39 +186,39 @@ export default function SmartAttendanceSessionsPage() {
         </div>
       ) : null}
 
-      {/* Filtres */}
+      {/* Filters */}
       <section className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Filtres</h2>
+        <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">{labels.filtersTitle}</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-1 block text-xs font-bold text-slate-600">Statut</label>
+            <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterStatus}</label>
             <select
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.status}
               onChange={(e) => setPendingFilters((f) => ({ ...f, status: e.target.value }))}
             >
-              <option value="">Tous les statuts</option>
-              <option value="detected">Détecté</option>
-              <option value="pending_validation">En attente</option>
-              <option value="approved">Approuvé</option>
-              <option value="rejected">Refusé</option>
-              <option value="cancelled">Annulé</option>
+              <option value="">{labels.filterStatusAll}</option>
+              <option value="detected">{statusLabels.statusDetected}</option>
+              <option value="pending_validation">{statusLabels.statusPendingValidation}</option>
+              <option value="approved">{statusLabels.statusApproved}</option>
+              <option value="rejected">{statusLabels.statusRejected}</option>
+              <option value="cancelled">{statusLabels.statusCancelled}</option>
             </select>
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-bold text-slate-600">Employé (ID ou nom)</label>
+            <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterEmployee}</label>
             <input
               type="text"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
-              placeholder="Rechercher…"
+              placeholder={labels.filterEmployeePlaceholder}
               value={pendingFilters.employee_id}
               onChange={(e) => setPendingFilters((f) => ({ ...f, employee_id: e.target.value }))}
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-bold text-slate-600">Date début</label>
+            <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterDateFrom}</label>
             <input
               type="date"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
@@ -214,7 +228,7 @@ export default function SmartAttendanceSessionsPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-bold text-slate-600">Date fin</label>
+            <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterDateTo}</label>
             <input
               type="date"
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
@@ -230,14 +244,14 @@ export default function SmartAttendanceSessionsPage() {
             onClick={applyFilters}
             className="rounded-xl bg-security px-4 py-2 text-sm font-bold text-white transition hover:bg-security-dark"
           >
-            Appliquer
+            {labels.apply}
           </button>
           <button
             type="button"
             onClick={resetFilters}
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
           >
-            Réinitialiser
+            {labels.reset}
           </button>
           <button
             type="button"
@@ -245,18 +259,18 @@ export default function SmartAttendanceSessionsPage() {
             disabled={sessions.length === 0}
             className="ml-auto rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
           >
-            ⬇ Export CSV
+            {labels.exportCsv}
           </button>
         </div>
       </section>
 
-      {/* Tableau */}
+      {/* Table */}
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Sessions</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{labels.sessionsTitle}</h2>
           {meta ? (
             <span className="text-xs text-slate-500">
-              {meta.total} session{meta.total > 1 ? 's' : ''}
+              {meta.total} {meta.total > 1 ? labels.sessionCountPlural : labels.sessionCountSingular}
             </span>
           ) : null}
         </div>
@@ -275,19 +289,19 @@ export default function SmartAttendanceSessionsPage() {
           </div>
         ) : sessions.length === 0 ? (
           <div className="px-6 py-10 text-center text-sm text-slate-500">
-            Aucune session trouvée pour ces critères.
+            {labels.noSessions}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-app-border bg-slate-50/50">
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employé</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Arrivée</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Départ</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Durée</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
-                  <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Détail</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckIn}</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckOut}</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnDuration}</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                  <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnDetail}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-app-border">
@@ -295,24 +309,24 @@ export default function SmartAttendanceSessionsPage() {
                   <tr key={session.id} className="transition-colors hover:bg-slate-50/60">
                     <td className="px-6 py-4">
                       <p className="font-bold text-slate-900">
-                        {session.employee_name ?? `Employé #${session.employee_id}`}
+                        {session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}
                       </p>
                       {session.employee_matricule ? (
                         <p className="text-xs text-slate-500">{session.employee_matricule}</p>
                       ) : null}
                     </td>
-                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_in_time, locale)}</td>
-                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_out_time, locale)}</td>
+                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_in_time, intlLocale)}</td>
+                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_out_time, intlLocale)}</td>
                     <td className="px-4 py-4 text-slate-700">{formatDuration(session.duration_minutes)}</td>
                     <td className="px-4 py-4">
-                      <GeoSessionStatusBadge status={session.status} />
+                      <GeoSessionStatusBadge status={session.status} labels={statusLabels} />
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/smart-attendance/sessions/${session.id}`}
                         className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-security hover:text-security-dark"
                       >
-                        Voir →
+                        {labels.viewDetail}
                       </Link>
                     </td>
                   </tr>
@@ -326,7 +340,7 @@ export default function SmartAttendanceSessionsPage() {
         {meta && meta.last_page > 1 ? (
           <div className="flex items-center justify-between border-t border-app-border px-6 py-4">
             <span className="text-xs text-slate-500">
-              Page {meta.current_page} / {meta.last_page}
+              {labels.pageLabel} {meta.current_page} / {meta.last_page}
             </span>
             <div className="flex gap-2">
               <button
@@ -335,7 +349,7 @@ export default function SmartAttendanceSessionsPage() {
                 disabled={page <= 1}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
               >
-                ← Précédent
+                {labels.previous}
               </button>
               <button
                 type="button"
@@ -343,7 +357,7 @@ export default function SmartAttendanceSessionsPage() {
                 disabled={page >= meta.last_page}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
               >
-                Suivant →
+                {labels.next}
               </button>
             </div>
           </div>
