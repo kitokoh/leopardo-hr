@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leopardo RH - Kiosk biometrie</title>
+  <title data-i18n="page.title">Leopardo RH - Kiosk biometrie</title>
   <style>
     :root {
       color-scheme: dark;
@@ -563,6 +563,24 @@
 
     .hidden { display: none !important; }
 
+    .lang-select {
+      min-height: auto;
+      width: auto;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #071221;
+      color: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+    }
+
+    [dir="rtl"] .topbar { flex-direction: row-reverse; }
+    [dir="rtl"] .brand { flex-direction: row-reverse; }
+    [dir="rtl"] .tab { text-align: right; }
+    [dir="rtl"] .emp-meta,
+    [dir="rtl"] .demo-user-role { float: left; }
+
     @media (max-width: 980px) {
       .layout, .punch-grid { grid-template-columns: 1fr; }
       .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -576,30 +594,34 @@
   </style>
 </head>
 <body>
-  <a href="#identifier" class="sr-only">Aller au formulaire de pointage</a>
+  <a href="#identifier" class="sr-only" data-i18n="skip.punch">Aller au formulaire de pointage</a>
   <div class="shell" role="main" aria-label="Borne de pointage Leopardo RH">
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">L</div>
         <div>
-          <div class="eyebrow">Kiosk biometrie terrain</div>
-          <h1 id="companyName">Chargement...</h1>
-          <p id="locationLabel">Initialisation de la borne d'entree...</p>
+          <div class="eyebrow" data-i18n="eyebrow">Kiosk biometrie terrain</div>
+          <h1 id="companyName" data-i18n="company.loading">Chargement...</h1>
+          <p id="locationLabel" data-i18n="location.loading">Initialisation de la borne d'entree...</p>
         </div>
       </div>
-      <div class="pill" role="status" aria-live="polite">
-        <span id="syncDot" class="dot" aria-hidden="true"></span>
-        <span id="syncLabel">Verification reseau...</span>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="pill" role="status" aria-live="polite">
+          <span id="syncDot" class="dot" aria-hidden="true"></span>
+          <span id="syncLabel" data-i18n="sync.checking">Verification reseau...</span>
+        </div>
+        <label for="langSelect" class="sr-only" data-i18n="lang.label">Langue</label>
+        <select id="langSelect" class="lang-select" aria-label="Langue / Language"></select>
       </div>
     </header>
 
     <div class="layout">
       <nav class="tabs" role="tablist" aria-label="Sections du kiosk">
-        <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch">Pointage <span>doigt / visage</span></button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="info" aria-controls="panel-info">Employe <span>infos jour</span></button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="announcements" aria-controls="panel-announcements">Annonces <span>entreprise</span></button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="leave" aria-controls="panel-leave">Conges <span>soldes</span></button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="qr" aria-controls="panel-qr">QR Code <span>fallback</span></button>
+        <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch"><span data-i18n="tab.punch">Pointage</span> <span data-i18n="tab.punch.sub">doigt / visage</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="info" aria-controls="panel-info"><span data-i18n="tab.info">Employe</span> <span data-i18n="tab.info.sub">infos jour</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="announcements" aria-controls="panel-announcements"><span data-i18n="tab.announcements">Annonces</span> <span data-i18n="tab.announcements.sub">entreprise</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="leave" aria-controls="panel-leave"><span data-i18n="tab.leave">Conges</span> <span data-i18n="tab.leave.sub">soldes</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="qr" aria-controls="panel-qr"><span data-i18n="tab.qr">QR Code</span> <span data-i18n="tab.qr.sub">fallback</span></button>
       </nav>
 
       <main class="content">
@@ -616,51 +638,51 @@
                   <path d="M47 78c3-5 4-10 4-16 0-6 4-10 9-10s9 4 9 10c0 6 1 11 4 16" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
                 </svg>
               </div>
-              <h2 class="stage-title">Posez le doigt</h2>
-              <p class="stage-copy">Le capteur ZKTeco reconnait l'employe. En fallback, scannez le visage, le QR ou saisissez le matricule.</p>
+              <h2 class="stage-title" data-i18n="stage.title">Posez le doigt</h2>
+              <p class="stage-copy" data-i18n="stage.copy">Le capteur ZKTeco reconnait l'employe. En fallback, scannez le visage, le QR ou saisissez le matricule.</p>
             </div>
 
             <div class="card">
               <div class="field-stack">
                 <div>
-                  <label for="identifier">Identifiant employe / zkteco_id / matricule</label>
-                  <input id="identifier" name="identifier" autocomplete="off" placeholder="Scanner ou saisir l'identifiant" aria-label="Identifiant employe">
+                  <label for="identifier" data-i18n="identifier.label">Identifiant employe / zkteco_id / matricule</label>
+                  <input id="identifier" name="identifier" autocomplete="off" data-i18n-placeholder="identifier.placeholder" placeholder="Scanner ou saisir l'identifiant" data-i18n-aria-label="identifier.aria" aria-label="Identifiant employe">
                 </div>
                 <div>
-                  <label for="biometricType">Mode de reconnaissance</label>
-                  <select id="biometricType" aria-label="Type de biometrie">
-                    <option value="fingerprint">Empreinte</option>
-                    <option value="face">Visage</option>
-                    <option value="mixed">Mixte</option>
+                  <label for="biometricType" data-i18n="biometricType.label">Mode de reconnaissance</label>
+                  <select id="biometricType" data-i18n-aria-label="biometricType.aria" aria-label="Type de biometrie">
+                    <option value="fingerprint" data-i18n="biometricType.fingerprint">Empreinte</option>
+                    <option value="face" data-i18n="biometricType.face">Visage</option>
+                    <option value="mixed" data-i18n="biometricType.mixed">Mixte</option>
                   </select>
                 </div>
               </div>
               <div class="actions">
-                <button class="primary" id="checkInButton" aria-label="Pointer entree">Arrivee</button>
-                <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Depart</button>
+                <button class="primary" id="checkInButton" data-i18n-aria-label="checkIn.aria" aria-label="Pointer entree"><span data-i18n="checkIn.label">Arrivee</span></button>
+                <button class="secondary" id="checkOutButton" data-i18n-aria-label="checkOut.aria" aria-label="Pointer sortie"><span data-i18n="checkOut.label">Depart</span></button>
               </div>
-              <button class="info" id="demoAccessBtn" style="margin-top:12px;" aria-label="Acces demo">Choisir un employe demo</button>
-              <div id="statusBox" class="status" role="alert" aria-live="polite">Pret a recevoir un pointage.</div>
+              <button class="info" id="demoAccessBtn" style="margin-top:12px;" data-i18n-aria-label="demoAccess.aria" aria-label="Acces demo"><span data-i18n="demoAccess.label">Choisir un employe demo</span></button>
+              <div id="statusBox" class="status" role="alert" aria-live="polite" data-i18n="statusBox.ready">Pret a recevoir un pointage.</div>
             </div>
           </div>
 
           <aside class="card" style="margin-top:18px;">
             <dl class="meta">
-              <div><dt>Code appareil</dt><dd id="deviceCode">-</dd></div>
-              <div><dt>Mode</dt><dd>ZKTeco / HID / bridge local offline-first</dd></div>
-              <div><dt>File locale</dt><dd id="queueCount">0 evenement en attente</dd></div>
-              <div><dt>Derniere synchronisation</dt><dd id="lastSyncAt">Verification en cours</dd></div>
+              <div><dt data-i18n="meta.deviceCode">Code appareil</dt><dd id="deviceCode">-</dd></div>
+              <div><dt data-i18n="meta.mode">Mode</dt><dd data-i18n="meta.mode.value">ZKTeco / HID / bridge local offline-first</dd></div>
+              <div><dt data-i18n="meta.queue">File locale</dt><dd id="queueCount" data-i18n="meta.queue.empty">0 evenement en attente</dd></div>
+              <div><dt data-i18n="meta.lastSync">Derniere synchronisation</dt><dd id="lastSyncAt" data-i18n="meta.lastSync.checking">Verification en cours</dd></div>
             </dl>
           </aside>
         </section>
 
         <section id="panel-info" class="tab-panel" role="tabpanel">
           <div class="card">
-            <h2>Information employe</h2>
-            <p>Saisissez un identifiant pour afficher les informations utiles au pointage du jour.</p>
+            <h2 data-i18n="info.title">Information employe</h2>
+            <p data-i18n="info.copy">Saisissez un identifiant pour afficher les informations utiles au pointage du jour.</p>
             <div class="actions">
-              <input id="infoIdentifier" placeholder="Matricule, email ou zkteco_id" aria-label="Identifiant pour recherche employe">
-              <button class="info" id="infoSearchBtn" aria-label="Rechercher employe">Rechercher</button>
+              <input id="infoIdentifier" data-i18n-placeholder="info.identifier.placeholder" placeholder="Matricule, email ou zkteco_id" data-i18n-aria-label="info.identifier.aria" aria-label="Identifiant pour recherche employe">
+              <button class="info" id="infoSearchBtn" data-i18n-aria-label="info.search.aria" aria-label="Rechercher employe"><span data-i18n="info.search.label">Rechercher</span></button>
             </div>
             <div id="employeeInfoResult" class="hidden">
               <div class="employee-card">
@@ -670,11 +692,11 @@
                   <div class="emp-meta"><span id="empMatricule">-</span> - <span id="empDepartment">-</span> - <span id="empPosition">-</span></div>
                 </div>
               </div>
-              <h3 style="margin-top:22px;">Pointage du jour</h3>
+              <h3 style="margin-top:22px;" data-i18n="info.todayAttendance">Pointage du jour</h3>
               <div class="attendance-row" id="empAttendance">
-                <span class="att-badge att-pending">Aucun pointage aujourd'hui</span>
+                <span class="att-badge att-pending" data-i18n="info.attendance.pending">Aucun pointage aujourd'hui</span>
               </div>
-              <h3 style="margin-top:22px;">Soldes conges</h3>
+              <h3 style="margin-top:22px;" data-i18n="info.leaveBalances">Soldes conges</h3>
               <div class="balance-grid" id="empBalances"></div>
             </div>
             <div id="infoStatus" class="status hidden" role="alert" aria-live="polite"></div>
@@ -683,21 +705,21 @@
 
         <section id="panel-announcements" class="tab-panel" role="tabpanel">
           <div class="card">
-            <h2>Annonces</h2>
-            <p>Annonces actives de votre entreprise.</p>
+            <h2 data-i18n="announcements.title">Annonces</h2>
+            <p data-i18n="announcements.copy">Annonces actives de votre entreprise.</p>
             <div id="announcementsList">
-              <p style="text-align:center;padding:40px 0;color:var(--muted);">Chargement des annonces...</p>
+              <p style="text-align:center;padding:40px 0;color:var(--muted);" data-i18n="announcements.loading">Chargement des annonces...</p>
             </div>
           </div>
         </section>
 
         <section id="panel-leave" class="tab-panel" role="tabpanel">
           <div class="card">
-            <h2>Solde de conges</h2>
-            <p>Consultez votre solde de conges en saisissant votre identifiant.</p>
+            <h2 data-i18n="leave.title">Solde de conges</h2>
+            <p data-i18n="leave.copy">Consultez votre solde de conges en saisissant votre identifiant.</p>
             <div class="actions">
-              <input id="leaveIdentifier" placeholder="Matricule, email ou zkteco_id" aria-label="Identifiant pour solde conges">
-              <button class="info" id="leaveSearchBtn" aria-label="Consulter solde">Consulter</button>
+              <input id="leaveIdentifier" data-i18n-placeholder="leave.identifier.placeholder" placeholder="Matricule, email ou zkteco_id" data-i18n-aria-label="leave.identifier.aria" aria-label="Identifiant pour solde conges">
+              <button class="info" id="leaveSearchBtn" data-i18n-aria-label="leave.search.aria" aria-label="Consulter solde"><span data-i18n="leave.search.label">Consulter</span></button>
             </div>
             <div id="leaveResult" class="hidden" style="margin-top:20px;">
               <h3><span id="leaveEmpName">-</span> - <span id="leaveYear">2026</span></h3>
@@ -709,19 +731,19 @@
 
         <section id="panel-qr" class="tab-panel" role="tabpanel">
           <div class="card">
-            <h2>Pointage par QR Code</h2>
-            <p>Scannez votre QR code personnel ou collez les donnees du QR.</p>
+            <h2 data-i18n="qr.title">Pointage par QR Code</h2>
+            <p data-i18n="qr.copy">Scannez votre QR code personnel ou collez les donnees du QR.</p>
             <div class="qr-area" id="qrScanArea">
               <div>
                 <div class="qr-icon" aria-hidden="true">&#9634;</div>
-                <p>Presentez votre QR code devant la camera ou collez les donnees ci-dessous.</p>
+                <p data-i18n="qr.scanArea.copy">Presentez votre QR code devant la camera ou collez les donnees ci-dessous.</p>
               </div>
             </div>
-            <label for="qrDataInput" style="margin-top:14px;">Donnees QR</label>
-            <input id="qrDataInput" placeholder="Collez les donnees du QR code ici" aria-label="Donnees QR code">
+            <label for="qrDataInput" style="margin-top:14px;" data-i18n="qr.data.label">Donnees QR</label>
+            <input id="qrDataInput" data-i18n-placeholder="qr.data.placeholder" placeholder="Collez les donnees du QR code ici" data-i18n-aria-label="qr.data.aria" aria-label="Donnees QR code">
             <div class="actions">
-              <button class="primary" id="qrCheckInBtn" aria-label="Pointer entree via QR">Arrivee QR</button>
-              <button class="secondary" id="qrCheckOutBtn" aria-label="Pointer sortie via QR">Depart QR</button>
+              <button class="primary" id="qrCheckInBtn" data-i18n-aria-label="qr.checkIn.aria" aria-label="Pointer entree via QR"><span data-i18n="qr.checkIn.label">Arrivee QR</span></button>
+              <button class="secondary" id="qrCheckOutBtn" data-i18n-aria-label="qr.checkOut.aria" aria-label="Pointer sortie via QR"><span data-i18n="qr.checkOut.label">Depart QR</span></button>
             </div>
             <div id="qrStatus" class="status hidden" role="alert" aria-live="polite"></div>
           </div>
@@ -733,13 +755,14 @@
   <div id="demoOverlay" class="demo-overlay hidden" aria-modal="true" role="dialog" aria-label="Choisir un employe demo">
     <div class="demo-modal">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
-        <h2 style="margin:0;">Choisir un employe demo</h2>
-        <button class="secondary" style="width:auto;padding:8px 14px;font-size:13px;" id="demoCloseBtn">Fermer</button>
+        <h2 style="margin:0;" data-i18n="demo.title">Choisir un employe demo</h2>
+        <button class="secondary" style="width:auto;padding:8px 14px;font-size:13px;" id="demoCloseBtn" data-i18n="demo.close">Fermer</button>
       </div>
       <div id="demoUsersList"></div>
     </div>
   </div>
 
+  <script src="./i18n.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
