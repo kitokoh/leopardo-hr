@@ -15,7 +15,7 @@ import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
   const SmartAttendanceDashboardScreen({super.key});
 
-  static const Color _bg = Color(0xFF0B1120);
+  static const Color _bg = AppColors.mobileDarkBg;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -140,7 +140,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF111B2E),
+        color: AppColors.mobileDarkSurface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
@@ -175,7 +175,7 @@ class _PendingCard extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF111B2E),
+          color: AppColors.mobileDarkSurface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
