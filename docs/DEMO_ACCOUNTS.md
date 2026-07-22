@@ -3,6 +3,11 @@
 To explore the platform's capabilities across different roles, you can use the
 built-in demo environment.
 
+> Looking for ready-to-use app/API/web/admin/kiosk links plus end-to-end test
+> scenarios by persona? See
+> [`docs/GUIDES/GUIDE_TESTEURS_PILOTES.md`](GUIDES/GUIDE_TESTEURS_PILOTES.md)
+> — this file stays the detailed credential reference.
+
 ## 🚀 Instant Access
 
 The canonical, always-fresh source of demo credentials is the API itself:
