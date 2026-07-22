@@ -146,7 +146,10 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import api, { downloadApiFile } from '@/services/api'
 import DataTable from '@/components/common/DataTable.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const loading = ref(false)
 const error = ref('')
 const auditLogs = ref([])
@@ -211,7 +214,7 @@ function formatType(type) {
 
 function formatDate(date) {
   if (!date) return '-'
-  return new Date(date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return new Date(date).toLocaleString(toIntlLocale(localeStore.current), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function formatJson(data) {

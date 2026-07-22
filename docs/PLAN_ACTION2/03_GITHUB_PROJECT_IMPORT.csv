@@ -38,6 +38,8 @@ Title,Priority,Area,Surface,Dependencies,Acceptance Criteria
 "PA2-MOB-012 Trancher la politique de theme clair sombre","P1","Mobile","core; 4 apps","PA2-MOB-010","Decision ecrite sombre principal ou ThemeMode.system plus reglage utilisateur"
 "PA2-MOB-013 Aligner platform admin sur composants partages","P2","Mobile","platform admin; core","PA2-MOB-010","Parite usage LeopardoBadge QrCard ShimmerLoading avec 3 autres apps"
 "PA2-MOB-014 Auditer et clore statut reel PA2-MOB-006 a 009","P1","Mobile","docs; backlog","","Statut explicite avec preuve CHANGELOG par ticket; PA2-MOB-009 verifie en priorite"
+"PA2-MOB-015 Auditer les changements de role permission RH","P2","Mobile","API; manager mobile","PA2-MOB-014","Enregistrement audit acteur ancien nouveau role horodatage sur update employee role manager_role"
+"PA2-MOB-016 Pieces jointes pour absences et avances","P2","Mobile","API; employee/manager mobile","PA2-MOB-014","Absence.fromJson parse proof_path UI absences manager/employee; SalaryAdvance gagne un champ justificatif backend API mobile"
 "PA2-KIO-001 Kiosk onboarding appareil","P0","Kiosk","API; kiosk","","Provision device sync token roster annonces offline"
 "PA2-KIO-002 Punch kiosk biometrie/QR","P1","Kiosk","kiosk; API","PA2-KIO-001","Punch device QR fallback audit sync retry"
 "PA2-KIO-003 UI kiosk terrain moderne","P1","Kiosk","front/zkteco-kiosk","PA2-KIO-001","Gros boutons statut sync erreur actionnable"

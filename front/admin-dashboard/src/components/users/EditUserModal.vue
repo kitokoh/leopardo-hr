@@ -211,6 +211,8 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const props = defineProps({
   user: {
@@ -221,6 +223,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'updated'])
 const toast = useToast()
+const localeStore = useLocaleStore()
 
 const isLoading = ref(false)
 const companies = ref([])
@@ -331,7 +334,7 @@ async function forceLogout() {
 
 function formatDate(date) {
   if (!date) return 'Jamais'
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',

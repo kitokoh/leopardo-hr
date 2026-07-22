@@ -220,7 +220,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const summary = ref({
@@ -362,15 +365,16 @@ async function loadDashboard() {
 
 function formatCurrency(value, currency = 'EUR') {
   const amount = Number(value || 0)
+  const intlLocale = toIntlLocale(localeStore.current)
 
   try {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(intlLocale, {
       style: 'currency',
       currency: currency || 'EUR',
       maximumFractionDigits: 0,
     }).format(amount)
   } catch {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(intlLocale, {
       style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,
@@ -394,7 +398,7 @@ function riskLabel(risk) {
 
 function formatDate(value) {
   if (!value) return 'Non renseigné'
-  return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(new Date(value))
+  return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), { dateStyle: 'medium' }).format(new Date(value))
 }
 
 onMounted(loadDashboard)

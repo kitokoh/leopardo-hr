@@ -132,8 +132,11 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import EdgeStatCard from '@/components/edge/EdgeStatCard.vue';
 import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
 import { useEdgeNodesStore } from '@/stores/edgeNodes';
+import { useLocaleStore } from '@/stores/locale';
+import { toIntlLocale } from '@/i18n/index.js';
 
 const store = useEdgeNodesStore();
+const localeStore = useLocaleStore();
 const loading = ref(false);
 const syncingNodeId = ref(null);
 const selectedNode = ref(null);
@@ -191,7 +194,7 @@ function licenseLabel(status) {
 }
 
 function formatDate(iso) {
-  return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  return new Date(iso).toLocaleDateString(toIntlLocale(localeStore.current), { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function formatRelative(iso) {
