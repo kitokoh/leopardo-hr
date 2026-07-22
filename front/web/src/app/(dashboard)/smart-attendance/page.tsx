@@ -1,14 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Settings } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { GeoSessionStatusBadge } from './_components/GeoSessionStatusBadge';
 import { GeoSessionStatsCards, type DashboardStats } from './_components/GeoSessionStatsCards';
 import { ApproveSessionModal } from './_components/ApproveSessionModal';
 import { RejectSessionModal } from './_components/RejectSessionModal';
+
+const emptySubscribe = () => () => {};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,10 +36,10 @@ type DashboardPayload = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatTime(iso?: string | null): string {
+function formatTime(iso: string | null | undefined, intlLocale: string): string {
   if (!iso) return '—';
   const d = new Date(iso);
-  return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleTimeString(intlLocale, { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDuration(minutes?: number | null): string {
@@ -77,6 +80,9 @@ type ModalState =
   | null;
 
 export default function SmartAttendanceDashboardPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).smartAttendancePage;
+  const intlLocale = toIntlLocale(locale);
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
     detected: 0,
@@ -101,11 +107,11 @@ export default function SmartAttendanceDashboardPage() {
       setPendingSessions(sessions);
       setError(null);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger le tableau de bord.');
+      setError(err instanceof ApiError ? err.message : labels.dashboardLoadError);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [labels.dashboardLoadError]);
 
   useEffect(() => {
     void load();
@@ -129,7 +135,7 @@ export default function SmartAttendanceDashboardPage() {
       setLoading(true);
       await load();
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : 'Erreur lors de l\'approbation.');
+      alert(err instanceof ApiError ? err.message : labels.approveError);
     } finally {
       setModalLoading(false);
     }
@@ -147,7 +153,7 @@ export default function SmartAttendanceDashboardPage() {
       setLoading(true);
       await load();
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : 'Erreur lors du refus.');
+      alert(err instanceof ApiError ? err.message : labels.rejectError);
     } finally {
       setModalLoading(false);
     }
@@ -156,8 +162,8 @@ export default function SmartAttendanceDashboardPage() {
   return (
     <>
       <ModulePageShell
-        title="Smart Attendance"
-        subtitle="Suivi intelligent de présence par géolocalisation — validation des sessions en attente et statistiques du jour."
+        title={labels.title}
+        subtitle={labels.subtitle}
         accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
       >
         {error ? (
@@ -167,7 +173,7 @@ export default function SmartAttendanceDashboardPage() {
         ) : null}
 
         {/* Stats */}
-        <GeoSessionStatsCards stats={stats} loading={loading} />
+        <GeoSessionStatsCards stats={stats} loading={loading} labels={labels} />
 
         {/* Actions rapides */}
         <div className="flex items-center gap-3">
@@ -175,13 +181,13 @@ export default function SmartAttendanceDashboardPage() {
             href="/smart-attendance/sessions"
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 shadow-sm"
           >
-            Toutes les sessions →
+            {labels.allSessions}
           </Link>
           <Link
             href="/smart-attendance/settings"
             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 shadow-sm"
           >
-            <Settings className="h-4 w-4" aria-hidden="true" /> Paramètres
+            <Settings className="h-4 w-4" aria-hidden="true" /> {labels.settings}
           </Link>
         </div>
 
@@ -189,7 +195,7 @@ export default function SmartAttendanceDashboardPage() {
         <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-              Sessions en attente de validation
+              {labels.pendingSessionsTitle}
             </h2>
             <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700">
               {pendingSessions.length}
@@ -200,19 +206,19 @@ export default function SmartAttendanceDashboardPage() {
             <TableSkeleton />
           ) : pendingSessions.length === 0 ? (
             <div className="flex items-center justify-center gap-2 px-6 py-10 text-center text-sm text-slate-500">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" /> Aucune session en attente de validation.
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" /> {labels.noPendingSessions}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-app-border bg-slate-50/50">
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employé</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Arrivée</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Départ</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Durée</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
-                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckIn}</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckOut}</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnDuration}</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
@@ -220,17 +226,17 @@ export default function SmartAttendanceDashboardPage() {
                     <tr key={session.id} className="group transition-colors hover:bg-slate-50/60">
                       <td className="px-6 py-4">
                         <Link href={`/smart-attendance/sessions/${session.id}`} className="hover:underline">
-                          <p className="font-bold text-slate-900">{session.employee_name ?? `Employé #${session.employee_id}`}</p>
+                          <p className="font-bold text-slate-900">{session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}</p>
                           {session.employee_matricule ? (
                             <p className="text-xs text-slate-500">{session.employee_matricule}</p>
                           ) : null}
                         </Link>
                       </td>
-                      <td className="px-4 py-4 text-slate-700">{formatTime(session.check_in_time)}</td>
-                      <td className="px-4 py-4 text-slate-700">{formatTime(session.check_out_time)}</td>
+                      <td className="px-4 py-4 text-slate-700">{formatTime(session.check_in_time, intlLocale)}</td>
+                      <td className="px-4 py-4 text-slate-700">{formatTime(session.check_out_time, intlLocale)}</td>
                       <td className="px-4 py-4 text-slate-700">{formatDuration(session.duration_minutes)}</td>
                       <td className="px-4 py-4">
-                        <GeoSessionStatusBadge status={session.status} />
+                        <GeoSessionStatusBadge status={session.status} labels={labels} />
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
@@ -239,14 +245,14 @@ export default function SmartAttendanceDashboardPage() {
                             onClick={() => setModal({ type: 'approve', session })}
                             className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-500"
                           >
-                            Approuver
+                            {labels.approve}
                           </button>
                           <button
                             type="button"
                             onClick={() => setModal({ type: 'reject', session })}
                             className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-500"
                           >
-                            Refuser
+                            {labels.reject}
                           </button>
                         </div>
                       </td>
@@ -262,19 +268,21 @@ export default function SmartAttendanceDashboardPage() {
       {/* Modals */}
       {modal?.type === 'approve' ? (
         <ApproveSessionModal
-          employeeName={modal.session.employee_name ?? `Employé #${modal.session.employee_id}`}
+          employeeName={modal.session.employee_name ?? `${labels.employeeFallback} #${modal.session.employee_id}`}
           onConfirm={(note) => void handleApprove(note)}
           onCancel={() => setModal(null)}
           loading={modalLoading}
+          labels={labels}
         />
       ) : null}
 
       {modal?.type === 'reject' ? (
         <RejectSessionModal
-          employeeName={modal.session.employee_name ?? `Employé #${modal.session.employee_id}`}
+          employeeName={modal.session.employee_name ?? `${labels.employeeFallback} #${modal.session.employee_id}`}
           onConfirm={(reason) => void handleReject(reason)}
           onCancel={() => setModal(null)}
           loading={modalLoading}
+          labels={labels}
         />
       ) : null}
     </>
