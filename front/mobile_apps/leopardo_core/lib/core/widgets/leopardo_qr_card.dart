@@ -88,11 +88,11 @@ class LeopardoQrCard extends StatelessWidget {
                         backgroundColor: Colors.white,
                         eyeStyle: const QrEyeStyle(
                           eyeShape: QrEyeShape.circle,
-                          color: Color(0xFF0B1120),
+                          color: AppColors.mobileDarkBg,
                         ),
                         dataModuleStyle: const QrDataModuleStyle(
                           dataModuleShape: QrDataModuleShape.circle,
-                          color: Color(0xFF0B1120),
+                          color: AppColors.mobileDarkBg,
                         ),
                         errorCorrectionLevel: QrErrorCorrectLevel.M,
                       )
