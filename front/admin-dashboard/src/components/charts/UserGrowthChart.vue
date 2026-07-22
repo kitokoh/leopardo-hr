@@ -18,7 +18,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const chartContainer = ref(null)
 const chart = ref(null)
 const isLoading = ref(true)
@@ -60,7 +63,7 @@ async function loadData() {
   for (let i = 29; i >= 0; i--) {
     const date = new Date()
     date.setDate(date.getDate() - i)
-    dates.push(date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' }))
+    dates.push(date.toLocaleDateString(toIntlLocale(localeStore.current), { month: 'short', day: 'numeric' }))
 
     // Random new users between 5-50
     const newUsersCount = Math.floor(Math.random() * 45) + 5
@@ -92,7 +95,7 @@ function initChart() {
         let result = `<div class="font-medium">${params[0].axisValue}</div>`
         params.forEach(param => {
           const value = param.seriesName === 'Total Utilisateurs'
-            ? param.value.toLocaleString('fr-FR')
+            ? param.value.toLocaleString(toIntlLocale(localeStore.current))
             : param.value
           result += `
             <div class="flex items-center mt-1">
