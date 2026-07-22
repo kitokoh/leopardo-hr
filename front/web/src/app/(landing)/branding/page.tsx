@@ -18,44 +18,47 @@ import {
   Type,
 } from 'lucide-react';
 
-const features = [
-  {
-    icon: ImageIcon,
-    title: 'Logo entreprise',
-    desc: 'Uploadez votre logo (PNG, SVG). Il s\'affiche dans l\'app mobile, les emails et les bulletins PDF.',
-    color: 'emerald',
-  },
-  {
-    icon: Type,
-    title: 'Nom d\'affichage',
-    desc: 'Personnalisez le nom affiché dans l\'interface : "Acme Corp" plutôt que votre identifiant technique.',
-    color: 'blue',
-  },
-  {
-    icon: Palette,
-    title: 'Couleurs primaires',
-    desc: 'Définissez votre couleur principale et votre couleur d\'accent. Aperçu en temps réel dans le dashboard.',
-    color: 'violet',
-  },
-  {
-    icon: Smartphone,
-    title: 'Mobile branding',
-    desc: 'Le thème se propage dans l\'app manager et l\'app employee. Headers, boutons et badges adoptent vos couleurs.',
-    color: 'pink',
-  },
-  {
-    icon: Monitor,
-    title: 'Dashboard admin',
-    desc: 'L\'espace web du manager reflète votre identité visuelle dès la connexion.',
-    color: 'amber',
-  },
-  {
-    icon: Shield,
-    title: 'Isolation tenant',
-    desc: 'Chaque entreprise a son propre branding. Aucun risque de mélange entre tenants.',
-    color: 'red',
-  },
-];
+type Lang = 'fr' | 'en' | 'tr' | 'ar';
+const langs: Lang[] = ['fr', 'en', 'tr', 'ar'];
+
+type FeatureCopy = { title: string; desc: string; color: string };
+
+const featuresByLocale: Record<Lang, FeatureCopy[]> = {
+  fr: [
+    { title: 'Logo entreprise', desc: "Uploadez votre logo (PNG, SVG). Il s'affiche dans l'app mobile, les emails et les bulletins PDF.", color: 'emerald' },
+    { title: "Nom d'affichage", desc: 'Personnalisez le nom affiché dans l\'interface : "Acme Corp" plutôt que votre identifiant technique.', color: 'blue' },
+    { title: 'Couleurs primaires', desc: "Définissez votre couleur principale et votre couleur d'accent. Aperçu en temps réel dans le dashboard.", color: 'violet' },
+    { title: 'Mobile branding', desc: "Le thème se propage dans l'app manager et l'app employee. Headers, boutons et badges adoptent vos couleurs.", color: 'pink' },
+    { title: 'Dashboard admin', desc: "L'espace web du manager reflète votre identité visuelle dès la connexion.", color: 'amber' },
+    { title: 'Isolation tenant', desc: 'Chaque entreprise a son propre branding. Aucun risque de mélange entre tenants.', color: 'red' },
+  ],
+  en: [
+    { title: 'Company logo', desc: 'Upload your logo (PNG, SVG). It appears in the mobile app, emails and PDF payslips.', color: 'emerald' },
+    { title: 'Display name', desc: 'Customise the name shown in the interface: "Acme Corp" instead of your technical identifier.', color: 'blue' },
+    { title: 'Primary colours', desc: 'Set your primary and accent colours. Live preview in the dashboard.', color: 'violet' },
+    { title: 'Mobile branding', desc: 'The theme propagates to the manager and employee apps. Headers, buttons and badges pick up your colours.', color: 'pink' },
+    { title: 'Admin dashboard', desc: "The manager's web space reflects your visual identity as soon as they log in.", color: 'amber' },
+    { title: 'Tenant isolation', desc: 'Each company has its own branding. No risk of mixing tenants.', color: 'red' },
+  ],
+  tr: [
+    { title: 'Şirket logosu', desc: "Logonuzu yükleyin (PNG, SVG). Mobil uygulamada, e-postalarda ve PDF bordrolarda görünür.", color: 'emerald' },
+    { title: 'Görünen ad', desc: 'Arayüzde görünen adı özelleştirin: teknik kimliğiniz yerine "Acme Corp".', color: 'blue' },
+    { title: 'Birincil renkler', desc: 'Ana rengi ve vurgu rengini belirleyin. Panelde gerçek zamanlı önizleme.', color: 'violet' },
+    { title: 'Mobil marka', desc: 'Tema yönetici ve çalışan uygulamalarına yayılır. Başlıklar, düğmeler ve rozetler renklerinizi alır.', color: 'pink' },
+    { title: 'Yönetici paneli', desc: "Yöneticinin web alanı giriş yaptığı anda görsel kimliğinizi yansıtır.", color: 'amber' },
+    { title: 'Kiracı yalıtımı', desc: 'Her şirketin kendi markası vardır. Kiracılar arasında karışma riski yoktur.', color: 'red' },
+  ],
+  ar: [
+    { title: 'شعار الشركة', desc: 'ارفع شعارك (PNG، SVG). يظهر في التطبيق الجوال والبريد الإلكتروني وكشوف الرواتب PDF.', color: 'emerald' },
+    { title: 'الاسم المعروض', desc: 'خصّص الاسم المعروض في الواجهة: "Acme Corp" بدل معرفك التقني.', color: 'blue' },
+    { title: 'الألوان الأساسية', desc: 'حدّد لونك الأساسي ولون التمييز. معاينة فورية في لوحة التحكم.', color: 'violet' },
+    { title: 'الهوية على الموبايل', desc: 'ينتقل السمة إلى تطبيقي المدير والموظف. تتبنى الرؤوس والأزرار والشعارات ألوانك.', color: 'pink' },
+    { title: 'لوحة تحكم الإدارة', desc: 'مساحة المدير على الويب تعكس هويتك البصرية من أول تسجيل دخول.', color: 'amber' },
+    { title: 'عزل المستأجرين', desc: 'كل شركة لها هويتها الخاصة. لا خطر لاختلاط الهوية بين المستأجرين.', color: 'red' },
+  ],
+};
+
+const featureIcons = [ImageIcon, Type, Palette, Smartphone, Monitor, Shield] as const;
 
 const colorMap: Record<string, { bg: string; icon: string; border: string; light: string }> = {
   emerald: {
@@ -96,64 +99,94 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; light
   },
 };
 
-const plans = [
-  {
-    name: 'Starter',
-    price: 'Inclus',
-    features: ['Logo entreprise', 'Nom d\'affichage'],
-    highlight: false,
-  },
-  {
-    name: 'Pro',
-    price: 'Premium',
-    features: ['Logo entreprise', 'Nom d\'affichage', 'Couleurs personnalisées', 'Branding mobile'],
-    highlight: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Sur devis',
-    features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisé', 'Splash screen mobile custom'],
-    highlight: false,
-  },
-];
+type PlanCopy = { name: string; price: string; features: string[]; highlight: boolean };
 
-const copy: Record<string, { hero: string; heroSub: string; featuresTitle: string; plansTitle: string; ctaTitle: string; ctaBtn: string }> = {
+const plansByLocale: Record<Lang, PlanCopy[]> = {
+  fr: [
+    { name: 'Starter', price: 'Inclus', features: ['Logo entreprise', "Nom d'affichage"], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisées', 'Branding mobile'], highlight: true },
+    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisé', 'Splash screen mobile custom'], highlight: false },
+  ],
+  en: [
+    { name: 'Starter', price: 'Included', features: ['Company logo', 'Display name'], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Company logo', 'Display name', 'Custom colours', 'Mobile branding'], highlight: true },
+    { name: 'Enterprise', price: 'Custom quote', features: ['Everything in Pro', 'Full white-label', 'Custom domain', 'Custom mobile splash screen'], highlight: false },
+  ],
+  tr: [
+    { name: 'Starter', price: 'Dahil', features: ['Şirket logosu', 'Görünen ad'], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Şirket logosu', 'Görünen ad', 'Özel renkler', 'Mobil marka'], highlight: true },
+    { name: 'Enterprise', price: 'Teklif alın', features: ["Pro'daki her şey", 'Tam whitelabel', 'Özel alan adı', 'Özel mobil açılış ekranı'], highlight: false },
+  ],
+  ar: [
+    { name: 'Starter', price: 'مشمول', features: ['شعار الشركة', 'الاسم المعروض'], highlight: false },
+    { name: 'Pro', price: 'بريميوم', features: ['شعار الشركة', 'الاسم المعروض', 'ألوان مخصصة', 'هوية الموبايل'], highlight: true },
+    { name: 'Enterprise', price: 'حسب العرض', features: ['كل ما في Pro', 'علامة بيضاء كاملة', 'نطاق مخصص', 'شاشة بداية مخصصة للتطبيق'], highlight: false },
+  ],
+};
+
+type BrandingPageCopy = {
+  hero: string;
+  heroSub: string;
+  badge: string;
+  featuresTitle: string;
+  apiSectionTitle: string;
+  plansTitle: string;
+  recommendedBadge: string;
+  ctaTitle: string;
+  ctaSub: string;
+  ctaBtn: string;
+};
+
+const copy: Record<Lang, BrandingPageCopy> = {
   fr: {
     hero: 'Personnalisation entreprise',
     heroSub: 'Faites de Leopardo RH votre propre outil. Logo, couleurs, nom — tout reflète votre identité.',
+    badge: 'Tenant Branding Premium',
     featuresTitle: 'Ce que vous pouvez personnaliser',
+    apiSectionTitle: 'API Branding',
     plansTitle: 'Branding selon votre plan',
+    recommendedBadge: 'Recommandé',
     ctaTitle: 'Prêt à personnaliser votre espace ?',
+    ctaSub: 'Demandez une démo pour voir le branding premium en action.',
     ctaBtn: 'Démarrer la personnalisation',
   },
   en: {
     hero: 'Enterprise Branding',
     heroSub: 'Make Leopardo RH yours. Logo, colours, name — everything reflects your identity.',
+    badge: 'Tenant Branding Premium',
     featuresTitle: 'What you can customise',
+    apiSectionTitle: 'Branding API',
     plansTitle: 'Branding by plan',
+    recommendedBadge: 'Recommended',
     ctaTitle: 'Ready to customise your workspace?',
+    ctaSub: 'Request a demo to see premium branding in action.',
     ctaBtn: 'Start customising',
   },
   tr: {
     hero: 'Kurumsal Marka',
     heroSub: 'Leopardo RH\'yi kendinize ait yapın. Logo, renkler, isim — her şey kimliğinizi yansıtır.',
+    badge: 'Kiracı Marka Premium',
     featuresTitle: 'Neler özelleştirilebilir',
+    apiSectionTitle: 'Marka API',
     plansTitle: 'Plana göre marka özelleştirme',
+    recommendedBadge: 'Önerilen',
     ctaTitle: 'Çalışma alanınızı özelleştirmeye hazır mısınız?',
+    ctaSub: 'Premium markayı aksiyonda görmek için demo talep edin.',
     ctaBtn: 'Özelleştirmeye başla',
   },
   ar: {
     hero: 'هوية بصرية للمؤسسة',
     heroSub: 'اجعل Leopardo RH منصتك الخاصة. شعار، ألوان، اسم — كل شيء يعكس هويتك.',
+    badge: 'هوية المستأجر المميزة',
     featuresTitle: 'ما يمكنك تخصيصه',
+    apiSectionTitle: 'واجهة برمجة تطبيقات الهوية',
     plansTitle: 'العلامة التجارية حسب الخطة',
+    recommendedBadge: 'موصى به',
     ctaTitle: 'هل أنت مستعد لتخصيص مساحتك؟',
+    ctaSub: 'اطلب عرضًا توضيحيًا لمشاهدة الهوية المميزة قيد العمل.',
     ctaBtn: 'ابدأ التخصيص',
   },
 };
-
-type Lang = 'fr' | 'en' | 'tr' | 'ar';
-const langs: Lang[] = ['fr', 'en', 'tr', 'ar'];
 
 export default function BrandingPage() {
   const [isDark, setIsDark] = useState(false);
@@ -161,6 +194,8 @@ export default function BrandingPage() {
   useScrollReveal();
 
   const t = copy[lang];
+  const features = featuresByLocale[lang];
+  const plans = plansByLocale[lang];
   const isRtl = lang === 'ar';
 
   return (
@@ -192,7 +227,7 @@ export default function BrandingPage() {
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/15 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-6">
             <Brush className="w-3.5 h-3.5" />
-            Tenant Branding Premium
+            {t.badge}
           </div>
 
           <motion.h1
@@ -246,6 +281,7 @@ export default function BrandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feat, i) => {
               const c = colorMap[feat.color];
+              const Icon = featureIcons[i];
               return (
                 <motion.div
                   key={feat.title}
@@ -256,7 +292,7 @@ export default function BrandingPage() {
                   className={`p-6 rounded-2xl border ${c.border} ${c.bg}`}
                 >
                   <div className={`w-10 h-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center mb-4 shadow-sm`}>
-                    <feat.icon className={`w-5 h-5 ${c.icon}`} />
+                    <Icon className={`w-5 h-5 ${c.icon}`} />
                   </div>
                   <h3 className="font-bold text-slate-900 dark:text-white mb-2">{feat.title}</h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{feat.desc}</p>
@@ -272,7 +308,7 @@ export default function BrandingPage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
             <Layers className="w-6 h-6 text-violet-600 dark:text-violet-400" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">API Branding</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t.apiSectionTitle}</h2>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 dark:bg-slate-950 overflow-hidden">
@@ -320,7 +356,7 @@ export default function BrandingPage() {
               >
                 {plan.highlight && (
                   <div className="flex items-center gap-1 text-violet-200 text-xs font-semibold mb-2">
-                    <Sparkles className="w-3.5 h-3.5" /> Recommandé
+                    <Sparkles className="w-3.5 h-3.5" /> {t.recommendedBadge}
                   </div>
                 )}
                 <p className={`font-black text-2xl mb-1 ${plan.highlight ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
@@ -353,7 +389,7 @@ export default function BrandingPage() {
         >
           <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">{t.ctaTitle}</h2>
           <p className="text-slate-500 dark:text-slate-400 mb-8">
-            Demandez une démo pour voir le branding premium en action.
+            {t.ctaSub}
           </p>
           <Link
             href="/demo"

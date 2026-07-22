@@ -95,7 +95,10 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const conversations = ref([])
 const activeConversation = ref(null)
 const messages = ref([])
@@ -105,12 +108,12 @@ const messagesContainer = ref(null)
 
 function formatDate(date) {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), { day: '2-digit', month: '2-digit' })
 }
 
 function formatTime(date) {
   if (!date) return ''
-  return new Date(date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(date).toLocaleTimeString(toIntlLocale(localeStore.current), { hour: '2-digit', minute: '2-digit' })
 }
 
 function scrollToBottom() {

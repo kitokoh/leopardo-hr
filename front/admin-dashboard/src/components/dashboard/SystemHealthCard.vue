@@ -135,9 +135,12 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ExclamationTriangleIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
+const localeStore = useLocaleStore()
 
 // Mock system metrics (in real app, these would come from monitoring APIs)
 const apiResponseTime = ref(45)
@@ -185,6 +188,6 @@ function formatTime(timestamp) {
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  return time.toLocaleDateString('fr-FR')
+  return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 </script>

@@ -26,10 +26,15 @@ Our API follows REST principles, uses JSON for communication, and returns standa
 Most endpoints require a **Bearer Token** obtained via the `/auth/login` endpoint.
 
 ```bash
-curl -X POST https://api.leopardo-rh.com/api/v1/auth/login \
+curl -X POST https://gestionemployerbackend.onrender.com/api/v1/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email": "admin@leopardo-rh.com", "password": "password123"}'
 ```
+
+> The `admin@leopardo-rh.com` demo account above is only seeded/servable when
+> the target environment has `DEMO_MODE_ENABLED=true` (see
+> [DEMO_ACCOUNTS.md](../DEMO_ACCOUNTS.md)). Replace with a real account when
+> targeting an environment without demo mode enabled.
 
 ---
 
