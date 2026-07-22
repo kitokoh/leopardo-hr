@@ -153,7 +153,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF111B2E),
+        color: AppColors.mobileDarkSurface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
@@ -186,7 +186,7 @@ class _PendingCard extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF111B2E),
+          color: AppColors.mobileDarkSurface,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
