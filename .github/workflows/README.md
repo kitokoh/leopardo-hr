@@ -63,6 +63,8 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 |---|---|---|
 | `fix-composer-lock.yml` | Manuel | Régénère composer.lock |
 | `plan-action2-project.yml` | PR → docs/PLAN_ACTION2 | Sync GitHub Projects |
+| `plan-action2-claim-guard.yml` | PR (opened/edited/synchronize) | Garde-fou collision de claim multi-agent + signalement PR sans ID PA2-* (PA2-AUTO-011/004) |
+| `plan-action2-post-merge-audit.yml` | Push → main | Audit non bloquant CHANGELOG/openapi.yaml/i18n apres chaque merge (PA2-AUTO-010) |
 
 ---
 

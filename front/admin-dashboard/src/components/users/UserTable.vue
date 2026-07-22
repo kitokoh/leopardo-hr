@@ -192,6 +192,10 @@ import {
   TrashIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   users: {
@@ -349,11 +353,11 @@ function formatLastLogin(date) {
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
   if (diff < 604800000) return `${Math.floor(diff / 86400000)}j`
 
-  return loginDate.toLocaleDateString('fr-FR')
+  return loginDate.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 
 function formatDate(date) {
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'

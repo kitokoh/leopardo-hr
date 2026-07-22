@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Monitor, Smartphone, TabletSmartphone } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
@@ -11,6 +12,14 @@ type ProductScreen = {
   features: string[];
   gradient: string;
   mockup: 'desktop' | 'mobile' | 'kiosk';
+  /**
+   * Real product screenshot served from `front/web/public/screenshots`.
+   * When omitted (e.g. the ZKTeco kiosk, which has no captured screenshot
+   * asset yet), the abstract placeholder frame is rendered instead so we
+   * never fake a screenshot that does not exist.
+   */
+  screenshotSrc?: string;
+  screenshotAlt?: string;
 };
 
 const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; screens: ProductScreen[] }> = {
@@ -26,6 +35,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['KPI temps reel', 'Gestion paie multi-pays', 'Pipeline recrutement', 'Exports CSV/PDF'],
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
+        screenshotSrc: '/screenshots/web-dashboard.png',
+        screenshotAlt: 'Capture du dashboard admin Leopardo RH',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -34,6 +45,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['Pointage GPS/biometrique', 'Bulletins de paie', 'Demandes de conges', 'Notifications push'],
         gradient: 'from-violet-500 to-purple-500',
         mockup: 'mobile',
+        screenshotSrc: '/screenshots/mobile-attendance.png',
+        screenshotAlt: "Capture de l'ecran de pointage de l'app mobile employe",
       },
       {
         icon: <TabletSmartphone className="w-6 h-6" />,
@@ -57,6 +70,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['Real-time KPIs', 'Multi-country payroll', 'Recruitment pipeline', 'CSV/PDF exports'],
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
+        screenshotSrc: '/screenshots/web-dashboard.png',
+        screenshotAlt: 'Leopardo HR admin dashboard screenshot',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -65,6 +80,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['GPS/biometric check-in', 'Pay slips', 'Leave requests', 'Push notifications'],
         gradient: 'from-violet-500 to-purple-500',
         mockup: 'mobile',
+        screenshotSrc: '/screenshots/mobile-attendance.png',
+        screenshotAlt: 'Employee mobile app attendance screen screenshot',
       },
       {
         icon: <TabletSmartphone className="w-6 h-6" />,
@@ -88,6 +105,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['Gercek zamanli KPI', 'Cok ulkeli bordro', 'Ise alim hatti', 'CSV/PDF ihracat'],
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
+        screenshotSrc: '/screenshots/web-dashboard.png',
+        screenshotAlt: 'Leopardo IK yonetici paneli ekran goruntusu',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -96,6 +115,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['GPS/biyometrik giris', 'Maas bordrolari', 'Izin talepleri', 'Push bildirimler'],
         gradient: 'from-violet-500 to-purple-500',
         mockup: 'mobile',
+        screenshotSrc: '/screenshots/mobile-attendance.png',
+        screenshotAlt: 'Calisan mobil uygulamasi puantaj ekrani goruntusu',
       },
       {
         icon: <TabletSmartphone className="w-6 h-6" />,
@@ -119,6 +140,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['مؤشرات فورية', 'رواتب متعددة البلدان', 'خط أنابيب التوظيف', 'تصدير CSV/PDF'],
         gradient: 'from-emerald-500 to-cyan-500',
         mockup: 'desktop',
+        screenshotSrc: '/screenshots/web-dashboard.png',
+        screenshotAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو للموارد البشرية',
       },
       {
         icon: <Smartphone className="w-6 h-6" />,
@@ -127,6 +150,8 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
         features: ['تسجيل GPS/بيومتري', 'كشوف الرواتب', 'طلبات الإجازة', 'إشعارات فورية'],
         gradient: 'from-violet-500 to-purple-500',
         mockup: 'mobile',
+        screenshotSrc: '/screenshots/mobile-attendance.png',
+        screenshotAlt: 'لقطة شاشة لشاشة الحضور في تطبيق الموظف المحمول',
       },
       {
         icon: <TabletSmartphone className="w-6 h-6" />,
@@ -140,20 +165,42 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
   },
 };
 
-function MockupFrame({ type, gradient }: { type: 'desktop' | 'mobile' | 'kiosk'; gradient: string }) {
+function MockupFrame({
+  type,
+  gradient,
+  screenshotSrc,
+  screenshotAlt,
+}: {
+  type: 'desktop' | 'mobile' | 'kiosk';
+  gradient: string;
+  screenshotSrc?: string;
+  screenshotAlt?: string;
+}) {
   if (type === 'mobile') {
     return (
       <div className="relative mx-auto w-[180px] h-[320px]">
         <div className="absolute inset-0 rounded-[2rem] border-4 border-slate-800 dark:border-slate-600 bg-slate-900 shadow-2xl overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-slate-800 dark:bg-slate-600 rounded-b-xl" />
-          <div className={`absolute inset-[3px] rounded-[1.7rem] bg-gradient-to-br ${gradient} opacity-20`} />
-          <div className="absolute inset-[3px] rounded-[1.7rem] flex flex-col items-center justify-center gap-2 p-4">
-            <div className="w-full h-3 bg-white/20 rounded" />
-            <div className="w-3/4 h-3 bg-white/15 rounded" />
-            <div className="w-full h-16 bg-white/10 rounded-lg mt-2" />
-            <div className="w-full h-8 bg-white/10 rounded-lg" />
-            <div className="w-full h-8 bg-white/10 rounded-lg" />
-          </div>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-slate-800 dark:bg-slate-600 rounded-b-xl z-10" />
+          {screenshotSrc ? (
+            <Image
+              src={screenshotSrc}
+              alt={screenshotAlt ?? ''}
+              fill
+              sizes="180px"
+              className="object-cover object-top"
+            />
+          ) : (
+            <>
+              <div className={`absolute inset-[3px] rounded-[1.7rem] bg-gradient-to-br ${gradient} opacity-20`} />
+              <div className="absolute inset-[3px] rounded-[1.7rem] flex flex-col items-center justify-center gap-2 p-4">
+                <div className="w-full h-3 bg-white/20 rounded" />
+                <div className="w-3/4 h-3 bg-white/15 rounded" />
+                <div className="w-full h-16 bg-white/10 rounded-lg mt-2" />
+                <div className="w-full h-8 bg-white/10 rounded-lg" />
+                <div className="w-full h-8 bg-white/10 rounded-lg" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
@@ -163,15 +210,27 @@ function MockupFrame({ type, gradient }: { type: 'desktop' | 'mobile' | 'kiosk';
     return (
       <div className="relative mx-auto w-[220px] h-[280px]">
         <div className="absolute inset-0 rounded-2xl border-4 border-slate-700 dark:border-slate-600 bg-slate-900 shadow-2xl overflow-hidden">
-          <div className={`absolute inset-[3px] rounded-xl bg-gradient-to-br ${gradient} opacity-20`} />
-          <div className="absolute inset-[3px] rounded-xl flex flex-col items-center justify-center gap-3 p-4">
-            <div className="w-16 h-16 rounded-full bg-white/15 flex items-center justify-center">
-              <div className="w-8 h-8 rounded-full bg-white/20" />
-            </div>
-            <div className="w-3/4 h-3 bg-white/20 rounded" />
-            <div className="w-full h-10 bg-white/10 rounded-lg mt-1" />
-            <div className="w-full h-10 bg-white/10 rounded-lg" />
-          </div>
+          {screenshotSrc ? (
+            <Image
+              src={screenshotSrc}
+              alt={screenshotAlt ?? ''}
+              fill
+              sizes="220px"
+              className="object-cover object-top"
+            />
+          ) : (
+            <>
+              <div className={`absolute inset-[3px] rounded-xl bg-gradient-to-br ${gradient} opacity-20`} />
+              <div className="absolute inset-[3px] rounded-xl flex flex-col items-center justify-center gap-3 p-4">
+                <div className="w-16 h-16 rounded-full bg-white/15 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-white/20" />
+                </div>
+                <div className="w-3/4 h-3 bg-white/20 rounded" />
+                <div className="w-full h-10 bg-white/10 rounded-lg mt-1" />
+                <div className="w-full h-10 bg-white/10 rounded-lg" />
+              </div>
+            </>
+          )}
         </div>
         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-3 bg-slate-700 dark:bg-slate-600 rounded-b-lg" />
       </div>
@@ -181,25 +240,37 @@ function MockupFrame({ type, gradient }: { type: 'desktop' | 'mobile' | 'kiosk';
   return (
     <div className="relative mx-auto w-full max-w-[300px] h-[200px]">
       <div className="absolute inset-0 rounded-xl border-2 border-slate-700 dark:border-slate-600 bg-slate-900 shadow-2xl overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-6 bg-slate-800 dark:bg-slate-700 flex items-center gap-1.5 px-3">
+        <div className="absolute top-0 left-0 right-0 h-6 bg-slate-800 dark:bg-slate-700 flex items-center gap-1.5 px-3 z-10">
           <span className="w-2 h-2 rounded-full bg-red-500/60" />
           <span className="w-2 h-2 rounded-full bg-amber-500/60" />
           <span className="w-2 h-2 rounded-full bg-green-500/60" />
         </div>
-        <div className={`absolute inset-[2px] top-6 rounded-b-lg bg-gradient-to-br ${gradient} opacity-15`} />
-        <div className="absolute inset-[2px] top-6 rounded-b-lg flex flex-col gap-2 p-3">
-          <div className="flex gap-2">
-            <div className="w-1/4 h-full bg-white/10 rounded-lg min-h-[130px]" />
-            <div className="flex-1 flex flex-col gap-2">
+        {screenshotSrc ? (
+          <Image
+            src={screenshotSrc}
+            alt={screenshotAlt ?? ''}
+            fill
+            sizes="300px"
+            className="object-cover object-top pt-6"
+          />
+        ) : (
+          <>
+            <div className={`absolute inset-[2px] top-6 rounded-b-lg bg-gradient-to-br ${gradient} opacity-15`} />
+            <div className="absolute inset-[2px] top-6 rounded-b-lg flex flex-col gap-2 p-3">
               <div className="flex gap-2">
-                <div className="flex-1 h-12 bg-white/10 rounded-lg" />
-                <div className="flex-1 h-12 bg-white/10 rounded-lg" />
-                <div className="flex-1 h-12 bg-white/10 rounded-lg" />
+                <div className="w-1/4 h-full bg-white/10 rounded-lg min-h-[130px]" />
+                <div className="flex-1 flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <div className="flex-1 h-12 bg-white/10 rounded-lg" />
+                    <div className="flex-1 h-12 bg-white/10 rounded-lg" />
+                    <div className="flex-1 h-12 bg-white/10 rounded-lg" />
+                  </div>
+                  <div className="flex-1 bg-white/10 rounded-lg" />
+                </div>
               </div>
-              <div className="flex-1 bg-white/10 rounded-lg" />
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -248,7 +319,12 @@ export function ProductScreenshots({ locale = 'fr' }: ProductScreenshotsProps) {
             >
               <div className="bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl transition-all duration-300">
                 <div className="mb-6">
-                  <MockupFrame type={screen.mockup} gradient={screen.gradient} />
+                  <MockupFrame
+                    type={screen.mockup}
+                    gradient={screen.gradient}
+                    screenshotSrc={screen.screenshotSrc}
+                    screenshotAlt={screen.screenshotAlt}
+                  />
                 </div>
 
                 <div className="flex items-center gap-3 mb-3">

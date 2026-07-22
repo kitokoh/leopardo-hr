@@ -5,11 +5,14 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Plus, RefreshCw, ShieldAlert, Wifi, WifiOff, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+
+const emptySubscribe = () => () => {};
 
 interface EdgeNode {
   id: string;
@@ -39,6 +42,7 @@ const MODE_STYLES: Record<string, string> = {
 };
 
 export default function EdgeNodesPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [nodes, setNodes] = useState<EdgeNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState<string | null>(null);
@@ -190,7 +194,7 @@ export default function EdgeNodesPage() {
                         {node.site_address ?? 'Adresse non renseignee'} · v{node.edge_version}
                       </p>
                       <p className="mt-1 text-xs text-slate-400">
-                        Derniere sync : {node.last_sync_at ? new Date(node.last_sync_at).toLocaleString('fr-FR') : 'jamais'}
+                        Derniere sync : {node.last_sync_at ? new Date(node.last_sync_at).toLocaleString(toIntlLocale(locale)) : 'jamais'}
                       </p>
                     </div>
                   </div>
