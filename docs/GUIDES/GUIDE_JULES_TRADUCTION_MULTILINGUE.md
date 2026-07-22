@@ -64,7 +64,7 @@ Apres traduction, l'agent technique doit executer :
 
 ```powershell
 node shared/i18n/validators/validate.js
-powershell -NoProfile -ExecutionPolicy Bypass -File dev-hub/tools/validate-i18n-debt.ps1
+node dev-hub/tools/i18n-debt.js
 ```
 
 Si `validate.js` echoue a cause d'une dette existante hors changement Jules, documenter le blocage dans le PR au lieu de modifier du code applicatif au hasard.

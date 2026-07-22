@@ -64,6 +64,99 @@
     "notifications": "Notifications",
     "evaluations": "Evaluations"
   },
+  "users": {
+    "page": {
+      "title": "User Management",
+      "summary": ":count user(s) - :active active - :newToday new today"
+    },
+    "actions": {
+      "bulk": "Actions (:count)",
+      "export": "Export",
+      "new": "New"
+    },
+    "filters": {
+      "search": {
+        "label": "Search",
+        "placeholder": "Name, email, company..."
+      },
+      "status": {
+        "label": "Status",
+        "all": "All statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "suspended": "Suspended",
+        "pending": "Pending"
+      },
+      "role": {
+        "label": "Role",
+        "all": "All roles",
+        "admin": "Administrator",
+        "manager": "Manager",
+        "employee": "Employee",
+        "hr": "HR"
+      },
+      "company": {
+        "label": "Company",
+        "all": "All companies"
+      },
+      "registrationDate": {
+        "label": "Registration date",
+        "all": "All dates",
+        "today": "Today",
+        "week": "This week",
+        "month": "This month",
+        "quarter": "This quarter"
+      },
+      "lastLogin": {
+        "label": "Last login",
+        "all": "All",
+        "today": "Today",
+        "week": "This week",
+        "month": "This month",
+        "never": "Never logged in"
+      },
+      "segment": {
+        "label": "Segment",
+        "all": "All segments",
+        "champions": "Champions",
+        "loyal": "Loyal",
+        "potential": "Potential",
+        "new": "New",
+        "atRisk": "At risk"
+      },
+      "advanced": {
+        "show": "Show advanced filters",
+        "hide": "Hide advanced filters"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count selected",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "suspend": "Suspend",
+      "export": "Export",
+      "cancel": "Cancel"
+    },
+    "toast": {
+      "loadError": "Failed to load users",
+      "bulkActivated": ":count user(s) activated",
+      "bulkDeactivated": ":count user(s) deactivated",
+      "bulkSuspended": ":count user(s) suspended",
+      "bulkError": "Bulk action failed",
+      "deleted": "User deleted",
+      "deleteError": "Failed to delete user",
+      "impersonating": "Signing in as :name",
+      "created": "User created successfully",
+      "updated": "User updated",
+      "exportInProgress": "Export in progress...",
+      "exportDone": "Export completed",
+      "exportError": "Export failed",
+      "selectionExportDone": "Selection export completed"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete :name?"
+    }
+  },
   "emails": {
     "invitation": {
       "subject": "You are invited to join :company on Leopardo HR",

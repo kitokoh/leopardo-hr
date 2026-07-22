@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
 import '../../core/platform_providers.dart';
@@ -365,7 +366,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         value: _activateImmediately,
         onChanged: (value) => setState(() => _activateImmediately = value),
         activeThumbColor: Colors.white,
-        activeTrackColor: const Color(0xFF10B981),
+        activeTrackColor: AppColors.rh,
         title: const Text(
           'Activer immediatement',
           style: TextStyle(

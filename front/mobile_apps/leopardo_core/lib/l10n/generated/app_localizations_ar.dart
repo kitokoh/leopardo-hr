@@ -181,4 +181,67 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get emailsAbsenceRejectedFooter =>
       'تواصل مع مديرك اذا كنت تحتاج تفاصيل اضافية.';
+
+  @override
+  String get profileTitle => 'ملفي الشخصي';
+
+  @override
+  String get profileSubtitle => 'المعلومات الشخصية واللغة';
+
+  @override
+  String get profileLoading => 'تحميل الملف...';
+
+  @override
+  String get profileBackTooltip => 'رجوع';
+
+  @override
+  String get profileJobTitleUnset => 'المنصب الوظيفي فيغر محدد';
+
+  @override
+  String get profileDetailsTitle => 'المعلومات';
+
+  @override
+  String get profileEmailLabel => 'البريد الالكتروني';
+
+  @override
+  String get profileDepartmentLabel => 'القسم';
+
+  @override
+  String get profileJobTitleLabel => 'المنصب الوظيفي';
+
+  @override
+  String get profileMatriculeLabel => 'رقم الموظف';
+
+  @override
+  String get profileValueUnset => 'فير محدد';
+
+  @override
+  String get profileOpenSettings => 'فتح اعدادات الحساب';
+
+  @override
+  String get profileLanguageUpdated => 'تم تحديث اللغة.';
+
+  @override
+  String get profileLanguageSaving => 'جارٍ التحديث...';
+
+  @override
+  String get profileLanguageSave => 'تحديث اللغة';
+
+  @override
+  String get aiChatTitle => 'مساعد الذكاء الاصطناعي';
+
+  @override
+  String get aiChatBackTooltip => 'رجوع';
+
+  @override
+  String get aiChatSendTooltip => 'إرسال';
+
+  @override
+  String get aiChatInputHint => 'اكتب رسالتك...';
+
+  @override
+  String get aiChatEmptyStateTitle => 'اطرح أسئلتك المتعلقة بالموارد البشرية';
+
+  @override
+  String get aiChatErrorMessage => 'خطأ: تعذر الاتصال بالمساعد.';
 }
