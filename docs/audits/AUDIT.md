@@ -490,9 +490,9 @@ MAIL_PORT=587
 MAIL_USERNAME=...
 MAIL_PASSWORD=...
 
-# Redis — CHANGER après rotation du mot de passe Upstash
-REDIS_URL=rediss://default:NOUVEAU_MDP@REDACTED.upstash.io:6379
-REDIS_PASSWORD=NOUVEAU_MDP
+# Redis — CHANGER après rotation du mot de passe Upstash (voir docs/security/SECURITY_INCIDENT_REDIS_2026-07.md)
+REDIS_URL=rediss://default:<NOUVEAU_MDP>@<votre_host>.upstash.io:6379
+REDIS_PASSWORD=<NOUVEAU_MDP>
 ```
 
 ---
