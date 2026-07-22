@@ -25,13 +25,13 @@ class AttendanceScreen extends ConsumerStatefulWidget {
 }
 
 class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
-  static const Color _bg = Color(0xFF0B1120);
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _secondary = Color(0xFFB8C7DA);
-  static const Color _border = Color(0xFF1A2B44);
-  static const Color _soft = Color(0xFF6F86A5);
+  static const Color _bg = AppColors.mobileDarkBg;
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _text = AppColors.mobileDarkText;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _secondary = AppColors.mobileDarkSecondary;
+  static const Color _border = AppColors.mobileDarkBorder;
+  static const Color _soft = AppColors.mobileDarkDisabled;
 
   late Timer _clockTimer;
   DateTime _now = DateTime.now();
@@ -281,7 +281,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFF2A3C5A),
+                color: AppColors.mobileDarkSurfaceAlt,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -584,7 +584,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   style: TextStyle(
                     fontSize: 11,
                     color:
-                        _fingerprintEnabled ? _soft : const Color(0xFF1E3050),
+                        _fingerprintEnabled ? _soft : AppColors.mobileDarkFieldAlt,
                   ),
                 ),
               ],
@@ -810,7 +810,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           fontFeatures: const [FontFeature.tabularFigures()],
-                          color: day.isAbsent ? _soft : const Color(0xFFC8D8F0),
+                          color: day.isAbsent ? _soft : AppColors.mobileDarkTextSoft,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -890,7 +890,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           _WeekStat(
             value: '${hours}h${mins.toString().padLeft(2, '0')}',
             label: 'Heures semaine',
-            color: const Color(0xFFC8D8F0),
+            color: AppColors.mobileDarkTextSoft,
           ),
           _WeekStat(
             value: '${totalEarnings.toStringAsFixed(0)} $currency',
@@ -1041,7 +1041,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                     child: _DetailMetric(
                       label: 'Temps travaille',
                       value: day.hoursFormatted,
-                      color: const Color(0xFFC8D8F0),
+                      color: AppColors.mobileDarkTextSoft,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -1207,7 +1207,7 @@ class _TasksSheetFrame extends StatelessWidget {
             width: 36,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFF2A3C5A),
+              color: AppColors.mobileDarkSurfaceAlt,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -1302,7 +1302,7 @@ class _SheetHandle extends StatelessWidget {
         width: 36,
         height: 4,
         decoration: BoxDecoration(
-          color: const Color(0xFF2A3C5A),
+          color: AppColors.mobileDarkSurfaceAlt,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -1331,7 +1331,7 @@ class _ActionTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF0C1525),
+          color: AppColors.mobileDarkField,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: _AttendanceScreenState._border),
         ),
@@ -1397,7 +1397,7 @@ class _DetailMetric extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C1525),
+        color: AppColors.mobileDarkField,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _AttendanceScreenState._border),
       ),
@@ -1447,7 +1447,7 @@ class _SessionDetailTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C1525),
+        color: AppColors.mobileDarkField,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _AttendanceScreenState._border),
       ),
@@ -1541,10 +1541,10 @@ class _SessionDetailTile extends StatelessWidget {
       case 'overtime':
         return AppColors.warning;
       case 'break':
-        return const Color(0xFF6F86A5);
+        return AppColors.mobileDarkDisabled;
       case 'mission':
       case 'travel':
-        return const Color(0xFF38BDF8);
+        return AppColors.mobileAccentSkyBlue;
       default:
         return AppColors.rh;
     }
@@ -1569,7 +1569,7 @@ class _TaskLine extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C1525),
+        color: AppColors.mobileDarkField,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: _AttendanceScreenState._border),
       ),
@@ -1931,7 +1931,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2A3C5A),
+                  color: AppColors.mobileDarkSurfaceAlt,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -1942,7 +1942,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFFE2EAF6),
+                color: AppColors.mobileDarkText,
               ),
             ),
             const SizedBox(height: 4),
@@ -1950,7 +1950,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               widget.canDirectEdit
                   ? 'La correction sera appliquee au dossier de pointage.'
                   : 'La demande sera transmise au RH pour validation.',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF7A9CC0)),
+              style: const TextStyle(fontSize: 12, color: AppColors.mobileDarkMuted),
             ),
             const SizedBox(height: 18),
             Row(
@@ -1977,22 +1977,22 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               controller: _reasonCtrl,
               maxLines: 2,
               maxLength: 200,
-              style: const TextStyle(fontSize: 13, color: Color(0xFFE2EAF6)),
+              style: const TextStyle(fontSize: 13, color: AppColors.mobileDarkText),
               decoration: InputDecoration(
                 hintText: 'Motif (ex: oubli de pointage a 8h)',
                 hintStyle: const TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF7A9CC0),
+                  color: AppColors.mobileDarkMuted,
                 ),
                 filled: true,
-                fillColor: const Color(0xFF0C1525),
+                fillColor: AppColors.mobileDarkField,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF1A2B44)),
+                  borderSide: const BorderSide(color: AppColors.mobileDarkBorder),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF1A2B44)),
+                  borderSide: const BorderSide(color: AppColors.mobileDarkBorder),
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
@@ -2054,16 +2054,16 @@ class _TimeTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFF0C1525),
+          color: AppColors.mobileDarkField,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF1A2B44)),
+          border: Border.all(color: AppColors.mobileDarkBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 10, color: Color(0xFF7A9CC0)),
+              style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
             ),
             const SizedBox(height: 4),
             Text(
@@ -2073,7 +2073,7 @@ class _TimeTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: value != null ? AppColors.rh : const Color(0xFF6F86A5),
+                color: value != null ? AppColors.rh : AppColors.mobileDarkDisabled,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -2095,23 +2095,23 @@ class _TimeChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C1525),
+        color: AppColors.mobileDarkField,
         borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: const Color(0xFF1A2B44)),
+        border: Border.all(color: AppColors.mobileDarkBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 10, color: Color(0xFF7A9CC0)),
+            style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
           ),
           const SizedBox(height: 4),
           Text(
             value,
             style: const TextStyle(
               fontSize: 18,
-              color: Color(0xFFE2EAF6),
+              color: AppColors.mobileDarkText,
               fontWeight: FontWeight.w600,
               fontFeatures: [FontFeature.tabularFigures()],
             ),
@@ -2159,11 +2159,11 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF7A9CC0)),
+        Icon(icon, size: 16, color: AppColors.mobileDarkMuted),
         const SizedBox(width: 10),
         Text(
           label,
-          style: const TextStyle(fontSize: 13, color: Color(0xFFE2EAF6)),
+          style: const TextStyle(fontSize: 13, color: AppColors.mobileDarkText),
         ),
       ],
     );
@@ -2197,7 +2197,7 @@ class _WeekStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: Color(0xFF6F86A5)),
+          style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkDisabled),
         ),
       ],
     );
