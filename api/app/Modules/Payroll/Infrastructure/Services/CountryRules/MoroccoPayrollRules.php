@@ -76,12 +76,18 @@ class MoroccoPayrollRules extends AbstractCountryRules
         return 'Africa/Casablanca';
     }
 
+    /**
+     * @return array<int, int>
+     */
     public function weeklyRestDays(): array
     {
         // Sunday is the standard weekly rest day in Morocco.
         return [7];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function supportedPayCycles(): array
     {
         return ['daily', 'weekly', 'monthly'];
@@ -89,15 +95,38 @@ class MoroccoPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Moroccan public-holiday calendar wired in yet; '.
-            'national/religious holidays (Aid al-Fitr, Aid al-Adha, Fete du Trone, etc.) '.
-            'must be entered manually per company until PA2-COUNTRY-012 delivers a real source.';
+        return 'Placeholder: no official Moroccan public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string
     {
         return 'pilot';
     }
+
+    /**
+     * PA2-COUNTRY-005: Moroccan labor code (loi 65-99) sets the legal weekly
+     * working-hours threshold at 44 hours/week for most non-agricultural
+     * sectors.
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 44.0;
+    }
+
+    /**
+     * PA2-COUNTRY-005: loi 65-99 art. 201 majore les heures supplementaires
+     * de 25% (heures de jour) a 50% (heures de nuit/jour de repos), avec des
+     * taux plus eleves les jours feries. Modelise ici uniquement le palier
+     * par defaut "heures de jour", a titre pilote (confidenceLevel='pilot') ;
+     * la distinction jour/nuit/ferie necessite un horodatage non disponible
+     * dans cette interface generique.
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => null, 'multiplier' => 1.25],
+        ];
+    }
 }
-
-
