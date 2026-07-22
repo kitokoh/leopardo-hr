@@ -26,7 +26,7 @@
 | PA2-ONB-001 | P0 | Trial self-service de bout en bout | API, `front/web` | creation entreprise, manager, plan trial, email welcome, retour credentials ou next-step securise |
 | PA2-ONB-002 | P0 | Activation client platform admin | API, `front/admin-dashboard`, mobile admin | creer, voir, activer client; devise/langue/timezone selon pays; tests contrat |
 | PA2-ONB-003 | P1 | Onboarding wizard manager | `front/web`, mobile manager | premiere connexion guide horaires, employes, branding, regles, kiosk |
-| PA2-ONB-004 | P1 | Demo users publics robustes | API, docs, front | `/demo-users` expose employee/manager/superadmin utilisables, docs QA alignees |
+| PA2-ONB-004 | P1 | ~~Demo users~~ Fait le 2026-07-22: `docs/DEMO_ACCOUNTS.md` recrivait des comptes fictifs (`hr@techcorp.com`, `manager@techcorp.com`, `employee@techcorp.com`) qui n'existent nulle part dans le code/seeders; remplaces par les vrais personas seedes par `DemoCompanyOnceSeeder`/servis par `GET /api/v1/demo-users` (`admin@leopardo-rh.com`, `ahmed.benali@techcorp-algerie.dz` et les 5 autres `manager_role` TechCorp Algerie), avec avertissement explicite sur le gate `DEMO_MODE_ENABLED` (404 par defaut) deja en place cote API. `docs/api/API_REFERENCE.md` renvoie desormais vers ce meme gate au lieu de presenter le compte demo comme utilisable partout | API, docs, front | FAIT: `docs/DEMO_ACCOUNTS.md` aligne sur les personas reels servis par `/api/v1/demo-users` (superadmin + 6 manager_role + employee), gate `DEMO_MODE_ENABLED` documente explicitement; plus aucune reference a un compte demo fictif dans `docs/` |
 | PA2-ONB-005 | P2 | Drip emails trial | API jobs, mails | J+0/J+3/expiration, preference opt-out, logs communication |
 
 ## Web admin plateforme
