@@ -70,6 +70,34 @@ class MoroccoPayrollRules extends AbstractCountryRules
             'employer' => round($cnssBase * 0.0898 + $grossSalary * 0.0411, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Africa/Casablanca';
+    }
+
+    public function weeklyRestDays(): array
+    {
+        // Sunday is the standard weekly rest day in Morocco.
+        return [7];
+    }
+
+    public function supportedPayCycles(): array
+    {
+        return ['daily', 'weekly', 'monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'placeholder: no official Moroccan public-holiday calendar wired in yet; '.
+            'national/religious holidays (Aid al-Fitr, Aid al-Adha, Fete du Trone, etc.) '.
+            'must be entered manually per company until PA2-COUNTRY-012 delivers a real source.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
 }
 
 
