@@ -52,5 +52,11 @@
   "emailsAbsenceRejectedGreeting": "Hello :name,",
   "emailsAbsenceRejectedBody": "Your leave request for :period has been rejected.",
   "emailsAbsenceRejectedAction": "View request",
-  "emailsAbsenceRejectedFooter": "Please contact your manager if you need more details."
+  "emailsAbsenceRejectedFooter": "Please contact your manager if you need more details.",
+  "aiChatScreenTitle": "AI Assistant",
+  "aiChatBackTooltip": "Back",
+  "aiChatSendTooltip": "Send",
+  "aiChatEmptyStateTitle": "Ask your HR questions",
+  "aiChatInputHint": "Type your message...",
+  "aiChatErrorMessage": "Error: unable to reach the assistant."
 }

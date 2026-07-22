@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 
 class _ChatMessage {
@@ -72,7 +73,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
           _messages.add(
             _ChatMessage(
               role: 'assistant',
-              content: 'Erreur : impossible de contacter l\'assistant.',
+              content: context.l10n.aiChatErrorMessage,
             ),
           );
         });
@@ -84,18 +85,19 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       backgroundColor: AppColors.bgDark,
       appBar: AppBar(
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Assistant IA',
+          l10n.aiChatScreenTitle,
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          tooltip: 'Retour',
+          tooltip: l10n.aiChatBackTooltip,
           onPressed: () => context.pop(),
         ),
       ),
@@ -114,7 +116,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Posez vos questions RH',
+                          l10n.aiChatEmptyStateTitle,
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMutedDark,
                           ),
@@ -179,7 +181,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                       controller: _controller,
                       style: const TextStyle(color: AppColors.textDark),
                       decoration: InputDecoration(
-                        hintText: 'Tapez votre message...',
+                        hintText: l10n.aiChatInputHint,
                         hintStyle: const TextStyle(
                           color: AppColors.textMutedDark,
                         ),
@@ -207,7 +209,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                   IconButton(
                     onPressed: _loading ? null : _send,
                     icon: const Icon(Icons.send, color: AppColors.ia),
-                    tooltip: 'Envoyer',
+                    tooltip: l10n.aiChatSendTooltip,
                   ),
                 ],
               ),

@@ -182,4 +182,22 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get emailsAbsenceRejectedFooter =>
       'Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun.';
+
+  @override
+  String get aiChatScreenTitle => 'Yapay Zeka Asistani';
+
+  @override
+  String get aiChatBackTooltip => 'Geri';
+
+  @override
+  String get aiChatSendTooltip => 'Gonder';
+
+  @override
+  String get aiChatEmptyStateTitle => 'IK sorularinizi sorun';
+
+  @override
+  String get aiChatInputHint => 'Mesajinizi yazin...';
+
+  @override
+  String get aiChatErrorMessage => 'Hata: asistana ulasilamadi.';
 }

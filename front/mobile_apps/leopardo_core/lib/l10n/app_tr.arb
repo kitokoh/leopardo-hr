@@ -52,5 +52,11 @@
   "emailsAbsenceRejectedGreeting": "Merhaba :name,",
   "emailsAbsenceRejectedBody": ":period donemi icin izin talebiniz reddedildi.",
   "emailsAbsenceRejectedAction": "Talebi gor",
-  "emailsAbsenceRejectedFooter": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun."
+  "emailsAbsenceRejectedFooter": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun.",
+  "aiChatScreenTitle": "Yapay Zeka Asistani",
+  "aiChatBackTooltip": "Geri",
+  "aiChatSendTooltip": "Gonder",
+  "aiChatEmptyStateTitle": "IK sorularinizi sorun",
+  "aiChatInputHint": "Mesajinizi yazin...",
+  "aiChatErrorMessage": "Hata: asistana ulasilamadi."
 }
