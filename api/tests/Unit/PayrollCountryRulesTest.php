@@ -83,6 +83,61 @@ class PayrollCountryRulesTest extends TestCase
      * company-specific TaxSlab overrides per payroll run without leaking
      * state across companies/requests).
      */
+    /**
+     * PA2-COUNTRY-005: Morocco and Tunisia must expose the same country
+     * metadata contract (timezone, weekly rest days, supported pay cycles,
+     * public-holiday source disclosure, confidence level) that the other
+     * CountryRulesInterface implementations already provide, so platform
+     * admin/company provisioning can rely on it without special-casing MA/TN.
+     */
+    public function test_morocco_and_tunisia_expose_country_metadata_for_provisioning(): void
+    {
+        $morocco = new MoroccoPayrollRules;
+
+        self::assertSame('Africa/Casablanca', $morocco->timezone());
+        self::assertSame([7], $morocco->weeklyRestDays());
+        self::assertSame(['daily', 'weekly', 'monthly'], $morocco->supportedPayCycles());
+        self::assertStringContainsString('placeholder', $morocco->publicHolidaysSource());
+        self::assertSame('pilot', $morocco->confidenceLevel());
+
+        $tunisia = new TunisiaPayrollRules;
+
+        self::assertSame('Africa/Tunis', $tunisia->timezone());
+        self::assertSame([7], $tunisia->weeklyRestDays());
+        self::assertSame(['daily', 'weekly', 'monthly'], $tunisia->supportedPayCycles());
+        self::assertStringContainsString('placeholder', $tunisia->publicHolidaysSource());
+        self::assertSame('pilot', $tunisia->confidenceLevel());
+    }
+
+    /**
+     * Every CountryRulesInterface implementation must expose the country
+     * metadata contract, not just Morocco/Tunisia — regression guard so a
+     * future country addition can't skip it silently.
+     */
+    public function test_every_country_rules_implementation_exposes_country_metadata(): void
+    {
+        $allRules = [
+            new AlgeriaPayrollRules,
+            new MoroccoPayrollRules,
+            new TunisiaPayrollRules,
+            new FrancePayrollRules,
+            new TurkeyPayrollRules,
+            new SenegalPayrollRules,
+        ];
+
+        foreach ($allRules as $rules) {
+            self::assertNotSame('', $rules->timezone(), $rules->countryCode().': timezone must not be empty');
+            self::assertNotEmpty($rules->weeklyRestDays(), $rules->countryCode().': weeklyRestDays must not be empty');
+            self::assertNotEmpty($rules->supportedPayCycles(), $rules->countryCode().': supportedPayCycles must not be empty');
+            self::assertNotSame('', $rules->publicHolidaysSource(), $rules->countryCode().': publicHolidaysSource must not be empty');
+            self::assertContains(
+                $rules->confidenceLevel(),
+                ['production', 'pilot', 'placeholder'],
+                $rules->countryCode().': confidenceLevel must be one of the documented values'
+            );
+        }
+    }
+
     public function test_for_company_returns_a_scoped_clone_without_mutating_the_original(): void
     {
         $rules = new TunisiaPayrollRules;
