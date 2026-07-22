@@ -2,6 +2,11 @@
 
 Date : 2026-05-22
 
+> Ce document est la reference technique interne (variables d'environnement,
+> hebergeurs, providers). Pour un testeur ou un client pilote qui veut juste
+> essayer le produit avec des liens et des comptes prets a l'emploi, voir
+> [`GUIDE_TESTEURS_PILOTES.md`](GUIDE_TESTEURS_PILOTES.md).
+
 ## Liens applicatifs
 
 | Surface | Usage | URL actuelle / cible |
