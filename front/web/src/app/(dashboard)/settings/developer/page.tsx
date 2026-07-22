@@ -1,11 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { Key, Webhook, FileText, Plus, Trash2, Copy, Check, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+
+const emptySubscribe = () => () => {};
 
 type ApiToken = {
   id: number | string;
@@ -26,6 +29,9 @@ type WebhookEndpoint = {
 };
 
 export default function DeveloperSettingsPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).developerSettingsPage;
+  const intlLocale = toIntlLocale(locale);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,11 +61,11 @@ export default function DeveloperSettingsPage() {
       const data = await res.json() as { data?: ApiToken[] };
       setTokens(Array.isArray(data.data) ? data.data : []);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les cles API.');
+      setError(err instanceof ApiError ? err.message : labels.loadTokensError);
     } finally {
       setTokensLoading(false);
     }
-  }, []);
+  }, [labels.loadTokensError]);
 
   const loadWebhooks = useCallback(async () => {
     setWebhooksLoading(true);
@@ -73,11 +79,11 @@ export default function DeveloperSettingsPage() {
       setWebhooks(Array.isArray(webhooksData.data) ? webhooksData.data : []);
       setAvailableEvents(Array.isArray(eventsData.data) ? eventsData.data : []);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les webhooks.');
+      setError(err instanceof ApiError ? err.message : labels.loadWebhooksError);
     } finally {
       setWebhooksLoading(false);
     }
-  }, []);
+  }, [labels.loadWebhooksError]);
 
   useEffect(() => {
     void loadTokens();
@@ -100,19 +106,19 @@ export default function DeveloperSettingsPage() {
       setNewTokenName('');
       await loadTokens();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de creer la cle API.');
+      setError(err instanceof ApiError ? err.message : labels.createTokenError);
     } finally {
       setCreatingToken(false);
     }
   };
 
   const handleDeleteToken = async (tokenId: ApiToken['id']) => {
-    if (!confirm('Revoquer cette cle API ? Les integrations qui l\'utilisent cesseront de fonctionner.')) return;
+    if (!confirm(labels.revokeTokenConfirm)) return;
     try {
       await apiFetch(`/api-tokens/${tokenId}`, { method: 'DELETE' });
       setTokens((prev) => prev.filter((t) => t.id !== tokenId));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de revoquer la cle API.');
+      setError(err instanceof ApiError ? err.message : labels.deleteTokenError);
     }
   };
 
@@ -136,19 +142,19 @@ export default function DeveloperSettingsPage() {
       setNewWebhook({ url: '', events: [] });
       await loadWebhooks();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de creer le webhook.');
+      setError(err instanceof ApiError ? err.message : labels.createWebhookError);
     } finally {
       setCreatingWebhook(false);
     }
   };
 
   const handleDeleteWebhook = async (id: WebhookEndpoint['id']) => {
-    if (!confirm('Supprimer cet endpoint webhook ?')) return;
+    if (!confirm(labels.deleteWebhookConfirm)) return;
     try {
       await apiFetch(`/webhooks/${id}`, { method: 'DELETE' });
       setWebhooks((prev) => prev.filter((w) => w.id !== id));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de supprimer le webhook.');
+      setError(err instanceof ApiError ? err.message : labels.deleteWebhookError);
     }
   };
 
@@ -163,15 +169,15 @@ export default function DeveloperSettingsPage() {
         setWebhooks((prev) => prev.map((w) => (w.id === webhook.id ? data.data as WebhookEndpoint : w)));
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de mettre a jour le webhook.');
+      setError(err instanceof ApiError ? err.message : labels.updateWebhookError);
     }
   };
 
   return (
     <>
       <ModulePageShell
-        title="Espace Developpeur"
-        subtitle="Gerez vos cles API et vos webhooks pour integrer Leopardo RH a vos outils."
+        title={labels.title}
+        subtitle={labels.subtitle}
         accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
       >
         {error ? (
@@ -184,7 +190,7 @@ export default function DeveloperSettingsPage() {
         {revealedToken ? (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <p className="text-sm font-bold text-amber-900">
-              Cle &quot;{revealedToken.name}&quot; creee — copiez-la maintenant, elle ne sera plus jamais affichee :
+              {labels.revealedTokenNotice.replace('{name}', revealedToken.name)}
             </p>
             <div className="mt-2 flex items-center gap-2">
               <code className="flex-1 break-all rounded-xl border border-amber-200 bg-white px-3 py-2 text-xs font-mono">
@@ -198,7 +204,7 @@ export default function DeveloperSettingsPage() {
               </button>
             </div>
             <button onClick={() => setRevealedToken(null)} className="mt-2 text-xs font-bold uppercase tracking-wider text-amber-700 underline">
-              J&apos;ai copie la cle, masquer
+              {labels.revealedTokenDismiss}
             </button>
           </div>
         ) : null}
@@ -209,28 +215,32 @@ export default function DeveloperSettingsPage() {
               <div className="rounded-xl bg-brand-50 p-2 text-brand-600">
                 <Key className="h-5 w-5" />
               </div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Cles API</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{labels.apiKeysTitle}</h2>
             </div>
 
             <div className="mt-4 space-y-3">
               {tokensLoading ? (
-                <p className="text-sm text-slate-400">Chargement...</p>
+                <p className="text-sm text-slate-400">{labels.loading}</p>
               ) : tokens.length === 0 ? (
-                <p className="text-sm text-slate-400">Aucune cle API creee pour le moment.</p>
+                <p className="text-sm text-slate-400">{labels.noTokens}</p>
               ) : (
                 tokens.map((token) => (
                   <div key={token.id} className="flex items-center justify-between rounded-xl border border-app-border bg-slate-50 p-4">
                     <div>
                       <p className="font-bold text-slate-950">{token.name}</p>
                       <p className="text-xs text-slate-500">
-                        {token.created_at ? `Creee le ${new Date(token.created_at).toLocaleDateString('fr-FR')}` : 'Date inconnue'}
-                        {token.last_used_at ? ` · derniere utilisation le ${new Date(token.last_used_at).toLocaleDateString('fr-FR')}` : ' · jamais utilisee'}
+                        {token.created_at
+                          ? labels.createdOn.replace('{date}', new Date(token.created_at).toLocaleDateString(intlLocale))
+                          : labels.unknownDate}
+                        {token.last_used_at
+                          ? labels.lastUsedOn.replace('{date}', new Date(token.last_used_at).toLocaleDateString(intlLocale))
+                          : labels.neverUsed}
                       </p>
                     </div>
                     <button
                       onClick={() => handleDeleteToken(token.id)}
                       className="rounded-lg p-2 text-red-400 hover:bg-red-50 hover:text-red-600"
-                      title="Revoquer"
+                      title={labels.revoke}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -242,7 +252,7 @@ export default function DeveloperSettingsPage() {
             <div className="mt-4 flex gap-2">
               <input
                 type="text"
-                placeholder="Nom de la cle (ex: Production)"
+                placeholder={labels.tokenNamePlaceholder}
                 value={newTokenName}
                 onChange={(e) => setNewTokenName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') void handleCreateToken(); }}
@@ -263,14 +273,14 @@ export default function DeveloperSettingsPage() {
               <div className="rounded-xl bg-ia-light p-2 text-ia">
                 <Webhook className="h-5 w-5" />
               </div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Webhooks</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{labels.webhooksTitle}</h2>
             </div>
 
             <div className="mt-4 space-y-3">
               {webhooksLoading ? (
-                <p className="text-sm text-slate-400">Chargement...</p>
+                <p className="text-sm text-slate-400">{labels.loading}</p>
               ) : webhooks.length === 0 ? (
-                <p className="text-sm text-slate-400">Aucun endpoint webhook configure.</p>
+                <p className="text-sm text-slate-400">{labels.noWebhooks}</p>
               ) : (
                 webhooks.map((webhook) => (
                   <div key={webhook.id} className="rounded-xl border border-app-border bg-slate-50 p-4">
@@ -278,7 +288,7 @@ export default function DeveloperSettingsPage() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-bold text-slate-950">{webhook.url}</p>
                         <p className="mt-0.5 text-xs text-slate-500">
-                          {webhook.events.length} evenement(s) · {webhook.failure_count ? `${webhook.failure_count} echec(s)` : 'aucun echec'}
+                          {labels.eventsCount.replace('{count}', String(webhook.events.length))} · {webhook.failure_count ? labels.failuresCount.replace('{count}', String(webhook.failure_count)) : labels.noFailures}
                         </p>
                       </div>
                       <button
@@ -287,7 +297,7 @@ export default function DeveloperSettingsPage() {
                           webhook.active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-200 text-slate-600'
                         }`}
                       >
-                        {webhook.active ? 'Actif' : 'Inactif'}
+                        {webhook.active ? labels.active : labels.inactive}
                       </button>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
@@ -299,13 +309,15 @@ export default function DeveloperSettingsPage() {
                     </div>
                     <div className="mt-3 flex items-center justify-between border-t border-app-border pt-3">
                       <span className="text-xs text-slate-500">
-                        {webhook.last_triggered_at ? `Declenche le ${new Date(webhook.last_triggered_at).toLocaleString('fr-FR')}` : 'Jamais declenche'}
+                        {webhook.last_triggered_at
+                          ? labels.triggeredOn.replace('{date}', new Date(webhook.last_triggered_at).toLocaleString(intlLocale))
+                          : labels.neverTriggered}
                       </span>
                       <button
                         onClick={() => handleDeleteWebhook(webhook.id)}
                         className="flex items-center gap-1 text-xs font-bold text-red-500 hover:underline"
                       >
-                        <Trash2 className="h-3 w-3" /> Supprimer
+                        <Trash2 className="h-3 w-3" /> {labels.delete}
                       </button>
                     </div>
                   </div>
@@ -317,7 +329,7 @@ export default function DeveloperSettingsPage() {
               onClick={() => setShowWebhookModal(true)}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-app-border py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900"
             >
-              <Plus className="h-4 w-4" /> Ajouter un endpoint
+              <Plus className="h-4 w-4" /> {labels.addEndpoint}
             </button>
           </section>
         </div>
@@ -325,9 +337,9 @@ export default function DeveloperSettingsPage() {
         <section className="rounded-2xl border border-app-border bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-sm">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <h2 className="text-lg font-black">Documentation API</h2>
+              <h2 className="text-lg font-black">{labels.apiDocsTitle}</h2>
               <p className="mt-1 text-sm text-slate-400">
-                Decouvrez comment integrer nos webhooks signes (format Svix) et nos endpoints REST.
+                {labels.apiDocsBody}
               </p>
             </div>
             <Link
@@ -336,7 +348,7 @@ export default function DeveloperSettingsPage() {
               className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-slate-900 transition hover:bg-slate-100"
             >
               <FileText className="h-4 w-4" />
-              Ouvrir l&apos;Explorer
+              {labels.openExplorer}
             </Link>
           </div>
         </section>
@@ -357,12 +369,12 @@ export default function DeveloperSettingsPage() {
               className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
             >
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-black text-slate-950">Nouvel endpoint webhook</h2>
+                <h2 className="text-lg font-black text-slate-950">{labels.newWebhookModalTitle}</h2>
                 <button onClick={() => setShowWebhookModal(false)} className="text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
               </div>
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">URL de destination</label>
+                  <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">{labels.destinationUrlLabel}</label>
                   <input
                     type="url"
                     placeholder="https://erp.client.com/webhook"
@@ -372,7 +384,7 @@ export default function DeveloperSettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">Evenements a ecouter</label>
+                  <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">{labels.eventsToListenLabel}</label>
                   <div className="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-app-border p-2">
                     {availableEvents.map((event) => (
                       <label key={event} className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm hover:bg-slate-50">
@@ -388,13 +400,13 @@ export default function DeveloperSettingsPage() {
                 </div>
               </div>
               <div className="mt-5 flex gap-3">
-                <button onClick={() => setShowWebhookModal(false)} className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Annuler</button>
+                <button onClick={() => setShowWebhookModal(false)} className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">{labels.cancel}</button>
                 <button
                   onClick={handleCreateWebhook}
                   disabled={!newWebhook.url.trim() || newWebhook.events.length === 0 || creatingWebhook}
                   className="flex-1 rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
                 >
-                  {creatingWebhook ? 'Creation...' : 'Creer'}
+                  {creatingWebhook ? labels.creating : labels.create}
                 </button>
               </div>
             </motion.div>

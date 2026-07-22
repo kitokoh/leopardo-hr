@@ -1,10 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
+
+const emptySubscribe = () => () => {};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,16 +33,17 @@ type FormState = {
   radius: string;
 };
 
-const MODE_LABELS: Record<string, string> = {
-  '': 'Libre (pas de mode forcé)',
-  gps_auto: 'GPS automatique',
-  qr_code: 'QR Code',
-  manual: 'Manuel',
-};
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SmartAttendanceSettingsPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).smartAttendanceSettingsPage;
+  const modeLabels: Record<string, string> = {
+    '': labels.modeFree,
+    gps_auto: labels.modeGpsAuto,
+    qr_code: labels.modeQrCode,
+    manual: labels.modeManual,
+  };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,11 +76,11 @@ export default function SmartAttendanceSettingsPage() {
       }
       setError(null);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les paramètres.');
+      setError(err instanceof ApiError ? err.message : labels.loadError);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [labels.loadError]);
 
   useEffect(() => {
     void loadSettings();
@@ -100,10 +104,10 @@ export default function SmartAttendanceSettingsPage() {
         body: JSON.stringify(body),
       });
 
-      setSuccessMsg('Paramètres enregistrés avec succès.');
+      setSuccessMsg(labels.saveSuccess);
       await loadSettings();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Erreur lors de l\'enregistrement.');
+      setError(err instanceof ApiError ? err.message : labels.saveError);
     } finally {
       setSaving(false);
     }
@@ -111,8 +115,8 @@ export default function SmartAttendanceSettingsPage() {
 
   return (
     <ModulePageShell
-      title="Paramètres Smart Attendance"
-      subtitle="Configuration du mode de pointage et du géofence entreprise."
+      title={labels.title}
+      subtitle={labels.subtitle}
       accentClassName="bg-gradient-to-br from-slate-500/10 via-white to-white"
     >
       {/* Back */}
@@ -121,20 +125,20 @@ export default function SmartAttendanceSettingsPage() {
           href="/smart-attendance"
           className="text-sm font-bold text-slate-500 transition hover:text-slate-900"
         >
-          ← Tableau de bord
+          {labels.backToDashboard}
         </Link>
       </div>
 
-      {/* Mode actuel */}
+      {/* Current mode */}
       {currentSettings && !loading ? (
         <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Mode actuel</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.currentModeLabel}</p>
           <p className="mt-1 text-lg font-black text-slate-900">
-            {MODE_LABELS[currentSettings.forced_mode ?? ''] ?? (currentSettings.forced_mode ?? 'Libre')}
+            {modeLabels[currentSettings.forced_mode ?? ''] ?? (currentSettings.forced_mode ?? labels.modeFree)}
           </p>
           <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-600">
             <span className={`rounded-full px-2.5 py-0.5 font-bold ${currentSettings.gps_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
-              GPS : {currentSettings.gps_enabled ? 'Activé' : 'Désactivé'}
+              {labels.gpsLabel}{currentSettings.gps_enabled ? labels.gpsEnabled : labels.gpsDisabled}
             </span>
             {currentSettings.latitude != null && currentSettings.longitude != null ? (
               <span className="rounded-full bg-security-light px-2.5 py-0.5 font-bold text-security-dark">
@@ -143,7 +147,7 @@ export default function SmartAttendanceSettingsPage() {
             ) : null}
             {currentSettings.radius != null ? (
               <span className="rounded-full bg-ia-light px-2.5 py-0.5 font-bold text-ia-dark">
-                Rayon : {currentSettings.radius}m
+                {labels.radiusLabel}{currentSettings.radius}m
               </span>
             ) : null}
           </div>
@@ -162,10 +166,10 @@ export default function SmartAttendanceSettingsPage() {
         </div>
       ) : null}
 
-      {/* Formulaire */}
+      {/* Form */}
       <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
         <h2 className="mb-5 text-sm font-bold uppercase tracking-wider text-slate-800">
-          Configuration
+          {labels.configurationTitle}
         </h2>
 
         {loading ? (
@@ -175,10 +179,10 @@ export default function SmartAttendanceSettingsPage() {
           </div>
         ) : (
           <div className="space-y-5">
-            {/* Mode forcé */}
+            {/* Forced mode */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                Mode de pointage
+                {labels.modeFieldLabel}
               </label>
               <select
                 className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
@@ -186,21 +190,21 @@ export default function SmartAttendanceSettingsPage() {
                 onChange={(e) => setForm((f) => ({ ...f, forced_mode: e.target.value }))}
                 disabled={saving}
               >
-                <option value="">Libre (pas de mode forcé)</option>
-                <option value="gps_auto">GPS automatique</option>
-                <option value="qr_code">QR Code</option>
-                <option value="manual">Manuel</option>
+                <option value="">{labels.modeFree}</option>
+                <option value="gps_auto">{labels.modeGpsAuto}</option>
+                <option value="qr_code">{labels.modeQrCode}</option>
+                <option value="manual">{labels.modeManual}</option>
               </select>
               <p className="mt-1 text-xs text-slate-500">
-                &ldquo;Libre&rdquo; laisse l&apos;employé choisir la méthode disponible.
+                {labels.modeFreeHint}
               </p>
             </div>
 
-            {/* Toggle GPS */}
+            {/* GPS toggle */}
             <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
               <div>
-                <p className="text-sm font-bold text-slate-900">Géolocalisation GPS</p>
-                <p className="text-xs text-slate-500">Activer la vérification de position</p>
+                <p className="text-sm font-bold text-slate-900">{labels.gpsToggleTitle}</p>
+                <p className="text-xs text-slate-500">{labels.gpsToggleSubtitle}</p>
               </div>
               <button
                 type="button"
@@ -220,32 +224,32 @@ export default function SmartAttendanceSettingsPage() {
               </button>
             </div>
 
-            {/* Champs GPS conditionnels */}
+            {/* Conditional GPS fields */}
             {form.gps_enabled ? (
               <div className="space-y-4 rounded-xl border border-security-light bg-security-light/40 p-4">
                 <p className="text-xs font-bold uppercase tracking-wider text-security-dark">
-                  Configuration du géofence
+                  {labels.geofenceConfigTitle}
                 </p>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600">Latitude</label>
+                    <label className="block text-xs font-bold text-slate-600">{labels.latitudeLabel}</label>
                     <input
                       type="number"
                       step="any"
                       className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
-                      placeholder="ex: 48.8566"
+                      placeholder="e.g. 48.8566"
                       value={form.latitude}
                       onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
                       disabled={saving}
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600">Longitude</label>
+                    <label className="block text-xs font-bold text-slate-600">{labels.longitudeLabel}</label>
                     <input
                       type="number"
                       step="any"
                       className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
-                      placeholder="ex: 2.3522"
+                      placeholder="e.g. 2.3522"
                       value={form.longitude}
                       onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
                       disabled={saving}
@@ -253,18 +257,18 @@ export default function SmartAttendanceSettingsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600">Rayon (mètres)</label>
+                  <label className="block text-xs font-bold text-slate-600">{labels.radiusFieldLabel}</label>
                   <input
                     type="number"
                     min={1}
                     className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
-                    placeholder="ex: 200"
+                    placeholder="e.g. 200"
                     value={form.radius}
                     onChange={(e) => setForm((f) => ({ ...f, radius: e.target.value }))}
                     disabled={saving}
                   />
                   <p className="mt-1 text-xs text-slate-500">
-                    Distance maximale autorisée depuis le lieu de travail.
+                    {labels.radiusHint}
                   </p>
                 </div>
               </div>
@@ -278,7 +282,7 @@ export default function SmartAttendanceSettingsPage() {
                 disabled={saving || loading}
                 className="rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
               >
-                {saving ? 'Enregistrement…' : 'Enregistrer'}
+                {saving ? labels.saving : labels.save}
               </button>
               <button
                 type="button"
@@ -286,7 +290,7 @@ export default function SmartAttendanceSettingsPage() {
                 disabled={saving || loading}
                 className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
               >
-                Annuler
+                {labels.cancel}
               </button>
             </div>
           </div>
