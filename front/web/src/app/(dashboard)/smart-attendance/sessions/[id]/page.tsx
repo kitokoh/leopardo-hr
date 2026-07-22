@@ -1,14 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Check, LogIn, LogOut, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { GeoSessionStatusBadge } from '../../_components/GeoSessionStatusBadge';
 import { ApproveSessionModal } from '../../_components/ApproveSessionModal';
 import { RejectSessionModal } from '../../_components/RejectSessionModal';
+
+const emptySubscribe = () => () => {};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,9 +49,9 @@ type SessionPayload = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatDateTime(iso?: string | null): string {
+function formatDateTime(iso: string | null | undefined, intlLocale: string): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleString('fr-FR', {
+  return new Date(iso).toLocaleString(intlLocale, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -81,6 +84,12 @@ type ModalType = 'approve' | 'reject' | null;
 
 export default function SmartAttendanceSessionDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).smartAttendanceSessionDetailPage;
+  const statusLabels = getCopy(locale).smartAttendancePage;
+  const approveLabels = getCopy(locale).smartAttendancePage;
+  const rejectLabels = getCopy(locale).smartAttendancePage;
+  const intlLocale = toIntlLocale(locale);
   const [session, setSession] = useState<GeoSessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,11 +106,11 @@ export default function SmartAttendanceSessionDetailPage() {
       setSession(payload.data ?? null);
       setError(null);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger la session.');
+      setError(err instanceof ApiError ? err.message : labels.loadError);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, labels.loadError]);
 
   useEffect(() => {
     void load();
@@ -118,7 +127,7 @@ export default function SmartAttendanceSessionDetailPage() {
       setModal(null);
       await load();
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : 'Erreur lors de l\'approbation.');
+      alert(err instanceof ApiError ? err.message : labels.approveErrorGeneric);
     } finally {
       setModalLoading(false);
     }
@@ -135,7 +144,7 @@ export default function SmartAttendanceSessionDetailPage() {
       setModal(null);
       await load();
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : 'Erreur lors du refus.');
+      alert(err instanceof ApiError ? err.message : labels.rejectErrorGeneric);
     } finally {
       setModalLoading(false);
     }
@@ -144,8 +153,8 @@ export default function SmartAttendanceSessionDetailPage() {
   return (
     <>
       <ModulePageShell
-        title="Détail de session"
-        subtitle="Informations complètes de la session de présence géolocalisée."
+        title={labels.title}
+        subtitle={labels.subtitle}
         accentClassName="bg-gradient-to-br from-security/10 via-white to-white"
       >
         {/* Back */}
@@ -154,7 +163,7 @@ export default function SmartAttendanceSessionDetailPage() {
             href="/smart-attendance/sessions"
             className="text-sm font-bold text-slate-500 transition hover:text-slate-900"
           >
-            ← Retour aux sessions
+            {labels.backToSessions}
           </Link>
         </div>
 
@@ -172,11 +181,11 @@ export default function SmartAttendanceSessionDetailPage() {
           </div>
         ) : !session ? (
           <div className="rounded-2xl border border-app-border bg-white px-6 py-10 text-center text-sm text-slate-500">
-            Session introuvable.
+            {labels.notFound}
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Carte employé */}
+            {/* Employee card */}
             <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
                 {session.employee_photo ? (
@@ -192,31 +201,31 @@ export default function SmartAttendanceSessionDetailPage() {
                 )}
                 <div className="flex-1">
                   <p className="text-xl font-black text-slate-950">
-                    {session.employee_name ?? `Employé #${session.employee_id}`}
+                    {session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}
                   </p>
                   {session.employee_matricule ? (
                     <p className="text-sm text-slate-500">{session.employee_matricule}</p>
                   ) : null}
                 </div>
-                <GeoSessionStatusBadge status={session.status} />
+                <GeoSessionStatusBadge status={session.status} labels={statusLabels} />
               </div>
 
               {/* Notes */}
               {session.note ? (
                 <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                  <span className="font-bold">Note : </span>{session.note}
+                  <span className="font-bold">{labels.noteLabel}</span>{session.note}
                 </div>
               ) : null}
               {session.rejection_reason ? (
                 <div className="mt-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-800">
-                  <span className="font-bold">Raison du refus : </span>{session.rejection_reason}
+                  <span className="font-bold">{labels.rejectionReasonLabel}</span>{session.rejection_reason}
                 </div>
               ) : null}
             </section>
 
             {/* Timeline */}
             <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Timeline</h2>
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">{labels.timelineTitle}</h2>
               <div className="flex items-start gap-0">
                 {/* Check in */}
                 <div className="flex flex-col items-center">
@@ -226,8 +235,8 @@ export default function SmartAttendanceSessionDetailPage() {
                   <div className="mt-2 h-12 w-0.5 bg-slate-200" />
                 </div>
                 <div className="ml-4 mt-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Arrivée détectée</p>
-                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_in_time)}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{labels.checkInDetected}</p>
+                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_in_time, intlLocale)}</p>
                 </div>
               </div>
 
@@ -238,21 +247,21 @@ export default function SmartAttendanceSessionDetailPage() {
                   </div>
                 </div>
                 <div className="ml-4 mt-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Départ</p>
-                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_out_time)}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{labels.departure}</p>
+                  <p className="text-lg font-black text-slate-900">{formatDateTime(session.check_out_time, intlLocale)}</p>
                   {session.duration_minutes != null ? (
-                    <p className="text-sm text-slate-500">Durée : {formatDuration(session.duration_minutes)}</p>
+                    <p className="text-sm text-slate-500">{labels.durationLabel}{formatDuration(session.duration_minutes)}</p>
                   ) : null}
                 </div>
               </div>
             </section>
 
-            {/* Carte GPS */}
+            {/* GPS coordinates */}
             <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">Coordonnées GPS</h2>
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">{labels.gpsCoordinatesTitle}</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">Check-in</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">{labels.checkInLabel}</p>
                   <p className="mt-1 font-mono text-sm text-slate-800">
                     {formatCoords(session.check_in_latitude, session.check_in_longitude)}
                   </p>
@@ -263,13 +272,13 @@ export default function SmartAttendanceSessionDetailPage() {
                       rel="noopener noreferrer"
                       className="mt-2 inline-block text-xs font-bold text-emerald-700 underline"
                     >
-                      Voir sur Maps →
+                      {labels.viewOnMaps}
                     </a>
                   ) : null}
                 </div>
 
                 <div className="rounded-xl border border-red-100 bg-red-50 p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-red-600">Check-out</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-red-600">{labels.checkOutLabel}</p>
                   <p className="mt-1 font-mono text-sm text-slate-800">
                     {formatCoords(session.check_out_latitude, session.check_out_longitude)}
                   </p>
@@ -280,30 +289,30 @@ export default function SmartAttendanceSessionDetailPage() {
                       rel="noopener noreferrer"
                       className="mt-2 inline-block text-xs font-bold text-red-700 underline"
                     >
-                      Voir sur Maps →
+                      {labels.viewOnMaps}
                     </a>
                   ) : null}
                 </div>
               </div>
             </section>
 
-            {/* Événements de localisation */}
+            {/* Location events */}
             {session.location_events && session.location_events.length > 0 ? (
               <section className="overflow-hidden rounded-2xl border border-app-border bg-white shadow-sm">
                 <div className="border-b border-app-border px-6 py-4">
                   <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Historique des événements GPS ({session.location_events.length})
+                    {labels.gpsHistoryTitle} ({session.location_events.length})
                   </h2>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-app-border bg-slate-50/50">
-                        <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Heure</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Latitude</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Longitude</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Précision (m)</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnType}</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTime}</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnLatitude}</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnLongitude}</th>
+                        <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnAccuracy}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-app-border">
@@ -314,7 +323,7 @@ export default function SmartAttendanceSessionDetailPage() {
                               {ev.event_type}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-slate-700">{formatDateTime(ev.recorded_at)}</td>
+                          <td className="px-4 py-3 text-slate-700">{formatDateTime(ev.recorded_at, intlLocale)}</td>
                           <td className="px-4 py-3 font-mono text-slate-700">{ev.latitude?.toFixed(6) ?? '—'}</td>
                           <td className="px-4 py-3 font-mono text-slate-700">{ev.longitude?.toFixed(6) ?? '—'}</td>
                           <td className="px-4 py-3 text-slate-700">{ev.accuracy?.toFixed(1) ?? '—'}</td>
@@ -326,24 +335,24 @@ export default function SmartAttendanceSessionDetailPage() {
               </section>
             ) : null}
 
-            {/* Actions validation */}
+            {/* Validation actions */}
             {canValidate ? (
               <section className="rounded-2xl border border-amber-100 bg-amber-50 p-5">
-                <p className="mb-3 text-sm font-bold text-amber-800">Cette session est en attente de validation.</p>
+                <p className="mb-3 text-sm font-bold text-amber-800">{labels.pendingValidationNotice}</p>
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => setModal('approve')}
                     className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-emerald-500"
                   >
-                    <Check className="h-4 w-4" aria-hidden="true" /> Approuver
+                    <Check className="h-4 w-4" aria-hidden="true" /> {labels.approve}
                   </button>
                   <button
                     type="button"
                     onClick={() => setModal('reject')}
                     className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-red-500"
                   >
-                    <X className="h-4 w-4" aria-hidden="true" /> Refuser
+                    <X className="h-4 w-4" aria-hidden="true" /> {labels.reject}
                   </button>
                 </div>
               </section>
@@ -355,19 +364,21 @@ export default function SmartAttendanceSessionDetailPage() {
       {/* Modals */}
       {modal === 'approve' && session ? (
         <ApproveSessionModal
-          employeeName={session.employee_name ?? `Employé #${session.employee_id}`}
+          employeeName={session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}
           onConfirm={(note) => void handleApprove(note)}
           onCancel={() => setModal(null)}
           loading={modalLoading}
+          labels={approveLabels}
         />
       ) : null}
 
       {modal === 'reject' && session ? (
         <RejectSessionModal
-          employeeName={session.employee_name ?? `Employé #${session.employee_id}`}
+          employeeName={session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}
           onConfirm={(reason) => void handleReject(reason)}
           onCancel={() => setModal(null)}
           loading={modalLoading}
+          labels={rejectLabels}
         />
       ) : null}
     </>
