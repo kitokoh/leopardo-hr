@@ -59,6 +59,34 @@ class FrancePayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.30, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Europe/Paris';
+    }
+
+    public function weeklyRestDays(): array
+    {
+        // Saturday and Sunday are the standard weekly rest days in France.
+        return [6, 7];
+    }
+
+    public function supportedPayCycles(): array
+    {
+        return ['monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'placeholder: no official French public-holiday calendar wired in yet; '.
+            'the 11 legal jours feries must be entered manually per company '.
+            'until PA2-COUNTRY-012 delivers a real source.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
 }
 
 

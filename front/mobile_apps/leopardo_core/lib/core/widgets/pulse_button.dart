@@ -78,8 +78,14 @@ class _PulseButtonState extends State<PulseButton>
             final accent = widget.isCheckedIn ? AppColors.danger : AppColors.rh;
             final coreColors =
                 widget.isCheckedIn
-                    ? const [Color(0xFFB91C1C), Color(0xFF7F1D1D)]
-                    : const [Color(0xFF0D5C3A), AppColors.rhDark];
+                    ? const [
+                      AppColors.mobilePunchOutGradientStart,
+                      AppColors.mobilePunchOutGradientEnd,
+                    ]
+                    : const [
+                      AppColors.mobilePunchInGradientStart,
+                      AppColors.rhDark,
+                    ];
 
             return Transform.scale(
               scale: widget.isLoading ? 1.0 : _animation.value,
