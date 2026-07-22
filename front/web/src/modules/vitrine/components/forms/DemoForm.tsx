@@ -12,6 +12,8 @@ import { Card } from '@/modules/vitrine/components/common/Card';
 import { demoFormSchema, DemoFormData } from '@/modules/vitrine/lib/validation';
 import { submitDemoForm, createFormReducer, initialFormState } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { toIntlLocale } from '@/lib/i18n';
 
 interface DemoFormProps {
   page?: string;
@@ -38,6 +40,7 @@ export function DemoForm({
 
   const [formState, dispatch] = useReducer(createFormReducer(), initialFormState);
   const { trackDemoRequest } = useAnalyticsForm();
+  const { locale } = useVitrineLocale();
 
   // Generate available dates (next 30 days, excluding weekends)
   const getAvailableDates = () => {
@@ -246,7 +249,7 @@ export function DemoForm({
                 <option value="">Choisir une date</option>
                 {availableDates.map((date) => (
                   <option key={date.toISOString()} value={date.toISOString().split('T')[0]}>
-                    {date.toLocaleDateString('fr-FR', {
+                    {date.toLocaleDateString(toIntlLocale(locale), {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',

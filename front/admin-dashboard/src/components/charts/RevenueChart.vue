@@ -18,7 +18,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const chartContainer = ref(null)
 const chart = ref(null)
 const isLoading = ref(true)
@@ -95,7 +98,7 @@ function initChart() {
         params.forEach(param => {
           let value = param.value
           if (param.seriesName === 'Revenus') {
-            value = new Intl.NumberFormat('fr-FR', {
+            value = new Intl.NumberFormat(toIntlLocale(localeStore.current), {
               style: 'currency',
               currency: 'EUR'
             }).format(value)
