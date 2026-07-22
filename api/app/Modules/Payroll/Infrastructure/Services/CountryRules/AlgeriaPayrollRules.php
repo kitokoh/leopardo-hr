@@ -65,12 +65,22 @@ class AlgeriaPayrollRules extends AbstractCountryRules
         return 'Africa/Algiers';
     }
 
+    /**
+     * PA2-COUNTRY-004: Algerian labor code (loi 90-11 art. 27 modifiee) sets a
+     * weekend of Friday + Saturday as the standard legal weekly rest for most
+     * sectors (moved from the historical Thursday/Friday weekend by decret
+     * 2009 for public administration, since generalized in practice).
+     *
+     * @return array<int, int>
+     */
     public function weeklyRestDays(): array
     {
-        // Friday and Saturday are the standard weekly rest days in Algeria.
         return [5, 6];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function supportedPayCycles(): array
     {
         return ['daily', 'weekly', 'monthly'];
@@ -78,15 +88,37 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Algerian public-holiday calendar wired in yet; '.
-            'national/religious holidays must be entered manually per company '.
-            'until PA2-COUNTRY-012 delivers a real source.';
+        return 'Placeholder: no official Algerian public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string
     {
         return 'pilot';
     }
+
+    /**
+     * PA2-COUNTRY-004: standard Algerian legal weekly working-hours threshold
+     * (loi 90-11 art. 26 : duree legale hebdomadaire de 40 heures pour un
+     * horaire normal ; au-dela = heures supplementaires).
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 40.0;
+    }
+
+    /**
+     * PA2-COUNTRY-004: loi 90-11 art. 33 majore les heures supplementaires
+     * d'au moins 50% du salaire horaire normal, sans distinction de palier
+     * dans le texte general (contrairement a la France). Modelise ici comme
+     * un palier unique et illimite a titre pilote (confidenceLevel='pilot'),
+     * a valider legalement avant usage paie reel.
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => null, 'multiplier' => 1.5],
+        ];
+    }
 }
-
-
