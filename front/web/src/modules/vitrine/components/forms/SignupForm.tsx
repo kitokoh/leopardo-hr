@@ -258,7 +258,12 @@ export function SignupForm({
                   <span className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Votre role
                   </span>
-                  <select className={selectClassName} {...register('role')}>
+                  <select
+                    className={selectClassName}
+                    aria-invalid={errors.role ? true : undefined}
+                    aria-describedby={errors.role ? 'signup-role-error' : undefined}
+                    {...register('role')}
+                  >
                     <option value="">Choisir</option>
                     <option value="founder">Fondateur / dirigeant</option>
                     <option value="manager">Manager</option>
@@ -267,7 +272,7 @@ export function SignupForm({
                     <option value="other">Autre</option>
                   </select>
                   {errors.role && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <p id="signup-role-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
                       {errors.role.message}
                     </p>
                   )}
@@ -278,7 +283,12 @@ export function SignupForm({
                     <Users className="h-4 w-4" />
                     Taille equipe
                   </span>
-                  <select className={selectClassName} {...register('employees')}>
+                  <select
+                    className={selectClassName}
+                    aria-invalid={errors.employees ? true : undefined}
+                    aria-describedby={errors.employees ? 'signup-employees-error' : undefined}
+                    {...register('employees')}
+                  >
                     <option value="">Choisir</option>
                     <option value="1-10">1-10</option>
                     <option value="11-50">11-50</option>
@@ -287,7 +297,7 @@ export function SignupForm({
                     <option value="500+">500+</option>
                   </select>
                   {errors.employees && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <p id="signup-employees-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
                       {errors.employees.message}
                     </p>
                   )}
@@ -314,6 +324,8 @@ export function SignupForm({
                   type="checkbox"
                   id="agreeToTerms"
                   className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  aria-invalid={errors.agreeToTerms ? true : undefined}
+                  aria-describedby={errors.agreeToTerms ? 'signup-agree-terms-error' : undefined}
                   {...register('agreeToTerms')}
                 />
                 <label htmlFor="agreeToTerms" className="text-sm text-slate-600 dark:text-slate-400">
@@ -328,7 +340,7 @@ export function SignupForm({
                 </label>
               </div>
               {errors.agreeToTerms && (
-                <p className="text-sm text-red-600 dark:text-red-400">
+                <p id="signup-agree-terms-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
                   {errors.agreeToTerms.message}
                 </p>
               )}
