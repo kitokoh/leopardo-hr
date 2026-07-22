@@ -184,6 +184,51 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun.';
 
   @override
+  String get profileTitle => 'Profilim';
+
+  @override
+  String get profileSubtitle => 'Kisisel bilgiler ve dil';
+
+  @override
+  String get profileLoading => 'Profil yukleniyor...';
+
+  @override
+  String get profileBackTooltip => 'Geri';
+
+  @override
+  String get profileJobTitleUnset => 'Unvan belirtilmedi';
+
+  @override
+  String get profileDetailsTitle => 'Bilgiler';
+
+  @override
+  String get profileEmailLabel => 'E-posta';
+
+  @override
+  String get profileDepartmentLabel => 'Departman';
+
+  @override
+  String get profileJobTitleLabel => 'Unvan';
+
+  @override
+  String get profileMatriculeLabel => 'Personel numarasi';
+
+  @override
+  String get profileValueUnset => 'Belirtilmedi';
+
+  @override
+  String get profileOpenSettings => 'Hesap ayarlarini ac';
+
+  @override
+  String get profileLanguageUpdated => 'Dil guncellendi.';
+
+  @override
+  String get profileLanguageSaving => 'Guncelleniyor...';
+
+  @override
+  String get profileLanguageSave => 'Dili guncelle';
+
+  @override
   String get aiChatTitle => 'Yapay Zeka Asistani';
 
   @override

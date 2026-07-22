@@ -67,6 +67,46 @@ class AppColors {
   /// @Deprecated Utilisez [textDark]. Conserve pour compat avec [AppTheme.textPrimary].
   static const Color textOnDark = textDark;
 
+  // ─── Palette mobile sombre "pointage" (PA2-MOB-011) ─────────────────────
+  // Ecrans attendance/ + smart_attendance/ + widgets core partages sur les 3
+  // apps mobiles (employee/manager/hr) redefinissaient chacun les memes
+  // Color(0x...) litteraux au lieu de partager une seule source de verite.
+  // Ces tokens couvrent le theme sombre dedie "pointage" utilise par ces
+  // ecrans (distinct de [bgDark]/[cardDark]/[borderDark] generiques ci-dessus,
+  // qui restent le theme sombre par defaut de l'app). Toute nouvelle valeur
+  // hex sur un ecran de pointage doit etre ajoutee ici plutot que hardcodee.
+  static const Color mobileDarkBg = Color(0xFF0B1120);
+  static const Color mobileDarkSurface = Color(0xFF111B2E);
+  static const Color mobileDarkSurfaceAlt = Color(0xFF2A3C5A);
+  static const Color mobileDarkField = Color(0xFF0C1525);
+  static const Color mobileDarkFieldAlt = Color(0xFF1E3050);
+  static const Color mobileDarkBorder = Color(0xFF1A2B44);
+  static const Color mobileDarkText = Color(0xFFE2EAF6);
+  static const Color mobileDarkTextSoft = Color(0xFFC8D8F0);
+  static const Color mobileDarkMuted = Color(0xFF7A9CC0);
+  static const Color mobileDarkMutedAlt = Color(0xFF8EA9C8);
+  static const Color mobileDarkSecondary = Color(0xFFB8C7DA);
+  static const Color mobileDarkDisabled = Color(0xFF6F86A5);
+
+  // Accents statut ecrans pointage (valeurs historiques distinctes des
+  // couleurs semantiques generiques success/warning/danger/info ci-dessus ;
+  // conservees a l'identique pour ne pas changer le rendu visuel existant).
+  static const Color mobileAccentBlue = Color(0xFF2196F3);
+  static const Color mobileAccentSkyBlue = Color(0xFF38BDF8);
+  static const Color mobileAccentGreen = Color(0xFF4CAF50);
+  static const Color mobileAccentPurple = Color(0xFF9C27B0);
+  static const Color mobileAccentRed = Color(0xFFF44336);
+  static const Color mobileAccentRedLight = Color(0xFFEF5350);
+  static const Color mobileAccentRedSoft = Color(0xFFEF9A9A);
+  static const Color mobileAccentOrange = Color(0xFFFFA726);
+  static const Color mobileAccentGrey = Color(0xFF607D8B);
+  static const Color mobileAccentTeal = Color(0xFF14B8A6);
+
+  // Degrades bouton de pointage (PulseButton) entree/sortie.
+  static const Color mobilePunchInGradientStart = Color(0xFF0D5C3A);
+  static const Color mobilePunchOutGradientStart = Color(0xFFB91C1C);
+  static const Color mobilePunchOutGradientEnd = Color(0xFF7F1D1D);
+
   static bool isDark(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
 

@@ -59,6 +59,34 @@ class AlgeriaPayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.26, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Africa/Algiers';
+    }
+
+    public function weeklyRestDays(): array
+    {
+        // Friday and Saturday are the standard weekly rest days in Algeria.
+        return [5, 6];
+    }
+
+    public function supportedPayCycles(): array
+    {
+        return ['daily', 'weekly', 'monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'placeholder: no official Algerian public-holiday calendar wired in yet; '.
+            'national/religious holidays must be entered manually per company '.
+            'until PA2-COUNTRY-012 delivers a real source.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
 }
 
 
