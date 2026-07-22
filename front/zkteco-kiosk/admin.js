@@ -1,3 +1,5 @@
+const t = (key, params) => window.KioskI18n.t(key, params);
+
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
     ...options,
@@ -10,7 +12,7 @@ async function fetchJson(url, options = {}) {
 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.error || payload.message || 'Erreur locale');
+    throw new Error(payload.error || payload.message || t('error.generic', { status: response.status }));
   }
 
   return payload;
@@ -32,19 +34,26 @@ async function loadEvents() {
 
 async function runSync(path) {
   try {
-    syncResult.textContent = 'Synchronisation en cours...';
+    syncResult.textContent = t('admin.sync.inProgress');
     const payload = await fetchJson(path, { method: 'POST', body: '{}' });
     syncResult.textContent = JSON.stringify(payload.data, null, 2);
     await loadStatus();
     await loadEvents();
   } catch (error) {
-    syncResult.textContent = error.message || 'Erreur de synchronisation';
+    syncResult.textContent = error.message || t('admin.sync.error');
   }
 }
 
 document.getElementById('syncAll').addEventListener('click', () => runSync('/local/sync/all'));
 document.getElementById('syncRoster').addEventListener('click', () => runSync('/local/sync/roster'));
 document.getElementById('syncEvents').addEventListener('click', () => runSync('/local/sync/events'));
+
+window.KioskI18n.applyStaticTranslations();
+window.KioskI18n.initLangSelector('langSelect');
+document.addEventListener('leopardo:lang-changed', () => {
+  loadStatus();
+  loadEvents();
+});
 
 loadStatus();
 loadEvents();
