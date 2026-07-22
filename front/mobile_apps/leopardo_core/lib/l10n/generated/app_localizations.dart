@@ -419,6 +419,132 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Consultez votre manager si vous avez besoin d un complement.'**
   String get emailsAbsenceRejectedFooter;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon profil'**
+  String get profileTitle;
+
+  /// No description provided for @profileSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations personnelles et langue'**
+  String get profileSubtitle;
+
+  /// No description provided for @profileLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du profil...'**
+  String get profileLoading;
+
+  /// No description provided for @profileBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get profileBackTooltip;
+
+  /// No description provided for @profileJobTitleUnset.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poste non renseigne'**
+  String get profileJobTitleUnset;
+
+  /// No description provided for @profileDetailsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations'**
+  String get profileDetailsTitle;
+
+  /// No description provided for @profileEmailLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get profileEmailLabel;
+
+  /// No description provided for @profileDepartmentLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Departement'**
+  String get profileDepartmentLabel;
+
+  /// No description provided for @profileJobTitleLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poste'**
+  String get profileJobTitleLabel;
+
+  /// No description provided for @profileMatriculeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matricule'**
+  String get profileMatriculeLabel;
+
+  /// No description provided for @profileValueUnset.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non renseigne'**
+  String get profileValueUnset;
+
+  /// No description provided for @profileOpenSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les parametres du compte'**
+  String get profileOpenSettings;
+
+  /// No description provided for @profileLanguageUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue mise a jour.'**
+  String get profileLanguageUpdated;
+
+  /// No description provided for @profileLanguageSaving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise a jour...'**
+  String get profileLanguageSaving;
+
+  /// No description provided for @profileLanguageSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre a jour la langue'**
+  String get profileLanguageSave;
+
+  /// No description provided for @aiChatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assistant IA'**
+  String get aiChatTitle;
+
+  /// No description provided for @aiChatBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get aiChatBackTooltip;
+
+  /// No description provided for @aiChatSendTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get aiChatSendTooltip;
+
+  /// No description provided for @aiChatInputHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tapez votre message...'**
+  String get aiChatInputHint;
+
+  /// No description provided for @aiChatEmptyStateTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Posez vos questions RH'**
+  String get aiChatEmptyStateTitle;
+
+  /// No description provided for @aiChatErrorMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : impossible de contacter l assistant.'**
+  String get aiChatErrorMessage;
 }
 
 class _AppLocalizationsDelegate

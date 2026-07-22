@@ -52,5 +52,5 @@ Le lead agent verifie regulierement:
 - Script de validation du CSV: colonnes, ID uniques, dependances existantes.
 - Script de generation d'issues depuis CSV.
 - Action GitHub qui refuse une PR sans ID PA2 quand elle touche code produit.
-- Rapport hebdomadaire des tickets ouverts, bloques, merges et a verifier.
+- **Fait (PA2-AUTO-005)** : rapport hebdomadaire des tickets ouverts, bloques, merges et a verifier — `dev-hub/tools/plan-action2-weekly-report.sh` (merges PA2-* des N derniers jours, PR PA2-* stale ou avec CI en echec, tickets P0 sans PR ni issue assignee), execute chaque lundi par `.github/workflows/plan-action2-weekly-report.yml` (publie dans le step summary de l'action ; poste aussi un commentaire sur une issue de suivi si `vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE` est configuree).
 

@@ -127,6 +127,10 @@ import {
   ShieldCheckIcon,
   LightBulbIcon
 } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   alerts: {
@@ -178,6 +182,6 @@ function formatTime(timestamp) {
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  return time.toLocaleDateString('fr-FR')
+  return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 </script>
