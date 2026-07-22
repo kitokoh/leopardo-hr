@@ -6,14 +6,14 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 class MobileSurface {
   MobileSurface._();
 
-  static const Color background = Color(0xFF0B1120);
-  static const Color surface = Color(0xFF111B2E);
-  static const Color chip = Color(0xFF0C1525);
-  static const Color border = Color(0xFF1A2B44);
-  static const Color text = Color(0xFFE2EAF6);
-  static const Color muted = Color(0xFF8EA9C8);
-  static const Color secondary = Color(0xFFB8C7DA);
-  static const Color disabled = Color(0xFF6F86A5);
+  static const Color background = AppColors.mobileDarkBg;
+  static const Color surface = AppColors.mobileDarkSurface;
+  static const Color chip = AppColors.mobileDarkField;
+  static const Color border = AppColors.mobileDarkBorder;
+  static const Color text = AppColors.mobileDarkText;
+  static const Color muted = AppColors.mobileDarkMutedAlt;
+  static const Color secondary = AppColors.mobileDarkSecondary;
+  static const Color disabled = AppColors.mobileDarkDisabled;
 
   static BoxDecoration cardDecoration({
     Color color = surface,
