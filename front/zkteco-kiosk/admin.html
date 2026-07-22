@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Administration locale ZKTeco</title>
+  <title data-i18n="admin.page.title">Administration locale ZKTeco</title>
   <style>
     body { margin: 0; font-family: Inter, Arial, sans-serif; background: #020617; color: #e2e8f0; }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
@@ -12,36 +12,60 @@
     button { border: none; border-radius: 14px; padding: 14px 16px; cursor: pointer; background: #10b981; color: #052e2b; font-weight: 700; }
     button.secondary { background: #334155; color: #e2e8f0; }
     pre { overflow: auto; white-space: pre-wrap; word-break: break-word; }
+
+    .lang-select {
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Administration locale ZKTeco</h1>
-    <p>Utilise cette page quand le client n a pas internet en continu. Les pointages restent en local puis se synchronisent ici des que la connexion revient.</p>
+    <div class="topbar">
+      <h1 data-i18n="admin.page.title">Administration locale ZKTeco</h1>
+      <div>
+        <label for="langSelect" style="font-size:12px;margin-right:8px;" data-i18n="lang.label">Langue</label>
+        <select id="langSelect" class="lang-select" aria-label="Langue / Language"></select>
+      </div>
+    </div>
+    <p data-i18n="admin.intro">Utilise cette page quand le client n a pas internet en continu. Les pointages restent en local puis se synchronisent ici des que la connexion revient.</p>
 
     <div class="grid">
       <section class="card">
-        <h2>Synchronisation</h2>
+        <h2 data-i18n="admin.sync.title">Synchronisation</h2>
         <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
-          <button id="syncAll">Sync complete</button>
-          <button id="syncRoster" class="secondary">Mettre a jour le roster</button>
-          <button id="syncEvents" class="secondary">Envoyer les pointages</button>
+          <button id="syncAll" data-i18n="admin.sync.all">Sync complete</button>
+          <button id="syncRoster" class="secondary" data-i18n="admin.sync.roster">Mettre a jour le roster</button>
+          <button id="syncEvents" class="secondary" data-i18n="admin.sync.events">Envoyer les pointages</button>
         </div>
-        <pre id="syncResult" style="margin-top:16px;">Pret.</pre>
+        <pre id="syncResult" style="margin-top:16px;" data-i18n="admin.sync.ready">Pret.</pre>
       </section>
 
       <section class="card">
-        <h2>Etat local</h2>
-        <pre id="statusResult">Chargement...</pre>
+        <h2 data-i18n="admin.status.title">Etat local</h2>
+        <pre id="statusResult" data-i18n="admin.loading">Chargement...</pre>
       </section>
     </div>
 
     <section class="card" style="margin-top:20px;">
-      <h2>File offline</h2>
-      <pre id="eventsResult">Chargement...</pre>
+      <h2 data-i18n="admin.queue.title">File offline</h2>
+      <pre id="eventsResult" data-i18n="admin.loading">Chargement...</pre>
     </section>
   </div>
 
+  <script src="./i18n.js"></script>
   <script src="./admin.js"></script>
 </body>
 </html>

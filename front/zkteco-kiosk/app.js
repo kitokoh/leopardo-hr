@@ -41,6 +41,8 @@ const els = {
 };
 
 // ── Utilities ────────────────────────────────────────
+const t = (key, params) => window.KioskI18n.t(key, params);
+
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, {
     ...options,
@@ -52,7 +54,7 @@ async function fetchJson(url, options = {}) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.error || payload.message || `Erreur ${response.status}`);
+    throw new Error(payload.error || payload.message || t('error.generic', { status: response.status }));
   }
   return payload;
 }
@@ -85,7 +87,7 @@ function initials(name) {
 }
 
 function actionLabel(action) {
-  return action === 'check_out' ? 'depart' : 'arrivee';
+  return action === 'check_out' ? t('punch.action.checkOut') : t('punch.action.checkIn');
 }
 
 function setPunchButtonsDisabled(disabled) {
@@ -113,7 +115,7 @@ function initTabs() {
   $$('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.tab;
-      $$('.tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      $$('.tab').forEach(tabEl => { tabEl.classList.remove('active'); tabEl.setAttribute('aria-selected', 'false'); });
       $$('.tab-panel').forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       tab.setAttribute('aria-selected', 'true');
@@ -129,21 +131,21 @@ function initTabs() {
 // ── Punch (existing) ─────────────────────────────────
 function renderStatus() {
   if (!state.status) return;
-  els.companyName.textContent = state.status.company_name || 'Leopardo RH Client';
-  els.locationLabel.textContent = state.status.location_label || 'Entree principale';
+  els.companyName.textContent = state.status.company_name || t('company.default');
+  els.locationLabel.textContent = state.status.location_label || t('location.default');
   els.deviceCode.textContent = state.status.device_code || '-';
-  els.queueCount.textContent = `${state.status.queue_count || 0} evenement(s) en attente`;
+  els.queueCount.textContent = t('queue.count', { count: state.status.queue_count || 0 });
   if (els.lastSyncAt) {
     const lastSync = state.status.last_sync_at || state.status.last_synced_at || state.lastStatusRefreshAt;
-    els.lastSyncAt.textContent = lastSync ? formatDateTime(lastSync) : 'Aucune synchronisation confirmee';
+    els.lastSyncAt.textContent = lastSync ? formatDateTime(lastSync) : t('meta.lastSync.checking');
   }
 
   const ok = state.status.online === true;
   els.syncDot.classList.toggle('ok', ok);
   els.syncDot.classList.toggle('bad', !ok);
   els.syncLabel.textContent = ok
-    ? 'Connexion OK - synchronisation auto active'
-    : `Mode offline - sync plus tard (${state.status.last_error || 'reseau indisponible'})`;
+    ? t('sync.online')
+    : t('sync.offline', { error: state.status.last_error || t('error.networkUnavailable') });
 
   window.dispatchEvent(new CustomEvent('leopardo:kiosk-status', {
     detail: {
@@ -162,9 +164,9 @@ async function refreshStatus() {
     state.lastStatusRefreshAt = new Date().toISOString();
     renderStatus();
   } catch (error) {
-    setStatus('#statusBox', error.message || 'Bridge local indisponible.', true);
+    setStatus('#statusBox', error.message || t('error.bridgeUnavailable'), true);
     if (els.lastSyncAt) {
-      els.lastSyncAt.textContent = 'Bridge local indisponible';
+      els.lastSyncAt.textContent = t('error.bridgeUnavailableShort');
     }
   }
 }
@@ -173,12 +175,12 @@ async function submitPunch(action) {
   if (state.isPunching) return;
   const identifier = els.identifier.value.trim();
   if (!identifier) {
-    setStatus('#statusBox', 'Veuillez saisir ou scanner un identifiant employe.', true);
+    setStatus('#statusBox', t('error.identifierRequired'), true);
     return;
   }
   state.isPunching = true;
   setPunchButtonsDisabled(true);
-  setStatus('#statusBox', `Reconnaissance ${els.biometricType.value} et enregistrement ${actionLabel(action)}...`);
+  setStatus('#statusBox', t('punch.recognizing', { type: els.biometricType.value, action: actionLabel(action) }));
   try {
     const employee = await findLocalRosterEmployee(identifier);
     const payload = await fetchJson(`${CONFIG.localBridgeUrl}/punch`, {
@@ -189,15 +191,15 @@ async function submitPunch(action) {
         biometric_type: els.biometricType.value,
       }),
     });
-    const mode = payload.data.sync_status === 'synced' ? 'synchronise' : 'stocke hors ligne';
+    const mode = payload.data.sync_status === 'synced' ? t('punch.mode.synced') : t('punch.mode.offline');
     const employeeLabel = employee?.name || identifier;
     const eventTime = payload.data.occurred_at ? formatTime(payload.data.occurred_at) : formatTime(new Date().toISOString());
-    setStatus('#statusBox', `${actionLabel(action)} ${mode} a ${eventTime} pour ${employeeLabel}.`);
+    setStatus('#statusBox', t('punch.confirmed', { action: actionLabel(action), mode, time: eventTime, employee: employeeLabel }));
     els.identifier.value = '';
     els.identifier.focus();
     await refreshStatus();
   } catch (error) {
-    setStatus('#statusBox', error.message || 'Echec de pointage.', true);
+    setStatus('#statusBox', error.message || t('error.punchFailed'), true);
   } finally {
     state.isPunching = false;
     setPunchButtonsDisabled(false);
@@ -208,10 +210,10 @@ async function submitPunch(action) {
 async function searchEmployeeInfo() {
   const identifier = $('#infoIdentifier').value.trim();
   if (!identifier) {
-    setStatus('#infoStatus', 'Veuillez saisir un identifiant.', true);
+    setStatus('#infoStatus', t('error.identifierRequiredShort'), true);
     return;
   }
-  setStatus('#infoStatus', 'Recherche en cours...');
+  setStatus('#infoStatus', t('search.inProgress'));
   $('#employeeInfoResult').classList.add('hidden');
 
   try {
@@ -241,12 +243,12 @@ async function searchEmployeeInfo() {
     const attEl = $('#empAttendance');
     if (att) {
       let html = '';
-      if (att.check_in) html += `<span class="att-badge att-in">Entree: ${formatTime(att.check_in)}</span>`;
-      if (att.check_out) html += `<span class="att-badge att-out">Sortie: ${formatTime(att.check_out)}</span>`;
-      if (!att.check_in && !att.check_out) html = `<span class="att-badge att-pending">Aucun pointage</span>`;
+      if (att.check_in) html += `<span class="att-badge att-in">${t('attendance.checkIn', { time: formatTime(att.check_in) })}</span>`;
+      if (att.check_out) html += `<span class="att-badge att-out">${t('attendance.checkOut', { time: formatTime(att.check_out) })}</span>`;
+      if (!att.check_in && !att.check_out) html = `<span class="att-badge att-pending">${t('info.attendance.none')}</span>`;
       attEl.innerHTML = html;
     } else {
-      attEl.innerHTML = `<span class="att-badge att-pending">Aucun pointage aujourd'hui</span>`;
+      attEl.innerHTML = `<span class="att-badge att-pending">${t('info.attendance.pending')}</span>`;
     }
 
     // Leave balances
@@ -256,11 +258,11 @@ async function searchEmployeeInfo() {
         <div class="balance-item">
           <div class="balance-type">${b.leave_type}</div>
           <div class="balance-value">${b.remaining}</div>
-          <div class="balance-total">sur ${b.total} jours</div>
+          <div class="balance-total">${t('balances.ofDays', { total: b.total })}</div>
         </div>
       `).join('');
     } else {
-      balancesEl.innerHTML = '<p style="color:var(--muted);font-size:13px;">Aucun solde disponible</p>';
+      balancesEl.innerHTML = `<p style="color:var(--muted);font-size:13px;">${t('info.balances.none')}</p>`;
     }
 
     $('#employeeInfoResult').classList.remove('hidden');
@@ -273,14 +275,14 @@ async function searchEmployeeInfo() {
 // ── H2: Announcements ────────────────────────────────
 async function loadAnnouncements() {
   const container = $('#announcementsList');
-  container.innerHTML = '<p style="text-align:center;padding:20px;color:var(--muted);">Chargement...</p>';
+  container.innerHTML = `<p style="text-align:center;padding:20px;color:var(--muted);">${t('announcements.loading')}</p>`;
 
   try {
     const data = await kioskApi('/announcements');
     const items = data.data || [];
 
     if (items.length === 0) {
-      container.innerHTML = '<p style="text-align:center;padding:40px 0;color:var(--muted);">Aucune annonce active pour le moment.</p>';
+      container.innerHTML = `<p style="text-align:center;padding:40px 0;color:var(--muted);">${t('announcements.empty')}</p>`;
       return;
     }
 
@@ -292,7 +294,7 @@ async function loadAnnouncements() {
       </div>
     `).join('');
   } catch (error) {
-    container.innerHTML = `<p style="text-align:center;padding:20px;color:#fecdd3;">Erreur: ${escapeHtml(error.message)}</p>`;
+    container.innerHTML = `<p style="text-align:center;padding:20px;color:#fecdd3;">${t('announcements.error', { message: escapeHtml(error.message) })}</p>`;
   }
 }
 
@@ -300,10 +302,10 @@ async function loadAnnouncements() {
 async function searchLeaveBalance() {
   const identifier = $('#leaveIdentifier').value.trim();
   if (!identifier) {
-    setStatus('#leaveStatus', 'Veuillez saisir un identifiant.', true);
+    setStatus('#leaveStatus', t('error.identifierRequiredShort'), true);
     return;
   }
-  setStatus('#leaveStatus', 'Recherche en cours...');
+  setStatus('#leaveStatus', t('search.inProgress'));
   $('#leaveResult').classList.add('hidden');
 
   try {
@@ -324,11 +326,11 @@ async function searchLeaveBalance() {
         <div class="balance-item">
           <div class="balance-type">${b.leave_type}</div>
           <div class="balance-value">${b.remaining}</div>
-          <div class="balance-total">${b.used} utilise(s) sur ${b.total}</div>
+          <div class="balance-total">${t('leave.balances.usedOfTotal', { used: b.used, total: b.total })}</div>
         </div>
       `).join('');
     } else {
-      container.innerHTML = '<p style="color:var(--muted);font-size:13px;">Aucun solde conges configure.</p>';
+      container.innerHTML = `<p style="color:var(--muted);font-size:13px;">${t('leave.balances.none')}</p>`;
     }
 
     $('#leaveResult').classList.remove('hidden');
@@ -342,10 +344,10 @@ async function searchLeaveBalance() {
 async function submitQrPunch(action) {
   const qrData = $('#qrDataInput').value.trim();
   if (!qrData) {
-    setStatus('#qrStatus', 'Veuillez scanner ou coller les donnees du QR code.', true);
+    setStatus('#qrStatus', t('error.qrDataRequired'), true);
     return;
   }
-  setStatus('#qrStatus', 'Traitement du QR code...');
+  setStatus('#qrStatus', t('search.inProgress'));
 
   try {
     const data = await kioskApi('/qr-punch', {
@@ -357,8 +359,8 @@ async function submitQrPunch(action) {
     const timeStr = action === 'check_in'
       ? formatTime(result.check_in)
       : formatTime(result.check_out);
-    const label = action === 'check_in' ? 'Entree' : 'Sortie';
-    setStatus('#qrStatus', `${label} enregistree a ${timeStr} pour employe #${result.employee_id}.`);
+    const label = action === 'check_in' ? t('qr.entry') : t('qr.exit');
+    setStatus('#qrStatus', t('qr.confirmed', { label, time: timeStr, employeeId: result.employee_id }));
     $('#qrDataInput').value = '';
   } catch (error) {
     setStatus('#qrStatus', error.message, true);
@@ -366,11 +368,17 @@ async function submitQrPunch(action) {
 }
 
 // ── Helpers ──────────────────────────────────────────
+const INTL_LOCALES = { fr: 'fr-FR', en: 'en-US', tr: 'tr-TR', ar: 'ar-SA' };
+
+function intlLocale() {
+  return INTL_LOCALES[window.KioskI18n.getLang()] || 'fr-FR';
+}
+
 function formatTime(isoString) {
   if (!isoString) return '-';
   try {
     const d = new Date(isoString);
-    return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleTimeString(intlLocale(), { hour: '2-digit', minute: '2-digit' });
   } catch {
     return isoString.substring(11, 16) || '-';
   }
@@ -379,7 +387,7 @@ function formatTime(isoString) {
 function formatDateTime(isoString) {
   if (!isoString) return '-';
   try {
-    return new Date(isoString).toLocaleString('fr-FR', {
+    return new Date(isoString).toLocaleString(intlLocale(), {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -409,7 +417,7 @@ window.ZKTecoBridge = {
     els.identifier.focus();
   },
   showEmployeeInfo(identifier) {
-    $$('.tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    $$('.tab').forEach(tabEl => { tabEl.classList.remove('active'); tabEl.setAttribute('aria-selected', 'false'); });
     $$('.tab-panel').forEach(p => p.classList.remove('active'));
     const infoTab = document.querySelector('[data-tab="info"]');
     if (infoTab) { infoTab.classList.add('active'); infoTab.setAttribute('aria-selected', 'true'); }
@@ -421,6 +429,12 @@ window.ZKTecoBridge = {
 
 // ── Event Listeners ──────────────────────────────────
 function init() {
+  window.KioskI18n.applyStaticTranslations();
+  window.KioskI18n.initLangSelector('langSelect');
+  document.addEventListener('leopardo:lang-changed', () => {
+    if (state.status) renderStatus();
+  });
+
   initTabs();
 
   // Punch
@@ -534,7 +548,7 @@ function initDemoAccess() {
     const leaveId = $('#leaveIdentifier');
     if (leaveId) leaveId.value = matricule;
     overlay.classList.add('hidden');
-    setStatus('#statusBox', `Employe demo selectionne : ${matricule}. Cliquez Pointer entree ou sortie.`);
+    setStatus('#statusBox', t('demo.selected', { matricule }));
   });
 }
 
