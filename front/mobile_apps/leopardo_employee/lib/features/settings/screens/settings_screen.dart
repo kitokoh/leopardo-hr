@@ -198,6 +198,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               color: MobileSurface.secondary,
             ),
           ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/profile'),
+            icon: const Icon(Icons.person_outline_rounded),
+            label: const Text('Voir mon profil'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(44),
+            ),
+          ),
         ],
       ),
     );
