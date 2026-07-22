@@ -57,6 +57,62 @@ class SenegalPayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.114, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Africa/Dakar';
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function weeklyRestDays(): array
+    {
+        // Sunday is the standard weekly rest day in Senegal.
+        return [7];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function supportedPayCycles(): array
+    {
+        return ['daily', 'weekly', 'monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'Placeholder: no official Senegalese public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
+
+    /**
+     * PA2-COUNTRY-005 baseline: Senegalese Code du travail sets the legal
+     * weekly working-hours threshold at 40 hours/week for non-agricultural
+     * sectors.
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 40.0;
+    }
+
+    /**
+     * PA2-COUNTRY-005 baseline: Code du travail senegalais majore les
+     * heures supplementaires (15% pour les 8 premieres heures/semaine,
+     * jusqu'a 40% au-dela ou de nuit). Modelise ici un palier a 2 niveaux, a
+     * titre pilote (confidenceLevel='pilot').
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => 8.0, 'multiplier' => 1.15],
+            ['up_to_hours' => null, 'multiplier' => 1.40],
+        ];
+    }
 }
-
-

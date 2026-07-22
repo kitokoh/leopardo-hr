@@ -55,6 +55,61 @@ class TunisiaPayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.1657, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Africa/Tunis';
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function weeklyRestDays(): array
+    {
+        // Sunday is the standard weekly rest day in Tunisia.
+        return [7];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function supportedPayCycles(): array
+    {
+        return ['daily', 'weekly', 'monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'Placeholder: no official Tunisian public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
+
+    /**
+     * PA2-COUNTRY-005: Tunisian labor code (Code du travail art. 79) sets
+     * the legal weekly working-hours threshold at 48 hours/week for most
+     * non-agricultural sectors (40h for some regulated sectors).
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 48.0;
+    }
+
+    /**
+     * PA2-COUNTRY-005: Code du travail art. 90 majore les heures
+     * supplementaires de 25% (au-dela de la duree normale hebdomadaire).
+     * Modelise ici comme un palier unique, a titre pilote
+     * (confidenceLevel='pilot').
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => null, 'multiplier' => 1.25],
+        ];
+    }
 }
-
-

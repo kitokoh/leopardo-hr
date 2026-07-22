@@ -98,5 +98,68 @@ class PayrollCountryRulesTest extends TestCase
         // no-DB fallback path.
         self::assertSame($rules->taxSlabs(), $scoped->taxSlabs());
     }
-}
 
+    /**
+     * PA2-COUNTRY-004: Algeria's rules must expose the standard weekend
+     * (Friday+Saturday, not the generic Sunday-only default other countries
+     * use) plus the statutory 40h/week overtime threshold and its premium
+     * tier, so payroll/attendance can compute overtime pay without
+     * hardcoding Algeria-specific values elsewhere.
+     */
+    public function test_algeria_exposes_weekend_and_overtime_rules(): void
+    {
+        $rules = new AlgeriaPayrollRules;
+
+        self::assertSame([5, 6], $rules->weeklyRestDays());
+        self::assertSame(['daily', 'weekly', 'monthly'], $rules->supportedPayCycles());
+        self::assertSame('Africa/Algiers', $rules->timezone());
+        self::assertSame(40.0, $rules->overtimeThresholdWeeklyHours());
+
+        $tiers = $rules->overtimeRateTiers();
+        self::assertNotEmpty($tiers);
+        self::assertNull($tiers[array_key_last($tiers)]['up_to_hours']);
+        self::assertSame(1.5, $tiers[0]['multiplier']);
+    }
+
+    /**
+     * Every CountryRulesInterface implementation must expose the full
+     * country-metadata + overtime contract, not just Algeria — regression
+     * guard so a future country addition can't skip it silently.
+     */
+    public function test_every_country_rules_implementation_exposes_the_full_contract(): void
+    {
+        $allRules = [
+            new AlgeriaPayrollRules,
+            new MoroccoPayrollRules,
+            new TunisiaPayrollRules,
+            new FrancePayrollRules,
+            new TurkeyPayrollRules,
+            new SenegalPayrollRules,
+        ];
+
+        foreach ($allRules as $rules) {
+            $label = $rules->countryCode();
+
+            self::assertNotSame('', $rules->timezone(), $label.': timezone must not be empty');
+            self::assertNotEmpty($rules->weeklyRestDays(), $label.': weeklyRestDays must not be empty');
+            self::assertNotEmpty($rules->supportedPayCycles(), $label.': supportedPayCycles must not be empty');
+            self::assertNotSame('', $rules->publicHolidaysSource(), $label.': publicHolidaysSource must not be empty');
+            self::assertContains(
+                $rules->confidenceLevel(),
+                ['production', 'pilot', 'placeholder'],
+                $label.': confidenceLevel must be one of the documented values'
+            );
+            self::assertGreaterThan(0.0, $rules->overtimeThresholdWeeklyHours(), $label.': overtimeThresholdWeeklyHours must be positive');
+
+            $tiers = $rules->overtimeRateTiers();
+            self::assertNotEmpty($tiers, $label.': overtimeRateTiers must not be empty');
+            self::assertNull(
+                $tiers[array_key_last($tiers)]['up_to_hours'],
+                $label.': the last overtime tier must be unbounded (up_to_hours = null)'
+            );
+            foreach ($tiers as $tier) {
+                self::assertGreaterThan(1.0, $tier['multiplier'], $label.': overtime multiplier must be > 1.0 (a real premium)');
+            }
+        }
+    }
+}
