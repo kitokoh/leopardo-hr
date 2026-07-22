@@ -1,0 +1,54 @@
+name: PLAN_ACTION2 Post-Merge Audit
+
+# PA2-AUTO-010: audit post-merge automatique. Verifie, apres chaque push
+# sur `main` (typiquement un merge de PR), si CHANGELOG.md, api/openapi.yaml
+# et les catalogues i18n pertinents ont ete mis a jour en coherence avec les
+# fichiers reellement modifies. Voir dev-hub/tools/check-post-merge-audit.sh
+# pour la logique complete et sa justification.
+#
+# Design volontairement non bloquant (le job ne fait jamais echouer le
+# workflow): un audit sur `main` intervient apres le fait, bloquer ici
+# n'empecherait aucun merge deja effectue et casserait juste le badge de
+# statut de `main` sur un simple ecart de process. Le signal reste visible
+# dans le step summary de l'action pour revue humaine / rapport hebdo
+# (PA2-AUTO-005).
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  post-merge-audit:
+    name: Audit changelog/openapi/i18n coherence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # fetch-depth: 0 (pas juste 2) car `github.event.before` peut etre
+          # plusieurs commits en arriere si le push contient plus d'un
+          # commit (ex. merge --no-ff avec des commits de la branche de
+          # feature) ; un fetch trop court ferait echouer `git diff` sur un
+          # sha absent du clone local.
+          fetch-depth: 0
+
+      - name: Determine diff range
+        id: range
+        run: |
+          if [[ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" && -n "${{ github.event.before }}" ]]; then
+            echo "base=${{ github.event.before }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=HEAD~1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run post-merge audit
+        run: |
+          chmod +x dev-hub/tools/check-post-merge-audit.sh
+          dev-hub/tools/check-post-merge-audit.sh \
+            "${{ github.repository }}" \
+            "${{ steps.range.outputs.base }}" \
+            "${{ github.sha }}" \
+            | tee audit-report.txt
+          cat audit-report.txt >> "$GITHUB_STEP_SUMMARY"

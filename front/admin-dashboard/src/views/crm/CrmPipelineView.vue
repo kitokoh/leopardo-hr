@@ -126,8 +126,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const router = useRouter()
+const localeStore = useLocaleStore()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const pipeline = ref({
@@ -162,7 +165,7 @@ function openCompany(companyId) {
 
 function formatDate(value) {
   if (!value) return ''
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'short',
     timeStyle: 'short',
   }).format(new Date(value))

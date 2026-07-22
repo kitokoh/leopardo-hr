@@ -1,11 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { Key, Webhook, FileText, Plus, Trash2, Copy, Check, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+
+const emptySubscribe = () => () => {};
 
 type ApiToken = {
   id: number | string;
@@ -26,6 +29,7 @@ type WebhookEndpoint = {
 };
 
 export default function DeveloperSettingsPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -223,8 +227,8 @@ export default function DeveloperSettingsPage() {
                     <div>
                       <p className="font-bold text-slate-950">{token.name}</p>
                       <p className="text-xs text-slate-500">
-                        {token.created_at ? `Creee le ${new Date(token.created_at).toLocaleDateString('fr-FR')}` : 'Date inconnue'}
-                        {token.last_used_at ? ` · derniere utilisation le ${new Date(token.last_used_at).toLocaleDateString('fr-FR')}` : ' · jamais utilisee'}
+                        {token.created_at ? `Creee le ${new Date(token.created_at).toLocaleDateString(toIntlLocale(locale))}` : 'Date inconnue'}
+                        {token.last_used_at ? ` · derniere utilisation le ${new Date(token.last_used_at).toLocaleDateString(toIntlLocale(locale))}` : ' · jamais utilisee'}
                       </p>
                     </div>
                     <button
@@ -299,7 +303,7 @@ export default function DeveloperSettingsPage() {
                     </div>
                     <div className="mt-3 flex items-center justify-between border-t border-app-border pt-3">
                       <span className="text-xs text-slate-500">
-                        {webhook.last_triggered_at ? `Declenche le ${new Date(webhook.last_triggered_at).toLocaleString('fr-FR')}` : 'Jamais declenche'}
+                        {webhook.last_triggered_at ? `Declenche le ${new Date(webhook.last_triggered_at).toLocaleString(toIntlLocale(locale))}` : 'Jamais declenche'}
                       </span>
                       <button
                         onClick={() => handleDeleteWebhook(webhook.id)}
