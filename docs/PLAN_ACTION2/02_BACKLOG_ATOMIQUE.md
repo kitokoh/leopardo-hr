@@ -217,7 +217,7 @@
 | PA2-AUTO-002 | P0 | Validation dependances tickets | dev-hub/tools | script refuse dependance inconnue ou cycle evident |
 | PA2-AUTO-003 | P1 | Generation issues depuis CSV | scripts/docs | **Fait** : `scripts/generate-plan-action2-issues.sh` (dry-run par defaut, `--apply`, `--milestone`, `--owner`, `--label-filter`) |
 | PA2-AUTO-004 | P1 | Check PR avec ID PA2 | GitHub Actions | **Fait** : `dev-hub/tools/check-plan-action2-pr-id.sh` (non bloquant, `::warning`), branche dans `plan-action2-claim-guard.yml`, exempte `docs:`/`chore:` |
-| PA2-AUTO-005 | P1 | Rapport hebdo avancement | GitHub Actions/docs | liste merges, bloques, stale, prochains P0 |
+| PA2-AUTO-005 | P1 | Rapport hebdo avancement | GitHub Actions/docs | **Fait** : `dev-hub/tools/plan-action2-weekly-report.sh` (merges recents, PR bloquees/stale ou CI en echec, prochains P0 non demarres), workflow hebdomadaire `.github/workflows/plan-action2-weekly-report.yml` (step summary + commentaire d'issue optionnel via `vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE`) |
 | PA2-AUTO-006 | P1 | Template PR PA2 | `.github` | **Fait** : `.github/PULL_REQUEST_TEMPLATE.md` ajoute ID PA2, surfaces touchees, contrat API, risques residuels, screenshots obligatoires si surface UI cochee |
 | PA2-AUTO-007 | P2 | Dashboard readiness tickets | docs/admin | mapping tickets vers release pilote |
 | PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | **Fait** : nouvelle section "Regles agents juniors" dans `AGENTS.md` (choix de ticket, anti-duplication, demande de review) |
