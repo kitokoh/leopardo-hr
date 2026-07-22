@@ -190,6 +190,51 @@ class AppLocalizationsFr extends AppLocalizations {
       'Consultez votre manager si vous avez besoin d un complement.';
 
   @override
+  String get profileTitle => 'Mon profil';
+
+  @override
+  String get profileSubtitle => 'Informations personnelles et langue';
+
+  @override
+  String get profileLoading => 'Chargement du profil...';
+
+  @override
+  String get profileBackTooltip => 'Retour';
+
+  @override
+  String get profileJobTitleUnset => 'Poste non renseigne';
+
+  @override
+  String get profileDetailsTitle => 'Informations';
+
+  @override
+  String get profileEmailLabel => 'Email';
+
+  @override
+  String get profileDepartmentLabel => 'Departement';
+
+  @override
+  String get profileJobTitleLabel => 'Poste';
+
+  @override
+  String get profileMatriculeLabel => 'Matricule';
+
+  @override
+  String get profileValueUnset => 'Non renseigne';
+
+  @override
+  String get profileOpenSettings => 'Ouvrir les parametres du compte';
+
+  @override
+  String get profileLanguageUpdated => 'Langue mise a jour.';
+
+  @override
+  String get profileLanguageSaving => 'Mise a jour...';
+
+  @override
+  String get profileLanguageSave => 'Mettre a jour la langue';
+
+  @override
   String get aiChatTitle => 'Assistant IA';
 
   @override
