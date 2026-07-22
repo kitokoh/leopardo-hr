@@ -25,18 +25,12 @@ class AppTheme {
 
   static ThemeData _buildTheme(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
-    const mobileDarkBackground = Color(0xFF0B1120);
-    const mobileDarkSurface = Color(0xFF111B2E);
-    const mobileDarkField = Color(0xFF0C1525);
-    const mobileDarkBorder = Color(0xFF1A2B44);
-    const mobileDarkText = Color(0xFFE2EAF6);
-    const mobileDarkMuted = Color(0xFF7A9CC0);
-    final scaffold = isDark ? mobileDarkBackground : AppColors.bgLight;
-    final surface = isDark ? mobileDarkSurface : AppColors.cardLight;
-    final fieldFill = isDark ? mobileDarkField : AppColors.bgLight;
-    final border = isDark ? mobileDarkBorder : AppColors.borderLight;
-    final text = isDark ? mobileDarkText : AppColors.textLight;
-    final muted = isDark ? mobileDarkMuted : AppColors.textMuted;
+    final scaffold = isDark ? AppColors.mobileDarkBg : AppColors.bgLight;
+    final surface = isDark ? AppColors.mobileDarkSurface : AppColors.cardLight;
+    final fieldFill = isDark ? AppColors.mobileDarkField : AppColors.bgLight;
+    final border = isDark ? AppColors.mobileDarkBorder : AppColors.borderLight;
+    final text = isDark ? AppColors.mobileDarkText : AppColors.textLight;
+    final muted = isDark ? AppColors.mobileDarkMuted : AppColors.textMuted;
     final scheme = ColorScheme.fromSeed(
       seedColor: AppColors.rh,
       brightness: brightness,
