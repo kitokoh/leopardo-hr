@@ -222,7 +222,7 @@
 | PA2-AUTO-007 | P2 | Dashboard readiness tickets | docs/admin | mapping tickets vers release pilote |
 | PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | **Fait** : nouvelle section "Regles agents juniors" dans `AGENTS.md` (choix de ticket, anti-duplication, demande de review) |
 | PA2-AUTO-009 | P2 | Nettoyage branches stale | docs/scripts | **Fait** : `scripts/list-stale-branches.sh` (listing fusionnees vs stale non-fusionnees, `--delete-merged` avec confirmation interactive par branche, aucune suppression automatique) |
-| PA2-AUTO-010 | P2 | Audit post-merge automatique | GitHub Actions | verifie changelog, matrice, OpenAPI, i18n selon fichiers touches |
+| PA2-AUTO-010 | P2 | ~~Audit post-merge automatique~~ Fait: `dev-hub/tools/check-post-merge-audit.sh` + workflow `.github/workflows/plan-action2-post-merge-audit.yml` | GitHub Actions | FAIT: sur chaque push vers `main`, signale (non bloquant) si CHANGELOG.md, api/openapi.yaml ou un catalogue i18n de surface n'ont pas ete mis a jour alors que le diff touche du code produit/des controllers/des fichiers de la surface correspondante |
 | PA2-AUTO-011 | P0 | ~~Garde-fou collision de claim multi-agent~~ Fait le 2026-07-21: `dev-hub/tools/check-plan-action2-claim.sh` + workflow `.github/workflows/plan-action2-claim-guard.yml` | GitHub Actions, `dev-hub/tools` | FAIT: toute PR referencant un ID `PA2-*` echoue si une autre PR ouverte reference le meme ID, ou si l'issue GitHub du ticket est assignee a un autre agent que l'auteur de la PR ; avertissement (non bloquant) si l'issue n'a aucun assignee, conformement au protocole de claim de `01_MODE_EXECUTION_MULTI_AGENT.md` |
 
 ## Extension v1.2 - Audit architecture technique 2026-07-16 (voir `08_AUDIT_ARCHITECTURE_TECH.md`)
