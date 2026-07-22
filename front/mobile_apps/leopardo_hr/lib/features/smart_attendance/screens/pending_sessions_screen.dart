@@ -57,7 +57,7 @@ class _PendingGeoSessionsScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF111B2E),
+        backgroundColor: AppColors.mobileDarkSurface,
         title: Text(
           'Motif du rejet',
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
@@ -119,7 +119,7 @@ class _PendingGeoSessionsScreenState
     final sessionsAsync = ref.watch(pendingGeoSessionsProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1120),
+      backgroundColor: AppColors.mobileDarkBg,
       appBar: MobileTopBar(
         title: 'Sessions à valider',
         subtitle: 'Smart Attendance — GPS',
@@ -190,7 +190,7 @@ class _SessionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF111B2E),
+        color: AppColors.mobileDarkSurface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
       ),
