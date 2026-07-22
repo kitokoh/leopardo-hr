@@ -22,6 +22,8 @@ final class CountryDefaults
         'GA' => ['label' => 'Gabon', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Libreville'],
         'CG' => ['label' => 'Congo', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Brazzaville'],
         'TD' => ['label' => 'Tchad', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Ndjamena'],
+        'CF' => ['label' => 'Republique Centrafricaine', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Bangui'],
+        'GQ' => ['label' => 'Guinee Equatoriale', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Malabo'],
         'FR' => ['label' => 'France', 'language' => 'fr', 'currency' => 'EUR', 'timezone' => 'Europe/Paris'],
         'TR' => ['label' => 'Turquie', 'language' => 'tr', 'currency' => 'TRY', 'timezone' => 'Europe/Istanbul'],
         'GB' => ['label' => 'Royaume-Uni', 'language' => 'en', 'currency' => 'GBP', 'timezone' => 'Europe/London'],

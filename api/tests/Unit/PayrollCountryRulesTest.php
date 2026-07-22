@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -97,6 +98,67 @@ class PayrollCountryRulesTest extends TestCase
         // hardcoded defaults — confirms forCompany() doesn't break the
         // no-DB fallback path.
         self::assertSame($rules->taxSlabs(), $scoped->taxSlabs());
+    }
+
+    /**
+     * PA2-COUNTRY-007: CEMAC zone (CM, CF, TD, CG, GA, GQ) must be covered by
+     * a single CemacPayrollRules class, scoped per member state via
+     * forMemberCountry(), so payroll can be run for any of the six members
+     * with the correct ISO country code, timezone and minimum wage.
+     */
+    public function test_cemac_defaults_to_cameroon_and_exposes_member_country_codes(): void
+    {
+        $default = new CemacPayrollRules;
+
+        self::assertSame('CM', $default->countryCode());
+        self::assertSame('XAF', $default->currency());
+        self::assertSame('Africa/Douala', $default->timezone());
+        self::assertSame(['CM', 'CF', 'TD', 'CG', 'GA', 'GQ'], CemacPayrollRules::MEMBER_COUNTRY_CODES);
+    }
+
+    public function test_cemac_for_member_country_scopes_currency_timezone_and_minimum_wage_per_member(): void
+    {
+        $expected = [
+            'CM' => ['Africa/Douala', 41875.0],
+            'CF' => ['Africa/Bangui', 35000.0],
+            'TD' => ['Africa/Ndjamena', 60000.0],
+            'CG' => ['Africa/Brazzaville', 90000.0],
+            'GA' => ['Africa/Libreville', 150000.0],
+            'GQ' => ['Africa/Malabo', 128000.0],
+        ];
+
+        foreach ($expected as $memberCode => [$timezone, $minimumWage]) {
+            $rules = (new CemacPayrollRules)->forMemberCountry($memberCode);
+
+            self::assertSame($memberCode, $rules->countryCode());
+            self::assertSame('XAF', $rules->currency());
+            self::assertSame($timezone, $rules->timezone());
+            self::assertSame($minimumWage, $rules->minimumWage());
+            self::assertSame([7], $rules->weeklyRestDays());
+            self::assertSame(['monthly'], $rules->supportedPayCycles());
+            self::assertSame('placeholder', $rules->confidenceLevel());
+            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            self::assertNotEmpty($rules->socialContributions());
+        }
+    }
+
+    public function test_cemac_for_member_country_ignores_unknown_codes(): void
+    {
+        $rules = (new CemacPayrollRules)->forMemberCountry('XX');
+
+        self::assertSame('CM', $rules->countryCode());
+    }
+
+    public function test_cemac_calculates_social_charges_and_progressive_income_tax(): void
+    {
+        $rules = (new CemacPayrollRules)->forMemberCountry('GA');
+
+        $charges = $rules->calculateSocialCharges(1000);
+        self::assertEqualsWithDelta(42.0, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(162.0, $charges['employer'], 0.01);
+
+        self::assertSame(0.0, $rules->calculateIncomeTax(500000 / 12));
+        self::assertSame(4166.67, $rules->calculateIncomeTax(1000000 / 12));
     }
 }
 
