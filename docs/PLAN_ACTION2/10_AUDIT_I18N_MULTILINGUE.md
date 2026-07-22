@@ -79,7 +79,7 @@ Tant qu'un seul point est faux sur une surface donnee, cette surface reste "mult
 | PA2-I18N-010 | P1 | Extraction texte en dur — web Next.js (`app/(dashboard)` et `app/(landing)`) | `front/web` | pages recensees (payroll, smart-attendance, edge-nodes, settings/developer, offline, pricing, guides/planning-employes, mobile) utilisent le catalogue `front/web/src/lib/i18n` au lieu de texte en dur; catalogue etendu en consequence sur les 4 locales |
 | PA2-I18N-011 | P1 | Corriger le melange de langues fige dans les donnees vitrine | `front/web/src/modules/vitrine/data/pricing.ts`, `app/(landing)/mobile/page.tsx` | plus aucune chaine turque (ou autre langue) codee en dur au meme niveau que du francais dans un objet de donnees; contenu deplace dans le catalogue i18n avec la bonne cle par langue |
 | PA2-I18N-012 | P1 | Extraction texte en dur — admin-dashboard Vue | `front/admin-dashboard/src` | vues a fort trafic (`UsersView`, `CompaniesView`, `PayrollView`, `SystemView`, `QuickActionsCard`, `Header`) utilisent `$t('xxx')` au lieu de texte en dur (toasts succes, libelles); catalogue `front/admin-dashboard/src/i18n/locales` etendu en consequence |
-| PA2-I18N-013 | P2 | Decision produit + implementation i18n kiosk | `front/zkteco-kiosk` | decision ecrite (multilingue requis ou mono-langue assume) documentee dans ce fichier; si multilingue: catalogue minimal 4 langues branche via `data-i18n`/JS, selecteur de langue simple dans `admin.html`, `front/zkteco-kiosk/**` ajoute aux triggers CI `i18n-enterprise.yml` |
+| PA2-I18N-013 | P2 | ~~Decision produit + implementation~~ Fait le 2026-07-22 | `front/zkteco-kiosk` | FAIT: decision ecrite (multilingue requis) documentee en section 7ter; catalogue minimal 4 langues (`front/zkteco-kiosk/i18n.js`) branche via `data-i18n`/`data-i18n-placeholder`/`data-i18n-aria-label` sur `index.html` et `admin.html`, appels `t(key, params)` pour le texte dynamique de `app.js`/`admin.js`; selecteur de langue simple ajoute dans les deux pages (`#langSelect`); `front/zkteco-kiosk/**` deja present dans les triggers CI `i18n-enterprise.yml` depuis PA2-I18N-014 |
 | PA2-I18N-014 | P1 | ~~Etendre~~ Fait le 2026-07-22 | `.github/workflows/i18n-enterprise.yml` | FAIT: triggers etendus a `front/mobile_apps/leopardo_{employee,manager,platform_admin}/lib/**`, `front/zkteco-kiosk/**`, `api/resources/views/{pdf,emails}/**` (2026-07-19); nouveau job bloquant `check-new-hardcoded-strings` qui echoue si une nouvelle chaine en dur est introduite sur diff de PR (pas seulement rapport informatif) (2026-07-22) |
 | PA2-I18N-015 | P2 | ~~Reecrire~~ Fait le 2026-07-22 | `dev-hub/tools` | FAIT: `dev-hub/tools/i18n-debt.js` (Node) ignore les classes CSS/Tailwind et les routes techniques, distingue texte UI visible vs texte log/dev; rapport republie `docs/validation/I18N_DEBT_REPORT_2026_07_22.md` remplace `I18N_DEBT_REPORT_2026_06_06.md` par une mesure fiable (7604 signaux reels) de la dette residuelle apres PA2-I18N-005 a 013 |
 
@@ -105,6 +105,26 @@ Statut mis a jour par agent KiloClaw a la demande de kitokoh (poursuite du trava
 
 ---
 
+---
+
+## 7ter. Decision produit — PA2-I18N-013 (kiosk ZKTeco) — 2026-07-22
+
+**Decision : le kiosk est multilingue (fr/en/tr/ar), pas mono-langue.**
+
+Justification : le kiosk est deploye a l'entree physique de sites clients et utilise directement par des employes qui ne lisent pas necessairement le francais (deploiements cibles en Algerie, au Maroc, en Tunisie, en Turquie et au Canada d'apres les comptes de demonstration deja presents dans `app.js`). Contrairement aux autres surfaces, le kiosk n'a pas d'utilisateur unique authentifie avec une preference de langue stockee cote serveur : n'importe quel employe peut se presenter devant la borne. Une langue figee en francais serait une regression d'accessibilite directe pour cette population, alors que l'infrastructure i18n existe deja partout ailleurs dans le produit (mobile, web, admin, emails).　
+
+Implementation retenue (volontairement minimale, sans dependance externe, coherente avec le reste du kiosk en JS vanilla) :
+
+- **`front/zkteco-kiosk/i18n.js`** (nouveau fichier) : catalogue statique `fr`/`en`/`tr`/`ar` (116 cles, verifie programmatiquement pour parite exacte entre les 4 langues), fonction `t(key, params)` avec interpolation `{placeholder}` et repli sur le francais puis sur la cle brute si une traduction manque (jamais d'ecran vide), persistance du choix de langue dans `localStorage` (cle `leopardo_kiosk_lang`), detection initiale via `navigator.language`.
+- **`index.html` / `admin.html`** : texte statique marque par les attributs `data-i18n` (contenu textuel), `data-i18n-placeholder` (placeholders de champs), `data-i18n-aria-label` (labels d'accessibilite) ; `KioskI18n.applyStaticTranslations()` les resout au chargement et a chaque changement de langue. Un `<select id="langSelect">` simple, peuple depuis `KioskI18n.supported`, est ajoute dans la barre superieure du kiosk et dans `admin.html`.
+- **`app.js` / `admin.js`** : tout le texte genere dynamiquement (messages de statut, toasts d'erreur, libelles de pointage/QR/conges/annonces) passe desormais par `t('cle', { param })` au lieu de gabarits de chaines francaises en dur ; `formatTime`/`formatDateTime` utilisent la locale `Intl` correspondant a la langue active (`fr-FR`/`en-US`/`tr-TR`/`ar-SA`) au lieu de `fr-FR` fixe.
+- **Direction du document** : `KioskI18n` pose `dir="rtl"` sur `<html>` quand la langue active est l'arabe (et `ltr` sinon), avec des regles CSS `[dir="rtl"]` ciblees pour inverser la disposition des elements les plus visibles (barre superieure, onglets, badges).
+- **CI** : `front/zkteco-kiosk/**` figure deja dans les triggers `pull_request`/`push` de `.github/workflows/i18n-enterprise.yml` depuis PA2-I18N-014 (2026-07-22) — aucune modification CI supplementaire necessaire pour ce ticket.
+
+Verification effectuee : `node -c` sur les 3 fichiers JS (syntaxe valide) ; script Node dedie confirmant que les 4 catalogues de langue ont des cles strictement identiques (116/116, 0 manquante, 0 en trop) et qu'aucune cle referencee par `data-i18n*` dans le HTML ou par `t('...')` dans le JS n'est absente du catalogue ; rendu DOM via `jsdom` verifiant que le changement de langue met a jour le titre, le texte visible, la direction du document (`rtl` pour `ar`) et l'attribut `lang`, avec un retour par defaut sur le francais quand `navigator.language` ne correspond a aucune langue supportee.
+
+---
+
 ## 8. Recapitulatif executif
 
 | Domaine | Etat | Severite |
@@ -118,6 +138,6 @@ Statut mis a jour par agent KiloClaw a la demande de kitokoh (poursuite du trava
 | Mobile employee/manager/platform_admin — usage reel des ARB | Infra prete, tres peu utilisee dans les ecrans | Eleve |
 | Web Next.js et admin Vue — extraction texte en dur | Catalogues existent, couverture partielle | Eleve |
 | Vitrine — melange de langues fige dans les donnees | Trompeur, a corriger en priorite | Moyen |
-| Kiosk ZKTeco | Aucune infrastructure i18n | Eleve (perimetre isole) |
-| Couverture CI sur zones a risque | Incomplete (mobile x3, kiosk, PDF/emails absents) | Moyen-eleve |
+| Kiosk ZKTeco | Resolu (PA2-I18N-013) : catalogue minimal 4 langues + selecteur brancher via `data-i18n`/`t()` | OK |
+| Couverture CI sur zones a risque | `front/zkteco-kiosk/**` deja couvert (PA2-I18N-014); mobile x3 et PDF/emails restent hors triggers CI | Moyen |
 | Fiabilite outil de mesure de dette | Resolu (PA2-I18N-015) : `dev-hub/tools/i18n-debt.js` (Node), rapport pilotable | OK |
