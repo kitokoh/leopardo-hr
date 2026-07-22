@@ -59,6 +59,67 @@ class FrancePayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.30, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Europe/Paris';
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public function weeklyRestDays(): array
+    {
+        // Saturday and Sunday are the standard weekly rest days in France.
+        return [6, 7];
+    }
+
+    /**
+     * Monthly-only for now: French payroll (bulletin de paie) is
+     * structured around monthly cycles by convention; daily/weekly cycles
+     * are not yet modeled for this country.
+     *
+     * @return array<int, string>
+     */
+    public function supportedPayCycles(): array
+    {
+        return ['monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'Placeholder: no official French public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
+
+    /**
+     * PA2-COUNTRY-005 baseline: French Code du travail art. L3121-27 sets
+     * the legal weekly working-hours threshold (duree legale) at 35
+     * hours/week.
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 35.0;
+    }
+
+    /**
+     * PA2-COUNTRY-005 baseline: Code du travail art. L3121-36 majore les 8
+     * premieres heures supplementaires (36e a 43e heure) de 25%, puis les
+     * heures suivantes de 50%, sauf accord de branche/entreprise different.
+     * A titre pilote (confidenceLevel='pilot'), la convention collective
+     * applicable peut modifier ces taux.
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => 8.0, 'multiplier' => 1.25],
+            ['up_to_hours' => null, 'multiplier' => 1.5],
+        ];
+    }
 }
-
-
