@@ -280,6 +280,10 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   user: {
@@ -435,7 +439,7 @@ function getActivityIcon(type) {
 
 function formatDate(date) {
   if (!date) return 'Jamais'
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -456,7 +460,7 @@ function formatLastLogin(date) {
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
   if (diff < 604800000) return `${Math.floor(diff / 86400000)}j`
 
-  return loginDate.toLocaleDateString('fr-FR')
+  return loginDate.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 
 function formatTime(timestamp) {
@@ -467,7 +471,7 @@ function formatTime(timestamp) {
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  return time.toLocaleDateString('fr-FR')
+  return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 
 // Action methods

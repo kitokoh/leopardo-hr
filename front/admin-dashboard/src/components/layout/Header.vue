@@ -200,12 +200,15 @@ import {
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 defineEmits(['toggle-sidebar'])
 
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 
 const searchQuery = ref('')
 const showNotifications = ref(false)
@@ -261,7 +264,7 @@ function formatTime(timestamp) {
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  return time.toLocaleDateString('fr-FR')
+  return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 
 async function refreshData() {
