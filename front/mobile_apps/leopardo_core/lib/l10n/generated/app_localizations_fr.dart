@@ -188,4 +188,23 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get emailsAbsenceRejectedFooter =>
       'Consultez votre manager si vous avez besoin d un complement.';
+
+  @override
+  String get aiChatAppBarTitle => 'Assistant IA';
+
+  @override
+  String get aiChatBackTooltip => 'Retour';
+
+  @override
+  String get aiChatSendTooltip => 'Envoyer';
+
+  @override
+  String get aiChatPlaceholder => 'Tapez votre message...';
+
+  @override
+  String get aiChatEmptyStateHint => 'Posez vos questions RH';
+
+  @override
+  String get aiChatErrorMessage =>
+      'Erreur : impossible de contacter l assistant.';
 }

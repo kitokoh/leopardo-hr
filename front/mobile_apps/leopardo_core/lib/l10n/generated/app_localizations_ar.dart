@@ -181,4 +181,22 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get emailsAbsenceRejectedFooter =>
       'تواصل مع مديرك اذا كنت تحتاج تفاصيل اضافية.';
+
+  @override
+  String get aiChatAppBarTitle => 'المساعد الذكي';
+
+  @override
+  String get aiChatBackTooltip => 'رجوع';
+
+  @override
+  String get aiChatSendTooltip => 'ارسال';
+
+  @override
+  String get aiChatPlaceholder => 'اكتب رسالتك...';
+
+  @override
+  String get aiChatEmptyStateHint => 'اطرح اسئلتك المتعلقة بالموارد البشرية';
+
+  @override
+  String get aiChatErrorMessage => 'خطا: تعذر الاتصال بالمساعد.';
 }

@@ -52,5 +52,11 @@
   "emailsAbsenceRejectedGreeting": "مرحبا :name،",
   "emailsAbsenceRejectedBody": "تم رفض طلب الغياب للفترة :period.",
   "emailsAbsenceRejectedAction": "عرض الطلب",
-  "emailsAbsenceRejectedFooter": "تواصل مع مديرك اذا كنت تحتاج تفاصيل اضافية."
+  "emailsAbsenceRejectedFooter": "تواصل مع مديرك اذا كنت تحتاج تفاصيل اضافية.",
+  "aiChatAppBarTitle": "المساعد الذكي",
+  "aiChatBackTooltip": "رجوع",
+  "aiChatSendTooltip": "ارسال",
+  "aiChatPlaceholder": "اكتب رسالتك...",
+  "aiChatEmptyStateHint": "اطرح اسئلتك المتعلقة بالموارد البشرية",
+  "aiChatErrorMessage": "خطا: تعذر الاتصال بالمساعد."
 }
