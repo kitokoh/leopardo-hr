@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import {
   DollarSign,
   Download,
@@ -41,6 +41,7 @@ interface PayrollRun {
 
 export default function PayrollPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).payrollPage;
   const [payslips, setPayslips] = useState<PaySlip[]>([]);
   const [runs, setRuns] = useState<PayrollRun[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,15 +96,15 @@ export default function PayrollPage() {
   };
 
   const statCards = [
-    { label: 'Total Brut', value: formatCurrency(runs.reduce((s, r) => s + (r.total_gross || 0), 0)), icon: DollarSign, accent: 'text-emerald-600 bg-emerald-50' },
-    { label: 'Total Net', value: formatCurrency(runs.reduce((s, r) => s + (r.total_net || 0), 0)), icon: FileText, accent: 'text-finance-dark bg-finance-light' },
-    { label: 'Bulletins', value: String(payslips.length), icon: Calendar, accent: 'text-ia-dark bg-ia-light' },
+    { label: labels.statTotalGross, value: formatCurrency(runs.reduce((s, r) => s + (r.total_gross || 0), 0)), icon: DollarSign, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: labels.statTotalNet, value: formatCurrency(runs.reduce((s, r) => s + (r.total_net || 0), 0)), icon: FileText, accent: 'text-finance-dark bg-finance-light' },
+    { label: labels.statPayslips, value: String(payslips.length), icon: Calendar, accent: 'text-ia-dark bg-ia-light' },
   ];
 
   return (
     <ModulePageShell
-      title="Paie"
-      subtitle="Bulletins de paie et cycles de paie, avec export PDF direct, connecte a l'API RH pour chaque tenant."
+      title={labels.title}
+      subtitle={labels.subtitle}
       accentClassName="bg-gradient-to-br from-finance-light via-white to-white"
     >
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -133,13 +134,13 @@ export default function PayrollPage() {
           onClick={() => setTab('slips')}
           className={`px-4 py-2.5 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${tab === 'slips' ? 'border-brand-500 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
-          Bulletins de paie
+          {labels.tabSlips}
         </button>
         <button
           onClick={() => setTab('runs')}
           className={`px-4 py-2.5 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${tab === 'runs' ? 'border-brand-500 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
-          Cycles de paie
+          {labels.tabRuns}
         </button>
       </div>
 
@@ -149,7 +150,7 @@ export default function PayrollPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Rechercher par nom ou periode..."
+              placeholder={labels.searchPlaceholder}
               value={search}
               onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
               className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -161,19 +162,19 @@ export default function PayrollPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-app-border bg-slate-50/50">
-                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employe</th>
-                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Periode</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Brut</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Net</th>
-                    <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
-                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnNet}</th>
+                    <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
                   {loading ? (
-                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Chargement...</td></tr>
+                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.loading}</td></tr>
                   ) : paginated.length === 0 ? (
-                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Aucun bulletin trouve.</td></tr>
+                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noPayslips}</td></tr>
                   ) : paginated.map(slip => (
                     <tr key={slip.id} className="transition-colors hover:bg-slate-50/60">
                       <td className="px-6 py-4 font-bold text-slate-950">{slip.employee_name}</td>
@@ -182,13 +183,13 @@ export default function PayrollPage() {
                       <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(slip.net_salary)}</td>
                       <td className="px-4 py-4 text-center">
                         <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${slip.status === 'validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
-                          {slip.status === 'validated' ? 'Valide' : 'Brouillon'}
+                          {slip.status === 'validated' ? labels.statusValidated : labels.statusDraft}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Telecharger PDF"><Download className="h-4 w-4" /></button>
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Voir detail"><Eye className="h-4 w-4" /></button>
+                          <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title={labels.downloadPdf}><Download className="h-4 w-4" /></button>
+                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title={labels.viewDetail}><Eye className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -198,7 +199,7 @@ export default function PayrollPage() {
             </div>
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-app-border px-6 py-3">
-                <p className="text-xs font-medium text-slate-500">{filtered.length} resultats</p>
+                <p className="text-xs font-medium text-slate-500">{filtered.length} {labels.resultsCount}</p>
                 <div className="flex items-center gap-1">
                   <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 disabled:opacity-30"><ChevronLeft className="h-4 w-4" /></button>
                   <span className="px-2 text-sm font-medium text-slate-600">{currentPage}/{totalPages}</span>
@@ -216,18 +217,18 @@ export default function PayrollPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-app-border bg-slate-50/50">
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Periode</th>
-                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Employes</th>
-                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Total Brut</th>
-                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Total Net</th>
-                  <th className="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
+                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployees}</th>
+                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalGross}</th>
+                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalNet}</th>
+                  <th className="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-app-border">
                 {loading ? (
-                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">Chargement...</td></tr>
+                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{labels.loading}</td></tr>
                 ) : runs.length === 0 ? (
-                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">Aucun cycle de paie.</td></tr>
+                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noRuns}</td></tr>
                 ) : runs.map(run => (
                   <tr key={run.id} className="transition-colors hover:bg-slate-50/60">
                     <td className="px-6 py-4 font-bold text-slate-950">{run.period}</td>
@@ -236,7 +237,7 @@ export default function PayrollPage() {
                     <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(run.total_net)}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${run.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
-                        {run.status === 'completed' ? 'Termine' : run.status}
+                        {run.status === 'completed' ? labels.statusCompleted : run.status}
                       </span>
                     </td>
                   </tr>

@@ -79,7 +79,7 @@
   ],
   "cleanUrls": true,
   "trailingSlash": false,
-  "ignoreCommand": "bash -c 'if [ -n \"$VERCEL_GIT_PREVIOUS_SHA\" ]; then git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . ; else git diff --quiet HEAD^ HEAD -- . ; fi'",
+  "ignoreCommand": "bash -c 'ref=\"$VERCEL_GIT_PREVIOUS_SHA\"; if [ -z \"$ref\" ]; then ref=HEAD^; fi; if ! git cat-file -e \"$ref\" 2>/dev/null; then exit 1; fi; git diff --quiet \"$ref\" HEAD -- . '",
   "git": {
     "deploymentEnabled": {
       "main": true,

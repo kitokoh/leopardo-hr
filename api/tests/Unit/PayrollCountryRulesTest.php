@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -153,5 +154,129 @@ class PayrollCountryRulesTest extends TestCase
         // no-DB fallback path.
         self::assertSame($rules->taxSlabs(), $scoped->taxSlabs());
     }
-}
 
+    /**
+     * PA2-COUNTRY-007: CEMAC zone (CM, CF, TD, CG, GA, GQ) must be covered by
+     * a single CemacPayrollRules class, scoped per member state via
+     * forMemberCountry(), so payroll can be run for any of the six members
+     * with the correct ISO country code, timezone and minimum wage.
+     */
+    public function test_cemac_defaults_to_cameroon_and_exposes_member_country_codes(): void
+    {
+        $default = new CemacPayrollRules;
+
+        self::assertSame('CM', $default->countryCode());
+        self::assertSame('XAF', $default->currency());
+        self::assertSame('Africa/Douala', $default->timezone());
+        self::assertSame(['CM', 'CF', 'TD', 'CG', 'GA', 'GQ'], CemacPayrollRules::MEMBER_COUNTRY_CODES);
+    }
+
+    public function test_cemac_for_member_country_scopes_currency_timezone_and_minimum_wage_per_member(): void
+    {
+        $expected = [
+            'CM' => ['Africa/Douala', 41875.0],
+            'CF' => ['Africa/Bangui', 35000.0],
+            'TD' => ['Africa/Ndjamena', 60000.0],
+            'CG' => ['Africa/Brazzaville', 90000.0],
+            'GA' => ['Africa/Libreville', 150000.0],
+            'GQ' => ['Africa/Malabo', 128000.0],
+        ];
+
+        foreach ($expected as $memberCode => [$timezone, $minimumWage]) {
+            $rules = (new CemacPayrollRules)->forMemberCountry($memberCode);
+
+            self::assertSame($memberCode, $rules->countryCode());
+            self::assertSame('XAF', $rules->currency());
+            self::assertSame($timezone, $rules->timezone());
+            self::assertSame($minimumWage, $rules->minimumWage());
+            self::assertSame([7], $rules->weeklyRestDays());
+            self::assertSame(['monthly'], $rules->supportedPayCycles());
+            self::assertSame('placeholder', $rules->confidenceLevel());
+            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            self::assertNotEmpty($rules->socialContributions());
+        }
+    }
+
+    public function test_cemac_for_member_country_ignores_unknown_codes(): void
+    {
+        $rules = (new CemacPayrollRules)->forMemberCountry('XX');
+
+        self::assertSame('CM', $rules->countryCode());
+    }
+
+    public function test_cemac_calculates_social_charges_and_progressive_income_tax(): void
+    {
+        $rules = (new CemacPayrollRules)->forMemberCountry('GA');
+
+        $charges = $rules->calculateSocialCharges(1000);
+        self::assertEqualsWithDelta(42.0, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(162.0, $charges['employer'], 0.01);
+
+        self::assertSame(0.0, $rules->calculateIncomeTax(500000 / 12));
+        self::assertSame(4166.67, $rules->calculateIncomeTax(1000000 / 12));
+    }
+
+    /**
+     * PA2-COUNTRY-004: Algeria's rules must expose the standard weekend
+     * (Friday+Saturday, not the generic Sunday-only default other countries
+     * use) plus the statutory 40h/week overtime threshold and its premium
+     * tier, so payroll/attendance can compute overtime pay without
+     * hardcoding Algeria-specific values elsewhere.
+     */
+    public function test_algeria_exposes_weekend_and_overtime_rules(): void
+    {
+        $rules = new AlgeriaPayrollRules;
+
+        self::assertSame([5, 6], $rules->weeklyRestDays());
+        self::assertSame(['daily', 'weekly', 'monthly'], $rules->supportedPayCycles());
+        self::assertSame('Africa/Algiers', $rules->timezone());
+        self::assertSame(40.0, $rules->overtimeThresholdWeeklyHours());
+
+        $tiers = $rules->overtimeRateTiers();
+        self::assertNotEmpty($tiers);
+        self::assertNull($tiers[array_key_last($tiers)]['up_to_hours']);
+        self::assertSame(1.5, $tiers[0]['multiplier']);
+    }
+
+    /**
+     * Every CountryRulesInterface implementation must expose the full
+     * country-metadata + overtime contract, not just Algeria — regression
+     * guard so a future country addition can't skip it silently.
+     */
+    public function test_every_country_rules_implementation_exposes_the_full_contract(): void
+    {
+        $allRules = [
+            new AlgeriaPayrollRules,
+            new MoroccoPayrollRules,
+            new TunisiaPayrollRules,
+            new FrancePayrollRules,
+            new TurkeyPayrollRules,
+            new SenegalPayrollRules,
+        ];
+
+        foreach ($allRules as $rules) {
+            $label = $rules->countryCode();
+
+            self::assertNotSame('', $rules->timezone(), $label.': timezone must not be empty');
+            self::assertNotEmpty($rules->weeklyRestDays(), $label.': weeklyRestDays must not be empty');
+            self::assertNotEmpty($rules->supportedPayCycles(), $label.': supportedPayCycles must not be empty');
+            self::assertNotSame('', $rules->publicHolidaysSource(), $label.': publicHolidaysSource must not be empty');
+            self::assertContains(
+                $rules->confidenceLevel(),
+                ['production', 'pilot', 'placeholder'],
+                $label.': confidenceLevel must be one of the documented values'
+            );
+            self::assertGreaterThan(0.0, $rules->overtimeThresholdWeeklyHours(), $label.': overtimeThresholdWeeklyHours must be positive');
+
+            $tiers = $rules->overtimeRateTiers();
+            self::assertNotEmpty($tiers, $label.': overtimeRateTiers must not be empty');
+            self::assertNull(
+                $tiers[array_key_last($tiers)]['up_to_hours'],
+                $label.': the last overtime tier must be unbounded (up_to_hours = null)'
+            );
+            foreach ($tiers as $tier) {
+                self::assertGreaterThan(1.0, $tier['multiplier'], $label.': overtime multiplier must be > 1.0 (a real premium)');
+            }
+        }
+    }
+}
