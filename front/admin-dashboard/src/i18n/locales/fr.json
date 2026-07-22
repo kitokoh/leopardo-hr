@@ -64,6 +64,99 @@
     "notifications": "Notifications",
     "evaluations": "Evaluations"
   },
+  "users": {
+    "page": {
+      "title": "Gestion des Utilisateurs",
+      "summary": ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui"
+    },
+    "actions": {
+      "bulk": "Actions (:count)",
+      "export": "Exporter",
+      "new": "Nouveau"
+    },
+    "filters": {
+      "search": {
+        "label": "Rechercher",
+        "placeholder": "Nom, email, entreprise..."
+      },
+      "status": {
+        "label": "Statut",
+        "all": "Tous les statuts",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "suspended": "Suspendu",
+        "pending": "En attente"
+      },
+      "role": {
+        "label": "Role",
+        "all": "Tous les roles",
+        "admin": "Administrateur",
+        "manager": "Manager",
+        "employee": "Employe",
+        "hr": "RH"
+      },
+      "company": {
+        "label": "Entreprise",
+        "all": "Toutes les entreprises"
+      },
+      "registrationDate": {
+        "label": "Date d'inscription",
+        "all": "Toutes les dates",
+        "today": "Aujourd'hui",
+        "week": "Cette semaine",
+        "month": "Ce mois",
+        "quarter": "Ce trimestre"
+      },
+      "lastLogin": {
+        "label": "Derniere connexion",
+        "all": "Toutes",
+        "today": "Aujourd'hui",
+        "week": "Cette semaine",
+        "month": "Ce mois",
+        "never": "Jamais connecte"
+      },
+      "segment": {
+        "label": "Segment",
+        "all": "Tous les segments",
+        "champions": "Champions",
+        "loyal": "Loyaux",
+        "potential": "Potentiels",
+        "new": "Nouveaux",
+        "atRisk": "A risque"
+      },
+      "advanced": {
+        "show": "Afficher les filtres avances",
+        "hide": "Masquer les filtres avances"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count selectionne(s)",
+      "activate": "Activer",
+      "deactivate": "Desactiver",
+      "suspend": "Suspendre",
+      "export": "Exporter",
+      "cancel": "Annuler"
+    },
+    "toast": {
+      "loadError": "Erreur lors du chargement des utilisateurs",
+      "bulkActivated": ":count utilisateur(s) active(s)",
+      "bulkDeactivated": ":count utilisateur(s) desactive(s)",
+      "bulkSuspended": ":count utilisateur(s) suspendu(s)",
+      "bulkError": "Erreur lors de l'action groupee",
+      "deleted": "Utilisateur supprime",
+      "deleteError": "Erreur lors de la suppression",
+      "impersonating": "Connexion en tant que :name",
+      "created": "Utilisateur cree avec succes",
+      "updated": "Utilisateur mis a jour",
+      "exportInProgress": "Export en cours...",
+      "exportDone": "Export termine",
+      "exportError": "Erreur lors de l'export",
+      "selectionExportDone": "Export de la selection termine"
+    },
+    "confirm": {
+      "delete": "Etes-vous sur de vouloir supprimer :name ?"
+    }
+  },
   "emails": {
     "invitation": {
       "subject": "Vous etes invite(e) a rejoindre :company sur Leopardo RH",

@@ -55,6 +55,34 @@ class TunisiaPayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.1657, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Africa/Tunis';
+    }
+
+    public function weeklyRestDays(): array
+    {
+        // Sunday is the standard weekly rest day in Tunisia.
+        return [7];
+    }
+
+    public function supportedPayCycles(): array
+    {
+        return ['daily', 'weekly', 'monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'placeholder: no official Tunisian public-holiday calendar wired in yet; '.
+            'national/religious holidays (Aid al-Fitr, Aid al-Adha, Revolution Day, etc.) '.
+            'must be entered manually per company until PA2-COUNTRY-012 delivers a real source.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
 }
 
 
