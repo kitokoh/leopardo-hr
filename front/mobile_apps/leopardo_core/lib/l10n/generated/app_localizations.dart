@@ -419,6 +419,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Consultez votre manager si vous avez besoin d un complement.'**
   String get emailsAbsenceRejectedFooter;
+
+  /// No description provided for @aiChatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assistant IA'**
+  String get aiChatTitle;
+
+  /// No description provided for @aiChatBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get aiChatBackTooltip;
+
+  /// No description provided for @aiChatSendTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get aiChatSendTooltip;
+
+  /// No description provided for @aiChatInputHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tapez votre message...'**
+  String get aiChatInputHint;
+
+  /// No description provided for @aiChatEmptyStateTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Posez vos questions RH'**
+  String get aiChatEmptyStateTitle;
+
+  /// No description provided for @aiChatErrorMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : impossible de contacter l assistant.'**
+  String get aiChatErrorMessage;
 }
 
 class _AppLocalizationsDelegate

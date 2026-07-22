@@ -66,6 +66,10 @@
 
 <script setup>
 import { PencilIcon, TrashIcon, CogIcon } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 defineProps({
   tasks: {
@@ -87,7 +91,7 @@ function getStatusLabel(status) {
 }
 
 function formatDate(date) {
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',
