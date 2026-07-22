@@ -57,6 +57,34 @@ class SenegalPayrollRules extends AbstractCountryRules
             'employer' => round($grossSalary * 0.114, 2),
         ];
     }
+
+    public function timezone(): string
+    {
+        return 'Africa/Dakar';
+    }
+
+    public function weeklyRestDays(): array
+    {
+        // Sunday is the standard weekly rest day in Senegal.
+        return [7];
+    }
+
+    public function supportedPayCycles(): array
+    {
+        return ['daily', 'weekly', 'monthly'];
+    }
+
+    public function publicHolidaysSource(): string
+    {
+        return 'placeholder: no official Senegalese public-holiday calendar wired in yet; '.
+            'national/religious holidays must be entered manually per company '.
+            'until PA2-COUNTRY-012 delivers a real source.';
+    }
+
+    public function confidenceLevel(): string
+    {
+        return 'pilot';
+    }
 }
 
 
