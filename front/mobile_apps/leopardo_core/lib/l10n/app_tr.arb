@@ -52,5 +52,20 @@
   "emailsAbsenceRejectedGreeting": "Merhaba :name,",
   "emailsAbsenceRejectedBody": ":period donemi icin izin talebiniz reddedildi.",
   "emailsAbsenceRejectedAction": "Talebi gor",
-  "emailsAbsenceRejectedFooter": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun."
+  "emailsAbsenceRejectedFooter": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun.",
+  "profileTitle": "Profilim",
+  "profileSubtitle": "Kisisel bilgiler ve dil",
+  "profileLoading": "Profil yukleniyor...",
+  "profileBackTooltip": "Geri",
+  "profileJobTitleUnset": "Unvan belirtilmedi",
+  "profileDetailsTitle": "Bilgiler",
+  "profileEmailLabel": "E-posta",
+  "profileDepartmentLabel": "Departman",
+  "profileJobTitleLabel": "Unvan",
+  "profileMatriculeLabel": "Personel numarasi",
+  "profileValueUnset": "Belirtilmedi",
+  "profileOpenSettings": "Hesap ayarlarini ac",
+  "profileLanguageUpdated": "Dil guncellendi.",
+  "profileLanguageSaving": "Guncelleniyor...",
+  "profileLanguageSave": "Dili guncelle"
 }

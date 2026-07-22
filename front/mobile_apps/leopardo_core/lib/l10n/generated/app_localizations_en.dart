@@ -186,4 +186,49 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emailsAbsenceRejectedFooter =>
       'Please contact your manager if you need more details.';
+
+  @override
+  String get profileTitle => 'My profile';
+
+  @override
+  String get profileSubtitle => 'Personal information and language';
+
+  @override
+  String get profileLoading => 'Loading profile...';
+
+  @override
+  String get profileBackTooltip => 'Back';
+
+  @override
+  String get profileJobTitleUnset => 'Job title not set';
+
+  @override
+  String get profileDetailsTitle => 'Information';
+
+  @override
+  String get profileEmailLabel => 'Email';
+
+  @override
+  String get profileDepartmentLabel => 'Department';
+
+  @override
+  String get profileJobTitleLabel => 'Job title';
+
+  @override
+  String get profileMatriculeLabel => 'Employee ID';
+
+  @override
+  String get profileValueUnset => 'Not set';
+
+  @override
+  String get profileOpenSettings => 'Open account settings';
+
+  @override
+  String get profileLanguageUpdated => 'Language updated.';
+
+  @override
+  String get profileLanguageSaving => 'Updating...';
+
+  @override
+  String get profileLanguageSave => 'Update language';
 }
