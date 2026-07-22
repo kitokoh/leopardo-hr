@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -43,6 +44,14 @@ class PayrollCalculator
                 'TR' => new TurkeyPayrollRules,
                 'SN' => new SenegalPayrollRules,
             ];
+
+            // CEMAC zone (PA2-COUNTRY-007): one CemacPayrollRules instance per
+            // member state, each scoped via forMemberCountry() so countryCode()
+            // returns the actual ISO 3166-1 alpha-2 code (CemacPayrollRules is
+            // a single class covering all six members, not six separate ones).
+            foreach (CemacPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
+                $this->rulesMap[$memberCountryCode] = (new CemacPayrollRules)->forMemberCountry($memberCountryCode);
+            }
         }
     }
 
