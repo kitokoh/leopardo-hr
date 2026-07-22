@@ -5,13 +5,19 @@ name: Actionlint
 # caught at review time instead of silently shipping dead/broken steps.
 # actionlint bundles shellcheck integration, so `run:` blocks get basic
 # shell linting too.
+#
+# PA2-OPS-003: `pull_request.paths` intentionally removed so this job runs
+# on every PR unconditionally (not just ones touching .github/workflows/**).
+# It was added to `required_status_checks.contexts` on `main` (branch
+# protection) — a required check gated behind a `paths:` filter never posts
+# a status on PRs that don't match those paths, which makes GitHub treat
+# the required check as permanently pending and blocks merging that PR
+# indefinitely. The job itself is a fast static lint over `.github/**`, so
+# running it unconditionally on every PR is cheap; `push` keeps its `paths:`
+# filter since push-to-main doesn't gate any PR merge.
 
 on:
   pull_request:
-    paths:
-      - '.github/workflows/**'
-      - '.github/actions/**'
-      - '.github/paths-filters.yml'
   push:
     branches: [main, develop]
     paths:

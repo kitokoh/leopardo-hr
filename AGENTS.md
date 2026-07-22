@@ -14,6 +14,31 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 - Chaque changement de comportement, migration, CI ou procedure doit avoir une entree `CHANGELOG.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
 
+## Regles agents juniors (PA2-AUTO-008)
+
+Cette section s'adresse specifiquement a un agent qui debute sur ce depot et doit choisir un ticket `PA2-*` a prendre sans supervision constante. Elle complete (ne remplace pas) le protocole complet de claim/PR/merge deja documente dans `docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md` — lire ce fichier en premier si ce n'est pas deja fait.
+
+### Comment choisir un ticket
+
+1. Lister les tickets ouverts : `gh issue list --repo <owner>/<repo> --state open --json number,title,assignees`.
+2. Ecarter tout ticket deja assigne a quelqu'un d'autre (`assignees` non vide et different de soi).
+3. Ecarter tout ticket dont l'ID `PA2-XXX-000` apparait deja dans une PR ouverte : `gh pr list --search "PA2-XXX-000"`.
+4. Verifier les dependances dans `docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv` (colonne `Dependencies`) : ne pas prendre un ticket dont une dependance n'est pas encore merge dans `main` (chercher l'ID dependant dans `git log --oneline --all --grep="PA2-XXX-000"` et confirmer qu'il est bien sur `main`, pas seulement sur une branche/PR ouverte).
+5. Preferer un ticket dont on comprend le peripheremetre exact (fichiers/dossiers cites dans la colonne `Surface` du CSV) avant de le prendre — en cas de doute sur le perimetre reel, relire le document d'audit source cite en bas du corps de l'issue GitHub avant de commencer.
+
+### Comment eviter la duplication de travail
+
+- Toujours suivre le protocole de claim complet (`01_MODE_EXECUTION_MULTI_AGENT.md`) : s'auto-assigner l'issue, puis ouvrir immediatement une PR draft avec `Closes #N`, avant d'ecrire beaucoup de code. Une PR draft ouverte tot est le signal le plus fiable pour un autre agent qui regarderait le meme ticket.
+- Avant de commencer, chercher si le ticket n'est pas deja fait mais reste ouvert par erreur de suivi : chercher son ID dans `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` (une ligne marquee `**Fait**` signifie deja livre) et dans `git log --oneline --all --grep="PA2-XXX-000"` (un commit deja sur `main` referencant l'ID signifie deja livre, meme si l'issue GitHub n'a pas ete fermee).
+- Ne jamais committer directement sur `main`, meme pour "juste prendre" un ticket — voir la regle explicite deja posee dans `01_MODE_EXECUTION_MULTI_AGENT.md`.
+
+### Comment demander une review
+
+- Une fois le travail complet et verifie localement (tests pertinents, `shellcheck`/lint si applicable), passer la PR draft en "Ready for review" : `gh pr ready <numero>`.
+- Ne jamais merger sa propre PR sans que les checks CI obligatoires (`gh pr checks <numero>`) soient verts — voir "Strategie CI rapide" ci-dessous pour la methode de diagnostic rapide.
+- En cas de doute sur une decision produit ou une divergence avec le ticket source (audit contredit par le code reel, ticket ambigu), documenter explicitement le doute dans la description de la PR (section "Risques residuels" du template, voir PA2-AUTO-006) plutot que de deviner silencieusement.
+- Si le ticket doit etre abandonne en cours de route, suivre la procedure d'abandon deja documentee dans `01_MODE_EXECUTION_MULTI_AGENT.md` (retirer l'assignation, marquer la PR draft comme bloquee avec un commentaire explicite) pour liberer le ticket a un autre agent.
+
 ## Strategie CI rapide
 
 Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Actions comme source de verite au lieu d'insister sur les checks locaux Windows.
