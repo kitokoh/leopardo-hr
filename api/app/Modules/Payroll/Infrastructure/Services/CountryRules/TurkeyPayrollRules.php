@@ -63,12 +63,20 @@ class TurkeyPayrollRules extends AbstractCountryRules
         return 'Europe/Istanbul';
     }
 
+    /**
+     * @return array<int, int>
+     */
     public function weeklyRestDays(): array
     {
         // Sunday is the standard weekly rest day in Turkey.
         return [7];
     }
 
+    /**
+     * Monthly-only for now: not yet validated for daily/weekly pay cycles.
+     *
+     * @return array<int, string>
+     */
     public function supportedPayCycles(): array
     {
         return ['monthly'];
@@ -76,15 +84,34 @@ class TurkeyPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Turkish public-holiday calendar wired in yet; '.
-            'national/religious holidays must be entered manually per company '.
-            'until PA2-COUNTRY-012 delivers a real source.';
+        return 'Placeholder: no official Turkish public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string
     {
         return 'pilot';
     }
+
+    /**
+     * PA2-COUNTRY-005 baseline: Turkish Labor Law No. 4857 art. 63 sets the
+     * legal weekly working-hours threshold at 45 hours/week.
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 45.0;
+    }
+
+    /**
+     * PA2-COUNTRY-005 baseline: Labor Law No. 4857 art. 41 majore les heures
+     * supplementaires de 50% du salaire horaire normal. Modelise ici comme
+     * un palier unique, a titre pilote (confidenceLevel='pilot').
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => null, 'multiplier' => 1.5],
+        ];
+    }
 }
-
-
