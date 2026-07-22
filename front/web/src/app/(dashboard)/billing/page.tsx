@@ -1,10 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { CreditCard, Download, ExternalLink, FileText, Loader2, ShieldCheck, XCircle } from 'lucide-react';
+
+const emptySubscribe = () => () => {};
 
 type Subscription = {
   id: number | string;
@@ -42,6 +45,7 @@ const STATUS_LABELS: Record<string, { label: string; className: string }> = {
 };
 
 export default function BillingPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +83,7 @@ export default function BillingPage() {
   useEffect(() => { void load(); }, [load]);
 
   const formatCurrency = (val: number, currency = 'EUR') =>
-    new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(val || 0);
+    new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency }).format(val || 0);
 
   const handleUpgrade = async (plan: 'starter' | 'business' | 'enterprise') => {
     setActionLoading(`upgrade-${plan}`);
@@ -209,7 +213,7 @@ export default function BillingPage() {
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
                       {subscription.current_period_start && subscription.current_period_end
-                        ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString('fr-FR')} au ${new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}`
+                        ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
                         : 'Aucune periode active'}
                     </p>
                   </>
@@ -307,7 +311,7 @@ export default function BillingPage() {
                         </span>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('fr-FR') : '—'}
+                        {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString(toIntlLocale(locale)) : '—'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Telecharger PDF">

@@ -97,6 +97,10 @@ import {
   ArrowTrendingDownIcon as TrendingDownIcon,
   ArrowRightIcon
 } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   data: {
@@ -116,7 +120,7 @@ const chartCanvas = ref(null)
 
 // Computed properties
 const formattedRevenue = computed(() => {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0
@@ -156,7 +160,7 @@ const trendLabel = computed(() => {
 
 // Methods
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0

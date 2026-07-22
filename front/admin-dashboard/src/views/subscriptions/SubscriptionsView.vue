@@ -147,7 +147,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const isLoading = ref(false)
 const plans = ref([])
 const portfolioItems = ref([])
@@ -226,15 +229,16 @@ function formatFeatureLabel(feature) {
 
 function formatCurrency(value, currency = 'EUR') {
   const amount = Number(value || 0)
+  const intlLocale = toIntlLocale(localeStore.current)
 
   try {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(intlLocale, {
       style: 'currency',
       currency: currency || 'EUR',
       maximumFractionDigits: 0,
     }).format(amount)
   } catch {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(intlLocale, {
       style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,
