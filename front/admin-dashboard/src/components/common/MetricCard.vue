@@ -26,6 +26,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -40,12 +44,13 @@ const trendUp = computed(() => (props.trend ?? 0) >= 0)
 
 const formattedValue = computed(() => {
   const v = Number(props.value) || 0
+  const intlLocale = toIntlLocale(localeStore.current)
   if (props.format === 'currency') {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: props.currency }).format(v)
+    return new Intl.NumberFormat(intlLocale, { style: 'currency', currency: props.currency }).format(v)
   }
   if (props.format === 'percent') {
     return `${v}%`
   }
-  return new Intl.NumberFormat('fr-FR').format(v)
+  return new Intl.NumberFormat(intlLocale).format(v)
 })
 </script>

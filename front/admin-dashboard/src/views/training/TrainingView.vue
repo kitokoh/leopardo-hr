@@ -169,7 +169,10 @@ import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const loading = ref(false)
 const error = ref('')
 const courses = ref([])
@@ -225,7 +228,7 @@ const courseSessions = computed(() => {
 
 function formatCurrency(value, currency = 'EUR') {
   if (!value && value !== 0) return '-'
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency || 'EUR' }).format(value)
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), { style: 'currency', currency: currency || 'EUR' }).format(value)
 }
 
 function viewCourse(course) {

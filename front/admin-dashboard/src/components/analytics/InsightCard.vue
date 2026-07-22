@@ -103,6 +103,10 @@ import {
   InformationCircleIcon,
   ArrowRightIcon
 } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   insight: {
@@ -216,7 +220,7 @@ const confidenceColor = computed(() => {
 
 // Methods
 function formatDate(date) {
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',

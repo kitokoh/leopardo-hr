@@ -1,10 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { GeoSessionStatusBadge } from '../_components/GeoSessionStatusBadge';
+
+const emptySubscribe = () => () => {};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,10 +43,10 @@ type Filters = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatDateTime(iso?: string | null): string {
+function formatDateTime(iso: string | null | undefined, locale: AppLocale): string {
   if (!iso) return '—';
   const d = new Date(iso);
-  return d.toLocaleString('fr-FR', {
+  return d.toLocaleString(toIntlLocale(locale), {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',
@@ -85,6 +88,7 @@ function sessionsToCSV(sessions: GeoSession[]): string {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SmartAttendanceSessionsPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [sessions, setSessions] = useState<GeoSession[]>([]);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [loading, setLoading] = useState(true);
@@ -297,8 +301,8 @@ export default function SmartAttendanceSessionsPage() {
                         <p className="text-xs text-slate-500">{session.employee_matricule}</p>
                       ) : null}
                     </td>
-                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_in_time)}</td>
-                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_out_time)}</td>
+                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_in_time, locale)}</td>
+                    <td className="px-4 py-4 text-slate-700">{formatDateTime(session.check_out_time, locale)}</td>
                     <td className="px-4 py-4 text-slate-700">{formatDuration(session.duration_minutes)}</td>
                     <td className="px-4 py-4">
                       <GeoSessionStatusBadge status={session.status} />
