@@ -2,42 +2,55 @@
 
 import { useState } from 'react';
 
+export type RejectSessionModalLabels = {
+  rejectModalTitle: string;
+  rejectModalBody: string;
+  rejectModalReasonLabel: string;
+  rejectModalReasonPlaceholder: string;
+  rejectModalReasonRequired: string;
+  rejectModalConfirm: string;
+  rejectModalInProgress: string;
+  cancel: string;
+};
+
 type Props = {
   employeeName: string;
   onConfirm: (reason: string) => void;
   onCancel: () => void;
   loading?: boolean;
+  labels: RejectSessionModalLabels;
 };
 
-export function RejectSessionModal({ employeeName, onConfirm, onCancel, loading = false }: Props) {
+export function RejectSessionModal({ employeeName, onConfirm, onCancel, loading = false, labels }: Props) {
   const [reason, setReason] = useState('');
 
   const isValid = reason.trim().length > 0;
+  const [beforeName, afterName] = labels.rejectModalBody.split('{name}');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl border border-app-border bg-white p-6 shadow-xl">
-        <h2 className="text-lg font-black text-slate-950">Refuser la session</h2>
+        <h2 className="text-lg font-black text-slate-950">{labels.rejectModalTitle}</h2>
         <p className="mt-2 text-sm text-slate-600">
-          Vous allez refuser la session de{' '}
-          <span className="font-bold text-slate-900">{employeeName}</span>. Veuillez
-          indiquer une raison.
+          {beforeName}
+          <span className="font-bold text-slate-900">{employeeName}</span>
+          {afterName}
         </p>
 
         <div className="mt-4">
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-            Raison du refus <span className="text-red-500">*</span>
+            {labels.rejectModalReasonLabel} <span className="text-red-500">*</span>
           </label>
           <textarea
             className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:opacity-50"
             rows={3}
-            placeholder="Raison obligatoire…"
+            placeholder={labels.rejectModalReasonPlaceholder}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             disabled={loading}
           />
           {!isValid && reason.length > 0 ? (
-            <p className="mt-1 text-xs text-red-500">La raison est obligatoire.</p>
+            <p className="mt-1 text-xs text-red-500">{labels.rejectModalReasonRequired}</p>
           ) : null}
         </div>
 
@@ -48,7 +61,7 @@ export function RejectSessionModal({ employeeName, onConfirm, onCancel, loading 
             disabled={loading}
             className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
           >
-            Annuler
+            {labels.cancel}
           </button>
           <button
             type="button"
@@ -56,7 +69,7 @@ export function RejectSessionModal({ employeeName, onConfirm, onCancel, loading 
             disabled={loading || !isValid}
             className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'En cours…' : 'Refuser'}
+            {loading ? labels.rejectModalInProgress : labels.rejectModalConfirm}
           </button>
         </div>
       </div>

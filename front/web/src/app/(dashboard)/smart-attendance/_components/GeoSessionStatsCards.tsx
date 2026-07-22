@@ -28,43 +28,52 @@ export type DashboardStats = {
   rejected: number;
 };
 
+export type GeoSessionStatsLabels = {
+  statTotal: string;
+  statDetected: string;
+  statPending: string;
+  statApproved: string;
+  statRejected: string;
+};
+
 type Props = {
   stats: DashboardStats;
   loading?: boolean;
+  labels: GeoSessionStatsLabels;
 };
 
-export function GeoSessionStatsCards({ stats, loading = false }: Props) {
+export function GeoSessionStatsCards({ stats, loading = false, labels }: Props) {
   const cards: StatsCardProps[] = [
     {
-      title: 'Total',
+      title: labels.statTotal,
       value: loading ? '...' : stats.total,
       icon: ClipboardList,
       colorClass: 'text-slate-700',
       bgClass: 'border-slate-200',
     },
     {
-      title: 'Détectés',
+      title: labels.statDetected,
       value: loading ? '...' : stats.detected,
       icon: MapPin,
       colorClass: 'text-security-dark',
       bgClass: 'border-security-light',
     },
     {
-      title: 'En attente',
+      title: labels.statPending,
       value: loading ? '...' : stats.pending_validation,
       icon: Hourglass,
       colorClass: 'text-amber-700',
       bgClass: 'border-amber-100',
     },
     {
-      title: 'Approuvés',
+      title: labels.statApproved,
       value: loading ? '...' : stats.approved,
       icon: CheckCircle2,
       colorClass: 'text-emerald-700',
       bgClass: 'border-emerald-100',
     },
     {
-      title: 'Refusés',
+      title: labels.statRejected,
       value: loading ? '...' : stats.rejected,
       icon: XCircle,
       colorClass: 'text-red-700',
