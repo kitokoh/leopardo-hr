@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:leopardo_core/core/theme/app_colors.dart';
+
 typedef StartupInitializer = Future<void> Function();
 
 class StartupGate extends StatefulWidget {
@@ -108,7 +110,7 @@ class _StartupGateState extends State<StartupGate> {
             child: Directionality(
               textDirection: TextDirection.ltr,
               child: Material(
-                color: const Color(0xFF0B1120),
+                color: AppColors.mobileDarkBg,
                 child: SafeArea(
                   child: Center(
                     child: Padding(
@@ -120,7 +122,7 @@ class _StartupGateState extends State<StartupGate> {
                             width: 58,
                             height: 58,
                             decoration: const BoxDecoration(
-                              color: Color(0xFF10B981),
+                              color: AppColors.rh,
                               shape: BoxShape.circle,
                             ),
                             alignment: Alignment.center,
@@ -138,7 +140,7 @@ class _StartupGateState extends State<StartupGate> {
                             widget.appName,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Color(0xFFE2EAF6),
+                              color: AppColors.mobileDarkText,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                             ),
@@ -148,7 +150,7 @@ class _StartupGateState extends State<StartupGate> {
                             _startupWarning ?? 'Ouverture de votre espace...',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Color(0xFF8EA9C8),
+                              color: AppColors.mobileDarkMutedAlt,
                               fontSize: 13,
                               height: 1.35,
                             ),
@@ -161,9 +163,9 @@ class _StartupGateState extends State<StartupGate> {
                                     _showStartupGuard = false;
                                   }),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFFE2EAF6),
+                                foregroundColor: AppColors.mobileDarkText,
                                 side: const BorderSide(
-                                  color: Color(0xFF1A2B44),
+                                  color: AppColors.mobileDarkBorder,
                                 ),
                               ),
                               child: const Text('Continuer'),
