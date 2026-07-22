@@ -29,6 +29,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
 ) {
   const reactId = useId();
   const inputId = id || reactId;
+  const errorId = `${inputId}-error`;
+  const helperId = `${inputId}-helper`;
+  const describedBy = error ? errorId : helperText ? helperId : undefined;
 
   return (
     <div className="w-full">
@@ -54,6 +57,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
           transition={{ duration: 0.2 }}
           id={inputId}
           ref={ref}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           className={`
             w-full px-4 py-2.5 text-sm font-medium
             bg-white dark:bg-slate-900
@@ -79,6 +84,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
 
       {error && (
         <motion.div
+          id={errorId}
+          role="alert"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-1.5 mt-2 text-sm text-red-600 dark:text-red-400"
@@ -89,7 +96,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
       )}
 
       {helperText && !error && (
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{helperText}</p>
+        <p id={helperId} className="mt-2 text-sm text-slate-500 dark:text-slate-400">{helperText}</p>
       )}
     </div>
   );

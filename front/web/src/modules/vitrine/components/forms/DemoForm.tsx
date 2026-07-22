@@ -228,12 +228,15 @@ export function DemoForm({
 
           {/* Preferred Date */}
           <div>
-            <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
+            <label htmlFor="demo-preferred-date" className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
               Date préférée (optionnel)
             </label>
             <div className="relative">
               <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
               <select
+                id="demo-preferred-date"
+                aria-invalid={errors.preferredDate ? true : undefined}
+                aria-describedby={errors.preferredDate ? 'demo-preferred-date-error' : undefined}
                 className={`
                   w-full pl-10 pr-4 py-2.5 text-sm font-medium
                   bg-white dark:bg-slate-900
@@ -260,7 +263,7 @@ export function DemoForm({
               </select>
             </div>
             {errors.preferredDate && (
-              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              <p id="demo-preferred-date-error" role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
                 {errors.preferredDate.message}
               </p>
             )}
