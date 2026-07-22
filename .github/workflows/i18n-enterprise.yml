@@ -70,3 +70,30 @@ jobs:
 
       - name: Check generated files are committed
         run: git diff --exit-code
+
+  # PA2-I18N-014 (second half of the DoD, paired with PA2-I18N-015): a
+  # blocking check that fails a PR diff introducing a NEW hardcoded
+  # user-visible string on the risk surfaces this workflow now triggers on
+  # (mobile employee/manager/platform_admin, kiosk, admin-dashboard, web
+  # app/modules, API PDF/email views). Only ADDED lines are inspected, so
+  # pre-existing debt (tracked separately by dev-hub/tools/i18n-debt.js,
+  # PA2-I18N-015) never blocks unrelated PRs — this only prevents the debt
+  # from growing.
+  check-new-hardcoded-strings:
+    name: I18N — No new hardcoded strings (diff)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+
+      - name: Check diff for new hardcoded user-visible strings
+        run: node dev-hub/tools/check-i18n-diff.js "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
