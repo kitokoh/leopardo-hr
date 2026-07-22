@@ -64,6 +64,99 @@
     "notifications": "Bildirimler",
     "evaluations": "Degerlendirmeler"
   },
+  "users": {
+    "page": {
+      "title": "Kullanici Yonetimi",
+      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
+    },
+    "actions": {
+      "bulk": "Islemler (:count)",
+      "export": "Disa Aktar",
+      "new": "Yeni"
+    },
+    "filters": {
+      "search": {
+        "label": "Ara",
+        "placeholder": "Ad, e-posta, sirket..."
+      },
+      "status": {
+        "label": "Durum",
+        "all": "Tum durumlar",
+        "active": "Aktif",
+        "inactive": "Pasif",
+        "suspended": "Askiya alindi",
+        "pending": "Beklemede"
+      },
+      "role": {
+        "label": "Rol",
+        "all": "Tum roller",
+        "admin": "Yonetici",
+        "manager": "Mudur",
+        "employee": "Calisan",
+        "hr": "IK"
+      },
+      "company": {
+        "label": "Sirket",
+        "all": "Tum sirketler"
+      },
+      "registrationDate": {
+        "label": "Kayit tarihi",
+        "all": "Tum tarihler",
+        "today": "Bugun",
+        "week": "Bu hafta",
+        "month": "Bu ay",
+        "quarter": "Bu ceyrek"
+      },
+      "lastLogin": {
+        "label": "Son giris",
+        "all": "Tumu",
+        "today": "Bugun",
+        "week": "Bu hafta",
+        "month": "Bu ay",
+        "never": "Hic giris yapmadi"
+      },
+      "segment": {
+        "label": "Segment",
+        "all": "Tum segmentler",
+        "champions": "Sadikler",
+        "loyal": "Bagli",
+        "potential": "Potansiyel",
+        "new": "Yeni",
+        "atRisk": "Risk altinda"
+      },
+      "advanced": {
+        "show": "Gelismis filtreleri goster",
+        "hide": "Gelismis filtreleri gizle"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count secildi",
+      "activate": "Etkinlestir",
+      "deactivate": "Devre disi birak",
+      "suspend": "Askiya al",
+      "export": "Disa Aktar",
+      "cancel": "Vazgec"
+    },
+    "toast": {
+      "loadError": "Kullanicilar yuklenirken hata olustu",
+      "bulkActivated": ":count kullanici etkinlestirildi",
+      "bulkDeactivated": ":count kullanici devre disi birakildi",
+      "bulkSuspended": ":count kullanici askiya alindi",
+      "bulkError": "Toplu islem basarisiz oldu",
+      "deleted": "Kullanici silindi",
+      "deleteError": "Kullanici silinirken hata olustu",
+      "impersonating": ":name olarak giris yapiliyor",
+      "created": "Kullanici basariyla olusturuldu",
+      "updated": "Kullanici guncellendi",
+      "exportInProgress": "Disa aktarim yapiliyor...",
+      "exportDone": "Disa aktarim tamamlandi",
+      "exportError": "Disa aktarim basarisiz oldu",
+      "selectionExportDone": "Secim disa aktarimi tamamlandi"
+    },
+    "confirm": {
+      "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
+    }
+  },
   "emails": {
     "invitation": {
       "subject": ":company sirketine Leopardo IK uzerinden katilmaniz icin davet edildiniz",

@@ -64,6 +64,99 @@
     "notifications": "الاشعارات",
     "evaluations": "التقييمات"
   },
+  "users": {
+    "page": {
+      "title": "إدارة المستخدمين",
+      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم"
+    },
+    "actions": {
+      "bulk": "إجراءات (:count)",
+      "export": "تصدير",
+      "new": "جديد"
+    },
+    "filters": {
+      "search": {
+        "label": "بحث",
+        "placeholder": "الاسم، البريد الإلكتروني، الشركة..."
+      },
+      "status": {
+        "label": "الحالة",
+        "all": "جميع الحالات",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "suspended": "معلق",
+        "pending": "قيد الانتظار"
+      },
+      "role": {
+        "label": "الدور",
+        "all": "جميع الأدوار",
+        "admin": "مسؤول",
+        "manager": "مدير",
+        "employee": "موظف",
+        "hr": "الموارد البشرية"
+      },
+      "company": {
+        "label": "الشركة",
+        "all": "جميع الشركات"
+      },
+      "registrationDate": {
+        "label": "تاريخ التسجيل",
+        "all": "جميع التواريخ",
+        "today": "اليوم",
+        "week": "هذا الأسبوع",
+        "month": "هذا الشهر",
+        "quarter": "هذا الفصل"
+      },
+      "lastLogin": {
+        "label": "آخر تسجيل دخول",
+        "all": "الكل",
+        "today": "اليوم",
+        "week": "هذا الأسبوع",
+        "month": "هذا الشهر",
+        "never": "لم يسجل الدخول ابدا"
+      },
+      "segment": {
+        "label": "الشريحة",
+        "all": "جميع الشرائح",
+        "champions": "الأبطال",
+        "loyal": "الموالون",
+        "potential": "المحتملون",
+        "new": "جديد",
+        "atRisk": "معرض للخطر"
+      },
+      "advanced": {
+        "show": "إظهار الفلاتر المتقدمة",
+        "hide": "إخفاء الفلاتر المتقدمة"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count محدد",
+      "activate": "تفعيل",
+      "deactivate": "تعطيل",
+      "suspend": "تعليق",
+      "export": "تصدير",
+      "cancel": "إلغاء"
+    },
+    "toast": {
+      "loadError": "خطأ في تحميل المستخدمين",
+      "bulkActivated": "تم تفعيل :count مستخدم",
+      "bulkDeactivated": "تم تعطيل :count مستخدم",
+      "bulkSuspended": "تم تعليق :count مستخدم",
+      "bulkError": "فشل الإجراء الجماعي",
+      "deleted": "تم حذف المستخدم",
+      "deleteError": "خطأ في حذف المستخدم",
+      "impersonating": "تسجيل الدخول باسم :name",
+      "created": "تم إنشاء المستخدم بنجاح",
+      "updated": "تم تحديث المستخدم",
+      "exportInProgress": "التصدير قيد التنفيذ...",
+      "exportDone": "تم التصدير",
+      "exportError": "فشل التصدير",
+      "selectionExportDone": "تم تصدير التحديد"
+    },
+    "confirm": {
+      "delete": "هل انت متأكد من رغبتك في حذف :name؟"
+    }
+  },
   "emails": {
     "invitation": {
       "subject": "تمت دعوتك للانضمام الى :company على ليوباردو للموارد البشرية",
