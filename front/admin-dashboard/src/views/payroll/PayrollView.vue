@@ -216,7 +216,10 @@ import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const loading = ref(false)
 const error = ref('')
 const runs = ref([])
@@ -302,7 +305,7 @@ const filteredRuns = computed(() => {
 const formattedMasse = computed(() => formatCurrency(stats.value.total_net))
 
 function formatCurrency(value) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(value) || 0)
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), { style: 'currency', currency: 'EUR' }).format(Number(value) || 0)
 }
 
 function formatPeriod(start, end) {

@@ -1,0 +1,63 @@
+name: PLAN_ACTION2 Weekly Report
+
+# PA2-AUTO-005: rapport hebdomadaire d'avancement du backlog PLAN_ACTION2.
+# Genere le rapport (dev-hub/tools/plan-action2-weekly-report.sh), le publie
+# dans le step summary GitHub Actions, et le poste comme commentaire sur
+# l'issue de suivi dediee (creee manuellement une fois, cf. README ci-dessous)
+# si `vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE` est configuree. Sans cette
+# variable, seul le step summary est produit (aucune ecriture GitHub).
+
+on:
+  schedule:
+    # Chaque lundi 07:00 UTC.
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+    inputs:
+      since_days:
+        description: "Fenetre en jours pour la section merges"
+        required: false
+        default: "7"
+        type: string
+      stale_days:
+        description: "Seuil en jours pour la section bloques"
+        required: false
+        default: "5"
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  report:
+    name: Generate weekly PLAN_ACTION2 report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Generate report
+        id: report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/plan-action2-weekly-report.sh
+          SINCE="${{ inputs.since_days }}"
+          STALE="${{ inputs.stale_days }}"
+          SINCE="${SINCE:-7}"
+          STALE="${STALE:-5}"
+          dev-hub/tools/plan-action2-weekly-report.sh \
+            --repo "${{ github.repository }}" \
+            --since-days "$SINCE" \
+            --stale-days "$STALE" \
+            --output report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post report as issue comment (optional)
+        if: ${{ vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ vars.PLAN_ACTION2_WEEKLY_REPORT_ISSUE }}" \
+            --repo "${{ github.repository }}" \
+            --body-file report.md
