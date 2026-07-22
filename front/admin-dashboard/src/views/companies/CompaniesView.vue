@@ -254,9 +254,12 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const router = useRouter()
 const toast = useToast()
+const localeStore = useLocaleStore()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const showCreateModal = ref(false)
@@ -377,7 +380,7 @@ async function submitCreateClient() {
 }
 
 function formatCurrency(value, currency = 'EUR') {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
     style: 'currency',
     currency: currency || 'EUR',
     maximumFractionDigits: 0,

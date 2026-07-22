@@ -151,7 +151,10 @@ import api, { downloadApiFile } from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
+const localeStore = useLocaleStore()
 const loading = ref(false)
 const error = ref('')
 const allContracts = ref([])
@@ -194,7 +197,7 @@ const contractAlerts = computed(() => {
 })
 
 function formatCurrency(value, currency = 'EUR') {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency || 'EUR' }).format(value || 0)
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), { style: 'currency', currency: currency || 'EUR' }).format(value || 0)
 }
 
 function isExpiringSoon(endDate) {
