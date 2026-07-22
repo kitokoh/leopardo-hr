@@ -5,9 +5,14 @@ import 'app_typography.dart';
 
 /// Theme central Leopardo RH.
 ///
-/// Le mode clair est la presentation par defaut. Le mode sombre reste
-/// supporte pour les surfaces qui en ont besoin, sans devenir l experience
-/// principale du produit.
+/// Decision produit (PA2-MOB-012, voir
+/// `docs/PLAN_ACTION2/15_DECISION_THEME_MOBILE.md`) : le mode sombre est
+/// l'experience principale reelle des 4 apps mobiles (`leopardo_employee`,
+/// `leopardo_hr`, `leopardo_manager` et `leopardo_platform_admin` forcent
+/// toutes `ThemeMode.dark`), pas une variante secondaire. `lightTheme` reste
+/// expose et maintenu (utilise par les previews/tests et disponible pour un
+/// futur reglage utilisateur), mais aucune app ne l'active par defaut
+/// aujourd'hui.
 class AppTheme {
   AppTheme._();
 
