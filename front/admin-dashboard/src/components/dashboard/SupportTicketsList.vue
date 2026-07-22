@@ -134,9 +134,12 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const router = useRouter()
 const toast = useToast()
+const localeStore = useLocaleStore()
 
 // Mock tickets data (in real app, this would come from an API)
 const tickets = ref([
@@ -237,7 +240,7 @@ function formatTime(timestamp) {
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  return time.toLocaleDateString('fr-FR')
+  return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 
 function viewTicket(ticketId) {
