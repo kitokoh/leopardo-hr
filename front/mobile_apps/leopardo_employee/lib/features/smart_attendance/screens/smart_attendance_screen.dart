@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
@@ -25,11 +26,11 @@ class SmartAttendanceScreen extends ConsumerStatefulWidget {
 
 class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
   // Palette de couleurs cohérente avec le reste de l'app
-  static const Color _bg = Color(0xFF0B1120);
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _accent = Color(0xFF2196F3);
+  static const Color _bg = AppColors.mobileDarkBg;
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _text = AppColors.mobileDarkText;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _accent = AppColors.mobileAccentBlue;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
         },
         child: configAsync.when(
           loading: () => const Center(
-            child: CircularProgressIndicator(color: Color(0xFF2196F3)),
+            child: CircularProgressIndicator(color: AppColors.mobileAccentBlue),
           ),
           error: (error, _) => _ErrorPanel(
             message: 'Impossible de charger la configuration.\n$error',
@@ -149,7 +150,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Color(0xFF2196F3)),
+                      strokeWidth: 2, color: AppColors.mobileAccentBlue),
                 ),
             ],
           ),
@@ -202,10 +203,10 @@ class _ModeStatusCard extends StatelessWidget {
   final bool canChangeMode;
   final VoidCallback onChangeTap;
 
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _border = Color(0xFF1A2B44);
-  static const Color _accent = Color(0xFF2196F3);
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _border = AppColors.mobileDarkBorder;
+  static const Color _accent = AppColors.mobileAccentBlue;
 
   const _ModeStatusCard({
     required this.effectiveMode,
@@ -241,9 +242,9 @@ class _ModeStatusCard extends StatelessWidget {
   Color get _modeColor {
     switch (effectiveMode) {
       case 'gps_auto':
-        return const Color(0xFF4CAF50);
+        return AppColors.mobileAccentGreen;
       case 'qr_code':
-        return const Color(0xFF9C27B0);
+        return AppColors.mobileAccentPurple;
       case 'manual':
       default:
         return _muted;
@@ -316,7 +317,7 @@ class _ModeStatusCard extends StatelessWidget {
           // Bouton de changement de mode si autorisé
           if (canChangeMode) ...[
             const SizedBox(height: 14),
-            const Divider(color: Color(0xFF1A2B44), height: 1),
+            const Divider(color: AppColors.mobileDarkBorder, height: 1),
             const SizedBox(height: 12),
             GestureDetector(
               onTap: onChangeTap,
@@ -350,13 +351,13 @@ class _GpsZoneStatusCard extends StatelessWidget {
   final VoidCallback onStartMonitoring;
   final VoidCallback onStopMonitoring;
 
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _border = Color(0xFF1A2B44);
-  static const Color _green = Color(0xFF4CAF50);
-  static const Color _red = Color(0xFFEF5350);
-  static const Color _accent = Color(0xFF2196F3);
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _text = AppColors.mobileDarkText;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _border = AppColors.mobileDarkBorder;
+  static const Color _green = AppColors.mobileAccentGreen;
+  static const Color _red = AppColors.mobileAccentRedLight;
+  static const Color _accent = AppColors.mobileAccentBlue;
 
   const _GpsZoneStatusCard({
     required this.config,
@@ -465,20 +466,20 @@ class _GpsZoneStatusCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFA726).withValues(alpha: 0.1),
+                color: AppColors.mobileAccentOrange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
                 border:
-                    Border.all(color: const Color(0xFFFFA726).withValues(alpha: 0.3)),
+                    Border.all(color: AppColors.mobileAccentOrange.withValues(alpha: 0.3)),
               ),
               child: const Row(
                 children: [
                   Icon(Icons.warning_amber_rounded,
-                      color: Color(0xFFFFA726), size: 16),
+                      color: AppColors.mobileAccentOrange, size: 16),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'La zone GPS de votre entreprise n\'est pas encore configurée.',
-                      style: TextStyle(color: Color(0xFFFFA726), fontSize: 12),
+                      style: TextStyle(color: AppColors.mobileAccentOrange, fontSize: 12),
                     ),
                   ),
                 ],
@@ -534,26 +535,26 @@ class _GpsZoneStatusCard extends StatelessWidget {
 class _SessionCard extends StatelessWidget {
   final GeoAttendanceSession session;
 
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF7A9CC0);
-  static const Color _border = Color(0xFF1A2B44);
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _text = AppColors.mobileDarkText;
+  static const Color _muted = AppColors.mobileDarkMuted;
+  static const Color _border = AppColors.mobileDarkBorder;
 
   const _SessionCard({required this.session});
 
   Color get _statusColor {
     switch (session.status) {
       case 'approved':
-        return const Color(0xFF4CAF50);
+        return AppColors.mobileAccentGreen;
       case 'detected':
       case 'pending_validation':
-        return const Color(0xFFFFA726);
+        return AppColors.mobileAccentOrange;
       case 'rejected':
-        return const Color(0xFFEF5350);
+        return AppColors.mobileAccentRedLight;
       case 'cancelled':
-        return const Color(0xFF607D8B);
+        return AppColors.mobileAccentGrey;
       default:
-        return const Color(0xFF7A9CC0);
+        return AppColors.mobileDarkMuted;
     }
   }
 
@@ -657,7 +658,7 @@ class _SessionCard extends StatelessWidget {
                       const Text(
                         'En cours',
                         style:
-                            TextStyle(color: Color(0xFF4CAF50), fontSize: 12),
+                            TextStyle(color: AppColors.mobileAccentGreen, fontSize: 12),
                       ),
                     ],
                     if (session.durationFormatted != null) ...[
@@ -698,12 +699,12 @@ class _ErrorPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.error_outline_rounded,
-                color: Color(0xFFEF5350), size: 48),
+                color: AppColors.mobileAccentRedLight, size: 48),
             const SizedBox(height: 16),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Color(0xFF7A9CC0), fontSize: 13),
+              style: const TextStyle(color: AppColors.mobileDarkMuted, fontSize: 13),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -711,7 +712,7 @@ class _ErrorPanel extends StatelessWidget {
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('Réessayer'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2196F3),
+                backgroundColor: AppColors.mobileAccentBlue,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -734,13 +735,13 @@ class _ErrorBanner extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFEF5350).withValues(alpha: 0.1),
+        color: AppColors.mobileAccentRedLight.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFEF5350).withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.mobileAccentRedLight.withValues(alpha: 0.3)),
       ),
       child: Text(
         message,
-        style: const TextStyle(color: Color(0xFFEF9A9A), fontSize: 12),
+        style: const TextStyle(color: AppColors.mobileAccentRedSoft, fontSize: 12),
       ),
     );
   }
@@ -756,18 +757,18 @@ class _EmptySessionsPanel extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFF111B2E),
+        color: AppColors.mobileDarkSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF1A2B44)),
+        border: Border.all(color: AppColors.mobileDarkBorder),
       ),
       child: Column(
         children: [
           Icon(Icons.history_toggle_off_rounded,
-              color: const Color(0xFF7A9CC0).withValues(alpha: 0.5), size: 40),
+              color: AppColors.mobileDarkMuted.withValues(alpha: 0.5), size: 40),
           const SizedBox(height: 12),
           const Text(
             'Aucune session GPS pour le moment.',
-            style: TextStyle(color: Color(0xFF7A9CC0), fontSize: 13),
+            style: TextStyle(color: AppColors.mobileDarkMuted, fontSize: 13),
           ),
         ],
       ),
