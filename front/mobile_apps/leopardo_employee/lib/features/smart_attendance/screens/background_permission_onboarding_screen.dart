@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Écran d'onboarding pour la permission "Toujours autoriser" la localisation
@@ -24,9 +25,9 @@ class BackgroundPermissionOnboardingScreen extends StatefulWidget {
 
 class _BackgroundPermissionOnboardingScreenState
     extends State<BackgroundPermissionOnboardingScreen> {
-  static const Color _bg = Color(0xFF0B1120);
-  static const Color _card = Color(0xFF111B2E);
-  static const Color _accent = Color(0xFF14B8A6);
+  static const Color _bg = AppColors.mobileDarkBg;
+  static const Color _card = AppColors.mobileDarkSurface;
+  static const Color _accent = AppColors.mobileAccentTeal;
 
   bool _isLoading = false;
 
@@ -207,14 +208,14 @@ class _StepCard extends StatelessWidget {
           height: 28,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: const Color(0xFF14B8A6).withValues(alpha: 0.15),
+            color: AppColors.mobileAccentTeal.withValues(alpha: 0.15),
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF14B8A6), width: 1.5),
+            border: Border.all(color: AppColors.mobileAccentTeal, width: 1.5),
           ),
           child: Text(
             step,
             style: const TextStyle(
-              color: Color(0xFF14B8A6),
+              color: AppColors.mobileAccentTeal,
               fontWeight: FontWeight.bold,
               fontSize: 13,
             ),
