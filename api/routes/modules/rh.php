@@ -172,6 +172,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');
     Route::patch('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->whereNumber('task');
+    Route::get('/tasks/{task}/comments', [TaskController::class, 'listComments'])->whereNumber('task');
     Route::post('/tasks/{task}/comments', [TaskController::class, 'addComment'])->whereNumber('task');
 
     // ── Module 7 (complément) — Evaluations ──────────────────────────────────
