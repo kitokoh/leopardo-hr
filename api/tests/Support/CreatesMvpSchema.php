@@ -1116,6 +1116,9 @@ trait CreatesMvpSchema
                 $table->text('response_body')->nullable();
                 $table->unsignedInteger('duration_ms')->nullable();
                 $table->timestampTz('delivered_at')->useCurrent();
+                // PA2-API-006: dead-letter marker, see
+                // database/migrations/tenant/2026_07_23_000002_add_dead_letter_to_webhook_deliveries.php
+                $table->timestampTz('dead_lettered_at')->nullable();
             });
         }
 
