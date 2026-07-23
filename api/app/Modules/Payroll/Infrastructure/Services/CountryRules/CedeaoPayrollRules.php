@@ -168,8 +168,8 @@ class CedeaoPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * PA2-COUNTRY-006: matches App\Support\CountryDefaults for all six
-     * CEDEAO/UEMOA member codes supported here (CI/ML/BF/BJ/TG/NE), all
+     * PA2-COUNTRY-006 follow-up: matches App\Support\CountryDefaults for
+     * all six CEDEAO/UEMOA member codes (CI/ML/BF/BJ/TG/NE), all
      * French-speaking.
      */
     public function language(): string
