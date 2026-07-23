@@ -84,5 +84,10 @@ return [
             'title' => 'Annonce de la plateforme Leopardo',
             'body' => 'Une nouvelle annonce de la plateforme est disponible.',
         ],
+        'attendance_geofence_alert' => [
+            'category' => 'attendance',
+            'title' => 'Pointage hors zone',
+            'body' => 'Un employé a pointé hors de la zone géographique attendue.',
+        ],
     ],
 ];
