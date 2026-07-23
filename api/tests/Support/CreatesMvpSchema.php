@@ -1290,6 +1290,7 @@ trait CreatesMvpSchema
                 $table->string('ip_address', 64)->nullable();
                 $table->string('user_agent', 500)->nullable();
                 $table->string('document_version', 40)->default('v1');
+                $table->string('document_hash', 64)->nullable();
                 $table->json('metadata')->nullable();
                 $table->timestamps();
             });
