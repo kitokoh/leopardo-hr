@@ -1,4 +1,6 @@
 DROP TABLE IF EXISTS public.user_invitations CASCADE;
+DROP TABLE IF EXISTS public.platform_announcement_companies CASCADE;
+DROP TABLE IF EXISTS public.platform_announcements CASCADE;
 DROP TABLE IF EXISTS public.super_admins CASCADE;
 DROP TABLE IF EXISTS public.user_lookups CASCADE;
 DROP TABLE IF EXISTS public.personal_access_tokens CASCADE;
@@ -749,6 +751,38 @@ CREATE TABLE public.user_invitations (
 
 CREATE UNIQUE INDEX user_invitations_token_hash_unique
     ON public.user_invitations (token_hash);
+
+-- PA2-COMM-005 — Platform-wide announcements (public schema).
+CREATE TABLE public.platform_announcements (
+    id bigserial PRIMARY KEY,
+    created_by integer NOT NULL,
+    title varchar(200) NOT NULL,
+    body text NOT NULL,
+    category varchar(20) NOT NULL DEFAULT 'news',
+    severity varchar(20) NOT NULL DEFAULT 'normal',
+    audience_type varchar(20) NOT NULL DEFAULT 'all',
+    published_at timestamptz NULL,
+    expires_at timestamptz NULL,
+    companies_count integer NOT NULL DEFAULT 0,
+    recipients_count integer NOT NULL DEFAULT 0,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX platform_announcements_published_at_index ON public.platform_announcements (published_at);
+CREATE INDEX platform_announcements_audience_type_index ON public.platform_announcements (audience_type);
+
+CREATE TABLE public.platform_announcement_companies (
+    id bigserial PRIMARY KEY,
+    platform_announcement_id bigint NOT NULL REFERENCES public.platform_announcements(id) ON DELETE CASCADE,
+    company_id uuid NOT NULL,
+    created_at timestamptz NULL
+);
+
+CREATE UNIQUE INDEX platform_announcement_companies_unique
+    ON public.platform_announcement_companies (platform_announcement_id, company_id);
+CREATE INDEX platform_announcement_companies_company_id_index
+    ON public.platform_announcement_companies (company_id);
 
 -- SSO configs (public, FK to companies)
 CREATE TABLE IF NOT EXISTS public.company_sso_configs (
