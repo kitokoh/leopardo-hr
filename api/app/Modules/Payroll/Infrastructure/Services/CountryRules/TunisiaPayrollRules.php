@@ -89,6 +89,14 @@ class TunisiaPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults::DEFAULTS['TN'].
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
      * PA2-COUNTRY-005: Tunisian labor code (Code du travail art. 79) sets
      * the legal weekly working-hours threshold at 48 hours/week for most
      * non-agricultural sectors (40h for some regulated sectors).

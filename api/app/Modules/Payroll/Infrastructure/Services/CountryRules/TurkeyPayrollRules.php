@@ -93,6 +93,30 @@ class TurkeyPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults::DEFAULTS['TR'].
+     */
+    public function language(): string
+    {
+        return 'tr';
+    }
+
+    /**
+     * PA2-COUNTRY-006: explicit compliance disclaimer required by the
+     * ticket acceptance criteria ("seuils prudents et avertissement
+     * conformite"). Overrides AbstractCountryRules::complianceWarning()
+     * with wording specific to Turkish payroll law.
+     */
+    public function complianceWarning(): string
+    {
+        return 'Pilot ruleset for Turkiye: income tax slabs, SGK/unemployment '.
+            'contribution rates and the 45h/week overtime tier are sourced from '.
+            'general public references (Labor Law No. 4857) and are NOT a '.
+            'substitute for a certified Turkish payroll provider or local mali '.
+            'musavir. Do not rely on this for statutory payslip compliance '.
+            'without validation.';
+    }
+
+    /**
      * PA2-COUNTRY-005 baseline: Turkish Labor Law No. 4857 art. 63 sets the
      * legal weekly working-hours threshold at 45 hours/week.
      */

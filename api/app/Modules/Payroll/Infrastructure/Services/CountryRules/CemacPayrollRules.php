@@ -157,6 +157,15 @@ class CemacPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults for all six
+     * CEMAC member codes (CM/CF/TD/CG/GA/GQ), all French-speaking.
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
      * PA2-COUNTRY-007 follow-up (BUGFIX-CEMAC-001): CountryRulesInterface
      * requires overtimeThresholdWeeklyHours()/overtimeRateTiers() (added by
      * PA2-COUNTRY-004) for every implementation, but CemacPayrollRules never
