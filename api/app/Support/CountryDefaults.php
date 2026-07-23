@@ -28,6 +28,12 @@ final class CountryDefaults
         'TR' => ['label' => 'Turquie', 'language' => 'tr', 'currency' => 'TRY', 'timezone' => 'Europe/Istanbul'],
         'GB' => ['label' => 'Royaume-Uni', 'language' => 'en', 'currency' => 'GBP', 'timezone' => 'Europe/London'],
         'US' => ['label' => 'Etats-Unis', 'language' => 'en', 'currency' => 'USD', 'timezone' => 'America/New_York'],
+        // PA2-COUNTRY-001: Canada was listed in the acceptance criteria
+        // ("DZ, MA, TN, FR, TR, CEMAC, CEDEAO, CA exposes via CountryDefaults")
+        // but was missing from this catalogue. Default timezone/language
+        // reflect the most populous province (Ontario); CA companies can
+        // still configure a province-specific timezone at company level.
+        'CA' => ['label' => 'Canada', 'language' => 'en', 'currency' => 'CAD', 'timezone' => 'America/Toronto'],
     ];
 
     /**
