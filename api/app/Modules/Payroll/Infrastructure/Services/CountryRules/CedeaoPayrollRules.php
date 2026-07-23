@@ -168,6 +168,16 @@ class CedeaoPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006 follow-up: matches App\Support\CountryDefaults for
+     * all six CEDEAO/UEMOA member codes (CI/ML/BF/BJ/TG/NE), all
+     * French-speaking.
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
      * PA2-COUNTRY-008 baseline: UEMOA labor codes generally set the legal
      * weekly working-hours threshold at 40 hours/week for non-agricultural
      * sectors, consistent across the supported member states. Placeholder-

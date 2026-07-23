@@ -43,7 +43,7 @@ class SocialContributionController extends Controller
         }
 
         $validated = $request->validate([
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE',
+            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
             'name' => 'required|string|max:150',
             'code' => 'required|string|max:50|unique:social_contributions,code',
             'type' => 'required|in:employee,employer',
