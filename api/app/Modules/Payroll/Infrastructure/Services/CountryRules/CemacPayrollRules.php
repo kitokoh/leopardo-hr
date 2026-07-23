@@ -155,4 +155,37 @@ class CemacPayrollRules extends AbstractCountryRules
     {
         return 'placeholder';
     }
+
+    /**
+     * PA2-COUNTRY-007 follow-up (BUGFIX-CEMAC-001): CountryRulesInterface
+     * requires overtimeThresholdWeeklyHours()/overtimeRateTiers() (added by
+     * PA2-COUNTRY-004) for every implementation, but CemacPayrollRules never
+     * implemented them, causing a PHP fatal error (abstract methods not
+     * implemented) on any code path that loads this class. Most CEMAC member
+     * states' labor codes (Code du travail, largely harmonized across the
+     * zone) set the standard legal weekly working-hours threshold at 40
+     * hours/week, consistent with the other Francophone-derived country
+     * rules already implemented here (e.g. Algeria, Senegal).
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 40.0;
+    }
+
+    /**
+     * BUGFIX-CEMAC-001: conservative placeholder premium tiers (not yet
+     * legally validated per member state, hence confidenceLevel() =
+     * 'placeholder' rather than 'pilot'): +20% for the first 8 overtime
+     * hours/week, +30% beyond, a common shape across CEMAC/OHADA labor
+     * codes. Must be confirmed per member state before real payroll use.
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => 8.0, 'multiplier' => 1.20],
+            ['up_to_hours' => null, 'multiplier' => 1.30],
+        ];
+    }
 }
