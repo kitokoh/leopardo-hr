@@ -20,6 +20,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingQrController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
@@ -157,6 +158,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
     Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
+
+    // ── Module 5 (complement) — Company announcements (PA2-COMM-004) ──────────
+    Route::get('/announcements', [AnnouncementController::class, 'index']);
+    Route::post('/announcements', [AnnouncementController::class, 'store']);
+    Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->whereNumber('announcement');
 
     // ── Module 7 — Projects & Tasks ───────────────────────────────────────────
     Route::get('/projects', [ProjectController::class, 'index']);
