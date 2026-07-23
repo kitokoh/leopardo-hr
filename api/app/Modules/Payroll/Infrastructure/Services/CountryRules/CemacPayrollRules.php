@@ -155,4 +155,31 @@ class CemacPayrollRules extends AbstractCountryRules
     {
         return 'placeholder';
     }
+
+    /**
+     * PA2-COUNTRY-007: no single CEMAC-wide labour code article was
+     * identified for a standard weekly threshold across all six member
+     * states, so 40h/week (the common regional norm, matching Chad's SMIG
+     * documentation) is used as a conservative placeholder pending
+     * per-member-state legal validation.
+     */
+    public function overtimeThresholdWeeklyHours(): float
+    {
+        return 40.0;
+    }
+
+    /**
+     * PA2-COUNTRY-007: placeholder tiered majoration, common shape across
+     * the region (first block of extra hours at a lower rate, beyond that
+     * at a higher rate), not yet validated per member state.
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
+    public function overtimeRateTiers(): array
+    {
+        return [
+            ['up_to_hours' => 8.0, 'multiplier' => 1.2],
+            ['up_to_hours' => null, 'multiplier' => 1.3],
+        ];
+    }
 }
