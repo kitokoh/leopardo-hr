@@ -139,7 +139,7 @@
 | PA2-ATT-009 | P1 | Geofence pointage bienveillant | API/mobile | coordonnees/rayon entreprise, alerte hors zone, pointage non bloque par GPS indisponible |
 | PA2-ATT-010 | P1 | Kiosk synchronise avec multi-evenements | kiosk/API | punch kiosk alimente le meme modele evenementiel que mobile |
 | PA2-ATT-011 | P2 | Anomalies pointage exploitables | API/mobile/web | retard, absence, oubli depart, chevauchement, hors zone; workflows correction |
-| PA2-ATT-012 | P2 | Score regularite employee | API/mobile | indicateurs ponctualite et completion taches sans penalisation opaque |
+| PA2-ATT-012 | P2 | ~~Score~~ Fait le 2026-07-23: `GET /api/v1/attendance/regularity` (`AttendanceRegularityService`) | API/mobile | FAIT: score punctualite (jours attendus/travailles/absents, retards, sorties manquantes) + completion des taches assignees (exclue du score si aucune tache, jamais penalisee a 0), chaque nombre du calcul est retourne dans `breakdown` (non opaque) |
 
 ## Extension v1.1 - Pays, devises et regles locales
 
