@@ -312,6 +312,167 @@ class HrModelSeeder extends Seeder
                     'overtime_threshold_weekly' => 45.0,
                 ]),
             ],
+
+            // ─────────────────────────────────────────────────────────────────
+            // SÉNÉGAL (SN)
+            // Source légale : Code du travail sénégalais, IPRES, CSS
+            // Voir SenegalPayrollRules pour les taux détaillés (PA2-COUNTRY-005)
+            // ─────────────────────────────────────────────────────────────────
+            [
+                'country_code' => 'SN',
+                'name' => 'Modèle Sénégal',
+                'cotisations' => json_encode([
+                    'salariales' => [
+                        ['name' => 'IPRES (salarié)', 'rate' => 0.056, 'base' => 'gross_salary', 'ceiling' => null],
+                    ],
+                    'patronales' => [
+                        ['name' => 'IPRES (patronal)', 'rate' => 0.084, 'base' => 'gross_salary', 'ceiling' => null],
+                        ['name' => 'CSS (patronal)',   'rate' => 0.03,  'base' => 'gross_salary', 'ceiling' => null],
+                    ],
+                    'total_salarial' => 0.056,
+                    'total_patronal' => 0.114,
+                ]),
+                'ir_brackets' => json_encode([
+                    ['min' => 0, 'max' => 630000, 'rate' => 0.00, 'deduction' => 0],
+                    ['min' => 630001, 'max' => 1500000, 'rate' => 0.20, 'deduction' => 0],
+                    ['min' => 1500001, 'max' => 4000000, 'rate' => 0.30, 'deduction' => 0],
+                    ['min' => 4000001, 'max' => 8000000, 'rate' => 0.35, 'deduction' => 0],
+                    ['min' => 8000001, 'max' => 13500000, 'rate' => 0.37, 'deduction' => 0],
+                    ['min' => 13500001, 'max' => null, 'rate' => 0.40, 'deduction' => 0],
+                    // Valeurs annuelles en XOF
+                ]),
+                'leave_rules' => json_encode([
+                    'accrual_rate_monthly' => 2.0,   // 24 jours/an minimum légal
+                    'initial_balance' => 0,
+                    'carry_over' => true,
+                    'max_balance' => 48,
+                    'min_notice_days' => 15,
+                    'legal_minimum_days' => 24,
+                ]),
+                'holiday_calendar' => json_encode([
+                    ['date' => '2026-01-01', 'name' => 'Jour de l\'An',      'is_recurring' => true],
+                    ['date' => '2026-04-04', 'name' => 'Fête de l\'Indépendance', 'is_recurring' => true],
+                    ['date' => '2026-05-01', 'name' => 'Fête du Travail',    'is_recurring' => true],
+                    ['date' => '2026-08-15', 'name' => 'Assomption',        'is_recurring' => true],
+                    ['date' => '2026-11-01', 'name' => 'Toussaint',         'is_recurring' => true],
+                    ['date' => '2026-12-25', 'name' => 'Noël',              'is_recurring' => true],
+                    // Fêtes islamiques variables (Korité, Tabaski...) — à calculer annuellement
+                ]),
+                'working_hours' => json_encode([
+                    'weekly_hours' => 40,
+                    'daily_hours' => 8,
+                    'overtime_rate_first' => 1.15,   // 15% pour les 8 premières heures/semaine
+                    'overtime_rate_beyond' => 1.40,  // 40% au-delà, ou de nuit
+                    'overtime_threshold_daily' => 8.0,
+                    'overtime_threshold_weekly' => 40.0,
+                ]),
+            ],
+
+            // ─────────────────────────────────────────────────────────────────
+            // CAMEROUN (CM) — représentant de la zone CEMAC
+            // (CM, CF, TD, CG, GA, GQ partagent XAF + regime CNPS/CNSS)
+            // Voir CemacPayrollRules pour les taux détaillés (PA2-COUNTRY-007)
+            // Barème IR ci-dessous est un placeholder conservateur, non encore
+            // légalement validé par État membre — confidenceLevel = placeholder.
+            // ─────────────────────────────────────────────────────────────────
+            [
+                'country_code' => 'CM',
+                'name' => 'Modèle Cameroun (zone CEMAC)',
+                'cotisations' => json_encode([
+                    'salariales' => [
+                        ['name' => 'CNPS (salarié)', 'rate' => 0.042, 'base' => 'gross_salary', 'ceiling' => null],
+                    ],
+                    'patronales' => [
+                        ['name' => 'CNPS (patronal, pension/famille/AT)', 'rate' => 0.162, 'base' => 'gross_salary', 'ceiling' => null],
+                    ],
+                    'total_salarial' => 0.042,
+                    'total_patronal' => 0.162,
+                ]),
+                'ir_brackets' => json_encode([
+                    ['min' => 0, 'max' => 500000, 'rate' => 0.00, 'deduction' => 0],
+                    ['min' => 500001, 'max' => 1000000, 'rate' => 0.10, 'deduction' => 0],
+                    ['min' => 1000001, 'max' => 2500000, 'rate' => 0.20, 'deduction' => 0],
+                    ['min' => 2500001, 'max' => 5000000, 'rate' => 0.30, 'deduction' => 0],
+                    ['min' => 5000001, 'max' => null, 'rate' => 0.35, 'deduction' => 0],
+                    // Valeurs annuelles en XAF — placeholder, à valider par État membre
+                ]),
+                'leave_rules' => json_encode([
+                    'accrual_rate_monthly' => 1.5,
+                    'initial_balance' => 0,
+                    'carry_over' => true,
+                    'max_balance' => 36,
+                    'min_notice_days' => 15,
+                    'legal_minimum_days' => 18,
+                ]),
+                'holiday_calendar' => json_encode([
+                    ['date' => '2026-01-01', 'name' => 'Jour de l\'An',   'is_recurring' => true],
+                    ['date' => '2026-05-01', 'name' => 'Fête du Travail', 'is_recurring' => true],
+                    ['date' => '2026-05-20', 'name' => 'Fête Nationale',  'is_recurring' => true],
+                    ['date' => '2026-12-25', 'name' => 'Noël',           'is_recurring' => true],
+                    // Fêtes islamiques et calendrier religieux variables par État membre
+                ]),
+                'working_hours' => json_encode([
+                    'weekly_hours' => 40,
+                    'daily_hours' => 8,
+                    'overtime_rate_first' => 1.50,
+                    'overtime_threshold_daily' => 8.0,
+                    'overtime_threshold_weekly' => 40.0,
+                ]),
+            ],
+
+            // ─────────────────────────────────────────────────────────────────
+            // CÔTE D'IVOIRE (CI) — représentant de la zone CEDEAO/UEMOA
+            // (CI, ML, BF, BJ, TG, NE, GW partagent XOF + regime CNPS/CNSS;
+            // le Sénégal garde son propre modèle ci-dessus)
+            // Voir CedeaoPayrollRules pour les taux détaillés (PA2-COUNTRY-008)
+            // Barème IR ci-dessous est un placeholder conservateur, non encore
+            // légalement validé par État membre — confidenceLevel = placeholder.
+            // ─────────────────────────────────────────────────────────────────
+            [
+                'country_code' => 'CI',
+                'name' => 'Modèle Côte d\'Ivoire (zone CEDEAO/UEMOA)',
+                'cotisations' => json_encode([
+                    'salariales' => [
+                        ['name' => 'CNPS (salarié, retraite)', 'rate' => 0.063, 'base' => 'gross_salary', 'ceiling' => null],
+                    ],
+                    'patronales' => [
+                        ['name' => 'CNPS (patronal, retraite/famille/AT)', 'rate' => 0.164, 'base' => 'gross_salary', 'ceiling' => null],
+                    ],
+                    'total_salarial' => 0.063,
+                    'total_patronal' => 0.164,
+                ]),
+                'ir_brackets' => json_encode([
+                    ['min' => 0, 'max' => 600000, 'rate' => 0.00, 'deduction' => 0],
+                    ['min' => 600001, 'max' => 1200000, 'rate' => 0.10, 'deduction' => 0],
+                    ['min' => 1200001, 'max' => 2500000, 'rate' => 0.20, 'deduction' => 0],
+                    ['min' => 2500001, 'max' => 5000000, 'rate' => 0.30, 'deduction' => 0],
+                    ['min' => 5000001, 'max' => null, 'rate' => 0.35, 'deduction' => 0],
+                    // Valeurs annuelles en XOF — placeholder, à valider par État membre
+                ]),
+                'leave_rules' => json_encode([
+                    'accrual_rate_monthly' => 2.0,
+                    'initial_balance' => 0,
+                    'carry_over' => true,
+                    'max_balance' => 48,
+                    'min_notice_days' => 15,
+                    'legal_minimum_days' => 24,
+                ]),
+                'holiday_calendar' => json_encode([
+                    ['date' => '2026-01-01', 'name' => 'Jour de l\'An',            'is_recurring' => true],
+                    ['date' => '2026-05-01', 'name' => 'Fête du Travail',          'is_recurring' => true],
+                    ['date' => '2026-08-07', 'name' => 'Fête de l\'Indépendance', 'is_recurring' => true],
+                    ['date' => '2026-11-15', 'name' => 'Journée Nationale de la Paix', 'is_recurring' => true],
+                    ['date' => '2026-12-25', 'name' => 'Noël',                     'is_recurring' => true],
+                    // Fêtes islamiques et chrétiennes mobiles variables par État membre
+                ]),
+                'working_hours' => json_encode([
+                    'weekly_hours' => 40,
+                    'daily_hours' => 8,
+                    'overtime_rate_first' => 1.50,
+                    'overtime_threshold_daily' => 8.0,
+                    'overtime_threshold_weekly' => 40.0,
+                ]),
+            ],
         ];
 
         foreach ($models as $model) {
@@ -321,6 +482,6 @@ class HrModelSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ Modèles RH créés : DZ, MA, TN, FR, TR (cotisations + IR + congés + jours fériés)');
+        $this->command->info('✅ Modèles RH créés : DZ, MA, TN, FR, TR, SN, CM (zone CEMAC), CI (zone CEDEAO/UEMOA) (cotisations + IR + congés + jours fériés)');
     }
 }
