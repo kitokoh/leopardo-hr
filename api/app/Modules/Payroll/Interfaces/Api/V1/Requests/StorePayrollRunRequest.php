@@ -18,7 +18,7 @@ class StorePayrollRunRequest extends FormRequest
         return [
             'period_start' => 'required|date',
             'period_end' => 'required|date|after:period_start',
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE',
+            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
             'notes' => 'nullable|string|max:2000',
         ];
     }
