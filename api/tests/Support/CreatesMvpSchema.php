@@ -785,6 +785,36 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        // PA2-COMM-005 — Platform-wide announcements (public schema, not
+        // tenant-scoped; see database/migrations/public/2026_07_23_000002_...).
+        Schema::create('platform_announcements', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedInteger('created_by');
+            $table->string('title', 200);
+            $table->text('body');
+            $table->string('category', 20)->default('news');
+            $table->string('severity', 20)->default('normal');
+            $table->string('audience_type', 20)->default('all');
+            $table->timestampTz('published_at')->nullable();
+            $table->timestampTz('expires_at')->nullable();
+            $table->unsignedInteger('companies_count')->default(0);
+            $table->unsignedInteger('recipients_count')->default(0);
+            $table->timestamps();
+
+            $table->index(['published_at']);
+            $table->index(['audience_type']);
+        });
+
+        Schema::create('platform_announcement_companies', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('platform_announcement_id');
+            $table->uuid('company_id');
+            $table->timestampTz('created_at')->nullable();
+
+            $table->unique(['platform_announcement_id', 'company_id'], 'platform_announcement_companies_unique');
+            $table->index('company_id');
+        });
+
         $this->createPostSprintModuleTables();
         $this->restoreDefaultSearchPath();
     }
@@ -1778,6 +1808,8 @@ trait CreatesMvpSchema
         $cascade = DB::getDriverName() === 'pgsql' ? ' CASCADE' : '';
 
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_announcements"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_kiosks"'.$cascade);
