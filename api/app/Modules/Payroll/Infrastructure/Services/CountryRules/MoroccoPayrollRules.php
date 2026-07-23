@@ -104,6 +104,14 @@ class MoroccoPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults::DEFAULTS['MA'].
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
      * PA2-COUNTRY-005: Moroccan labor code (loi 65-99) sets the legal weekly
      * working-hours threshold at 44 hours/week for most non-agricultural
      * sectors.

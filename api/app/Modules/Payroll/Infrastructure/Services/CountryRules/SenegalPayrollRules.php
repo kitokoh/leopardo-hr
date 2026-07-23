@@ -91,6 +91,14 @@ class SenegalPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults::DEFAULTS['SN'].
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
      * PA2-COUNTRY-005 baseline: Senegalese Code du travail sets the legal
      * weekly working-hours threshold at 40 hours/week for non-agricultural
      * sectors.
