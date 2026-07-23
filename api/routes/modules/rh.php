@@ -71,6 +71,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
     Route::get('/attendance/anomalies', [AttendanceController::class, 'anomalies']);
+    Route::get('/attendance/regularity', [AttendanceController::class, 'regularity']);
     Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
