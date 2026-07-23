@@ -74,5 +74,10 @@ return [
             'title' => 'Alerte de sécurité',
             'body' => 'Une action sensible vient d’être détectée sur votre compte.',
         ],
+        'task_comment_added' => [
+            'category' => 'task',
+            'title' => 'Nouveau commentaire sur une tâche',
+            'body' => 'Un nouveau commentaire a été ajouté à une tâche que vous suivez.',
+        ],
     ],
 ];

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaskCommentResource;
 use App\Http\Resources\Api\V1\TaskResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Task;
 use App\Modules\Planning\Domain\Models\TaskComment;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +20,10 @@ use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
+    public function __construct(
+        private readonly CommunicationService $communicationService,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -163,6 +168,25 @@ class TaskController extends Controller
         return response()->json(['message' => 'Task deleted successfully']);
     }
 
+    public function listComments(Request $request, Task $task): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($task->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $this->canAccessTask($actor, $task)) {
+            abort(403);
+        }
+
+        $comments = $task->comments()
+            ->with('author')
+            ->orderBy('created_at')
+            ->get();
+
+        return TaskCommentResource::collection($comments)->response();
+    }
+
     public function addComment(Request $request, Task $task): JsonResponse
     {
         /** @var Employee $actor */
@@ -170,13 +194,61 @@ class TaskController extends Controller
         if ($task->company_id !== $actor->company_id) {
             abort(404);
         }
+        if (! $this->canAccessTask($actor, $task)) {
+            abort(403);
+        }
 
         $data = $request->validate(['content' => ['required', 'string', 'max:5000']]);
         $comment = TaskComment::create(['company_id' => $actor->company_id, 'task_id' => $task->id, 'author_id' => $actor->id, 'content' => $data['content']]);
 
-        return (new TaskCommentResource($comment))
+        $this->notifyTaskParticipants($task, $actor, $comment);
+
+        return (new TaskCommentResource($comment->load('author')))
             ->response()
             ->setStatusCode(201);
+    }
+
+    private function canAccessTask(Employee $actor, Task $task): bool
+    {
+        return $actor->isManager()
+            || in_array($actor->id, $task->assigned_to ?? [], true)
+            || $task->created_by === $actor->id;
+    }
+
+    /**
+     * Notify the other task participants (creator + assignees) that a new
+     * comment was posted, excluding the comment author.
+     */
+    private function notifyTaskParticipants(Task $task, Employee $author, TaskComment $comment): void
+    {
+        $recipientIds = collect($task->assigned_to ?? [])
+            ->push($task->created_by)
+            ->filter()
+            ->unique()
+            ->reject(fn ($id): bool => (int) $id === (int) $author->id)
+            ->values();
+
+        if ($recipientIds->isEmpty()) {
+            return;
+        }
+
+        $recipients = Employee::query()
+            ->where('company_id', $task->company_id)
+            ->whereIn('id', $recipientIds)
+            ->get();
+
+        $authorName = trim($author->first_name.' '.$author->last_name);
+
+        foreach ($recipients as $recipient) {
+            $locale = $recipient->preferred_language ?: config('app.fallback_locale', 'en');
+
+            $this->communicationService->notifyEmployee($recipient, 'task_comment_added', [
+                'title' => trans('notifications.task_comment_added_title', ['task' => $task->title], $locale),
+                'body' => trans('notifications.task_comment_added_body', ['author' => $authorName], $locale),
+                'task_id' => $task->id,
+                'task_comment_id' => $comment->id,
+            ], ['app']);
+        }
     }
 
     public function today(Request $request): JsonResponse
