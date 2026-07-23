@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PlanSeeder::class,      // Plans tarifaires (Starter/Business/Enterprise)
             LanguageSeeder::class,  // Langues (fr/ar/en/tr)
-            HrModelSeeder::class,   // Modèles RH par pays (DZ/MA/TN/FR/TR)
+            HrModelSeeder::class,   // Modèles RH par pays (DZ/MA/TN/FR/TR/SN/CM/CI)
             SuperAdminSeeder::class, // Premier Super Admin
         ]);
 
