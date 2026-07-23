@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\Auditable;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,11 +28,17 @@ use Illuminate\Support\Carbon;
  * @property array<mixed> $repayment_plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class SalaryAdvance extends Model
 {
-    use BelongsToCompany, HasFactory;
+    // PA2-PAY-001 — every create/manager-approve/mark-paid/employee-confirm
+    // transition writes a company-scoped audit_logs row (old/new dirty
+    // attributes + acting employee, resolved from the current request)
+    // via the shared Auditable trait, matching the ticket's explicit
+    // "audit" acceptance criterion for the double-validation workflow.
+    use Auditable, BelongsToCompany, HasFactory;
 
     protected $table = 'salary_advances';
 
