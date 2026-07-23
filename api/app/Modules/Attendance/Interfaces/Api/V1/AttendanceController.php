@@ -13,10 +13,12 @@ use App\Modules\Attendance\Domain\Models\AttendanceCorrectionRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceMonthlyReportService;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceRegularityService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceIndexRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceMonthlyReportRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceRegularityRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceTodayRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckInRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\CheckOutRequest;
@@ -236,6 +238,24 @@ class AttendanceController extends Controller
 
         return AttendanceLogResource::collection($paginator)->response();
 
+    }
+
+    public function regularity(AttendanceRegularityRequest $request, AttendanceRegularityService $regularityService): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $validated = $request->validated();
+        $employeeId = $validated['employee_id'] ?? null;
+
+        $target = $employeeId ? Employee::query()->findOrFail($employeeId) : $actor;
+        $this->authorize('viewForEmployee', [AttendanceLog::class, $target]);
+
+        $company = currentCompany();
+        $dateTo = $validated['date_to'] ?? now('UTC')->setTimezone($company->timezone)->toDateString();
+        $dateFrom = $validated['date_from'] ?? Carbon::parse($dateTo)->subDays(30)->toDateString();
+
+        return new JsonResponse($regularityService->summarize($target, $dateFrom, $dateTo));
     }
 
     public function anomalies(AttendanceAnomaliesRequest $request, AttendanceAnomalyService $anomalyService): JsonResponse
