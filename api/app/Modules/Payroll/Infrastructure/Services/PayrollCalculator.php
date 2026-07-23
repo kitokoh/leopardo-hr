@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
@@ -51,6 +52,14 @@ class PayrollCalculator
             // a single class covering all six members, not six separate ones).
             foreach (CemacPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
                 $this->rulesMap[$memberCountryCode] = (new CemacPayrollRules)->forMemberCountry($memberCountryCode);
+            }
+
+            // CEDEAO/UEMOA zone (PA2-COUNTRY-008): same pattern as CEMAC above,
+            // one CedeaoPayrollRules instance per XOF member state (Senegal
+            // already has its own dedicated SenegalPayrollRules and is not
+            // duplicated here).
+            foreach (CedeaoPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
+                $this->rulesMap[$memberCountryCode] = (new CedeaoPayrollRules)->forMemberCountry($memberCountryCode);
             }
         }
     }
