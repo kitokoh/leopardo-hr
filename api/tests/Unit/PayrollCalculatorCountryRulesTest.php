@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
@@ -22,8 +24,9 @@ use PHPUnit\Framework\TestCase;
  * via that implementation's currency()) a payroll run uses. This complements
  * PayrollCountryRulesTest (which exercises each CountryRulesInterface
  * implementation directly) by locking in the wiring/lookup layer itself,
- * including the documented gaps (CEDEAO members other than SN, and Canada)
- * where no rules exist yet per docs/PLAN_ACTION2/16_LIMITES_LEGALES_REGLES_PAYS.md.
+ * CEDEAO members and Canada are now covered too (PA2-COUNTRY-008/009),
+ * so this test locks in the currently-supported set rather than the
+ * previously-documented gaps.
  */
 class PayrollCalculatorCountryRulesTest extends TestCase
 {
@@ -44,6 +47,18 @@ class PayrollCalculatorCountryRulesTest extends TestCase
             'Congo (CG, CEMAC)' => ['CG', CemacPayrollRules::class, 'XAF'],
             'Gabon (GA, CEMAC)' => ['GA', CemacPayrollRules::class, 'XAF'],
             'Equatorial Guinea (GQ, CEMAC)' => ['GQ', CemacPayrollRules::class, 'XAF'],
+            // CEDEAO/UEMOA zone: single CedeaoPayrollRules class, scoped per
+            // member state, registered under each member's own ISO country
+            // code (Senegal excluded: it has its own dedicated class, see
+            // test_senegal_is_the_one_cedeao_member_with_supported_rules()).
+            'Cote d Ivoire (CI, CEDEAO)' => ['CI', CedeaoPayrollRules::class, 'XOF'],
+            'Mali (ML, CEDEAO)' => ['ML', CedeaoPayrollRules::class, 'XOF'],
+            'Burkina Faso (BF, CEDEAO)' => ['BF', CedeaoPayrollRules::class, 'XOF'],
+            'Benin (BJ, CEDEAO)' => ['BJ', CedeaoPayrollRules::class, 'XOF'],
+            'Togo (TG, CEDEAO)' => ['TG', CedeaoPayrollRules::class, 'XOF'],
+            'Niger (NE, CEDEAO)' => ['NE', CedeaoPayrollRules::class, 'XOF'],
+            // Canada: single ISO country code CA, federal defaults.
+            'Canada (CA)' => ['CA', CanadaPayrollRules::class, 'CAD'],
         ];
     }
 
@@ -85,44 +100,19 @@ class PayrollCalculatorCountryRulesTest extends TestCase
     }
 
     /**
-     * @return array<string, array{0: string}>
+     * Locks in the current documented behavior for a country code that
+     * CountryDefaults does not know about at all: a payroll run must fail
+     * loudly with InvalidArgumentException rather than silently using the
+     * wrong country's rules or a default currency.
      */
-    public static function unsupportedCountryCodesProvider(): array
-    {
-        return [
-            // CEDEAO/UEMOA members other than Senegal: CountryDefaults
-            // exposes currency/timezone metadata for these, but no
-            // CountryRulesInterface implementation exists yet (PA2-COUNTRY-008,
-            // not delivered). Documented explicitly in
-            // docs/PLAN_ACTION2/16_LIMITES_LEGALES_REGLES_PAYS.md.
-            'Cote d Ivoire (CI, CEDEAO)' => ['CI'],
-            'Mali (ML, CEDEAO)' => ['ML'],
-            'Burkina Faso (BF, CEDEAO)' => ['BF'],
-            'Benin (BJ, CEDEAO)' => ['BJ'],
-            'Togo (TG, CEDEAO)' => ['TG'],
-            'Niger (NE, CEDEAO)' => ['NE'],
-            // Canada: CountryDefaults exposes currency/timezone metadata,
-            // but no CountryRulesInterface implementation exists yet
-            // (PA2-COUNTRY-009, not delivered).
-            'Canada (CA)' => ['CA'],
-        ];
-    }
-
-    /**
-     * Locks in the current documented behavior for countries that
-     * CountryDefaults knows about but PayrollCalculator does not: a payroll
-     * run must fail loudly with InvalidArgumentException rather than
-     * silently using the wrong country's rules or a default currency.
-     */
-    #[DataProvider('unsupportedCountryCodesProvider')]
-    public function test_default_rules_map_rejects_country_codes_without_payroll_rules(string $countryCode): void
+    public function test_default_rules_map_rejects_country_codes_without_payroll_rules(): void
     {
         $calculator = new PayrollCalculator;
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("No payroll rules for country: {$countryCode}");
+        $this->expectExceptionMessage('No payroll rules for country: XX');
 
-        $calculator->getRules($countryCode);
+        $calculator->getRules('XX');
     }
 
     /**
