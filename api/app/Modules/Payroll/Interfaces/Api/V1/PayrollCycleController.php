@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Illuminate\Http\JsonResponse;
@@ -31,9 +32,15 @@ class PayrollCycleController extends Controller
         $runs = PayrollRun::query()
             ->where('company_id', $actor->company_id)
             ->orderByDesc('period_start')
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
-        return response()->json($runs);
+        // PA2-API-001: this endpoint used to return Laravel's raw paginator
+        // shape (top-level current_page/data/links/...), which diverges from
+        // the success/data/meta envelope used by every other paginated list
+        // in the API (see PayrollRunController::index, EmployeeController::index,
+        // etc). Route through the same resource used by /payroll-runs so
+        // /payroll/cycles matches the standard contract.
+        return PayrollRunResource::collection($runs)->response();
     }
 
     public function current(Request $request): JsonResponse
@@ -116,4 +123,3 @@ class PayrollCycleController extends Controller
         ]);
     }
 }
-
