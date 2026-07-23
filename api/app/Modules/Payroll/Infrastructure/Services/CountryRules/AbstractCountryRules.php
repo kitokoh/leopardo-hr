@@ -105,6 +105,32 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     abstract protected function defaultTaxSlabs(): array;
 
     /**
+     * PA2-COUNTRY-006: default compliance disclaimer shared by every
+     * country implementation, derived from confidenceLevel() so it stays
+     * accurate automatically as a country's rules mature from
+     * 'placeholder'/'pilot' to 'production' without touching every class.
+     * Subclasses may override with country-specific wording (e.g. citing a
+     * specific labor code article) if that becomes useful later.
+     */
+    public function complianceWarning(): string
+    {
+        return match ($this->confidenceLevel()) {
+            'production' => sprintf(
+                'Legally validated for %s payroll use, but always confirm current rates with local counsel before relying on this for statutory filings.',
+                $this->countryCode()
+            ),
+            'placeholder' => sprintf(
+                'Structure-only placeholder for %s: tax/social-contribution figures are not yet researched and must not be used for real payroll runs without replacing them first.',
+                $this->countryCode()
+            ),
+            default => sprintf(
+                'Pilot ruleset for %s, sourced from general public labor-code references but not yet legally validated locally. Confirm with local legal/tax counsel before relying on these figures (tax slabs, social contributions, overtime thresholds) for statutory compliance.',
+                $this->countryCode()
+            ),
+        };
+    }
+
+    /**
      * Calculates progressive tax for slabs declared with inclusive human-readable
      * bounds such as 0-5000, 5001-20000.
      *
@@ -140,5 +166,3 @@ abstract class AbstractCountryRules implements CountryRulesInterface
         return $tax;
     }
 }
-
-

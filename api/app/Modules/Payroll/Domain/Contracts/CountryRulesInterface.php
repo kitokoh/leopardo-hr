@@ -69,6 +69,24 @@ interface CountryRulesInterface
     public function confidenceLevel(): string;
 
     /**
+     * Default language for this country as an ISO 639-1 code (e.g. "fr",
+     * "tr", "en"), matching App\Support\CountryDefaults so payroll-facing
+     * consumers (payslip generation, notices, provisioning) can resolve a
+     * default locale without a separate lookup.
+     */
+    public function language(): string;
+
+    /**
+     * Human-readable compliance disclaimer for this country's payroll rules,
+     * explicit about confidenceLevel() so a manager/platform admin can't
+     * mistake pilot/placeholder values (tax slabs, social contributions,
+     * overtime thresholds) for locally validated statutory figures. Distinct
+     * from publicHolidaysSource(), which is scoped to holiday-calendar
+     * disclosure only.
+     */
+    public function complianceWarning(): string;
+
+    /**
      * Standard legal weekly working-hours threshold beyond which overtime
      * applies by default, absent a company-specific schedule override (see
      * Schedule::overtime_threshold_weekly for the per-company setting this
