@@ -97,6 +97,33 @@ class FrancePayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults::DEFAULTS['FR'].
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
+     * PA2-COUNTRY-006: explicit compliance disclaimer required by the
+     * ticket acceptance criteria ("seuils prudents et avertissement
+     * conformite"). Overrides AbstractCountryRules::complianceWarning()
+     * with wording specific to French payroll law, naming the concrete
+     * areas (tax slabs, social contributions, overtime tiers) that are
+     * pilot-sourced rather than validated against a payroll provider or
+     * local counsel.
+     */
+    public function complianceWarning(): string
+    {
+        return 'Pilot ruleset for France: income tax slabs, social contribution '.
+            'rates (securite sociale, CSG/CRDS) and the 35h/week overtime tiers '.
+            'are sourced from general public references (Code du travail, '.
+            'bareme fiscal indicatif) and are NOT a substitute for a certified '.
+            'French payroll provider (DSN) or local expert-comptable. Do not '.
+            'rely on this for statutory payslip compliance without validation.';
+    }
+
+    /**
      * PA2-COUNTRY-005 baseline: French Code du travail art. L3121-27 sets
      * the legal weekly working-hours threshold (duree legale) at 35
      * hours/week.

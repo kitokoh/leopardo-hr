@@ -125,6 +125,7 @@ class PayrollCountryRulesTest extends TestCase
             new FrancePayrollRules,
             new TurkeyPayrollRules,
             new SenegalPayrollRules,
+            new CemacPayrollRules,
         ];
 
         foreach ($allRules as $rules) {
@@ -138,6 +139,67 @@ class PayrollCountryRulesTest extends TestCase
                 $rules->countryCode().': confidenceLevel must be one of the documented values'
             );
         }
+    }
+
+    /**
+     * PA2-COUNTRY-006: France and Turkiye (and, by the shared
+     * AbstractCountryRules contract, every other country) must expose a
+     * default language() and a non-empty complianceWarning() so platform
+     * admin/company provisioning can pick a sensible default locale and
+     * surface an explicit "do not treat this as legally validated" notice
+     * (acceptance criteria: "langue, seuils prudents et avertissement
+     * conformite").
+     */
+    public function test_every_country_rules_implementation_exposes_language_and_compliance_warning(): void
+    {
+        $expectedLanguages = [
+            'DZ' => 'fr',
+            'MA' => 'fr',
+            'TN' => 'fr',
+            'FR' => 'fr',
+            'TR' => 'tr',
+            'SN' => 'fr',
+            'CM' => 'fr',
+        ];
+
+        $allRules = [
+            new AlgeriaPayrollRules,
+            new MoroccoPayrollRules,
+            new TunisiaPayrollRules,
+            new FrancePayrollRules,
+            new TurkeyPayrollRules,
+            new SenegalPayrollRules,
+            new CemacPayrollRules,
+        ];
+
+        foreach ($allRules as $rules) {
+            self::assertSame(
+                $expectedLanguages[$rules->countryCode()],
+                $rules->language(),
+                $rules->countryCode().': language() must match App\Support\CountryDefaults'
+            );
+            self::assertNotSame('', $rules->complianceWarning(), $rules->countryCode().': complianceWarning must not be empty');
+            self::assertStringContainsString(
+                $rules->confidenceLevel() === 'placeholder' ? 'placeholder' : 'pilot',
+                strtolower($rules->complianceWarning()),
+                $rules->countryCode().': complianceWarning should be explicit about its confidenceLevel'
+            );
+        }
+    }
+
+    /**
+     * France and Turkiye override complianceWarning() with wording specific
+     * to their payroll law (not just the shared generic default), per the
+     * PA2-COUNTRY-006 ticket scope.
+     */
+    public function test_france_and_turkey_expose_country_specific_compliance_warnings(): void
+    {
+        $france = (new FrancePayrollRules)->complianceWarning();
+        self::assertStringContainsString('France', $france);
+        self::assertStringContainsString('DSN', $france);
+
+        $turkey = (new TurkeyPayrollRules)->complianceWarning();
+        self::assertStringContainsString('SGK', $turkey);
     }
 
     public function test_for_company_returns_a_scoped_clone_without_mutating_the_original(): void

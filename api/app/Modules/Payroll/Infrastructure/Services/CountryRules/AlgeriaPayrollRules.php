@@ -97,6 +97,14 @@ class AlgeriaPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * PA2-COUNTRY-006: matches App\Support\CountryDefaults::DEFAULTS['DZ'].
+     */
+    public function language(): string
+    {
+        return 'fr';
+    }
+
+    /**
      * PA2-COUNTRY-004: standard Algerian legal weekly working-hours threshold
      * (loi 90-11 art. 26 : duree legale hebdomadaire de 40 heures pour un
      * horaire normal ; au-dela = heures supplementaires).
