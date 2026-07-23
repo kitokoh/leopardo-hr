@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\CompanyAnnouncement;
 use App\Modules\Notification\Domain\Models\Notification;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -239,5 +240,208 @@ class AnnouncementControllerTest extends TestCase
         Sanctum::actingAs($principalA);
 
         $this->deleteJson("/api/v1/announcements/{$announcement->id}")->assertNotFound();
+    }
+
+    public function test_manager_can_save_a_draft_announcement_without_fan_out(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($principal);
+
+        $response = $this->postJson('/api/v1/announcements', [
+            'title' => 'Draft picnic',
+            'body' => 'Still being written.',
+            'audience_type' => 'company',
+            'status' => 'draft',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.status', 'draft')
+            ->assertJsonPath('data.published_at', null)
+            ->assertJsonPath('data.recipients_count', 0);
+
+        $this->assertSame(0, Notification::query()->where('employee_id', $employee->id)->count());
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'announcement_draft',
+            'auditable_type' => CompanyAnnouncement::class,
+        ]);
+    }
+
+    public function test_manager_can_schedule_an_announcement_and_it_publishes_when_due(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($principal);
+
+        $scheduledAt = now()->addHour();
+
+        $response = $this->postJson('/api/v1/announcements', [
+            'title' => 'Scheduled picnic',
+            'body' => 'Will publish in an hour.',
+            'audience_type' => 'company',
+            'status' => 'scheduled',
+            'scheduled_at' => $scheduledAt->toIso8601String(),
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.status', 'scheduled')
+            ->assertJsonPath('data.published_at', null)
+            ->assertJsonPath('data.recipients_count', 0);
+
+        $announcementId = $response->json('data.id');
+        $this->assertSame(0, Notification::query()->where('employee_id', $employee->id)->count());
+
+        // Not due yet: the command must not publish it.
+        $this->artisan('announcements:publish-scheduled')->assertSuccessful();
+        $this->assertDatabaseHas('company_announcements', ['id' => $announcementId, 'status' => 'scheduled']);
+        $this->assertSame(0, Notification::query()->where('employee_id', $employee->id)->count());
+
+        // Move past the due time and run the command again.
+        Carbon::setTestNow($scheduledAt->clone()->addMinute());
+        $this->artisan('announcements:publish-scheduled')->assertSuccessful();
+        Carbon::setTestNow();
+
+        $this->assertDatabaseHas('company_announcements', ['id' => $announcementId, 'status' => 'published']);
+        $this->assertSame(1, Notification::query()->where('employee_id', $employee->id)->count());
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'announcement_published',
+            'auditable_id' => $announcementId,
+            'auditable_type' => CompanyAnnouncement::class,
+        ]);
+    }
+
+    public function test_author_can_publish_a_draft_announcement_now(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        $announcement = CompanyAnnouncement::create([
+            'company_id' => $company->id,
+            'created_by' => $principal->id,
+            'title' => 'Draft to publish',
+            'body' => 'Body text.',
+            'audience_type' => CompanyAnnouncement::AUDIENCE_COMPANY,
+            'status' => CompanyAnnouncement::STATUS_DRAFT,
+        ]);
+
+        Sanctum::actingAs($principal);
+
+        $this->postJson("/api/v1/announcements/{$announcement->id}/publish")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'published')
+            ->assertJsonPath('data.recipients_count', 1);
+
+        $this->assertSame(1, Notification::query()->where('employee_id', $employee->id)->count());
+    }
+
+    public function test_author_can_cancel_a_scheduled_announcement_before_it_publishes(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Employee::factory()->create(['company_id' => $company->id]);
+
+        $announcement = CompanyAnnouncement::create([
+            'company_id' => $company->id,
+            'created_by' => $principal->id,
+            'title' => 'Scheduled to cancel',
+            'body' => 'Body text.',
+            'audience_type' => CompanyAnnouncement::AUDIENCE_COMPANY,
+            'status' => CompanyAnnouncement::STATUS_SCHEDULED,
+            'scheduled_at' => now()->addHour(),
+        ]);
+
+        Sanctum::actingAs($principal);
+
+        $this->postJson("/api/v1/announcements/{$announcement->id}/cancel")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'cancelled')
+            ->assertJsonPath('data.cancelled_by', $principal->id);
+
+        $this->assertDatabaseHas('company_announcements', [
+            'id' => $announcement->id,
+            'status' => 'cancelled',
+        ]);
+
+        // The publish-scheduled command must skip cancelled rows.
+        Carbon::setTestNow(now()->addHours(2));
+        $this->artisan('announcements:publish-scheduled')->assertSuccessful();
+        Carbon::setTestNow();
+
+        $this->assertDatabaseHas('company_announcements', ['id' => $announcement->id, 'status' => 'cancelled']);
+    }
+
+    public function test_cannot_cancel_an_already_published_announcement(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $announcement = CompanyAnnouncement::create([
+            'company_id' => $company->id,
+            'created_by' => $principal->id,
+            'title' => 'Already live',
+            'body' => 'Body text.',
+            'audience_type' => CompanyAnnouncement::AUDIENCE_COMPANY,
+            'status' => CompanyAnnouncement::STATUS_PUBLISHED,
+            'published_at' => now(),
+        ]);
+
+        Sanctum::actingAs($principal);
+
+        $this->postJson("/api/v1/announcements/{$announcement->id}/cancel")->assertUnprocessable();
+    }
+
+    public function test_employee_other_than_author_cannot_moderate_someone_elses_draft(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $otherEmployee = Employee::factory()->create(['company_id' => $company->id]);
+
+        $announcement = CompanyAnnouncement::create([
+            'company_id' => $company->id,
+            'created_by' => $principal->id,
+            'title' => 'Not yours',
+            'body' => 'Body text.',
+            'audience_type' => CompanyAnnouncement::AUDIENCE_COMPANY,
+            'status' => CompanyAnnouncement::STATUS_DRAFT,
+        ]);
+
+        Sanctum::actingAs($otherEmployee);
+
+        $this->postJson("/api/v1/announcements/{$announcement->id}/publish")->assertForbidden();
+        $this->postJson("/api/v1/announcements/{$announcement->id}/cancel")->assertForbidden();
+    }
+
+    public function test_index_hides_other_authors_drafts_from_regular_employees_but_shows_them_to_hr(): void
+    {
+        $company = Company::factory()->create();
+        $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $hrManager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        $draft = CompanyAnnouncement::create([
+            'company_id' => $company->id,
+            'created_by' => $principal->id,
+            'title' => 'Hidden draft',
+            'body' => 'Body text.',
+            'audience_type' => CompanyAnnouncement::AUDIENCE_COMPANY,
+            'status' => CompanyAnnouncement::STATUS_DRAFT,
+        ]);
+
+        Sanctum::actingAs($employee);
+        $titles = collect($this->getJson('/api/v1/announcements')->json('data'))->pluck('title')->all();
+        $this->assertNotContains($draft->title, $titles);
+
+        Sanctum::actingAs($hrManager);
+        $titles = collect($this->getJson('/api/v1/announcements')->json('data'))->pluck('title')->all();
+        $this->assertContains($draft->title, $titles);
+
+        Sanctum::actingAs($principal);
+        $titles = collect($this->getJson('/api/v1/announcements')->json('data'))->pluck('title')->all();
+        $this->assertContains($draft->title, $titles);
     }
 }
