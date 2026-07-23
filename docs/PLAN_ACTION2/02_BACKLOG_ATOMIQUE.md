@@ -156,7 +156,7 @@
 | PA2-COUNTRY-009 | P2 | Regles Canada par province | API | CAD, province optionnelle, timezone et placeholders overtime provinciaux |
 | PA2-COUNTRY-010 | P2 | Seeders HR models multi-pays | API seeders | modeles RH par pays sans casser demos existantes |
 | PA2-COUNTRY-011 | P2 | Tests pays et devise | API tests | cas DZ/FR/TR/CEMAC/CEDEAO/CA couverts |
-| PA2-COUNTRY-012 | P2 | Documentation limites legales | docs | indique que les regles sont configurables et doivent etre validees localement |
+| PA2-COUNTRY-012 | P2 | ~~Documentation~~ Fait le 2026-07-23: nouveau `docs/PLAN_ACTION2/16_LIMITES_LEGALES_REGLES_PAYS.md` documente le niveau de confiance reel par pays (`pilot`/`placeholder`, aucun `production` a ce jour), les pays sans aucune classe `CountryRulesInterface` (CA, CEDEAO hors Senegal), le placeholder explicite des jours feries pour tous les pays sans exception, et ce qui est configurable par entreprise (bareme d'impot via `tax_slabs`) vs. fige par pays (cotisations sociales, heures supplementaires, cycles de paie) | docs | FAIT: document base sur une lecture directe du code source (`CountryRulesInterface`, les 7 implementations existantes, `CountryDefaults`, `TaxSlabController`), aucune affirmation de conformite legale fabriquee |
 
 ## Extension v1.1 - Paie et paiements jusqu'au bout
 
