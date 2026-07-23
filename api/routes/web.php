@@ -48,7 +48,11 @@ Route::get('/docs/openapi.yaml', function () {
 
 Route::middleware('guest:super_admin_web')->group(function (): void {
     Route::get('/platform/login', [PlatformAuthController::class, 'showLogin'])->name('platform.login');
-    Route::post('/platform/login', [PlatformAuthController::class, 'login'])->name('platform.login.store');
+    // PA2-API-005: dedicated 'web-login' throttle since this session-based form
+    // is not covered by the API 'auth-sensitive' limiter.
+    Route::post('/platform/login', [PlatformAuthController::class, 'login'])
+        ->middleware('throttle:web-login')
+        ->name('platform.login.store');
 });
 
 Route::post('/platform/logout', [PlatformAuthController::class, 'logout'])
@@ -66,13 +70,22 @@ Route::middleware('auth:super_admin_web')->prefix('platform')->name('platform.')
 
 Route::middleware('guest:web')->group(function (): void {
     Route::get('/login', [WebAuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [WebAuthController::class, 'login'])->name('login.store');
+    // PA2-API-005: dedicated 'web-login' throttle since this session-based form
+    // is not covered by the API 'auth-sensitive' limiter.
+    Route::post('/login', [WebAuthController::class, 'login'])
+        ->middleware('throttle:web-login')
+        ->name('login.store');
 });
 
 Route::get('/activate/{token}', [InvitationController::class, 'showActivationForm'])->name('invitation.activate.show');
 Route::post('/activate/{token}', [InvitationController::class, 'activate'])->name('invitation.activate.store');
 Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])->name('kiosk.show');
-Route::post('/kiosk/{deviceCode}/punch', [KioskController::class, 'punch'])->name('kiosk.punch');
+// PA2-API-005: public, device-code based, unauthenticated-by-Sanctum kiosk
+// punch endpoint gets its own 'kiosk-punch' throttle bucket (keyed by device
+// code + IP) to guard against brute force / abuse.
+Route::post('/kiosk/{deviceCode}/punch', [KioskController::class, 'punch'])
+    ->middleware('throttle:kiosk-punch')
+    ->name('kiosk.punch');
 
 Route::post('/logout', [WebAuthController::class, 'logout'])
     ->middleware('auth:web')
