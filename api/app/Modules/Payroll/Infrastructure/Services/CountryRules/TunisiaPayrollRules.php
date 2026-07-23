@@ -50,9 +50,12 @@ class TunisiaPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('CNSS_TN_EMP', 9.18);
+        $employerRate = $this->resolveContributionRate('CNSS_TN_PAT', 16.57);
+
         return [
-            'employee' => round($grossSalary * 0.0918, 2),
-            'employer' => round($grossSalary * 0.1657, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 
