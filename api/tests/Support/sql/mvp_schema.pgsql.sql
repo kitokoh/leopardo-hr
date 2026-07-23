@@ -274,6 +274,7 @@ CREATE TABLE shared_tenants.attendance_logs (
     work_type varchar(30) NOT NULL DEFAULT 'normal',
     punch_note text NULL,
     punch_meta jsonb NULL,
+    punch_photo_path varchar(255) NULL,
     status varchar(20) NOT NULL DEFAULT 'incomplete',
     hours_worked numeric(5, 2) NULL,
     overtime_hours numeric(5, 2) NOT NULL DEFAULT 0,
@@ -630,6 +631,17 @@ CREATE TABLE shared_tenants.tasks (
 );
 
 CREATE INDEX tasks_company_id_index ON shared_tenants.tasks (company_id);
+
+CREATE TABLE shared_tenants.task_comments (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    task_id integer NOT NULL,
+    author_id integer NOT NULL,
+    content text NOT NULL,
+    created_at timestamptz NULL
+);
+
+CREATE INDEX task_comments_task_id_created_at_index ON shared_tenants.task_comments (task_id, created_at);
 
 CREATE TABLE shared_tenants.notifications (
     id serial PRIMARY KEY,

@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
@@ -276,6 +277,87 @@ class PayrollCountryRulesTest extends TestCase
 
         self::assertSame(0.0, $rules->calculateIncomeTax(500000 / 12));
         self::assertSame(4166.67, $rules->calculateIncomeTax(1000000 / 12));
+    }
+
+    /**
+     * PA2-COUNTRY-008: CEDEAO/UEMOA zone (CI, ML, BF, BJ, TG, NE) must be
+     * covered by a single CedeaoPayrollRules class, scoped per member
+     * state via forMemberCountry(), so payroll can be run for any of the
+     * six supported members with the correct ISO country code, timezone
+     * and minimum wage. Senegal (SN) already has its own dedicated class
+     * and is intentionally not part of this zone's member list.
+     */
+    public function test_cedeao_defaults_to_cote_divoire_and_exposes_member_country_codes(): void
+    {
+        $default = new CedeaoPayrollRules;
+
+        self::assertSame('CI', $default->countryCode());
+        self::assertSame('XOF', $default->currency());
+        self::assertSame('Africa/Abidjan', $default->timezone());
+        self::assertSame(['CI', 'ML', 'BF', 'BJ', 'TG', 'NE'], CedeaoPayrollRules::MEMBER_COUNTRY_CODES);
+        self::assertNotContains('SN', CedeaoPayrollRules::MEMBER_COUNTRY_CODES);
+    }
+
+    public function test_cedeao_for_member_country_scopes_currency_timezone_and_minimum_wage_per_member(): void
+    {
+        $expected = [
+            'CI' => ['Africa/Abidjan', 75000.0],
+            'ML' => ['Africa/Bamako', 40000.0],
+            'BF' => ['Africa/Ouagadougou', 34664.0],
+            'BJ' => ['Africa/Porto-Novo', 52000.0],
+            'TG' => ['Africa/Lome', 35000.0],
+            'NE' => ['Africa/Niamey', 30047.0],
+        ];
+
+        foreach ($expected as $memberCode => [$timezone, $minimumWage]) {
+            $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
+
+            self::assertSame($memberCode, $rules->countryCode());
+            self::assertSame('XOF', $rules->currency());
+            self::assertSame($timezone, $rules->timezone());
+            self::assertSame($minimumWage, $rules->minimumWage());
+            self::assertSame([7], $rules->weeklyRestDays());
+            self::assertSame(['monthly'], $rules->supportedPayCycles());
+            self::assertSame('placeholder', $rules->confidenceLevel());
+            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            self::assertNotEmpty($rules->socialContributions());
+        }
+    }
+
+    public function test_cedeao_for_member_country_ignores_unknown_codes(): void
+    {
+        $rules = (new CedeaoPayrollRules)->forMemberCountry('XX');
+
+        self::assertSame('CI', $rules->countryCode());
+
+        // Senegal is not part of this zone's member codes even though it
+        // shares the XOF currency: it already has its own dedicated class.
+        $senegalAttempt = (new CedeaoPayrollRules)->forMemberCountry('SN');
+        self::assertSame('CI', $senegalAttempt->countryCode());
+    }
+
+    public function test_cedeao_calculates_social_charges_and_progressive_income_tax(): void
+    {
+        $rules = (new CedeaoPayrollRules)->forMemberCountry('BJ');
+
+        $charges = $rules->calculateSocialCharges(1000);
+        self::assertEqualsWithDelta(36.0, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(164.0, $charges['employer'], 0.01);
+
+        self::assertSame(0.0, $rules->calculateIncomeTax(600000 / 12));
+        self::assertSame(6000.0, $rules->calculateIncomeTax(1200000 / 12));
+    }
+
+    public function test_cedeao_exposes_overtime_rules(): void
+    {
+        $rules = new CedeaoPayrollRules;
+
+        self::assertSame(40.0, $rules->overtimeThresholdWeeklyHours());
+
+        $tiers = $rules->overtimeRateTiers();
+        self::assertNotEmpty($tiers);
+        self::assertNull($tiers[array_key_last($tiers)]['up_to_hours']);
+        self::assertSame(1.15, $tiers[0]['multiplier']);
     }
 
     /**

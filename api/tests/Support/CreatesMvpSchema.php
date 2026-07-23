@@ -602,6 +602,17 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create($this->tenantTable('task_comments'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('task_id');
+            $table->unsignedInteger('author_id');
+            $table->text('content');
+            $table->timestampTz('created_at')->nullable();
+
+            $table->index(['task_id', 'created_at']);
+        });
+
         Schema::create($this->tenantTable('notifications'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -652,6 +663,25 @@ trait CreatesMvpSchema
             $table->text('error_message')->nullable();
             $table->timestampTz('occurred_at')->useCurrent();
             $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('company_announcements'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('created_by');
+            $table->string('title', 200);
+            $table->text('body');
+            $table->string('priority', 20)->default('normal');
+            $table->string('audience_type', 20)->default('company');
+            $table->unsignedInteger('audience_department_id')->nullable();
+            $table->unsignedInteger('audience_employee_id')->nullable();
+            $table->timestampTz('published_at')->nullable();
+            $table->timestampTz('expires_at')->nullable();
+            $table->unsignedInteger('recipients_count')->default(0);
+            $table->timestamps();
+
+            $table->index(['company_id', 'published_at']);
+            $table->index(['company_id', 'audience_type']);
         });
 
         Schema::create($this->tenantTable('cabinet_folders'), function (Blueprint $table): void {
@@ -1008,6 +1038,27 @@ trait CreatesMvpSchema
                 $table->text('error_message')->nullable();
                 $table->timestampTz('occurred_at')->useCurrent();
                 $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('company_announcements'))) {
+            Schema::create($this->moduleTable('company_announcements'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('created_by');
+                $table->string('title', 200);
+                $table->text('body');
+                $table->string('priority', 20)->default('normal');
+                $table->string('audience_type', 20)->default('company');
+                $table->unsignedInteger('audience_department_id')->nullable();
+                $table->unsignedInteger('audience_employee_id')->nullable();
+                $table->timestampTz('published_at')->nullable();
+                $table->timestampTz('expires_at')->nullable();
+                $table->unsignedInteger('recipients_count')->default(0);
+                $table->timestamps();
+
+                $table->index(['company_id', 'published_at']);
+                $table->index(['company_id', 'audience_type']);
             });
         }
 
@@ -1755,6 +1806,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "contracts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_structures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "company_announcements"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "client_events"'.$cascade);
@@ -1774,6 +1826,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notifications"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "task_comments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "tasks"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "projects"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "sites"'.$cascade);

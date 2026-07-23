@@ -20,6 +20,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingQrController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
@@ -71,6 +72,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
     Route::get('/attendance/anomalies', [AttendanceController::class, 'anomalies']);
+    Route::get('/attendance/regularity', [AttendanceController::class, 'regularity']);
     Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
@@ -157,6 +159,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
 
+    // ── Module 5 (complement) — Company announcements (PA2-COMM-004) ──────────
+    Route::get('/announcements', [AnnouncementController::class, 'index']);
+    Route::post('/announcements', [AnnouncementController::class, 'store']);
+    Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->whereNumber('announcement');
+
     // ── Module 7 — Projects & Tasks ───────────────────────────────────────────
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::post('/projects', [ProjectController::class, 'store']);
@@ -172,6 +179,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');
     Route::patch('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->whereNumber('task');
+    Route::get('/tasks/{task}/comments', [TaskController::class, 'listComments'])->whereNumber('task');
     Route::post('/tasks/{task}/comments', [TaskController::class, 'addComment'])->whereNumber('task');
 
     // ── Module 7 (complément) — Evaluations ──────────────────────────────────
