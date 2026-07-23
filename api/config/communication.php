@@ -79,5 +79,10 @@ return [
             'title' => 'Nouveau commentaire sur une tâche',
             'body' => 'Un nouveau commentaire a été ajouté à une tâche que vous suivez.',
         ],
+        'platform_announcement' => [
+            'category' => 'platform',
+            'title' => 'Annonce de la plateforme Leopardo',
+            'body' => 'Une nouvelle annonce de la plateforme est disponible.',
+        ],
     ],
 ];
