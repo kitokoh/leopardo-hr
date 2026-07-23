@@ -21,7 +21,14 @@ class SalaryAdvanceResource extends JsonResource
             'company_name' => app()->bound('current_company') ? currentCompany()?->name : null,
             'employee_id' => $this->employee_id,
             'amount' => $this->amount,
-            'currency' => $this->currency,
+            // PA2-COUNTRY-003: salary_advances has no currency column of its
+            // own, so $this->currency is always null. Derive the real value
+            // from the owning company (loaded employee.company, then the
+            // resolved tenant) so mobile/web clients stop defaulting to the
+            // hardcoded 'DZD' fallback for every non-Algerian tenant.
+            'currency' => $this->employee?->company?->currency
+                ?? (app()->bound('current_company') ? currentCompany()?->currency : null)
+                ?? 'DZD',
             'reason' => $this->reason,
             'status' => $this->status,
             'requested_at' => ($this->requested_at ?? $this->created_at)?->toIso8601String(),
