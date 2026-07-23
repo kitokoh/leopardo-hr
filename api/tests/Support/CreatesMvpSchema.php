@@ -1307,6 +1307,28 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('ledger_entries'))) {
+            Schema::create($this->moduleTable('ledger_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('entry_type', 30)->index();
+                $table->decimal('amount', 12, 2);
+                $table->char('currency', 3)->default('DZD');
+                $table->decimal('balance_after', 12, 2);
+                $table->string('description', 500)->nullable();
+                $table->string('source_type', 60)->nullable();
+                $table->unsignedBigInteger('source_id')->nullable();
+                $table->unsignedBigInteger('payment_document_id')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestampTz('created_at')->nullable();
+
+                $table->index(['company_id', 'employee_id', 'created_at']);
+                $table->index(['source_type', 'source_id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('payment_confirmations'))) {
             Schema::create($this->moduleTable('payment_confirmations'), function (Blueprint $table): void {
                 $table->id();
@@ -1828,6 +1850,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ledger_entries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_items"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_batches"'.$cascade);

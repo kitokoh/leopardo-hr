@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Jobs\GeneratePaymentDocumentJob;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Payroll\Domain\Models\LedgerEntry;
 use App\Modules\Payroll\Domain\Models\PaymentBatch;
 use App\Modules\Payroll\Domain\Models\PaymentConfirmation;
 use App\Modules\Payroll\Domain\Models\PaymentItem;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Infrastructure\Services\LedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,8 @@ use Illuminate\Validation\ValidationException;
 
 class PaymentBatchController extends Controller
 {
+    public function __construct(private readonly LedgerService $ledgerService) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -149,8 +153,24 @@ class PaymentBatchController extends Controller
         });
 
         foreach ($batch->items as $item) {
+            $document = null;
             if ($item->pay_slip_id && $item->paySlip) {
-                GeneratePaymentDocumentJob::dispatchForPaySlip($item->paySlip, $actor->id);
+                $document = GeneratePaymentDocumentJob::dispatchForPaySlip($item->paySlip, $actor->id);
+            }
+
+            /** @var Employee|null $itemEmployee */
+            $itemEmployee = $item->employee ?? Employee::query()->find($item->employee_id);
+            if ($itemEmployee !== null) {
+                $this->ledgerService->record(
+                    employee: $itemEmployee,
+                    entryType: LedgerEntry::TYPE_PAYMENT,
+                    amount: abs((float) $item->amount),
+                    description: 'Bulk payment batch #'.$batch->id,
+                    source: $item,
+                    paymentDocumentId: $document?->id,
+                    createdBy: $actor->id,
+                    currency: $item->currency,
+                );
             }
         }
 
@@ -284,4 +304,3 @@ class PaymentBatchController extends Controller
         return $payload;
     }
 }
-

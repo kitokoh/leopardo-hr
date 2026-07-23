@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\SalaryAdvanceResource;
+use App\Jobs\GeneratePaymentDocumentJob;
+use App\Modules\Payroll\Domain\Models\LedgerEntry;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Modules\Payroll\Infrastructure\Services\LedgerService;
+use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\DecideSalaryAdvanceRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\SalaryAdvanceIndexRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StoreSalaryAdvanceRequest;
-use App\Http\Resources\Api\V1\SalaryAdvanceResource;
-use App\Jobs\GeneratePaymentDocumentJob;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Payroll\Domain\Models\SalaryAdvance;
-use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SalaryAdvanceController extends Controller
 {
-    public function __construct(private readonly SalaryAdvanceService $salaryAdvanceService) {}
+    public function __construct(
+        private readonly SalaryAdvanceService $salaryAdvanceService,
+        private readonly LedgerService $ledgerService,
+    ) {}
 
     public function index(SalaryAdvanceIndexRequest $request): JsonResponse
     {
@@ -156,7 +161,17 @@ class SalaryAdvanceController extends Controller
 
         $salaryAdvance->refresh();
 
-        GeneratePaymentDocumentJob::dispatchForSalaryAdvance($salaryAdvance, $actor->id);
+        $document = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($salaryAdvance, $actor->id);
+
+        $this->ledgerService->record(
+            employee: $salaryAdvance->employee ?? Employee::query()->find($salaryAdvance->employee_id),
+            entryType: LedgerEntry::TYPE_ADVANCE,
+            amount: -abs((float) $salaryAdvance->amount),
+            description: 'Salary advance paid: '.($salaryAdvance->payment_reference ?? 'no reference'),
+            source: $salaryAdvance,
+            paymentDocumentId: $document->id,
+            createdBy: $actor->id,
+        );
 
         return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
@@ -218,4 +233,3 @@ class SalaryAdvanceController extends Controller
         return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 }
-
