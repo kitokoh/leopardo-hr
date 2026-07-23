@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
@@ -52,6 +53,13 @@ class PayrollCalculator
             foreach (CemacPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
                 $this->rulesMap[$memberCountryCode] = (new CemacPayrollRules)->forMemberCountry($memberCountryCode);
             }
+
+            // Canada (PA2-COUNTRY-009): single ISO country code CA, province
+            // is an optional refinement (timezone/overtime threshold) rather
+            // than a separate registered country code — see CanadaPayrollRules
+            // docblock. Federal defaults (no province) are registered here;
+            // callers with a known province should use forProvince().
+            $this->rulesMap['CA'] = new CanadaPayrollRules;
         }
     }
 

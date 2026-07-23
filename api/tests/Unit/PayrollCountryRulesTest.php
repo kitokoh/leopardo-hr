@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
@@ -214,6 +215,89 @@ class PayrollCountryRulesTest extends TestCase
 
         self::assertSame(0.0, $rules->calculateIncomeTax(500000 / 12));
         self::assertSame(4166.67, $rules->calculateIncomeTax(1000000 / 12));
+    }
+
+    /**
+     * PA2-COUNTRY-009: Canada is a single ISO country code (CA); province
+     * is an optional refinement, not a separate country code. With no
+     * province set, CanadaPayrollRules must fall back to the federal
+     * Canada Labour Code defaults (America/Toronto timezone, 44h/week
+     * overtime threshold).
+     */
+    public function test_canada_defaults_to_federal_rules_without_a_province(): void
+    {
+        $rules = new CanadaPayrollRules;
+
+        self::assertSame('CA', $rules->countryCode());
+        self::assertSame('CAD', $rules->currency());
+        self::assertSame('America/Toronto', $rules->timezone());
+        self::assertSame(44.0, $rules->overtimeThresholdWeeklyHours());
+        self::assertSame('placeholder', $rules->confidenceLevel());
+    }
+
+    /**
+     * PA2-COUNTRY-009 acceptance criteria: "CAD province optionnelle
+     * timezone placeholders overtime provinciaux" — forProvince() must
+     * scope the timezone and statutory overtime threshold per province,
+     * while countryCode()/currency() stay CA/CAD regardless of province.
+     */
+    public function test_canada_for_province_scopes_timezone_and_overtime_threshold(): void
+    {
+        $expected = [
+            'BC' => ['America/Vancouver', 40.0],
+            'AB' => ['America/Edmonton', 44.0],
+            'SK' => ['America/Regina', 40.0],
+            'MB' => ['America/Winnipeg', 40.0],
+            'ON' => ['America/Toronto', 44.0],
+            'QC' => ['America/Toronto', 40.0],
+            'NB' => ['America/Moncton', 44.0],
+            'NS' => ['America/Halifax', 48.0],
+            'PE' => ['America/Halifax', 48.0],
+            'NL' => ['America/St_Johns', 40.0],
+            'YT' => ['America/Whitehorse', 40.0],
+            'NT' => ['America/Yellowknife', 40.0],
+            'NU' => ['America/Iqaluit', 40.0],
+        ];
+
+        foreach ($expected as $province => [$timezone, $overtimeThreshold]) {
+            $rules = (new CanadaPayrollRules)->forProvince($province);
+
+            self::assertSame('CA', $rules->countryCode());
+            self::assertSame('CAD', $rules->currency());
+            self::assertSame($timezone, $rules->timezone(), "{$province}: unexpected timezone");
+            self::assertSame($overtimeThreshold, $rules->overtimeThresholdWeeklyHours(), "{$province}: unexpected overtime threshold");
+
+            $tiers = $rules->overtimeRateTiers();
+            self::assertNotEmpty($tiers);
+            self::assertNull($tiers[array_key_last($tiers)]['up_to_hours']);
+            self::assertSame(1.5, $tiers[0]['multiplier']);
+        }
+    }
+
+    public function test_canada_for_province_ignores_unknown_codes_and_resets_with_null(): void
+    {
+        $rules = (new CanadaPayrollRules)->forProvince('XX');
+        self::assertSame('America/Toronto', $rules->timezone());
+        self::assertSame(44.0, $rules->overtimeThresholdWeeklyHours());
+
+        $scoped = (new CanadaPayrollRules)->forProvince('BC');
+        self::assertSame('America/Vancouver', $scoped->timezone());
+
+        $reset = $scoped->forProvince(null);
+        self::assertSame('America/Toronto', $reset->timezone());
+        self::assertSame(44.0, $reset->overtimeThresholdWeeklyHours());
+    }
+
+    public function test_canada_calculates_social_charges_and_progressive_income_tax(): void
+    {
+        $rules = new CanadaPayrollRules;
+
+        $charges = $rules->calculateSocialCharges(1000);
+        self::assertEqualsWithDelta(76.1, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(82.7, $charges['employer'], 0.01);
+
+        self::assertSame(0.0, $rules->calculateIncomeTax(0));
+        self::assertEqualsWithDelta(698.34, $rules->calculateIncomeTax(55867 / 12), 0.5);
     }
 
     /**
