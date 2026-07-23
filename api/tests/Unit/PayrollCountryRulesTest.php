@@ -217,6 +217,28 @@ class PayrollCountryRulesTest extends TestCase
     }
 
     /**
+     * Regression test for BUGFIX-CEMAC-001: CemacPayrollRules never
+     * implemented overtimeThresholdWeeklyHours()/overtimeRateTiers(), added
+     * to CountryRulesInterface by PA2-COUNTRY-004, which caused a PHP fatal
+     * error (unimplemented abstract methods) on any code path loading this
+     * class. Guards that the class stays instantiable and exposes the
+     * documented placeholder overtime contract.
+     */
+    public function test_cemac_exposes_overtime_rules(): void
+    {
+        $rules = new CemacPayrollRules;
+
+        self::assertSame(40.0, $rules->overtimeThresholdWeeklyHours());
+
+        $tiers = $rules->overtimeRateTiers();
+        self::assertNotEmpty($tiers);
+        self::assertSame(8.0, $tiers[0]['up_to_hours']);
+        self::assertSame(1.20, $tiers[0]['multiplier']);
+        self::assertNull($tiers[array_key_last($tiers)]['up_to_hours']);
+        self::assertSame(1.30, $tiers[array_key_last($tiers)]['multiplier']);
+    }
+
+    /**
      * PA2-COUNTRY-004: Algeria's rules must expose the standard weekend
      * (Friday+Saturday, not the generic Sunday-only default other countries
      * use) plus the statutory 40h/week overtime threshold and its premium
@@ -252,6 +274,7 @@ class PayrollCountryRulesTest extends TestCase
             new FrancePayrollRules,
             new TurkeyPayrollRules,
             new SenegalPayrollRules,
+            new CemacPayrollRules,
         ];
 
         foreach ($allRules as $rules) {
