@@ -28,6 +28,7 @@ final class CountryDefaults
         'TR' => ['label' => 'Turquie', 'language' => 'tr', 'currency' => 'TRY', 'timezone' => 'Europe/Istanbul'],
         'GB' => ['label' => 'Royaume-Uni', 'language' => 'en', 'currency' => 'GBP', 'timezone' => 'Europe/London'],
         'US' => ['label' => 'Etats-Unis', 'language' => 'en', 'currency' => 'USD', 'timezone' => 'America/New_York'],
+        'CA' => ['label' => 'Canada', 'language' => 'en', 'currency' => 'CAD', 'timezone' => 'America/Toronto'],
     ];
 
     /**
