@@ -18,6 +18,7 @@ use App\Modules\Billing\Interfaces\Api\V1\PaymentWebhookController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Billing\Interfaces\Api\V1\PlatformCompanySubscriptionController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
@@ -180,6 +181,14 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
 
         Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
+
+        // PA2-COMM-005 — Platform-wide announcements (maintenance, feature,
+        // incident, action required) broadcast by super-admin to all or a
+        // selected subset of companies.
+        Route::get('/announcements', [PlatformAnnouncementController::class, 'index']);
+        Route::post('/announcements', [PlatformAnnouncementController::class, 'store']);
+        Route::get('/announcements/{announcement}', [PlatformAnnouncementController::class, 'show']);
+        Route::delete('/announcements/{announcement}', [PlatformAnnouncementController::class, 'destroy']);
 
         // Edge node management (super-admin)
         Route::prefix('edge/nodes')->group(function (): void {
