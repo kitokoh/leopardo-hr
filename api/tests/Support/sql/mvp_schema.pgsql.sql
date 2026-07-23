@@ -632,6 +632,17 @@ CREATE TABLE shared_tenants.tasks (
 
 CREATE INDEX tasks_company_id_index ON shared_tenants.tasks (company_id);
 
+CREATE TABLE shared_tenants.task_comments (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    task_id integer NOT NULL,
+    author_id integer NOT NULL,
+    content text NOT NULL,
+    created_at timestamptz NULL
+);
+
+CREATE INDEX task_comments_task_id_created_at_index ON shared_tenants.task_comments (task_id, created_at);
+
 CREATE TABLE shared_tenants.notifications (
     id serial PRIMARY KEY,
     company_id uuid NULL,

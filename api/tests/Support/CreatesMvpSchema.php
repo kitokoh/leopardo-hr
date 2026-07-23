@@ -602,6 +602,17 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create($this->tenantTable('task_comments'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('task_id');
+            $table->unsignedInteger('author_id');
+            $table->text('content');
+            $table->timestampTz('created_at')->nullable();
+
+            $table->index(['task_id', 'created_at']);
+        });
+
         Schema::create($this->tenantTable('notifications'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -1774,6 +1785,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notifications"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "task_comments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "tasks"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "projects"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "sites"'.$cascade);
