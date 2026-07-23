@@ -57,6 +57,11 @@ class ExpenseClaimController extends Controller
         $claim = DB::transaction(function () use ($actor, $validated) {
             $totalAmount = collect($validated['items'])->sum('amount');
 
+            // PA2-COUNTRY-003: derive the claim currency from the employee's
+            // company so DZD is never shown as the actual currency for
+            // companies configured with another currency (MAD, TND, EUR, ...).
+            // 'DZD' remains only as a last-resort technical fallback for the
+            // rare case where the company record has no currency set.
             $claim = ExpenseClaim::create([
                 'company_id'   => $actor->company_id,
                 'employee_id'  => $actor->id,
@@ -64,7 +69,7 @@ class ExpenseClaimController extends Controller
                 'description'  => $validated['description'] ?? null,
                 'status'       => 'draft',
                 'total_amount' => $totalAmount,
-                'currency'     => 'DZD',
+                'currency'     => $actor->company?->currency ?? 'DZD',
             ]);
 
             foreach ($validated['items'] as $item) {

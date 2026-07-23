@@ -27,6 +27,7 @@ class SalaryAdvanceController extends Controller
         $query = SalaryAdvance::query()
             ->with([
                 'employee:id,first_name,last_name,email,company_id',
+                'employee.company:id,currency',
             ]);
 
         if (! $actor->isManager()) {
@@ -49,7 +50,7 @@ class SalaryAdvanceController extends Controller
     {
         $advance = $this->salaryAdvanceService->create($request->user(), $request->validated());
 
-        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))
+        return (new SalaryAdvanceResource($advance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))
             ->response()
             ->setStatusCode(201);
     }
@@ -65,7 +66,7 @@ class SalaryAdvanceController extends Controller
             abort(403);
         }
 
-        return (new SalaryAdvanceResource($salaryAdvance->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     public function approve(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -81,7 +82,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->approve($salaryAdvance, $actor, $request->validated());
 
-        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($advance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     public function reject(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -97,7 +98,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->reject($salaryAdvance, $actor, $request->validated('decision_comment'));
 
-        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($advance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     public function destroy(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -113,7 +114,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->cancel($salaryAdvance);
 
-        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($advance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -157,7 +158,7 @@ class SalaryAdvanceController extends Controller
 
         GeneratePaymentDocumentJob::dispatchForSalaryAdvance($salaryAdvance, $actor->id);
 
-        return (new SalaryAdvanceResource($salaryAdvance->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     /**
@@ -184,7 +185,7 @@ class SalaryAdvanceController extends Controller
             'validation_status' => 'employee_confirmed',
         ]);
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     /**
@@ -214,7 +215,7 @@ class SalaryAdvanceController extends Controller
             'status' => 'approved',
         ]);
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
+        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 }
 
