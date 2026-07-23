@@ -2,9 +2,10 @@
 
 namespace Tests\Feature\Attendance;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
@@ -96,5 +97,63 @@ class AutoCloseAttendanceCommandTest extends TestCase
         $this->assertTrue($log->punch_meta['auto_close']['correction_window']);
         $this->assertSame(10, $log->punch_meta['auto_close']['policy']['threshold_hours']);
     }
-}
 
+    public function test_auto_close_notifies_the_employee_so_they_can_request_a_correction(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company B',
+            'slug' => 'company-b',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'b@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'timezone' => 'Africa/Algiers',
+            'metadata' => [
+                'attendance_auto_close' => [
+                    'enabled' => true,
+                    'threshold_hours' => 10,
+                    'workday_hours' => 8,
+                    'overtime_margin_minutes' => 15,
+                ],
+            ],
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'email' => 'employee@b.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        $checkIn = Carbon::parse('2026-05-31 06:00:00', 'UTC');
+        $log = AttendanceLog::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => '2026-05-31',
+            'session_number' => 1,
+            'check_in' => $checkIn,
+            'method' => 'mobile',
+            'work_type' => 'normal',
+            'status' => 'incomplete',
+        ]);
+
+        $this->travelTo(Carbon::parse('2026-05-31 20:00:00', 'UTC'));
+
+        Artisan::call('attendance:auto-close', ['--threshold' => 12]);
+
+        $notification = Notification::query()
+            ->where('company_id', $company->id)
+            ->where('employee_id', $employee->id)
+            ->where('type', 'hr')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($notification, 'Employee should be notified that their attendance was auto-closed.');
+        $this->assertSame($log->id, $notification->data['attendance_log_id'] ?? null);
+        $this->assertFalse($notification->is_read);
+    }
+}
