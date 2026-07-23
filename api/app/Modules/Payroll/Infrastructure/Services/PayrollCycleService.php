@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -38,13 +38,15 @@ class PayrollCycleService
      * @return array{
      *     employee_id: int,
      *     employee_name: string,
+     *     country: string,
      *     period: array{start: string, end: string, label: string, cycle: string},
      *     currency: string,
      *     gross_due: float,
      *     advances: float,
      *     paid: float,
      *     remaining: float,
-     *     pay_slip: array{id: int|null, status: string|null, payroll_run_id: int|null}
+     *     next_payment_date: string,
+     *     pay_slip: array{id: int|null, status: string|null, payroll_run_id: int|null, receipt_available: bool}
      * }
      */
     public function getEmployeeBalance(Employee $employee): array
@@ -71,6 +73,7 @@ class PayrollCycleService
             'id' => null,
             'status' => null,
             'payroll_run_id' => null,
+            'receipt_available' => false,
         ];
 
         if ($payrollRun !== null) {
@@ -86,6 +89,7 @@ class PayrollCycleService
                     'id' => $paySlip->id,
                     'status' => $paySlip->status,
                     'payroll_run_id' => $payrollRun->id,
+                    'receipt_available' => in_array($paySlip->status, ['validated', 'sent'], true),
                 ];
             }
         }
@@ -96,6 +100,7 @@ class PayrollCycleService
         return [
             'employee_id' => $employee->id,
             'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'country' => $company->country,
             'period' => [
                 'start' => $cycle['start']->toDateString(),
                 'end' => $cycle['end']->toDateString(),
@@ -107,6 +112,7 @@ class PayrollCycleService
             'advances' => round($advances, 2),
             'paid' => round($paid, 2),
             'remaining' => round($remaining, 2),
+            'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
             'pay_slip' => $paySlipPayload,
         ];
     }
@@ -192,15 +198,18 @@ class PayrollCycleService
                     'label' => $cycle['label'],
                     'cycle' => $settings['pay_cycle'],
                 ],
+                'country' => $company !== null ? $company->country : '',
                 'currency' => $company?->currency ?? 'DZD',
                 'gross_due' => round($grossDue, 2),
                 'advances' => 0.0,
                 'paid' => 0.0,
                 'remaining' => round(max(0.0, $grossDue), 2),
+                'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
                 'pay_slip' => [
                     'id' => null,
                     'status' => null,
                     'payroll_run_id' => null,
+                    'receipt_available' => false,
                 ],
                 'warning' => 'partial_balance_fallback',
             ];
@@ -382,5 +391,37 @@ class PayrollCycleService
             'label' => $now->toDateString(),
         ];
     }
-}
 
+    /**
+     * Next date the employee should expect to receive their pay for the current cycle.
+     *
+     * For daily/weekly cycles, payment is expected right after the period ends.
+     * For monthly cycles, payment is expected on the configured `pay_day` of the
+     * period-end month (or the last day of that month if `pay_day` overflows it),
+     * bumped forward a day at a time if that date has already passed.
+     *
+     * @param  array{start: Carbon, end: Carbon, label: string}  $cycle
+     * @param  array{pay_cycle: string, pay_day: int, week_start: int}  $settings
+     */
+    private function nextPaymentDate(?Company $company, array $cycle, array $settings): Carbon
+    {
+        $now = Carbon::now($company?->timezone ?: 'UTC');
+
+        if ($settings['pay_cycle'] !== 'monthly') {
+            $candidate = $cycle['end']->copy()->startOfDay();
+
+            return $candidate->isPast() ? $now->copy()->startOfDay() : $candidate;
+        }
+
+        $payDay = min($settings['pay_day'], $cycle['end']->daysInMonth);
+        $candidate = $cycle['end']->copy()->startOfMonth()->addDays($payDay - 1)->startOfDay();
+
+        if ($candidate->isPast()) {
+            $nextMonth = $candidate->copy()->addMonthNoOverflow();
+            $payDayNextMonth = min($settings['pay_day'], $nextMonth->daysInMonth);
+            $candidate = $nextMonth->startOfMonth()->addDays($payDayNextMonth - 1)->startOfDay();
+        }
+
+        return $candidate;
+    }
+}
