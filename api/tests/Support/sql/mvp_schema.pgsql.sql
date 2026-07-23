@@ -274,6 +274,7 @@ CREATE TABLE shared_tenants.attendance_logs (
     work_type varchar(30) NOT NULL DEFAULT 'normal',
     punch_note text NULL,
     punch_meta jsonb NULL,
+    punch_photo_path varchar(255) NULL,
     status varchar(20) NOT NULL DEFAULT 'incomplete',
     hours_worked numeric(5, 2) NULL,
     overtime_hours numeric(5, 2) NOT NULL DEFAULT 0,
