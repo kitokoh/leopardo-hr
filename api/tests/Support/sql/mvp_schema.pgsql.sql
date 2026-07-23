@@ -510,6 +510,7 @@ CREATE TABLE shared_tenants.salary_advances (
     company_id uuid NOT NULL,
     employee_id integer NOT NULL,
     amount numeric(12, 2) NOT NULL,
+    currency char(3) NULL,
     reason text NULL,
     status varchar(20) NOT NULL DEFAULT 'pending',
     approved_by integer NULL,
