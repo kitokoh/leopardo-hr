@@ -675,13 +675,19 @@ trait CreatesMvpSchema
             $table->string('audience_type', 20)->default('company');
             $table->unsignedInteger('audience_department_id')->nullable();
             $table->unsignedInteger('audience_employee_id')->nullable();
+            $table->string('status', 20)->default('published');
             $table->timestampTz('published_at')->nullable();
+            $table->timestampTz('scheduled_at')->nullable();
             $table->timestampTz('expires_at')->nullable();
+            $table->timestampTz('cancelled_at')->nullable();
+            $table->unsignedInteger('cancelled_by')->nullable();
             $table->unsignedInteger('recipients_count')->default(0);
             $table->timestamps();
 
             $table->index(['company_id', 'published_at']);
             $table->index(['company_id', 'audience_type']);
+            $table->index(['company_id', 'status']);
+            $table->index(['status', 'scheduled_at']);
         });
 
         Schema::create($this->tenantTable('cabinet_folders'), function (Blueprint $table): void {
@@ -1052,13 +1058,19 @@ trait CreatesMvpSchema
                 $table->string('audience_type', 20)->default('company');
                 $table->unsignedInteger('audience_department_id')->nullable();
                 $table->unsignedInteger('audience_employee_id')->nullable();
+                $table->string('status', 20)->default('published');
                 $table->timestampTz('published_at')->nullable();
+                $table->timestampTz('scheduled_at')->nullable();
                 $table->timestampTz('expires_at')->nullable();
+                $table->timestampTz('cancelled_at')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
                 $table->unsignedInteger('recipients_count')->default(0);
                 $table->timestamps();
 
                 $table->index(['company_id', 'published_at']);
                 $table->index(['company_id', 'audience_type']);
+                $table->index(['company_id', 'status']);
+                $table->index(['status', 'scheduled_at']);
             });
         }
 

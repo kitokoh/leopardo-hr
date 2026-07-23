@@ -26,8 +26,12 @@ class CompanyAnnouncementResource extends JsonResource
             'created_by' => $this->created_by,
             'author' => $this->whenLoaded('author'),
             'recipients_count' => $this->recipients_count,
+            'status' => $this->status,
             'published_at' => $this->published_at?->toIso8601String(),
+            'scheduled_at' => $this->scheduled_at?->toIso8601String(),
             'expires_at' => $this->expires_at?->toIso8601String(),
+            'cancelled_at' => $this->cancelled_at?->toIso8601String(),
+            'cancelled_by' => $this->cancelled_by,
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
