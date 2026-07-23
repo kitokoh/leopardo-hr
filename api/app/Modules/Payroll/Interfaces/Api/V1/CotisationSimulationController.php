@@ -110,7 +110,7 @@ class CotisationSimulationController extends Controller
 
         $validated = $request->validate([
             'gross_salary' => 'required|numeric|min:0',
-            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN,CM,CF,TD,CG,GA,GQ',
+            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE',
         ]);
 
         $gross = (float) $validated['gross_salary'];
