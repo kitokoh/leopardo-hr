@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Domain\Models;
 
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -21,8 +22,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property string $document_version
+ * @property string|null $document_hash
  * @property array<string, mixed>|null $metadata
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PaymentConfirmation extends Model
 {
@@ -39,6 +42,7 @@ class PaymentConfirmation extends Model
         'ip_address',
         'user_agent',
         'document_version',
+        'document_hash',
         'metadata',
     ];
 
