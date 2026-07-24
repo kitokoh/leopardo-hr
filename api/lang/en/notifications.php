@@ -29,4 +29,11 @@ return [
 
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
+
+    'payment_document_processing_title' => 'Document being prepared',
+    'payment_document_processing_body' => 'Your payment document is being generated. We will notify you as soon as it is ready.',
+    'payment_document_ready_title' => 'Payment document ready',
+    'payment_document_ready_body' => 'Your payment document is now available for download.',
+    'payment_document_failed_title' => 'Payment document unavailable',
+    'payment_document_failed_body' => 'We could not generate your payment document. Our team has been notified; contact your manager if this persists.',
 ];

@@ -29,4 +29,11 @@ return [
 
     'company_announcement_title' => 'إعلان الشركة',
     'company_announcement_body' => 'تم نشر إعلان جديد في شركتك.',
+
+    'payment_document_processing_title' => 'المستند قيد التجهيز',
+    'payment_document_processing_body' => 'يتم حاليًا توليد مسند الدفع الخاص بك. سنعلمك فور انتهاء التجهيز.',
+    'payment_document_ready_title' => 'مسند الدفع جاهز',
+    'payment_document_ready_body' => 'مسند الدفع الخاص بك متاح الآن للتنزيل.',
+    'payment_document_failed_title' => 'مسند الدفع في غير متاح',
+    'payment_document_failed_body' => 'تعذر إنشاء مسند الدفع الخاص بك. تم إعلام فريقنا، يرجى الاتصال بمديرك المباشر إذا استمرت المشكلة.',
 ];

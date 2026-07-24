@@ -29,4 +29,11 @@ return [
 
     'company_announcement_title' => 'Annonce de l’entreprise',
     'company_announcement_body' => 'Une nouvelle annonce a été publiée dans votre entreprise.',
+
+    'payment_document_processing_title' => 'Document en cours de préparation',
+    'payment_document_processing_body' => 'Votre document de paiement est en cours de génération. Vous serez prévenu dès qu’il sera prêt.',
+    'payment_document_ready_title' => 'Document de paiement prêt',
+    'payment_document_ready_body' => 'Votre document de paiement est maintenant disponible au téléchargement.',
+    'payment_document_failed_title' => 'Document de paiement indisponible',
+    'payment_document_failed_body' => 'La génération de votre document de paiement a échoué. Notre équipe a été alertée ; contactez votre gestionnaire si le problème persiste.',
 ];
