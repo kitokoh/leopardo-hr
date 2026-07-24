@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\DispatchCommunicationJob;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -91,6 +92,8 @@ class AutoCloseAttendanceCommand extends Command
                 'check_in' => $log->check_in?->toIso8601String(),
                 'auto_check_out' => $autoCheckOut->toIso8601String(),
             ]);
+
+            $this->notifyAutoClose($log, $autoCheckOut);
         });
 
         $this->info("Auto-closed {$closed} attendance log(s).");
@@ -98,6 +101,30 @@ class AutoCloseAttendanceCommand extends Command
         Log::info('attendance:auto-close run complete', ['closed' => $closed]);
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Notify the employee that their forgotten check-out was auto-closed by
+     * the system, so they know a correction request is available if the
+     * computed hours/overtime are wrong (PA2-ATT-007).
+     */
+    private function notifyAutoClose(AttendanceLog $log, Carbon $autoCheckOut): void
+    {
+        if (! $log->employee_id || ! $log->company_id) {
+            return;
+        }
+
+        DispatchCommunicationJob::dispatch(
+            employeeId: $log->employee_id,
+            companyId: (string) $log->company_id,
+            templateKey: 'attendance_auto_closed',
+            context: [
+                'attendance_log_id' => $log->id,
+                'date' => $log->date?->toDateString(),
+                'auto_check_out' => $autoCheckOut->toIso8601String(),
+                'hours_worked' => $log->hours_worked,
+            ],
+        );
     }
 
     private function resolveCompany(AttendanceLog $log): ?Company
@@ -126,4 +153,3 @@ class AutoCloseAttendanceCommand extends Command
         ];
     }
 }
-
