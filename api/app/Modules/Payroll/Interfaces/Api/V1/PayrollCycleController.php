@@ -175,6 +175,11 @@ class PayrollCycleController extends Controller
                     'advances' => round(array_sum(array_column($items, 'advances')), 2),
                     'paid' => round(array_sum(array_column($items, 'paid')), 2),
                     'remaining' => round(array_sum(array_column($items, 'remaining')), 2),
+                    // PA2-PAY-010: expose team-wide overtime hours/pay so the
+                    // manager dashboard's "heures supp" acceptance criterion
+                    // is satisfied at the summary level, not just per employee.
+                    'overtime_hours' => round(array_sum(array_column($items, 'overtime_hours')), 2),
+                    'overtime_pay' => round(array_sum(array_column($items, 'overtime_pay')), 2),
                 ],
             ],
         ]);
