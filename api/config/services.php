@@ -50,6 +50,15 @@ return [
         'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
     ],
 
+    'whatsapp' => [
+        // Meta WhatsApp Business Cloud API. When either secret is missing,
+        // `CommunicationService::providerFor('whatsapp')` falls back to the
+        // audit-only provider (PA2-COMM-008) instead of failing dispatch.
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
+    ],
+
     'ayrshare' => [
         // Cle API primaire du compte Leopardo cote Ayrshare (Business/Enterprise
         // plan requis pour gerer des profils utilisateur par tenant).

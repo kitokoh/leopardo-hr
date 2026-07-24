@@ -646,6 +646,8 @@ trait CreatesMvpSchema
             $table->boolean('push_enabled')->default(true);
             $table->boolean('sms_enabled')->default(false);
             $table->boolean('whatsapp_enabled')->default(false);
+            $table->boolean('whatsapp_consent_given')->default(false);
+            $table->timestampTz('whatsapp_consent_at')->nullable();
             $table->char('locale', 2)->nullable();
             $table->string('timezone', 64)->nullable();
             $table->json('categories')->nullable();
@@ -1079,6 +1081,8 @@ trait CreatesMvpSchema
                 $table->boolean('push_enabled')->default(true);
                 $table->boolean('sms_enabled')->default(false);
                 $table->boolean('whatsapp_enabled')->default(false);
+                $table->boolean('whatsapp_consent_given')->default(false);
+                $table->timestampTz('whatsapp_consent_at')->nullable();
                 $table->char('locale', 2)->nullable();
                 $table->string('timezone', 64)->nullable();
                 $table->json('categories')->nullable();

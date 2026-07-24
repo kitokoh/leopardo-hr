@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
@@ -92,6 +92,8 @@ class CommunicationServiceTest extends TestCase
             'push_enabled' => true,
             'sms_enabled' => true,
             'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+            'whatsapp_consent_at' => now(),
             'categories' => ['payroll' => true],
         ]);
 
@@ -178,6 +180,90 @@ class CommunicationServiceTest extends TestCase
             'status' => 'skipped',
             'error_message' => 'Monthly channel quota exceeded.',
         ]);
+    }
+
+    /**
+     * PA2-COMM-008 — WhatsApp messaging requires an explicit, separate
+     * opt-in from the plain channel toggle: enabling `whatsapp_enabled`
+     * alone must not be enough to actually message the employee.
+     */
+    public function test_whatsapp_is_skipped_without_explicit_consent_even_when_channel_enabled(): void
+    {
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => false,
+            'categories' => ['payroll' => true],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['whatsapp']);
+
+        $this->assertSame('skipped', $result['results']['whatsapp']);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'whatsapp',
+            'status' => 'skipped',
+            'error_message' => 'WhatsApp consent missing.',
+        ]);
+    }
+
+    /**
+     * PA2-COMM-008 — with the channel enabled and consent explicitly
+     * given, WhatsApp dispatch proceeds through the configured provider
+     * (audit-only by default, since no Meta Cloud API secret is set in
+     * tests).
+     */
+    public function test_whatsapp_is_sent_once_consent_is_explicitly_given(): void
+    {
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+            'whatsapp_consent_at' => now(),
+            'categories' => ['payroll' => true],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['whatsapp']);
+
+        $this->assertSame('queued', $result['results']['whatsapp']);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'whatsapp',
+            'status' => 'queued',
+        ]);
+    }
+
+    /**
+     * PA2-COMM-008 — even when the `whatsapp_cloud` provider is selected,
+     * dispatch must stay on the safe audit-only fallback (never fail hard)
+     * whenever the Meta Cloud API secrets are not configured.
+     */
+    public function test_whatsapp_falls_back_to_audit_only_when_provider_secret_is_missing(): void
+    {
+        config()->set('communication.providers.whatsapp', 'whatsapp_cloud');
+        config()->set('services.whatsapp.phone_number_id', null);
+        config()->set('services.whatsapp.access_token', null);
+
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+            'whatsapp_consent_at' => now(),
+            'categories' => ['payroll' => true],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['whatsapp']);
+
+        $this->assertSame('queued', $result['results']['whatsapp']);
     }
 
     /**
@@ -274,5 +360,3 @@ class CommunicationServiceTest extends TestCase
         ]);
     }
 }
-
-

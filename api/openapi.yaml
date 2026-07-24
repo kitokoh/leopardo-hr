@@ -10756,6 +10756,14 @@ components:
           type: boolean
         whatsapp_enabled:
           type: boolean
+        whatsapp_consent_given:
+          type: boolean
+          description: PA2-COMM-008 - explicit opt-in required before WhatsApp Business messages are sent, distinct from whatsapp_enabled.
+        whatsapp_consent_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Server-stamped timestamp of the last consent change; never accepted as client input.
         locale:
           type: string
           enum: [fr, ar, en, tr]
@@ -10786,6 +10794,9 @@ components:
           type: boolean
         whatsapp_enabled:
           type: boolean
+        whatsapp_consent_given:
+          type: boolean
+          description: PA2-COMM-008 - set true to give explicit WhatsApp opt-in consent, false to withdraw it. The server stamps/clears whatsapp_consent_at accordingly.
         locale:
           type: string
           enum: [fr, ar, en, tr]

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -99,6 +99,56 @@ class NotificationPreferenceControllerTest extends TestCase
         $this->assertSame(0, CommunicationEvent::query()->count());
     }
 
+    /**
+     * PA2-COMM-008 — giving WhatsApp consent through the API stamps a
+     * server-side timestamp; the client cannot forge it.
+     */
+    public function test_update_stamps_whatsapp_consent_timestamp_when_consent_is_given(): void
+    {
+        $employee = $this->employee();
+        Sanctum::actingAs($employee);
+
+        $response = $this->patchJson('/api/v1/notification-preferences', [
+            'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.whatsapp_enabled', true)
+            ->assertJsonPath('data.whatsapp_consent_given', true);
+
+        $this->assertNotNull($response->json('data.whatsapp_consent_at'));
+
+        $preference = NotificationPreference::query()->where('employee_id', $employee->id)->firstOrFail();
+        $this->assertTrue($preference->hasWhatsappConsent());
+    }
+
+    /**
+     * PA2-COMM-008 — withdrawing consent clears the timestamp so a stale
+     * value can never be mistaken for still-valid consent.
+     */
+    public function test_update_clears_whatsapp_consent_timestamp_when_consent_is_withdrawn(): void
+    {
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+            'whatsapp_consent_at' => now(),
+        ]);
+        Sanctum::actingAs($employee);
+
+        $this->patchJson('/api/v1/notification-preferences', [
+            'whatsapp_consent_given' => false,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.whatsapp_consent_given', false)
+            ->assertJsonPath('data.whatsapp_consent_at', null);
+
+        $preference = NotificationPreference::query()->where('employee_id', $employee->id)->firstOrFail();
+        $this->assertFalse($preference->hasWhatsappConsent());
+    }
+
     private function employee(): Employee
     {
         $company = Company::factory()->create(['timezone' => 'Africa/Algiers']);
@@ -109,4 +159,3 @@ class NotificationPreferenceControllerTest extends TestCase
         ]);
     }
 }
-

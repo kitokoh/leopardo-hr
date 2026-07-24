@@ -18,6 +18,11 @@ return [
         'email' => env('COMMUNICATION_EMAIL_PROVIDER', 'mail'),
         'push' => env('COMMUNICATION_PUSH_PROVIDER', 'firebase'),
         'sms' => env('COMMUNICATION_SMS_PROVIDER', 'audit'),
+        // 'audit' (default) logs every dispatch without calling any real
+        // provider; 'whatsapp_cloud' switches to the Meta WhatsApp Business
+        // Cloud API once WHATSAPP_PHONE_NUMBER_ID/WHATSAPP_ACCESS_TOKEN are
+        // set (PA2-COMM-008) — falls back to 'audit' automatically if either
+        // secret is missing.
         'whatsapp' => env('COMMUNICATION_WHATSAPP_PROVIDER', 'audit'),
     ],
 
