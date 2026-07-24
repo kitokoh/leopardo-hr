@@ -43,6 +43,63 @@ class PayrollCycleController extends Controller
         return PayrollRunResource::collection($runs)->response();
     }
 
+    /**
+     * PA2-PAY-011 — GET /payroll/cycle-settings: expose the company's
+     * configurable pay cycle rule (daily/weekly/monthly, pay day, week start)
+     * to managers so they can review it before changing it.
+     */
+    public function cycleSettings(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $company = $actor->company;
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => $this->cycleService->getPayCycleSettings($company),
+        ]);
+    }
+
+    /**
+     * PA2-PAY-011 — PUT /payroll/cycle-settings: let a manager configure the
+     * company-wide pay cycle rule (journalier/hebdomadaire/mensuel), pay day,
+     * and week start. Applies immediately to getCurrentCycle()/balances.
+     */
+    public function updateCycleSettings(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $company = $actor->company;
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'pay_cycle' => ['sometimes', 'string', 'in:daily,weekly,monthly'],
+            'pay_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
+            'week_start' => ['sometimes', 'integer', 'min:1', 'max:7'],
+        ]);
+
+        $settings = $this->cycleService->updatePayCycleSettings($company, $validated);
+
+        return response()->json([
+            'data' => $settings,
+            'message' => 'Cycle de paie mis a jour.',
+        ]);
+    }
+
     public function current(Request $request): JsonResponse
     {
         /** @var Employee $actor */

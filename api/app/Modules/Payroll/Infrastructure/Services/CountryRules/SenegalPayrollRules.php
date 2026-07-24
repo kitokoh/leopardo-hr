@@ -52,9 +52,13 @@ class SenegalPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('IPRES_SN_EMP', 5.6);
+        $employerRate = $this->resolveContributionRate('IPRES_SN_PAT', 8.4)
+            + $this->resolveContributionRate('CSS_SN_PAT', 3.0);
+
         return [
-            'employee' => round($grossSalary * 0.056, 2),
-            'employer' => round($grossSalary * 0.114, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 

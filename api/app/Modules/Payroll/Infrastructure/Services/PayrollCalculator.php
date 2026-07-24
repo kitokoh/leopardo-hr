@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
@@ -19,6 +20,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class PayrollCalculator
@@ -85,27 +87,36 @@ class PayrollCalculator
     {
         $companyId = $run->company_id;
         $rules = $this->getRules($run->country_code);
-        // Scope the rules to this company so any company-specific TaxSlab
-        // overrides configured via TaxSlabController are actually applied
-        // (see AbstractCountryRules::forCompany()). Falls back to global
+        // Scope the rules to this company so any company-specific TaxSlab/
+        // SocialContribution overrides configured via TaxSlabController/
+        // SocialContributionController are actually applied (see
+        // AbstractCountryRules::forCompany()). Falls back to global
         // (company_id IS NULL) rows, then to the hardcoded defaults.
-        if ($rules instanceof \App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules) {
-            $rules = $rules->forCompany($companyId);
+        //
+        // Also scope to the run's own period_start (PA2-ARCH-004): country
+        // tax slabs/social contributions are associated with an effective
+        // date, so recalculating a past run (e.g. for an audit) resolves
+        // the rates that were effective *during that run's own period*,
+        // not today's rates. This makes calculateRun() safe to call again
+        // on an old run without silently drifting its figures forward to
+        // whatever rates happen to be current today.
+        if ($rules instanceof AbstractCountryRules) {
+            $rules = $rules->forCompany($companyId)->asOf($run->period_start);
         }
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, Employee> $employees */
+        /** @var Collection<int, Employee> $employees */
         $employees = Employee::where('company_id', $companyId)
             ->where('status', 'active')
             ->get();
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, SalaryStructure> $structuresCollection */
+        /** @var Collection<int, SalaryStructure> $structuresCollection */
         $structuresCollection = SalaryStructure::where('company_id', $companyId)
             ->where('country_code', $run->country_code)
             ->where('active', true)
             ->with('components')
             ->get();
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int|string, SalaryStructure> $structures */
+        /** @var Collection<int|string, SalaryStructure> $structures */
         $structures = $structuresCollection->keyBy('id');
 
         /** @var SalaryStructure|null $defaultStructure */
@@ -169,7 +180,7 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, SalaryComponent> $components */
+        /** @var Collection<int, SalaryComponent> $components */
         $components = $structure->components->where('active', true)->sortBy('order');
         foreach ($components as $component) {
             /** @var SalaryComponent $component */
@@ -284,6 +295,3 @@ class PayrollCalculator
         };
     }
 }
-
-
-

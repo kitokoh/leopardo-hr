@@ -21,12 +21,15 @@ class SalaryAdvanceResource extends JsonResource
             'company_name' => app()->bound('current_company') ? currentCompany()?->name : null,
             'employee_id' => $this->employee_id,
             'amount' => $this->amount,
-            // PA2-COUNTRY-003: salary_advances has no currency column of its
-            // own, so $this->currency is always null. Derive the real value
-            // from the owning company (loaded employee.company, then the
-            // resolved tenant) so mobile/web clients stop defaulting to the
-            // hardcoded 'DZD' fallback for every non-Algerian tenant.
-            'currency' => $this->employee?->company?->currency
+            // PA2-PAY-002: prefer the currency snapshotted on the advance at
+            // creation time (see SalaryAdvanceService::create()) so the
+            // receipt stays historically accurate even if the tenant's
+            // currency setting is edited afterwards. Rows created before
+            // this snapshot existed fall back to the owning company's
+            // current currency (PA2-COUNTRY-003), then the resolved tenant,
+            // then a last-resort 'DZD' default.
+            'currency' => $this->currency
+                ?? $this->employee?->company?->currency
                 ?? (app()->bound('current_company') ? currentCompany()?->currency : null)
                 ?? 'DZD',
             'reason' => $this->reason,

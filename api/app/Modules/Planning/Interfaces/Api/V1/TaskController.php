@@ -240,11 +240,13 @@ class TaskController extends Controller
         $authorName = trim($author->first_name.' '.$author->last_name);
 
         foreach ($recipients as $recipient) {
-            $locale = $recipient->preferred_language ?: config('app.fallback_locale', 'en');
-
+            // Title/body are resolved by CommunicationService from the
+            // `task_comment_added` template using the recipient's own
+            // locale (preferred_language, falling back to the company
+            // language) — see PA2-COMM-006.
             $this->communicationService->notifyEmployee($recipient, 'task_comment_added', [
-                'title' => trans('notifications.task_comment_added_title', ['task' => $task->title], $locale),
-                'body' => trans('notifications.task_comment_added_body', ['author' => $authorName], $locale),
+                'task' => $task->title,
+                'author' => $authorName,
                 'task_id' => $task->id,
                 'task_comment_id' => $comment->id,
             ], ['app']);

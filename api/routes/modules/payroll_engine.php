@@ -102,6 +102,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll/cycles/current', [PayrollCycleController::class, 'current']);
         Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
 
+        // PA2-PAY-011 — Configurable company pay cycle rule (daily/weekly/monthly)
+        Route::get('/payroll/cycle-settings', [PayrollCycleController::class, 'cycleSettings']);
+        Route::put('/payroll/cycle-settings', [PayrollCycleController::class, 'updateCycleSettings']);
+
         // Plan 65 — Bulk payment
         Route::get('/payment-batches', [PaymentBatchController::class, 'index']);
         Route::post('/payment-batches', [PaymentBatchController::class, 'store']);

@@ -91,6 +91,8 @@ Note 2026-06-01 : `GET /api/v1/employees/{employee}/balance` et `GET /api/v1/pay
 
 Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant-scope. Les scenarios doivent verifier qu'il reutilise l'entreprise courante du middleware tenant, qu'il ne depend pas d'un rechargement `Company` vulnerable au `search_path`, et qu'il reste tolerant aux colonnes paie employees absentes pendant les migrations progressives.
 
+Note 2026-07-23 (PA2-COMM-011) : `POST /api/v1/announcements` accepte desormais `status` (`draft`/`scheduled`/`published`) et `scheduled_at`, avec deux nouvelles actions `POST /api/v1/announcements/{id}/publish` et `POST /api/v1/announcements/{id}/cancel` (auteur ou principal/RH uniquement). Les scenarios API doivent verifier : une annonce `draft` ne fan-out aucune notification a la creation ; une annonce `scheduled` ne publie qu'une fois `scheduled_at` echu, via la commande `announcements:publish-scheduled` (couvert cote backend par `AnnouncementControllerTest`, pas encore par un scenario CI dedie multi-tenant) ; `GET /api/v1/announcements` ne remonte les lignes `draft`/`scheduled`/`cancelled` d'un autre auteur qu'aux managers `principal`/`rh` ; une annonce deja `published` ne peut pas etre annulee retroactivement (422 attendu).
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
