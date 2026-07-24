@@ -163,6 +163,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/webhooks/{webhookEndpoint}', [WebhookController::class, 'show']);
         Route::put('/webhooks/{webhookEndpoint}', [WebhookController::class, 'update']);
         Route::delete('/webhooks/{webhookEndpoint}', [WebhookController::class, 'destroy']);
+        Route::get('/webhooks/{webhookEndpoint}/dead-letters', [WebhookController::class, 'deadLetters']);
+        Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [WebhookController::class, 'replayDeadLetter']);
 
         // ── Audit Trail
         Route::get('/audit-logs', [AuditLogController::class, 'index']);
