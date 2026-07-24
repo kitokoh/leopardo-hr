@@ -819,6 +819,30 @@ trait CreatesMvpSchema
             $table->index('company_id');
         });
 
+        // PA2-ADM-006 — Secure super-admin impersonation sessions (public
+        // schema; see database/migrations/public/2026_07_23_000003_...).
+        Schema::create('platform_impersonation_sessions', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedInteger('super_admin_id');
+            $table->uuid('company_id');
+            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('personal_access_token_id')->nullable();
+            $table->string('company_name', 200)->nullable();
+            $table->string('employee_name', 200)->nullable();
+            $table->string('employee_email', 150)->nullable();
+            $table->string('reason', 500);
+            $table->string('ip_address', 45)->nullable();
+            $table->timestampTz('expires_at');
+            $table->timestampTz('ended_at')->nullable();
+            $table->unsignedInteger('ended_by')->nullable();
+            $table->timestampTz('created_at')->nullable();
+
+            $table->index('super_admin_id');
+            $table->index('company_id');
+            $table->index('employee_id');
+            $table->index('expires_at');
+        });
+
         $this->createPostSprintModuleTables();
         $this->restoreDefaultSearchPath();
     }
@@ -1816,6 +1840,7 @@ trait CreatesMvpSchema
 
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_impersonation_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcements"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
