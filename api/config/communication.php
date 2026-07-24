@@ -41,8 +41,10 @@ return [
         'employee_id',
         'feature_key',
         'locale',
+        'payment_reference',
         'payroll_run_id',
         'redirect_url',
+        'salary_advance_id',
         'severity',
         'source',
         'status',
@@ -105,6 +107,26 @@ return [
             'category' => 'system',
             'title_key' => 'notifications.company_announcement_title',
             'body_key' => 'notifications.company_announcement_body',
+        ],
+        'salary_advance_manager_approved' => [
+            'category' => 'payroll',
+            'title' => 'Avance sur salaire approuvée',
+            'body' => 'Votre demande d’avance sur salaire a été approuvée par votre manager. Le paiement sera déclaré prochainement.',
+        ],
+        'salary_advance_rejected' => [
+            'category' => 'payroll',
+            'title' => 'Avance sur salaire refusée',
+            'body' => 'Votre demande d’avance sur salaire a été refusée.',
+        ],
+        'salary_advance_payment_declared' => [
+            'category' => 'payroll',
+            'title' => 'Paiement de l’avance déclaré',
+            'body' => 'Le paiement de votre avance sur salaire a été déclaré. Merci de confirmer sa réception dans l’application.',
+        ],
+        'salary_advance_received' => [
+            'category' => 'payroll',
+            'title' => 'Réception d’avance confirmée',
+            'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
         ],
     ],
 ];
