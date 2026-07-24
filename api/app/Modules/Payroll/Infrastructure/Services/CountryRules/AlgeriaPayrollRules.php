@@ -54,9 +54,12 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('CNAS_EMP', 9.0);
+        $employerRate = $this->resolveContributionRate('CNAS_PAT', 26.0);
+
         return [
-            'employee' => round($grossSalary * 0.09, 2),
-            'employer' => round($grossSalary * 0.26, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 

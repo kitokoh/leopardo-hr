@@ -63,11 +63,17 @@ class MoroccoPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        $cnssBase = min($grossSalary, 6000);
+        $cnssCap = $this->resolveContributionCap('CNSS_EMP', 6000);
+        $cnssBase = $cnssCap === null ? $grossSalary : min($grossSalary, $cnssCap);
+
+        $cnssEmployeeRate = $this->resolveContributionRate('CNSS_EMP', 4.48);
+        $cnssEmployerRate = $this->resolveContributionRate('CNSS_PAT', 8.98);
+        $amoEmployeeRate = $this->resolveContributionRate('AMO_EMP', 2.26);
+        $amoEmployerRate = $this->resolveContributionRate('AMO_PAT', 4.11);
 
         return [
-            'employee' => round($cnssBase * 0.0448 + $grossSalary * 0.0226, 2),
-            'employer' => round($cnssBase * 0.0898 + $grossSalary * 0.0411, 2),
+            'employee' => round($cnssBase * $cnssEmployeeRate / 100 + $grossSalary * $amoEmployeeRate / 100, 2),
+            'employer' => round($cnssBase * $cnssEmployerRate / 100 + $grossSalary * $amoEmployerRate / 100, 2),
         ];
     }
 
