@@ -15,6 +15,7 @@ class SalaryAdvanceFactory extends Factory
 
         return [
             'amount' => $amount,
+            'currency' => 'DZD',
             'reason' => $this->faker->sentence(6),
             'status' => 'pending',
             'repayment_months' => rand(1, 6),

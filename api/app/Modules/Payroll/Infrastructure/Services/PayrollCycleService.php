@@ -20,6 +20,61 @@ use Illuminate\Support\Facades\Schema;
 class PayrollCycleService
 {
     /**
+     * PA2-PAY-011 — Returns the configurable pay cycle settings for a company
+     * (daily/weekly/monthly, pay day, week start), as currently persisted in
+     * the company's `metadata.payroll` bag. Read-only counterpart of
+     * updatePayCycleSettings().
+     *
+     * @return array{pay_cycle: string, pay_day: int, week_start: int}
+     */
+    public function getPayCycleSettings(Company $company): array
+    {
+        return $this->payrollSettings($company);
+    }
+
+    /**
+     * PA2-PAY-011 — Persists company-level pay cycle configuration
+     * (daily/hebdomadaire/mensuel, pay day, week start) into the company's
+     * `metadata.payroll` bag so subsequent getCurrentCycle()/getEmployeeBalance()
+     * calls immediately reflect the new rule. Only the provided keys are
+     * updated; omitted keys keep their previous value.
+     *
+     * @param  array{pay_cycle?: string, pay_day?: int, week_start?: int}  $changes
+     * @return array{pay_cycle: string, pay_day: int, week_start: int}
+     */
+    public function updatePayCycleSettings(Company $company, array $changes): array
+    {
+        $current = $this->payrollSettings($company);
+
+        $metadata = $company->metadata ?? [];
+        $metadata = is_array($metadata) ? $metadata : [];
+        $payroll = $metadata['payroll'] ?? [];
+        $payroll = is_array($payroll) ? $payroll : [];
+
+        if (array_key_exists('pay_cycle', $changes)) {
+            $payCycle = $changes['pay_cycle'];
+            $payroll['pay_cycle'] = in_array($payCycle, ['daily', 'weekly', 'monthly'], true)
+                ? $payCycle
+                : $current['pay_cycle'];
+        }
+
+        if (array_key_exists('pay_day', $changes)) {
+            $payroll['pay_day'] = max(1, min((int) $changes['pay_day'], 31));
+        }
+
+        if (array_key_exists('week_start', $changes)) {
+            $payroll['week_start'] = max(1, min((int) $changes['week_start'], 7));
+        }
+
+        $metadata['payroll'] = $payroll;
+
+        $company->metadata = $metadata;
+        $company->save();
+
+        return $this->payrollSettings($company->fresh());
+    }
+
+    /**
      * @return array{start: Carbon, end: Carbon, label: string}
      */
     public function getCurrentCycle(Company $company): array

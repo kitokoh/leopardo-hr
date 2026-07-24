@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Jobs\GeneratePaymentDocumentJob;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\GeneratePaymentDocumentJob;
 use App\Modules\Payroll\Domain\Models\PaymentBatch;
 use App\Modules\Payroll\Domain\Models\PaymentConfirmation;
 use App\Modules\Payroll\Domain\Models\PaymentItem;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Infrastructure\Services\PaymentConsentSignatureService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Queue;
@@ -71,14 +72,30 @@ class PaymentBatchControllerTest extends TestCase
             ->assertJsonPath('data.status', 'confirmed')
             ->assertJsonPath('data.payment_item_id', $item->id);
 
+        $documentHash = $confirm->json('data.document_hash');
+        $this->assertNotEmpty($documentHash);
+        $this->assertSame(64, strlen($documentHash));
+
         $this->assertDatabaseHas('payment_confirmations', [
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'payment_item_id' => $item->id,
             'device_signature' => 'employee-mobile-v1',
+            'document_hash' => $documentHash,
         ]);
         $this->assertSame(PaymentBatch::STATUS_CONFIRMED, PaymentBatch::query()->findOrFail($batchId)->status);
         $this->assertSame(PaymentItem::STATUS_CONFIRMED, $item->fresh()->status);
+
+        // PA2-PAY-016 - The stored hash must match what an independent
+        // recomputation from the confirmation facts would produce.
+        $confirmation = PaymentConfirmation::query()->where('payment_item_id', $item->id)->firstOrFail();
+        $signatureService = app(PaymentConsentSignatureService::class);
+        $this->assertTrue($signatureService->verify(
+            $item->fresh(),
+            $confirmation->confirmed_at,
+            $confirmation->document_version,
+            $confirmation->document_hash,
+        ));
 
         $again = $this->postJson("/api/v1/payment-confirmations/{$item->id}/confirm");
         $again->assertOk();
@@ -184,4 +201,3 @@ class PaymentBatchControllerTest extends TestCase
         return [$company, $manager, $employee, $run, $slip];
     }
 }
-

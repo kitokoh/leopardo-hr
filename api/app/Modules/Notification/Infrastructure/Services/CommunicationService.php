@@ -12,6 +12,7 @@ use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -36,8 +37,9 @@ class CommunicationService
         $preference = $this->preferencesFor($employee);
         $requestedChannels = $this->normalizeChannels($channels ?? config('communication.default_channels', ['app', 'push']));
         $category = (string) ($context['category'] ?? $template['category'] ?? 'system');
-        $title = (string) ($context['title'] ?? $template['title']);
-        $body = (string) ($context['body'] ?? $template['body']);
+        $locale = $this->localeFor($employee, $context);
+        $title = (string) ($context['title'] ?? $this->translate($template, 'title_key', $locale, $context));
+        $body = (string) ($context['body'] ?? $this->translate($template, 'body_key', $locale, $context));
         $metadata = $this->sanitizeMetadata($context);
 
         $notification = null;
@@ -104,12 +106,55 @@ class CommunicationService
 
             return is_array($fallback) ? $fallback : [
                 'category' => 'system',
-                'title' => 'Notification Leopardo RH',
-                'body' => 'Une nouvelle information est disponible dans votre espace.',
+                'title_key' => 'notifications.generic_title',
+                'body_key' => 'notifications.generic_body',
             ];
         }
 
         return $template;
+    }
+
+    /**
+     * Resolves the recipient's locale for this notification: an explicit
+     * `locale` in the caller context wins, then the employee's own
+     * `preferred_language`, then the tenant company's default language.
+     *
+     * @param  array<string, mixed>  $context
+     */
+    private function localeFor(Employee $employee, array $context): string
+    {
+        $requested = $context['locale'] ?? $employee->preferred_language ?? $employee->company?->language;
+
+        return I18nCatalog::normalizeLocale(is_string($requested) ? $requested : null);
+    }
+
+    /**
+     * Resolves a template's title/body from its translation key, forwarding
+     * only the caller context keys declared in `vars` as `trans()`
+     * replacement parameters (e.g. `:task`, `:author`).
+     *
+     * @param  array<string, mixed>  $template
+     * @param  array<string, mixed>  $context
+     */
+    private function translate(array $template, string $keyField, string $locale, array $context): string
+    {
+        $key = $template[$keyField] ?? null;
+
+        if (is_string($key) === false || $key === '') {
+            return '';
+        }
+
+        $vars = $template['vars'] ?? [];
+        $vars = is_array($vars) ? $vars : [];
+        $replace = [];
+
+        foreach ($vars as $var) {
+            if (is_string($var) && array_key_exists($var, $context)) {
+                $replace[$var] = (string) $context[$var];
+            }
+        }
+
+        return trans($key, $replace, $locale);
     }
 
     private function preferencesFor(Employee $employee): NotificationPreference
