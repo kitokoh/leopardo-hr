@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
@@ -18,24 +19,22 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\MeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingQrController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
-use App\Modules\Payroll\Interfaces\Api\V1\SalaryAdvanceController;
-use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
-use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
-use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
-use App\Modules\Planning\Interfaces\Api\V1\TaskController;
-
-use App\Modules\HR\Interfaces\Api\V1\Controllers\MeController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\SseTokenController;
 use App\Modules\Payroll\Interfaces\Api\V1\EstimationController;
-
+use App\Modules\Payroll\Interfaces\Api\V1\LedgerController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\SalaryAdvanceController;
+use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
+use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
+use App\Modules\Planning\Interfaces\Api\V1\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -57,6 +56,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     // ── Estimations ───────────────────────────────────────────────────────────
     Route::get('/employees/{employee}/balance', [PayrollCycleController::class, 'employeeBalance'])->whereNumber('employee'); // Plan 61
+    Route::get('/employees/{employee}/ledger', [LedgerController::class, 'employeeLedger'])->whereNumber('employee'); // PA2-PAY-007
     Route::get('/employees/{employee}/daily-summary', [EstimationController::class, 'dailySummary'])->whereNumber('employee');
     Route::get('/employees/{employee}/quick-estimate', [EstimationController::class, 'quickEstimate'])->whereNumber('employee');
     Route::get('/employees/{employee}/receipt', [EstimationController::class, 'receipt'])->whereNumber('employee');
@@ -66,6 +66,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/quick-estimate', [MeController::class, 'quickEstimate']);
     Route::get('/me/monthly-summary', [MeController::class, 'monthlySummary']);
     Route::get('/me/balance', [PayrollCycleController::class, 'myBalance']);
+    Route::get('/me/ledger', [LedgerController::class, 'myLedger']); // PA2-PAY-007
 
     // ── Attendance ────────────────────────────────────────────────────────────
     Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
