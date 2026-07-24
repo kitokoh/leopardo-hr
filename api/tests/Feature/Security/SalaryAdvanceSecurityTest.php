@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Security;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\Notification;
@@ -257,6 +258,71 @@ class SalaryAdvanceSecurityTest extends TestCase
             'employee_id' => $manager->id,
             'type' => 'payroll',
         ]);
+    }
+
+    public function test_salary_advance_double_validation_writes_audit_log_for_every_transition(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 750,
+            'reason' => 'Transport familial',
+            'status' => 'pending',
+            'validation_status' => 'pending',
+        ]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/manager-approve")
+            ->assertOk();
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/mark-paid", [
+                'payment_reference' => 'CASH-2026-001',
+            ])
+            ->assertOk();
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/confirm-received")
+            ->assertOk();
+
+        // The initial forceCreate() above writes a `created` row, then each
+        // of the 3 update() calls writes its own `updated` row (PA2-PAY-001
+        // explicit "audit" acceptance criterion), all scoped to this company
+        // and this SalaryAdvance, with the acting employee correctly
+        // attributed to each transition.
+        $this->assertDatabaseCount('audit_logs', 4);
+        $this->assertSame(
+            3,
+            AuditLog::query()->where('auditable_id', $advance->id)->where('action', 'updated')->count(),
+            'Expected one audit_logs "updated" row per double-validation transition.'
+        );
+
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $company->id,
+            'user_id' => $manager->id,
+            'action' => 'updated',
+            'auditable_type' => SalaryAdvance::class,
+            'auditable_id' => $advance->id,
+        ]);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $company->id,
+            'user_id' => $employee->id,
+            'action' => 'updated',
+            'auditable_type' => SalaryAdvance::class,
+            'auditable_id' => $advance->id,
+        ]);
+
+        $newValues = AuditLog::query()
+            ->where('auditable_id', $advance->id)
+            ->where('user_id', $manager->id)
+            ->where('new_values->validation_status', 'manager_approved')
+            ->first();
+        $this->assertNotNull($newValues, 'Expected an audit_logs row capturing the manager-approve transition new_values.');
     }
 
     public function test_manager_cannot_mark_salary_advance_paid_before_manager_approval(): void
