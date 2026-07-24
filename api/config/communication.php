@@ -48,41 +48,63 @@ return [
         'status',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Localizable templates
+    |--------------------------------------------------------------------------
+    |
+    | PA2-COMM-006 — Every template only carries a `category` plus the
+    | translation keys (`lang/{locale}/notifications.php`) used to resolve
+    | its title/body for the recipient's locale. `vars` lists the caller
+    | context keys that get forwarded to `trans()` as replacement
+    | parameters (e.g. `:task`, `:author`, `:period`), so a caller can
+    | still pass an explicit `title`/`body` in `$context` to override the
+    | localized text (used by callers with fully custom content, like
+    | manager-authored announcements).
+    |
+    */
+
     'templates' => [
         'generic' => [
             'category' => 'system',
-            'title' => 'Notification Leopardo RH',
-            'body' => 'Une nouvelle information est disponible dans votre espace.',
+            'title_key' => 'notifications.generic_title',
+            'body_key' => 'notifications.generic_body',
         ],
         'absence_approved' => [
             'category' => 'hr',
-            'title' => 'Demande d’absence approuvée',
-            'body' => 'Votre demande d’absence a été approuvée.',
+            'title_key' => 'notifications.absence_approved_title',
+            'body_key' => 'notifications.absence_approved_body',
         ],
         'absence_rejected' => [
             'category' => 'hr',
-            'title' => 'Demande d’absence refusée',
-            'body' => 'Votre demande d’absence a été refusée.',
+            'title_key' => 'notifications.absence_rejected_title',
+            'body_key' => 'notifications.absence_rejected_body',
         ],
         'payroll_ready' => [
             'category' => 'payroll',
-            'title' => 'Bulletin de paie disponible',
-            'body' => 'Votre nouveau bulletin de paie est disponible dans votre espace.',
+            'title_key' => 'notifications.payroll_ready_title',
+            'body_key' => 'notifications.payroll_ready_body',
         ],
         'security_alert' => [
             'category' => 'security',
-            'title' => 'Alerte de sécurité',
-            'body' => 'Une action sensible vient d’être détectée sur votre compte.',
+            'title_key' => 'notifications.security_alert_title',
+            'body_key' => 'notifications.security_alert_body',
         ],
         'task_comment_added' => [
             'category' => 'task',
-            'title' => 'Nouveau commentaire sur une tâche',
-            'body' => 'Un nouveau commentaire a été ajouté à une tâche que vous suivez.',
+            'title_key' => 'notifications.task_comment_added_title',
+            'body_key' => 'notifications.task_comment_added_body',
+            'vars' => ['task', 'author'],
         ],
         'platform_announcement' => [
             'category' => 'platform',
-            'title' => 'Annonce de la plateforme Leopardo',
-            'body' => 'Une nouvelle annonce de la plateforme est disponible.',
+            'title_key' => 'notifications.platform_announcement_title',
+            'body_key' => 'notifications.platform_announcement_body',
+        ],
+        'company_announcement' => [
+            'category' => 'system',
+            'title_key' => 'notifications.company_announcement_title',
+            'body_key' => 'notifications.company_announcement_body',
         ],
     ],
 ];
