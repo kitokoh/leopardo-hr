@@ -52,11 +52,19 @@ class FrancePayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        // 98.25% CSG/CRDS abatement base is a statutory constant, not a
+        // per-code rate/cap tracked in social_contributions, so it stays
+        // hardcoded here.
         $csgBase = $grossSalary * 0.9825;
 
+        $ssEmployeeRate = $this->resolveContributionRate('SS_FR_EMP', 7.5);
+        $ssEmployerRate = $this->resolveContributionRate('SS_FR_PAT', 30.0);
+        $csgRate = $this->resolveContributionRate('CSG_FR', 9.2);
+        $crdsRate = $this->resolveContributionRate('CRDS_FR', 0.5);
+
         return [
-            'employee' => round($grossSalary * 0.075 + $csgBase * 0.092 + $csgBase * 0.005, 2),
-            'employer' => round($grossSalary * 0.30, 2),
+            'employee' => round($grossSalary * $ssEmployeeRate / 100 + $csgBase * $csgRate / 100 + $csgBase * $crdsRate / 100, 2),
+            'employer' => round($grossSalary * $ssEmployerRate / 100, 2),
         ];
     }
 

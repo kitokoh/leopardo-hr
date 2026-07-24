@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SocialContributionResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SocialContributionController extends Controller
 {
@@ -42,10 +43,24 @@ class SocialContributionController extends Controller
             abort(403);
         }
 
+        // PA2-ARCH-004: uniqueness is scoped to (company_id, code,
+        // effective_from) rather than a bare global code, so a new dated
+        // rate for an existing contribution code can be added without
+        // deleting the historical row a past payroll run needs to be
+        // recalculated against for an audit. See the
+        // make_social_contributions_code_unique_per_effective_period
+        // migration.
         $validated = $request->validate([
             'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
             'name' => 'required|string|max:150',
-            'code' => 'required|string|max:50|unique:social_contributions,code',
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('social_contributions', 'code')
+                    ->where('company_id', $actor->company_id)
+                    ->where('effective_from', $request->string('effective_from')->value()),
+            ],
             'type' => 'required|in:employee,employer',
             'rate' => 'required|numeric|min:0|max:100',
             'cap' => 'nullable|numeric|min:0',
@@ -105,4 +120,3 @@ class SocialContributionController extends Controller
         return response()->json(['message' => 'Social contribution deleted successfully.']);
     }
 }
-

@@ -119,9 +119,12 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('CNSS_CEDEAO_EMP', 3.6);
+        $employerRate = $this->resolveContributionRate('CNSS_CEDEAO_PAT', 16.4);
+
         return [
-            'employee' => round($grossSalary * 0.036, 2),
-            'employer' => round($grossSalary * 0.164, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 
