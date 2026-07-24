@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $company_id
  * @property int|null $employee_id
  * @property float $amount
+ * @property string|null $currency
  * @property string|null $reason
  * @property string $status
  * @property string|null $approved_by
@@ -43,7 +44,7 @@ class SalaryAdvance extends Model
     protected $table = 'salary_advances';
 
     protected $fillable = [
-        'company_id', 'employee_id', 'amount', 'reason', 'status',
+        'company_id', 'employee_id', 'amount', 'currency', 'reason', 'status',
         'approved_by', 'decision_comment', 'repayment_months',
         'monthly_deduction', 'amount_remaining', 'repayment_plan',
         // Plan 60 — double validation

@@ -479,6 +479,10 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->index();
             $table->unsignedInteger('employee_id')->index();
             $table->decimal('amount', 12, 2);
+            // PA2-PAY-002: snapshot the tenant currency at creation time so
+            // advance receipts stay historically accurate even if the
+            // company's currency setting changes later.
+            $table->char('currency', 3)->nullable();
             $table->text('reason')->nullable();
             $table->string('status', 20)->default('pending');
             $table->unsignedInteger('approved_by')->nullable();
@@ -675,13 +679,19 @@ trait CreatesMvpSchema
             $table->string('audience_type', 20)->default('company');
             $table->unsignedInteger('audience_department_id')->nullable();
             $table->unsignedInteger('audience_employee_id')->nullable();
+            $table->string('status', 20)->default('published');
             $table->timestampTz('published_at')->nullable();
+            $table->timestampTz('scheduled_at')->nullable();
             $table->timestampTz('expires_at')->nullable();
+            $table->timestampTz('cancelled_at')->nullable();
+            $table->unsignedInteger('cancelled_by')->nullable();
             $table->unsignedInteger('recipients_count')->default(0);
             $table->timestamps();
 
             $table->index(['company_id', 'published_at']);
             $table->index(['company_id', 'audience_type']);
+            $table->index(['company_id', 'status']);
+            $table->index(['status', 'scheduled_at']);
         });
 
         Schema::create($this->tenantTable('cabinet_folders'), function (Blueprint $table): void {
@@ -807,6 +817,30 @@ trait CreatesMvpSchema
 
             $table->unique(['platform_announcement_id', 'company_id'], 'platform_announcement_companies_unique');
             $table->index('company_id');
+        });
+
+        // PA2-ADM-006 — Secure super-admin impersonation sessions (public
+        // schema; see database/migrations/public/2026_07_23_000003_...).
+        Schema::create('platform_impersonation_sessions', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedInteger('super_admin_id');
+            $table->uuid('company_id');
+            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('personal_access_token_id')->nullable();
+            $table->string('company_name', 200)->nullable();
+            $table->string('employee_name', 200)->nullable();
+            $table->string('employee_email', 150)->nullable();
+            $table->string('reason', 500);
+            $table->string('ip_address', 45)->nullable();
+            $table->timestampTz('expires_at');
+            $table->timestampTz('ended_at')->nullable();
+            $table->unsignedInteger('ended_by')->nullable();
+            $table->timestampTz('created_at')->nullable();
+
+            $table->index('super_admin_id');
+            $table->index('company_id');
+            $table->index('employee_id');
+            $table->index('expires_at');
         });
 
         $this->createPostSprintModuleTables();
@@ -1082,13 +1116,19 @@ trait CreatesMvpSchema
                 $table->string('audience_type', 20)->default('company');
                 $table->unsignedInteger('audience_department_id')->nullable();
                 $table->unsignedInteger('audience_employee_id')->nullable();
+                $table->string('status', 20)->default('published');
                 $table->timestampTz('published_at')->nullable();
+                $table->timestampTz('scheduled_at')->nullable();
                 $table->timestampTz('expires_at')->nullable();
+                $table->timestampTz('cancelled_at')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
                 $table->unsignedInteger('recipients_count')->default(0);
                 $table->timestamps();
 
                 $table->index(['company_id', 'published_at']);
                 $table->index(['company_id', 'audience_type']);
+                $table->index(['company_id', 'status']);
+                $table->index(['status', 'scheduled_at']);
             });
         }
 
@@ -1116,6 +1156,9 @@ trait CreatesMvpSchema
                 $table->text('response_body')->nullable();
                 $table->unsignedInteger('duration_ms')->nullable();
                 $table->timestampTz('delivered_at')->useCurrent();
+                // PA2-API-006: dead-letter marker, see
+                // database/migrations/tenant/2026_07_23_000002_add_dead_letter_to_webhook_deliveries.php
+                $table->timestampTz('dead_lettered_at')->nullable();
             });
         }
 
@@ -1307,6 +1350,28 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('ledger_entries'))) {
+            Schema::create($this->moduleTable('ledger_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('entry_type', 30)->index();
+                $table->decimal('amount', 12, 2);
+                $table->char('currency', 3)->default('DZD');
+                $table->decimal('balance_after', 12, 2);
+                $table->string('description', 500)->nullable();
+                $table->string('source_type', 60)->nullable();
+                $table->unsignedBigInteger('source_id')->nullable();
+                $table->unsignedBigInteger('payment_document_id')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestampTz('created_at')->nullable();
+
+                $table->index(['company_id', 'employee_id', 'created_at']);
+                $table->index(['source_type', 'source_id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('payment_confirmations'))) {
             Schema::create($this->moduleTable('payment_confirmations'), function (Blueprint $table): void {
                 $table->id();
@@ -1320,6 +1385,7 @@ trait CreatesMvpSchema
                 $table->string('ip_address', 64)->nullable();
                 $table->string('user_agent', 500)->nullable();
                 $table->string('document_version', 40)->default('v1');
+                $table->string('document_hash', 64)->nullable();
                 $table->json('metadata')->nullable();
                 $table->timestamps();
             });
@@ -1797,6 +1863,7 @@ trait CreatesMvpSchema
 
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_impersonation_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcements"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
@@ -1828,6 +1895,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ledger_entries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_items"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_batches"'.$cascade);

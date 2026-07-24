@@ -1,6 +1,7 @@
 class PayrollBalance {
   final int employeeId;
   final String employeeName;
+  final String country;
   final String currency;
   final String periodStart;
   final String periodEnd;
@@ -10,12 +11,15 @@ class PayrollBalance {
   final double advances;
   final double paid;
   final double remaining;
+  final String nextPaymentDate;
   final int? paySlipId;
   final String? paySlipStatus;
+  final bool receiptAvailable;
 
   const PayrollBalance({
     required this.employeeId,
     required this.employeeName,
+    required this.country,
     required this.currency,
     required this.periodStart,
     required this.periodEnd,
@@ -25,8 +29,10 @@ class PayrollBalance {
     required this.advances,
     required this.paid,
     required this.remaining,
+    required this.nextPaymentDate,
     this.paySlipId,
     this.paySlipStatus,
+    this.receiptAvailable = false,
   });
 
   factory PayrollBalance.fromJson(Map<String, dynamic> json) {
@@ -36,6 +42,7 @@ class PayrollBalance {
     return PayrollBalance(
       employeeId: _asInt(json['employee_id']),
       employeeName: (json['employee_name'] ?? '').toString(),
+      country: (json['country'] ?? '').toString(),
       currency: (json['currency'] ?? 'DZD').toString(),
       periodStart: (period['start'] ?? '').toString(),
       periodEnd: (period['end'] ?? '').toString(),
@@ -45,8 +52,10 @@ class PayrollBalance {
       advances: _asDouble(json['advances']),
       paid: _asDouble(json['paid']),
       remaining: _asDouble(json['remaining']),
+      nextPaymentDate: (json['next_payment_date'] ?? '').toString(),
       paySlipId: _nullableInt(paySlip['id']),
       paySlipStatus: paySlip['status']?.toString(),
+      receiptAvailable: paySlip['receipt_available'] == true,
     );
   }
 

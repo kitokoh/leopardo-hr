@@ -65,6 +65,9 @@ class CountryCurrencyPropagationTest extends TestCase
             'role' => 'employee',
         ]);
 
+        // Legacy row created before the PA2-PAY-002 currency snapshot
+        // existed: no `currency` value stored, so the resource must fall
+        // back to the owning company's current currency.
         SalaryAdvance::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
@@ -78,5 +81,41 @@ class CountryCurrencyPropagationTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.0.currency', 'MAD');
+    }
+
+    /**
+     * PA2-PAY-002: a salary advance must keep the currency that was active
+     * on the tenant when it was created, even after the company's currency
+     * setting is changed afterwards (e.g. a company migrating from MAD to
+     * EUR must not have its historical advance receipts silently reported
+     * in the new currency).
+     */
+    public function test_salary_advance_keeps_creation_time_currency_after_company_currency_changes(): void
+    {
+        $company = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->postJson('/api/v1/salary-advances', [
+            'amount' => 2000,
+            'reason' => 'Car repair',
+        ]);
+
+        $response->assertCreated();
+        $response->assertJsonPath('data.currency', 'MAD');
+
+        $advanceId = $response->json('data.id');
+
+        // Company later migrates to a new currency.
+        $company->update(['currency' => 'EUR']);
+
+        $again = $this->getJson("/api/v1/salary-advances/{$advanceId}");
+
+        $again->assertOk();
+        $again->assertJsonPath('data.currency', 'MAD');
     }
 }

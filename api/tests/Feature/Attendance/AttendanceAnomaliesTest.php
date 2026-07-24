@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Attendance;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -162,6 +162,35 @@ class AttendanceAnomaliesTest extends TestCase
         $response->assertJsonCount(0, 'data.items');
     }
 
+    public function test_attendance_anomalies_include_logs_dated_exactly_on_the_date_to_boundary(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        app()->instance('current_company', $company);
+        AttendanceLog::factory()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => '2026-05-10',
+            'check_in' => Carbon::parse('2026-05-10 09:20:00', 'UTC'),
+            'check_out' => Carbon::parse('2026-05-10 17:00:00', 'UTC'),
+            'late_minutes' => 20,
+            'status' => 'late',
+        ]);
+        app()->forgetInstance('current_company');
+
+        Sanctum::actingAs($manager);
+
+        // date_from and date_to are the same single day: the log dated on that
+        // exact day must be included in the summary (regression for PA2-ATT-011).
+        $response = $this->getJson('/api/v1/attendance/anomalies?date_from=2026-05-10&date_to=2026-05-10');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.summary.total', 1);
+        $response->assertJsonPath('data.summary.by_type.late_arrival', 1);
+    }
+
     public function test_attendance_anomalies_include_geofence_and_repeated_exact_check_ins(): void
     {
         $company = Company::factory()->create([
@@ -207,4 +236,3 @@ class AttendanceAnomaliesTest extends TestCase
         $response->assertJsonPath('data.summary.by_type.out_of_geofence', 1);
     }
 }
-
