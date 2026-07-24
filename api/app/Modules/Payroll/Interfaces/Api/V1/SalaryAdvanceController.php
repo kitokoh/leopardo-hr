@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\SalaryAdvanceResource;
+use App\Jobs\GeneratePaymentDocumentJob;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\DecideSalaryAdvanceRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\SalaryAdvanceIndexRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StoreSalaryAdvanceRequest;
-use App\Http\Resources\Api\V1\SalaryAdvanceResource;
-use App\Jobs\GeneratePaymentDocumentJob;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Payroll\Domain\Models\SalaryAdvance;
-use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -157,6 +157,7 @@ class SalaryAdvanceController extends Controller
         $salaryAdvance->refresh();
 
         GeneratePaymentDocumentJob::dispatchForSalaryAdvance($salaryAdvance, $actor->id);
+        $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_payment_declared');
 
         return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
@@ -184,8 +185,16 @@ class SalaryAdvanceController extends Controller
             'employee_confirmed_at' => now(),
             'validation_status' => 'employee_confirmed',
         ]);
+        $salaryAdvance = $salaryAdvance->fresh();
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
+        if ($salaryAdvance->payment_declared_by) {
+            $manager = Employee::query()->withoutGlobalScopes()->find($salaryAdvance->payment_declared_by);
+            if ($manager instanceof Employee) {
+                $this->salaryAdvanceService->notifyRecipient($salaryAdvance, $manager, 'salary_advance_received');
+            }
+        }
+
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     /**
@@ -214,8 +223,10 @@ class SalaryAdvanceController extends Controller
             'validation_status' => 'manager_approved',
             'status' => 'approved',
         ]);
+        $salaryAdvance = $salaryAdvance->fresh();
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
+        $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_manager_approved');
+
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 }
-
