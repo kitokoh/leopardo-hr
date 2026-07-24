@@ -493,6 +493,11 @@ trait CreatesMvpSchema
             $table->string('payment_reference')->nullable();
             $table->text('payment_note')->nullable();
             $table->timestampTz('employee_confirmed_at')->nullable();
+            $table->text('dispute_reason')->nullable();
+            $table->timestampTz('disputed_at')->nullable();
+            $table->timestampTz('dispute_resolved_at')->nullable();
+            $table->unsignedBigInteger('dispute_resolved_by')->nullable();
+            $table->text('dispute_resolution_note')->nullable();
             $table->string('validation_status', 32)->default('pending');
             $table->text('decision_comment')->nullable();
             $table->unsignedSmallInteger('repayment_months')->default(1);

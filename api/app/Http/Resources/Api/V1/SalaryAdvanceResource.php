@@ -50,6 +50,13 @@ class SalaryAdvanceResource extends JsonResource
             'payment_reference' => $this->payment_reference,
             'payment_note' => $this->payment_note,
             'employee_confirmed_at' => $this->employee_confirmed_at?->toIso8601String(),
+            // PA2-PAY-015: employee dispute ("reclamation") state, mirroring
+            // the double-validation fields above.
+            'dispute_reason' => $this->dispute_reason,
+            'disputed_at' => $this->disputed_at?->toIso8601String(),
+            'dispute_resolved_at' => $this->dispute_resolved_at?->toIso8601String(),
+            'dispute_resolved_by' => $this->dispute_resolved_by,
+            'dispute_resolution_note' => $this->dispute_resolution_note,
             'repayment_months' => $this->repayment_months,
             'monthly_deduction' => $this->monthly_deduction,
             'amount_remaining' => $this->amount_remaining,
@@ -66,4 +73,3 @@ class SalaryAdvanceResource extends JsonResource
         ];
     }
 }
-
