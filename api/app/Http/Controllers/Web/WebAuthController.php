@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class WebAuthController extends Controller
 {
@@ -32,6 +33,15 @@ class WebAuthController extends Controller
             ->first();
 
         if (! $employee || ! Hash::check($validated['password'], $employee->password_hash)) {
+            // PA2-API-005: security-relevant event, logged to the dedicated
+            // 'audit' channel so brute-force attempts against the employee web
+            // login are visible independently of the per-minute throttle.
+            Log::channel('audit')->warning('web_login.failed', [
+                'email' => $validated['email'],
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
             return back()
                 ->withInput(['email' => $validated['email']])
                 ->withErrors(['email' => 'Identifiants invalides.']);

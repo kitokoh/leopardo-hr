@@ -358,7 +358,18 @@ class KioskController extends Controller
         }
 
         $token = (string) $request->header('X-Kiosk-Token', '');
-        abort_if($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash), 401, 'INVALID_KIOSK_TOKEN');
+        if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {
+            // PA2-API-005: security-relevant event, logged to the dedicated
+            // 'audit' channel so brute-force attempts against a kiosk device
+            // token are visible independently of the per-minute throttle.
+            Log::channel('audit')->warning('kiosk_auth.failed', [
+                'device_code' => $kiosk->device_code,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            abort(401, 'INVALID_KIOSK_TOKEN');
+        }
 
         return $kiosk;
     }
