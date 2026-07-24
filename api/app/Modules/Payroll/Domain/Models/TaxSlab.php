@@ -21,7 +21,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $effective_to
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class TaxSlab extends Model
 {
@@ -49,14 +50,23 @@ class TaxSlab extends Model
     }
 
     /**
+     * Scopes to rows effective at a given point in time (defaults to now()
+     * when omitted). Accepting an explicit date is what makes retroactive
+     * recalculation possible for audit purposes (PA2-ARCH-004): recalculating
+     * a payroll run from a past period must use the tax slabs that were
+     * effective *during that period*, not today's slabs.
+     *
      * @param  Builder<static>  $q
+     * @param  Carbon|\DateTimeInterface|string|null  $asOf
      * @return Builder<static>
      */
-    public function scopeEffective(Builder $query): Builder
+    public function scopeEffective(Builder $query, $asOf = null): Builder
     {
-        return $query->where('effective_from', '<=', now())
-            ->where(function (Builder $q) {
-                $q->whereNull('effective_to')->orWhere('effective_to', '>=', now());
+        $asOf ??= now();
+
+        return $query->where('effective_from', '<=', $asOf)
+            ->where(function (Builder $q) use ($asOf) {
+                $q->whereNull('effective_to')->orWhere('effective_to', '>=', $asOf);
             });
     }
 }
