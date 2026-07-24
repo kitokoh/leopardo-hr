@@ -165,6 +165,29 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
                 ->by('webhooks-inbound:'.$request->ip());
         });
+
+        // PA2-API-005 — Session-based web login forms (employee login, super-admin
+        // platform login) are not covered by the API 'auth-sensitive' limiter
+        // above, which only guards the Sanctum token endpoints. Keyed by e-mail +
+        // IP, mirroring 'auth-sensitive', to slow down brute-force credential
+        // stuffing without needing a Sanctum token.
+        RateLimiter::for('web-login', function (Request $request) {
+            $email = strtolower((string) $request->input('email', 'anonymous'));
+
+            return Limit::perMinute((int) config('security.rate_limits.web_login_per_minute', 10))
+                ->by('web-login:'.$email.'|'.$request->ip());
+        });
+
+        // PA2-API-005 — The kiosk web punch endpoint (public, device-code based,
+        // no Sanctum auth) needs its own throttle bucket keyed by device code so a
+        // single compromised/misbehaving kiosk cannot exhaust another kiosk's
+        // quota, while still bounding brute-force attempts against a device code.
+        RateLimiter::for('kiosk-punch', function (Request $request) {
+            $deviceCode = strtoupper((string) $request->route('deviceCode', 'unknown'));
+
+            return Limit::perMinute((int) config('security.rate_limits.kiosk_punch_per_minute', 30))
+                ->by('kiosk-punch:'.$deviceCode.'|'.$request->ip());
+        });
     }
 
     private function resolvePlanLimit(string $plan): int
