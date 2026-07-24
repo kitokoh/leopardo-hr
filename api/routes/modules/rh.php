@@ -161,8 +161,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
 
     // ── Module 5 (complement) — Company announcements (PA2-COMM-004) ──────────
+    // PA2-COMM-011 — Moderation: publish/cancel a draft or scheduled announcement.
     Route::get('/announcements', [AnnouncementController::class, 'index']);
     Route::post('/announcements', [AnnouncementController::class, 'store']);
+    Route::post('/announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])->whereNumber('announcement');
+    Route::post('/announcements/{announcement}/cancel', [AnnouncementController::class, 'cancel'])->whereNumber('announcement');
     Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->whereNumber('announcement');
 
     // ── Module 7 — Projects & Tasks ───────────────────────────────────────────

@@ -34,15 +34,15 @@
         <!-- Right side -->
         <div class="flex items-center space-x-4">
           <!-- Real-time connection status -->
-          <div class="flex items-center">
+          <div class="flex items-center" :title="realtimeStore.isPolling ? 'Notifications via polling de secours (push indisponible)' : ''">
             <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
-                realtimeStore.isConnected ? 'bg-green-400' : 'bg-red-400'
+                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : 'bg-red-400')
               ]"
             ></div>
             <span class="text-xs text-gray-500 hidden sm:block">
-              {{ realtimeStore.isConnected ? 'Connecté' : 'Déconnecté' }}
+              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : 'Déconnecté') }}
             </span>
           </div>
 

@@ -3,14 +3,30 @@ import { ref, computed } from 'vue'
 import { io } from 'socket.io-client'
 import { useDashboardStore } from './dashboard'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
+
+// PA2-COMM-013 — Fallback polling robuste : quand le canal push (Socket.IO)
+// est indisponible (proxy/firewall bloquant les websockets, serveur
+// websocket down, etc.), on ne doit pas perdre les notifications. Si aucune
+// connexion push n'est etablie apres ce delai, on bascule sur un polling
+// REST regulier de l'inbox existante.
+const PUSH_CONNECT_GRACE_MS = 8000
+const POLL_INTERVAL_MS = 30000
 
 export const useRealtimeStore = defineStore('realtime', () => {
   // State
   const socket = ref(null)
   const isConnected = ref(false)
+  const isPolling = ref(false)
   const notifications = ref([])
   const onlineUsers = ref([])
   const globePoints = ref([])
+
+  // Internal fallback-polling bookkeeping
+  let pollTimer = null
+  let pushGraceTimer = null
+  let knownNotificationIds = new Set()
+  let pollInFlight = false
 
   // Services
   const toast = useToast()
@@ -34,6 +50,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     const token = localStorage.getItem('admin_token')
     if (!token) {
       console.warn('Pas de token pour la connexion WebSocket')
+      // No token yet (not logged in): nothing to poll either, bail out.
       return
     }
 
@@ -44,10 +61,17 @@ export const useRealtimeStore = defineStore('realtime', () => {
       transports: ['websocket']
     })
 
+    // If the push channel hasn't connected within the grace period, assume
+    // it is unavailable (blocked websocket, server down, ...) and fall back
+    // to REST polling so the inbox keeps updating regardless.
+    schedulePushGraceTimer()
+
     // Événements de connexion
     socket.value.on('connect', () => {
       console.log('WebSocket connecté')
       isConnected.value = true
+      clearPushGraceTimer()
+      stopPolling()
       toast.success('Connexion temps réel établie')
     })
 
@@ -55,15 +79,103 @@ export const useRealtimeStore = defineStore('realtime', () => {
       console.log('WebSocket déconnecté')
       isConnected.value = false
       toast.warning('Connexion temps réel perdue')
+      // Push dropped after being connected: switch to fallback polling
+      // immediately instead of waiting silently for a reconnection.
+      startPolling()
     })
 
     socket.value.on('connect_error', (error) => {
       console.error('Erreur de connexion WebSocket:', error)
       isConnected.value = false
+      startPolling()
     })
 
     // Événements métier
     setupEventListeners()
+  }
+
+  function schedulePushGraceTimer() {
+    clearPushGraceTimer()
+    pushGraceTimer = setTimeout(() => {
+      if (!isConnected.value) {
+        startPolling()
+      }
+    }, PUSH_CONNECT_GRACE_MS)
+  }
+
+  function clearPushGraceTimer() {
+    if (pushGraceTimer) {
+      clearTimeout(pushGraceTimer)
+      pushGraceTimer = null
+    }
+  }
+
+  /**
+   * Fallback polling (PA2-COMM-013): periodically fetches the REST inbox
+   * endpoint so notifications keep arriving even when the push channel
+   * (Socket.IO) never connects or drops. Runs alongside the socket and
+   * stops itself automatically once push reports connected again.
+   */
+  function startPolling() {
+    if (isPolling.value) {
+      return
+    }
+
+    isPolling.value = true
+    pollNotifications()
+    pollTimer = setInterval(pollNotifications, POLL_INTERVAL_MS)
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer)
+      pollTimer = null
+    }
+    isPolling.value = false
+  }
+
+  async function pollNotifications() {
+    const token = localStorage.getItem('admin_token')
+    if (!token || pollInFlight) {
+      return
+    }
+
+    pollInFlight = true
+    const isBaselinePoll = knownNotificationIds.size === 0 && notifications.value.length === 0
+    try {
+      const { data } = await api.get('/notifications', { params: { per_page: 20 } })
+      const items = Array.isArray(data?.data) ? data.data : []
+
+      // Present newest first, and only surface items we haven't already
+      // recorded (from polling or from a previous push connection) to
+      // avoid duplicate toasts/badges.
+      for (const item of [...items].reverse()) {
+        const id = item.id ?? `poll-${item.created_at}-${item.title}`
+        if (knownNotificationIds.has(id)) {
+          continue
+        }
+        knownNotificationIds.add(id)
+
+        addNotification({
+          id,
+          type: item.type || 'info',
+          title: item.title || 'Notification',
+          message: item.body || item.message || '',
+          data: item.data,
+          timestamp: item.created_at ? new Date(item.created_at) : new Date(),
+          read: Boolean(item.is_read),
+          // The very first poll just seeds already-existing notifications;
+          // toasting for all of them would spam the admin on every
+          // fallback activation (e.g. page reload). Only genuinely new
+          // notifications discovered on later polls should toast.
+          silent: isBaselinePoll
+        })
+      }
+    } catch (error) {
+      console.error('Fallback polling notifications a échoué:', error)
+    } finally {
+      pollInFlight = false
+    }
   }
 
   function setupEventListeners() {
@@ -160,6 +272,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
   }
 
   function disconnect() {
+    clearPushGraceTimer()
+    stopPolling()
+    knownNotificationIds = new Set()
     if (socket.value) {
       socket.value.disconnect()
       socket.value = null
@@ -168,10 +283,11 @@ export const useRealtimeStore = defineStore('realtime', () => {
   }
 
   function addNotification(notification) {
+    const { silent, ...rest } = notification
     const newNotification = {
       id: Date.now() + Math.random(),
       read: false,
-      ...notification
+      ...rest
     }
 
     notifications.value.unshift(newNotification)
@@ -179,6 +295,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // Garder seulement les 100 dernières notifications
     if (notifications.value.length > 100) {
       notifications.value = notifications.value.slice(0, 100)
+    }
+
+    if (silent) {
+      return
     }
 
     // Toast pour les notifications importantes
@@ -223,6 +343,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // State
     socket,
     isConnected,
+    isPolling,
     notifications,
     onlineUsers,
     globePoints,

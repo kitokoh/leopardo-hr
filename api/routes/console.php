@@ -128,6 +128,12 @@ Schedule::command('marketing:publish-scheduled-posts')
     ->withoutOverlapping()
     ->onOneServer();
 
+// PA2-COMM-011 — publish scheduled company announcements that are due
+Schedule::command('announcements:publish-scheduled')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 

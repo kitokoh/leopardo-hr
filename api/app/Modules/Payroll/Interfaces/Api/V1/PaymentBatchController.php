@@ -14,6 +14,7 @@ use App\Modules\Payroll\Domain\Models\PaymentItem;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\LedgerService;
+use App\Modules\Payroll\Infrastructure\Services\PaymentConsentSignatureService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,10 @@ use Illuminate\Validation\ValidationException;
 
 class PaymentBatchController extends Controller
 {
-    public function __construct(private readonly LedgerService $ledgerService) {}
+    public function __construct(
+        private readonly LedgerService $ledgerService,
+        private readonly PaymentConsentSignatureService $consentSignatureService,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -202,21 +206,36 @@ class PaymentBatchController extends Controller
         ]);
 
         $confirmation = DB::transaction(function () use ($request, $paymentItem, $actor, $validated): PaymentConfirmation {
-            $confirmation = PaymentConfirmation::query()->firstOrCreate(
-                ['payment_item_id' => $paymentItem->id],
-                [
-                    'company_id' => $actor->company_id,
-                    'payment_batch_id' => $paymentItem->payment_batch_id,
-                    'employee_id' => $actor->id,
-                    'status' => 'confirmed',
-                    'confirmed_at' => now(),
-                    'device_signature' => $validated['device_signature'] ?? null,
-                    'ip_address' => $request->ip(),
-                    'user_agent' => substr((string) $request->userAgent(), 0, 500),
-                    'document_version' => $validated['document_version'] ?? 'v1',
-                    'metadata' => $validated['metadata'] ?? null,
-                ],
+            $existing = PaymentConfirmation::query()->where('payment_item_id', $paymentItem->id)->first();
+
+            if ($existing !== null) {
+                return $existing;
+            }
+
+            $confirmedAt = now();
+            $documentVersion = (string) ($validated['document_version'] ?? 'v1');
+
+            // PA2-PAY-016 - Timestamped consent hash binding this confirmation
+            // to the payment item, amount, currency and instant, without a
+            // premature PKI/certificate stack.
+            $documentHash = $this->consentSignatureService->hash(
+                $this->consentSignatureService->buildPayload($paymentItem, $confirmedAt, $documentVersion)
             );
+
+            $confirmation = PaymentConfirmation::query()->create([
+                'company_id' => $actor->company_id,
+                'payment_batch_id' => $paymentItem->payment_batch_id,
+                'payment_item_id' => $paymentItem->id,
+                'employee_id' => $actor->id,
+                'status' => 'confirmed',
+                'confirmed_at' => $confirmedAt,
+                'device_signature' => $validated['device_signature'] ?? null,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'document_version' => $documentVersion,
+                'document_hash' => $documentHash,
+                'metadata' => $validated['metadata'] ?? null,
+            ]);
 
             $paymentItem->forceFill([
                 'status' => PaymentItem::STATUS_CONFIRMED,
@@ -235,6 +254,7 @@ class PaymentBatchController extends Controller
                 'status' => $confirmation->status,
                 'confirmed_at' => $confirmation->confirmed_at?->toIso8601String(),
                 'document_version' => $confirmation->document_version,
+                'document_hash' => $confirmation->document_hash,
             ],
             'message' => 'Reception du paiement confirmee.',
         ]);

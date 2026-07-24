@@ -172,6 +172,7 @@ class SalaryAdvanceController extends Controller
             paymentDocumentId: $document->id,
             createdBy: $actor->id,
         );
+        $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_payment_declared');
 
         return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
@@ -199,8 +200,16 @@ class SalaryAdvanceController extends Controller
             'employee_confirmed_at' => now(),
             'validation_status' => 'employee_confirmed',
         ]);
+        $salaryAdvance = $salaryAdvance->fresh();
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
+        if ($salaryAdvance->payment_declared_by) {
+            $manager = Employee::query()->withoutGlobalScopes()->find($salaryAdvance->payment_declared_by);
+            if ($manager instanceof Employee) {
+                $this->salaryAdvanceService->notifyRecipient($salaryAdvance, $manager, 'salary_advance_received');
+            }
+        }
+
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 
     /**
@@ -229,7 +238,10 @@ class SalaryAdvanceController extends Controller
             'validation_status' => 'manager_approved',
             'status' => 'approved',
         ]);
+        $salaryAdvance = $salaryAdvance->fresh();
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
+        $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_manager_approved');
+
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
 }

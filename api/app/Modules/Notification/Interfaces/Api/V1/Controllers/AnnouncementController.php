@@ -13,9 +13,19 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 
 /**
  * PA2-COMM-004 — Manager RH envoie a entreprise equipe departement employe.
+ *
+ * PA2-COMM-011 — Moderation: managers can save an announcement as a draft
+ * or schedule it for later (`store()` with `status`/`scheduled_at`),
+ * publish a pending one immediately (`publish()`), or cancel a
+ * draft/scheduled one before it fans out (`cancel()`). Recipients other
+ * than the author only ever see `published` announcements; draft/
+ * scheduled/cancelled rows stay visible to their author (and to
+ * principal/RH, who can moderate anyone's announcements) so the
+ * moderation workflow has something to list before publication.
  */
 class AnnouncementController extends Controller
 {
@@ -24,34 +34,52 @@ class AnnouncementController extends Controller
     ) {}
 
     /**
-     * List announcements the authenticated employee can see: everything
-     * addressed to the whole company, their own department, or to them
-     * directly, plus everything they authored themselves.
+     * List announcements the authenticated employee can see: every
+     * *published* announcement addressed to the whole company, their own
+     * department, or to them directly, plus every announcement they
+     * authored themselves regardless of status (draft/scheduled/
+     * cancelled/published), plus — for principal/RH moderators — every
+     * draft/scheduled/cancelled announcement in the company so they can
+     * moderate on behalf of other managers.
      */
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        $canModerateOthers = $actor->hasManagerRole('principal', 'rh');
 
         $query = CompanyAnnouncement::query()
             ->where('company_id', $actor->company_id)
-            ->where(function ($scope) use ($actor): void {
-                $scope->where('audience_type', CompanyAnnouncement::AUDIENCE_COMPANY)
-                    ->orWhere('created_by', $actor->id)
-                    ->orWhere(function ($departmentScope) use ($actor): void {
-                        $departmentScope->where('audience_type', CompanyAnnouncement::AUDIENCE_DEPARTMENT)
-                            ->where('audience_department_id', $actor->department_id ?? -1);
-                    })
-                    ->orWhere(function ($employeeScope) use ($actor): void {
-                        $employeeScope->where('audience_type', CompanyAnnouncement::AUDIENCE_EMPLOYEE)
-                            ->where('audience_employee_id', $actor->id);
+            ->where(function ($scope) use ($actor, $canModerateOthers): void {
+                $scope->where('created_by', $actor->id)
+                    ->orWhere(function ($visibleScope) use ($actor, $canModerateOthers): void {
+                        // Non-authors only ever see published announcements
+                        // unless they are a company-wide moderator.
+                        $visibleScope->when(
+                            ! $canModerateOthers,
+                            fn ($q) => $q->where('status', CompanyAnnouncement::STATUS_PUBLISHED)
+                        )->where(function ($audienceScope) use ($actor): void {
+                            $audienceScope->where('audience_type', CompanyAnnouncement::AUDIENCE_COMPANY)
+                                ->orWhere(function ($departmentScope) use ($actor): void {
+                                    $departmentScope->where('audience_type', CompanyAnnouncement::AUDIENCE_DEPARTMENT)
+                                        ->where('audience_department_id', $actor->department_id ?? -1);
+                                })
+                                ->orWhere(function ($employeeScope) use ($actor): void {
+                                    $employeeScope->where('audience_type', CompanyAnnouncement::AUDIENCE_EMPLOYEE)
+                                        ->where('audience_employee_id', $actor->id);
+                                });
+                        });
                     });
             });
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->string('status')->toString());
+        }
 
         $perPage = min(100, max(1, $request->integer('per_page', 20)));
 
         return CompanyAnnouncementResource::collection(
-            $query->orderByDesc('published_at')->orderByDesc('id')->paginate($perPage)
+            $query->orderByDesc('created_at')->orderByDesc('id')->paginate($perPage)
         )->response();
     }
 
@@ -71,6 +99,8 @@ class AnnouncementController extends Controller
             'audience_type' => ['required', Rule::in(CompanyAnnouncement::audienceTypes())],
             'audience_department_id' => ['required_if:audience_type,department', 'nullable', 'integer', 'min:1'],
             'audience_employee_id' => ['required_if:audience_type,employee', 'nullable', 'integer', 'min:1'],
+            'status' => ['nullable', Rule::in([CompanyAnnouncement::STATUS_DRAFT, CompanyAnnouncement::STATUS_SCHEDULED, CompanyAnnouncement::STATUS_PUBLISHED])],
+            'scheduled_at' => ['nullable', 'date', 'after:now', 'required_if:status,scheduled'],
             'expires_at' => ['nullable', 'date', 'after:now'],
         ]);
 
@@ -81,6 +111,39 @@ class AnnouncementController extends Controller
         return (new CompanyAnnouncementResource($announcement->load('author')))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * Publishes a `draft`/`scheduled` announcement right now, fanning it
+     * out to its audience ahead of its `scheduled_at` (if any).
+     */
+    public function publish(Request $request, CompanyAnnouncement $announcement): JsonResponse
+    {
+        $actor = $this->authorizeModeration($request, $announcement);
+
+        try {
+            $announcement = $this->announcements->publishNow($announcement);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['status' => $e->getMessage()]);
+        }
+
+        return (new CompanyAnnouncementResource($announcement->load('author')))->response();
+    }
+
+    /**
+     * Cancels a `draft`/`scheduled` announcement before it ever fans out.
+     */
+    public function cancel(Request $request, CompanyAnnouncement $announcement): JsonResponse
+    {
+        $actor = $this->authorizeModeration($request, $announcement);
+
+        try {
+            $announcement = $this->announcements->cancel($announcement, $actor);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['status' => $e->getMessage()]);
+        }
+
+        return (new CompanyAnnouncementResource($announcement->load(['author', 'cancelledBy'])))->response();
     }
 
     public function destroy(Request $request, CompanyAnnouncement $announcement): JsonResponse
@@ -99,6 +162,26 @@ class AnnouncementController extends Controller
         $announcement->delete();
 
         return response()->json(['message' => 'Announcement deleted.']);
+    }
+
+    /**
+     * Only the author or a company-wide moderator (principal/RH) may
+     * publish-now/cancel a draft/scheduled announcement.
+     */
+    private function authorizeModeration(Request $request, CompanyAnnouncement $announcement): Employee
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($announcement->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if ($announcement->created_by !== $actor->id && ! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        return $actor;
     }
 
     /**

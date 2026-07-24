@@ -139,6 +139,15 @@ Chaque webhook production devra inclure :
 
 Le partenaire doit refuser un timestamp trop ancien et ignorer proprement un `event_id` deja traite. Les retries doivent etre consideres normaux.
 
+### Retry et dead-letter
+
+Chaque livraison echoue jusqu'a 3 tentatives (backoff 30s / 120s / 600s). Au-dela de 10 echecs cumules, l'endpoint est automatiquement desactive (`active=false`) pour eviter de marteler un partenaire indisponible.
+
+Si les 3 tentatives echouent, la livraison est marquee dead-letter (`dead_lettered_at` non nul) plutot que silencieusement perdue :
+
+- `GET /api/v1/webhooks/{id}/dead-letters` liste les livraisons dead-letter d'un endpoint (managers uniquement).
+- `POST /api/v1/webhooks/{id}/dead-letters/{delivery}/replay` remet en file le meme evenement/payload d'origine (202) et reactive l'endpoint pour lui laisser une nouvelle chance. Le replay ne re-execute pas l'action metier d'origine cote plateforme : c'est le meme `event`/`data`, donc pas de doublon fonctionnel emis — seul le partenaire doit deduplicquer via l'`event_id`/`Webhook-Id` s'il retraite un evenement deja vu.
+
 ### Exigences partenaire
 
 - Endpoint HTTPS public.

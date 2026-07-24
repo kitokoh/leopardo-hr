@@ -180,6 +180,90 @@ class CommunicationServiceTest extends TestCase
         ]);
     }
 
+    /**
+     * PA2-COMM-006 — title/body must be resolved from the localizable
+     * `notifications.*` translation keys using the employee's own
+     * preferred locale, not a single hardcoded French string.
+     */
+    public function test_notification_title_and_body_use_employee_preferred_locale(): void
+    {
+        $employee = $this->employee();
+        $employee->forceFill(['preferred_language' => 'en'])->save();
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['app']);
+
+        $this->assertDatabaseHas('notifications', [
+            'id' => $result['notification_id'],
+            'title' => 'Leave request approved',
+            'body' => 'Your leave request has been approved.',
+        ]);
+    }
+
+    /**
+     * When the employee has no explicit preferred_language, the recipient's
+     * locale falls back to the tenant company's own default language.
+     */
+    public function test_notification_falls_back_to_company_language_when_employee_has_none(): void
+    {
+        $company = Company::factory()->create(['timezone' => 'Africa/Algiers', 'language' => 'en']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => 'employee-'.$company->id.'@example.test',
+            'preferred_language' => null,
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'security_alert', [], ['app']);
+
+        $this->assertDatabaseHas('notifications', [
+            'id' => $result['notification_id'],
+            'title' => 'Security alert',
+            'body' => 'A sensitive action was just detected on your account.',
+        ]);
+    }
+
+    /**
+     * Template variables declared in `config('communication.templates')`
+     * (e.g. `task_comment_added`'s `:task`/`:author`) must be forwarded from
+     * the caller context into the translated string.
+     */
+    public function test_template_variables_are_interpolated_into_translated_body(): void
+    {
+        $employee = $this->employee();
+        $employee->forceFill(['preferred_language' => 'fr'])->save();
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'task_comment_added', [
+            'task' => 'Verification materiel',
+            'author' => 'Amine K.',
+        ], ['app']);
+
+        $this->assertDatabaseHas('notifications', [
+            'id' => $result['notification_id'],
+            'title' => 'Nouveau commentaire sur « Verification materiel »',
+            'body' => 'Amine K. a ajouté un nouveau commentaire sur une tâche qui vous concerne.',
+        ]);
+    }
+
+    /**
+     * Callers may still pass an explicit `title`/`body` in the context to
+     * fully override the localized template (used for manager-authored
+     * free-text content like announcements).
+     */
+    public function test_explicit_title_and_body_override_the_localized_template(): void
+    {
+        $employee = $this->employee();
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [
+            'title' => 'Custom title',
+            'body' => 'Custom body',
+        ], ['app']);
+
+        $this->assertDatabaseHas('notifications', [
+            'id' => $result['notification_id'],
+            'title' => 'Custom title',
+            'body' => 'Custom body',
+        ]);
+    }
+
     private function employee(): Employee
     {
         $company = Company::factory()->create(['timezone' => 'Africa/Algiers']);

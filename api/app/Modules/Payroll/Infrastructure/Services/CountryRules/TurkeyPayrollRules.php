@@ -52,9 +52,14 @@ class TurkeyPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('SGK_TR_EMP', 14.0)
+            + $this->resolveContributionRate('UNEMP_TR_EMP', 1.0);
+        $employerRate = $this->resolveContributionRate('SGK_TR_PAT', 20.5)
+            + $this->resolveContributionRate('UNEMP_TR_PAT', 2.0);
+
         return [
-            'employee' => round($grossSalary * 0.15, 2),
-            'employer' => round($grossSalary * 0.225, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 

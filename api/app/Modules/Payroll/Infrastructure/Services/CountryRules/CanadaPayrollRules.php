@@ -116,9 +116,14 @@ class CanadaPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('CPP_CA_EMP', 5.95)
+            + $this->resolveContributionRate('EI_CA_EMP', 1.66);
+        $employerRate = $this->resolveContributionRate('CPP_CA_PAT', 5.95)
+            + $this->resolveContributionRate('EI_CA_PAT', 2.32);
+
         return [
-            'employee' => round($grossSalary * 0.0761, 2),
-            'employer' => round($grossSalary * 0.0827, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 
