@@ -479,6 +479,10 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->index();
             $table->unsignedInteger('employee_id')->index();
             $table->decimal('amount', 12, 2);
+            // PA2-PAY-002: snapshot the tenant currency at creation time so
+            // advance receipts stay historically accurate even if the
+            // company's currency setting changes later.
+            $table->char('currency', 3)->nullable();
             $table->text('reason')->nullable();
             $table->string('status', 20)->default('pending');
             $table->unsignedInteger('approved_by')->nullable();

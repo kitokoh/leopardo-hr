@@ -16,9 +16,14 @@ class SalaryAdvanceService
         $amount = (float) $data['amount'];
         $months = (int) ($data['repayment_months'] ?? 1);
 
+        // PA2-PAY-002: snapshot the tenant currency at creation time so the
+        // advance receipt stays historically accurate even if the
+        // company's currency setting changes later.
+        $currency = $data['currency'] ?? $employee->company?->currency ?? 'DZD';
+
         return SalaryAdvance::create([
             'company_id' => $employee->company_id, 'employee_id' => $employee->id,
-            'amount' => $amount, 'reason' => $data['reason'] ?? null,
+            'amount' => $amount, 'currency' => $currency, 'reason' => $data['reason'] ?? null,
             'status' => 'pending', 'repayment_months' => $months, 'amount_remaining' => $amount,
         ]);
     }
