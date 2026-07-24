@@ -7816,6 +7816,53 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /webhooks/{webhook}/dead-letters:
+    get:
+      tags: ["Integrations"]
+      summary: "Lister les livraisons webhook dead-letter (retries epuises)"
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: "Liste des livraisons dead-letter"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /webhooks/{webhook}/dead-letters/{delivery}/replay:
+    post:
+      tags: ["Integrations"]
+      summary: "Rejouer une livraison webhook dead-letter"
+      description: "Redispatch le meme evenement/payload sans re-executer l'action metier d'origine (pas de doublon fonctionnel cote plateforme)."
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: delivery
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "202":
+          description: "Livraison re-mise en file"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /webhooks/{webhook}/test:
     post:
       tags: ["Integrations"]

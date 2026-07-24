@@ -149,10 +149,13 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
     private function notifyEmployee(PushNotificationService $pushService, Employee $employee, PayrollRun $run): void
     {
         try {
+            // PA2-COMM-006 — title/body come from the localized
+            // `notifications.payroll_ready_*` keys, resolved for the
+            // employee's own locale (App::setLocale() above already set it).
             $period = $run->period_end->format('M Y');
             $pushService->sendToEmployee($employee, [
-                'title' => 'Bulletin de paie disponible',
-                'body' => "Votre bulletin de paie {$period} est prêt.",
+                'title' => trans('notifications.payroll_ready_title'),
+                'body' => trans('notifications.payroll_ready_body_with_period', ['period' => $period]),
                 'data' => [
                     'type' => 'pay_slip_ready',
                     'payroll_run_id' => $run->id,
