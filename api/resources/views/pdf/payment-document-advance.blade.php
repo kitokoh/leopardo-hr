@@ -26,7 +26,7 @@
     </div>
 
     <table>
-        <tr><th>{{ __('pdf.payment_advance_amount') }}</th><td>{{ number_format((float) ($salaryAdvance?->amount ?? $metadata['amount'] ?? 0), 2, ',', ' ') }}</td></tr>
+        <tr><th>{{ __('pdf.payment_advance_amount') }}</th><td>{{ number_format((float) ($salaryAdvance?->amount ?? $metadata['amount'] ?? 0), 2, ',', ' ') }} {{ $salaryAdvance?->currency ?? $metadata['currency'] ?? '' }}</td></tr>
         <tr><th>{{ __('pdf.payment_advance_reason') }}</th><td>{{ $salaryAdvance?->reason ?? __('pdf.payment_document_not_specified') }}</td></tr>
         <tr><th>{{ __('pdf.payment_advance_payment_reference') }}</th><td>{{ $salaryAdvance?->payment_reference ?? ($metadata['payment_reference'] ?? __('pdf.payment_document_not_specified')) }}</td></tr>
         <tr><th>{{ __('pdf.payment_advance_declared_on') }}</th><td>{{ $salaryAdvance?->payment_declared_at?->format('Y-m-d H:i') ?? ($metadata['payment_declared_at'] ?? __('pdf.payment_document_not_specified')) }}</td></tr>

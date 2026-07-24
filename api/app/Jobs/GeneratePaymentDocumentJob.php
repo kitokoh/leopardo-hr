@@ -173,6 +173,10 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             'requested_by' => $requestedBy,
             'metadata' => [
                 'amount' => $advance->amount,
+                // PA2-PAY-002: snapshot the advance's own currency (set at
+                // creation time) so the receipt stays historically accurate
+                // even if the tenant's currency setting changes later.
+                'currency' => $advance->currency,
                 'payment_reference' => $advance->payment_reference,
                 'payment_declared_at' => $advance->payment_declared_at?->toIso8601String(),
             ],
