@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use App\Exceptions\SalaryAdvanceNotPendingException;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Exceptions\SalaryAdvanceNotPendingException;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SalaryAdvanceService
 {
+    public function __construct(
+        private readonly CommunicationService $communication,
+    ) {}
+
     public function create(Employee $employee, array $data): SalaryAdvance
     {
         $amount = (float) $data['amount'];
@@ -39,8 +46,11 @@ class SalaryAdvanceService
         $plan = $this->buildPlan($advance->amount, $months, $monthly);
 
         $advance->update(['status' => 'active', 'approved_by' => $approver->id, 'decision_comment' => $data['decision_comment'] ?? null, 'repayment_months' => $months, 'monthly_deduction' => $monthly, 'amount_remaining' => $advance->amount, 'repayment_plan' => $plan]);
+        $advance = $advance->fresh();
 
-        return $advance->fresh();
+        $this->notify($advance, 'salary_advance_manager_approved');
+
+        return $advance;
     }
 
     public function reject(SalaryAdvance $advance, Employee $approver, ?string $comment = null): SalaryAdvance
@@ -50,8 +60,45 @@ class SalaryAdvanceService
         }
 
         $advance->update(['status' => 'rejected', 'approved_by' => $approver->id, 'decision_comment' => $comment]);
+        $advance = $advance->fresh();
 
-        return $advance->fresh();
+        $this->notify($advance, 'salary_advance_rejected');
+
+        return $advance;
+    }
+
+    /**
+     * Notify the advance owner about a status change (PA2-PAY-008).
+     * Notification failures must never break the advance workflow.
+     */
+    public function notify(SalaryAdvance $advance, string $templateKey): void
+    {
+        $employee = $advance->employee ?? Employee::query()->withoutGlobalScopes()->find($advance->employee_id);
+
+        if ($employee instanceof Employee) {
+            $this->notifyRecipient($advance, $employee, $templateKey);
+        }
+    }
+
+    /**
+     * Notify an explicit recipient (e.g. the manager who declared payment,
+     * once the employee confirms reception) about the advance.
+     */
+    public function notifyRecipient(SalaryAdvance $advance, Employee $recipient, string $templateKey): void
+    {
+        try {
+            $this->communication->notifyEmployee($recipient, $templateKey, [
+                'salary_advance_id' => $advance->id,
+                'payment_reference' => $advance->payment_reference,
+            ]);
+        } catch (Throwable $exception) {
+            Log::warning('salary-advance: failed to notify recipient', [
+                'salary_advance_id' => $advance->id,
+                'recipient_id' => $recipient->id,
+                'template' => $templateKey,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     public function cancel(SalaryAdvance $advance): SalaryAdvance
@@ -80,4 +127,3 @@ class SalaryAdvanceService
         return $plan;
     }
 }
-
