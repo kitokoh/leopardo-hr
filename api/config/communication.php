@@ -136,5 +136,10 @@ return [
             'title' => 'Journée de pointage clôturée automatiquement',
             'body' => 'Nous avons détecté un oubli de départ et clôturé votre journée automatiquement selon la règle de votre entreprise. Vérifiez les heures calculées et demandez une correction si besoin.',
         ],
+        'attendance_geofence_alert' => [
+            'category' => 'attendance',
+            'title' => 'Pointage hors zone',
+            'body' => 'Un employé a pointé hors de la zone géographique attendue.',
+        ],
     ],
 ];
