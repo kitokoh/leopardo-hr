@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +34,63 @@ class PayrollCycleController extends Controller
             ->paginate($request->integer('per_page', 15));
 
         return response()->json($runs);
+    }
+
+    /**
+     * PA2-PAY-011 — GET /payroll/cycle-settings: expose the company's
+     * configurable pay cycle rule (daily/weekly/monthly, pay day, week start)
+     * to managers so they can review it before changing it.
+     */
+    public function cycleSettings(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $company = $actor->company;
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => $this->cycleService->getPayCycleSettings($company),
+        ]);
+    }
+
+    /**
+     * PA2-PAY-011 — PUT /payroll/cycle-settings: let a manager configure the
+     * company-wide pay cycle rule (journalier/hebdomadaire/mensuel), pay day,
+     * and week start. Applies immediately to getCurrentCycle()/balances.
+     */
+    public function updateCycleSettings(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $company = $actor->company;
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'pay_cycle' => ['sometimes', 'string', 'in:daily,weekly,monthly'],
+            'pay_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
+            'week_start' => ['sometimes', 'integer', 'min:1', 'max:7'],
+        ]);
+
+        $settings = $this->cycleService->updatePayCycleSettings($company, $validated);
+
+        return response()->json([
+            'data' => $settings,
+            'message' => 'Cycle de paie mis a jour.',
+        ]);
     }
 
     public function current(Request $request): JsonResponse
@@ -116,4 +173,3 @@ class PayrollCycleController extends Controller
         ]);
     }
 }
-
