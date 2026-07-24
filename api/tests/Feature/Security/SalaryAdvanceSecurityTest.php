@@ -2,8 +2,9 @@
 
 namespace Tests\Feature\Security;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
@@ -243,6 +244,19 @@ class SalaryAdvanceSecurityTest extends TestCase
             'validation_status' => 'employee_confirmed',
             'payment_reference' => 'CASH-2026-001',
         ]);
+
+        // PA2-PAY-008: each transition notifies the relevant party.
+        $this->assertDatabaseHas('notifications', [
+            'employee_id' => $employee->id,
+            'type' => 'payroll',
+        ]);
+        $employeeNotifications = Notification::query()->where('employee_id', $employee->id)->pluck('data')->all();
+        $this->assertCount(2, $employeeNotifications); // manager_approved + payment_declared
+
+        $this->assertDatabaseHas('notifications', [
+            'employee_id' => $manager->id,
+            'type' => 'payroll',
+        ]);
     }
 
     public function test_manager_cannot_mark_salary_advance_paid_before_manager_approval(): void
@@ -339,4 +353,3 @@ class SalaryAdvanceSecurityTest extends TestCase
         return $employee;
     }
 }
-

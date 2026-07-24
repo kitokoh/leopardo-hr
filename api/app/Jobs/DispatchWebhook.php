@@ -38,6 +38,38 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
         $this->queue = 'webhooks';
     }
 
+    /**
+     * Called by the queue worker once every retry attempt (see `$tries`)
+     * has been exhausted for this job.
+     *
+     * Records a dedicated dead-letter `WebhookDelivery` row — distinct from
+     * the generic `failed_jobs` entry Laravel already writes — so partner
+     * admins can see and replay it from `GET /webhooks/{id}/dead-letters`
+     * without needing shell/DB access. See PA2-API-006.
+     */
+    public function failed(Throwable $exception): void
+    {
+        WebhookDelivery::create([
+            'webhook_endpoint_id' => $this->endpoint->id,
+            'event' => $this->event,
+            'payload' => [
+                'event' => $this->event,
+                'timestamp' => now()->toIso8601String(),
+                'data' => $this->payload,
+            ],
+            'response_code' => 0,
+            'response_body' => mb_substr('All retries exhausted: '.$exception->getMessage(), 0, 2000),
+            'duration_ms' => 0,
+            'dead_lettered_at' => now(),
+        ]);
+
+        Log::error('Webhook delivery dead-lettered after exhausting all retries', [
+            'endpoint_id' => $this->endpoint->id,
+            'event' => $this->event,
+            'error' => $exception->getMessage(),
+        ]);
+    }
+
     public function tenantCompanyId(): ?string
     {
         // `SerializesModels` re-hydrates `$endpoint` from the DB when the job
@@ -55,7 +87,7 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(): void
@@ -150,4 +182,3 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
         }
     }
 }
-

@@ -1,34 +1,37 @@
 <?php
 
-use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
+use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
+use App\Http\Controllers\Web\PlatformCompanyController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
+use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
+use App\Modules\Billing\Interfaces\Api\V1\PaymentWebhookController;
+use App\Modules\Billing\Interfaces\Api\V1\PlatformCompanySubscriptionController;
+use App\Modules\Billing\Interfaces\Api\V1\PlatformPlanController;
+use App\Modules\Billing\Interfaces\Api\V1\SelfServiceTrialController;
+use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
+use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
+use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
-use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
-use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
-use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
-use App\Modules\Billing\Interfaces\Api\V1\PaymentWebhookController;
-use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
-use App\Modules\Billing\Interfaces\Api\V1\PlatformCompanySubscriptionController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
-use App\Modules\Billing\Interfaces\Api\V1\PlatformPlanController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
-use App\Modules\Billing\Interfaces\Api\V1\SelfServiceTrialController;
-use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
-use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -181,11 +184,25 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
 
+        // PA2-COMM-005 — Platform-wide announcements (maintenance, feature,
+        // incident, action required) broadcast by super-admin to all or a
+        // selected subset of companies.
+        Route::get('/announcements', [PlatformAnnouncementController::class, 'index']);
+        Route::post('/announcements', [PlatformAnnouncementController::class, 'store']);
+        Route::get('/announcements/{announcement}', [PlatformAnnouncementController::class, 'show']);
+        Route::delete('/announcements/{announcement}', [PlatformAnnouncementController::class, 'destroy']);
+
+        // PA2-ADM-006 — Secure super-admin impersonation ("log in as this
+        // employee"): mandatory reason, hard time limit, fully audited.
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+
         // Edge node management (super-admin)
         Route::prefix('edge/nodes')->group(function (): void {
-            Route::get('/', [\App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController::class, 'listNodes']);
-            Route::post('/{id}/sync', [\App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController::class, 'forceSync'])->whereNumber('id');
-            Route::delete('/{id}', [\App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController::class, 'revokeNode'])->whereNumber('id');
+            Route::get('/', [EdgeController::class, 'listNodes']);
+            Route::post('/{id}/sync', [EdgeController::class, 'forceSync'])->whereNumber('id');
+            Route::delete('/{id}', [EdgeController::class, 'revokeNode'])->whereNumber('id');
         });
     });
 });

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use Carbon\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -67,6 +68,41 @@ class PayrollCycleIntegrationTest extends TestCase
         // Step 3: List runs — our run should appear
         $this->getJson('/api/v1/payroll-runs')
             ->assertOk();
+    }
+
+    public function test_payroll_cycles_index_uses_standard_data_meta_envelope(): void
+    {
+        // PA2-API-001: /api/v1/payroll/cycles used to return Laravel's raw
+        // paginator shape (current_page/data/links/... at the top level)
+        // instead of the success/data/meta envelope used everywhere else in
+        // the API (see ApiListQueryContractTest, PayrollRunControllerTest).
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+            'country_code' => 'DZ',
+            'status' => 'validated',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/payroll/cycles?per_page=5');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'company_id', 'country_code', 'period_start', 'period_end', 'status'],
+                ],
+                'meta' => ['current_page', 'last_page', 'per_page', 'total'],
+                'links' => ['first', 'last', 'prev', 'next'],
+            ])
+            ->assertJsonPath('meta.per_page', 5)
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonMissingPath('current_page')
+            ->assertJsonMissingPath('data.0.links');
     }
 
     public function test_employee_cannot_manage_payroll_runs(): void
@@ -162,10 +198,37 @@ class PayrollCycleIntegrationTest extends TestCase
         $this->getJson('/api/v1/me/balance')
             ->assertOk()
             ->assertJsonPath('data.employee_id', $employee->id)
+            ->assertJsonPath('data.country', 'DZ')
             ->assertJsonPath('data.currency', 'DZD')
             ->assertJsonPath('data.gross_due', 100000)
             ->assertJsonPath('data.advances', 15000)
-            ->assertJsonPath('data.remaining', 85000);
+            ->assertJsonPath('data.remaining', 85000)
+            ->assertJsonPath('data.pay_slip.receipt_available', true)
+            ->assertJsonStructure(['data' => ['next_payment_date']]);
+    }
+
+    public function test_employee_balance_reports_next_payment_date_from_company_pay_day(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'MA',
+            'currency' => 'MAD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly', 'pay_day' => 28]],
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 8000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/balance')->assertOk();
+
+        $nextPaymentDate = $response->json('data.next_payment_date');
+        $this->assertNotEmpty($nextPaymentDate, 'next_payment_date should be present in the balance payload.');
+        $this->assertSame(28, Carbon::parse($nextPaymentDate)->day, 'next_payment_date should land on the configured pay_day.');
+        $this->assertFalse(Carbon::parse($nextPaymentDate)->isPast(), 'next_payment_date should be a future or today date, never a past one.');
+        $response->assertJsonPath('data.pay_slip.receipt_available', false);
     }
 
     public function test_employee_cannot_read_another_employee_balance(): void
@@ -205,4 +268,3 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertJsonMissing(['employee_id' => $employeeB->id]);
     }
 }
-

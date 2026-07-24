@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Contracts\HasApiTokens as HasApiTokensContract;
@@ -380,6 +381,38 @@ class Employee extends Authenticatable implements HasApiTokensContract
     }
 
     /**
+     * Resolves who should be alerted about this employee (e.g. an
+     * out-of-geofence punch): their direct `manager_id` when one is
+     * assigned and still active, otherwise every active company-wide
+     * manager (`manager_role` principal/rh) so an alert is never silently
+     * dropped just because no direct hierarchy has been configured yet.
+     * Never includes the employee themself.
+     *
+     * @return Collection<int, self>
+     */
+    public function resolveAlertRecipients(): Collection
+    {
+        if ($this->manager_id !== null) {
+            $directManager = static::query()
+                ->where('company_id', $this->company_id)
+                ->where('status', 'active')
+                ->find($this->manager_id);
+
+            if ($directManager !== null) {
+                return collect([$directManager]);
+            }
+        }
+
+        return static::query()
+            ->where('company_id', $this->company_id)
+            ->where('role', 'manager')
+            ->whereIn('manager_role', ['principal', 'rh'])
+            ->where('status', 'active')
+            ->where('id', '!=', $this->id)
+            ->get();
+    }
+
+    /**
      * Route d'accueil suggeree selon le role/sous-role de l'employe.
      */
     public function homeRoute(): string
@@ -426,6 +459,17 @@ class Employee extends Authenticatable implements HasApiTokensContract
     public function site(): BelongsTo
     {
         return $this->belongsTo(Site::class, 'site_id');
+    }
+
+    /**
+     * The direct manager this employee reports to via `manager_id`
+     * (self-referencing hierarchy FK; see PA2-SEC-003).
+     *
+     * @return BelongsTo<Employee, $this>
+     */
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'manager_id');
     }
 
     public function onboardingProgress(): HasOne

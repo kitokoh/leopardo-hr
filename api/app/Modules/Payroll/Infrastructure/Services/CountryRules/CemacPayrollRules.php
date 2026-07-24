@@ -108,9 +108,12 @@ class CemacPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        $employeeRate = $this->resolveContributionRate('CNPS_CEMAC_EMP', 4.2);
+        $employerRate = $this->resolveContributionRate('CNPS_CEMAC_PAT', 16.2);
+
         return [
-            'employee' => round($grossSalary * 0.042, 2),
-            'employer' => round($grossSalary * 0.162, 2),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 
