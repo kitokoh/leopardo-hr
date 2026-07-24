@@ -52,7 +52,11 @@ class AttendanceAnomalyService
                 'gps_lng',
             ])
             ->where('company_id', $companyId)
-            ->whereBetween('date', [$dateFrom, $dateTo])
+            // The `date` column is stored as a full timestamp (e.g. "2026-05-10 00:00:00").
+            // whereBetween() with two plain date strings would exclude every log dated
+            // exactly on $dateTo because "2026-05-10 00:00:00" sorts after "2026-05-10"
+            // lexicographically, so the upper bound must include the end of that day.
+            ->whereBetween('date', [$dateFrom, Carbon::parse($dateTo)->endOfDay()])
             ->when($filters['employee_id'] ?? null, fn ($query, $employeeId) => $query->where('employee_id', $employeeId))
             ->when($departmentEmployeeIds !== null, fn ($query) => $query->whereIn('employee_id', $departmentEmployeeIds))
             ->orderByDesc('date')
