@@ -70,6 +70,41 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertOk();
     }
 
+    public function test_payroll_cycles_index_uses_standard_data_meta_envelope(): void
+    {
+        // PA2-API-001: /api/v1/payroll/cycles used to return Laravel's raw
+        // paginator shape (current_page/data/links/... at the top level)
+        // instead of the success/data/meta envelope used everywhere else in
+        // the API (see ApiListQueryContractTest, PayrollRunControllerTest).
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+            'country_code' => 'DZ',
+            'status' => 'validated',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/payroll/cycles?per_page=5');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'company_id', 'country_code', 'period_start', 'period_end', 'status'],
+                ],
+                'meta' => ['current_page', 'last_page', 'per_page', 'total'],
+                'links' => ['first', 'last', 'prev', 'next'],
+            ])
+            ->assertJsonPath('meta.per_page', 5)
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonMissingPath('current_page')
+            ->assertJsonMissingPath('data.0.links');
+    }
+
     public function test_employee_cannot_manage_payroll_runs(): void
     {
         $company = Company::factory()->create();
