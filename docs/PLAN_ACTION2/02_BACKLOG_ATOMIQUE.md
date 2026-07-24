@@ -199,7 +199,7 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-QA-001 | P0 | Smoke login 5 surfaces | CI/API/mobile/web/kiosk | employee, manager, platform admin, web client, admin web, kiosk valides |
-| PA2-QA-002 | P0 | Matrice boutons critiques | docs/tests | chaque bouton pointage/paie/client/admin/kiosk mappe vers route ou action locale |
+| PA2-QA-002 | P0 | ~~Matrice~~ Fait le 2026-07-24: `docs/PLAN_ACTION2/MATRICE_BOUTONS_CRITIQUES.md` cree, croisant 24 boutons critiques (pointage kiosk/mobile, paie admin web/web dashboard, approbations mobile manager, activation client platform admin, checkout/signup vitrine) avec les routes API reelles (`api/routes/**`) ou une action locale justifiee (mode demo kiosk, pagination cote client, sandbox carte checkout) ; 0 bouton critique trouve sans route ni justification | docs/tests | chaque bouton pointage/paie/client/admin/kiosk mappe vers route ou action locale |
 | PA2-QA-003 | P0 | Contrats API par profil | API tests | employee, manager, superadmin, kiosk; permissions et erreurs |
 | PA2-QA-004 | P1 | Tests charge k6 pointage | dev-hub/k6 | scenario 10/20/50/100 punchs, lance seulement via paths ou manuel |
 | PA2-QA-005 | P1 | Tests charge k6 paie | dev-hub/k6 | preview paie, batch paiement, notification async |
