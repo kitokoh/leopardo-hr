@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Modules\Attendance\Application\DTOs\CheckInDTO;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
@@ -23,7 +24,10 @@ class AttendanceService
     /** @var array<int, string> */
     private const NON_WORK_TYPES = ['break'];
 
-    public function __construct(private readonly AttendanceGeofenceService $geofenceService) {}
+    public function __construct(
+        private readonly AttendanceGeofenceService $geofenceService,
+        private readonly CommunicationService $communicationService,
+    ) {}
 
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
@@ -83,6 +87,7 @@ class AttendanceService
         ]);
 
         AttendanceCheckedIn::dispatch($log);
+        $this->alertManagersIfOutsideGeofence($employee, $log, 'check_in');
 
         return $log;
     }
@@ -158,6 +163,7 @@ class AttendanceService
         $log->save();
 
         AttendanceCheckedOut::dispatch($log);
+        $this->alertManagersIfOutsideGeofence($employee, $log, 'check_out');
 
         return $log;
     }
@@ -408,6 +414,52 @@ class AttendanceService
     }
 
     /**
+     * Notifies the employee's manager (or, absent a direct manager, every
+     * company-wide principal/rh manager) when a check-in/check-out lands
+     * outside the configured geofence. Purely informational: the punch
+     * itself is never blocked by this (see buildPunchMeta()/
+     * AttendanceGeofenceService, PA2-ATT-009's "pointage tolerant GPS
+     * indisponible" requirement). No-op when geofencing isn't configured,
+     * GPS was unavailable (inside === null), or the punch is inside the
+     * zone.
+     */
+    private function alertManagersIfOutsideGeofence(Employee $employee, AttendanceLog $log, string $phase): void
+    {
+        $geofence = $log->punch_meta['geofence'] ?? null;
+
+        if (! is_array($geofence) || $geofence['inside'] !== false) {
+            return;
+        }
+
+        $recipients = $employee->resolveAlertRecipients();
+
+        if ($recipients->isEmpty()) {
+            return;
+        }
+
+        $employeeName = trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')) ?: $employee->email;
+        $distance = $geofence['distance_meters'] ?? '?';
+        $radius = $geofence['radius_meters'] ?? '?';
+
+        foreach ($recipients as $manager) {
+            $locale = $manager->preferred_language ?: config('app.fallback_locale', 'en');
+            $phaseLabel = trans('notifications.attendance_geofence_alert_phase_'.$phase, [], $locale);
+
+            $this->communicationService->notifyEmployee($manager, 'attendance_geofence_alert', [
+                'title' => trans('notifications.attendance_geofence_alert_title', ['employee' => $employeeName], $locale),
+                'body' => trans('notifications.attendance_geofence_alert_body', [
+                    'employee' => $employeeName,
+                    'phase' => $phaseLabel,
+                    'distance' => $distance,
+                    'radius' => $radius,
+                ], $locale),
+                'attendance_log_id' => $log->id,
+                'employee_id' => $employee->id,
+            ], ['app']);
+        }
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function buildPunchMeta(Company $company, Employee $employee, CheckInDTO $dto, string $phase): array
@@ -424,4 +476,3 @@ class AttendanceService
         ];
     }
 }
-
