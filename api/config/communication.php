@@ -90,6 +90,18 @@ return [
             'title_key' => 'notifications.payroll_ready_title',
             'body_key' => 'notifications.payroll_ready_body',
         ],
+        'bulk_payment_completed' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.bulk_payment_completed_title',
+            'body_key' => 'notifications.bulk_payment_completed_body',
+            'vars' => ['succeeded', 'total', 'failed'],
+        ],
+        'bulk_payment_completed_with_errors' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.bulk_payment_completed_with_errors_title',
+            'body_key' => 'notifications.bulk_payment_completed_with_errors_body',
+            'vars' => ['succeeded', 'total', 'failed'],
+        ],
         'security_alert' => [
             'category' => 'security',
             'title_key' => 'notifications.security_alert_title',
