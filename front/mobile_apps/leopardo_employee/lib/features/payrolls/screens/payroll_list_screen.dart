@@ -469,6 +469,27 @@ class _BalanceCard extends StatelessWidget {
               currency: balance.currency,
               color: AppColors.info,
             ),
+            if (balance.nextPaymentDate.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.event_available_outlined,
+                    size: 16,
+                    color: MobileSurface.secondary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Prochaine paie prevue le ${balance.nextPaymentDate}',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
