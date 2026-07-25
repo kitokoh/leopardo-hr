@@ -118,7 +118,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-STR-001 | P0 | Positionnement commercial final | docs, vitrine | "OS de gestion d'entreprise mobile-first" avec proposition claire par persona |
+| PA2-STR-001 | P0 | Fait le 2026-06-05 (audit 2026-07-25, `19_AUDIT_STATUT_PA2_STR_001.md`): positionnement final livre commit `4b51420c` (`docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/`), propage a la vitrine (`vitrine-locale.ts`) | docs, vitrine | FAIT: "OS de gestion d'entreprise mobile-first" avec proposition claire par persona |
 | PA2-STR-002 | P1 | One-pager commercial | docs/commercial | offre, ROI, modules, objections, pricing, cas d'usage PME terrain |
 | PA2-STR-003 | P1 | Documentation testeurs/pilotes | docs | liens apps/API/web/admin/kiosk, comptes demo, scenarios de test |
 | PA2-STR-004 | P2 | Marketplace architecture note | docs/API | modules/plugins, permissions, billing futur, webhooks |
