@@ -112,6 +112,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/salary-advances/{salaryAdvance}/manager-approve', [SalaryAdvanceController::class, 'managerApprove'])->whereNumber('salaryAdvance');
     Route::put('/salary-advances/{salaryAdvance}/mark-paid', [SalaryAdvanceController::class, 'markPaid'])->whereNumber('salaryAdvance');
     Route::put('/salary-advances/{salaryAdvance}/confirm-received', [SalaryAdvanceController::class, 'confirmReceived'])->whereNumber('salaryAdvance');
+    // PA2-PAY-015 — employee dispute ("reclamation") instead of confirming reception
+    Route::put('/salary-advances/{salaryAdvance}/dispute', [SalaryAdvanceController::class, 'dispute'])->whereNumber('salaryAdvance');
+    Route::put('/salary-advances/{salaryAdvance}/resolve-dispute', [SalaryAdvanceController::class, 'resolveDispute'])->whereNumber('salaryAdvance');
 
     // ── Module 3 — Payrolls ───────────────────────────────────────────────────
     Route::get('/payrolls', [PayrollController::class, 'index']);
