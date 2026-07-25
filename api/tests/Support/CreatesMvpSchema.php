@@ -678,6 +678,41 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create($this->tenantTable('conversation_threads'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('manager_id')->nullable()->index();
+            $table->string('subject_type', 40)->nullable();
+            $table->unsignedBigInteger('subject_id')->nullable();
+            $table->string('title', 200);
+            $table->string('status', 20)->default('open')->index();
+            $table->unsignedBigInteger('last_message_id')->nullable();
+            $table->timestampTz('last_message_at')->nullable();
+            $table->timestampTz('employee_last_read_at')->nullable();
+            $table->timestampTz('manager_last_read_at')->nullable();
+            $table->timestamps();
+
+            $table->index(['company_id', 'employee_id']);
+            $table->index(['company_id', 'manager_id']);
+            $table->index(['subject_type', 'subject_id']);
+        });
+
+        Schema::create($this->tenantTable('conversation_messages'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedBigInteger('conversation_thread_id')->index();
+            $table->unsignedInteger('author_id');
+            $table->text('body');
+            $table->string('attachment_path', 255)->nullable();
+            $table->string('attachment_original_name', 255)->nullable();
+            $table->string('attachment_mime_type', 100)->nullable();
+            $table->unsignedInteger('attachment_size')->nullable();
+            $table->timestampTz('created_at')->useCurrent();
+
+            $table->index(['conversation_thread_id', 'created_at']);
+        });
+
         Schema::create($this->tenantTable('company_announcements'), function (Blueprint $table): void {
             $table->id();
             $table->uuid('company_id')->index();
@@ -1172,6 +1207,45 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'audience_type']);
                 $table->index(['company_id', 'status']);
                 $table->index(['status', 'scheduled_at']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('conversation_threads'))) {
+            Schema::create($this->moduleTable('conversation_threads'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->unsignedInteger('manager_id')->nullable()->index();
+                $table->string('subject_type', 40)->nullable();
+                $table->unsignedBigInteger('subject_id')->nullable();
+                $table->string('title', 200);
+                $table->string('status', 20)->default('open')->index();
+                $table->unsignedBigInteger('last_message_id')->nullable();
+                $table->timestampTz('last_message_at')->nullable();
+                $table->timestampTz('employee_last_read_at')->nullable();
+                $table->timestampTz('manager_last_read_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'employee_id']);
+                $table->index(['company_id', 'manager_id']);
+                $table->index(['subject_type', 'subject_id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('conversation_messages'))) {
+            Schema::create($this->moduleTable('conversation_messages'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('conversation_thread_id')->index();
+                $table->unsignedInteger('author_id');
+                $table->text('body');
+                $table->string('attachment_path', 255)->nullable();
+                $table->string('attachment_original_name', 255)->nullable();
+                $table->string('attachment_mime_type', 100)->nullable();
+                $table->unsignedInteger('attachment_size')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->index(['conversation_thread_id', 'created_at']);
             });
         }
 
@@ -1975,6 +2049,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "salary_structures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "company_announcements"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "conversation_messages"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "conversation_threads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "client_events"'.$cascade);
