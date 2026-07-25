@@ -244,4 +244,80 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get aiChatErrorMessage => 'خطأ: تعذر الاتصال بالمساعد.';
+
+  @override
+  String get authBackTooltip => 'رجوع';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'تسجيل دخول الموظف';
+
+  @override
+  String get authManagerLoginSubtitle => 'تسجيل دخول المدير / الموارد البشرية';
+
+  @override
+  String get authEmailProfessionalLabel => 'البريد الالكتروني المهني';
+
+  @override
+  String get authEmailLabel => 'البريد الالكتروني';
+
+  @override
+  String get authEmailRequired => 'البريد الالكتروني مطلوب';
+
+  @override
+  String get authEmailInvalid => 'بريد الكتروني غير صالح';
+
+  @override
+  String get authPasswordLabel => 'كلمة المرور';
+
+  @override
+  String get authPasswordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get authPasswordTooShort => 'كلمة المرور قصيرة جدا';
+
+  @override
+  String get authContinueWithGoogle => 'الاستمرار مع Google';
+
+  @override
+  String get authActivateInvitation => 'تفعيل دعوتي';
+
+  @override
+  String get authPersonalAccountLink => 'حساب شخصي';
+
+  @override
+  String get authActivateManagerAccess => 'تفعيل صلاحية المدير';
+
+  @override
+  String get commonOr => 'او';
+
+  @override
+  String get authTryDemoAccount => 'تجربة حساب تجريبي';
+
+  @override
+  String get platformLoginTitle => 'ليوباردو بلاتفورم';
+
+  @override
+  String get platformLoginSubtitle => 'لوحة تحكم محمولة مخصصة لادارة المنصة.';
+
+  @override
+  String get platformLogin2faNotice =>
+      'هذا الحساب يحمي المنصة: ادخل رمز التحقق بخطوتين من تطبيق المصادقة.';
+
+  @override
+  String get platformLoginEmailLabel => 'بريد المسؤول الاعلى';
+
+  @override
+  String get platformLoginEmailRequired => 'البريد الالكتروني مطلوب';
+
+  @override
+  String get platformLoginPasswordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get platformLogin2faLabel => 'رمز التحقق بخطوتين اذا كان مفعلا';
+
+  @override
+  String get platformLoginSubmitting => 'جاري تسجيل الدخول...';
+
+  @override
+  String get platformLoginUseDemoAccount => 'استخدام الحساب التجريبي';
 }
