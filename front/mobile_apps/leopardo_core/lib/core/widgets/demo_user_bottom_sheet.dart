@@ -164,6 +164,7 @@ Future<DemoUser?> showDemoUserBottomSheet(
                           ),
                         ),
                         IconButton(
+                          tooltip: 'Fermer',
                           icon: const Icon(Icons.close),
                           onPressed: () => Navigator.pop(context),
                         ),

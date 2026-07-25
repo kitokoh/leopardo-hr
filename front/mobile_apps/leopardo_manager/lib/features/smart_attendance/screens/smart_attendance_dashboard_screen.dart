@@ -25,6 +25,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
         title: 'Smart Attendance',
         subtitle: 'Pointage GPS — tableau de bord équipe',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),

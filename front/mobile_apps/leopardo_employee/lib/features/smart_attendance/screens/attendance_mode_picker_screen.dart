@@ -111,6 +111,7 @@ class _AttendanceModePickerScreenState
         backgroundColor: _bg,
         elevation: 0,
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _text),
           onPressed: () => context.pop(),
         ),
