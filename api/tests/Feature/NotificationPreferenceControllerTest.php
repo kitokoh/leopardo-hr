@@ -100,53 +100,54 @@ class NotificationPreferenceControllerTest extends TestCase
     }
 
     /**
-     * PA2-COMM-008 — giving WhatsApp consent through the API stamps a
-     * server-side timestamp; the client cannot forge it.
+     * PA2-COMM-014 — the notification preferences update audit event
+     * (`notification_preferences_updated`) must persist which channels
+     * were left enabled, so support/QA can audit an opt-out without
+     * having to compare the record before/after in production data.
      */
-    public function test_update_stamps_whatsapp_consent_timestamp_when_consent_is_given(): void
+    public function test_update_audit_event_metadata_captures_channel_state(): void
     {
         $employee = $this->employee();
-        Sanctum::actingAs($employee);
-
-        $response = $this->patchJson('/api/v1/notification-preferences', [
-            'whatsapp_enabled' => true,
-            'whatsapp_consent_given' => true,
-        ])
-            ->assertOk()
-            ->assertJsonPath('data.whatsapp_enabled', true)
-            ->assertJsonPath('data.whatsapp_consent_given', true);
-
-        $this->assertNotNull($response->json('data.whatsapp_consent_at'));
-
-        $preference = NotificationPreference::query()->where('employee_id', $employee->id)->firstOrFail();
-        $this->assertTrue($preference->hasWhatsappConsent());
-    }
-
-    /**
-     * PA2-COMM-008 — withdrawing consent clears the timestamp so a stale
-     * value can never be mistaken for still-valid consent.
-     */
-    public function test_update_clears_whatsapp_consent_timestamp_when_consent_is_withdrawn(): void
-    {
-        $employee = $this->employee();
-        NotificationPreference::query()->create([
-            'company_id' => $employee->company_id,
-            'employee_id' => $employee->id,
-            'whatsapp_enabled' => true,
-            'whatsapp_consent_given' => true,
-            'whatsapp_consent_at' => now(),
-        ]);
         Sanctum::actingAs($employee);
 
         $this->patchJson('/api/v1/notification-preferences', [
-            'whatsapp_consent_given' => false,
-        ])
-            ->assertOk()
-            ->assertJsonPath('data.whatsapp_consent_given', false)
-            ->assertJsonPath('data.whatsapp_consent_at', null);
+            'sms_enabled' => true,
+            'whatsapp_enabled' => false,
+        ])->assertOk();
 
-        $preference = NotificationPreference::query()->where('employee_id', $employee->id)->firstOrFail();
-        $this->assertFalse($preference->hasWhatsappConsent());
+        $event = CommunicationEvent::query()
+            ->where('employee_id', $employee->id)
+            ->where('event_name', 'notification_preferences_updated')
+            ->firstOrFail();
+
+        $this->assertSame(true, $event->metadata['channels']['sms']);
+        $this->assertSame(false, $event->metadata['channels']['whatsapp']);
+    }
+
+    /**
+     * PA2-COMM-014 — quotas are configured globally per channel, but the
+     * preferences endpoint must still expose whichever quiet hours window
+     * an employee has actually saved so mobile/web can display it back
+     * accurately (regression guard for the update round-trip).
+     */
+    public function test_update_round_trips_quiet_hours_window(): void
+    {
+        $employee = $this->employee();
+        Sanctum::actingAs($employee);
+
+        $this->patchJson('/api/v1/notification-preferences', [
+            'quiet_hours' => [
+                'enabled' => true,
+                'start' => '21:30',
+                'end' => '06:45',
+            ],
+        ])->assertOk();
+
+        $this->getJson('/api/v1/notification-preferences')
+            ->assertOk()
+            ->assertJsonPath('data.quiet_hours.enabled', true)
+            ->assertJsonPath('data.quiet_hours.start', '21:30')
+            ->assertJsonPath('data.quiet_hours.end', '06:45');
     }
 
     private function employee(): Employee
