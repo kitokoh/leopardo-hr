@@ -8,6 +8,7 @@ Ce dossier contient les scripts de charge k6 utilises pour mesurer les parcours 
 |---|---|---|
 | `k6/api-core-smoke.js` | Health, auth session, dashboard manager, employees, attendance, payroll et self-service employe | Non |
 | `k6/employee-100-attendance-payroll.js` | Benchmark 100 employes simultanes sur pointage, historique et consultation paie | Non par defaut ; check-in optionnel avec `ALLOW_ATTENDANCE_MUTATIONS=true` |
+| `k6/attendance-punch-scale.js` | Charge progressive pointage (10/20/50/100 VUs) manuel (`check-in`/`check-out`) ou path-based (`smart-attendance/geo-events`) | Oui, punchs reels crees a chaque iteration (voir Garde-fous) |
 | `k6/payroll-500-batch.js` | Benchmark calcul paie 500 employes avec seuil < 30 s | Lecture par defaut ; calcul optionnel avec `ALLOW_PAYROLL_MUTATIONS=true` |
 | `k6/admin-dashboard-10k.js` | Benchmark dashboard admin + pagination/search sur tenant 10k employes | Non |
 
@@ -65,6 +66,33 @@ k6 run dev-hub/load/k6/payroll-500-batch.js
 
 Seuil : `POST /api/v1/payroll-runs/{id}/calculate` p95 < 30000 ms.
 
+### Pointage progressif 10/20/50/100 (PA2-QA-004)
+
+Montee en charge par palier sur le pointage, en mode manuel (`check-in`/`check-out` classiques) ou path-based (evenements geofence `zone_enter`/`zone_exit` de SmartAttendance). Chaque palier dure `STAGE_DURATION` (30s par defaut) et le VU cible peut etre ajuste par palier.
+
+Mode manuel (par defaut) :
+
+```bash
+BASE_URL="https://api-staging.leopardo-rh.com" \
+EMPLOYEE_TOKENS="token1,token2,token3" \
+PUNCH_MODE=manual \
+k6 run dev-hub/load/k6/attendance-punch-scale.js
+```
+
+Mode path-based (geofence) :
+
+```bash
+BASE_URL="https://api-staging.leopardo-rh.com" \
+EMPLOYEE_TOKENS="token1,token2,token3" \
+PUNCH_MODE=path \
+GEO_LAT=33.5731 GEO_LNG=-7.5898 \
+k6 run dev-hub/load/k6/attendance-punch-scale.js
+```
+
+Paliers par defaut : 10 -> 20 -> 50 -> 100 VUs, 30s chacun (`STAGE_1_VUS`..`STAGE_4_VUS`, `STAGE_DURATION`). Seuils : moins de 2% d'erreurs, p95 punch < 1500 ms, zero echec non attendu (statuts hors 200/201/409/422 comptes comme echec).
+
+**Attention** : ce script cree reellement des pointages (check-in/check-out ou sessions geofence) a chaque iteration, contrairement aux autres scripts read-only de ce dossier. Executer uniquement sur un tenant de staging dedie aux tests de charge, jamais en production. Utiliser `ALLOW_CHECKOUT=false` pour ne garder que le check-in si l'on souhaite limiter le volume de mutations en mode manuel.
+
 ### Dashboard admin 10k employes
 
 ```bash
@@ -100,6 +128,20 @@ Seuils : p95 dashboard < 1500 ms, liste/search employes < 1800 ms.
 | `EMPLOYEE_DURATION` | `1m` | Duree employe |
 
 Les valeurs `*_VUS` inferieures a `1` sont normalisees a leur defaut pour respecter la configuration k6.
+
+### Variables `attendance-punch-scale.js`
+
+| Variable | Defaut | Usage |
+|---|---|---|
+| `PUNCH_MODE` | `manual` | `manual` (check-in/check-out) ou `path` (geofence zone_enter/zone_exit) |
+| `EMPLOYEE_TOKENS` | vide | Tokens Sanctum employe, un par VU en round-robin (fallback health si vide) |
+| `STAGE_1_VUS`..`STAGE_4_VUS` | `10`/`20`/`50`/`100` | VUs cibles par palier |
+| `STAGE_DURATION` | `30s` | Duree de chaque palier |
+| `STAGE_GRACEFUL_RAMPDOWN` | `10s` | Temps de descente en fin de test |
+| `ALLOW_CHECKOUT` | `true` | Desactiver pour ne faire que le check-in en mode manuel |
+| `GEO_LAT` / `GEO_LNG` / `GEO_ACCURACY_METERS` | `33.5731` / `-7.5898` / `15` | Coordonnees utilisees pour les evenements geofence en mode path |
+| `GEO_DWELL_SECONDS` | `1` | Delai entre `zone_enter` et `zone_exit` |
+| `PUNCH_SLEEP` | `1` | Pause entre iterations d'un VU |
 
 ## Procedure de benchmark Plan 14
 
