@@ -6,6 +6,7 @@ import {
   HeroSection,
   Footer,
   useScrollReveal,
+  ProductDemoVideo,
 } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
@@ -300,6 +301,8 @@ export default function DemoPage() {
           icon: <Calendar className="w-3 h-3" />,
         }}
       />
+
+      <ProductDemoVideo locale={locale} />
 
       <section id="demo-form" className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />
