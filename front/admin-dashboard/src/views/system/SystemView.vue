@@ -49,6 +49,13 @@
       @refresh="loadQueueObservability"
     />
 
+    <!-- Notifications & Runbooks Observability (PA2-ADM-005) -->
+    <NotificationObservabilityCard
+      :data="notificationObservability"
+      :loading="isLoadingNotificationObservability"
+      @refresh="loadNotificationObservability"
+    />
+
     <!-- System Status Overview -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up">
       <SystemStatusCard
@@ -237,6 +244,7 @@ import api from '@/services/api'
 // Components
 import SystemStatusCard from '@/components/system/SystemStatusCard.vue'
 import QueueObservabilityCard from '@/components/system/QueueObservabilityCard.vue'
+import NotificationObservabilityCard from '@/components/system/NotificationObservabilityCard.vue'
 import RealTimeMetricsChart from '@/components/system/RealTimeMetricsChart.vue'
 import ResourceUsageWidget from '@/components/system/ResourceUsageWidget.vue'
 import BackupManagement from '@/components/system/BackupManagement.vue'
@@ -253,6 +261,8 @@ const toast = useToast()
 const isRunningHealthCheck = ref(false)
 const queueObservability = ref(null)
 const isLoadingObservability = ref(false)
+const notificationObservability = ref(null)
+const isLoadingNotificationObservability = ref(false)
 const isCreatingBackup = ref(false)
 const showCreateTaskModal = ref(false)
 const showImportModal = ref(false)
@@ -333,6 +343,7 @@ let metricsInterval = null
 onMounted(async () => {
   await loadSystemData()
   await loadQueueObservability()
+  await loadNotificationObservability()
   startMetricsRefresh()
 })
 
@@ -373,6 +384,22 @@ async function loadQueueObservability() {
     toast.error('Erreur lors du chargement de l\'observabilité des jobs')
   } finally {
     isLoadingObservability.value = false
+  }
+}
+
+// PA2-ADM-005 — Cross-tenant notification failure rate (24h) + curated
+// runbook links, backed by GET /platform/observability/notifications.
+async function loadNotificationObservability() {
+  isLoadingNotificationObservability.value = true
+
+  try {
+    const response = await api.get('/platform/observability/notifications')
+    notificationObservability.value = response.data?.data || null
+  } catch (error) {
+    console.error('Failed to load notification observability:', error)
+    toast.error('Erreur lors du chargement de l\'observabilité des notifications')
+  } finally {
+    isLoadingNotificationObservability.value = false
   }
 }
 
