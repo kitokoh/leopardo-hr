@@ -47,7 +47,7 @@ Avant toute publication :
 
 ## Marketplace cible
 
-Les extensions marketplace doivent passer par une API publique et des webhooks signes.
+Les extensions marketplace doivent passer par une API publique et des webhooks signes. Le mapping concret de ce guide (scopes, gating billing, evenements) sur les mecanismes deja implementes (`Feature`, `FeaturePlanMatrix`, `Partner`/`Commission`, `WebhookEndpoint`) est fige dans `docs/architecture/adr/0010-marketplace-plugin-permissions-billing-webhooks.md`.
 
 Un manifeste plugin devra declarer :
 
