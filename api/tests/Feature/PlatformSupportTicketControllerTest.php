@@ -141,6 +141,42 @@ class PlatformSupportTicketControllerTest extends TestCase
         ]);
     }
 
+    public function test_super_admin_can_scope_ticket_list_to_one_company(): void
+    {
+        // PA2-ADM-003 — the company detail page's "Support" panel calls
+        // GET /platform/support-tickets?company_id=... to show only that
+        // client's tickets; make sure the filter actually scopes the list
+        // and does not leak other companies' tickets.
+        $superAdmin = $this->actingAsSuperAdmin();
+
+        $companyA = Company::factory()->create();
+        $employeeA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        Sanctum::actingAs($employeeA);
+        $this->postJson('/api/v1/support-tickets', [
+            'subject' => 'Company A ticket',
+            'category' => 'general',
+            'message' => 'Issue reported by company A.',
+        ])->assertCreated();
+
+        $companyB = Company::factory()->create();
+        $employeeB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
+        Sanctum::actingAs($employeeB);
+        $this->postJson('/api/v1/support-tickets', [
+            'subject' => 'Company B ticket',
+            'category' => 'general',
+            'message' => 'Issue reported by company B.',
+        ])->assertCreated();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        $response = $this->getJson("/api/v1/platform/support-tickets?company_id={$companyA->id}");
+
+        $response->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.subject', 'Company A ticket')
+            ->assertJsonPath('data.0.company.id', $companyA->id);
+    }
+
     public function test_employee_reply_reopens_a_pending_ticket(): void
     {
         $superAdmin = $this->actingAsSuperAdmin();

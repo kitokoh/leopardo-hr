@@ -237,6 +237,55 @@
             </form>
           </section>
 
+          <!-- Support Tickets -->
+          <section class="card overflow-hidden">
+            <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30 flex items-center justify-between gap-3">
+              <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <LifebuoyIcon class="h-5 w-5 text-amber-500" />
+                Support
+                <span v-if="supportSummary.open_count > 0" class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                  {{ supportSummary.open_count }} ouvert{{ supportSummary.open_count > 1 ? 's' : '' }}
+                </span>
+              </h2>
+              <router-link
+                :to="{ name: 'support-tickets', query: { company_id: route.params.id, company_name: health?.company?.name || '' } }"
+                class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400"
+              >
+                Voir tous les tickets
+              </router-link>
+            </div>
+
+            <div class="p-6">
+              <div v-if="isSupportLoading" class="flex h-24 items-center justify-center">
+                <div class="h-8 w-8 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+              </div>
+              <div v-else-if="supportTickets.length === 0" class="flex flex-col items-center justify-center gap-2 py-6 text-center">
+                <CheckBadgeIcon class="h-8 w-8 text-emerald-500/50" />
+                <p class="text-sm font-medium text-slate-500">Aucun ticket de support pour ce client.</p>
+              </div>
+              <ul v-else class="space-y-3">
+                <li
+                  v-for="ticket in supportTickets"
+                  :key="ticket.id"
+                  class="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/30"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ ticket.subject }}</p>
+                    <span :class="['shrink-0 rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', ticketPriorityClass(ticket.priority)]">
+                      {{ ticket.priority }}
+                    </span>
+                  </div>
+                  <div class="mt-2 flex items-center justify-between">
+                    <span :class="['rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', ticketStatusClass(ticket.status)]">
+                      {{ ticket.status }}
+                    </span>
+                    <span class="text-[10px] font-semibold text-slate-400">{{ ticket.messages_count }} message{{ ticket.messages_count > 1 ? 's' : '' }}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+
           <!-- System Info -->
           <section class="card bg-slate-900 text-white border-none shadow-premium overflow-hidden relative">
             <div class="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
@@ -301,7 +350,8 @@ import {
   ClipboardDocumentCheckIcon,
   AcademicCapIcon,
   GlobeAltIcon,
-  DevicePhoneMobileIcon
+  DevicePhoneMobileIcon,
+  LifebuoyIcon
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
@@ -332,6 +382,13 @@ const isFeaturesLoading = ref(false)
 const isSavingFeatures = ref(false)
 const featuresForm = ref({})
 const originalFeatures = ref({})
+
+// PA2-ADM-003: support tickets summary for this company, so an admin
+// looking at a company's file sees its support activity/risk without
+// having to jump to the global support center and filter manually.
+const isSupportLoading = ref(false)
+const supportTickets = ref([])
+const supportSummary = ref({ open_count: 0 })
 
 const scoreColor = computed(() => {
   if (healthScore.value >= 75) return 'green'
@@ -367,6 +424,28 @@ async function loadCompany() {
     errorMessage.value = 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.'
   } finally {
     isLoading.value = false
+  }
+
+  await loadSupportTickets()
+}
+
+async function loadSupportTickets() {
+  isSupportLoading.value = true
+
+  try {
+    const response = await api.get('/platform/support-tickets', {
+      params: { company_id: route.params.id, per_page: 5 },
+    })
+    supportTickets.value = response.data?.data || []
+    const counts = response.data?.meta?.status_counts || {}
+    supportSummary.value = {
+      open_count: (counts.open || 0) + (counts.pending || 0),
+    }
+  } catch (error) {
+    console.error('Failed to load support tickets for company:', error)
+    supportTickets.value = []
+  } finally {
+    isSupportLoading.value = false
   }
 }
 
@@ -493,6 +572,26 @@ function formatFeatureName(key) {
     cabinet: 'Placard Numérique',
   }
   return names[key] || key.toUpperCase()
+}
+
+function ticketPriorityClass(priority) {
+  const classes = {
+    urgent: 'border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300',
+    high: 'border-orange-300 bg-orange-50 text-orange-700 dark:bg-orange-950/30 dark:text-orange-300',
+    normal: 'border-slate-200 bg-slate-50 text-slate-600 dark:bg-slate-900/40 dark:text-slate-300',
+    low: 'border-slate-200 bg-slate-50 text-slate-400 dark:bg-slate-900/40 dark:text-slate-500',
+  }
+  return classes[priority] || classes.normal
+}
+
+function ticketStatusClass(status) {
+  const classes = {
+    open: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    resolved: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    closed: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+  }
+  return classes[status] || classes.closed
 }
 
 function getFeatureIcon(key) {
