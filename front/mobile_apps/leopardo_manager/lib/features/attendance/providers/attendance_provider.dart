@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
+import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
@@ -325,6 +326,19 @@ final managerAttendanceTodayProvider =
     FutureProvider.autoDispose<List<AttendanceLog>>((ref) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return repo.getManagerAttendanceToday();
+});
+
+/// PA2-ATT-005: manager day-detail drill-down for a single employee.
+/// `autoDispose` so the cached detail is not kept around after the sheet is
+/// closed (avoids showing a stale detail if the manager reopens the same
+/// employee later in the session).
+final employeeDayDetailProvider =
+    FutureProvider.autoDispose.family<EmployeeDayDetail, int>((
+  ref,
+  employeeId,
+) async {
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return repo.getEmployeeDayDetail(employeeId);
 });
 
 final managerAnomaliesProvider =

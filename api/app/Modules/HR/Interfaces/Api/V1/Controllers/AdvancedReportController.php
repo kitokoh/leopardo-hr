@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Recruitment\Domain\Models\Applicant;
+use App\Modules\HR\Domain\Contracts\ApplicantPipelineReaderInterface;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
@@ -20,6 +20,10 @@ use Illuminate\Http\Request;
  */
 class AdvancedReportController extends Controller
 {
+    public function __construct(
+        private readonly ApplicantPipelineReaderInterface $applicantPipelineReader,
+    ) {}
+
     public function recruitmentPipeline(Request $request): JsonResponse
     {
         /** @var Employee $user */
@@ -28,12 +32,7 @@ class AdvancedReportController extends Controller
             abort(403);
         }
 
-        $companyId = $user->company_id;
-
-        $pipeline = Applicant::where('company_id', $companyId)
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status');
+        $pipeline = $this->applicantPipelineReader->countByStatus((int) $user->company_id);
 
         return response()->json(['data' => $pipeline]);
     }
