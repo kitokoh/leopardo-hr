@@ -13,6 +13,8 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0005](0005-clean-architecture-modules.md) | Acceptee | Adoption de la Clean Architecture / decoupage en modules DDD sous `api/app/Modules/` |
 | [0006](0006-auth-in-core.md) | Acceptee | Auth dans `app/Core/Auth/` plutot qu'un module, pour eviter les dependances circulaires |
 | [0007](0007-progressive-migration-strategy.md) | Acceptee | Strategie de migration progressive flat -> modules DDD (skeleton, cablage, nettoyage) |
+| [0008](0008-payment-consent-signature-model.md) | Acceptee | Modele de consentement/signature de paiement, sans PKI premature |
+| [0009](0009-ai-agent-tool-contracts-and-human-validation.md) | Acceptee | Contrats d'outils pour l'agent IA : permissions RBAC, audit et validation humaine avant toute ecriture |
 
 ## Format
 
