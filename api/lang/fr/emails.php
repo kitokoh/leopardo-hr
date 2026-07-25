@@ -96,4 +96,7 @@ return [
     'regards' => 'Cordialement,',
     'team_signature' => 'L\'équipe :company',
     'footer_note' => 'Si vous n\'avez pas demandé cette action, ignorez cet email.',
+
+    // Communication (PA2-COMM-007 email transactionnel generique)
+    'communication_unsubscribe_link' => 'Gerer mes preferences de notification',
 ];

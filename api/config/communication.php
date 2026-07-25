@@ -33,6 +33,24 @@ return [
         'whatsapp' => (int) env('COMMUNICATION_WHATSAPP_MONTHLY_QUOTA', 0),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email provider retry (PA2-COMM-007)
+    |--------------------------------------------------------------------------
+    |
+    | Bounded caller-side retry applied by `CommunicationService` when the
+    | configured email provider is `mail` (`MailMessageProvider`). A
+    | transient SMTP/API error is retried up to `max_attempts` times with
+    | exponential backoff starting at `base_delay_ms`, before the dispatch
+    | is recorded as a final `failed` audit event.
+    |
+    */
+
+    'email_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_EMAIL_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_EMAIL_RETRY_BASE_DELAY_MS', 500),
+    ],
+
     'public_metadata_keys' => [
         'absence_id',
         'attendance_log_id',
@@ -90,6 +108,18 @@ return [
             'title_key' => 'notifications.payroll_ready_title',
             'body_key' => 'notifications.payroll_ready_body',
         ],
+        'bulk_payment_completed' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.bulk_payment_completed_title',
+            'body_key' => 'notifications.bulk_payment_completed_body',
+            'vars' => ['succeeded', 'total', 'failed'],
+        ],
+        'bulk_payment_completed_with_errors' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.bulk_payment_completed_with_errors_title',
+            'body_key' => 'notifications.bulk_payment_completed_with_errors_body',
+            'vars' => ['succeeded', 'total', 'failed'],
+        ],
         'security_alert' => [
             'category' => 'security',
             'title_key' => 'notifications.security_alert_title',
@@ -130,6 +160,17 @@ return [
             'category' => 'payroll',
             'title' => 'Réception d’avance confirmée',
             'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
+        ],
+        // PA2-PAY-015 — employee dispute ("reclamation")
+        'salary_advance_disputed' => [
+            'category' => 'payroll',
+            'title' => 'Litige sur une avance sur salaire',
+            'body' => 'L’employé conteste avoir reçu le paiement de son avance sur salaire tel que déclaré. Merci de vérifier et de résoudre le litige.',
+        ],
+        'salary_advance_dispute_resolved' => [
+            'category' => 'payroll',
+            'title' => 'Litige sur l’avance résolu',
+            'body' => 'Le litige concernant votre avance sur salaire a été résolu par votre manager.',
         ],
         'attendance_auto_closed' => [
             'category' => 'hr',

@@ -491,6 +491,31 @@ class _SummaryCard extends StatelessWidget {
               value: summary.advances,
               color: AppColors.warning,
             ),
+            // PA2-PAY-010: team-wide overtime hours/pay, satisfying the
+            // dashboard's "heures supp" acceptance criterion at a glance,
+            // only shown when overtime was actually recorded this cycle.
+            if (summary.overtimeHours > 0) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Heures supp (${summary.overtimeHours.toStringAsFixed(1)}h)',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    summary.overtimePay.toStringAsFixed(0),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.info,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 12),
             ...summary.items.take(5).map(
                   (item) => Padding(
@@ -498,11 +523,24 @@ class _SummaryCard extends StatelessWidget {
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            item.employeeName,
-                            style: AppTypography.caption.copyWith(
-                              color: MobileSurface.secondary,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.employeeName,
+                                style: AppTypography.caption.copyWith(
+                                  color: MobileSurface.secondary,
+                                ),
+                              ),
+                              if (item.overtimeHours > 0)
+                                Text(
+                                  '+${item.overtimeHours.toStringAsFixed(1)}h supp',
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.info,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                         Text(

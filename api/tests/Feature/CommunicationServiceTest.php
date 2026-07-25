@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -181,6 +182,91 @@ class CommunicationServiceTest extends TestCase
     }
 
     /**
+     * PA2-COMM-007 — a transient email transport failure is retried up to
+     * `communication.email_retry.max_attempts` before recording a final
+     * `failed` audit event, instead of failing on the very first attempt.
+     */
+    public function test_email_dispatch_retries_on_transient_failure_then_succeeds(): void
+    {
+        config()->set('communication.email_retry.base_delay_ms', 0);
+        $employee = $this->employee();
+
+        $attempts = 0;
+        Mail::shouldReceive('to')
+            ->times(2)
+            ->andReturnUsing(function () use (&$attempts) {
+                $attempts++;
+                $pending = \Mockery::mock();
+                $pending->shouldReceive('send')->andReturnUsing(function () use ($attempts): void {
+                    if ($attempts < 2) {
+                        throw new RuntimeException('SMTP timeout');
+                    }
+                });
+
+                return $pending;
+            });
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['email']);
+
+        $this->assertSame('queued', $result['results']['email']);
+        $this->assertSame(2, $attempts);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'email',
+            'status' => 'queued',
+        ]);
+    }
+
+    /**
+     * PA2-COMM-007 — once every retry attempt has failed, the dispatch is
+     * recorded as a final `failed` audit event with the underlying error.
+     */
+    public function test_email_dispatch_records_failed_status_after_exhausting_retries(): void
+    {
+        config()->set('communication.email_retry.base_delay_ms', 0);
+        config()->set('communication.email_retry.max_attempts', 2);
+        $employee = $this->employee();
+
+        Mail::shouldReceive('to')
+            ->times(2)
+            ->andReturnUsing(function () {
+                $pending = \Mockery::mock();
+                $pending->shouldReceive('send')->andThrow(new RuntimeException('SMTP connection refused'));
+
+                return $pending;
+            });
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['email']);
+
+        $this->assertSame('failed', $result['results']['email']);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'email',
+            'status' => 'failed',
+            'error_message' => 'SMTP connection refused',
+        ]);
+    }
+
+    /**
+     * PA2-COMM-007 — an employee whose address previously bounced (stamped
+     * by `EmailBounceWebhookController`) is skipped instead of retried.
+     */
+    public function test_email_dispatch_skips_previously_bounced_address(): void
+    {
+        Mail::fake();
+        $employee = $this->employee();
+        $employee->forceFill([
+            'email_bounced_at' => now(),
+            'email_bounce_reason' => 'hard_bounce',
+        ])->save();
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['email']);
+
+        $this->assertSame('skipped', $result['results']['email']);
+        Mail::assertNothingSent();
+    }
+
+    /**
      * PA2-COMM-006 — title/body must be resolved from the localizable
      * `notifications.*` translation keys using the employee's own
      * preferred locale, not a single hardcoded French string.
@@ -274,5 +360,3 @@ class CommunicationServiceTest extends TestCase
         ]);
     }
 }
-
-
