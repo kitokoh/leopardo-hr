@@ -9,6 +9,7 @@ import {
   useScrollReveal,
 } from '@/modules/vitrine';
 import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/data/currency';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 import {
@@ -53,6 +54,7 @@ type FaqItem = {
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
   plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
+  currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
   faq: { title: string; subtitle: string; badge: string; all: string; categories: string[]; items: FaqItem[] };
@@ -82,6 +84,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
       trialNote: '30 jours offerts · Aucune CB requise',
+    },
+    currency: {
+      label: 'Afficher les prix en',
+      approx: 'Conversion approximative depuis le prix de référence en EUR ; le tarif contractuel reste fixé en EUR.',
     },
     trust: {
       items: [
@@ -189,6 +195,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodAnnual: '/month billed annually',
       trialNote: '30 days free · No credit card required',
     },
+    currency: {
+      label: 'Show prices in',
+      approx: 'Approximate conversion from the EUR reference price; the contractual price stays denominated in EUR.',
+    },
     trust: {
       items: [
         'Free plan — no credit card',
@@ -295,6 +305,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodAnnual: '/ay yıllık faturalama',
       trialNote: '30 gün ücretsiz · Kredi kartı gerekmez',
     },
+    currency: {
+      label: 'Fiyatları şu para birimiyle göster',
+      approx: 'EUR referans fiyatından yaklaşık dönüşüm; sözleşme tutarı EUR olarak kalır.',
+    },
     trust: {
       items: [
         'Ücretsiz plan — kredi kartı yok',
@@ -400,6 +414,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
       trialNote: '30 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
+    },
+    currency: {
+      label: 'عرض الأسعار بعملة',
+      approx: 'تحويل تقريبي من السعر المرجعي باليورو؛ يبقى السعر التعاقدي محددًا باليورو.',
     },
     trust: {
       items: [
@@ -605,6 +623,10 @@ export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(true);
   const [openFaqId, setOpenFaqId] = useState<string | null>('free-plan');
   const [faqCategory, setFaqCategory] = useState<string | null>(null);
+  // PA2-MKT-003: let PME prospects in DZ/MA/TN/TR/CA/US see an approximate
+  // price in their own currency instead of only EUR. The contractual price
+  // stays EUR (see currency.ts docblock); this is a display convenience.
+  const [currencyOption, setCurrencyOption] = useState<CurrencyOption>(DEFAULT_CURRENCY_OPTION);
 
   const { locale, direction } = useVitrineLocale();
   const copy = pricingPageCopy[locale] ?? pricingPageCopy.fr;
@@ -614,6 +636,9 @@ export default function PricingPage() {
   function showsCurrency(price: string) {
     return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(price);
   }
+
+  const isEurSelected = currencyOption.currency === 'EUR';
+  const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
     // Free plan → direct account creation, no payment
@@ -737,6 +762,33 @@ export default function PricingPage() {
             </p>
           </div>
 
+          {/* PA2-MKT-003: currency/country selector for approximate local pricing */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <label className="flex items-center gap-2 rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-sm text-slate-600 dark:text-slate-300">
+              <span className="font-medium">{copy.currency.label}</span>
+              <select
+                value={currencyOption.country}
+                onChange={(event) => {
+                  const next = CURRENCY_OPTIONS.find((o) => o.country === event.target.value);
+                  if (next) setCurrencyOption(next);
+                }}
+                className="bg-transparent outline-none font-semibold"
+                aria-label={copy.currency.label}
+              >
+                {CURRENCY_OPTIONS.map((option) => (
+                  <option key={option.country} value={option.country}>
+                    {option.label[locale] ?? option.label.fr}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {!isEurSelected && (
+            <p className="text-center text-xs text-slate-400 dark:text-slate-500 mb-8 max-w-md mx-auto">
+              {copy.currency.approx}
+            </p>
+          )}
+
           {/* Billing toggle */}
           <div className="flex items-center justify-center gap-4 mb-14">
             <span className={`text-sm font-semibold transition-colors ${!isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
@@ -833,9 +885,11 @@ export default function PricingPage() {
                           </span>
                         ) : hasNumericPrice ? (
                           <>
-                            <span className="text-lg font-bold text-slate-500 dark:text-slate-400">EUR</span>
+                            <span className="text-lg font-bold text-slate-500 dark:text-slate-400">
+                              {isEurSelected ? 'EUR' : currencyOption.currency}
+                            </span>
                             <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                              {displayPrice}
+                              {isEurSelected ? displayPrice : (convertedPrice(displayPrice) ?? displayPrice)}
                             </span>
                           </>
                         ) : (
@@ -855,10 +909,15 @@ export default function PricingPage() {
                           </p>
                           {isAnnual && (
                             <p className="text-xs text-slate-400 dark:text-slate-600">
-                              <span className="line-through">EUR {plan.price}</span>
+                              <span className="line-through">
+                                {isEurSelected ? 'EUR' : currencyOption.currency} {isEurSelected ? plan.price : (convertedPrice(plan.price) ?? plan.price)}
+                              </span>
                               {' '}
                               <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{copy.plans.savings}</span>
                             </p>
+                          )}
+                          {!isEurSelected && (
+                            <p className="text-xs text-slate-400 dark:text-slate-600">≈ EUR {displayPrice}</p>
                           )}
                         </div>
                       ) : null}
