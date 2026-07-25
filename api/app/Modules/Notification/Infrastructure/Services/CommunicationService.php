@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Contracts\Communication\MessageProviderInterface;
+use App\Contracts\Communication\RetryableMessageProviderInterface;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\SendPushNotificationJob;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;
-use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use App\Modules\Notification\Infrastructure\Services\Providers\MailMessageProvider;
 use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class CommunicationService
@@ -292,8 +292,7 @@ class CommunicationService
         try {
             $status = match ($channel) {
                 'push' => $this->sendPush($employee, $title, $body, $metadata),
-                'email' => $this->sendEmail($employee, $title, $body),
-                'sms', 'whatsapp' => $this->providerFor($channel)->send($employee, $title, $body, $metadata),
+                'email', 'sms', 'whatsapp' => $this->dispatchWithRetry($this->providerFor($channel), $employee, $title, $body, $metadata),
                 default => 'skipped',
             };
 
@@ -322,24 +321,57 @@ class CommunicationService
         return 'queued';
     }
 
-    private function sendEmail(Employee $employee, string $title, string $body): string
-    {
-        $email = $employee->email ?? null;
-
-        if (is_string($email) === false || $email === '') {
-            return 'skipped';
+    /**
+     * PA2-COMM-007 - Bounded caller-side retry for providers that opt in via
+     * `RetryableMessageProviderInterface` (currently `MailMessageProvider`).
+     * Providers that do not implement it (audit fallback, WhatsApp Cloud
+     * API) are called exactly once, unchanged from prior behaviour.
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    private function dispatchWithRetry(
+        MessageProviderInterface $provider,
+        Employee $employee,
+        string $title,
+        string $body,
+        array $metadata
+    ): string {
+        if (! $provider instanceof RetryableMessageProviderInterface) {
+            return $provider->send($employee, $title, $body, $metadata);
         }
 
-        Mail::raw($body, static function ($message) use ($email, $title): void {
-            $message->to($email)->subject($title);
-        });
+        $maxAttempts = $provider->maxAttempts();
+        $lastException = null;
 
-        return 'queued';
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                return $provider->send($employee, $title, $body, $metadata);
+            } catch (Throwable $exception) {
+                $lastException = $exception;
+
+                if ($attempt < $maxAttempts) {
+                    $delayMs = $provider->retryDelayMs($attempt);
+
+                    if ($delayMs > 0) {
+                        usleep($delayMs * 1000);
+                    }
+                }
+            }
+        }
+
+        throw $lastException;
     }
 
     private function providerFor(string $channel): MessageProviderInterface
     {
         $configured = config('communication.providers.'.$channel, 'audit');
+
+        if ($channel === 'email' && $configured === 'mail') {
+            return new MailMessageProvider(
+                (int) config('communication.email_retry.max_attempts', 3),
+                (int) config('communication.email_retry.base_delay_ms', 500),
+            );
+        }
 
         if ($configured !== 'audit') {
             Log::warning('Communication provider not implemented yet, falling back to audit-only provider', [
@@ -378,7 +410,3 @@ class CommunicationService
         ]);
     }
 }
-
-
-
-

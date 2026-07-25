@@ -100,6 +100,38 @@ class PayrollCycleController extends Controller
         ]);
     }
 
+    /**
+     * PA2-PAY-003 — GET /payroll/cycles/preview: lets a manager preview the
+     * resulting period and an estimated payroll total for a candidate pay
+     * cycle rule (journalier/hebdomadaire/mensuel, pay day, week start)
+     * before committing it via PUT /payroll/cycle-settings. Read-only, does
+     * not persist anything.
+     */
+    public function preview(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $company = $actor->company;
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        $overrides = $request->validate([
+            'pay_cycle' => ['sometimes', 'string', 'in:daily,weekly,monthly'],
+            'pay_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
+            'week_start' => ['sometimes', 'integer', 'min:1', 'max:7'],
+        ]);
+
+        return response()->json([
+            'data' => $this->cycleService->previewCycle($company, $overrides),
+        ]);
+    }
+
     public function current(Request $request): JsonResponse
     {
         /** @var Employee $actor */

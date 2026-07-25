@@ -255,6 +255,8 @@ trait CreatesMvpSchema
             $table->timestampTz('locked_until')->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('email_verified_at')->nullable();
+            $table->timestampTz('email_bounced_at')->nullable();
+            $table->string('email_bounce_reason', 255)->nullable();
             $table->json('extra_data')->nullable();
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
