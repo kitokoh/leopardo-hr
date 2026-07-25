@@ -252,4 +252,81 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get aiChatErrorMessage =>
       'Erreur : impossible de contacter l assistant.';
+
+  @override
+  String get authBackTooltip => 'Retour';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'Connexion employe';
+
+  @override
+  String get authManagerLoginSubtitle => 'Connexion Manager / RH';
+
+  @override
+  String get authEmailProfessionalLabel => 'Email professionnel';
+
+  @override
+  String get authEmailLabel => 'Email';
+
+  @override
+  String get authEmailRequired => 'Email obligatoire';
+
+  @override
+  String get authEmailInvalid => 'Email invalide';
+
+  @override
+  String get authPasswordLabel => 'Mot de passe';
+
+  @override
+  String get authPasswordRequired => 'Mot de passe obligatoire';
+
+  @override
+  String get authPasswordTooShort => 'Mot de passe trop court';
+
+  @override
+  String get authContinueWithGoogle => 'Continuer avec Google';
+
+  @override
+  String get authActivateInvitation => 'Activer mon invitation';
+
+  @override
+  String get authPersonalAccountLink => 'Compte perso';
+
+  @override
+  String get authActivateManagerAccess => 'Activer mon acces manager';
+
+  @override
+  String get commonOr => 'ou';
+
+  @override
+  String get authTryDemoAccount => 'Tester avec un compte demo';
+
+  @override
+  String get platformLoginTitle => 'Leopardo Platform';
+
+  @override
+  String get platformLoginSubtitle =>
+      'Cockpit mobile reserve a l administration de la plateforme.';
+
+  @override
+  String get platformLogin2faNotice =>
+      'Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.';
+
+  @override
+  String get platformLoginEmailLabel => 'Email super-admin';
+
+  @override
+  String get platformLoginEmailRequired => 'Email requis';
+
+  @override
+  String get platformLoginPasswordRequired => 'Mot de passe requis';
+
+  @override
+  String get platformLogin2faLabel => 'Code 2FA si active';
+
+  @override
+  String get platformLoginSubmitting => 'Connexion...';
+
+  @override
+  String get platformLoginUseDemoAccount => 'Utiliser le compte demo';
 }

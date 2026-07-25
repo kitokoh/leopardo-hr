@@ -249,4 +249,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiChatErrorMessage => 'Error: unable to reach the assistant.';
+
+  @override
+  String get authBackTooltip => 'Back';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'Employee sign-in';
+
+  @override
+  String get authManagerLoginSubtitle => 'Manager / HR sign-in';
+
+  @override
+  String get authEmailProfessionalLabel => 'Work email';
+
+  @override
+  String get authEmailLabel => 'Email';
+
+  @override
+  String get authEmailRequired => 'Email required';
+
+  @override
+  String get authEmailInvalid => 'Invalid email';
+
+  @override
+  String get authPasswordLabel => 'Password';
+
+  @override
+  String get authPasswordRequired => 'Password required';
+
+  @override
+  String get authPasswordTooShort => 'Password too short';
+
+  @override
+  String get authContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get authActivateInvitation => 'Activate my invitation';
+
+  @override
+  String get authPersonalAccountLink => 'Personal account';
+
+  @override
+  String get authActivateManagerAccess => 'Activate my manager access';
+
+  @override
+  String get commonOr => 'or';
+
+  @override
+  String get authTryDemoAccount => 'Try a demo account';
+
+  @override
+  String get platformLoginTitle => 'Leopardo Platform';
+
+  @override
+  String get platformLoginSubtitle =>
+      'Mobile cockpit reserved for platform administration.';
+
+  @override
+  String get platformLogin2faNotice =>
+      'This account protects the platform: enter the 2FA code from your authenticator app.';
+
+  @override
+  String get platformLoginEmailLabel => 'Super-admin email';
+
+  @override
+  String get platformLoginEmailRequired => 'Email required';
+
+  @override
+  String get platformLoginPasswordRequired => 'Password required';
+
+  @override
+  String get platformLogin2faLabel => '2FA code if enabled';
+
+  @override
+  String get platformLoginSubmitting => 'Signing in...';
+
+  @override
+  String get platformLoginUseDemoAccount => 'Use the demo account';
 }
