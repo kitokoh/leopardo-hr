@@ -30,6 +30,6 @@ return [
     'company_announcement_title' => 'إعلان الشركة',
     'company_announcement_body' => 'تم نشر إعلان جديد في شركتك.',
 
-    'conversation_message_received_title' => 'رسالة جديدة من :author',
-    'conversation_message_received_body' => 'رد :author في ":thread".',
+    'payment_document_ready_title' => 'المستند جاهز',
+    'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
 ];
