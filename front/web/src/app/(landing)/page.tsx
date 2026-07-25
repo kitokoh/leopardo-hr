@@ -42,7 +42,7 @@ export default function LandingPage() {
   const [isDark, setIsDark] = useState(false);
   const toggleDarkMode = () => setIsDark((d) => !d);
   useScrollReveal();
-  const { locale, copy } = useVitrineLocale();
+  const { locale, copy, direction } = useVitrineLocale();
 
   const features = getFeatures(locale);
   const faqItems = getFaqItems(locale);
@@ -50,6 +50,7 @@ export default function LandingPage() {
 
   return (
     <div
+      dir={direction}
       className={`min-h-screen transition-colors duration-500 ${
         isDark ? 'dark bg-slate-950' : 'bg-white'
       }`}

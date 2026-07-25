@@ -525,14 +525,14 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
 export default function DownloadPage() {
   const [isDark, setIsDark] = useState(false);
   useScrollReveal();
-  const { locale } = useVitrineLocale();
+  const { locale, direction } = useVitrineLocale();
   const c = copy[locale as AppLocale] ?? copy.fr;
   const platforms = platformLabels[locale as AppLocale] ?? platformLabels.fr;
   const mobileApps = mobileAppsData[locale as AppLocale] ?? mobileAppsData.fr;
   const kiosk = kioskCopy[locale as AppLocale] ?? kioskCopy.fr;
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
+    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
       <section className="relative pt-32 pb-20 overflow-hidden">
