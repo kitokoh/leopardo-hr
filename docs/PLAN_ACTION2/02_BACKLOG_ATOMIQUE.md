@@ -33,7 +33,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-ADM-001 | P0 | Login admin premium + demo | `front/admin-dashboard` | design moderne, bouton demo, erreurs auth propres, logout clair |
+| PA2-ADM-001 | P0 | Fait (PR #742, durci par `9536c563`; audit 2026-07-25, `20_AUDIT_STATUT_PA2_ADM_001.md`): design moderne, bouton demo, erreurs auth, logout dedie, deja sous test e2e | `front/admin-dashboard` | FAIT: design moderne, bouton demo, erreurs auth propres, logout clair |
 | PA2-ADM-002 | P0 | Console creation client | `front/admin-dashboard`, API | workflow creation client identique mobile admin, validation pays/devise, etat trial/active |
 | PA2-ADM-003 | P0 | Fiche entreprise actionnable | `front/admin-dashboard` | resume, abonnement, activation, activite, risques, liens support |
 | PA2-ADM-004 | P1 | Pipeline CRM platform | `front/admin-dashboard`, API | leads trial/demo/contact visibles, statut, source, note, conversion client |
