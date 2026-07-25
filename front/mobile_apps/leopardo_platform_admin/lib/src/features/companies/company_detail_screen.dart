@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
+import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
 
 import '../../core/platform_providers.dart';
 import '../dashboard/platform_dashboard_screen.dart';
@@ -51,13 +54,58 @@ class CompanyDetailScreen extends ConsumerWidget {
         detail.when(
           data: (data) =>
               _CompanyDetailContent(companyId: companyId, data: data),
-          loading: () => const MobileEmptyLoading(label: 'Chargement client'),
+          loading: () => const _CompanyDetailLoading(),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(
               platformCompanyDetailProvider(companyId),
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CompanyDetailLoading extends StatelessWidget {
+  const _CompanyDetailLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MobilePanel(
+          child: Row(
+            children: [
+              const ShimmerLoading(width: 48, height: 48, borderRadius: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    ShimmerLoading(width: 160, height: 16),
+                    SizedBox(height: 8),
+                    ShimmerLoading(width: 120, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
+        const Row(
+          children: [
+            Expanded(child: ShimmerLoading(width: double.infinity, height: 64)),
+            SizedBox(width: 10),
+            Expanded(child: ShimmerLoading(width: double.infinity, height: 64)),
+          ],
+        ),
+        const SizedBox(height: 18),
+        ShimmerLoading(
+          width: double.infinity,
+          height: 220,
+          borderRadius: 16,
         ),
       ],
     );
@@ -120,7 +168,7 @@ class _CompanyDetailContent extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  MobileStatusPill(label: health.status, color: riskColor),
+                  LeopardoBadge(label: health.status, color: riskColor),
                 ],
               ),
               const SizedBox(height: 16),
@@ -176,6 +224,15 @@ class _CompanyDetailContent extends ConsumerWidget {
                   : AppColors.rh,
             ),
           ],
+        ),
+        const SizedBox(height: 18),
+        const MobileSectionLabel('Reference client'),
+        LeopardoQrCard(
+          data: companyId,
+          title: health.companyName,
+          subtitle:
+              'Identifiant tenant a presenter au support ou scanner sur site pour retrouver ce client instantanement.',
+          copyLabel: 'Copier l\'identifiant',
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Abonnement'),
@@ -242,7 +299,7 @@ class _CompanyDetailContent extends ConsumerWidget {
                 runSpacing: 8,
                 children: data.features.knownModules.map((module) {
                   final enabled = data.features.active[module] == true;
-                  return MobileStatusPill(
+                  return LeopardoBadge(
                     label: module,
                     color: enabled ? AppColors.rh : MobileSurface.disabled,
                     icon: enabled
