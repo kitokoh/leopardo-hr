@@ -1319,6 +1319,28 @@ trait CreatesMvpSchema
             });
         }
 
+        // PA2-PAY-014: bank export status now supports the async
+        // pending -> generating -> generated/failed lifecycle (previously
+        // only generated/sent/confirmed), file_path is nullable while no
+        // file has been produced yet, and error_message records job
+        // failures (see 2026_07_25_000002_make_bank_exports_generation_async.php).
+        if (! Schema::hasTable($this->moduleTable('bank_exports'))) {
+            Schema::create($this->moduleTable('bank_exports'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('payroll_run_id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('format', 20)->default('csv_generic');
+                $table->string('file_path', 500)->nullable();
+                $table->decimal('total_amount', 16, 2)->default(0);
+                $table->unsignedInteger('transfer_count')->default(0);
+                $table->string('status', 20)->default('pending');
+                $table->text('error_message')->nullable();
+                $table->timestampTz('generated_at')->nullable();
+                $table->timestampTz('sent_at')->nullable();
+                $table->timestampsTz();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('payment_batches'))) {
             Schema::create($this->moduleTable('payment_batches'), function (Blueprint $table): void {
                 $table->id();
@@ -1906,6 +1928,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_items"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_batches"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "bank_exports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_documents"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "privacy_requests"'.$cascade);
