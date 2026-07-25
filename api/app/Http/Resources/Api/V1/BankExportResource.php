@@ -20,6 +20,7 @@ class BankExportResource extends JsonResource
             'payroll_run_id' => $this->payroll_run_id,
             'format' => $this->format,
             'file_path' => $this->file_path,
+            'error_message' => $this->error_message,
             'total_amount' => $this->total_amount,
             'transfer_count' => $this->transfer_count,
             'status' => $this->status,
@@ -31,4 +32,3 @@ class BankExportResource extends JsonResource
         ];
     }
 }
-
