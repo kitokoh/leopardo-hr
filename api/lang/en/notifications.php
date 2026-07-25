@@ -30,9 +30,10 @@ return [
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
 
-    'bulk_payment_completed_title' => 'Bulk payment completed (:succeeded/:total)',
-    'bulk_payment_completed_body' => 'The bulk payment was processed successfully: :succeeded of :total payslip(s).',
-
-    'bulk_payment_completed_with_errors_title' => 'Bulk payment completed with errors (:succeeded/:total)',
-    'bulk_payment_completed_with_errors_body' => 'The bulk payment has finished: :succeeded of :total payslip(s) processed successfully, :failed failure(s). Check the audit log for details.',
+    'payment_document_processing_title' => 'Document being prepared',
+    'payment_document_processing_body' => 'Your payment document is being generated. We will notify you as soon as it is ready.',
+    'payment_document_ready_title' => 'Payment document ready',
+    'payment_document_ready_body' => 'Your payment document is now available for download.',
+    'payment_document_failed_title' => 'Payment document unavailable',
+    'payment_document_failed_body' => 'We could not generate your payment document. Our team has been notified; contact your manager if this persists.',
 ];

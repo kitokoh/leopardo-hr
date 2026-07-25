@@ -23,6 +23,8 @@ class NotificationPreferenceResource extends JsonResource
             'push_enabled' => $this->push_enabled,
             'sms_enabled' => $this->sms_enabled,
             'whatsapp_enabled' => $this->whatsapp_enabled,
+            'whatsapp_consent_given' => $this->whatsapp_consent_given,
+            'whatsapp_consent_at' => $this->whatsapp_consent_at?->toIso8601String(),
             'locale' => $this->locale,
             'timezone' => $this->timezone,
             'categories' => $this->categories,
@@ -32,4 +34,3 @@ class NotificationPreferenceResource extends JsonResource
         ];
     }
 }
-
