@@ -61,12 +61,13 @@ return [
         'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
     ],
 
-    'mail_bounce_webhook' => [
-        // PA2-COMM-007 - Shared secret the configured email provider (or a
-        // relay) must send back in the `X-Bounce-Webhook-Secret` header on
-        // every call to POST /api/v1/webhooks/email-bounce. Left empty in
-        // local/test environments, in which case the check is skipped.
-        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
+    'whatsapp' => [
+        // Meta WhatsApp Business Cloud API. When either secret is missing,
+        // `CommunicationService::providerFor('whatsapp')` falls back to the
+        // audit-only provider (PA2-COMM-008) instead of failing dispatch.
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
     ],
 
     'ayrshare' => [
