@@ -3,6 +3,10 @@
 return [
     'task_comment_added_title' => 'Nouveau commentaire sur « :task »',
     'task_comment_added_body' => ':author a ajouté un nouveau commentaire sur une tâche qui vous concerne.',
+    'attendance_geofence_alert_title' => 'Pointage hors zone : :employee',
+    'attendance_geofence_alert_body' => ':employee a :phase hors de la zone de travail attendue (:distance m, rayon autorisé :radius m).',
+    'attendance_geofence_alert_phase_check_in' => 'pointé son arrivée',
+    'attendance_geofence_alert_phase_check_out' => 'pointé son départ',
 
     'generic_title' => 'Notification Leopardo RH',
     'generic_body' => 'Une nouvelle information est disponible dans votre espace.',
@@ -25,4 +29,10 @@ return [
 
     'company_announcement_title' => 'Annonce de l’entreprise',
     'company_announcement_body' => 'Une nouvelle annonce a été publiée dans votre entreprise.',
+
+    'bulk_payment_completed_title' => 'Paiement en masse terminé (:succeeded/:total)',
+    'bulk_payment_completed_body' => 'Le paiement en masse a été traité avec succès : :succeeded bulletin(s) sur :total.',
+
+    'bulk_payment_completed_with_errors_title' => 'Paiement en masse terminé avec erreurs (:succeeded/:total)',
+    'bulk_payment_completed_with_errors_body' => 'Le paiement en masse est terminé : :succeeded bulletin(s) sur :total traité(s) avec succès, :failed échec(s). Consultez le journal d’audit pour le détail.',
 ];

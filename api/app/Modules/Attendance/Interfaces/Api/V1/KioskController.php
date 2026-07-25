@@ -65,6 +65,10 @@ class KioskController extends Controller
         $validated = $request->validate([
             'identifier' => ['required', 'string', 'max:150'],
             'action' => ['nullable', 'in:check_in,check_out'],
+            // PA2-ATT-010: kiosk punches must feed the same multi-event
+            // work_type model as mobile (normal/overtime/break/resume/
+            // mission/travel/training/other), not just plain in/out.
+            'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
         ]);
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
@@ -76,6 +80,7 @@ class KioskController extends Controller
             kiosk: $kiosk,
             identifier: trim($validated['identifier']),
             action: $validated['action'] ?? 'check_in',
+            workType: $validated['work_type'] ?? 'normal',
         );
 
         // REST convention: 201 Created for check_in, 200 OK for check_out
@@ -89,6 +94,8 @@ class KioskController extends Controller
                 'check_in' => optional($log->check_in)->toIso8601String(),
                 'check_out' => optional($log->check_out)->toIso8601String(),
                 'method' => $log->method,
+                'work_type' => $log->work_type,
+                'session_number' => $log->session_number,
                 'status' => $log->status,
             ],
         ], $statusCode);
@@ -142,6 +149,9 @@ class KioskController extends Controller
             'events.*.occurred_at' => ['nullable', 'date'],
             'events.*.external_event_id' => ['nullable', 'string', 'max:100'],
             'events.*.biometric_type' => ['nullable', 'in:fingerprint,face,mixed'],
+            // PA2-ATT-010: offline-synced kiosk events must also carry the
+            // multi-event work_type, same as mobile's offline sync payloads.
+            'events.*.work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
         ]);
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
@@ -313,6 +323,9 @@ class KioskController extends Controller
         $validated = $request->validate([
             'qr_data' => ['required', 'string', 'max:500'],
             'action' => ['nullable', 'in:check_in,check_out'],
+            // PA2-ATT-010: QR-code kiosk punches must also feed the same
+            // multi-event work_type model as mobile.
+            'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
         ]);
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
@@ -323,10 +336,15 @@ class KioskController extends Controller
         $qrPayload = json_decode(base64_decode($validated['qr_data'], true), true);
         $identifier = $qrPayload['employee_id'] ?? $qrPayload['matricule'] ?? $validated['qr_data'];
 
+        $allowedWorkTypes = ['normal', 'overtime', 'break', 'resume', 'mission', 'travel', 'training', 'other'];
+        $qrWorkType = is_array($qrPayload) ? ($qrPayload['work_type'] ?? null) : null;
+        $qrWorkType = in_array($qrWorkType, $allowedWorkTypes, true) ? $qrWorkType : null;
+
         $log = $this->kioskAttendanceService->punch(
             kiosk: $kiosk,
             identifier: (string) $identifier,
             action: $validated['action'] ?? 'check_in',
+            workType: $validated['work_type'] ?? $qrWorkType ?? 'normal',
         );
 
         $action = $validated['action'] ?? 'check_in';
@@ -339,6 +357,8 @@ class KioskController extends Controller
                 'check_in' => optional($log->check_in)->toIso8601String(),
                 'check_out' => optional($log->check_out)->toIso8601String(),
                 'method' => 'qr_code',
+                'work_type' => $log->work_type,
+                'session_number' => $log->session_number,
                 'status' => $log->status,
             ],
         ], $statusCode);

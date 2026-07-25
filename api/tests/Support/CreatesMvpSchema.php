@@ -255,6 +255,8 @@ trait CreatesMvpSchema
             $table->timestampTz('locked_until')->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('email_verified_at')->nullable();
+            $table->timestampTz('email_bounced_at')->nullable();
+            $table->string('email_bounce_reason', 255)->nullable();
             $table->json('extra_data')->nullable();
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
@@ -493,6 +495,11 @@ trait CreatesMvpSchema
             $table->string('payment_reference')->nullable();
             $table->text('payment_note')->nullable();
             $table->timestampTz('employee_confirmed_at')->nullable();
+            $table->text('dispute_reason')->nullable();
+            $table->timestampTz('disputed_at')->nullable();
+            $table->timestampTz('dispute_resolved_at')->nullable();
+            $table->unsignedBigInteger('dispute_resolved_by')->nullable();
+            $table->text('dispute_resolution_note')->nullable();
             $table->string('validation_status', 32)->default('pending');
             $table->text('decision_comment')->nullable();
             $table->unsignedSmallInteger('repayment_months')->default(1);
@@ -1350,6 +1357,28 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('ledger_entries'))) {
+            Schema::create($this->moduleTable('ledger_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('entry_type', 30)->index();
+                $table->decimal('amount', 12, 2);
+                $table->char('currency', 3)->default('DZD');
+                $table->decimal('balance_after', 12, 2);
+                $table->string('description', 500)->nullable();
+                $table->string('source_type', 60)->nullable();
+                $table->unsignedBigInteger('source_id')->nullable();
+                $table->unsignedBigInteger('payment_document_id')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestampTz('created_at')->nullable();
+
+                $table->index(['company_id', 'employee_id', 'created_at']);
+                $table->index(['source_type', 'source_id']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('payment_confirmations'))) {
             Schema::create($this->moduleTable('payment_confirmations'), function (Blueprint $table): void {
                 $table->id();
@@ -1873,6 +1902,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ledger_entries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_items"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_batches"'.$cascade);

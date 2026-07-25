@@ -3,6 +3,10 @@
 return [
     'task_comment_added_title' => 'New comment on ":task"',
     'task_comment_added_body' => ':author added a new comment to a task you are involved in.',
+    'attendance_geofence_alert_title' => 'Out-of-zone punch: :employee',
+    'attendance_geofence_alert_body' => ':employee :phase outside the expected work zone (:distance m from the allowed :radius m radius).',
+    'attendance_geofence_alert_phase_check_in' => 'checked in',
+    'attendance_geofence_alert_phase_check_out' => 'checked out',
 
     'generic_title' => 'Leopardo HR notification',
     'generic_body' => 'New information is available in your space.',
@@ -25,4 +29,10 @@ return [
 
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
+
+    'bulk_payment_completed_title' => 'Bulk payment completed (:succeeded/:total)',
+    'bulk_payment_completed_body' => 'The bulk payment was processed successfully: :succeeded of :total payslip(s).',
+
+    'bulk_payment_completed_with_errors_title' => 'Bulk payment completed with errors (:succeeded/:total)',
+    'bulk_payment_completed_with_errors_body' => 'The bulk payment has finished: :succeeded of :total payslip(s) processed successfully, :failed failure(s). Check the audit log for details.',
 ];

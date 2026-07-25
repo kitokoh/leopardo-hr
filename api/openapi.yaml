@@ -5504,6 +5504,66 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /payroll/cycles/preview:
+    get:
+      tags: ["Payroll"]
+      summary: "Previsualiser un cycle de paie candidat"
+      description: "PA2-PAY-003 - Permet a un manager de previsualiser la periode resultante et un total de paie estime pour une regle de cycle candidate (journalier/hebdomadaire/mensuel, jour de paie, debut de semaine) avant de l'enregistrer via PUT /payroll/cycle-settings. Lecture seule, ne persiste rien."
+      parameters:
+        - in: query
+          name: pay_cycle
+          required: false
+          schema:
+            type: string
+            enum: [daily, weekly, monthly]
+        - in: query
+          name: pay_day
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 31
+        - in: query
+          name: week_start
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 7
+      responses:
+        "200":
+          description: "Previsualisation du cycle candidat"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      settings:
+                        type: object
+                        properties:
+                          pay_cycle: { type: string, enum: [daily, weekly, monthly] }
+                          pay_day: { type: integer }
+                          week_start: { type: integer }
+                      period:
+                        type: object
+                        properties:
+                          start: { type: string, format: date }
+                          end: { type: string, format: date }
+                          label: { type: string }
+                      next_payment_date: { type: string, format: date }
+                      currency: { type: string }
+                      employee_count: { type: integer }
+                      estimated_total_gross: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Error422"
+
   /payroll/mobile-summary:
     get:
       tags: ["Payroll"]
@@ -5531,6 +5591,8 @@ paths:
                           advances: { type: number, format: float }
                           paid: { type: number, format: float }
                           remaining: { type: number, format: float }
+                          overtime_hours: { type: number, format: float }
+                          overtime_pay: { type: number, format: float }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -12541,6 +12603,14 @@ components:
         remaining:
           type: number
           format: float
+        overtime_hours:
+          type: number
+          format: float
+          description: "PA2-PAY-010 - heures supplementaires enregistrees pour le cycle courant (agregation attendance_logs.overtime_hours)."
+        overtime_pay:
+          type: number
+          format: float
+          description: "PA2-PAY-010 - estimation du paiement des heures supplementaires (taux horaire estime x1.5), a titre indicatif pour le dashboard manager."
         pay_slip:
           type: object
           properties:

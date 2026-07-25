@@ -90,9 +90,14 @@
               <WifiIcon class="h-5 w-5 text-white" />
             </span>
             <p class="ml-3 font-medium text-white">
-              <span class="md:hidden">Connexion perdue</span>
+              <span class="md:hidden">{{ realtimeStore.isPolling ? 'Mode secours' : 'Connexion perdue' }}</span>
               <span class="hidden md:inline">
-                Connexion temps réel perdue. Tentative de reconnexion...
+                <template v-if="realtimeStore.isPolling">
+                  Connexion temps réel indisponible. Les notifications continuent d'arriver via actualisation périodique.
+                </template>
+                <template v-else>
+                  Connexion temps réel perdue. Tentative de reconnexion...
+                </template>
               </span>
             </p>
           </div>

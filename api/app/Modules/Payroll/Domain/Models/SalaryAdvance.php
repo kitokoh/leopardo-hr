@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\Auditable;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,11 +29,17 @@ use Illuminate\Support\Carbon;
  * @property array<mixed> $repayment_plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class SalaryAdvance extends Model
 {
-    use BelongsToCompany, HasFactory;
+    // PA2-PAY-001 — every create/manager-approve/mark-paid/employee-confirm
+    // transition writes a company-scoped audit_logs row (old/new dirty
+    // attributes + acting employee, resolved from the current request)
+    // via the shared Auditable trait, matching the ticket's explicit
+    // "audit" acceptance criterion for the double-validation workflow.
+    use Auditable, BelongsToCompany, HasFactory;
 
     protected $table = 'salary_advances';
 
@@ -45,6 +52,9 @@ class SalaryAdvance extends Model
         'payment_declared_at', 'payment_declared_by',
         'payment_reference', 'payment_note',
         'employee_confirmed_at', 'validation_status',
+        // PA2-PAY-015 — employee dispute
+        'dispute_reason', 'disputed_at',
+        'dispute_resolved_at', 'dispute_resolved_by', 'dispute_resolution_note',
     ];
 
     protected $casts = [
@@ -54,6 +64,9 @@ class SalaryAdvance extends Model
         'manager_approved_at' => 'datetime',
         'payment_declared_at' => 'datetime',
         'employee_confirmed_at' => 'datetime',
+        // PA2-PAY-015
+        'disputed_at' => 'datetime',
+        'dispute_resolved_at' => 'datetime',
     ];
 
     /** @return BelongsTo<Employee, $this> */
@@ -66,6 +79,12 @@ class SalaryAdvance extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');
+    }
+
+    /** @return BelongsTo<Employee, $this> */
+    public function disputeResolver(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'dispute_resolved_by');
     }
 
     /**

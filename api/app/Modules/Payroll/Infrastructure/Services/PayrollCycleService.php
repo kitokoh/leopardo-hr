@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -90,16 +91,78 @@ class PayrollCycleService
     }
 
     /**
+     * PA2-PAY-003 — Lets a manager preview the effect of a candidate pay
+     * cycle rule (journalier/hebdomadaire/mensuel, pay day, week start)
+     * before actually saving it via updatePayCycleSettings(). Computes the
+     * resulting period (start/end/label) and an estimated payroll total for
+     * the company's active employees under that candidate rule, without
+     * persisting anything or creating a PayrollRun.
+     *
+     * Unlike updatePayCycleSettings(), omitted keys fall back to the
+     * company's *currently saved* settings rather than being left untouched
+     * on a persisted record, since nothing is written here.
+     *
+     * @param  array{pay_cycle?: string, pay_day?: int, week_start?: int}  $overrides
+     * @return array{
+     *     settings: array{pay_cycle: string, pay_day: int, week_start: int},
+     *     period: array{start: string, end: string, label: string},
+     *     next_payment_date: string,
+     *     currency: string,
+     *     employee_count: int,
+     *     estimated_total_gross: float,
+     * }
+     */
+    public function previewCycle(Company $company, array $overrides = []): array
+    {
+        $settings = $this->candidateSettings($company, $overrides);
+        $now = Carbon::now($company->timezone ?: 'UTC');
+
+        $cycle = match ($settings['pay_cycle']) {
+            'daily' => $this->dailyPeriod($now),
+            'weekly' => $this->weeklyPeriod($now, $settings['week_start']),
+            default => $this->monthlyPeriod($now),
+        };
+
+        $employees = Employee::query()
+            ->where('company_id', $company->id)
+            ->when(Schema::hasColumn('employees', 'status'), function ($query): void {
+                $query->where('status', '!=', 'archived');
+            })
+            ->get();
+
+        $estimatedTotal = $employees->sum(
+            fn (Employee $employee): float => $this->fallbackGrossDue($employee, $settings['pay_cycle'])
+        );
+
+        return [
+            'settings' => $settings,
+            'period' => [
+                'start' => $cycle['start']->toDateString(),
+                'end' => $cycle['end']->toDateString(),
+                'label' => $cycle['label'],
+            ],
+            'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
+            'currency' => $company->currency,
+            'employee_count' => $employees->count(),
+            'estimated_total_gross' => round((float) $estimatedTotal, 2),
+        ];
+    }
+
+    /**
      * @return array{
      *     employee_id: int,
      *     employee_name: string,
+     *     country: string,
      *     period: array{start: string, end: string, label: string, cycle: string},
      *     currency: string,
      *     gross_due: float,
      *     advances: float,
      *     paid: float,
      *     remaining: float,
-     *     pay_slip: array{id: int|null, status: string|null, payroll_run_id: int|null}
+     *     overtime_hours: float,
+     *     overtime_pay: float,
+     *     next_payment_date: string,
+     *     pay_slip: array{id: int|null, status: string|null, payroll_run_id: int|null, receipt_available: bool}
      * }
      */
     public function getEmployeeBalance(Employee $employee): array
@@ -126,6 +189,7 @@ class PayrollCycleService
             'id' => null,
             'status' => null,
             'payroll_run_id' => null,
+            'receipt_available' => false,
         ];
 
         if ($payrollRun !== null) {
@@ -141,16 +205,20 @@ class PayrollCycleService
                     'id' => $paySlip->id,
                     'status' => $paySlip->status,
                     'payroll_run_id' => $payrollRun->id,
+                    'receipt_available' => in_array($paySlip->status, ['validated', 'sent'], true),
                 ];
             }
         }
 
         $advances = $this->cycleAdvances($employee, $cycle['start'], $cycle['end']);
         $remaining = max(0.0, $grossDue - $advances - $paid);
+        $overtimeHours = $this->cycleOvertimeHours($employee, $cycle['start'], $cycle['end']);
+        $overtimePay = $this->estimateOvertimePay($employee, $overtimeHours);
 
         return [
             'employee_id' => $employee->id,
             'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'country' => $company->country,
             'period' => [
                 'start' => $cycle['start']->toDateString(),
                 'end' => $cycle['end']->toDateString(),
@@ -162,6 +230,9 @@ class PayrollCycleService
             'advances' => round($advances, 2),
             'paid' => round($paid, 2),
             'remaining' => round($remaining, 2),
+            'overtime_hours' => round($overtimeHours, 2),
+            'overtime_pay' => round($overtimePay, 2),
+            'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
             'pay_slip' => $paySlipPayload,
         ];
     }
@@ -247,15 +318,20 @@ class PayrollCycleService
                     'label' => $cycle['label'],
                     'cycle' => $settings['pay_cycle'],
                 ],
+                'country' => $company !== null ? $company->country : '',
                 'currency' => $company?->currency ?? 'DZD',
                 'gross_due' => round($grossDue, 2),
                 'advances' => 0.0,
                 'paid' => 0.0,
                 'remaining' => round(max(0.0, $grossDue), 2),
+                'overtime_hours' => 0.0,
+                'overtime_pay' => 0.0,
+                'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
                 'pay_slip' => [
                     'id' => null,
                     'status' => null,
                     'payroll_run_id' => null,
+                    'receipt_available' => false,
                 ],
                 'warning' => 'partial_balance_fallback',
             ];
@@ -299,6 +375,35 @@ class PayrollCycleService
         $fresh = $run->fresh();
 
         return $fresh;
+    }
+
+    /**
+     * PA2-PAY-003 — Same shape as payrollSettings(), but merges the given
+     * overrides on top of the company's persisted settings for preview
+     * purposes. Invalid override values are ignored in favour of the
+     * persisted/default value, matching updatePayCycleSettings()'s validation.
+     *
+     * @param  array{pay_cycle?: string, pay_day?: int, week_start?: int}  $overrides
+     * @return array{pay_cycle: string, pay_day: int, week_start: int}
+     */
+    private function candidateSettings(Company $company, array $overrides): array
+    {
+        $settings = $this->payrollSettings($company);
+
+        if (array_key_exists('pay_cycle', $overrides)
+            && in_array($overrides['pay_cycle'], ['daily', 'weekly', 'monthly'], true)) {
+            $settings['pay_cycle'] = $overrides['pay_cycle'];
+        }
+
+        if (array_key_exists('pay_day', $overrides)) {
+            $settings['pay_day'] = max(1, min((int) $overrides['pay_day'], 31));
+        }
+
+        if (array_key_exists('week_start', $overrides)) {
+            $settings['week_start'] = max(1, min((int) $overrides['week_start'], 7));
+        }
+
+        return $settings;
     }
 
     /**
@@ -406,6 +511,59 @@ class PayrollCycleService
         return (float) $query->sum('amount');
     }
 
+    /**
+     * PA2-PAY-010 — Sum of `attendance_logs.overtime_hours` already recorded
+     * for this employee within the current pay cycle. Attendance is the
+     * source of truth for overtime (computed per punch against the
+     * employee's schedule threshold, see AttendanceService::checkOut()); the
+     * payroll dashboard only aggregates it, it never recomputes overtime
+     * itself.
+     */
+    private function cycleOvertimeHours(Employee $employee, Carbon $start, Carbon $end): float
+    {
+        if (Schema::hasTable('attendance_logs') === false) {
+            return 0.0;
+        }
+
+        return (float) AttendanceLog::query()
+            ->where('employee_id', $employee->id)
+            ->where('company_id', $employee->company_id)
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->sum('overtime_hours');
+    }
+
+    /**
+     * PA2-PAY-010 — Estimated overtime pay for the current cycle, at 1.5x the
+     * employee's estimated hourly rate (same +50% placeholder majoration used
+     * by AttendanceMonthlyReportService::estimatedOvertimeAmount(); this is a
+     * dashboard estimate for the manager, not the legally-validated overtime
+     * premium tiers a country's CountryRulesInterface::overtimeRateTiers()
+     * applies when a payroll run is actually calculated).
+     */
+    private function estimateOvertimePay(Employee $employee, float $overtimeHours): float
+    {
+        if ($overtimeHours <= 0) {
+            return 0.0;
+        }
+
+        return round($overtimeHours * $this->estimatedHourlyRate($employee) * 1.5, 2);
+    }
+
+    private function estimatedHourlyRate(Employee $employee): float
+    {
+        $hourlyRate = (float) ($employee->hourly_rate ?? 0);
+        if ($hourlyRate > 0) {
+            return round($hourlyRate, 2);
+        }
+
+        $salaryBase = (float) ($employee->salary_base ?? 0);
+        if ($salaryBase <= 0) {
+            return 0.0;
+        }
+
+        return round($salaryBase / 173.33, 2);
+    }
+
     /** @return array{start: Carbon, end: Carbon, label: string} */
     private function monthlyPeriod(Carbon $now): array
     {
@@ -436,5 +594,38 @@ class PayrollCycleService
             'end' => $now->copy()->endOfDay(),
             'label' => $now->toDateString(),
         ];
+    }
+
+    /**
+     * Next date the employee should expect to receive their pay for the current cycle.
+     *
+     * For daily/weekly cycles, payment is expected right after the period ends.
+     * For monthly cycles, payment is expected on the configured `pay_day` of the
+     * period-end month (or the last day of that month if `pay_day` overflows it),
+     * bumped forward a day at a time if that date has already passed.
+     *
+     * @param  array{start: Carbon, end: Carbon, label: string}  $cycle
+     * @param  array{pay_cycle: string, pay_day: int, week_start: int}  $settings
+     */
+    private function nextPaymentDate(?Company $company, array $cycle, array $settings): Carbon
+    {
+        $now = Carbon::now($company?->timezone ?: 'UTC');
+
+        if ($settings['pay_cycle'] !== 'monthly') {
+            $candidate = $cycle['end']->copy()->startOfDay();
+
+            return $candidate->isPast() ? $now->copy()->startOfDay() : $candidate;
+        }
+
+        $payDay = min($settings['pay_day'], $cycle['end']->daysInMonth);
+        $candidate = $cycle['end']->copy()->startOfMonth()->addDays($payDay - 1)->startOfDay();
+
+        if ($candidate->isPast()) {
+            $nextMonth = $candidate->copy()->addMonthNoOverflow();
+            $payDayNextMonth = min($settings['pay_day'], $nextMonth->daysInMonth);
+            $candidate = $nextMonth->startOfMonth()->addDays($payDayNextMonth - 1)->startOfDay();
+        }
+
+        return $candidate;
     }
 }
