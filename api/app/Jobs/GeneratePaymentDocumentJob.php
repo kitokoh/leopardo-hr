@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -60,7 +61,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext()];
     }
 
-    public function handle(): void
+    public function handle(CommunicationService $communication): void
     {
         /** @var PaymentDocument|null $document */
         $document = PaymentDocument::query()
@@ -78,6 +79,11 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             'status' => PaymentDocument::STATUS_GENERATING,
             'error_message' => null,
         ]);
+
+        // PA2-COMM-010 — Let the employee know their document is being
+        // prepared instead of leaving the UI to poll silently. Best-effort:
+        // a notification failure must never block PDF generation.
+        $this->notifyDocumentStatus($communication, $document, 'payment_document_processing');
 
         try {
             // Tenant context (search_path + current_company) is already active
@@ -99,15 +105,52 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
                 'generated_at' => now(),
                 'error_message' => null,
             ]);
+
+            // PA2-COMM-010 — Document ready: tell the employee without
+            // blocking the UI (they were never made to wait synchronously).
+            $this->notifyDocumentStatus($communication, $document, 'payment_document_ready');
         } catch (Throwable $e) {
             $document->update([
                 'status' => PaymentDocument::STATUS_FAILED,
                 'error_message' => $e->getMessage(),
             ]);
 
+            $this->notifyDocumentStatus($communication, $document, 'payment_document_failed');
+
             report($e);
 
             throw $e;
+        }
+    }
+
+    /**
+     * PA2-COMM-010 — Best-effort employee notification for a payment
+     * document lifecycle transition (processing / ready / failed). Routed
+     * through the same CommunicationService pipeline as every other
+     * notification so preferences, quiet hours and audit events stay
+     * consistent; a delivery failure here is logged but never rethrown.
+     */
+    private function notifyDocumentStatus(CommunicationService $communication, PaymentDocument $document, string $templateKey): void
+    {
+        if ($document->employee_id === null) {
+            return;
+        }
+
+        try {
+            $employee = $document->employee;
+
+            if ($employee === null) {
+                return;
+            }
+
+            $communication->notifyEmployee($employee, $templateKey, [
+                'category' => 'payroll',
+                'document_type' => $document->document_type,
+                'payroll_run_id' => $document->payroll_run_id,
+                'salary_advance_id' => $document->salary_advance_id,
+            ]);
+        } catch (Throwable $e) {
+            Log::warning("GeneratePaymentDocumentJob: notification '{$templateKey}' failed for document #{$document->id}: {$e->getMessage()}");
         }
     }
 

@@ -30,9 +30,10 @@ return [
     'company_announcement_title' => 'Şirket duyurusu',
     'company_announcement_body' => 'Şirketinizde yeni bir duyuru yayınlandı.',
 
-    'bulk_payment_completed_title' => 'Toplu ödeme tamamlandı (:succeeded/:total)',
-    'bulk_payment_completed_body' => 'Toplu ödeme başarıyla işlendi: :total bordrodan :succeeded tanesi.',
-
-    'bulk_payment_completed_with_errors_title' => 'Toplu ödeme hatalarla tamamlandı (:succeeded/:total)',
-    'bulk_payment_completed_with_errors_body' => 'Toplu ödeme tamamlandı: :total bordrodan :succeeded tanesi başarıyla işlendi, :failed hata oluştu. Ayrıntılar için denetim günlüğünü kontrol edin.',
+    'payment_document_processing_title' => 'Belge hazırlanıyor',
+    'payment_document_processing_body' => 'Ödeme belgeniz oluşturuluyor. Hazır olduğunda size bildireceğiz.',
+    'payment_document_ready_title' => 'Ödeme belgesi hazır',
+    'payment_document_ready_body' => 'Ödeme belgeniz şimdi indirilebilir durumda.',
+    'payment_document_failed_title' => 'Ödeme belgesi kullanılamıyor',
+    'payment_document_failed_body' => 'Ödeme belgeniz oluşturulamadı. Ekibimiz bilgilendirildi; sorun devam ederse yöneticinizle iletişime geçin.',
 ];
