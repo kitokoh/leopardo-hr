@@ -49,7 +49,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
 | `phpstan-baseline.yml` | Manuel | Régénère phpstan-baseline.neon |
-| `lighthouse.yml` | Manuel + schedule | Audit Lighthouse (perf, a11y, SEO) |
+| `lighthouse.yml` | PR/push → front/web + hebdomadaire | Audit Lighthouse (perf, a11y, SEO) + budget d'assets (`front/web/budget.json`), non bloquant (PA2-QA-008) |
 | `owasp-zap.yml` | Manuel | Scan OWASP ZAP (sécurité API) |
 | `k6-load-smoke.yml` | Manuel | Load test k6 |
 | `i18n-enterprise.yml` | PR → shared/i18n | Validation et sync traductions |

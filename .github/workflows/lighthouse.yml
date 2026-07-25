@@ -1,10 +1,39 @@
 name: Lighthouse CI
 
+# PA2-QA-008: run Lighthouse automatically on every change to the vitrine
+# (front/web) instead of manual-only, so score/asset-weight regressions are
+# actually surfaced during review — but deliberately non-blocking
+# (continue-on-error on the audit step) so a score dip on marketing/content
+# pages never blocks an unrelated merge. The signal stays visible in the job
+# log/artifacts/step summary for a human reviewer to act on, same pattern as
+# the non-blocking PHPStan-strict job in architecture-check.yml.
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'front/web/**'
+      - '.github/workflows/lighthouse.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/web/**'
+      - '.github/workflows/lighthouse.yml'
+  schedule:
+    # Weekly baseline even without a front/web change, to catch drift caused
+    # by third-party/CDN content rather than a code change (e.g. a heavier
+    # embed, an unoptimized CMS asset).
+    - cron: "0 6 * * 1"
 
 permissions:
   contents: read
+
+concurrency:
+  group: lighthouse-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   lighthouse:
@@ -35,11 +64,24 @@ jobs:
           sleep 5
 
       - name: Run Lighthouse CI
+        id: lighthouse
+        continue-on-error: true
         uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: './front/web/lighthouserc.json'
+          budgetPath: './front/web/budget.json'
           uploadArtifacts: true
           temporaryPublicStorage: true
+
+      - name: Summarize Lighthouse outcome (non-blocking)
+        if: always()
+        run: |
+          if [ "${{ steps.lighthouse.outcome }}" = "failure" ]; then
+            echo "### :warning: Lighthouse found score/budget regressions" >> "$GITHUB_STEP_SUMMARY"
+            echo "This audit is monitoring-only (PA2-QA-008) and does not block the merge. Review the archived report below before it accumulates into a real regression." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### :white_check_mark: Lighthouse thresholds and asset budgets passed" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Archive Lighthouse reports
         if: always()
