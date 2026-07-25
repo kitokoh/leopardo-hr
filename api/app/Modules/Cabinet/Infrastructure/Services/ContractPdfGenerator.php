@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Infrastructure\Services;
 
+use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\App;
 
-class ContractPdfGenerator
+class ContractPdfGenerator implements ContractDocumentGeneratorInterface
 {
     public function generate(Contract $contract): string
     {
