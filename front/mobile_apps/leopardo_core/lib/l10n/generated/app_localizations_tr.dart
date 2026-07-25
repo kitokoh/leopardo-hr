@@ -245,4 +245,81 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get aiChatErrorMessage => 'Hata: asistana ulasilamadi.';
+
+  @override
+  String get authBackTooltip => 'Geri';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'Calisan girisi';
+
+  @override
+  String get authManagerLoginSubtitle => 'Yonetici / IK girisi';
+
+  @override
+  String get authEmailProfessionalLabel => 'Is e-postasi';
+
+  @override
+  String get authEmailLabel => 'E-posta';
+
+  @override
+  String get authEmailRequired => 'E-posta zorunlu';
+
+  @override
+  String get authEmailInvalid => 'Gecersiz e-posta';
+
+  @override
+  String get authPasswordLabel => 'Sifre';
+
+  @override
+  String get authPasswordRequired => 'Sifre zorunlu';
+
+  @override
+  String get authPasswordTooShort => 'Sifre cok kisa';
+
+  @override
+  String get authContinueWithGoogle => 'Google ile devam et';
+
+  @override
+  String get authActivateInvitation => 'Davetimi etkinlestir';
+
+  @override
+  String get authPersonalAccountLink => 'Kisisel hesap';
+
+  @override
+  String get authActivateManagerAccess => 'Yonetici erisimimi etkinlestir';
+
+  @override
+  String get commonOr => 'veya';
+
+  @override
+  String get authTryDemoAccount => 'Demo hesabini dene';
+
+  @override
+  String get platformLoginTitle => 'Leopardo Platform';
+
+  @override
+  String get platformLoginSubtitle =>
+      'Platform yonetimine ayrilmis mobil kokpit.';
+
+  @override
+  String get platformLogin2faNotice =>
+      'Bu hesap platformu korur: kimlik dogrulama uygulamanizdaki 2FA kodunu girin.';
+
+  @override
+  String get platformLoginEmailLabel => 'Super yonetici e-postasi';
+
+  @override
+  String get platformLoginEmailRequired => 'E-posta zorunlu';
+
+  @override
+  String get platformLoginPasswordRequired => 'Sifre zorunlu';
+
+  @override
+  String get platformLogin2faLabel => 'Etkinse 2FA kodu';
+
+  @override
+  String get platformLoginSubmitting => 'Giris yapiliyor...';
+
+  @override
+  String get platformLoginUseDemoAccount => 'Demo hesabini kullan';
 }
