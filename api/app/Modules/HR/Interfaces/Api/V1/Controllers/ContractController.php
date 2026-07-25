@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
-use App\Modules\Cabinet\Infrastructure\Services\ContractPdfGenerator;
+use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\ContractAmendment;
 use Illuminate\Http\JsonResponse;
@@ -393,7 +393,7 @@ class ContractController extends Controller
         return (new ContractResource($contract))->response();
     }
 
-    public function generatePdf(Request $request, Contract $contract, ContractPdfGenerator $generator)
+    public function generatePdf(Request $request, Contract $contract, ContractDocumentGeneratorInterface $generator)
     {
         /** @var Employee $actor */
         $actor = $request->user();
