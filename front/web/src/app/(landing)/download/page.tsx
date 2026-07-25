@@ -13,6 +13,7 @@ import {
   HardDrive,
   Laptop,
   Monitor,
+  QrCode,
   Shield,
   Smartphone,
   Wifi,
@@ -317,19 +318,22 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',        androidLabel: 'Bientot sur Google Play',
+        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',
+        androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Gestion des equipes, planification des horaires, approbation des demandes et suivi des presences.',        androidLabel: 'Bientot sur Google Play',
+        description: 'Gestion des equipes, planification des horaires, approbation des demandes et suivi des presences.',
+        androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
       {
         slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'Supervision multi-tenant, configuration globale et controle des tenants depuis mobile.',        androidLabel: 'Bientot sur Google Play',
+        description: 'Supervision multi-tenant, configuration globale et controle des tenants depuis mobile.',
+        androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
     ],
@@ -341,19 +345,22 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Mobile attendance, leave requests, payslip access and HR notifications for employees.',        androidLabel: 'Coming soon on Google Play',
+        description: 'Mobile attendance, leave requests, payslip access and HR notifications for employees.',
+        androidLabel: 'Coming soon on Google Play',
         iosLabel: 'Coming soon on App Store',
       },
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Team management, schedule planning, approval workflows and attendance monitoring.',        androidLabel: 'Coming soon on Google Play',
+        description: 'Team management, schedule planning, approval workflows and attendance monitoring.',
+        androidLabel: 'Coming soon on Google Play',
         iosLabel: 'Coming soon on App Store',
       },
       {
         slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'Multi-tenant supervision, global configuration and tenant controls from your mobile.',        androidLabel: 'Coming soon on Google Play',
+        description: 'Multi-tenant supervision, global configuration and tenant controls from your mobile.',
+        androidLabel: 'Coming soon on Google Play',
         iosLabel: 'Coming soon on App Store',
       },
     ],
@@ -365,19 +372,22 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Mobil devam takibi, izin talepleri, odeme belgeleri ve calisan bildirimleri.',        androidLabel: "Google Play'de Yakin Zamanda",
+        description: 'Mobil devam takibi, izin talepleri, odeme belgeleri ve calisan bildirimleri.',
+        androidLabel: "Google Play'de Yakin Zamanda",
         iosLabel: "App Store'da Yakin Zamanda",
       },
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Takim yonetimi, program planlama, onay surecleri ve devam izleme.',        androidLabel: "Google Play'de Yakin Zamanda",
+        description: 'Takim yonetimi, program planlama, onay surecleri ve devam izleme.',
+        androidLabel: "Google Play'de Yakin Zamanda",
         iosLabel: "App Store'da Yakin Zamanda",
       },
       {
         slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'Cok kiracili denetim, global yapilandirma ve mobilden kira kontrolleri.',        androidLabel: "Google Play'de Yakin Zamanda",
+        description: 'Cok kiracili denetim, global yapilandirma ve mobilden kira kontrolleri.',
+        androidLabel: "Google Play'de Yakin Zamanda",
         iosLabel: "App Store'da Yakin Zamanda",
       },
     ],
@@ -389,22 +399,99 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'تسجيل الحضور عبر الجوال وطلبات الإجازة وقسائم الرواتب وإشعارات الموظفين.',        androidLabel: 'قريبًا على Google Play',
+        description: 'تسجيل الحضور عبر الجوال وطلبات الإجازة وقسائم الرواتب وإشعارات الموظفين.',
+        androidLabel: 'قريبًا على Google Play',
         iosLabel: 'قريبًا على App Store',
       },
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'إدارة الفريق وجدولة المواعيد وسير عمل الموافقات ومراقبة الحضور.',        androidLabel: 'قريبًا على Google Play',
+        description: 'إدارة الفريق وجدولة المواعيد وسير عمل الموافقات ومراقبة الحضور.',
+        androidLabel: 'قريبًا على Google Play',
         iosLabel: 'قريبًا على App Store',
       },
       {
         slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'الإشراف متعدد المستأجرين والتكوين العام والتحكم في المستأجرين من الجوال.',        androidLabel: 'قريبًا على Google Play',
+        description: 'الإشراف متعدد المستأجرين والتكوين العام والتحكم في المستأجرين من الجوال.',
+        androidLabel: 'قريبًا على Google Play',
         iosLabel: 'قريبًا على App Store',
       },
     ],
+  },
+};
+
+type KioskCopy = {
+  sectionTitle: string;
+  sectionSubtitle: string;
+  bullets: string[];
+  ctaSetup: string;
+  ctaSetupHref: string;
+  ctaContact: string;
+  ctaContactHref: string;
+  note: string;
+};
+
+const kioskCopy: Record<AppLocale, KioskCopy> = {
+  fr: {
+    sectionTitle: 'Kiosk terrain (borne ZKTeco)',
+    sectionSubtitle: 'Une borne d\'entree biometrie/QR pour les equipes qui pointent sur site, sans smartphone obligatoire.',
+    bullets: [
+      'Pointage par empreinte, visage ou QR/matricule en fallback',
+      'Fonctionne hors-ligne : les pointages sont mis en file locale puis synchronises au retour du reseau',
+      'Bridge desktop local (Python) + interface tactile plein ecran, deployable sur PC ou mini-PC',
+      'Provisionne depuis l\'app manager : code appareil et token de synchronisation generes en quelques secondes',
+    ],
+    ctaSetup: 'Guide d\'installation kiosk',
+    ctaSetupHref: '/docs#kiosk',
+    ctaContact: 'Etre accompagne pour l\'installation',
+    ctaContactHref: '/contact?topic=download-kiosk',
+    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est necessaire.',
+  },
+  en: {
+    sectionTitle: 'Field Kiosk (ZKTeco terminal)',
+    sectionSubtitle: 'A biometric/QR entry kiosk for on-site teams that clock in without a smartphone.',
+    bullets: [
+      'Fingerprint, face, or QR/employee-code fallback punch',
+      'Works offline: punches queue locally and sync automatically once the network is back',
+      'Local desktop bridge (Python) plus a full-screen touch UI, deployable on a PC or mini-PC',
+      'Provisioned from the manager app: device code and sync token generated in seconds',
+    ],
+    ctaSetup: 'Kiosk setup guide',
+    ctaSetupHref: '/docs#kiosk',
+    ctaContact: 'Get help with installation',
+    ctaContactHref: '/contact?topic=download-kiosk',
+    note: 'The kiosk ships with the local bridge source code; no separate hardware to buy beyond a ZKTeco reader or a tablet.',
+  },
+  tr: {
+    sectionTitle: 'Saha kiosku (ZKTeco terminali)',
+    sectionSubtitle: 'Akilli telefonu olmadan sahada yoklama yapan ekipler icin biyometrik/QR giris kiosku.',
+    bullets: [
+      'Parmak izi, yuz veya QR/personel kodu ile yoklama',
+      'Cevrimdisi calisir: yoklamalar yerelde kuyruklanir ve ag donunce otomatik senkronize olur',
+      'Yerel masaustu bridge (Python) ve tam ekran dokunmatik arayuz, PC veya mini PC uzerinde calisir',
+      'Yonetici uygulamasindan saglanir: cihaz kodu ve senkronizasyon token\'i saniyeler icinde uretilir',
+    ],
+    ctaSetup: 'Kiosk kurulum kilavuzu',
+    ctaSetupHref: '/docs#kiosk',
+    ctaContact: 'Kurulum icin destek alin',
+    ctaContactHref: '/contact?topic=download-kiosk',
+    note: 'Kiosk, yerel bridge kaynak kodu ile birlikte gelir; ZKTeco okuyucu veya tablet disinda ayrica donanim satin alinmaz.',
+  },
+  ar: {
+    sectionTitle: 'كشك الميدان (جهاز ZKTeco)',
+    sectionSubtitle: 'كشك دخول بالبصمة/الوجه أو QR للفرق التي تسجل الحضور في الموقع دون الحاجة إلى هاتف ذكي.',
+    bullets: [
+      'تسجيل الحضور بالبصمة أو الوجه أو رمز QR/رقم الموظف كخيار احتياطي',
+      'يعمل بدون إنترنت: يتم تخزين التسجيلات محلياً ومزامنتها تلقائياً عند عودة الشبكة',
+      'جسر مكتبي محلي (Python) وواجهة لمس بملء الشاشة، يعمل على جهاز كمبيوتر أو مصغر',
+      'يتم تجهيزه من تطبيق المدير: رمز الجهاز ورمز المزامنة يتم إنشاؤهما في ثوانٍ',
+    ],
+    ctaSetup: 'دليل تثبيت الكشك',
+    ctaSetupHref: '/docs#kiosk',
+    ctaContact: 'طلب مساعدة للتثبيت',
+    ctaContactHref: '/contact?topic=download-kiosk',
+    note: 'يأتي الكشك مع الكود المصدري للجسر المحلي؛ لا حاجة لشراء جهاز منفصل بخلاف قارئ ZKTeco أو جهاز لوحي.',
   },
 };
 
@@ -442,6 +529,7 @@ export default function DownloadPage() {
   const c = copy[locale as AppLocale] ?? copy.fr;
   const platforms = platformLabels[locale as AppLocale] ?? platformLabels.fr;
   const mobileApps = mobileAppsData[locale as AppLocale] ?? mobileAppsData.fr;
+  const kiosk = kioskCopy[locale as AppLocale] ?? kioskCopy.fr;
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
@@ -658,6 +746,80 @@ export default function DownloadPage() {
               </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Section Kiosk terrain ===== */}
+      <section id="kiosk" className="relative py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-4">
+                <Fingerprint className="w-4 h-4" />
+                {locale === 'fr' ? 'Terrain' : locale === 'ar' ? 'الميدان' : locale === 'tr' ? 'Saha' : 'Field'}
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">{kiosk.sectionTitle}</h2>
+              <p className="text-lg text-slate-500 dark:text-slate-400 mb-8">{kiosk.sectionSubtitle}</p>
+
+              <ul className="space-y-3 mb-8">
+                {kiosk.bullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <Check className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href={kiosk.ctaSetupHref}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                  {kiosk.ctaSetup}
+                </Link>
+                <Link
+                  href={kiosk.ctaContactHref}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-200 text-sm font-bold hover:border-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-400 transition-all"
+                >
+                  {kiosk.ctaContact}
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/60 p-8"
+            >
+              <div className="grid grid-cols-3 gap-4 text-center mb-6">
+                <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
+                  <Fingerprint className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    {locale === 'fr' ? 'Biometrie' : locale === 'ar' ? 'البصمة' : locale === 'tr' ? 'Biyometri' : 'Biometrics'}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
+                  <QrCode className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">QR / ID</p>
+                </div>
+                <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
+                  <WifiOff className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    {locale === 'fr' ? 'Hors-ligne' : locale === 'ar' ? 'دون اتصال' : locale === 'tr' ? 'Cevrimdisi' : 'Offline'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{kiosk.note}</p>
+            </motion.div>
           </div>
         </div>
       </section>
