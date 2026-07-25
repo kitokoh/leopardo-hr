@@ -6,11 +6,12 @@ namespace App\Modules\Onboarding\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 
-class OnboardingQrService
+class OnboardingQrService implements OnboardingQrInterface
 {
     private const TOKEN_VERSION = 1;
 
