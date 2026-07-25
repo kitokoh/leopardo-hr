@@ -107,6 +107,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/salary-advances', [SalaryAdvanceController::class, 'index']);
     Route::post('/salary-advances', [SalaryAdvanceController::class, 'store']);
     Route::get('/salary-advances/{salaryAdvance}', [SalaryAdvanceController::class, 'show'])->whereNumber('salaryAdvance');
+    // PA2-MOB-006: download the supporting document attached to a request.
+    Route::get('/salary-advances/{salaryAdvance}/proof', [SalaryAdvanceController::class, 'downloadProof'])->whereNumber('salaryAdvance');
     Route::put('/salary-advances/{salaryAdvance}/approve', [SalaryAdvanceController::class, 'approve'])->whereNumber('salaryAdvance');
     Route::put('/salary-advances/{salaryAdvance}/reject', [SalaryAdvanceController::class, 'reject'])->whereNumber('salaryAdvance');
     Route::delete('/salary-advances/{salaryAdvance}', [SalaryAdvanceController::class, 'destroy'])->whereNumber('salaryAdvance');
