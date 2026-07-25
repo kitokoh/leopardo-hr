@@ -14,6 +14,7 @@ import {
   TrustedBrands,
   OperationalProofSection,
   LaunchOperatingSystemSection,
+  ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
   HeroProductVisual,
@@ -112,6 +113,9 @@ export default function LandingPage() {
         <TrustedBrands locale={locale} />
         <SocialProofMetrics locale={locale} />
         <OperationalProofSection locale={locale} />
+
+        {/* ─── PRODUCT DEMO VIDEO ─── PA2-MKT-014 */}
+        <ProductDemoVideo locale={locale} />
 
         {/* ─── FEATURES ─── Phase-3 */}
         {/* id="fonctionnalites": PA2-MKT-013 — Footer links here via /#fonctionnalites */}
