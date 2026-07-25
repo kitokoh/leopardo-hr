@@ -96,4 +96,7 @@ return [
     'regards' => 'Saygılarımızla,',
     'team_signature' => ':company ekibi',
     'footer_note' => 'Bu işlemi siz talep etmediyseniz, bu e-postayı dikkate almayın.',
+
+    // Communication (PA2-COMM-007)
+    'communication_unsubscribe_link' => 'Bildirim tercihlerimi yonet',
 ];

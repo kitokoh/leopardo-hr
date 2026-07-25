@@ -42,6 +42,13 @@
       </div>
     </div>
 
+    <!-- Queue / Jobs Observability (PA2-QA-006) -->
+    <QueueObservabilityCard
+      :data="queueObservability"
+      :loading="isLoadingObservability"
+      @refresh="loadQueueObservability"
+    />
+
     <!-- System Status Overview -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up">
       <SystemStatusCard
@@ -225,9 +232,11 @@ import {
   BeakerIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 
 // Components
 import SystemStatusCard from '@/components/system/SystemStatusCard.vue'
+import QueueObservabilityCard from '@/components/system/QueueObservabilityCard.vue'
 import RealTimeMetricsChart from '@/components/system/RealTimeMetricsChart.vue'
 import ResourceUsageWidget from '@/components/system/ResourceUsageWidget.vue'
 import BackupManagement from '@/components/system/BackupManagement.vue'
@@ -242,6 +251,8 @@ const toast = useToast()
 
 // Reactive state
 const isRunningHealthCheck = ref(false)
+const queueObservability = ref(null)
+const isLoadingObservability = ref(false)
 const isCreatingBackup = ref(false)
 const showCreateTaskModal = ref(false)
 const showImportModal = ref(false)
@@ -321,6 +332,7 @@ let metricsInterval = null
 
 onMounted(async () => {
   await loadSystemData()
+  await loadQueueObservability()
   startMetricsRefresh()
 })
 
@@ -345,6 +357,22 @@ async function loadSystemData() {
   } catch (error) {
     console.error('Failed to load system data:', error)
     toast.error('Erreur lors du chargement des données système')
+  }
+}
+
+// PA2-QA-006 — Redis/jobs observability: queue depth, failed jobs and last
+// run of scheduled tasks, backed by GET /platform/observability/queues.
+async function loadQueueObservability() {
+  isLoadingObservability.value = true
+
+  try {
+    const response = await api.get('/platform/observability/queues')
+    queueObservability.value = response.data?.data || null
+  } catch (error) {
+    console.error('Failed to load queue observability:', error)
+    toast.error('Erreur lors du chargement de l\'observabilité des jobs')
+  } finally {
+    isLoadingObservability.value = false
   }
 }
 

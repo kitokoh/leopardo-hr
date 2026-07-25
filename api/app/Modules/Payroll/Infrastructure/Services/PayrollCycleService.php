@@ -91,6 +91,64 @@ class PayrollCycleService
     }
 
     /**
+     * PA2-PAY-003 — Lets a manager preview the effect of a candidate pay
+     * cycle rule (journalier/hebdomadaire/mensuel, pay day, week start)
+     * before actually saving it via updatePayCycleSettings(). Computes the
+     * resulting period (start/end/label) and an estimated payroll total for
+     * the company's active employees under that candidate rule, without
+     * persisting anything or creating a PayrollRun.
+     *
+     * Unlike updatePayCycleSettings(), omitted keys fall back to the
+     * company's *currently saved* settings rather than being left untouched
+     * on a persisted record, since nothing is written here.
+     *
+     * @param  array{pay_cycle?: string, pay_day?: int, week_start?: int}  $overrides
+     * @return array{
+     *     settings: array{pay_cycle: string, pay_day: int, week_start: int},
+     *     period: array{start: string, end: string, label: string},
+     *     next_payment_date: string,
+     *     currency: string,
+     *     employee_count: int,
+     *     estimated_total_gross: float,
+     * }
+     */
+    public function previewCycle(Company $company, array $overrides = []): array
+    {
+        $settings = $this->candidateSettings($company, $overrides);
+        $now = Carbon::now($company->timezone ?: 'UTC');
+
+        $cycle = match ($settings['pay_cycle']) {
+            'daily' => $this->dailyPeriod($now),
+            'weekly' => $this->weeklyPeriod($now, $settings['week_start']),
+            default => $this->monthlyPeriod($now),
+        };
+
+        $employees = Employee::query()
+            ->where('company_id', $company->id)
+            ->when(Schema::hasColumn('employees', 'status'), function ($query): void {
+                $query->where('status', '!=', 'archived');
+            })
+            ->get();
+
+        $estimatedTotal = $employees->sum(
+            fn (Employee $employee): float => $this->fallbackGrossDue($employee, $settings['pay_cycle'])
+        );
+
+        return [
+            'settings' => $settings,
+            'period' => [
+                'start' => $cycle['start']->toDateString(),
+                'end' => $cycle['end']->toDateString(),
+                'label' => $cycle['label'],
+            ],
+            'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
+            'currency' => $company->currency,
+            'employee_count' => $employees->count(),
+            'estimated_total_gross' => round((float) $estimatedTotal, 2),
+        ];
+    }
+
+    /**
      * @return array{
      *     employee_id: int,
      *     employee_name: string,
@@ -317,6 +375,35 @@ class PayrollCycleService
         $fresh = $run->fresh();
 
         return $fresh;
+    }
+
+    /**
+     * PA2-PAY-003 — Same shape as payrollSettings(), but merges the given
+     * overrides on top of the company's persisted settings for preview
+     * purposes. Invalid override values are ignored in favour of the
+     * persisted/default value, matching updatePayCycleSettings()'s validation.
+     *
+     * @param  array{pay_cycle?: string, pay_day?: int, week_start?: int}  $overrides
+     * @return array{pay_cycle: string, pay_day: int, week_start: int}
+     */
+    private function candidateSettings(Company $company, array $overrides): array
+    {
+        $settings = $this->payrollSettings($company);
+
+        if (array_key_exists('pay_cycle', $overrides)
+            && in_array($overrides['pay_cycle'], ['daily', 'weekly', 'monthly'], true)) {
+            $settings['pay_cycle'] = $overrides['pay_cycle'];
+        }
+
+        if (array_key_exists('pay_day', $overrides)) {
+            $settings['pay_day'] = max(1, min((int) $overrides['pay_day'], 31));
+        }
+
+        if (array_key_exists('week_start', $overrides)) {
+            $settings['week_start'] = max(1, min((int) $overrides['week_start'], 7));
+        }
+
+        return $settings;
     }
 
     /**

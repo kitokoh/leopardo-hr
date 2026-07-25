@@ -93,6 +93,8 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 Note 2026-07-23 (PA2-COMM-011) : `POST /api/v1/announcements` accepte desormais `status` (`draft`/`scheduled`/`published`) et `scheduled_at`, avec deux nouvelles actions `POST /api/v1/announcements/{id}/publish` et `POST /api/v1/announcements/{id}/cancel` (auteur ou principal/RH uniquement). Les scenarios API doivent verifier : une annonce `draft` ne fan-out aucune notification a la creation ; une annonce `scheduled` ne publie qu'une fois `scheduled_at` echu, via la commande `announcements:publish-scheduled` (couvert cote backend par `AnnouncementControllerTest`, pas encore par un scenario CI dedie multi-tenant) ; `GET /api/v1/announcements` ne remonte les lignes `draft`/`scheduled`/`cancelled` d'un autre auteur qu'aux managers `principal`/`rh` ; une annonce deja `published` ne peut pas etre annulee retroactivement (422 attendu).
 
+Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un manager de previsualiser une regle de cycle candidate (`pay_cycle`/`pay_day`/`week_start`, tous optionnels) avant de la sauvegarder via `PUT /api/v1/payroll/cycle-settings`. Les scenarios API doivent verifier : sans parametre, la reponse reflete les reglages actuellement persistes de l'entreprise (pas de defaut code en dur) ; un override (ex. `pay_cycle=weekly`) n'est jamais ecrit dans `companies.metadata.payroll` (verifie via un `GET /api/v1/payroll/cycle-settings` immediatement apres) ; `estimated_total_gross`/`employee_count` n'incluent que les employes actifs (les employes `archived` sont exclus) ; un `pay_cycle` hors `daily/weekly/monthly` renvoie 422 ; un employe (non manager) recoit 403.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -1041,6 +1043,7 @@ Note 2026-07-23 (PA2-COMM-011) : `POST /api/v1/announcements` accepte desormais 
 - `GET /api/v1/me/balance` : retourne le solde paie self-service du cycle courant avec devise, avances deduites et reste
 - `GET /api/v1/employees/{id}/balance` : retourne `gross_due`, `advances`, `paid`, `remaining` pour le cycle courant
 - `GET /api/v1/payroll/mobile-summary` : retourne la synthese mobile manager des soldes paie du perimetre autorise
+- `GET /api/v1/payroll/cycles/preview` (PA2-PAY-003, manager requis) : previsualise le resultat d'une regle de cycle candidate (`pay_cycle`/`pay_day`/`week_start` optionnels) sans rien persister, avec periode/label/prochaine date de paiement et total paie estime sur les employes actifs
 - Employe peut consulter son propre solde ; manager peut consulter tout employe de son entreprise
 - Acces refuse a un employe consultant le solde d'un autre employe sans etre manager (403)
 - Acces refuse a un manager consultant un employe hors de son entreprise (404)
