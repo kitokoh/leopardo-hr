@@ -50,6 +50,14 @@ return [
         'mode' => env('CHARGILY_MODE', 'live'), // 'test' | 'live'
     ],
 
+    'mail_bounce_webhook' => [
+        // PA2-COMM-007 - Shared secret the configured email provider (or a
+        // relay) must send back in the `X-Bounce-Webhook-Secret` header on
+        // every call to POST /api/v1/webhooks/email-bounce. Left empty in
+        // local/test environments, in which case the check is skipped.
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
+    ],
+
     'ayrshare' => [
         // Cle API primaire du compte Leopardo cote Ayrshare (Business/Enterprise
         // plan requis pour gerer des profils utilisateur par tenant).
