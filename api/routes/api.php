@@ -31,6 +31,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use Illuminate\Support\Facades\Route;
 
@@ -177,6 +178,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
         Route::get('/metrics/overview', PlatformMetricsOverviewController::class);
+
+        // PA2-QA-006 — Redis/jobs observability (queue depth, failed jobs,
+        // scheduled task last-run) for the super-admin "System" screen.
+        Route::get('/observability/queues', QueueObservabilityController::class);
 
         Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
         Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
