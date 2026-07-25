@@ -29,4 +29,10 @@ return [
 
     'company_announcement_title' => 'Şirket duyurusu',
     'company_announcement_body' => 'Şirketinizde yeni bir duyuru yayınlandı.',
+
+    'bulk_payment_completed_title' => 'Toplu ödeme tamamlandı (:succeeded/:total)',
+    'bulk_payment_completed_body' => 'Toplu ödeme başarıyla işlendi: :total bordrodan :succeeded tanesi.',
+
+    'bulk_payment_completed_with_errors_title' => 'Toplu ödeme hatalarla tamamlandı (:succeeded/:total)',
+    'bulk_payment_completed_with_errors_body' => 'Toplu ödeme tamamlandı: :total bordrodan :succeeded tanesi başarıyla işlendi, :failed hata oluştu. Ayrıntılar için denetim günlüğünü kontrol edin.',
 ];
