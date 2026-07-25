@@ -5,8 +5,17 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Support\CountryDefaults;
 use Illuminate\Support\Collection;
 
+/**
+ * PA2-I18N-003 — Bank export currency must follow the payroll run's own
+ * country (`PayrollRun::$country_code`, resolved through the canonical
+ * `App\Support\CountryDefaults` catalogue), not a hardcoded 3-letter code.
+ * `DZD` only ever appears here as the technical last-resort fallback that
+ * `CountryDefaults::for()` itself falls back to for an unknown/empty code —
+ * it is never a hardcoded per-format assumption.
+ */
 class BankExportGenerator
 {
     public function generate(PayrollRun $run, string $format): string
@@ -16,13 +25,20 @@ class BankExportGenerator
             ->where('status', 'validated')
             ->get();
 
+        // sepa_xml/csv_generic/virement_ma are multi-country formats, so
+        // their currency must follow the payroll run's own country. ccp_dz/
+        // cpa_dz/bna_dz are Algeria-only local bank formats (Poste/CPA/BNA)
+        // that are always denominated in DZD regardless of country_code,
+        // so they intentionally keep their literal 'DZD'.
+        $currency = CountryDefaults::for($run->country_code)['currency'];
+
         return match ($format) {
-            'sepa_xml' => $this->generateSepaXml($run, $slips),
+            'sepa_xml' => $this->generateSepaXml($run, $slips, $currency),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
             'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
             'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
-            'virement_ma' => $this->generateCsvGeneric($run, $slips),
-            'csv_generic' => $this->generateCsvGeneric($run, $slips),
+            'virement_ma' => $this->generateCsvGeneric($run, $slips, $currency),
+            'csv_generic' => $this->generateCsvGeneric($run, $slips, $currency),
             default => throw new \InvalidArgumentException("Unsupported bank export format: {$format}"),
         };
     }
@@ -53,7 +69,7 @@ class BankExportGenerator
         };
     }
 
-    private function generateSepaXml(PayrollRun $run, Collection $slips): string
+    private function generateSepaXml(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
     {
         $msgId = 'LEO-'.now()->format('YmdHis').'-'.$run->id;
         $nbTransactions = $slips->count();
@@ -87,7 +103,7 @@ class BankExportGenerator
 
             $xml .= '      <CdtTrfTxInf>'."\n";
             $xml .= '        <PmtId><EndToEndId>SAL-'.$run->id.'-'.$slip->employee_id.'</EndToEndId></PmtId>'."\n";
-            $xml .= '        <Amt><InstdAmt Ccy="EUR">'.number_format($slip->net_salary, 2, '.', '').'</InstdAmt></Amt>'."\n";
+            $xml .= '        <Amt><InstdAmt Ccy="'.$this->xmlEscape($currency).'">'.number_format($slip->net_salary, 2, '.', '').'</InstdAmt></Amt>'."\n";
             $xml .= '        <CdtrAgt><FinInstnId><BIC>NOTPROVIDED</BIC></FinInstnId></CdtrAgt>'."\n";
             $xml .= '        <Cdtr><Nm>'.$this->xmlEscape($name).'</Nm></Cdtr>'."\n";
             $xml .= '        <CdtrAcct><Id><IBAN>'.$this->xmlEscape($iban).'</IBAN></Id></CdtrAcct>'."\n";
@@ -124,7 +140,7 @@ class BankExportGenerator
         return implode("\r\n", $lines)."\r\n";
     }
 
-    private function generateCsvGeneric(PayrollRun $run, Collection $slips): string
+    private function generateCsvGeneric(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
     {
         $csv = "employee_id,first_name,last_name,iban,bank_account,net_salary,currency,period\n";
 
@@ -140,7 +156,7 @@ class BankExportGenerator
                 $this->csvEscape($employee->iban ?? ''),
                 $this->csvEscape($employee->bank_account ?? ''),
                 $slip->net_salary,
-                $run->country_code ?? 'EUR',
+                $currency,
                 $period
             );
         }
@@ -208,4 +224,3 @@ class BankExportGenerator
         return $value;
     }
 }
-
