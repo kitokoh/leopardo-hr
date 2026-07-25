@@ -17,14 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])
     ->prefix('absences')
     ->group(function (): void {
-        Route::get('/',                      [AbsenceController::class, 'index']);
-        Route::post('/',                     [AbsenceController::class, 'store']);
-        Route::get('/{absence}',             [AbsenceController::class, 'show'])->whereNumber('absence');
-        Route::put('/{absence}/approve',     [AbsenceController::class, 'approve'])->whereNumber('absence');
-        Route::post('/{absence}/approve',    [AbsenceController::class, 'approve'])->whereNumber('absence');
-        Route::put('/{absence}/reject',      [AbsenceController::class, 'reject'])->whereNumber('absence');
-        Route::post('/{absence}/reject',     [AbsenceController::class, 'reject'])->whereNumber('absence');
-        Route::delete('/{absence}',          [AbsenceController::class, 'destroy'])->whereNumber('absence');
+        Route::get('/', [AbsenceController::class, 'index']);
+        Route::post('/', [AbsenceController::class, 'store']);
+        Route::get('/{absence}', [AbsenceController::class, 'show'])->whereNumber('absence');
+        // PA2-MOB-006: download the supporting document attached to a request.
+        Route::get('/{absence}/proof', [AbsenceController::class, 'downloadProof'])->whereNumber('absence');
+        Route::put('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
+        Route::post('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
+        Route::put('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
+        Route::post('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
+        Route::delete('/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
     });
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])

@@ -9,6 +9,10 @@ import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
 import 'company_screen.dart';
 
+// PA2-ADM-002: fallback list used only while GET /platform/country-defaults
+// has not resolved yet (or fails). Kept in sync with App\Support\CountryDefaults
+// on the API and the web admin-dashboard's fallback list so mobile and web
+// never diverge on which countries are offered when the network is slow.
 const _fallbackCountryDefaults = [
   PlatformCountryDefault(
     country: 'DZ',
@@ -46,10 +50,80 @@ const _fallbackCountryDefaults = [
     language: 'fr',
   ),
   PlatformCountryDefault(
+    country: 'ML',
+    label: 'Mali',
+    currency: 'XOF',
+    timezone: 'Africa/Bamako',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'BF',
+    label: 'Burkina Faso',
+    currency: 'XOF',
+    timezone: 'Africa/Ouagadougou',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'BJ',
+    label: 'Benin',
+    currency: 'XOF',
+    timezone: 'Africa/Porto-Novo',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'TG',
+    label: 'Togo',
+    currency: 'XOF',
+    timezone: 'Africa/Lome',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'NE',
+    label: 'Niger',
+    currency: 'XOF',
+    timezone: 'Africa/Niamey',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
     country: 'CM',
     label: 'Cameroun',
     currency: 'XAF',
     timezone: 'Africa/Douala',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'GA',
+    label: 'Gabon',
+    currency: 'XAF',
+    timezone: 'Africa/Libreville',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'CG',
+    label: 'Congo',
+    currency: 'XAF',
+    timezone: 'Africa/Brazzaville',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'TD',
+    label: 'Tchad',
+    currency: 'XAF',
+    timezone: 'Africa/Ndjamena',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'CF',
+    label: 'Republique Centrafricaine',
+    currency: 'XAF',
+    timezone: 'Africa/Bangui',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'GQ',
+    label: 'Guinee Equatoriale',
+    currency: 'XAF',
+    timezone: 'Africa/Malabo',
     language: 'fr',
   ),
   PlatformCountryDefault(
@@ -67,10 +141,24 @@ const _fallbackCountryDefaults = [
     language: 'tr',
   ),
   PlatformCountryDefault(
+    country: 'GB',
+    label: 'Royaume-Uni',
+    currency: 'GBP',
+    timezone: 'Europe/London',
+    language: 'en',
+  ),
+  PlatformCountryDefault(
     country: 'US',
     label: 'Etats-Unis',
     currency: 'USD',
     timezone: 'America/New_York',
+    language: 'en',
+  ),
+  PlatformCountryDefault(
+    country: 'CA',
+    label: 'Canada',
+    currency: 'CAD',
+    timezone: 'America/Toronto',
     language: 'en',
   ),
 ];
@@ -166,6 +254,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         title: 'Nouveau client',
         subtitle: 'Provisionnement plateforme',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),

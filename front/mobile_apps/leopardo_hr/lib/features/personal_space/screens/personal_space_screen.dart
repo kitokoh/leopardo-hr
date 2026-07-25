@@ -18,6 +18,7 @@ class PersonalSpaceScreen extends ConsumerWidget {
         title: const Text('Espace Personnel'),
         actions: [
           IconButton(
+            tooltip: 'Deconnexion',
             icon: const Icon(Icons.logout),
             onPressed: () => ref.read(authProvider.notifier).logout(),
           ),

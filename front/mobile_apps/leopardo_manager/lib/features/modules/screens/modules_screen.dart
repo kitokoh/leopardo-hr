@@ -372,6 +372,7 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       IconButton(
+                        tooltip: "Plus d'actions",
                         onPressed: () =>
                             _showAdvanceActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
@@ -607,6 +608,7 @@ class _PayrollsTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       IconButton(
+                        tooltip: "Plus d'actions",
                         onPressed: () =>
                             _showPayrollActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
