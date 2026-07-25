@@ -49,6 +49,7 @@ type LandingCopy = {
     secondaryCta: string
     mobileBadge?: string
     downloadCta?: string
+    visualAlt?: string
     stats: HeroStat[]
   }
   heroQuickTrial: {
@@ -169,6 +170,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitleTail: 'pour transformer vos operations quotidiennes sans la complexite d\'un ERP.',
       mobileBadge: 'Disponible sur mobile',
       downloadCta: 'Telecharger les apps',
+      visualAlt: 'Capture du tableau de bord admin Leopardo RH',
       primaryCta: 'Essai gratuit 30 jours',
       secondaryCta: 'Voir la demo',
       stats: [
@@ -312,6 +314,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitleTail: 'to transform your daily operations without the complexity of a heavy ERP.',
       mobileBadge: 'Available on mobile',
       downloadCta: 'Download the apps',
+      visualAlt: 'Leopardo HR admin dashboard screenshot',
       primaryCta: 'Start 30-day free trial',
       secondaryCta: 'Watch demo',
       stats: [
@@ -455,6 +458,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitleTail: 'agir ERP olmadan saha pilotu baslatmaniz icin.',
       mobileBadge: 'Mobilde kullanilabilir',
       downloadCta: 'Uygulamalari indir',
+      visualAlt: 'Leopardo IK yonetici paneli ekran goruntusu',
       primaryCta: '30 gun ucretsiz deneyin',
       secondaryCta: 'Demoyu izle',
       stats: [
@@ -598,6 +602,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitleTail: 'لتشغيل تجربة ميدانية بدون نظام ERP ثقيل.',
       mobileBadge: 'متاح على الجوال',
       downloadCta: 'تحميل التطبيقات',
+      visualAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو للموارد البشرية',
       primaryCta: 'ابدأ تجربة 30 يوما',
       secondaryCta: 'شاهد العرض',
       stats: [
