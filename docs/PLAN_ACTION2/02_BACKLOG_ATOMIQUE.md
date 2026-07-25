@@ -204,7 +204,7 @@
 | PA2-QA-004 | P1 | Tests charge k6 pointage | dev-hub/k6 | scenario 10/20/50/100 punchs, lance seulement via paths ou manuel |
 | PA2-QA-005 | P1 | ~~Tests charge k6 paie~~ Fait le 2026-07-25 : `dev-hub/load/k6/payroll-progressive-scale.js` cree, memes 4 paliers 10/20/50/100 VUs que `attendance-punch-scale.js` (PA2-QA-004), couvrant preview paie (`payroll/cycles/preview`, lecture), batch paiement (`payroll-runs/{id}/bulk-pay` + poll statut, mutation optionnelle) et notification async (poll `observability/queues`, PA2-QA-006) | dev-hub/k6 | preview paie, batch paiement, notification async |
 | PA2-QA-006 | P1 | Observabilite Redis/jobs | API/admin | queue depth, failed jobs, last run, alertes visibles |
-| PA2-QA-007 | P1 | Audit CORS et cold-start | API/web/mobile | web vitrine et apps gerent Render cold-start et CORS proprement |
+| PA2-QA-007 | P1 | Fait le 2026-07-25: CORS/TrustProxies deja corriges et testes (`docs/security/AUDIT_API_2026-07-19.md`, `CorsAndTrustedProxyTest`); gap reel trouve et corrige sur le cold-start admin-dashboard (`services/api.js` ne retentait jamais les 502/503/504, contrairement a la vitrine et au mobile) | API/web/mobile | FAIT: web vitrine et apps gerent Render cold-start et CORS proprement |
 | PA2-QA-008 | P2 | Fait le 2026-07-25 (issue #1073): `lighthouse.yml` passe de manuel-uniquement a PR/push sur `front/web` + hebdomadaire, avec `budget.json` (poids par type d'asset) et etape non bloquante (`continue-on-error`) | CI/manual | FAIT: score et poids assets surveilles sans bloquer inutilement |
 | PA2-QA-009 | P2 | Accessibilite mobile lisibilite | mobile | contrastes, textes visibles, pas de bouton sans action |
 | PA2-QA-010 | P2 | Rapport release pilote | docs | checklist go/no-go par surface avec preuves |
