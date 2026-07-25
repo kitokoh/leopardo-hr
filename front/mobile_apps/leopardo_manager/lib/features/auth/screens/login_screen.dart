@@ -170,6 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           label: l10n.authPasswordLabel,
                           icon: Icons.lock_outline_rounded,
                           suffix: IconButton(
+                            tooltip: 'Afficher ou masquer le mot de passe',
                             icon: Icon(
                               _obscurePassword
                                   ? Icons.visibility_off_rounded

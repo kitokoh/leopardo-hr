@@ -78,6 +78,7 @@ class _BackgroundPermissionOnboardingScreenState
         backgroundColor: _bg,
         elevation: 0,
         leading: IconButton(
+          tooltip: 'Fermer',
           icon: const Icon(Icons.close_rounded, color: Colors.white70),
           onPressed: () => context.pop(),
         ),

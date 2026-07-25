@@ -35,6 +35,7 @@ class NotificationListScreen extends ConsumerWidget {
           ),
         ],
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           onPressed: () => Navigator.of(context).pop(),
         ),
