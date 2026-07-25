@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationPreferenceResource;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Infrastructure\Services\NotificationPreferenceProvisioner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,6 +37,7 @@ class NotificationPreferenceController extends Controller
             'push_enabled' => ['sometimes', 'boolean'],
             'sms_enabled' => ['sometimes', 'boolean'],
             'whatsapp_enabled' => ['sometimes', 'boolean'],
+            'whatsapp_consent_given' => ['sometimes', 'boolean'],
             'locale' => ['sometimes', 'nullable', 'in:fr,ar,en,tr'],
             'timezone' => ['sometimes', 'nullable', 'string', 'max:64'],
             'categories' => ['sometimes', 'array'],
@@ -48,6 +49,17 @@ class NotificationPreferenceController extends Controller
         ]);
 
         $preferences = $this->preferences->ensureForEmployee($employee);
+
+        // PA2-COMM-008 - WhatsApp consent is a distinct, explicit,
+        // server-timestamped opt-in: the employee can flip it on/off from
+        // the client, but the exact instant is always recorded here, never
+        // trusted from client input, and withdrawing consent clears the
+        // timestamp so a later `hasWhatsappConsent()` check is unambiguous.
+        if (array_key_exists('whatsapp_consent_given', $validated)) {
+            $consentGiven = (bool) $validated['whatsapp_consent_given'];
+            $validated['whatsapp_consent_at'] = $consentGiven ? now() : null;
+        }
+
         $preferences->fill($validated);
         $preferences->save();
 
@@ -65,6 +77,7 @@ class NotificationPreferenceController extends Controller
                     'sms' => $preferences->sms_enabled,
                     'whatsapp' => $preferences->whatsapp_enabled,
                 ],
+                'whatsapp_consent_given' => $preferences->whatsapp_consent_given,
             ],
             'occurred_at' => now(),
         ]);
@@ -72,5 +85,3 @@ class NotificationPreferenceController extends Controller
         return (new NotificationPreferenceResource($preferences->fresh()))->response();
     }
 }
-
-

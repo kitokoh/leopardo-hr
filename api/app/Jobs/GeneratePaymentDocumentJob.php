@@ -80,6 +80,11 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             'error_message' => null,
         ]);
 
+        // PA2-COMM-010 — Let the employee know their document is being
+        // prepared instead of leaving the UI to poll silently. Best-effort:
+        // a notification failure must never block PDF generation.
+        $this->notifyDocumentStatus($communication, $document, 'payment_document_processing');
+
         try {
             // Tenant context (search_path + current_company) is already active
             // at this point thanks to EnsureTenantContext.
@@ -110,6 +115,8 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
                 'status' => PaymentDocument::STATUS_FAILED,
                 'error_message' => $e->getMessage(),
             ]);
+
+            $this->notifyDocumentStatus($communication, $document, 'payment_document_failed');
 
             report($e);
 
