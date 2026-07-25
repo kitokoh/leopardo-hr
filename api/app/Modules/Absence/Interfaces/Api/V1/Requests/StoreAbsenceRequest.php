@@ -32,6 +32,9 @@ class StoreAbsenceRequest extends FormRequest
             'start_date' => ['required', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date_format:Y-m-d'],
             'reason' => ['nullable', 'string', 'max:1000'],
+            // PA2-MOB-006: optional supporting document (medical note,
+            // justification letter, etc.) attached at request time.
+            'proof' => ['nullable', 'file', 'max:5120', 'mimes:jpg,jpeg,png,pdf,heic'],
         ];
     }
 
