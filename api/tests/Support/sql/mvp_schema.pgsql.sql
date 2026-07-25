@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS public.user_invitations CASCADE;
 DROP TABLE IF EXISTS public.platform_announcement_companies CASCADE;
 DROP TABLE IF EXISTS public.platform_impersonation_sessions CASCADE;
 DROP TABLE IF EXISTS public.platform_announcements CASCADE;
+DROP TABLE IF EXISTS public.marketing_leads CASCADE;
 DROP TABLE IF EXISTS public.super_admins CASCADE;
 DROP TABLE IF EXISTS public.user_lookups CASCADE;
 DROP TABLE IF EXISTS public.personal_access_tokens CASCADE;
@@ -790,6 +791,38 @@ CREATE UNIQUE INDEX platform_announcement_companies_unique
     ON public.platform_announcement_companies (platform_announcement_id, company_id);
 CREATE INDEX platform_announcement_companies_company_id_index
     ON public.platform_announcement_companies (company_id);
+
+-- PA2-MKT-007 — Marketing acquisition leads (public schema, not tenant-scoped).
+CREATE TABLE public.marketing_leads (
+    id bigserial PRIMARY KEY,
+    external_id varchar(80) NOT NULL,
+    type varchar(30) NOT NULL,
+    email varchar(255) NOT NULL,
+    locale varchar(5) NOT NULL DEFAULT 'fr',
+    country varchar(2) NULL,
+    page varchar(300) NULL,
+    source varchar(120) NULL,
+    campaign varchar(120) NULL,
+    ip varchar(64) NULL,
+    referrer varchar(500) NULL,
+    payload jsonb NULL,
+    status varchar(20) NOT NULL DEFAULT 'new',
+    note text NULL,
+    converted_company_id uuid NULL,
+    crm_forwarded boolean NOT NULL DEFAULT false,
+    email_forwarded boolean NOT NULL DEFAULT false,
+    captured_at timestamptz NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL,
+    CONSTRAINT marketing_leads_type_check CHECK (type IN ('signup', 'demo_request', 'newsletter', 'contact')),
+    CONSTRAINT marketing_leads_status_check CHECK (status IN ('new', 'contacted', 'qualified', 'converted', 'rejected'))
+);
+
+CREATE UNIQUE INDEX marketing_leads_external_id_unique ON public.marketing_leads (external_id);
+CREATE INDEX marketing_leads_type_index ON public.marketing_leads (type);
+CREATE INDEX marketing_leads_source_index ON public.marketing_leads (source);
+CREATE INDEX marketing_leads_status_index ON public.marketing_leads (status);
+CREATE INDEX marketing_leads_created_at_index ON public.marketing_leads (created_at);
 
 -- PA2-ADM-006 — Secure super-admin impersonation sessions (public schema).
 CREATE TABLE public.platform_impersonation_sessions (
