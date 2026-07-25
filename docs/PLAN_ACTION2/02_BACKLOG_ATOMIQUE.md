@@ -110,7 +110,7 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-I18N-001 | P0 | Fait le 2026-07-25: strategie consolidee (`18_STRATEGIE_ANTI_HARDCODE_I18N.md`) reliant guide Jules + dette par surface + garde CI, deja livres separement sous PA2-I18N-007/014/015 | docs/tools | FAIT: guide Jules, dette par surface, interdiction nouveau texte dur critique |
-| PA2-I18N-002 | P1 | Catalogues vitrine FR/EN/TR/AR | `front/web` | hero/pricing/download/signup traduits, RTL arabe propre |
+| PA2-I18N-002 | P1 | Fait le 2026-07-25 (issue #1008): catalogues vitrine FR/EN/TR/AR deja traduits (`src/lib/i18n.ts`, `vitrine-locale.ts`); corrige le vrai bug restant: la homepage (`(landing)/page.tsx`), `/download` et `/changelog` ne propageaient pas `dir="rtl"` en arabe (contrairement a `/signup`, `/pricing`, `/checkout` qui l'appliquaient deja via `useVitrineLocale().direction`) — ajout de `dir={direction}` sur le conteneur racine des 3 pages + tests de regression (`__tests__/rtl-direction.test.tsx`) | `front/web` | FAIT: hero/pricing/download/signup traduits, RTL arabe propre sur toutes les pages vitrine avec locale |
 | PA2-I18N-003 | P1 | Devises multi-pays runtime | API/mobile/web | DZD fallback seulement technique, XOF/XAF/EUR/TRY selon pays |
 | PA2-I18N-004 | P2 | Accessibilite formulaires | web/mobile | contrastes, labels, erreurs, navigation clavier web |
 

@@ -10,13 +10,13 @@ import { motion } from 'framer-motion';
 export default function ChangelogPage() {
   const [isDark, setIsDark] = useState(false);
   useScrollReveal();
-  const { copy } = useVitrineLocale();
+  const { copy, direction } = useVitrineLocale();
   const ch = copy.changelog;
 
   const headline = `${ch.title} ${ch.titleHighlight}`;
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
+    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
       <HeroSection
