@@ -14,6 +14,7 @@ use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
 use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
+use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
@@ -34,6 +35,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +79,13 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
     });
+
+    // PA2-MKT-007 - Public vitrine lead capture (signup/demo/contact/
+    // newsletter), called server-to-server from front/web's Next.js API
+    // routes right after captureMarketingLead() logs + forwards the lead.
+    // Protected by a shared secret (see services.marketing_lead_webhook),
+    // not Sanctum, since the caller has no tenant yet.
+    Route::middleware(['throttle:webhooks-inbound'])->post('/marketing/leads', [MarketingLeadController::class, 'store']);
 
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
@@ -196,6 +205,10 @@ Route::prefix('v1')->group(function (): void {
         // PA2-QA-006 — Redis/jobs observability (queue depth, failed jobs,
         // scheduled task last-run) for the super-admin "System" screen.
         Route::get('/observability/queues', QueueObservabilityController::class);
+
+        // PA2-ADM-005 — Cross-tenant notification failure rate (24h) +
+        // curated runbook links for the super-admin "System" screen.
+        Route::get('/observability/notifications', PlatformNotificationObservabilityController::class);
 
         Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
         Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');

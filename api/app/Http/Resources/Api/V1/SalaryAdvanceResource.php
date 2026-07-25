@@ -33,6 +33,10 @@ class SalaryAdvanceResource extends JsonResource
                 ?? (app()->bound('current_company') ? currentCompany()?->currency : null)
                 ?? 'DZD',
             'reason' => $this->reason,
+            // PA2-MOB-006: optional supporting document (justification,
+            // quote, invoice, etc.), mirroring the absence proof workflow.
+            'proof_path' => $this->proof_path,
+            'has_proof' => (bool) $this->proof_path,
             'status' => $this->status,
             'requested_at' => ($this->requested_at ?? $this->created_at)?->toIso8601String(),
             'approved_at' => $this->approved_at?->toIso8601String(),

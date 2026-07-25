@@ -75,6 +75,13 @@ export async function captureMarketingLead(
     emailForwarded,
   });
 
+  // Persist the lead in the platform's own CRM pipeline (PA2-MKT-007), so
+  // it survives even when the external CRM/email webhooks above are down
+  // or unconfigured. Best-effort and fire-and-forget: a failure here must
+  // never fail the form submission, the lead is already durably logged
+  // via `marketing.lead.received` above.
+  await persistLead(lead, crmForwarded, emailForwarded);
+
   return {
     id,
     crmForwarded,
@@ -84,6 +91,56 @@ export async function captureMarketingLead(
 
 function createLeadId(type: MarketingLeadType): string {
   return `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL || 'https://gestionemployerbackend.onrender.com';
+const LEAD_PERSIST_TIMEOUT_MS = 2500;
+
+async function persistLead(
+  lead: Record<string, unknown>,
+  crmForwarded: boolean,
+  emailForwarded: boolean
+): Promise<void> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), LEAD_PERSIST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(`${LEOPARDO_API_URL}/api/v1/marketing/leads`, {
+      method: 'POST',
+      headers: buildForwardHeaders('crm'),
+      body: JSON.stringify({
+        external_id: lead.id,
+        type: lead.type,
+        email: lead.email,
+        locale: lead.locale,
+        page: lead.page,
+        source: lead.source,
+        ip: lead.ip,
+        referrer: lead.referrer,
+        payload: lead.data,
+        crm_forwarded: crmForwarded,
+        email_forwarded: emailForwarded,
+        captured_at: lead.timestamp,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      logLeadEvent('marketing.lead.persist_failed', {
+        id: lead.id,
+        type: lead.type,
+        status: response.status,
+      });
+    }
+  } catch (error) {
+    logLeadEvent('marketing.lead.persist_error', {
+      id: lead.id,
+      type: lead.type,
+      error: error instanceof Error ? error.name : 'unknown',
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function forwardLead(

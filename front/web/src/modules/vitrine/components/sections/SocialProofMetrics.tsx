@@ -1,9 +1,27 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Building2, Users, Clock, TrendingUp } from 'lucide-react';
+import { Building2, Globe2, Layers, ShieldCheck } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
+/**
+ * PA2-MKT-006: this section previously showed "500+ active companies",
+ * "50K+ employees managed" and "99.9% SLA uptime" — none of which are
+ * true. `PILOTAGE.md` ("Clients payants | 0 | 3-5 | 20-30 | 100-150")
+ * confirms 0 paying customers exist to date, and no SLA/uptime monitor
+ * (`docs/GESTION_PROJET/RUNBOOK_UPTIME_MONITORING.md`) has ever actually
+ * been configured/measured — a "99.9%" figure with no monitor behind it
+ * is a fabricated number, exactly the "chiffres non trompeurs" risk this
+ * ticket flags.
+ *
+ * Replaced with 4 claims that are true today and checkable directly in
+ * the repository, none of which imply a customer count or an SLA that
+ * was never measured: number of country-specific payroll rule engines
+ * actually implemented, number of supported product locales, number of
+ * mobile/web/kiosk surfaces that make up the product, and the size of
+ * the automated backend test suite (a real engineering signal a
+ * technical evaluator can verify, unlike a marketing number).
+ */
 type MetricItem = {
   icon: React.ReactNode;
   value: string;
@@ -12,28 +30,28 @@ type MetricItem = {
 
 const metricsByLocale: Record<AppLocale, MetricItem[]> = {
   fr: [
-    { icon: <Building2 className="w-6 h-6" />, value: '500+', label: 'Entreprises actives' },
-    { icon: <Users className="w-6 h-6" />, value: '50K+', label: 'Employes geres' },
-    { icon: <Clock className="w-6 h-6" />, value: '99.9%', label: 'Disponibilite SLA' },
-    { icon: <TrendingUp className="w-6 h-6" />, value: '40%', label: 'Gain de temps moyen' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'Pays avec regles de paie dediees' },
+    { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
+    { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Tests automatises backend' },
   ],
   en: [
-    { icon: <Building2 className="w-6 h-6" />, value: '500+', label: 'Active companies' },
-    { icon: <Users className="w-6 h-6" />, value: '50K+', label: 'Employees managed' },
-    { icon: <Clock className="w-6 h-6" />, value: '99.9%', label: 'SLA uptime' },
-    { icon: <TrendingUp className="w-6 h-6" />, value: '40%', label: 'Average time saved' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'Countries with dedicated payroll rules' },
+    { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Product languages (FR/EN/TR/AR)' },
+    { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Product surfaces (web, mobile, kiosk)' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Automated backend tests' },
   ],
   tr: [
-    { icon: <Building2 className="w-6 h-6" />, value: '500+', label: 'Aktif sirket' },
-    { icon: <Users className="w-6 h-6" />, value: '50K+', label: 'Yonetilen calisan' },
-    { icon: <Clock className="w-6 h-6" />, value: '99.9%', label: 'SLA suresi' },
-    { icon: <TrendingUp className="w-6 h-6" />, value: '40%', label: 'Ortalama zaman tasarrufu' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'Ozel bordro kurali olan ulke' },
+    { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Urun dili (FR/EN/TR/AR)' },
+    { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Urun yuzeyi (web, mobil, kiosk)' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Otomatik backend testi' },
   ],
   ar: [
-    { icon: <Building2 className="w-6 h-6" />, value: '+500', label: 'شركة نشطة' },
-    { icon: <Users className="w-6 h-6" />, value: '+50 الف', label: 'موظف مدار' },
-    { icon: <Clock className="w-6 h-6" />, value: '99.9%', label: 'وقت التشغيل' },
-    { icon: <TrendingUp className="w-6 h-6" />, value: '40%', label: 'توفير الوقت' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'دول بقواعد رواتب مخصصة' },
+    { icon: <Layers className="w-6 h-6" />, value: '4', label: 'لغات المنتج (FR/EN/TR/AR)' },
+    { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'واجهات المنتج (ويب، موبايل، كشك)' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'اختبار تلقائي للخلفية' },
   ],
 };
 

@@ -7,7 +7,7 @@ namespace App\Jobs;
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Payroll\PayrollCalculator;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -43,7 +43,7 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(): void
@@ -95,4 +95,3 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
         ];
     }
 }
-

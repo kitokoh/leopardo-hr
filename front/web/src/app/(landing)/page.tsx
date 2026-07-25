@@ -14,6 +14,7 @@ import {
   TrustedBrands,
   OperationalProofSection,
   LaunchOperatingSystemSection,
+  ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
   HeroProductVisual,
@@ -41,7 +42,7 @@ export default function LandingPage() {
   const [isDark, setIsDark] = useState(false);
   const toggleDarkMode = () => setIsDark((d) => !d);
   useScrollReveal();
-  const { locale, copy } = useVitrineLocale();
+  const { locale, copy, direction } = useVitrineLocale();
 
   const features = getFeatures(locale);
   const faqItems = getFaqItems(locale);
@@ -49,6 +50,7 @@ export default function LandingPage() {
 
   return (
     <div
+      dir={direction}
       className={`min-h-screen transition-colors duration-500 ${
         isDark ? 'dark bg-slate-950' : 'bg-white'
       }`}
@@ -112,6 +114,9 @@ export default function LandingPage() {
         <TrustedBrands locale={locale} />
         <SocialProofMetrics locale={locale} />
         <OperationalProofSection locale={locale} />
+
+        {/* ─── PRODUCT DEMO VIDEO ─── PA2-MKT-014 */}
+        <ProductDemoVideo locale={locale} />
 
         {/* ─── FEATURES ─── Phase-3 */}
         {/* id="fonctionnalites": PA2-MKT-013 — Footer links here via /#fonctionnalites */}
