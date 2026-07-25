@@ -101,6 +101,17 @@ class PaymentBatchControllerTest extends TestCase
         $again->assertOk();
         $this->assertSame(1, PaymentConfirmation::query()->where('payment_item_id', $item->id)->count());
         $this->assertSame($slip->id, $item->pay_slip_id);
+
+        // PA2-PAY-006 - The consent/signature model has its own audit trail:
+        // confirming a payment writes an audit_logs row for the
+        // PaymentConfirmation, independent of the tamper-evident hash itself.
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $company->id,
+            'user_id' => $employee->id,
+            'action' => 'created',
+            'auditable_type' => (new PaymentConfirmation)->getMorphClass(),
+            'auditable_id' => $confirmation->id,
+        ]);
     }
 
     public function test_employee_cannot_confirm_another_employee_payment_item(): void

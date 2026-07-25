@@ -23,6 +23,30 @@ on:
         description: "Duration for each scenario"
         required: false
         default: "1m"
+      run_attendance_punch_scale:
+        description: "Also run the progressive attendance punch scale test (10/20/50/100 VUs)"
+        required: false
+        default: "false"
+      attendance_punch_mode:
+        description: "attendance-punch-scale.js mode: manual or path"
+        required: false
+        default: "manual"
+      attendance_stage_duration:
+        description: "Duration of each attendance-punch-scale.js stage"
+        required: false
+        default: "30s"
+      run_payroll_progressive_scale:
+        description: "Also run the progressive payroll load test (10/20/50/100 VUs, PA2-QA-005)"
+        required: false
+        default: "false"
+      payroll_stage_duration:
+        description: "Duration of each payroll-progressive-scale.js stage"
+        required: false
+        default: "30s"
+      payroll_allow_mutations:
+        description: "Allow payroll-progressive-scale.js to dispatch real bulk-pay jobs (needs K6_PAYROLL_RUN_IDS)"
+        required: false
+        default: "false"
 
 permissions:
   contents: read
@@ -87,5 +111,96 @@ jobs:
         with:
           name: k6-api-core-smoke-summary
           path: dev-hub/load/reports/api-core-smoke-summary.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  attendance-punch-scale:
+    name: Attendance punch progressive load (10/20/50/100 VUs)
+    if: github.event.inputs.run_attendance_punch_scale == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Prepare reports directory
+        run: mkdir -p dev-hub/load/reports
+
+      - name: Run k6 attendance punch scale
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url }}
+          EMPLOYEE_TOKENS: ${{ secrets.K6_EMPLOYEE_TOKENS }}
+          PUNCH_MODE: ${{ github.event.inputs.attendance_punch_mode }}
+          STAGE_DURATION: ${{ github.event.inputs.attendance_stage_duration }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${EMPLOYEE_TOKENS}" ]]; then
+            echo "::notice::K6_EMPLOYEE_TOKENS is not configured; scenario will fall back to health probes."
+          fi
+
+          docker run --rm \
+            -e BASE_URL \
+            -e EMPLOYEE_TOKENS \
+            -e PUNCH_MODE \
+            -e STAGE_DURATION \
+            -v "${PWD}:/work" \
+            grafana/k6:latest run \
+            --summary-export /work/dev-hub/load/reports/attendance-punch-scale-summary.json \
+            /work/dev-hub/load/k6/attendance-punch-scale.js
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: k6-attendance-punch-scale-summary
+          path: dev-hub/load/reports/attendance-punch-scale-summary.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  payroll-progressive-scale:
+    name: Payroll progressive load (10/20/50/100 VUs)
+    if: github.event.inputs.run_payroll_progressive_scale == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Prepare reports directory
+        run: mkdir -p dev-hub/load/reports
+
+      - name: Run k6 payroll progressive scale
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url }}
+          MANAGER_TOKENS: ${{ secrets.K6_MANAGER_TOKENS }}
+          PAYROLL_RUN_IDS: ${{ secrets.K6_PAYROLL_RUN_IDS }}
+          ALLOW_PAYROLL_MUTATIONS: ${{ github.event.inputs.payroll_allow_mutations }}
+          STAGE_DURATION: ${{ github.event.inputs.payroll_stage_duration }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MANAGER_TOKENS}" ]]; then
+            echo "::notice::K6_MANAGER_TOKENS is not configured; scenario will fall back to health probes."
+          fi
+          if [[ "${ALLOW_PAYROLL_MUTATIONS}" == "true" && -z "${PAYROLL_RUN_IDS}" ]]; then
+            echo "::notice::ALLOW_PAYROLL_MUTATIONS is true but K6_PAYROLL_RUN_IDS is not configured; bulk-pay dispatch will be skipped."
+          fi
+
+          docker run --rm \
+            -e BASE_URL \
+            -e MANAGER_TOKENS \
+            -e PAYROLL_RUN_IDS \
+            -e ALLOW_PAYROLL_MUTATIONS \
+            -e STAGE_DURATION \
+            -v "${PWD}:/work" \
+            grafana/k6:latest run \
+            --summary-export /work/dev-hub/load/reports/payroll-progressive-scale-summary.json \
+            /work/dev-hub/load/k6/payroll-progressive-scale.js
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: k6-payroll-progressive-scale-summary
+          path: dev-hub/load/reports/payroll-progressive-scale-summary.json
           if-no-files-found: ignore
           retention-days: 14

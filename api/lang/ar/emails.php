@@ -96,4 +96,7 @@ return [
     'regards' => 'مع التحية،',
     'team_signature' => 'فريق :company',
     'footer_note' => 'إذا لم تطلب هذا الإجراء، تجاهل هذا البريد الإلكتروني.',
+
+    // Communication (PA2-COMM-007)
+    'communication_unsubscribe_link' => 'إدارة تفضيلات الإشعارات',
 ];

@@ -3,6 +3,14 @@
 Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- **Audit trail pour la nomination/revocation de rôles RH (PA2-MOB-007)**
+  - Nouvel événement `EmployeeRoleAssigned`, journalisé dans `audit_logs` (actions `role_assigned` / `role_revoked`) avec l'ancien et le nouveau `manager_role`, et l'identité du manager principal ayant fait le changement
+  - Couvre les deux chemins existants : `POST /employees/{id}/assign-role` (dashboard web) **et** `PATCH /employees/{id}` (utilisé par l'app mobile manager `TeamScreen._toggleHrRole`), qui contournait auparavant tout audit
+  - Tests Feature : `RoleAssignmentAuditTest` (6 tests couvrant nomination/revocation sur les deux endpoints, non-régression sur les champs non lies au rôle, et rejet d'un manager non-principal)
+
 ## [4.21.0] - 2026-07-01
 
 ### Changed

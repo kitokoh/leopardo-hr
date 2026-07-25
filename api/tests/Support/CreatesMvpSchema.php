@@ -255,6 +255,8 @@ trait CreatesMvpSchema
             $table->timestampTz('locked_until')->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('email_verified_at')->nullable();
+            $table->timestampTz('email_bounced_at')->nullable();
+            $table->string('email_bounce_reason', 255)->nullable();
             $table->json('extra_data')->nullable();
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
@@ -493,6 +495,11 @@ trait CreatesMvpSchema
             $table->string('payment_reference')->nullable();
             $table->text('payment_note')->nullable();
             $table->timestampTz('employee_confirmed_at')->nullable();
+            $table->text('dispute_reason')->nullable();
+            $table->timestampTz('disputed_at')->nullable();
+            $table->timestampTz('dispute_resolved_at')->nullable();
+            $table->unsignedBigInteger('dispute_resolved_by')->nullable();
+            $table->text('dispute_resolution_note')->nullable();
             $table->string('validation_status', 32)->default('pending');
             $table->text('decision_comment')->nullable();
             $table->unsignedSmallInteger('repayment_months')->default(1);
@@ -817,6 +824,38 @@ trait CreatesMvpSchema
 
             $table->unique(['platform_announcement_id', 'company_id'], 'platform_announcement_companies_unique');
             $table->index('company_id');
+        });
+
+        // PA2-COMM-012 — Pilot client support center (public schema, not
+        // tenant-scoped; see database/migrations/public/2026_07_25_000002_...).
+        Schema::create('platform_support_tickets', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id');
+            $table->unsignedInteger('created_by_employee_id');
+            $table->string('subject', 200);
+            $table->string('category', 30)->default('general');
+            $table->string('priority', 20)->default('normal');
+            $table->string('status', 20)->default('open');
+            $table->unsignedInteger('assigned_super_admin_id')->nullable();
+            $table->timestampTz('last_message_at')->nullable();
+            $table->timestampTz('resolved_at')->nullable();
+            $table->timestamps();
+
+            $table->index('company_id');
+            $table->index('status');
+            $table->index('priority');
+            $table->index('last_message_at');
+        });
+
+        Schema::create('platform_support_messages', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('platform_support_ticket_id');
+            $table->unsignedInteger('author_employee_id')->nullable();
+            $table->unsignedInteger('author_super_admin_id')->nullable();
+            $table->text('body');
+            $table->timestampTz('created_at')->nullable();
+
+            $table->index('platform_support_ticket_id');
         });
 
         // PA2-ADM-006 — Secure super-admin impersonation sessions (public
@@ -1309,6 +1348,28 @@ trait CreatesMvpSchema
 
                 $table->index(['company_id', 'document_type', 'status']);
                 $table->index(['employee_id', 'document_type', 'created_at']);
+            });
+        }
+
+        // PA2-PAY-014: bank export status now supports the async
+        // pending -> generating -> generated/failed lifecycle (previously
+        // only generated/sent/confirmed), file_path is nullable while no
+        // file has been produced yet, and error_message records job
+        // failures (see 2026_07_25_000002_make_bank_exports_generation_async.php).
+        if (! Schema::hasTable($this->moduleTable('bank_exports'))) {
+            Schema::create($this->moduleTable('bank_exports'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('payroll_run_id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('format', 20)->default('csv_generic');
+                $table->string('file_path', 500)->nullable();
+                $table->decimal('total_amount', 16, 2)->default(0);
+                $table->unsignedInteger('transfer_count')->default(0);
+                $table->string('status', 20)->default('pending');
+                $table->text('error_message')->nullable();
+                $table->timestampTz('generated_at')->nullable();
+                $table->timestampTz('sent_at')->nullable();
+                $table->timestampsTz();
             });
         }
 
@@ -1864,6 +1925,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_impersonation_sessions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_support_messages"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_support_tickets"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcements"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
@@ -1899,6 +1962,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_items"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_batches"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "bank_exports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_documents"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "privacy_requests"'.$cascade);

@@ -22,6 +22,17 @@ class AttendancePolicy
         return $actor->isManager();
     }
 
+    /**
+     * PA2-ATT-004 - Every authenticated employee may view anomalies detected
+     * on their own attendance logs (late arrivals, missing check-outs, etc.).
+     * This is intentionally unrestricted by role: it only ever surfaces the
+     * caller's own records, scoped by employee_id in the controller/service.
+     */
+    public function viewOwnAnomalies(Employee $actor): bool
+    {
+        return true;
+    }
+
     public function viewForEmployee(Employee $actor, Employee $target): bool
     {
         if ($actor->id === $target->id) {
