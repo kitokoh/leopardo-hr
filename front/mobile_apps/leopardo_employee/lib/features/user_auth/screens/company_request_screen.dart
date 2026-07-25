@@ -141,6 +141,7 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
       appBar: AppBar(
         title: const Text('Creer une entreprise'),
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             if (context.canPop()) {

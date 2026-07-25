@@ -23,11 +23,13 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
         title: 'Presences equipe',
         subtitle: 'Pointages du jour et sessions ouvertes',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
+            tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(managerAttendanceTodayProvider),
           ),
@@ -120,11 +122,13 @@ class ManagerAnomaliesScreen extends ConsumerWidget {
         title: 'Anomalies',
         subtitle: 'Retards, oublis et pointages a verifier',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
+            tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(managerAnomaliesProvider),
           ),
@@ -252,11 +256,13 @@ class _ManagerCorrectionsScreenState
         title: 'Corrections',
         subtitle: 'Demandes employees en attente RH',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
+            tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(managerCorrectionsProvider),
           ),
