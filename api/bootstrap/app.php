@@ -40,6 +40,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
+        // PA2-PAY-012 — Nightly progressive payroll pre-calculation
+        $schedule->command('payroll:precalculate')->dailyAt('02:00');
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

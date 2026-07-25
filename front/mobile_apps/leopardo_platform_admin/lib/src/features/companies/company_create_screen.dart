@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
 import '../../core/platform_providers.dart';
@@ -330,24 +331,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         runSpacing: 8,
         children: items
             .map(
-              (item) => Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: MobileSurface.surface,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: MobileSurface.border),
-                ),
-                child: Text(
-                  '${item.$1}: ${item.$2}',
-                  style: const TextStyle(
-                    color: MobileSurface.secondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              (item) => LeopardoBadge(
+                label: '${item.$1}: ${item.$2}',
+                color: AppColors.rh,
               ),
             )
             .toList(),

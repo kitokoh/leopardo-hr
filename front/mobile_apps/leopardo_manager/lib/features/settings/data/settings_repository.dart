@@ -22,6 +22,9 @@ class SettingsRepository {
     required String firstName,
     required String lastName,
     required String email,
+    String? personalEmail,
+    String? recoveryEmail,
+    String? personalPhone,
   }) async {
     final response = await _apiClient.requestWithRetry(
       '/auth/profile',
@@ -30,12 +33,56 @@ class SettingsRepository {
         'first_name': firstName.trim(),
         'last_name': lastName.trim(),
         'email': email.trim(),
+        'personal_email': personalEmail?.trim(),
+        'recovery_email': recoveryEmail?.trim(),
+        'personal_phone': personalPhone?.trim(),
       },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
 
     return Employee.fromJson(extractDataMap(response.data));
+  }
+
+  Future<EmployeeCareer> loadCareer() async {
+    final response = await _apiClient.requestWithRetry(
+      '/me/career',
+      timeoutOverride: _readTimeout,
+    );
+    return EmployeeCareer.fromJson(extractDataMap(response.data));
+  }
+
+  Future<CabinetStats> loadCabinetStats() async {
+    final response = await _apiClient.requestWithRetry(
+      '/cabinet/stats',
+      timeoutOverride: _readTimeout,
+    );
+    return CabinetStats.fromJson(extractDataMap(response.data));
+  }
+
+  Future<EmployeeQrPayload> loadEmployeeQrPayload() async {
+    final response = await _apiClient.requestWithRetry(
+      '/me/qr-profile',
+      timeoutOverride: _readTimeout,
+    );
+    return EmployeeQrPayload.fromJson(extractDataMap(response.data));
+  }
+
+  Future<String> submitCompanyQr(String token, {String? message}) async {
+    final response = await _apiClient.requestWithRetry(
+      '/me/company-qr/scan',
+      method: 'POST',
+      data: {
+        'qr_token': token.trim(),
+        if (message != null && message.trim().isNotEmpty)
+          'message': message.trim(),
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+    final data = extractDataMap(response.data);
+    return (response.data['message'] ?? data['status'] ?? 'Demande envoyee')
+        .toString();
   }
 
   Future<void> changePassword({
@@ -165,4 +212,111 @@ class LocalBiometricSettings {
   final bool faceEnabled;
   final bool attendanceConsent;
   final String biometricNote;
+}
+
+class EmployeeCareer {
+  const EmployeeCareer({
+    required this.availableForNewCompany,
+    required this.currentCompanyName,
+    required this.timeline,
+  });
+
+  final bool availableForNewCompany;
+  final String? currentCompanyName;
+  final List<EmployeeCareerEntry> timeline;
+
+  factory EmployeeCareer.fromJson(Map<String, dynamic> json) {
+    final rawTimeline = json['timeline'];
+    return EmployeeCareer(
+      availableForNewCompany: json['available_for_new_company'] == true,
+      currentCompanyName: json['current_company_name']?.toString(),
+      timeline: rawTimeline is List
+          ? rawTimeline
+              .whereType<Map>()
+              .map(
+                (entry) => EmployeeCareerEntry.fromJson(
+                  entry.cast<String, dynamic>(),
+                ),
+              )
+              .toList()
+          : const <EmployeeCareerEntry>[],
+    );
+  }
+}
+
+class EmployeeCareerEntry {
+  const EmployeeCareerEntry({
+    required this.companyName,
+    required this.startDate,
+    required this.endDate,
+    required this.jobTitle,
+    required this.status,
+    required this.current,
+  });
+
+  final String? companyName;
+  final String? startDate;
+  final String? endDate;
+  final String? jobTitle;
+  final String? status;
+  final bool current;
+
+  factory EmployeeCareerEntry.fromJson(Map<String, dynamic> json) {
+    return EmployeeCareerEntry(
+      companyName: json['company_name']?.toString(),
+      startDate: json['start_date']?.toString(),
+      endDate: json['end_date']?.toString(),
+      jobTitle: json['job_title']?.toString(),
+      status: json['status']?.toString(),
+      current: json['current'] == true,
+    );
+  }
+}
+
+class CabinetStats {
+  const CabinetStats({
+    required this.folders,
+    required this.documents,
+    required this.shared,
+    required this.publicDocuments,
+  });
+
+  final int folders;
+  final int documents;
+  final int shared;
+  final int publicDocuments;
+
+  factory CabinetStats.fromJson(Map<String, dynamic> json) {
+    return CabinetStats(
+      folders: _parseInt(
+        json['folders_count'] ?? json['total_folders'] ?? json['folders'],
+      ),
+      documents: _parseInt(
+        json['documents_count'] ?? json['total_documents'] ?? json['documents'],
+      ),
+      shared: _parseInt(json['shared_count'] ?? json['shared']),
+      publicDocuments: _parseInt(json['public_count'] ?? json['public']),
+    );
+  }
+
+  static int _parseInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+}
+
+class EmployeeQrPayload {
+  const EmployeeQrPayload({required this.token, required this.expiresAt});
+
+  final String token;
+  final String? expiresAt;
+
+  factory EmployeeQrPayload.fromJson(Map<String, dynamic> json) {
+    return EmployeeQrPayload(
+      token: (json['token'] ?? '').toString(),
+      expiresAt: json['expires_at']?.toString(),
+    );
+  }
 }

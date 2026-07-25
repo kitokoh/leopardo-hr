@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Events\EmployeeRoleAssigned;
 use App\Mail\RoleAssignmentMail;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
@@ -49,6 +50,9 @@ class RoleAssignmentController extends Controller
         $employee->role = $newRole ? 'manager' : 'employee';
         $employee->manager_role = $newRole;
         $employee->save();
+
+        // PA2-MOB-007 — every nomination/revocation must leave an audit trail.
+        EmployeeRoleAssigned::dispatch($employee, $actor, $previousRole, $newRole);
 
         // Send notification email if role was assigned (not removed)
         if ($newRole && $newRole !== $previousRole) {

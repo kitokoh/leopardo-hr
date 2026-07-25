@@ -51,12 +51,12 @@
 | PA2-MOB-005 | P0 | Ajout employee manager | API, manager mobile | formulaire complet salaire/date/role + QR onboarding, employee apparait ensuite |
 | PA2-MOB-006 | P1 | Demandes avance/absence detaillees | API, employee/manager | **PARTIEL (audit 2026-07-22, `14_AUDIT_STATUT_PA2_MOB_006_A_009.md`)** : qui/quoi/combien/pourquoi et approve/reject livres pour absences et avances; piece jointe absente (modele mobile absence n'expose pas `proof_path`; avances sans champ justificatif backend). Reste = `PA2-MOB-016` |
 | PA2-MOB-007 | P1 | Gestion RH mobile | API, manager mobile | **PARTIEL (audit 2026-07-22)** : nommer/revoquer RH et permissions visibles livres (`team_screen.dart`); aucun audit des changements de role. Reste = `PA2-MOB-015` |
-| PA2-MOB-008 | P1 | Mon compte premium portable | employee/manager | **FAIT (audit 2026-07-22)** : parcours professionnel, contacts personnels, placard numerique, QR, biometrie tous verifies presents dans `settings_screen.dart` |
+| PA2-MOB-008 | P1 | Mon compte premium portable | employee/manager | Fait le 2026-07-25: le audit 2026-07-22 avait verifie uniquement `leopardo_employee/settings_screen.dart` (Issue #978 restait ouverte car `leopardo_manager/settings_screen.dart` n'avait ni parcours, ni placard, ni QR, ni contacts personnels). `leopardo_manager` aligne desormais sur `leopardo_employee`: `_buildQrOnboardingSection`, `_buildCareerSection`, `_buildCabinetSection`, contacts personnels (`personal_email`/`recovery_email`/`personal_phone`) dans le formulaire profil | FAIT: parcours professionnel, contacts personnels, placard numerique, QR, biometrie tous presents dans `settings_screen.dart` des deux apps (employee et manager) |
 | PA2-MOB-009 | P1 | Mobile admin creation/activation client | platform admin | **FAIT, clos (Issue #979)** : creer entreprise, activer, voir abonnement, pays/devise/langue |
 | PA2-MOB-010 | P2 | Design system mobile 2026 | core + apps | composants unifies, contrastes lisibles, boutons actionnables, dark mode coherent |
 | PA2-MOB-011 | P1 | Eliminer les litteraux hex dupliques dans les ecrans pointage | `leopardo_employee`/`leopardo_manager`/`leopardo_hr` (attendance, smart_attendance), `leopardo_platform_admin/lib/main.dart` | zero `Color(0x...)` litteral hors `AppColors`/`AppTheme`; couleurs Material non gouvernees mappees ou ajoutees au token system; garde CI anti-recidive |
 | PA2-MOB-012 | P1 | Trancher la politique de theme clair/sombre | `leopardo_core/lib/core/theme/app_theme.dart`, 4 apps `app.dart`/`platform_admin_app.dart` | decision ecrite (sombre = experience principale documentee, ou `ThemeMode.system` + reglage utilisateur); les 4 apps alignees sur la meme decision |
-| PA2-MOB-013 | P2 | Aligner `leopardo_platform_admin` sur le vocabulaire de composants partages | `leopardo_platform_admin/lib/src/features/companies`, `leopardo_core/lib/core/widgets` | usage de `LeopardoBadge`/`LeopardoQrCard`/`ShimmerLoading` a parite avec les 3 autres apps sur les ecrans liste/detail/creation |
+| PA2-MOB-013 | P2 | ~~Aligner~~ Fait le 2026-07-25: `CompanyScreen` (liste), `CompanyDetailScreen` (fiche) et `CompanyRequestsScreen` remplacent `MobileStatusPill`/chips manuels et `MobileEmptyLoading` par `LeopardoBadge.forStatus`/`LeopardoBadge` et des squelettes `ShimmerLoading`, a parite avec `leopardo_employee`/`leopardo_manager`/`leopardo_hr`; `CompanyDetailScreen` ajoute une `LeopardoQrCard` de reference tenant (identifiant client scannable/copiable pour le support) | `leopardo_platform_admin/lib/src/features/companies`, `leopardo_core/lib/core/widgets` | FAIT: usage de `LeopardoBadge`/`LeopardoQrCard`/`ShimmerLoading` a parite avec les 3 autres apps sur les ecrans liste/detail/creation |
 | PA2-MOB-014 | P1 | Auditer et clore explicitement le statut reel de PA2-MOB-006 a 009 | `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md`, `CHANGELOG.md` | statut explicite (fait/partiel/non demarre) pour chaque ticket avec preuve CHANGELOG; PA2-MOB-009 verifie en priorite (code applicatif semble deja livre) |
 | PA2-MOB-015 | P2 | Auditer les changements de role/permission RH | `api/app/Modules/HR/Infrastructure/Services/EmployeeService.php`, `EmployeeController::update()` | chaque changement de `role`/`manager_role` via l'API employee update declenche un enregistrement d'audit (acteur, ancien/nouveau role, horodatage) consultable; couverture test dediee |
 | PA2-MOB-016 | P2 | Pieces jointes pour absences et avances | `api/app/Modules/Planning`, `api/app/Modules/Payroll`, `leopardo_core/lib/models/{absence,salary_advance}.dart`, ecrans manager/employee absences+avances des 3 apps | `Absence.fromJson` parse `proof_path` et l'UI manager/employee permet de consulter (et pour les avances : d'ajouter au backend) une piece jointe; `SalaryAdvance` gagne un champ justificatif backend+API+mobile equivalent |
@@ -88,11 +88,11 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-JOB-001 | P0 | Redis/queues readiness | infra, API | health queue, worker runbook, retry, failed jobs visibles |
-| PA2-JOB-002 | P0 | Notifications FCM production | API, mobile | device tokens, preferences, push employee/manager, history, fallback polling |
-| PA2-JOB-003 | P1 | Communication multi-canal | API | email/SMS/WhatsApp providers audit-only ou actifs selon env, quotas, quiet hours |
-| PA2-JOB-004 | P1 | Traitements paie asynchrones | API jobs | recalculs, PDF, notifications post-paiement ne bloquent pas UI |
-| PA2-JOB-005 | P1 | k6 stress tests gates | `dev-hub/k6`, Actions | scenarios 10/20/50/100 users, lancement manuel ou path-based |
-| PA2-JOB-006 | P2 | Observabilite go-live | docs, dashboard | uptime, logs, queue depth, DB health, alerting minimal |
+| PA2-JOB-002 | P0 | ~~Notifications FCM production~~ Fait (audit 2026-07-25, `17_AUDIT_STATUT_PA2_JOB_001_A_006.md`) : livre sous plusieurs tickets `PA2-COMM-*` (device tokens `DeviceTokenController`, preferences `NotificationPreference`, push `PushNotificationService`, fallback polling `PA2-COMM-013`), jamais rattache a l'issue #996 | API, mobile | device tokens, preferences, push employee/manager, history, fallback polling |
+| PA2-JOB-003 | P1 | ~~Communication multi-canal~~ Fait cote code (audit 2026-07-25) mais integration bloquee tant que `PA2-COMM-008` (PR #1208, conflit `notifications.php`) n'est pas mergee ; SMS reste intentionnellement audit-only | API | email/SMS/WhatsApp providers audit-only ou actifs selon env, quotas, quiet hours |
+| PA2-JOB-004 | P1 | ~~Traitements paie asynchrones~~ Fait cote code (audit 2026-07-25, `GeneratePaySlipPdfJob`/`ProcessBulkPaymentJob`/`PrecalculatePayrollRuns` via PA2-PAY-012/013/014) mais integration bloquee tant que `PA2-COMM-010` (PR #1205, conflit `notifications.php`) n'est pas mergee | API jobs | recalculs, PDF, notifications post-paiement ne bloquent pas UI |
+| PA2-JOB-005 | P1 | ~~k6 stress tests gates~~ Fait le 2026-07-25 : volet pointage (`attendance-punch-scale.js`, PA2-QA-004) et volet paie progressif 10/20/50/100 (`payroll-progressive-scale.js`, PA2-QA-005) desormais tous les deux livres | `dev-hub/k6`, Actions | scenarios 10/20/50/100 users, lancement manuel ou path-based |
+| PA2-JOB-006 | P2 | ~~Observabilite go-live~~ Fait (audit 2026-07-25) : livre integralement par `PA2-QA-006` (`QueueObservabilityController`, dependance PA2-JOB-001 citee dans son propre docblock), jamais rattache a l'issue #1000 | docs, dashboard | uptime, logs, queue depth, DB health, alerting minimal |
 
 ## Paie, avances et documents
 
@@ -103,7 +103,7 @@
 | PA2-PAY-003 | P1 | Cycles paie multi-frequence | API | journalier/hebdo/mensuel, regles entreprise, preview manager |
 | PA2-PAY-004 | P1 | Bordereaux PDF async | API jobs | generation PDF, stockage, telechargement, notification quand pret |
 | PA2-PAY-005 | P2 | Paiement masse manager | API, mobile/web | selection multiple, batch async, recap, erreurs partielles |
-| PA2-PAY-006 | P2 | Signature numerique preparee | API/docs | modele consentement/signature, audit, sans sur-ingenierie crypto prematuree |
+| PA2-PAY-006 | P2 | Fait le 2026-07-25: modele consentement/signature documente (`docs/architecture/adr/0008-payment-consent-signature-model.md`, decrit le mecanisme deja livre par PA2-PAY-016) + `PaymentConfirmation` passe sur `Auditable` (une ligne `audit_logs` par confirmation) | API/docs | FAIT: modele consentement/signature, audit, sans sur-ingenierie crypto prematuree |
 
 ## Internationalisation, pays et accessibilite
 
@@ -199,10 +199,10 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-QA-001 | P0 | Smoke login 5 surfaces | CI/API/mobile/web/kiosk | employee, manager, platform admin, web client, admin web, kiosk valides |
-| PA2-QA-002 | P0 | Matrice boutons critiques | docs/tests | chaque bouton pointage/paie/client/admin/kiosk mappe vers route ou action locale |
+| PA2-QA-002 | P0 | ~~Matrice~~ Fait le 2026-07-24: `docs/PLAN_ACTION2/MATRICE_BOUTONS_CRITIQUES.md` cree, croisant 24 boutons critiques (pointage kiosk/mobile, paie admin web/web dashboard, approbations mobile manager, activation client platform admin, checkout/signup vitrine) avec les routes API reelles (`api/routes/**`) ou une action locale justifiee (mode demo kiosk, pagination cote client, sandbox carte checkout) ; 0 bouton critique trouve sans route ni justification | docs/tests | chaque bouton pointage/paie/client/admin/kiosk mappe vers route ou action locale |
 | PA2-QA-003 | P0 | Contrats API par profil | API tests | employee, manager, superadmin, kiosk; permissions et erreurs |
 | PA2-QA-004 | P1 | Tests charge k6 pointage | dev-hub/k6 | scenario 10/20/50/100 punchs, lance seulement via paths ou manuel |
-| PA2-QA-005 | P1 | Tests charge k6 paie | dev-hub/k6 | preview paie, batch paiement, notification async |
+| PA2-QA-005 | P1 | ~~Tests charge k6 paie~~ Fait le 2026-07-25 : `dev-hub/load/k6/payroll-progressive-scale.js` cree, memes 4 paliers 10/20/50/100 VUs que `attendance-punch-scale.js` (PA2-QA-004), couvrant preview paie (`payroll/cycles/preview`, lecture), batch paiement (`payroll-runs/{id}/bulk-pay` + poll statut, mutation optionnelle) et notification async (poll `observability/queues`, PA2-QA-006) | dev-hub/k6 | preview paie, batch paiement, notification async |
 | PA2-QA-006 | P1 | Observabilite Redis/jobs | API/admin | queue depth, failed jobs, last run, alertes visibles |
 | PA2-QA-007 | P1 | Audit CORS et cold-start | API/web/mobile | web vitrine et apps gerent Render cold-start et CORS proprement |
 | PA2-QA-008 | P2 | Lighthouse vitrine conversion | CI/manual | score et poids assets surveilles sans bloquer inutilement |

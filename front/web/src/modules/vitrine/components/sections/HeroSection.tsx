@@ -161,6 +161,18 @@ export function HeroSection({
           {/* Optional quick-trial inline form (e.g. QuickTrialEmailForm with source=hero_email_trial) */}
           {quickTrialForm}
 
+          {/* Real product visual — proves the product exists before the visitor scrolls (PA2-MKT-001) */}
+          {visual && (
+            <motion.div
+              initial={animated ? { opacity: 0, y: 40, scale: 0.97 } : {}}
+              animate={animated ? { opacity: 1, y: 0, scale: 1 } : {}}
+              transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-16 max-w-4xl mx-auto"
+            >
+              {visual}
+            </motion.div>
+          )}
+
           {/* Stats */}
           {stats && stats.length > 0 && (
             <motion.div
