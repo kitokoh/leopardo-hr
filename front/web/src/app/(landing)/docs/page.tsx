@@ -354,6 +354,45 @@ export default function DocsPage() {
         </div>
       </section>
 
+      {/* Kiosk terrain */}
+      <section id="kiosk" className="py-12 px-4 bg-emerald-50 dark:bg-emerald-900/10 border-y border-emerald-100 dark:border-emerald-900/30">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+              <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pointage depuis le kiosque (ZKTeco)</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Borne d&apos;entree biometrie/QR + bridge desktop local offline-first</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">Installation</h3>
+              <ol className="list-decimal list-inside space-y-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <li>Copier <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">config.example.json</code> en <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">config.json</code></li>
+                <li>Renseigner <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">apiBaseUrl</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">deviceCode</code> et <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">kioskToken</code> (generes depuis l&apos;app manager)</li>
+                <li>Lancer <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">python desktop-bridge/bridge.py</code> sur le PC/mini-PC local</li>
+                <li>Ouvrir la borne sur <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">http://127.0.0.1:8037/index.html</code></li>
+              </ol>
+            </div>
+            <div className="p-5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">Fonctionnement</h3>
+              <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <li>Empreinte, visage ou QR/matricule en fallback clavier HID</li>
+                <li>Mode hors-ligne : file locale SQLite, synchronisation automatique au retour reseau</li>
+                <li>Admin local (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">admin.html</code>) pour forcer une synchronisation manuelle</li>
+                <li>Le matching biometrique brut reste gere par le terminal/SDK ZKTeco</li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+            Code source complet du bridge et de l&apos;UI kiosque : <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">front/zkteco-kiosk/</code>.{' '}
+            <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la page telechargement →</Link>
+          </p>
+        </div>
+      </section>
+
       {/* Doc categories */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto space-y-12">
