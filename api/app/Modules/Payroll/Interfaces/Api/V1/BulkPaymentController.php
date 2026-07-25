@@ -44,6 +44,17 @@ class BulkPaymentController extends Controller
             ], 422);
         }
 
+        // PA2-PAY-005: a manager can pick a subset of employees/pay slips to
+        // pay in this batch (e.g. "pay everyone except the two under
+        // dispute") instead of always paying the whole run. Omitting
+        // pay_slip_ids keeps the previous "pay everyone in the run"
+        // behaviour so existing integrations are unaffected.
+        $validated = $request->validate([
+            'pay_slip_ids' => ['nullable', 'array', 'min:1'],
+            'pay_slip_ids.*' => ['integer', 'distinct'],
+        ]);
+        $paySlipIds = $validated['pay_slip_ids'] ?? null;
+
         // Prevent double-dispatch if already processing
         $progressKey = "bulk_pay:run:{$payrollRun->id}";
         try {
@@ -61,11 +72,12 @@ class BulkPaymentController extends Controller
             // Redis unavailable — allow dispatch to continue
         }
 
-        ProcessBulkPaymentJob::dispatch($payrollRun->id, $actor->id);
+        ProcessBulkPaymentJob::dispatch($payrollRun->id, $actor->id, $paySlipIds);
 
         return response()->json([
             'message' => 'Bulk payment processing started.',
             'payroll_run_id' => $payrollRun->id,
+            'selected_pay_slip_count' => $paySlipIds !== null ? count($paySlipIds) : null,
             'status' => 'accepted',
         ], 202);
     }
