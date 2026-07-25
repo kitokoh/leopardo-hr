@@ -46,6 +46,13 @@ export interface FormSubmissionResponse {
   message: string;
   data?: any;
   error?: string;
+  /**
+   * Present when the backend accepted the request but could not reach the
+   * OTP/trial provisioning API (e.g. cold-start timeout). `false` means the
+   * lead was captured and the team will follow up manually; the caller must
+   * NOT treat this the same as a normal OTP-sent success.
+   */
+  provisioned?: boolean;
 }
 
 /**
@@ -85,8 +92,9 @@ export async function submitSignupForm(
       const error = await response.json();
       return {
         success: false,
-        message: "Erreur lors de la demande d'essai",
-        error: error.message,
+        message: error.message || "Erreur lors de la demande d'essai",
+        error: error.error || error.message,
+        data: error.data,
       };
     }
 
@@ -96,12 +104,16 @@ export async function submitSignupForm(
       success: true,
       message: result.message || "Code de verification envoye.",
       data: result.data,
+      provisioned: result.provisioned !== false,
     };
   } catch (error) {
     safeLog("Signup form error:", error);
     return {
       success: false,
-      message: "Erreur lors de la demande d'essai",
+      message:
+        error instanceof Error && error.name === 'AbortError'
+          ? 'Le serveur met du temps a repondre. Veuillez reessayer dans quelques instants.'
+          : "Erreur lors de la demande d'essai",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
   }
