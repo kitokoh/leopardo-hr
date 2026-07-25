@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Support\CountryDefaults;
 use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\App;
@@ -20,15 +21,6 @@ class PaySlipPdfGenerator
         'FR' => 'En application du Code du travail français. Cotisations CSG/CRDS incluses. Net imposable disponible.',
         'TR' => 'İş Kanunu uyarınca düzenlenmiştir. SGK primleri dahildir.',
         'SN' => 'Conformément au Code du travail sénégalais. IPRES/CSS incluses.',
-    ];
-
-    private const COUNTRY_CURRENCY = [
-        'DZ' => 'DZD',
-        'MA' => 'MAD',
-        'TN' => 'TND',
-        'FR' => 'EUR',
-        'TR' => 'TRY',
-        'SN' => 'XOF',
     ];
 
     public function generate(PaySlip $paySlip): string
@@ -51,7 +43,12 @@ class PaySlipPdfGenerator
             'lines' => $paySlip->lines->sortBy('order'),
             'employee' => $employee,
             'company' => $company,
-            'currency' => self::COUNTRY_CURRENCY[$countryCode] ?? 'EUR',
+            // PA2-I18N-003: resolve the pay slip currency from the payroll
+            // run's own country through the canonical CountryDefaults
+            // catalogue, instead of this class's own partial hardcoded map
+            // (which only covered 6 of the ~20 countries CountryDefaults
+            // already supports, e.g. CEMAC/CEDEAO members, GB, US, CA).
+            'currency' => CountryDefaults::for($countryCode)['currency'],
             'legalMentions' => self::COUNTRY_LEGAL[$countryCode] ?? '',
         ]);
 
@@ -78,4 +75,3 @@ class PaySlipPdfGenerator
         return $results;
     }
 }
-

@@ -122,11 +122,13 @@ class _PendingGeoSessionsScreenState
         title: 'Sessions à valider',
         subtitle: 'Smart Attendance — GPS',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
+            tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(pendingGeoSessionsProvider),
           ),
