@@ -85,6 +85,7 @@ return [
         'category',
         'company_id',
         'date',
+        'document_type',
         'employee_id',
         'feature_key',
         'hours_worked',
@@ -188,16 +189,23 @@ return [
             'title' => 'Réception d’avance confirmée',
             'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
         ],
-        // PA2-PAY-015 — employee dispute ("reclamation")
-        'salary_advance_disputed' => [
+        // PA2-COMM-010 — Payment document lifecycle: lets the employee know a
+        // receipt/payslip/bordereau is being prepared, then that it is ready,
+        // without the UI having to block or poll blindly for it.
+        'payment_document_processing' => [
             'category' => 'payroll',
-            'title' => 'Litige sur une avance sur salaire',
-            'body' => 'L’employé conteste avoir reçu le paiement de son avance sur salaire tel que déclaré. Merci de vérifier et de résoudre le litige.',
+            'title_key' => 'notifications.payment_document_processing_title',
+            'body_key' => 'notifications.payment_document_processing_body',
         ],
-        'salary_advance_dispute_resolved' => [
+        'payment_document_ready' => [
             'category' => 'payroll',
-            'title' => 'Litige sur l’avance résolu',
-            'body' => 'Le litige concernant votre avance sur salaire a été résolu par votre manager.',
+            'title_key' => 'notifications.payment_document_ready_title',
+            'body_key' => 'notifications.payment_document_ready_body',
+        ],
+        'payment_document_failed' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.payment_document_failed_title',
+            'body_key' => 'notifications.payment_document_failed_body',
         ],
         'attendance_auto_closed' => [
             'category' => 'hr',
