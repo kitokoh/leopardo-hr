@@ -826,6 +826,38 @@ trait CreatesMvpSchema
             $table->index('company_id');
         });
 
+        // PA2-COMM-012 — Pilot client support center (public schema, not
+        // tenant-scoped; see database/migrations/public/2026_07_25_000002_...).
+        Schema::create('platform_support_tickets', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id');
+            $table->unsignedInteger('created_by_employee_id');
+            $table->string('subject', 200);
+            $table->string('category', 30)->default('general');
+            $table->string('priority', 20)->default('normal');
+            $table->string('status', 20)->default('open');
+            $table->unsignedInteger('assigned_super_admin_id')->nullable();
+            $table->timestampTz('last_message_at')->nullable();
+            $table->timestampTz('resolved_at')->nullable();
+            $table->timestamps();
+
+            $table->index('company_id');
+            $table->index('status');
+            $table->index('priority');
+            $table->index('last_message_at');
+        });
+
+        Schema::create('platform_support_messages', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('platform_support_ticket_id');
+            $table->unsignedInteger('author_employee_id')->nullable();
+            $table->unsignedInteger('author_super_admin_id')->nullable();
+            $table->text('body');
+            $table->timestampTz('created_at')->nullable();
+
+            $table->index('platform_support_ticket_id');
+        });
+
         // PA2-ADM-006 — Secure super-admin impersonation sessions (public
         // schema; see database/migrations/public/2026_07_23_000003_...).
         Schema::create('platform_impersonation_sessions', function (Blueprint $table): void {
@@ -1871,6 +1903,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_impersonation_sessions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_support_messages"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "platform_support_tickets"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcements"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
