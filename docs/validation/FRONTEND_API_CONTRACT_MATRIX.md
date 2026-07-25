@@ -57,6 +57,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Documents paiement employe | `GET /api/v1/me/payment-documents` | employe | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
 | Mobile | Telechargement document paiement | `GET /api/v1/me/payment-documents/{paymentDocument}/download` | employe | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
 | Mobile manager | Resume paie equipe | `GET /api/v1/payroll/mobile-summary` | manager principal/comptable | `PayrollCycleIntegrationTest`, `FrontendApiContractTest` |
+| Mobile manager | Previsualisation cycle de paie candidat | `GET /api/v1/payroll/cycles/preview` | manager principal/comptable | `PayrollCyclePreviewTest`, `FrontendApiContractTest` |
 | Mobile manager | Documents paiement cycle | `GET /api/v1/payroll-runs/{payrollRun}/payment-documents` | manager principal/comptable | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
 | Mobile manager | Alias documents paiement | `GET /api/v1/payments/{payrollRun}/documents` | manager principal/comptable | `FrontendApiContractTest` |
 | Mobile manager | Lots paiement masse | `GET/POST /api/v1/payment-batches`, `GET /api/v1/payment-batches/{paymentBatch}` | manager principal/comptable | `PaymentBatchControllerTest`, `FrontendApiContractTest` |
