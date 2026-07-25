@@ -26,6 +26,7 @@ class CompanyRequestsScreen extends ConsumerWidget {
         title: 'Demandes clients',
         subtitle: 'Validation super-admin',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),

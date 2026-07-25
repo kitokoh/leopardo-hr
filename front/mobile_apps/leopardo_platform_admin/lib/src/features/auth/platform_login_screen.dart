@@ -131,6 +131,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
                       suffixIcon: IconButton(
+                        tooltip: 'Afficher ou masquer le mot de passe',
                         onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword,
                         ),
