@@ -242,6 +242,27 @@ jobs:
           set -euo pipefail
           test -f "${BUILD_FILE}"
 
+      - name: Rename build output with a per-app identifiable filename
+        # PA2-MOB-001: Flutter always names the raw build output
+        # "app-release.apk"/"app-release.aab" regardless of which of the 4
+        # mobile apps produced it, so a build downloaded from this workflow's
+        # artifact list or from Firebase App Distribution was previously
+        # indistinguishable from any other app's build once renamed by hand.
+        # Renaming (not copying) the file in place, then repointing
+        # BUILD_FILE at the new path, keeps every downstream step (Firebase
+        # distribution upload, artifact upload) working unchanged while
+        # giving the artifact a name like
+        # "leopardo-employee-employee-main-42.apk".
+        if: env.SHOULD_BUILD == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXTENSION="${BUILD_FILE##*.}"
+          RENAMED_FILE="$(dirname "${BUILD_FILE}")/${{ matrix.app.artifact_name }}-${BUILD_NAME}.${EXTENSION}"
+          mv "${BUILD_FILE}" "${RENAMED_FILE}"
+          echo "BUILD_FILE=${RENAMED_FILE}" >> "$GITHUB_ENV"
+          echo "Renamed build output to $(basename "${RENAMED_FILE}")"
+
       - name: Upload mobile artifact
         if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v7
