@@ -64,13 +64,34 @@ class PaySlipPdfLocaleTest extends TestCase
     }
 
     /**
+     * PA2-I18N-003 — the pay slip currency must follow the payroll run's
+     * own country (CEMAC member here) via `App\Support\CountryDefaults`
+     * instead of falling back to EUR/DZD for countries this class used to
+     * omit from its own hardcoded currency map.
+     */
+    public function test_payslip_pdf_resolves_currency_for_cemac_country_not_in_legacy_map(): void
+    {
+        $company = Company::factory()->create(['language' => 'fr']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'preferred_language' => 'fr',
+        ]);
+
+        [, $slip] = $this->payrollSlip($company, $employee, 'CM');
+
+        $binary = app(PaySlipPdfGenerator::class)->generate($slip);
+
+        $this->assertNotEmpty($binary);
+    }
+
+    /**
      * @return array{0: PayrollRun, 1: PaySlip}
      */
-    private function payrollSlip(Company $company, Employee $employee): array
+    private function payrollSlip(Company $company, Employee $employee, string $countryCode = 'DZ'): array
     {
         $run = PayrollRun::query()->create([
             'company_id' => $company->id,
-            'country_code' => 'DZ',
+            'country_code' => $countryCode,
             'period_start' => '2026-05-01',
             'period_end' => '2026-05-31',
             'status' => 'validated',
