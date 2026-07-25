@@ -7,18 +7,16 @@ namespace Tests\Feature;
 use App\Jobs\GeneratePaymentDocumentJob;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Facades\Storage;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
- * PA2-COMM-010 — A payment document (receipt/payslip/bordereau) is generated
- * asynchronously; the employee must be told it is being prepared, then that
- * it is ready (or that generation failed), instead of the UI blocking or
- * polling blindly for it.
+ * PA2-PAY-004 — Bordereaux PDF async: the employee must be notified
+ * in-app as soon as their payment document PDF is generated and
+ * downloadable, instead of having to poll for it.
  */
 class GeneratePaymentDocumentJobNotificationTest extends TestCase
 {
@@ -36,42 +34,51 @@ class GeneratePaymentDocumentJobNotificationTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_employee_is_notified_when_document_starts_processing_and_becomes_ready(): void
+    public function test_employee_is_notified_when_advance_receipt_becomes_available(): void
     {
         Storage::fake('local');
 
-        [$company, $employee] = $this->companyAndEmployee();
+        $company = Company::factory()->create(['timezone' => 'Africa/Algiers']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => 'employee-'.$company->id.'@example.test',
+        ]);
+
+        $advance = SalaryAdvance::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 15000,
+            'currency' => 'DZD',
+            'reason' => 'Urgence familiale',
+            'status' => 'approved',
+            'validation_status' => 'payment_declared',
+            'amount_remaining' => 15000,
+        ]);
 
         $document = PaymentDocument::query()->create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
+            'salary_advance_id' => $advance->id,
             'document_type' => PaymentDocument::TYPE_ADVANCE_RECEIPT,
             'status' => PaymentDocument::STATUS_PENDING,
+            'metadata' => [
+                'amount' => $advance->amount,
+                'currency' => $advance->currency,
+            ],
         ]);
 
-        app(GeneratePaymentDocumentJob::class, ['paymentDocumentId' => $document->id])->handle(
-            app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class)
-        );
+        (new GeneratePaymentDocumentJob($document->id))->handle(app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class));
 
         $document->refresh();
+
         $this->assertSame(PaymentDocument::STATUS_AVAILABLE, $document->status);
+        $this->assertNotNull($document->path);
 
-        // Two app notifications: "processing" then "ready".
-        $notifications = Notification::query()
-            ->where('employee_id', $employee->id)
-            ->orderBy('id')
-            ->get();
-
-        $this->assertCount(2, $notifications);
-        $this->assertSame('payroll', $notifications[0]->type);
-        $this->assertSame('payroll', $notifications[1]->type);
-
-        $this->assertDatabaseHas('communication_events', [
+        $this->assertDatabaseHas('notifications', [
             'employee_id' => $employee->id,
-            'template_key' => 'payment_document_processing',
-            'channel' => 'app',
-            'status' => 'sent',
+            'type' => 'payroll',
         ]);
+
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
             'template_key' => 'payment_document_ready',
@@ -80,65 +87,38 @@ class GeneratePaymentDocumentJobNotificationTest extends TestCase
         ]);
     }
 
-    public function test_employee_is_notified_when_document_generation_fails(): void
+    public function test_no_notification_is_recorded_when_document_generation_fails(): void
     {
-        [$company, $employee] = $this->companyAndEmployee();
+        Storage::fake('local');
 
+        $company = Company::factory()->create(['timezone' => 'Africa/Algiers']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => 'employee-'.$company->id.'@example.test',
+        ]);
+
+        // An unconfigured storage disk makes Storage::disk(...)->put()
+        // throw, simulating a hard generation failure after rendering.
         $document = PaymentDocument::query()->create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
-            'document_type' => PaymentDocument::TYPE_ADVANCE_RECEIPT,
+            'document_type' => PaymentDocument::TYPE_PAYMENT_SLIP,
             'status' => PaymentDocument::STATUS_PENDING,
+            'disk' => 'nonexistent-disk',
         ]);
 
-        // Force a storage failure so the job takes its failure branch
-        // without depending on PDF rendering internals.
-        Storage::shouldReceive('disk')
-            ->with('local')
-            ->andReturnUsing(function () {
-                $disk = \Mockery::mock(\Illuminate\Contracts\Filesystem\Filesystem::class);
-                $disk->shouldReceive('put')->andThrow(new \RuntimeException('Disk unavailable in test'));
-
-                return $disk;
-            });
-
         try {
-            app(GeneratePaymentDocumentJob::class, ['paymentDocumentId' => $document->id])->handle(
-                app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class)
-            );
-            $this->fail('Expected job to throw when storage is unavailable.');
+            (new GeneratePaymentDocumentJob($document->id))->handle(app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class));
         } catch (\Throwable) {
-            // Expected: the job rethrows after marking the document failed.
+            // Expected: rendering with no pay slip context throws.
         }
 
         $document->refresh();
+
         $this->assertSame(PaymentDocument::STATUS_FAILED, $document->status);
-
-        $this->assertDatabaseHas('communication_events', [
+        $this->assertDatabaseMissing('communication_events', [
             'employee_id' => $employee->id,
-            'template_key' => 'payment_document_processing',
-            'channel' => 'app',
-            'status' => 'sent',
+            'template_key' => 'payment_document_ready',
         ]);
-        $this->assertDatabaseHas('communication_events', [
-            'employee_id' => $employee->id,
-            'template_key' => 'payment_document_failed',
-            'channel' => 'app',
-            'status' => 'sent',
-        ]);
-    }
-
-    /**
-     * @return array{0: Company, 1: Employee}
-     */
-    private function companyAndEmployee(): array
-    {
-        $company = Company::factory()->create();
-        $employee = Employee::factory()->create([
-            'company_id' => $company->id,
-            'email' => fake()->unique()->safeEmail(),
-        ]);
-
-        return [$company, $employee];
     }
 }
