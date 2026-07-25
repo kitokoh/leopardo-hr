@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SignupForm } from '../SignupForm';
+import { submitSignupForm } from '@/modules/vitrine/lib/forms';
 
 // Mock the form submission
 jest.mock('@/modules/vitrine/lib/forms', () => ({
@@ -21,11 +22,15 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
         return { ...state, isSubmitting: false, isSuccess: true, message: action.payload?.message ?? '' };
       case 'SUBMIT_ERROR':
         return { ...state, isSubmitting: false, isError: true, message: action.payload?.message ?? '' };
+      case 'RESET':
+        return { ...state, isSubmitting: false };
       default:
         return state;
     }
   },
 }));
+
+const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
 
 describe('SignupForm Component', () => {
   describe('Rendering', () => {
@@ -133,6 +138,57 @@ describe('SignupForm Component', () => {
       const { container } = render(<SignupForm />);
       const form = container.querySelector('form');
       expect(form).toBeInTheDocument();
+    });
+  });
+
+  describe('Cold-start fallback (PA2-MKT-002)', () => {
+    beforeEach(() => {
+      mockedSubmitSignupForm.mockReset();
+    });
+
+    async function fillValidForm() {
+      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      const selects = screen.getAllByRole('combobox');
+      await userEvent.selectOptions(selects[0], 'founder');
+      await userEvent.selectOptions(selects[1], '1-10');
+      await userEvent.click(screen.getByRole('checkbox'));
+    }
+
+    it('shows the "we will contact you" pending screen instead of a fake OTP step when provisioned is false', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: false,
+        message: "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables.",
+        data: { nextStep: 'contact_under_24h' },
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /demande d'essai recue/i })).toBeInTheDocument();
+      });
+      expect(screen.getByText(/notre equipe vous contacte sous 24h ouvrables/i)).toBeInTheDocument();
+      expect(screen.queryByText(/verifiez votre email/i)).not.toBeInTheDocument();
+    });
+
+    it('shows the OTP verification step when provisioned is true (default backend path)', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de verification envoye.',
+        data: {},
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+      });
     });
   });
 

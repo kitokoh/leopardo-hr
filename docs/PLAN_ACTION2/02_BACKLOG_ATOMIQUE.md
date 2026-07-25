@@ -5,9 +5,9 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-MKT-001 | P0 | Hero vitrine vendeur avec preuve produit visible | `front/web` | H1 positionne Leopardo comme OS mobile-first, capture email visible, visuel produit reel ou video existante, CTA `/signup` et `/demo` sans lien mort |
-| PA2-MKT-002 | P0 | Parcours essai gratuit sans friction | `front/web`, API trial | Email-only hero + formulaire guide envoient un lead/trial coherent, erreurs lisibles, cold-start API gere |
+| PA2-MKT-002 | P0 | Fait le 2026-07-25 (issue #949): bug corrige ou le formulaire guide (`SignupForm`) affichait un faux ecran "code OTP envoye" meme quand le backend tombait en fallback `provisioned:false` (cold-start/timeout) - un nouvel ecran "pending" honnete est affiche a la place; le formulaire hero email-only (`QuickTrialEmailForm`) affiche desormais le message reel du backend (y compris le fallback 24h) au lieu d'un message generique, et gere un timeout explicite | `front/web`, API trial | FAIT: email-only hero + formulaire guide envoient un lead/trial coherent, erreurs lisibles (message backend reel affiche), cold-start API gere (fallback `provisioned:false` correctement distingue d'un OTP envoye) |
 | PA2-MKT-003 | P0 | Pricing credible pour PME terrain | `front/web` | offres Free trial 30 jours, Starter, Pro, Business/Enterprise; devise et pays parametrables; FAQ objections clients |
-| PA2-MKT-004 | P1 | Page download commerciale | `front/web` | employee, manager, platform admin, kiosk expliqués; liens Firebase/store fallback reels; pas d'ancre morte |
+| PA2-MKT-004 | P1 | Fait le 2026-07-25 (issue #951): section kiosk ZKTeco ajoutee a `/download` (biometrie/QR, bridge offline, provisioning manager) avec CTA `/docs#kiosk` et `/contact?topic=download-kiosk`; `id="kiosk"` ajoute a `/docs` (etait un ancre morte, jamais definie) | `front/web` | FAIT: employee, manager, platform admin, kiosk expliques; liens Firebase/store fallback reels et guide/contact kiosk reels; plus aucune ancre morte |
 | PA2-MKT-005 | P1 | Fait le 2026-07-25: nav Ressources deja livree (guides/blog/docs/download); SEO metadata + sitemap ajoutes pour /docs et /download (gap trouve et corrige) | `front/web` | FAIT: navigation "Ressources" contient guides, articles, docs, download; metadata SEO par page |
 | PA2-MKT-006 | P1 | Trust proof et social proof | `front/web` | section "trusted by/pilotes" adaptable, chiffres prudents, videos/assets existants integres |
 | PA2-MKT-007 | P2 | Funnel CRM marketing | `front/web`, API CRM | signup/demo/contact/newsletter alimentent une pipeline admin avec source, campagne, langue, pays |
@@ -205,7 +205,7 @@
 | PA2-QA-005 | P1 | ~~Tests charge k6 paie~~ Fait le 2026-07-25 : `dev-hub/load/k6/payroll-progressive-scale.js` cree, memes 4 paliers 10/20/50/100 VUs que `attendance-punch-scale.js` (PA2-QA-004), couvrant preview paie (`payroll/cycles/preview`, lecture), batch paiement (`payroll-runs/{id}/bulk-pay` + poll statut, mutation optionnelle) et notification async (poll `observability/queues`, PA2-QA-006) | dev-hub/k6 | preview paie, batch paiement, notification async |
 | PA2-QA-006 | P1 | Observabilite Redis/jobs | API/admin | queue depth, failed jobs, last run, alertes visibles |
 | PA2-QA-007 | P1 | Audit CORS et cold-start | API/web/mobile | web vitrine et apps gerent Render cold-start et CORS proprement |
-| PA2-QA-008 | P2 | Lighthouse vitrine conversion | CI/manual | score et poids assets surveilles sans bloquer inutilement |
+| PA2-QA-008 | P2 | Fait le 2026-07-25 (issue #1073): `lighthouse.yml` passe de manuel-uniquement a PR/push sur `front/web` + hebdomadaire, avec `budget.json` (poids par type d'asset) et etape non bloquante (`continue-on-error`) | CI/manual | FAIT: score et poids assets surveilles sans bloquer inutilement |
 | PA2-QA-009 | P2 | Accessibilite mobile lisibilite | mobile | contrastes, textes visibles, pas de bouton sans action |
 | PA2-QA-010 | P2 | Rapport release pilote | docs | checklist go/no-go par surface avec preuves |
 

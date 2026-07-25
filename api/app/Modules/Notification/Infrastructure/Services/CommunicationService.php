@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Contracts\Communication\MessageProviderInterface;
+use App\Contracts\Communication\RetryableMessageProviderInterface;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\SendPushNotificationJob;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
