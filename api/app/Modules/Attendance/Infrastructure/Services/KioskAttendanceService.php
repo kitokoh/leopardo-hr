@@ -18,9 +18,9 @@ class KioskAttendanceService
         private readonly TenantManager $tenantManager,
     ) {}
 
-    public function punch(AttendanceKiosk $kiosk, string $identifier, string $action = 'check_in'): AttendanceLog
+    public function punch(AttendanceKiosk $kiosk, string $identifier, string $action = 'check_in', string $workType = 'normal'): AttendanceLog
     {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action) {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType) {
             $employee = Employee::query()
                 ->where('company_id', $kiosk->company_id)
                 ->where(function ($query) use ($identifier): void {
@@ -41,11 +41,20 @@ class KioskAttendanceService
 
             $kiosk->forceFill(['last_seen_at' => now()])->save();
 
+            // PA2-ATT-010: kiosk punches feed the same multi-event work_type
+            // model as mobile (normal/overtime/break/resume/mission/travel/
+            // training/other) instead of being locked to plain check_in/out.
             if ($action === 'check_out') {
-                return $this->attendanceService->checkOut($employee, new CheckInDTO(method: 'kiosk_'.$kiosk->biometric_mode));
+                return $this->attendanceService->checkOut($employee, new CheckInDTO(
+                    method: 'kiosk_'.$kiosk->biometric_mode,
+                    work_type: $workType,
+                ));
             }
 
-            return $this->attendanceService->checkIn($employee, new CheckInDTO(method: 'kiosk_'.$kiosk->biometric_mode));
+            return $this->attendanceService->checkIn($employee, new CheckInDTO(
+                method: 'kiosk_'.$kiosk->biometric_mode,
+                work_type: $workType,
+            ));
         });
     }
 
@@ -85,7 +94,10 @@ class KioskAttendanceService
                     biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
                     synced_from_offline: true,
                     action: $event['action'] ?? 'check_in',
-                    source_device_code: $kiosk->device_code
+                    source_device_code: $kiosk->device_code,
+                    // PA2-ATT-010: offline-synced kiosk events also carry the
+                    // multi-event work_type, matching mobile's offline sync.
+                    work_type: $event['work_type'] ?? 'normal',
                 ));
 
                 $processed[] = $log->id;
