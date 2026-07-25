@@ -22,6 +22,7 @@ class SalaryAdvance {
     this.monthlyDeduction,
     this.amountRemaining,
     this.repaymentPlan = const <Map<String, dynamic>>[],
+    this.hasProof = false,
     this.requestedAt,
     this.createdAt,
     this.updatedAt,
@@ -49,6 +50,9 @@ class SalaryAdvance {
   final double? monthlyDeduction;
   final double? amountRemaining;
   final List<Map<String, dynamic>> repaymentPlan;
+  // PA2-MOB-006: whether a supporting document (justification, quote,
+  // invoice, etc.) is attached to this request.
+  final bool hasProof;
   final DateTime? requestedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -65,8 +69,9 @@ class SalaryAdvance {
     }
 
     final employee = json['employee'];
-    final employeeMap =
-        employee is Map ? employee.cast<String, dynamic>() : null;
+    final employeeMap = employee is Map
+        ? employee.cast<String, dynamic>()
+        : null;
     final company = json['company'];
     final companyMap = company is Map ? company.cast<String, dynamic>() : null;
     final firstName = employeeMap?['first_name']?.toString().trim() ?? '';
@@ -80,8 +85,8 @@ class SalaryAdvance {
       amount: _parseDouble(json['amount']),
       employeeName:
           (json['employee_name']?.toString().trim().isNotEmpty ?? false)
-              ? json['employee_name'].toString().trim()
-              : (composedName.isEmpty ? null : composedName),
+          ? json['employee_name'].toString().trim()
+          : (composedName.isEmpty ? null : composedName),
       employeeEmail: employeeMap?['email']?.toString(),
       companyId:
           json['company_id']?.toString() ??
@@ -111,6 +116,9 @@ class SalaryAdvance {
       monthlyDeduction: _parseDouble(json['monthly_deduction']),
       amountRemaining: _parseDouble(json['amount_remaining']),
       repaymentPlan: plan,
+      hasProof:
+          json['has_proof'] as bool? ??
+          (json['proof_path']?.toString().isNotEmpty ?? false),
       requestedAt: DateTime.tryParse(json['requested_at']?.toString() ?? ''),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
       updatedAt: DateTime.tryParse(json['updated_at']?.toString() ?? ''),
