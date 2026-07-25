@@ -117,6 +117,19 @@ export default function DashboardLayout({
     setUnreadCount((count) => Math.max(0, count - 1));
   };
 
+  const markAllNotificationsRead = async () => {
+    if (unreadCount === 0) {
+      return;
+    }
+
+    await apiFetch('/notifications/read-all', {
+      method: 'PUT',
+    });
+
+    setNotificationPreview((items) => items.map((item) => ({ ...item, is_read: true })));
+    setUnreadCount(0);
+  };
+
   const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => {
@@ -286,7 +299,18 @@ export default function DashboardLayout({
                 <div className="absolute right-0 top-12 z-20 w-80 rounded-lg border border-slate-200 bg-white p-3 shadow-xl">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                     <p className="text-sm font-bold text-slate-900">Notifications</p>
-                    <span className="text-xs font-semibold text-slate-500">{unreadCount} non lue(s)</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-slate-500">{unreadCount} non lue(s)</span>
+                      {unreadCount > 0 ? (
+                        <button
+                          type="button"
+                          className="text-xs font-semibold text-brand-600 transition hover:text-brand-800"
+                          onClick={() => void markAllNotificationsRead()}
+                        >
+                          Tout marquer lu
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="mt-2 max-h-80 space-y-2 overflow-auto">
                     {notificationPreview.length > 0 ? notificationPreview.map((notification) => (

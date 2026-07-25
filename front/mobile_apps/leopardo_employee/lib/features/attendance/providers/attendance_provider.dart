@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
+import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
@@ -362,4 +363,16 @@ final todayTasksProvider = FutureProvider<List<Map<String, dynamic>>>((
 ) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getTodayTasks();
+});
+
+/// PA2-ATT-004 - Anomalies detected on the caller's own attendance logs for
+/// the calendar month containing [date]. Non-blocking: repository swallows
+/// network errors and returns an empty report so the day-detail view never
+/// fails to render because of this enrichment.
+final monthlyAnomaliesProvider =
+    FutureProvider.family<AttendanceAnomalyReport, DateTime>((ref, date) async {
+  final repo = ref.watch(attendanceRepositoryProvider);
+  final from = DateTime(date.year, date.month, 1);
+  final to = DateTime(date.year, date.month + 1, 0);
+  return await repo.getMyAnomalies(from: from, to: to);
 });
