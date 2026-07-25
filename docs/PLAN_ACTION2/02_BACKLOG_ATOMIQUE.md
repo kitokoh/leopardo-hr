@@ -103,7 +103,7 @@
 | PA2-PAY-003 | P1 | Cycles paie multi-frequence | API | journalier/hebdo/mensuel, regles entreprise, preview manager |
 | PA2-PAY-004 | P1 | Bordereaux PDF async | API jobs | generation PDF, stockage, telechargement, notification quand pret |
 | PA2-PAY-005 | P2 | Paiement masse manager | API, mobile/web | selection multiple, batch async, recap, erreurs partielles |
-| PA2-PAY-006 | P2 | Signature numerique preparee | API/docs | modele consentement/signature, audit, sans sur-ingenierie crypto prematuree |
+| PA2-PAY-006 | P2 | Fait le 2026-07-25: modele consentement/signature documente (`docs/architecture/adr/0008-payment-consent-signature-model.md`, decrit le mecanisme deja livre par PA2-PAY-016) + `PaymentConfirmation` passe sur `Auditable` (une ligne `audit_logs` par confirmation) | API/docs | FAIT: modele consentement/signature, audit, sans sur-ingenierie crypto prematuree |
 
 ## Internationalisation, pays et accessibilite
 
