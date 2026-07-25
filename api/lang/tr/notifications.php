@@ -30,10 +30,6 @@ return [
     'company_announcement_title' => 'Şirket duyurusu',
     'company_announcement_body' => 'Şirketinizde yeni bir duyuru yayınlandı.',
 
-    'payment_document_processing_title' => 'Belge hazırlanıyor',
-    'payment_document_processing_body' => 'Ödeme belgeniz oluşturuluyor. Hazır olduğunda size bildireceğiz.',
-    'payment_document_ready_title' => 'Ödeme belgesi hazır',
-    'payment_document_ready_body' => 'Ödeme belgeniz şimdi indirilebilir durumda.',
-    'payment_document_failed_title' => 'Ödeme belgesi kullanılamıyor',
-    'payment_document_failed_body' => 'Ödeme belgeniz oluşturulamadı. Ekibimiz bilgilendirildi; sorun devam ederse yöneticinizle iletişime geçin.',
+    'conversation_message_received_title' => ':author\'dan yeni mesaj',
+    'conversation_message_received_body' => ':author, ":thread" konusunda yanıt verdi.',
 ];
