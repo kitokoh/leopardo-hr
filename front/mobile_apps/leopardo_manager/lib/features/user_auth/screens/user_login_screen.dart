@@ -111,6 +111,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
+                    tooltip: 'Retour',
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       if (context.canPop()) {
@@ -240,6 +241,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                 labelText: 'Mot de passe',
                 prefixIcon: const Icon(Icons.lock_outlined),
                 suffixIcon: IconButton(
+                  tooltip: 'Afficher ou masquer le mot de passe',
                   icon: Icon(
                     _obscure ? Icons.visibility_off : Icons.visibility,
                   ),

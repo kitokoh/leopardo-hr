@@ -25,6 +25,7 @@ class CompanyScreen extends ConsumerWidget {
         title: 'Entreprises',
         subtitle: 'Tenants plateforme',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),

@@ -254,6 +254,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
         title: 'Nouveau client',
         subtitle: 'Provisionnement plateforme',
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),

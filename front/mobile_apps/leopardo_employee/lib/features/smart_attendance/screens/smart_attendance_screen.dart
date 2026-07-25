@@ -45,6 +45,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
         backgroundColor: _bg,
         elevation: 0,
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _text),
           onPressed: () => context.pop(),
         ),
@@ -59,6 +60,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
         actions: [
           // Bouton de rafraîchissement
           IconButton(
+            tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded, color: _muted),
             onPressed: () {
               ref.invalidate(smartAttendanceConfigProvider);

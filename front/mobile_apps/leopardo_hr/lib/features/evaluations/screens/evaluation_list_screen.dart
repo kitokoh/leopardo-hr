@@ -22,6 +22,7 @@ class EvaluationListScreen extends ConsumerWidget {
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.of(context).pop(),
         ),
