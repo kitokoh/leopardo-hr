@@ -44,6 +44,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/about', today, 'monthly', 0.7),
     page('/changelog', today, 'weekly', 0.65),
     page('/blog', today, 'weekly', 0.8),
+    page('/docs', today, 'monthly', 0.7),
+    page('/download', today, 'monthly', 0.75),
     page('/privacy', today, 'yearly', 0.4),
     page('/terms', today, 'yearly', 0.4),
     page('/guides/rh-startup', today, 'monthly', 0.7),
