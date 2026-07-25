@@ -67,6 +67,25 @@ function contextualErrorMessage(status, data, url) {
   }
 }
 
+// Render cold-start handling: the free/starter Render tier used for the API
+// can take several seconds to wake up from an idle instance, returning a
+// transient 502/503/504 during that window. `front/web/src/lib/api-client.ts`
+// (Next.js vitrine) and `leopardo_core/lib/core/api/api_client.dart` (mobile
+// apps) both already retry those specific statuses with the same progressive
+// backoff; the admin dashboard only ever showed a "try again" toast without
+// retrying automatically. Mirrors the same constants so behaviour stays
+// consistent across every surface. See PA2-QA-007.
+const COLD_START_STATUSES = [502, 503, 504]
+const COLD_START_MAX_RETRIES = 2
+
+function coldStartBackoffMs(attempt) {
+  return Math.min(3000 * (attempt + 1), 10000)
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
 function baseEndsWithV1(baseURL) {
@@ -127,6 +146,20 @@ api.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response
       const requestUrl = originalRequest?.url || ''
+
+      if (COLD_START_STATUSES.includes(status) && originalRequest) {
+        const attempt = originalRequest._coldStartAttempt || 0
+        if (attempt < COLD_START_MAX_RETRIES) {
+          originalRequest._coldStartAttempt = attempt + 1
+          addBreadcrumb('api.cold_start_retry', `HTTP ${status} on ${originalRequest.method?.toUpperCase() || 'GET'} ${requestUrl}, retrying (${attempt + 1}/${COLD_START_MAX_RETRIES})`, {
+            status,
+            url: requestUrl,
+            method: originalRequest.method,
+          })
+          await sleep(coldStartBackoffMs(attempt))
+          return api(originalRequest)
+        }
+      }
 
       addBreadcrumb('api.error', `HTTP ${status} on ${originalRequest?.method?.toUpperCase() || 'GET'} ${requestUrl}`, {
         status,
