@@ -55,6 +55,9 @@ class SalaryAdvance extends Model
         // PA2-PAY-015 — employee dispute
         'dispute_reason', 'disputed_at',
         'dispute_resolved_at', 'dispute_resolved_by', 'dispute_resolution_note',
+        // PA2-MOB-006 — optional supporting document (justification, quote,
+        // invoice, etc.) attached at request time.
+        'proof_path',
     ];
 
     protected $casts = [
