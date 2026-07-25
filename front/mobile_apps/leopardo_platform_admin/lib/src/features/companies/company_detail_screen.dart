@@ -46,6 +46,7 @@ class CompanyDetailScreen extends ConsumerWidget {
         title: 'Fiche client',
         subtitle: companyId,
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
