@@ -70,6 +70,17 @@ return [
         'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
     ],
 
+    'marketing_lead_webhook' => [
+        // PA2-MKT-007 - Shared secret the public vitrine (front/web Next.js
+        // API routes) sends in `X-Marketing-Lead-Token` (or as a Bearer
+        // token) on every call to POST /api/v1/marketing/leads. Reuses the
+        // same value as `MARKETING_LEAD_WEBHOOK_TOKEN`, already documented
+        // in docs/validation/LAUNCH_OBSERVABILITY_DASHBOARD.md for the
+        // CRM/email forward webhooks. Left empty in local/test environments,
+        // in which case the check is skipped.
+        'secret' => env('MARKETING_LEAD_WEBHOOK_TOKEN'),
+    ],
+
     'ayrshare' => [
         // Cle API primaire du compte Leopardo cote Ayrshare (Business/Enterprise
         // plan requis pour gerer des profils utilisateur par tenant).
