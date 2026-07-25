@@ -36,11 +36,18 @@ return new class extends Migration
         // `companies` lives in the `public` schema while this migration runs
         // against a tenant schema (search_path=<tenant>,public in
         // production, but CI runs tenant migrations with
-        // search_path=shared_tenants only, no `public`). Schema-qualify the
-        // join target so it resolves correctly regardless of search_path.
-        DB::table('salary_advances')
-            ->join('public.companies', 'public.companies.id', '=', 'salary_advances.company_id')
-            ->update(['salary_advances.currency' => DB::raw('public.companies.currency')]);
+        // search_path=shared_tenants only, no `public`). Laravel's query
+        // builder also cannot express a joined UPDATE on PostgreSQL (it
+        // tries to reference the joined table inside the UPDATE's own
+        // scope, which Postgres rejects), so use PostgreSQL's native
+        // "UPDATE ... SET ... FROM ..." syntax directly and schema-qualify
+        // the companies reference so it resolves regardless of search_path.
+        DB::statement(
+            'update salary_advances '.
+            'set currency = companies.currency '.
+            'from public.companies '.
+            'where companies.id = salary_advances.company_id'
+        );
     }
 
     public function down(): void
