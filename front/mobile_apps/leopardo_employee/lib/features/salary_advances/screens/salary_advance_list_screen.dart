@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -9,12 +12,22 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/salary_advances/providers/salary_advance_provider.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SalaryAdvanceListScreen extends ConsumerWidget {
+class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SalaryAdvanceListScreen> createState() =>
+      _SalaryAdvanceListScreenState();
+}
+
+class _SalaryAdvanceListScreenState
+    extends ConsumerState<SalaryAdvanceListScreen> {
+  int? _downloadingProofId;
+
+  @override
+  Widget build(BuildContext context) {
     final advancesAsync = ref.watch(salaryAdvancesProvider);
 
     return Scaffold(
@@ -78,13 +91,14 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                       icon: Icons.payments_outlined,
                       iconColor: color,
                       title: amount,
-                      subtitle:
-                          months == null ? reason : '$reason - $months mois',
+                      subtitle: months == null
+                          ? reason
+                          : '$reason - $months mois',
                       trailing: MobileStatusPill(
                         label: _getStatusLabel(advance),
                         color: color,
                       ),
-                      footer: _advanceFooter(context, ref, advance),
+                      footer: _advanceFooter(context, advance),
                     ),
                   ),
                 );
@@ -108,11 +122,11 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     );
   }
 
-  Widget? _advanceFooter(
-    BuildContext context,
-    WidgetRef ref,
-    SalaryAdvance advance,
-  ) {
+  Widget? _advanceFooter(BuildContext context, SalaryAdvance advance) {
+    final proofButton = advance.hasProof
+        ? _proofButton(context, advance.id)
+        : null;
+
     if (advance.validationStatus == 'payment_declared') {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,11 +138,12 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
               height: 1.35,
             ),
           ),
+          if (proofButton != null) proofButton,
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
             child: FilledButton.icon(
-              onPressed: () => _confirmReceived(context, ref, advance.id),
+              onPressed: () => _confirmReceived(context, advance.id),
               icon: const Icon(Icons.verified_user_outlined, size: 16),
               label: const Text('Confirmer reception'),
             ),
@@ -137,16 +152,74 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
       );
     }
 
-    if (advance.status != 'pending') return null;
+    if (advance.status != 'pending') {
+      return proofButton;
+    }
 
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (proofButton != null) proofButton,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () => _confirmCancelAdvance(context, advance.id),
+            icon: const Icon(Icons.close_rounded, size: 16),
+            label: const Text('Annuler la demande'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // PA2-MOB-006: quick access to the supporting document ( "pieces" )
+  // attached to the advance request.
+  Widget _proofButton(BuildContext context, int advanceId) {
     return Align(
       alignment: Alignment.centerLeft,
       child: TextButton.icon(
-        onPressed: () => _confirmCancelAdvance(context, ref, advance.id),
-        icon: const Icon(Icons.close_rounded, size: 16),
-        label: const Text('Annuler la demande'),
+        onPressed: _downloadingProofId == advanceId
+            ? null
+            : () => _viewProof(context, advanceId),
+        icon: _downloadingProofId == advanceId
+            ? const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.attach_file_rounded, size: 16),
+        label: const Text('Voir la piece jointe'),
       ),
     );
+  }
+
+  Future<void> _viewProof(BuildContext context, int advanceId) async {
+    setState(() => _downloadingProofId = advanceId);
+    try {
+      final path = await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .downloadProof(advanceId);
+      if (!mounted) return;
+
+      final uri = Uri.file(path);
+      final canLaunch = await canLaunchUrl(uri);
+      if (!mounted) return;
+
+      if (canLaunch) {
+        await launchUrl(uri);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Piece jointe telechargee: $path')),
+        );
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    } finally {
+      if (mounted) setState(() => _downloadingProofId = null);
+    }
   }
 
   void _showRequestSheet(BuildContext context) {
@@ -163,7 +236,6 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
 
   Future<void> _confirmCancelAdvance(
     BuildContext context,
-    WidgetRef ref,
     int advanceId,
   ) async {
     final confirmed = await showDialog<bool>(
@@ -202,11 +274,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _confirmReceived(
-    BuildContext context,
-    WidgetRef ref,
-    int advanceId,
-  ) async {
+  Future<void> _confirmReceived(BuildContext context, int advanceId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -304,12 +372,25 @@ class _SalaryAdvanceRequestSheetState
   final _reasonCtrl = TextEditingController();
   int _repaymentMonths = 1;
   bool _submitting = false;
+  // PA2-MOB-006: optional supporting document (justification, quote,
+  // invoice, etc.) attached to the request.
+  File? _proofFile;
 
   @override
   void dispose() {
     _amountCtrl.dispose();
     _reasonCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickProof() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _proofFile = File(picked.path));
   }
 
   @override
@@ -397,6 +478,16 @@ class _SalaryAdvanceRequestSheetState
                   : null,
             ),
             const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _pickProof,
+              icon: const Icon(Icons.attach_file_rounded, size: 18),
+              label: Text(
+                _proofFile == null
+                    ? 'Joindre une piece (optionnel)'
+                    : 'Piece jointe',
+              ),
+            ),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting
@@ -417,10 +508,13 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,
+            proofFilePath: _proofFile?.path,
           );
       ref.invalidate(salaryAdvancesProvider);
       await ref.refresh(salaryAdvancesProvider.future).then((_) {});

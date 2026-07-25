@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -11,12 +14,20 @@ import 'package:leopardo_manager/features/absences/providers/absence_provider.da
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/absence.dart';
 import 'package:leopardo_core/models/employee.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class AbsenceListScreen extends ConsumerWidget {
+class AbsenceListScreen extends ConsumerStatefulWidget {
   const AbsenceListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AbsenceListScreen> createState() => _AbsenceListScreenState();
+}
+
+class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
+  int? _downloadingProofId;
+
+  @override
+  Widget build(BuildContext context) {
     final absencesAsync = ref.watch(absencesProvider);
     final actor = ref.watch(authProvider).employee;
 
@@ -67,8 +78,8 @@ class AbsenceListScreen extends ConsumerWidget {
                     '${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)}';
                 final requester =
                     absence.employeeName?.trim().isNotEmpty == true
-                        ? absence.employeeName!
-                        : 'Employe #${absence.employeeId}';
+                    ? absence.employeeName!
+                    : 'Employe #${absence.employeeId}';
 
                 return MobileListCard(
                   icon: Icons.event_available_outlined,
@@ -80,7 +91,7 @@ class AbsenceListScreen extends ConsumerWidget {
                     label: _statusLabel(absence.status),
                     color: color,
                   ),
-                  footer: _absenceFooter(context, ref, absence, actor: actor),
+                  footer: _absenceFooter(context, absence, actor: actor),
                 );
               },
             );
@@ -116,11 +127,13 @@ class AbsenceListScreen extends ConsumerWidget {
 
   Widget? _absenceFooter(
     BuildContext context,
-    WidgetRef ref,
     Absence absence, {
     required Employee? actor,
   }) {
     final details = _absenceContext(absence);
+    final proofButton = absence.hasProof
+        ? _proofButton(context, absence.id)
+        : null;
 
     if (absence.status == 'pending') {
       if (_canDecideAbsence(actor, absence)) {
@@ -128,12 +141,13 @@ class AbsenceListScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             details,
+            if (proofButton != null) proofButton,
             const SizedBox(height: 12),
             MobileDecisionActions(
               approveLabel: 'Approuver',
               rejectLabel: 'Refuser',
-              onApprove: () => _confirmApproveAbsence(context, ref, absence),
-              onReject: () => _showRejectAbsenceSheet(context, ref, absence.id),
+              onApprove: () => _confirmApproveAbsence(context, absence),
+              onReject: () => _showRejectAbsenceSheet(context, absence.id),
             ),
           ],
         );
@@ -143,11 +157,12 @@ class AbsenceListScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           details,
+          if (proofButton != null) proofButton,
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
-              onPressed: () => _confirmCancelAbsence(context, ref, absence.id),
+              onPressed: () => _confirmCancelAbsence(context, absence.id),
               icon: const Icon(Icons.close_rounded, size: 16),
               label: const Text('Annuler la demande'),
             ),
@@ -156,7 +171,62 @@ class AbsenceListScreen extends ConsumerWidget {
       );
     }
 
-    return details;
+    if (proofButton == null) return details;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [details, proofButton],
+    );
+  }
+
+  // PA2-MOB-006: quick access to the supporting document ( "pieces" )
+  // attached to the request, so managers get who/what/why AND attachments.
+  Widget _proofButton(BuildContext context, int absenceId) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        onPressed: _downloadingProofId == absenceId
+            ? null
+            : () => _viewProof(context, absenceId),
+        icon: _downloadingProofId == absenceId
+            ? const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.attach_file_rounded, size: 16),
+        label: const Text('Voir le justificatif'),
+      ),
+    );
+  }
+
+  Future<void> _viewProof(BuildContext context, int absenceId) async {
+    setState(() => _downloadingProofId = absenceId);
+    try {
+      final path = await ref
+          .read(absenceRepositoryProvider)
+          .downloadProof(absenceId);
+      if (!mounted) return;
+
+      final uri = Uri.file(path);
+      final canLaunch = await canLaunchUrl(uri);
+      if (!mounted) return;
+
+      if (canLaunch) {
+        await launchUrl(uri);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Justificatif telecharge: $path')),
+        );
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    } finally {
+      if (mounted) setState(() => _downloadingProofId = null);
+    }
   }
 
   Widget _absenceContext(Absence absence) {
@@ -187,7 +257,6 @@ class AbsenceListScreen extends ConsumerWidget {
 
   Future<void> _confirmApproveAbsence(
     BuildContext context,
-    WidgetRef ref,
     Absence absence,
   ) async {
     final confirmed = await showDialog<bool>(
@@ -227,11 +296,7 @@ class AbsenceListScreen extends ConsumerWidget {
     }
   }
 
-  void _showRejectAbsenceSheet(
-    BuildContext context,
-    WidgetRef ref,
-    int absenceId,
-  ) {
+  void _showRejectAbsenceSheet(BuildContext context, int absenceId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -267,7 +332,6 @@ class AbsenceListScreen extends ConsumerWidget {
 
   Future<void> _confirmCancelAbsence(
     BuildContext context,
-    WidgetRef ref,
     int absenceId,
   ) async {
     final confirmed = await showDialog<bool>(
@@ -312,12 +376,12 @@ class AbsenceListScreen extends ConsumerWidget {
   }
 
   static String _statusLabel(String status) => switch (status) {
-        'approved' => 'approuvee',
-        'pending' => 'en attente',
-        'rejected' => 'rejetee',
-        'cancelled' => 'annulee',
-        _ => status,
-      };
+    'approved' => 'approuvee',
+    'pending' => 'en attente',
+    'rejected' => 'rejetee',
+    'cancelled' => 'annulee',
+    _ => status,
+  };
 
   static Color _getStatusColor(String status) {
     switch (status) {
@@ -348,11 +412,24 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
   DateTime _endDate = DateTime.now().add(const Duration(days: 1));
   _AbsenceTypeOption? _selectedType;
   bool _submitting = false;
+  // PA2-MOB-006: optional supporting document (medical note,
+  // justification letter, etc.) attached to the request.
+  File? _proofFile;
 
   @override
   void dispose() {
     _reasonController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickProof() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _proofFile = File(picked.path));
   }
 
   @override
@@ -430,9 +507,8 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                     onChanged: (value) => setState(() => _selectedType = value),
                   );
                 },
-                loading: () => const MobileEmptyLoading(
-                  label: 'Chargement des soldes',
-                ),
+                loading: () =>
+                    const MobileEmptyLoading(label: 'Chargement des soldes'),
                 error: (error, _) => MobileErrorPanel(
                   message: error.toString(),
                   onRetry: () => ref.invalidate(leaveBalancesProvider),
@@ -471,6 +547,16 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                 validator: (value) => value == null || value.trim().length < 4
                     ? 'Motif obligatoire'
                     : null,
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _pickProof,
+                icon: const Icon(Icons.attach_file_rounded, size: 18),
+                label: Text(
+                  _proofFile == null
+                      ? 'Joindre un justificatif (optionnel)'
+                      : 'Justificatif joint',
+                ),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -517,11 +603,14 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(absenceRepositoryProvider).requestAbsence(
+      await ref
+          .read(absenceRepositoryProvider)
+          .requestAbsence(
             absenceTypeId: selectedType.id,
             startDate: _startDate,
             endDate: _endDate,
             reason: _reasonController.text,
+            proofFilePath: _proofFile?.path,
           );
       ref.invalidate(absencesProvider);
       ref.invalidate(leaveBalancesProvider);
@@ -601,12 +690,14 @@ class _AbsenceTypeOption {
     if (id == null) return null;
 
     final name = type['name']?.toString();
-    final remaining = balance['remaining_days'] ??
+    final remaining =
+        balance['remaining_days'] ??
         balance['remaining'] ??
         balance['balance'] ??
         balance['available_days'];
-    final suffix =
-        remaining == null ? '' : ' - ${remaining.toString()} j disponibles';
+    final suffix = remaining == null
+        ? ''
+        : ' - ${remaining.toString()} j disponibles';
 
     return _AbsenceTypeOption(
       id: id,
