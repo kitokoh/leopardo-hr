@@ -77,7 +77,7 @@
 |---|---|---|---|---|
 | PA2-API-001 | P0 | Reponses JSON standard | API | success/data/meta/error coherents, pagination standard, tests contrat |
 | PA2-API-002 | P0 | RBAC multi-tenant preuve | API tests | employee/manager/superadmin/kiosk scopes; test non-regression fuite tenant |
-| PA2-API-003 | P0 | Matrice frontend/API complete | docs, tests | chaque bouton critique a route/endpoints/test ou justification |
+| PA2-API-003 | P0 | Fait le 2026-07-25: 6 routes critiques admin web (calcul/validation run paie, liste bulletins, PDF bulletin, approbation/rejet conge) ajoutees a `FrontendApiContractTest` (121/121 vert), completant `MATRICE_BOUTONS_CRITIQUES.md` avec des tests reels, pas seulement un audit manuel | docs, tests | FAIT: chaque bouton critique a route/endpoints/test ou justification |
 | PA2-API-004 | P1 | OpenAPI premium | `api/openapi.yaml`, docs | auth, erreurs, permissions, webhooks, exemples request/response |
 | PA2-API-005 | P1 | Rate limit et brute-force | API | login/trial/kiosk/webhooks proteges, erreurs douces, logs securite |
 | PA2-API-006 | P1 | Webhooks sortants partenaires | API jobs | event types, signatures, retry, dead-letter, doc dev |
