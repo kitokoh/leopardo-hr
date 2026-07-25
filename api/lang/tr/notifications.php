@@ -30,6 +30,6 @@ return [
     'company_announcement_title' => 'Şirket duyurusu',
     'company_announcement_body' => 'Şirketinizde yeni bir duyuru yayınlandı.',
 
-    'conversation_message_received_title' => ':author\'dan yeni mesaj',
-    'conversation_message_received_body' => ':author, ":thread" konusunda yanıt verdi.',
+    'payment_document_ready_title' => 'Belge hazır',
+    'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
 ];
