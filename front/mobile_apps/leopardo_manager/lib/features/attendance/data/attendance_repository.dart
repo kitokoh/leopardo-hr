@@ -2,6 +2,7 @@ import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
+import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 
 class AttendanceRepository {
@@ -199,6 +200,29 @@ class AttendanceRepository {
         .whereType<Map>()
         .map((e) => AttendanceLog.fromJson(e.cast<String, dynamic>()))
         .toList();
+  }
+
+  /// Manager/HR "day detail" drill-down for a single employee (PA2-ATT-005).
+  /// Reuses the tenant-scoped `AttendancePolicy::viewForEmployee` guard
+  /// already enforced by `/attendance/today`, so a manager can only ever
+  /// resolve employees within their own company/team scope; the backend
+  /// returns a 403 for anyone outside that scope, never silently leaking
+  /// data across tenants.
+  Future<EmployeeDayDetail> getEmployeeDayDetail(int employeeId) async {
+    final response = await apiClient.requestWithRetry(
+      '/attendance/today',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+      queryParameters: {'employee_id': employeeId},
+    );
+    final raw = response.data is Map
+        ? (response.data as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
+    final payload = raw['data'];
+    final data = payload is Map
+        ? payload.cast<String, dynamic>()
+        : const <String, dynamic>{};
+    return EmployeeDayDetail.fromJson(data);
   }
 
   Future<ManagerAnomalyReport> getManagerAnomalies() async {
