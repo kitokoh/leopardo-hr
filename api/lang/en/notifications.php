@@ -30,6 +30,6 @@ return [
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
 
-    'conversation_message_received_title' => 'New message from :author',
-    'conversation_message_received_body' => ':author replied in ":thread".',
+    'payment_document_ready_title' => 'Document ready',
+    'payment_document_ready_body' => 'Your payment document is generated and available to download.',
 ];
