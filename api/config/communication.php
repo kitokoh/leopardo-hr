@@ -97,6 +97,7 @@ return [
         'feature_key',
         'hours_worked',
         'locale',
+        'payment_document_id',
         'payment_reference',
         'payroll_run_id',
         'redirect_url',
@@ -229,6 +230,14 @@ return [
             'category' => 'attendance',
             'title' => 'Pointage hors zone',
             'body' => 'Un employé a pointé hors de la zone géographique attendue.',
+        ],
+        'payment_document_ready' => [
+            // PA2-PAY-004 — async payslip/advance-receipt PDF generation:
+            // notifies the employee as soon as the document is stored and
+            // downloadable, instead of them having to poll for it.
+            'category' => 'payroll',
+            'title_key' => 'notifications.payment_document_ready_title',
+            'body_key' => 'notifications.payment_document_ready_body',
         ],
     ],
 ];
