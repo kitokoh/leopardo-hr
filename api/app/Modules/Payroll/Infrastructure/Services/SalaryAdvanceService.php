@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Exceptions\SalaryAdvanceNotPendingException;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -18,7 +19,7 @@ class SalaryAdvanceService
         private readonly CommunicationService $communication,
     ) {}
 
-    public function create(Employee $employee, array $data): SalaryAdvance
+    public function create(Employee $employee, array $data, ?UploadedFile $proof = null): SalaryAdvance
     {
         $amount = (float) $data['amount'];
         $months = (int) ($data['repayment_months'] ?? 1);
@@ -28,10 +29,16 @@ class SalaryAdvanceService
         // company's currency setting changes later.
         $currency = $data['currency'] ?? $employee->company?->currency ?? 'DZD';
 
+        // PA2-MOB-006: persist the optional supporting document under a
+        // company-scoped path, mirroring the absence proof workflow, so
+        // managers get "qui quoi combien pourquoi et pieces" for advances too.
+        $proofPath = $proof?->store('salary_advances/proofs/'.$employee->company_id, 'local');
+
         return SalaryAdvance::create([
             'company_id' => $employee->company_id, 'employee_id' => $employee->id,
             'amount' => $amount, 'currency' => $currency, 'reason' => $data['reason'] ?? null,
             'status' => 'pending', 'repayment_months' => $months, 'amount_remaining' => $amount,
+            'proof_path' => $proofPath,
         ]);
     }
 

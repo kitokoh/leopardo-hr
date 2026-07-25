@@ -1,5 +1,18 @@
 import { defineConfig } from '@playwright/test'
 
+// PA2-QA-001 — Smoke login across the 5 surfaces (API, employee/manager
+// mobile, platform admin, admin web, kiosk).
+//
+// .github/workflows/e2e-staging.yml runs this suite against the real
+// deployed staging URL by exporting BASE_URL (see the front/web project's
+// own convention in front/web/playwright.config.ts). This config used to
+// only read PLAYWRIGHT_BASE_URL, so the "staging" admin-dashboard smoke job
+// silently ignored BASE_URL, always fell back to 127.0.0.1:4173, and spun up
+// a fresh local dev server instead of testing staging — the CI job passed
+// without ever exercising the real deployed admin login flow.
+const baseURL = process.env.BASE_URL || process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173'
+const shouldStartLocalServer = !process.env.BASE_URL && !process.env.PLAYWRIGHT_BASE_URL
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
@@ -12,16 +25,18 @@ export default defineConfig({
       ]
     : 'list',
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173',
+    baseURL,
     headless: true,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
-  webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 4173',
-    url: 'http://127.0.0.1:4173/login',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: shouldStartLocalServer
+    ? {
+        command: 'npm run dev -- --host 127.0.0.1 --port 4173',
+        url: 'http://127.0.0.1:4173/login',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120_000,
+      }
+    : undefined,
 })
