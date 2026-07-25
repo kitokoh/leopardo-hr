@@ -29,4 +29,10 @@ return [
 
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
+
+    'bulk_payment_completed_title' => 'Bulk payment completed (:succeeded/:total)',
+    'bulk_payment_completed_body' => 'The bulk payment was processed successfully: :succeeded of :total payslip(s).',
+
+    'bulk_payment_completed_with_errors_title' => 'Bulk payment completed with errors (:succeeded/:total)',
+    'bulk_payment_completed_with_errors_body' => 'The bulk payment has finished: :succeeded of :total payslip(s) processed successfully, :failed failure(s). Check the audit log for details.',
 ];
