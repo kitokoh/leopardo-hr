@@ -12,6 +12,22 @@
       </button>
     </div>
 
+    <!-- PA2-ADM-004: explicit lead -> trial -> client conversion summary -->
+    <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-4 sm:grid-cols-3 shrink-0">
+      <div class="card p-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Leads totaux</p>
+        <p class="mt-1 text-2xl font-black text-slate-900 dark:text-white">{{ meta.total_leads }}</p>
+      </div>
+      <div class="card p-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Taux lead -> essai</p>
+        <p class="mt-1 text-2xl font-black text-emerald-600">{{ formatRate(meta.conversion.lead_to_trial_rate) }}</p>
+      </div>
+      <div class="card p-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Taux lead -> client payant</p>
+        <p class="mt-1 text-2xl font-black text-blue-600">{{ formatRate(meta.conversion.lead_to_client_rate) }}</p>
+      </div>
+    </div>
+
     <div v-if="isLoading" class="flex-1 flex items-center justify-center p-6 text-sm text-gray-500">
       Chargement du pipeline...
     </div>
@@ -35,6 +51,10 @@
           <div v-for="item in pipeline.leads" :key="item.id" class="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-colors cursor-pointer" @click="openRequest(item.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non précisé' }}</p>
+            <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+              {{ formatSource(item.source) }}
+            </span>
+            <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
               <span class="text-xs text-slate-400">{{ formatDate(item.created_at) }}</span>
             </div>
@@ -60,6 +80,10 @@
           <div v-for="item in pipeline.trials" :key="item.id" class="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-emerald-100 dark:border-emerald-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <p class="text-xs text-slate-500 mt-1">{{ item.email }}</p>
+            <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+              {{ formatSource(item.source) }}
+            </span>
+            <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
               <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{{ item.company.days_left }}j restants</span>
             </div>
@@ -84,6 +108,10 @@
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
           <div v-for="item in pipeline.active" :key="item.id" class="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-blue-100 dark:border-blue-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
+            <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+              {{ formatSource(item.source) }}
+            </span>
+            <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
               <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Actif</span>
             </div>
@@ -139,6 +167,24 @@ const pipeline = ref({
   active: [],
   rejected: []
 })
+// PA2-ADM-004: conversion summary served alongside the raw pipeline buckets.
+const meta = ref({
+  total_leads: 0,
+  conversion: {
+    lead_to_trial_rate: 0,
+    lead_to_client_rate: 0
+  }
+})
+
+const SOURCE_LABELS = {
+  signup_form: 'Inscription',
+  demo_form: 'Demande de démo',
+  contact_form: 'Contact',
+  newsletter_form: 'Newsletter',
+  self_service_trial: 'Essai self-service',
+  manager_request: 'Demande manager',
+  direct: 'Direct'
+}
 
 async function loadPipeline() {
   isLoading.value = true
@@ -147,12 +193,28 @@ async function loadPipeline() {
   try {
     const response = await api.get('/platform/crm/pipeline')
     pipeline.value = response.data?.data || { leads: [], trials: [], active: [], rejected: [] }
+    meta.value = response.data?.meta || {
+      total_leads: 0,
+      conversion: { lead_to_trial_rate: 0, lead_to_client_rate: 0 }
+    }
   } catch (error) {
     console.error('Failed to load CRM pipeline:', error)
     errorMessage.value = 'Impossible de charger le pipeline CRM.'
   } finally {
     isLoading.value = false
   }
+}
+
+function formatRate(rate) {
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
+    style: 'percent',
+    maximumFractionDigits: 1
+  }).format(rate || 0)
+}
+
+function formatSource(source) {
+  if (!source) return SOURCE_LABELS.direct
+  return SOURCE_LABELS[source] || source
 }
 
 function openRequest(id) {

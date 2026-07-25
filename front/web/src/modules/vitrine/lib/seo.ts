@@ -196,6 +196,32 @@ export const pageMetadata = {
     ],
     ogImage: `${siteUrl}/og/blog.png`,
   },
+
+  docs: {
+    title: "Documentation API | Guides techniques Leopardo RH",
+    description:
+      "Documentation technique et guides d'integration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
+    keywords: [
+      "documentation API RH",
+      "integration Leopardo",
+      "webhooks paie",
+      "API gestion employes",
+    ],
+    ogImage: `${siteUrl}/og/docs.png`,
+  },
+
+  download: {
+    title: "Telecharger Leopardo RH | Windows, macOS, Android, iOS",
+    description:
+      "Telechargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
+    keywords: [
+      "telecharger Leopardo RH",
+      "application pointage mobile",
+      "client desktop ZKTeco",
+      "app RH Android iOS",
+    ],
+    ogImage: `${siteUrl}/og/download.png`,
+  },
 };
 
 /**
