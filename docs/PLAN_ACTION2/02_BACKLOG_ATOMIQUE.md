@@ -67,7 +67,7 @@
 |---|---|---|---|---|
 | PA2-KIO-001 | P0 | Fait (audit 2026-07-25, `22_AUDIT_STATUT_PA2_KIO_001.md`): provisioning/sync token/roster/annonces/offline tous deja livres et testes | API, kiosk | FAIT: manager provisionne device, sync token, roster, annonces; mode offline conserve |
 | PA2-KIO-002 | P1 | Punch kiosk biometrie/QR | kiosk, API | check-in/out via device, QR fallback, audit device, sync retry |
-| PA2-KIO-003 | P1 | UI kiosk terrain moderne | `front/zkteco-kiosk` | lisible sur tablette/terminal, gros boutons, statut sync, erreur actionnable |
+| PA2-KIO-003 | P1 | Fait (2026-07-25, issue #986): bouton "Reessayer" actionnable ajoute a cote de la pastille de statut sync | `front/zkteco-kiosk` | FAIT: lisible sur tablette/terminal, gros boutons, statut sync, erreur actionnable |
 | PA2-KIO-004 | P2 | Enrolement biometrie mobile vers kiosk | mobile, API | employee soumet consentement, empreinte/visage reference, statut visible |
 | PA2-KIO-005 | P2 | Mode pointage photo obligatoire par tenant (issue #761) | API (config tenant + upload), mobile employee, `front/zkteco-kiosk` | champ config tenant `pointage.mode: kiosk\|photo` lisible/modifiable via API ; quand `photo`, l'ecran de pointage mobile employee ouvre l'appareil photo avant validation arrivee/depart, avec possibilite de retake ; photo stockee (local/S3 selon config existante) avec metadonnees timestamp/userId/deviceId, liee au log de presence et affichee en miniature dans l'historique manager ; politique de retention configurable (defaut 90 jours) ; PAS de reconnaissance faciale (exclu explicitement par la demande) |
 
