@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\BankExportResource;
+use App\Jobs\GenerateBankExportJob;
 use App\Modules\Payroll\Domain\Models\BankExport;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -36,36 +36,29 @@ class BankExportController extends Controller
             'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
         ]);
 
-        $generator = new BankExportGenerator;
         $format = $validated['format'];
-        $content = $generator->generate($payrollRun, $format);
-        $extension = $generator->fileExtension($format);
 
-        $fileName = sprintf('bank_exports/%s_%s_%s.%s',
-            $payrollRun->company_id,
-            $payrollRun->period_start->format('Y_m'),
-            $format,
-            $extension
-        );
-
-        Storage::disk('local')->put($fileName, $content);
-
-        $totalAmount = $payrollRun->paySlips()->where('status', 'validated')->sum('net_salary');
-
+        // PA2-PAY-014: the file itself (SEPA XML / CCP Algerie / CPA/BNA /
+        // CSV) is never rendered inside the HTTP request anymore — it does
+        // not scale for large payroll runs. Create a `pending` BankExport
+        // row immediately and let GenerateBankExportJob (queue `documents`)
+        // do the actual work, mirroring GeneratePaymentDocumentJob's
+        // pending -> generating -> generated/failed lifecycle.
         $export = BankExport::create([
             'payroll_run_id' => $payrollRun->id,
             'company_id' => $payrollRun->company_id,
             'format' => $format,
-            'file_path' => $fileName,
-            'total_amount' => round($totalAmount, 2),
-            'transfer_count' => $payrollRun->paySlips()->where('status', 'validated')->count(),
-            'status' => 'generated',
-            'generated_at' => now(),
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
         ]);
+
+        GenerateBankExportJob::dispatch($export->id);
 
         return (new BankExportResource($export))
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode(202);
     }
 
     public function show(Request $request, BankExport $bankExport): JsonResponse
@@ -95,11 +88,19 @@ class BankExportController extends Controller
             abort(403);
         }
 
-        if (! Storage::disk('local')->exists($bankExport->file_path)) {
+        if ($bankExport->status !== BankExport::STATUS_GENERATED && $bankExport->status !== BankExport::STATUS_SENT && $bankExport->status !== BankExport::STATUS_CONFIRMED) {
+            return response()->json([
+                'message' => $bankExport->status === BankExport::STATUS_FAILED
+                    ? 'Bank export generation failed: '.($bankExport->error_message ?? 'unknown error.')
+                    : 'Bank export is still being generated. Please try again shortly.',
+                'status' => $bankExport->status,
+            ], 409);
+        }
+
+        if ($bankExport->file_path === null || ! Storage::disk('local')->exists($bankExport->file_path)) {
             return response()->json(['message' => 'Export file not found.'], 404);
         }
 
         return Storage::disk('local')->download($bankExport->file_path);
     }
 }
-

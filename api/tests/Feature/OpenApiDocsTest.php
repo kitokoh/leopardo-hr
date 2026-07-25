@@ -51,4 +51,25 @@ class OpenApiDocsTest extends TestCase
             ->assertSee('/notifications')
             ->assertSee('/device-tokens');
     }
+
+    /**
+     * PA2-API-007 - the API Explorer must expose sandbox code snippets in
+     * curl, JavaScript and PHP so developers can copy a ready-to-run request
+     * outside the browser tool.
+     */
+    public function test_api_explorer_exposes_curl_javascript_and_php_sandbox_snippets(): void
+    {
+            $this->get('/api-explorer')
+                ->assertOk()
+                ->assertSee('Exemples de code (sandbox)')
+                ->assertSee('curl', false)
+                ->assertSee('JavaScript (fetch)')
+                ->assertSee('PHP', false)
+                ->assertSee('snippetOutput', false)
+                ->assertSee('buildCurlSnippet', false)
+                ->assertSee('buildJavaScriptSnippet', false)
+                ->assertSee('buildPhpSnippet', false)
+                ->assertSee('GuzzleHttp', false)
+                ->assertSee('Copier');
+    }
 }
