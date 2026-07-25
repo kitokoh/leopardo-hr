@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/demo_user_bottom_sheet.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -35,6 +36,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
     final compact = MediaQuery.of(context).size.height < 700;
+    final l10n = context.l10n;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
@@ -72,7 +74,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.centerLeft,
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back_rounded),
-                    tooltip: 'Retour',
+                    tooltip: l10n.authBackTooltip,
                     onPressed: () {
                       if (context.canPop()) {
                         context.pop();
@@ -123,7 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: AppTypography.title.copyWith(color: text),
                         ),
                         Text(
-                          'Connexion Manager / RH',
+                          l10n.authManagerLoginSubtitle,
                           style: AppTypography.caption.copyWith(color: muted),
                         ),
                       ],
@@ -145,14 +147,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         textInputAction: TextInputAction.next,
                         decoration: _inputDecoration(
                           context,
-                          label: 'Email',
+                          label: l10n.authEmailLabel,
                           icon: Icons.email_outlined,
                         ),
                         validator: (value) {
                           final v = value?.trim() ?? '';
-                          if (v.isEmpty) return 'Email obligatoire';
+                          if (v.isEmpty) return l10n.authEmailRequired;
                           if (!v.contains('@') || !v.contains('.')) {
-                            return 'Email invalide';
+                            return l10n.authEmailInvalid;
                           }
                           return null;
                         },
@@ -165,7 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onFieldSubmitted: (_) => _submit(),
                         decoration: _inputDecoration(
                           context,
-                          label: 'Mot de passe',
+                          label: l10n.authPasswordLabel,
                           icon: Icons.lock_outline_rounded,
                           suffix: IconButton(
                             icon: Icon(
@@ -181,10 +183,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         validator: (value) {
                           if ((value ?? '').isEmpty) {
-                            return 'Mot de passe obligatoire';
+                            return l10n.authPasswordRequired;
                           }
                           if ((value ?? '').length < 4) {
-                            return 'Mot de passe trop court';
+                            return l10n.authPasswordTooShort;
                           }
                           return null;
                         },
@@ -205,9 +207,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text(
-                                  'Se connecter',
-                                  style: TextStyle(
+                              : Text(
+                                  l10n.login,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -229,7 +231,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       .loginWithGoogle();
                                 },
                           icon: const Icon(Icons.login_rounded, size: 18),
-                          label: const Text('Continuer avec Google'),
+                          label: Text(l10n.authContinueWithGoogle),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -238,7 +240,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Center(
                         child: TextButton(
                           onPressed: () => context.go('/register'),
-                          child: const Text("Activer mon acces manager"),
+                          child: Text(l10n.authActivateManagerAccess),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -254,7 +256,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
-                              'ou',
+                              l10n.commonOr,
                               style:
                                   AppTypography.caption.copyWith(color: muted),
                             ),
@@ -286,7 +288,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             }
                           },
                           icon: const Icon(Icons.science_outlined, size: 18),
-                          label: const Text('Tester avec un compte demo'),
+                          label: Text(l10n.authTryDemoAccount),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.rhDark,
                             foregroundColor: Colors.white,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'platform_auth_controller.dart';
 
@@ -46,6 +47,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(platformAuthControllerProvider);
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: MobileSurface.background,
@@ -66,18 +68,18 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       size: 58,
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Leopardo Platform',
-                      style: TextStyle(
+                    Text(
+                      l10n.platformLoginTitle,
+                      style: const TextStyle(
                         color: MobileSurface.text,
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Cockpit mobile reserve a l administration de la plateforme.',
-                      style: TextStyle(
+                    Text(
+                      l10n.platformLoginSubtitle,
+                      style: const TextStyle(
                         color: MobileSurface.secondary,
                         fontSize: 14,
                         height: 1.4,
@@ -89,19 +91,19 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       const SizedBox(height: 14),
                     ],
                     if (auth.requiresTwoFactor) ...[
-                      const MobilePanel(
-                        padding: EdgeInsets.all(14),
+                      MobilePanel(
+                        padding: const EdgeInsets.all(14),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.verified_user_rounded,
                               color: AppColors.warning,
                             ),
-                            SizedBox(width: 10),
+                            const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.',
-                                style: TextStyle(
+                                l10n.platformLogin2faNotice,
+                                style: const TextStyle(
                                   color: MobileSurface.secondary,
                                   height: 1.35,
                                 ),
@@ -114,18 +116,18 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                     ],
                     _PlatformTextField(
                       controller: _emailController,
-                      label: 'Email super-admin',
+                      label: l10n.platformLoginEmailLabel,
                       icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) =>
                           value == null || !value.contains('@')
-                              ? 'Email requis'
+                              ? l10n.platformLoginEmailRequired
                               : null,
                     ),
                     const SizedBox(height: 12),
                     _PlatformTextField(
                       controller: _passwordController,
-                      label: 'Mot de passe',
+                      label: l10n.authPasswordLabel,
                       icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
                       suffixIcon: IconButton(
@@ -139,28 +141,29 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                         ),
                       ),
                       validator: (value) => value == null || value.length < 6
-                          ? 'Mot de passe requis'
+                          ? l10n.platformLoginPasswordRequired
                           : null,
                     ),
                     const SizedBox(height: 12),
                     _PlatformTextField(
                       controller: _twoFactorController,
-                      label: 'Code 2FA si active',
+                      label: l10n.platformLogin2faLabel,
                       icon: Icons.password_rounded,
                       keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 22),
                     MobilePrimaryAction(
                       icon: Icons.login_rounded,
-                      label:
-                          auth.isSubmitting ? 'Connexion...' : 'Se connecter',
+                      label: auth.isSubmitting
+                          ? l10n.platformLoginSubmitting
+                          : l10n.login,
                       onPressed: auth.isSubmitting ? null : _submit,
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: auth.isSubmitting ? null : _fillDemoAccount,
                       icon: const Icon(Icons.science_rounded),
-                      label: const Text('Utiliser le compte demo'),
+                      label: Text(l10n.platformLoginUseDemoAccount),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: MobileSurface.secondary,
                         side: const BorderSide(color: MobileSurface.border),
