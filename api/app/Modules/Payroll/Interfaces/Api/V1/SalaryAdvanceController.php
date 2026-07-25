@@ -19,6 +19,8 @@ use App\Modules\Payroll\Interfaces\Api\V1\Requests\SalaryAdvanceIndexRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StoreSalaryAdvanceRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SalaryAdvanceController extends Controller
 {
@@ -55,11 +57,40 @@ class SalaryAdvanceController extends Controller
 
     public function store(StoreSalaryAdvanceRequest $request): JsonResponse
     {
-        $advance = $this->salaryAdvanceService->create($request->user(), $request->validated());
+        $advance = $this->salaryAdvanceService->create($request->user(), $request->validated(), $request->file('proof'));
 
         return (new SalaryAdvanceResource($advance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * PA2-MOB-006: stream the supporting document attached to a salary
+     * advance request. Only the requesting employee or a manager of the
+     * same company may download it.
+     */
+    public function downloadProof(Request $request, SalaryAdvance $salaryAdvance): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager() && $salaryAdvance->employee_id !== $actor->id) {
+            abort(403);
+        }
+
+        if (! $salaryAdvance->proof_path) {
+            abort(404, 'NO_PROOF_ATTACHED');
+        }
+
+        $disk = Storage::disk('local');
+
+        if (! $disk->exists($salaryAdvance->proof_path)) {
+            abort(404, 'PROOF_FILE_MISSING');
+        }
+
+        return $disk->response($salaryAdvance->proof_path);
     }
 
     public function show(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
