@@ -100,6 +100,38 @@ class PayrollCycleController extends Controller
         ]);
     }
 
+    /**
+     * PA2-PAY-003 — GET /payroll/cycles/preview: lets a manager preview the
+     * resulting period and an estimated payroll total for a candidate pay
+     * cycle rule (journalier/hebdomadaire/mensuel, pay day, week start)
+     * before committing it via PUT /payroll/cycle-settings. Read-only, does
+     * not persist anything.
+     */
+    public function preview(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $company = $actor->company;
+        if (! $company instanceof Company) {
+            abort(404);
+        }
+
+        $overrides = $request->validate([
+            'pay_cycle' => ['sometimes', 'string', 'in:daily,weekly,monthly'],
+            'pay_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
+            'week_start' => ['sometimes', 'integer', 'min:1', 'max:7'],
+        ]);
+
+        return response()->json([
+            'data' => $this->cycleService->previewCycle($company, $overrides),
+        ]);
+    }
+
     public function current(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -175,6 +207,11 @@ class PayrollCycleController extends Controller
                     'advances' => round(array_sum(array_column($items, 'advances')), 2),
                     'paid' => round(array_sum(array_column($items, 'paid')), 2),
                     'remaining' => round(array_sum(array_column($items, 'remaining')), 2),
+                    // PA2-PAY-010: expose team-wide overtime hours/pay so the
+                    // manager dashboard's "heures supp" acceptance criterion
+                    // is satisfied at the summary level, not just per employee.
+                    'overtime_hours' => round(array_sum(array_column($items, 'overtime_hours')), 2),
+                    'overtime_pay' => round(array_sum(array_column($items, 'overtime_pay')), 2),
                 ],
             ],
         ]);

@@ -17,6 +17,12 @@ return [
     'providers' => [
         'email' => env('COMMUNICATION_EMAIL_PROVIDER', 'mail'),
         'push' => env('COMMUNICATION_PUSH_PROVIDER', 'firebase'),
+        // PA2-JOB-003 - real Twilio-backed SMS/WhatsApp providers now exist
+        // (see Notification/Infrastructure/Services/Providers) but default
+        // to the safe audit-only fallback, same as an unset/unknown provider
+        // name. Operators opt in explicitly via
+        // COMMUNICATION_SMS_PROVIDER=twilio / COMMUNICATION_WHATSAPP_PROVIDER=twilio
+        // plus the TWILIO_* credentials once a real account is available.
         'sms' => env('COMMUNICATION_SMS_PROVIDER', 'audit'),
         'whatsapp' => env('COMMUNICATION_WHATSAPP_PROVIDER', 'audit'),
     ],
@@ -31,6 +37,45 @@ return [
     'monthly_channel_quotas' => [
         'sms' => (int) env('COMMUNICATION_SMS_MONTHLY_QUOTA', 0),
         'whatsapp' => (int) env('COMMUNICATION_WHATSAPP_MONTHLY_QUOTA', 0),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email provider retry (PA2-COMM-007)
+    |--------------------------------------------------------------------------
+    |
+    | Bounded caller-side retry applied by `CommunicationService` when the
+    | configured email provider is `mail` (`MailMessageProvider`). A
+    | transient SMTP/API error is retried up to `max_attempts` times with
+    | exponential backoff starting at `base_delay_ms`, before the dispatch
+    | is recorded as a final `failed` audit event.
+    |
+    */
+
+    'email_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_EMAIL_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_EMAIL_RETRY_BASE_DELAY_MS', 500),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SMS / WhatsApp provider retry (PA2-JOB-003)
+    |--------------------------------------------------------------------------
+    |
+    | Same bounded caller-side retry policy as `email_retry` above, applied
+    | by `CommunicationService` to the Twilio-backed SMS and WhatsApp
+    | providers.
+    |
+    */
+
+    'sms_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_SMS_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_SMS_RETRY_BASE_DELAY_MS', 500),
+    ],
+
+    'whatsapp_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_WHATSAPP_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_WHATSAPP_RETRY_BASE_DELAY_MS', 500),
     ],
 
     'public_metadata_keys' => [
@@ -92,6 +137,18 @@ return [
             'title_key' => 'notifications.payroll_ready_title',
             'body_key' => 'notifications.payroll_ready_body',
         ],
+        'bulk_payment_completed' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.bulk_payment_completed_title',
+            'body_key' => 'notifications.bulk_payment_completed_body',
+            'vars' => ['succeeded', 'total', 'failed'],
+        ],
+        'bulk_payment_completed_with_errors' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.bulk_payment_completed_with_errors_title',
+            'body_key' => 'notifications.bulk_payment_completed_with_errors_body',
+            'vars' => ['succeeded', 'total', 'failed'],
+        ],
         'security_alert' => [
             'category' => 'security',
             'title_key' => 'notifications.security_alert_title',
@@ -138,6 +195,17 @@ return [
             'category' => 'payroll',
             'title' => 'Réception d’avance confirmée',
             'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
+        ],
+        // PA2-PAY-015 — employee dispute ("reclamation")
+        'salary_advance_disputed' => [
+            'category' => 'payroll',
+            'title' => 'Litige sur une avance sur salaire',
+            'body' => 'L’employé conteste avoir reçu le paiement de son avance sur salaire tel que déclaré. Merci de vérifier et de résoudre le litige.',
+        ],
+        'salary_advance_dispute_resolved' => [
+            'category' => 'payroll',
+            'title' => 'Litige sur l’avance résolu',
+            'body' => 'Le litige concernant votre avance sur salaire a été résolu par votre manager.',
         ],
         'attendance_auto_closed' => [
             'category' => 'hr',
