@@ -7793,51 +7793,221 @@ paths:
           $ref: "#/components/responses/Error403"
 
   # --- Webhooks ---
+  # Manager-facing CRUD for outbound partner webhooks (App\Modules\Billing\Interfaces\Api\V1\WebhookController).
+  # Auth: Sanctum Bearer, tenant-scoped by `company_id`. Only employees with the `principal` manager
+  # role may list/create/view/delete a webhook or manage its dead-letters (`hasManagerRole('principal')`,
+  # abort(403) otherwise). `update` (PUT) currently has no explicit role gate beyond authentication —
+  # documented as-is to match `WebhookController::update()`; do not assume 403 is possible there.
+  # Cross-tenant access on `show`/`update`/`destroy`/dead-letter routes returns 404 (not 403), since the
+  # endpoint is fetched by numeric id without a tenant-scoped global scope on `WebhookEndpoint` — a 404
+  # avoids leaking whether the id exists on another company's tenant.
   /webhooks:
     get:
-      tags: ["Integrations"]
-      summary: "Lister les webhooks"
+      tags: ["Webhooks"]
+      summary: "Lister les webhooks de l'entreprise"
+      description: |
+        Retourne tous les endpoints webhook du tenant courant (toutes companies confondues cote base,
+        mais sans filtre explicite par `company_id` dans le controller actuel — voir
+        `WebhookController::index()`). Necessite le role manager `principal`.
+      security:
+        - BearerAuth: []
       responses:
         "200":
           description: "Liste des webhooks"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WebhookEndpoint"
+              example:
+                data:
+                  - id: 12
+                    url: "https://partner.example.com/hooks/leopardo"
+                    events: ["employee.created", "absence.approved"]
+                    active: true
+                    failure_count: 0
+                    last_triggered_at: "2026-07-20T09:15:00+00:00"
+                    created_at: "2026-05-01T08:00:00+00:00"
+                    updated_at: "2026-07-20T09:15:00+00:00"
         "401":
           $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager sans role principal (abort(403) dans WebhookController::index())"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "FORBIDDEN"
+                message: "Cette action n'est pas autorisee."
     post:
-      tags: ["Integrations"]
+      tags: ["Webhooks"]
       summary: "Creer un webhook"
+      description: |
+        Cree un endpoint webhook pour l'entreprise de l'utilisateur authentifie. Le `secret` (HMAC de
+        signature des livraisons) est genere cote serveur (`Str::random(40)`) et n'est jamais fourni en
+        entree ; il n'est renvoye qu'une fois au moment de la creation (absent des reponses `GET`
+        ulterieures). Voir `App\Rules\NotPrivateUrl` : les URLs privees/loopback/liens locaux sont
+        rejetees (SSRF guard).
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [url, events]
-              properties:
-                url:
-                  type: string
-                  format: uri
-                events:
-                  type: array
-                  items:
-                    type: string
-                secret:
-                  type: string
-                  nullable: true
-                active:
-                  type: boolean
-                  default: true
+              $ref: "#/components/schemas/WebhookEndpointRequest"
+            example:
+              url: "https://partner.example.com/hooks/leopardo"
+              events: ["employee.created", "employee.archived"]
       responses:
         "201":
           description: "Webhook cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/WebhookEndpoint"
+              example:
+                data:
+                  id: 13
+                  url: "https://partner.example.com/hooks/leopardo"
+                  events: ["employee.created", "employee.archived"]
+                  active: true
+                  failure_count: 0
+                  last_triggered_at: null
+                  created_at: "2026-07-25T10:00:00+00:00"
+                  updated_at: "2026-07-25T10:00:00+00:00"
         "401":
           $ref: "#/components/responses/Error401"
+        "403":
+          description: "Requete rejetee par StoreWebhookEndpointRequest::authorize() (role manager principal requis)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "422":
-          $ref: "#/components/responses/Validation422"
+          description: "URL invalide/privee (App\\Rules\\NotPrivateUrl), events manquants/inconnus, ou liste vide"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+              example:
+                error: "VALIDATION_ERROR"
+                message: "Les donnees fournies sont invalides."
+                errors:
+                  url: ["L'URL cible ne peut pas pointer vers une adresse privee ou locale."]
+                  events: ["L'evenement selectionne est invalide."]
+
+  /webhooks/events:
+    get:
+      tags: ["Webhooks"]
+      summary: "Lister les types d'evenements webhook disponibles"
+      description: |
+        Catalogue statique des evenements pouvant etre souscrits via `events[]` sur `POST /webhooks` et
+        `PUT /webhooks/{webhook}` (voir `WebhookController::AVAILABLE_EVENTS`). Aucune restriction de
+        role au-dela de l'authentification.
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des evenements disponibles"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+              example:
+                data:
+                  - "employee.created"
+                  - "employee.updated"
+                  - "employee.archived"
+                  - "attendance.checked_in"
+                  - "attendance.checked_out"
+                  - "absence.requested"
+                  - "absence.approved"
+                  - "absence.rejected"
+                  - "contract.created"
+                  - "contract.activated"
+                  - "contract.terminated"
+                  - "payroll.validated"
+                  - "loan.approved"
+                  - "loan.disbursed"
+                  - "expense.submitted"
+                  - "expense.approved"
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /webhooks/{webhook}:
+    get:
+      tags: ["Webhooks"]
+      summary: "Voir un webhook et ses dernieres livraisons"
+      description: |
+        Retourne le webhook (incluant ses 20 dernieres livraisons, triees par `delivered_at` descendant).
+        Necessite le role manager `principal`. Renvoie 404 (pas 403) si le webhook appartient a une autre
+        entreprise, pour ne pas confirmer l'existence de l'id a un tenant non autorise.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          description: "Identifiant numerique du webhook (route model binding sur `webhookEndpoint`)"
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail du webhook avec ses livraisons recentes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: "#/components/schemas/WebhookEndpoint"
+                      - type: object
+                        properties:
+                          deliveries:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/WebhookDelivery"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager sans role principal"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: "Webhook inexistant ou appartenant a une autre entreprise (isolation tenant)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "RESOURCE_NOT_FOUND"
+                message: "Ressource introuvable."
     put:
-      tags: ["Integrations"]
+      tags: ["Webhooks"]
       summary: "Modifier un webhook"
+      description: |
+        Met a jour l'URL, les evenements souscrits et/ou l'etat actif du webhook. Passer `active: true`
+        remet `failure_count` a zero (relance manuelle apres desactivation automatique par depassement de
+        seuil d'echecs). Le champ `secret` n'est jamais modifiable via cet endpoint. Renvoie 404 si le
+        webhook appartient a une autre entreprise.
+      security:
+        - BearerAuth: []
       parameters:
         - name: webhook
           in: path
@@ -7848,40 +8018,60 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  format: uri
-                events:
-                  type: array
-                  items:
-                    type: string
-                active:
-                  type: boolean
+              $ref: "#/components/schemas/WebhookEndpointUpdateRequest"
+            example:
+              active: false
       responses:
         "200":
           description: "Webhook modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/WebhookEndpoint"
         "401":
           $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
     delete:
-      tags: ["Integrations"]
+      tags: ["Webhooks"]
       summary: "Supprimer un webhook"
+      description: "Suppression definitive. Necessite le role manager `principal`. Renvoie 404 si le webhook appartient a une autre entreprise."
+      security:
+        - BearerAuth: []
       parameters:
         - name: webhook
           in: path
           required: true
           schema: { type: integer }
       responses:
-        "200":
-          description: "Webhook supprime"
+        "204":
+          description: "Webhook supprime (reponse sans contenu)"
         "401":
           $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager sans role principal"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /webhooks/{webhook}/dead-letters:
     get:
-      tags: ["Integrations"]
+      tags: ["Webhooks"]
       summary: "Lister les livraisons webhook dead-letter (retries epuises)"
+      description: |
+        Livraisons ayant epuise toutes les tentatives de retry (voir `DispatchWebhook::failed()` /
+        `DispatchWebhook::$tries = 3`). Permet a un manager principal d'inspecter et de rejouer une
+        livraison sans acces shell/DB. Necessite le role manager `principal`. PA2-API-006.
+      security:
+        - BearerAuth: []
       parameters:
         - name: webhook
           in: path
@@ -7893,19 +8083,45 @@ paths:
           schema: { type: integer, default: 20 }
       responses:
         "200":
-          description: "Liste des livraisons dead-letter"
+          description: "Liste paginee des livraisons dead-letter"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WebhookDelivery"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
-          $ref: "#/components/responses/Error403"
+          description: "Manager sans role principal"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
-          $ref: "#/components/responses/Error404"
+          description: "Webhook inexistant ou appartenant a une autre entreprise"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /webhooks/{webhook}/dead-letters/{delivery}/replay:
     post:
-      tags: ["Integrations"]
+      tags: ["Webhooks"]
       summary: "Rejouer une livraison webhook dead-letter"
-      description: "Redispatch le meme evenement/payload sans re-executer l'action metier d'origine (pas de doublon fonctionnel cote plateforme)."
+      description: |
+        Redispatch le meme evenement/payload sans re-executer l'action metier d'origine (pas de doublon
+        fonctionnel cote plateforme). Reactive le webhook et remet `failure_count` a zero, pour eviter un
+        redeclenchement immediat du seuil d'auto-desactivation. Necessite le role manager `principal`.
+        Renvoie 404 si `delivery` n'appartient pas a `webhook` ou n'est pas dead-lettered
+        (`dead_lettered_at` null).
+      security:
+        - BearerAuth: []
       parameters:
         - name: webhook
           in: path
@@ -7918,27 +8134,28 @@ paths:
       responses:
         "202":
           description: "Livraison re-mise en file"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+              example:
+                message: "Webhook delivery re-queued."
         "401":
           $ref: "#/components/responses/Error401"
         "403":
-          $ref: "#/components/responses/Error403"
+          description: "Manager sans role principal"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
-          $ref: "#/components/responses/Error404"
-
-  /webhooks/{webhook}/test:
-    post:
-      tags: ["Integrations"]
-      summary: "Tester un webhook"
-      parameters:
-        - name: webhook
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Test envoye"
-        "401":
-          $ref: "#/components/responses/Error401"
+          description: "Webhook/livraison introuvable, appartenant a une autre entreprise, ou livraison non dead-letter"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   # --- Features / i18n ---
   /features:
@@ -9109,6 +9326,101 @@ components:
               type: string
         request_id:
           type: string
+          nullable: true
+
+    WebhookEndpoint:
+      type: object
+      description: "App\\Http\\Resources\\Api\\V1\\WebhookEndpointResource. Le champ `secret` HMAC n'est jamais expose ici, uniquement au moment de la creation."
+      properties:
+        id:
+          type: integer
+          example: 12
+        url:
+          type: string
+          format: uri
+          example: "https://partner.example.com/hooks/leopardo"
+        events:
+          type: array
+          items:
+            type: string
+          example: ["employee.created", "absence.approved"]
+        active:
+          type: boolean
+        failure_count:
+          type: integer
+          description: "Nombre d'echecs consecutifs; un seuil desactive automatiquement le webhook (active=false)."
+        last_triggered_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    WebhookEndpointRequest:
+      type: object
+      required: ["url", "events"]
+      description: "App\\Modules\\Billing\\Interfaces\\Api\\V1\\Requests\\StoreWebhookEndpointRequest."
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+          description: "Rejetee si l'URL pointe vers une adresse privee/loopback (App\\Rules\\NotPrivateUrl, garde SSRF)."
+        events:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            description: "Doit appartenir a la liste retournee par GET /webhooks/events."
+
+    WebhookEndpointUpdateRequest:
+      type: object
+      description: "App\\Modules\\Billing\\Interfaces\\Api\\V1\\Requests\\UpdateWebhookEndpointRequest. Tous les champs sont optionnels (sometimes)."
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        events:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        active:
+          type: boolean
+          description: "Passer a true remet failure_count a 0."
+
+    WebhookDelivery:
+      type: object
+      description: "App\\Http\\Resources\\Api\\V1\\WebhookDeliveryResource."
+      properties:
+        id:
+          type: integer
+        webhook_endpoint_id:
+          type: integer
+        event:
+          type: string
+          example: "employee.created"
+        response_code:
+          type: integer
+          description: "0 si la livraison a echoue (timeout/connexion refusee) plutot qu'un vrai code HTTP."
+        response_body:
+          type: string
+          nullable: true
+        duration_ms:
+          type: integer
+        dead_lettered_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Non-null une fois les 3 tentatives (DispatchWebhook::$tries) epuisees."
+        delivered_at:
+          type: string
+          format: date-time
           nullable: true
 
     HealthCheck:
@@ -10818,6 +11130,14 @@ components:
           type: boolean
         whatsapp_enabled:
           type: boolean
+        whatsapp_consent_given:
+          type: boolean
+          description: PA2-COMM-008 - explicit opt-in required before WhatsApp Business messages are sent, distinct from whatsapp_enabled.
+        whatsapp_consent_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Server-stamped timestamp of the last consent change; never accepted as client input.
         locale:
           type: string
           enum: [fr, ar, en, tr]
@@ -10848,6 +11168,9 @@ components:
           type: boolean
         whatsapp_enabled:
           type: boolean
+        whatsapp_consent_given:
+          type: boolean
+          description: PA2-COMM-008 - set true to give explicit WhatsApp opt-in consent, false to withdraw it. The server stamps/clears whatsapp_consent_at accordingly.
         locale:
           type: string
           enum: [fr, ar, en, tr]

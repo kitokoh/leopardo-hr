@@ -30,9 +30,6 @@ return [
     'company_announcement_title' => 'إعلان الشركة',
     'company_announcement_body' => 'تم نشر إعلان جديد في شركتك.',
 
-    'bulk_payment_completed_title' => 'اكتمل الدفع الجماعي (:succeeded/:total)',
-    'bulk_payment_completed_body' => 'تمت معالجة الدفع الجماعي بنجاح: :succeeded من :total كشف راتب.',
-
-    'bulk_payment_completed_with_errors_title' => 'اكتمل الدفع الجماعي مع وجود أخطاء (:succeeded/:total)',
-    'bulk_payment_completed_with_errors_body' => 'انتهى الدفع الجماعي: تمت معالجة :succeeded من :total كشف راتب بنجاح، مع :failed حالة فشل. راجع سجل التدقيق للتفاصيل.',
+    'payment_document_ready_title' => 'المستند جاهز',
+    'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
 ];

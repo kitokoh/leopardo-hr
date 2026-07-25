@@ -1135,6 +1135,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               );
             }
 
+            Future<void> pickQuietHour(bool isStart) async {
+              final current = isStart
+                  ? preferences.quietHoursStart
+                  : preferences.quietHoursEnd;
+              final fallback = isStart ? '20:00' : '07:00';
+              final parts = (current ?? fallback).split(':');
+              final initial = TimeOfDay(
+                hour: int.tryParse(parts.isNotEmpty ? parts[0] : '') ??
+                    (isStart ? 20 : 7),
+                minute: int.tryParse(parts.length > 1 ? parts[1] : '') ?? 0,
+              );
+              final picked = await showTimePicker(
+                context: context,
+                initialTime: initial,
+              );
+              if (picked == null) return;
+              final formatted =
+                  '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+              setLocalState(() {
+                preferences = isStart
+                    ? preferences.copyWith(quietHoursStart: formatted)
+                    : preferences.copyWith(quietHoursEnd: formatted);
+              });
+              save();
+            }
+
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: MobileSurface.cardDecoration(),
@@ -1180,12 +1206,87 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
                   tile(
+                    title: 'SMS',
+                    subtitle:
+                        'Canal court reserve aux urgences, actif apres opt-in.',
+                    value: preferences.smsEnabled,
+                    onChanged: (next) => preferences = preferences.copyWith(
+                      smsEnabled: next,
+                    ),
+                  ),
+                  tile(
+                    title: 'WhatsApp',
+                    subtitle:
+                        'Canal conversationnel, necessite votre opt-in explicite.',
+                    value: preferences.whatsappEnabled,
+                    onChanged: (next) => preferences = preferences.copyWith(
+                      whatsappEnabled: next,
+                    ),
+                  ),
+                  tile(
                     title: 'Heures calmes',
                     subtitle: 'Limiter les canaux externes hors horaires.',
                     value: preferences.quietHoursEnabled,
                     onChanged: (next) => preferences = preferences.copyWith(
                       quietHoursEnabled: next,
                     ),
+                  ),
+                  if (preferences.quietHoursEnabled)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, bottom: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed:
+                                  saving ? null : () => pickQuietHour(true),
+                              child: Text(
+                                'Debut ${preferences.quietHoursStart ?? '20:00'}',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed:
+                                  saving ? null : () => pickQuietHour(false),
+                              child: Text(
+                                'Fin ${preferences.quietHoursEnd ?? '07:00'}',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  DropdownButtonFormField<String>(
+                    initialValue: _languageLabels.containsKey(
+                      preferences.locale,
+                    )
+                        ? preferences.locale
+                        : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Langue des notifications',
+                    ),
+                    items: _languageLabels.entries
+                        .map(
+                          (entry) => DropdownMenuItem<String>(
+                            value: entry.key,
+                            child: Text(entry.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: saving
+                        ? null
+                        : (value) {
+                            if (value == null) return;
+                            setLocalState(() {
+                              preferences = preferences.copyWith(
+                                locale: value,
+                              );
+                            });
+                            save();
+                          },
                   ),
                   if (saving)
                     const Padding(

@@ -6,6 +6,7 @@ namespace App\Modules\Notification\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -19,13 +20,16 @@ use Illuminate\Support\Carbon;
  * @property bool $push_enabled
  * @property bool $sms_enabled
  * @property bool $whatsapp_enabled
+ * @property bool $whatsapp_consent_given
+ * @property Carbon|null $whatsapp_consent_at
  * @property string|null $locale
  * @property string|null $timezone
  * @property array<mixed>|null $categories
  * @property array<mixed>|null $quiet_hours
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class NotificationPreference extends Model
 {
@@ -39,6 +43,8 @@ class NotificationPreference extends Model
         'push_enabled',
         'sms_enabled',
         'whatsapp_enabled',
+        'whatsapp_consent_given',
+        'whatsapp_consent_at',
         'locale',
         'timezone',
         'categories',
@@ -51,6 +57,8 @@ class NotificationPreference extends Model
         'push_enabled' => 'boolean',
         'sms_enabled' => 'boolean',
         'whatsapp_enabled' => 'boolean',
+        'whatsapp_consent_given' => 'boolean',
+        'whatsapp_consent_at' => 'datetime',
         'categories' => 'array',
         'quiet_hours' => 'array',
     ];
@@ -59,5 +67,15 @@ class NotificationPreference extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
+    }
+
+    /**
+     * WhatsApp Business messaging (Meta Cloud API policy) requires an
+     * explicit, timestamped opt-in per recipient, distinct from the
+     * `whatsapp_enabled` channel toggle itself.
+     */
+    public function hasWhatsappConsent(): bool
+    {
+        return $this->whatsapp_consent_given === true && $this->whatsapp_consent_at !== null;
     }
 }

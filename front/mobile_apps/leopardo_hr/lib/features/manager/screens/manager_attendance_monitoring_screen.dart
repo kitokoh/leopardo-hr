@@ -7,6 +7,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
+import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_hr/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
@@ -44,17 +45,280 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
             message: error.toString(),
             onRetry: () => ref.invalidate(managerAttendanceTodayProvider),
           ),
-          data: (items) => _AttendanceBody(items: items),
+          data: (items) => _AttendanceBody(
+            items: items,
+            onSelectEmployee: (employeeId) =>
+                showEmployeeDayDetailSheet(context, employeeId),
+          ),
         ),
       ],
     );
   }
 }
 
+/// PA2-ATT-005: opens the manager day-detail drill-down for [employeeId].
+/// The bottom sheet owns its own Riverpod scope via [Consumer] so the parent
+/// screen does not need to know about [employeeDayDetailProvider].
+Future<void> showEmployeeDayDetailSheet(
+  BuildContext context,
+  int employeeId,
+) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (sheetContext) =>
+        _EmployeeDayDetailSheet(employeeId: employeeId),
+  );
+}
+
+class _EmployeeDayDetailSheet extends ConsumerWidget {
+  const _EmployeeDayDetailSheet({required this.employeeId});
+
+  final int employeeId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detail = ref.watch(employeeDayDetailProvider(employeeId));
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.72,
+      minChildSize: 0.4,
+      maxChildSize: 0.92,
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: MobileSurface.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: detail.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 64),
+                child: MobileEmptyLoading(
+                  label: 'Chargement du detail employe...',
+                ),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.all(20),
+                child: MobileErrorPanel(
+                  message: error.toString(),
+                  onRetry: () =>
+                      ref.invalidate(employeeDayDetailProvider(employeeId)),
+                ),
+              ),
+              data: (day) => ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: MobileSurface.border,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      MobileIconBubble(
+                        icon: Icons.person_rounded,
+                        color: day.isWorking ? AppColors.rh : AppColors.warning,
+                        size: 46,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              day.employeeName,
+                              style: AppTypography.subtitle.copyWith(
+                                color: MobileSurface.text,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if ((day.matricule ?? '').isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                day.matricule!,
+                                style: AppTypography.caption.copyWith(
+                                  color: MobileSurface.secondary,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      MobileStatusPill(
+                        label: day.status,
+                        color: day.isWorking ? AppColors.rh : AppColors.warning,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      MobileMetricTile(
+                        value: '${day.hoursWorked.toStringAsFixed(2)}h',
+                        label: 'Temps travaille',
+                        color: AppColors.rh,
+                      ),
+                      const SizedBox(width: 10),
+                      MobileMetricTile(
+                        value: '${day.overtimeHours.toStringAsFixed(2)}h',
+                        label: 'Heures supp',
+                        color: AppColors.warning,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      MobileMetricTile(
+                        value: '${day.breakMinutes} min',
+                        label: 'Pauses',
+                        color: AppColors.info,
+                      ),
+                      const SizedBox(width: 10),
+                      MobileMetricTile(
+                        value:
+                            '${day.totalEstimated.toStringAsFixed(0)} ${day.currency}',
+                        label: 'Gain estime',
+                        color: AppColors.rh,
+                      ),
+                    ],
+                  ),
+                  if (day.lateMinutes > 0) ...[
+                    const SizedBox(height: 14),
+                    MobilePanel(
+                      color: AppColors.warning.withValues(alpha: 0.10),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: AppColors.warning,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Retard detecte : ${day.lateMinutes} min',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: MobileSurface.text,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 18),
+                  MobileSectionLabel(
+                    'Pointages (${day.sessionsCount})',
+                  ),
+                  const SizedBox(height: 6),
+                  if (day.sessions.isEmpty)
+                    const _EmptyState(
+                      icon: Icons.schedule_outlined,
+                      title: 'Aucun pointage aujourd hui',
+                      message:
+                          'Cet employe n a pas encore pointe pour la journee en cours.',
+                    )
+                  else
+                    ...day.sessions.map((session) => _DaySessionRow(session)),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DaySessionRow extends StatelessWidget {
+  const _DaySessionRow(this.session);
+
+  final AttendanceLog session;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = session.checkOut == null
+        ? AppColors.warning
+        : ((session.lateMinutes ?? 0) > 0 ? AppColors.warning : AppColors.rh);
+
+    return MobilePanel(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 40,
+            decoration: BoxDecoration(
+              color: statusColor,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Session ${session.sessionNumber} · ${session.workType}',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.text,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${_time(session.checkIn)} -> ${_time(session.checkOut)}',
+                  style: AppTypography.caption.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                ),
+                if ((session.punchNote ?? '').trim().isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    session.punchNote!.trim(),
+                    style: AppTypography.caption.copyWith(
+                      color: MobileSurface.muted,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (session.workedHours != null)
+            Text(
+              '${session.workedHours!.toStringAsFixed(2)}h',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.rh,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AttendanceBody extends StatelessWidget {
-  const _AttendanceBody({required this.items});
+  const _AttendanceBody({required this.items, required this.onSelectEmployee});
 
   final List<AttendanceLog> items;
+  final void Function(int employeeId) onSelectEmployee;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +368,12 @@ class _AttendanceBody extends StatelessWidget {
                 'Les pointages equipe apparaitront ici des qu ils arrivent depuis mobile ou kiosque.',
           )
         else
-          ...items.map((log) => _AttendanceRow(log: log)),
+          ...items.map(
+            (log) => _AttendanceRow(
+              log: log,
+              onTap: () => onSelectEmployee(log.employeeId),
+            ),
+          ),
       ],
     );
   }
@@ -324,9 +593,10 @@ class _ManagerCorrectionsScreenState
 }
 
 class _AttendanceRow extends StatelessWidget {
-  const _AttendanceRow({required this.log});
+  const _AttendanceRow({required this.log, this.onTap});
 
   final AttendanceLog log;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -334,38 +604,50 @@ class _AttendanceRow extends StatelessWidget {
         ? AppColors.warning
         : ((log.lateMinutes ?? 0) > 0 ? AppColors.warning : AppColors.rh);
 
-    return MobilePanel(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          MobileIconBubble(
-            icon: Icons.person_outline_rounded,
-            color: statusColor,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  log.employeeName ?? 'Employe',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: MobileSurface.text,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${_time(log.checkIn)} -> ${_time(log.checkOut)} · ${log.workType}',
-                  style: AppTypography.caption.copyWith(
-                    color: MobileSurface.secondary,
-                  ),
-                ),
-              ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: MobilePanel(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          children: [
+            MobileIconBubble(
+              icon: Icons.person_outline_rounded,
+              color: statusColor,
             ),
-          ),
-          MobileStatusPill(label: log.status, color: statusColor),
-        ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    log.employeeName ?? 'Employe',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: MobileSurface.text,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    '${_time(log.checkIn)} -> ${_time(log.checkOut)} · ${log.workType}',
+                    style: AppTypography.caption.copyWith(
+                      color: MobileSurface.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            MobileStatusPill(label: log.status, color: statusColor),
+            if (onTap != null) ...[
+              const SizedBox(width: 6),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: MobileSurface.secondary,
+                size: 20,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

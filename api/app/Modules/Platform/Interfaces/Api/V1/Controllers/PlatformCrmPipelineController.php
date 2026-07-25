@@ -25,11 +25,17 @@ class PlatformCrmPipelineController extends Controller
         ];
 
         foreach ($requests as $request) {
+            // PA2-ADM-004: the pipeline card must surface the lead's
+            // acquisition source and an admin-facing note, in addition to
+            // status and conversion state, so the platform team can act
+            // on a lead without opening the full detail view.
             $data = [
                 'id' => $request->id,
                 'company_name' => $request->company_name,
                 'email' => $request->email,
                 'sector' => $request->sector,
+                'source' => $request->source,
+                'note' => $request->note,
                 'created_at' => $request->created_at,
                 'status' => $request->status,
                 'company' => $request->approvedCompany ? [
@@ -54,8 +60,22 @@ class PlatformCrmPipelineController extends Controller
             }
         }
 
+        // PA2-ADM-004: expose an explicit conversion summary (lead -> trial
+        // -> paying client) so the admin UI does not have to recompute
+        // ratios client-side from the four raw buckets.
+        $totalLeads = $requests->count();
+        $convertedToTrial = count($pipeline['trials']) + count($pipeline['active']);
+        $convertedToActive = count($pipeline['active']);
+
         return new JsonResponse([
             'data' => $pipeline,
+            'meta' => [
+                'total_leads' => $totalLeads,
+                'conversion' => [
+                    'lead_to_trial_rate' => $totalLeads > 0 ? round($convertedToTrial / $totalLeads, 4) : 0.0,
+                    'lead_to_client_rate' => $totalLeads > 0 ? round($convertedToActive / $totalLeads, 4) : 0.0,
+                ],
+            ],
         ]);
     }
 

@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\AttendanceAnomaliesRequest;
 use App\Modules\Planning\Infrastructure\Services\EstimationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -111,6 +113,28 @@ class MeController extends Controller
                 'month' => $month,
             ]),
         ]);
+    }
+
+    /**
+     * PA2-ATT-004 - Self-service anomaly view: an employee can see anomalies
+     * detected on their own attendance logs (late arrivals, missing
+     * check-outs, excessive overtime, etc.) without needing manager
+     * privileges. Always force-scoped to the caller's own employee_id so a
+     * regular employee can never read another employee's anomalies through
+     * this endpoint.
+     */
+    public function attendanceAnomalies(AttendanceAnomaliesRequest $request, AttendanceAnomalyService $anomalyService): JsonResponse
+    {
+        /** @var Employee $employee */
+        $employee = $request->user();
+
+        $this->authorize('viewOwnAnomalies', AttendanceLog::class);
+
+        $filters = array_merge($request->validated(), ['employee_id' => $employee->id]);
+
+        return new JsonResponse(
+            $anomalyService->summarize($employee->company_id, $filters, null)
+        );
     }
 }
 

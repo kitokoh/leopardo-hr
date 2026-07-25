@@ -12,8 +12,8 @@ use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Rules\GlobalEmailUnique;
+use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
-use App\Modules\Onboarding\Infrastructure\Services\OnboardingQrService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ use Illuminate\Validation\Rule;
 class OnboardingQrController extends Controller
 {
     public function __construct(
-        private readonly OnboardingQrService $qrService,
+        private readonly OnboardingQrInterface $qrService,
         private readonly EmployeeService $employeeService,
     ) {}
 
