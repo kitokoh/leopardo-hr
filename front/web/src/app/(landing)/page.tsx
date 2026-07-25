@@ -16,6 +16,7 @@ import {
   LaunchOperatingSystemSection,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
+  HeroProductVisual,
   FAQSection,
   CTASection,
   ProblemSection,
@@ -82,6 +83,12 @@ export default function LandingPage() {
           animated
           quickTrialForm={
             <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
+          }
+          visual={
+            <HeroProductVisual
+              src="/screenshots/web-dashboard.png"
+              alt={copy.hero.visualAlt ?? 'Leopardo HR admin dashboard screenshot'}
+            />
           }
         />
 

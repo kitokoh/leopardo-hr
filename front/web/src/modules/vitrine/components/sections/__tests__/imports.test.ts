@@ -9,6 +9,11 @@ describe('Phase 3 Components - Imports', () => {
     expect(HeroSection).toBeDefined();
   });
 
+  it('should import HeroProductVisual', () => {
+    const { HeroProductVisual } = require('../HeroProductVisual');
+    expect(HeroProductVisual).toBeDefined();
+  });
+
   it('should import FeatureCard and FeaturesSection', () => {
     const { FeatureCard } = require('../FeatureCard');
     const { FeaturesSection } = require('../FeaturesSection');
@@ -57,6 +62,7 @@ describe('Phase 3 Components - Imports', () => {
   it('should export all components from index', () => {
     const exports = require('../index');
     expect(exports.HeroSection).toBeDefined();
+    expect(exports.HeroProductVisual).toBeDefined();
     expect(exports.FeatureCard).toBeDefined();
     expect(exports.FeaturesSection).toBeDefined();
     expect(exports.PricingCard).toBeDefined();
