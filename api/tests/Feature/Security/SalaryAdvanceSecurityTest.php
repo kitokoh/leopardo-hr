@@ -388,6 +388,260 @@ class SalaryAdvanceSecurityTest extends TestCase
             ->assertStatus(403);
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // PA2-PAY-015 — Employee confirmation or dispute ("reclamation")
+    // ─────────────────────────────────────────────────────────────────────
+
+    public function test_employee_can_dispute_a_declared_payment_instead_of_confirming_it(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'payment_declared',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+            'payment_reference' => 'CASH-2026-002',
+        ]);
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/dispute", [
+                'dispute_reason' => 'I never received this payment in cash.',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.validation_status', 'disputed')
+            ->assertJsonPath('data.dispute_reason', 'I never received this payment in cash.');
+
+        $this->assertDatabaseHas('salary_advances', [
+            'id' => $advance->id,
+            'validation_status' => 'disputed',
+        ]);
+
+        // The manager who declared the payment is notified of the dispute.
+        $this->assertDatabaseHas('notifications', [
+            'employee_id' => $manager->id,
+            'type' => 'payroll',
+        ]);
+    }
+
+    public function test_dispute_requires_a_reason(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'payment_declared',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+        ]);
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/dispute", [])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['dispute_reason']);
+    }
+
+    public function test_employee_cannot_dispute_salary_advance_before_payment_declaration(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'approved',
+            'validation_status' => 'manager_approved',
+            'manager_approved_by' => $manager->id,
+        ]);
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/dispute", [
+                'dispute_reason' => 'Nothing declared yet.',
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Payment must be declared before it can be disputed.');
+    }
+
+    public function test_employee_cannot_dispute_salary_advance_of_another_employee(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee1 = $this->createEmployee($company, 'employee');
+        $employee2 = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee2->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'payment_declared',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+        ]);
+
+        $this->actingAs($employee1, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/dispute", [
+                'dispute_reason' => 'Not mine to dispute.',
+            ])
+            ->assertStatus(403);
+    }
+
+    public function test_manager_can_resolve_dispute_as_confirmed(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'disputed',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+            'dispute_reason' => 'Amount looked wrong.',
+            'disputed_at' => now(),
+        ]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/resolve-dispute", [
+                'resolution' => 'confirmed',
+                'dispute_resolution_note' => 'Verified with employee, amount was correct.',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.validation_status', 'employee_confirmed')
+            ->assertJsonPath('data.dispute_resolved_by', $manager->id);
+
+        $this->assertDatabaseHas('salary_advances', [
+            'id' => $advance->id,
+            'validation_status' => 'employee_confirmed',
+        ]);
+
+        // The employee is notified their dispute was resolved.
+        $this->assertDatabaseHas('notifications', [
+            'employee_id' => $employee->id,
+            'type' => 'payroll',
+        ]);
+    }
+
+    public function test_manager_can_resolve_dispute_as_reopened(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'disputed',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+            'dispute_reason' => 'Never received it.',
+            'disputed_at' => now(),
+        ]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/resolve-dispute", [
+                'resolution' => 'reopened',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.validation_status', 'payment_declared');
+
+        $this->assertDatabaseHas('salary_advances', [
+            'id' => $advance->id,
+            'validation_status' => 'payment_declared',
+            'employee_confirmed_at' => null,
+        ]);
+    }
+
+    public function test_non_manager_cannot_resolve_dispute(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'disputed',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+        ]);
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/resolve-dispute", [
+                'resolution' => 'confirmed',
+            ])
+            ->assertStatus(403);
+    }
+
+    public function test_manager_cannot_resolve_dispute_that_is_not_currently_disputed(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'payment_declared',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+        ]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/resolve-dispute", [
+                'resolution' => 'confirmed',
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Advance is not currently disputed.');
+    }
+
+    public function test_manager_cannot_resolve_dispute_of_another_tenant(): void
+    {
+        $companyA = $this->createCompany('Company A');
+        $companyB = $this->createCompany('Company B');
+
+        $managerA = $this->createEmployee($companyA, 'manager', 'principal');
+        $managerB = $this->createEmployee($companyB, 'manager', 'principal');
+        $employeeB = $this->createEmployee($companyB, 'employee');
+
+        $advanceB = SalaryAdvance::query()->forceCreate([
+            'company_id' => $companyB->id,
+            'employee_id' => $employeeB->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'disputed',
+            'manager_approved_by' => $managerB->id,
+            'payment_declared_by' => $managerB->id,
+        ]);
+
+        $this->actingAs($managerA, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advanceB->id}/resolve-dispute", [
+                'resolution' => 'confirmed',
+            ])
+            ->assertStatus(404);
+    }
+
     private function createCompany(string $name): Company
     {
         return Company::query()->create([
