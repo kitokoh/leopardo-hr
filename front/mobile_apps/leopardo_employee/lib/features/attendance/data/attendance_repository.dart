@@ -5,6 +5,7 @@ import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:hive/hive.dart';
+import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
 
 class AttendanceRepository {
   final ApiClient apiClient;
@@ -228,6 +229,37 @@ class AttendanceRepository {
       queryParameters: {'from': fmt(from), 'to': fmt(to)},
     );
     return MonthlySummary.fromJson(extractDataMap(response.data));
+  }
+
+  /// PA2-ATT-004 - Anomalies detected on the caller's own attendance logs
+  /// (late arrivals, missing check-outs, excessive overtime, etc.) for the
+  /// given period. Defaults to the current calendar month so the day-detail
+  /// sheet can flag anything unusual for the visible week/day.
+  Future<AttendanceAnomalyReport> getMyAnomalies({
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    String fmt(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/me/attendance-anomalies',
+        maxRetriesOverride: 0,
+        timeoutOverride: _readTimeout,
+        queryParameters: {
+          'date_from': fmt(from),
+          'date_to': fmt(to),
+          'per_page': 100,
+        },
+      );
+      final data = _dataMap(response.data);
+      return AttendanceAnomalyReport.fromJson(data);
+    } catch (_) {
+      // Anomalies are a non-blocking enrichment of the day-detail view; a
+      // failure here must never prevent the employee from seeing their own
+      // punches, breaks and gains.
+      return AttendanceAnomalyReport.empty;
+    }
   }
 
   Future<List<AttendanceLog>> getHistory(int year, int month) async {

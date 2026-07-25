@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -266,5 +267,82 @@ class PayrollCycleIntegrationTest extends TestCase
         $response->assertOk()
             ->assertJsonFragment(['employee_id' => $employeeA->id])
             ->assertJsonMissing(['employee_id' => $employeeB->id]);
+    }
+
+    public function test_employee_balance_includes_overtime_hours_and_estimated_pay(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 0,
+            'hourly_rate' => 500,
+        ]);
+
+        AttendanceLog::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => now()->startOfMonth()->addDays(2)->toDateString(),
+            'check_in' => now()->startOfMonth()->addDays(2)->setTime(8, 0),
+            'check_out' => now()->startOfMonth()->addDays(2)->setTime(19, 0),
+            'hours_worked' => 11,
+            'overtime_hours' => 3,
+            'status' => 'complete',
+        ]);
+        AttendanceLog::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => now()->startOfMonth()->addDays(3)->toDateString(),
+            'check_in' => now()->startOfMonth()->addDays(3)->setTime(8, 0),
+            'check_out' => now()->startOfMonth()->addDays(3)->setTime(18, 0),
+            'hours_worked' => 10,
+            'overtime_hours' => 2,
+            'status' => 'complete',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonPath('data.overtime_hours', 5)
+            ->assertJsonPath('data.overtime_pay', 3750); // 5h * 500 * 1.5
+    }
+
+    public function test_manager_mobile_summary_aggregates_team_overtime_totals(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'salary_base' => 0,
+            'hourly_rate' => 400,
+        ]);
+
+        AttendanceLog::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => now()->startOfMonth()->addDays(1)->toDateString(),
+            'check_in' => now()->startOfMonth()->addDays(1)->setTime(8, 0),
+            'check_out' => now()->startOfMonth()->addDays(1)->setTime(20, 0),
+            'hours_worked' => 12,
+            'overtime_hours' => 4,
+            'status' => 'complete',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/payroll/mobile-summary')->assertOk();
+
+        $response->assertJsonPath('data.totals.overtime_hours', 4)
+            ->assertJsonPath('data.totals.overtime_pay', 2400); // 4h * 400 * 1.5
+        $response->assertJsonFragment(['overtime_hours' => 4]);
     }
 }

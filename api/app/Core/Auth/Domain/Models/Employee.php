@@ -91,6 +91,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $national_id
  * @property int $failed_login_attempts
  * @property Carbon|null $locked_until
+ * @property Carbon|null $email_bounced_at
+ * @property string|null $email_bounce_reason
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
@@ -180,6 +182,8 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'national_id',
         'failed_login_attempts',
         'locked_until',
+        'email_bounced_at',
+        'email_bounce_reason',
     ];
 
     protected $hidden = [
@@ -188,6 +192,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'email_bounced_at' => 'datetime',
         'date_of_birth' => 'date',
         'contract_start' => 'date',
         'contract_end' => 'date',
@@ -240,6 +245,17 @@ class Employee extends Authenticatable implements HasApiTokensContract
         }
 
         return in_array($this->manager_role, $roles, true);
+    }
+
+    /**
+     * PA2-COMM-007 - True once a mail provider bounce webhook has recorded
+     * a hard bounce for this employee's `email`. `MailMessageProvider`
+     * checks this before every send so a known-bad address stops being
+     * retried on every future communication.
+     */
+    public function hasBouncedEmail(): bool
+    {
+        return $this->email_bounced_at !== null;
     }
 
     public function isPrincipal(): bool

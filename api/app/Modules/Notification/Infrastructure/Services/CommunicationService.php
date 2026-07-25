@@ -16,7 +16,6 @@ use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class CommunicationService
@@ -303,8 +302,7 @@ class CommunicationService
         try {
             $status = match ($channel) {
                 'push' => $this->sendPush($employee, $title, $body, $metadata),
-                'email' => $this->sendEmail($employee, $title, $body),
-                'sms', 'whatsapp' => $this->providerFor($channel)->send($employee, $title, $body, $metadata),
+                'email', 'sms', 'whatsapp' => $this->dispatchWithRetry($this->providerFor($channel), $employee, $title, $body, $metadata),
                 default => 'skipped',
             };
 
@@ -333,19 +331,45 @@ class CommunicationService
         return 'queued';
     }
 
-    private function sendEmail(Employee $employee, string $title, string $body): string
-    {
-        $email = $employee->email ?? null;
-
-        if (is_string($email) === false || $email === '') {
-            return 'skipped';
+    /**
+     * PA2-COMM-007 - Bounded caller-side retry for providers that opt in via
+     * `RetryableMessageProviderInterface` (currently `MailMessageProvider`).
+     * Providers that do not implement it (audit fallback, WhatsApp Cloud
+     * API) are called exactly once, unchanged from prior behaviour.
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    private function dispatchWithRetry(
+        MessageProviderInterface $provider,
+        Employee $employee,
+        string $title,
+        string $body,
+        array $metadata
+    ): string {
+        if (! $provider instanceof RetryableMessageProviderInterface) {
+            return $provider->send($employee, $title, $body, $metadata);
         }
 
-        Mail::raw($body, static function ($message) use ($email, $title): void {
-            $message->to($email)->subject($title);
-        });
+        $maxAttempts = $provider->maxAttempts();
+        $lastException = null;
 
-        return 'queued';
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                return $provider->send($employee, $title, $body, $metadata);
+            } catch (Throwable $exception) {
+                $lastException = $exception;
+
+                if ($attempt < $maxAttempts) {
+                    $delayMs = $provider->retryDelayMs($attempt);
+
+                    if ($delayMs > 0) {
+                        usleep($delayMs * 1000);
+                    }
+                }
+            }
+        }
+
+        throw $lastException;
     }
 
     private function providerFor(string $channel): MessageProviderInterface

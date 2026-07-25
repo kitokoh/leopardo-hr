@@ -11,6 +11,7 @@ use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
+use App\Events\EmployeeRoleAssigned;
 use App\Events\PayrollValidated;
 use App\Core\Auth\Domain\Models\AuditLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,6 +35,12 @@ class AuditLogger implements ShouldQueue
 
     public function handle(object $event): void
     {
+        if ($event instanceof EmployeeRoleAssigned) {
+            $this->handleRoleAssigned($event);
+
+            return;
+        }
+
         $class = $event::class;
         $mapping = self::EVENT_MAP[$class] ?? null;
 
@@ -67,6 +74,33 @@ class AuditLogger implements ShouldQueue
         } catch (\Throwable $e) {
             Log::error('AuditLogger: failed to write audit log', [
                 'event' => $class,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * PA2-MOB-007 — nominate/revoke RH permissions must leave an audit
+     * trail with both the previous and new manager_role, and the
+     * identity of the principal manager who made the change.
+     */
+    private function handleRoleAssigned(EmployeeRoleAssigned $event): void
+    {
+        try {
+            AuditLog::create([
+                'company_id' => $event->employee->company_id,
+                'user_id' => $event->actor->id,
+                'action' => $event->newRole ? 'role_assigned' : 'role_revoked',
+                'auditable_type' => $event->employee->getMorphClass(),
+                'auditable_id' => $event->employee->getKey(),
+                'old_values' => ['manager_role' => $event->previousRole],
+                'new_values' => ['manager_role' => $event->newRole],
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent() ? mb_substr((string) request()?->userAgent(), 0, 500) : null,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('AuditLogger: failed to write role assignment audit log', [
+                'employee_id' => $event->employee->id,
                 'error' => $e->getMessage(),
             ]);
         }

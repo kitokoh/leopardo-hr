@@ -8,6 +8,7 @@ use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
+use App\Events\EmployeeRoleAssigned;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use Illuminate\Support\Arr;
@@ -126,11 +127,22 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload, $employee);
 
+        $previousManagerRole = $employee->manager_role;
+        $roleChangeRequested = array_key_exists('manager_role', $payload) || array_key_exists('role', $payload);
+
         $employee->fill($payload);
         $employee->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
+        }
+
+        // PA2-MOB-007 — nominate/revoke RH permissions must leave an audit
+        // trail even when the change is made through the generic employee
+        // update endpoint (e.g. from the manager mobile app) rather than the
+        // dedicated RoleAssignmentController::assign endpoint.
+        if ($roleChangeRequested && $employee->manager_role !== $previousManagerRole) {
+            EmployeeRoleAssigned::dispatch($employee, $actor, $previousManagerRole, $employee->manager_role);
         }
 
         return $employee;

@@ -10,6 +10,7 @@ use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
