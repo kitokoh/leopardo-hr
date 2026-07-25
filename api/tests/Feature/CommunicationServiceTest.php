@@ -182,6 +182,143 @@ class CommunicationServiceTest extends TestCase
     }
 
     /**
+     * PA2-COMM-014 — a category disabled in the employee's preferences
+     * (e.g. `payroll` opted out) blocks every external channel for that
+     * category, not just the in-app notification.
+     */
+    public function test_disabled_category_blocks_external_channels_too(): void
+    {
+        Mail::fake();
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'email_enabled' => true,
+            'sms_enabled' => true,
+            'categories' => ['payroll' => false],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['app', 'email', 'sms']);
+
+        $this->assertSame('skipped', $result['results']['app']);
+        $this->assertSame('skipped', $result['results']['email']);
+        $this->assertSame('skipped', $result['results']['sms']);
+        $this->assertSame(0, Notification::query()->count());
+        $this->assertSame(3, CommunicationEvent::query()->where('error_message', 'Preference disabled.')->count());
+        Mail::assertNothingSent();
+    }
+
+    /**
+     * PA2-COMM-014 — quiet hours must never suppress a `security` category
+     * dispatch: `communication.quiet_hours.bypass_categories` lets urgent
+     * alerts reach the employee on every channel even at night.
+     */
+    public function test_quiet_hours_do_not_block_bypass_categories(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-22 22:15:00', 'Africa/Algiers'));
+        try {
+            $employee = $this->employee();
+            NotificationPreference::query()->create([
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'app_enabled' => true,
+                'email_enabled' => true,
+                'sms_enabled' => true,
+                'timezone' => 'Africa/Algiers',
+                'categories' => ['security' => true],
+                'quiet_hours' => [
+                    'enabled' => true,
+                    'start' => '20:00',
+                    'end' => '07:00',
+                ],
+            ]);
+
+            $result = app(CommunicationService::class)->notifyEmployee($employee, 'security_alert', [], ['app', 'email', 'sms']);
+
+            $this->assertSame('sent', $result['results']['app']);
+            $this->assertSame('queued', $result['results']['email']);
+            $this->assertSame('queued', $result['results']['sms']);
+            $this->assertSame(0, CommunicationEvent::query()->where('error_message', 'Quiet hours active.')->count());
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /**
+     * PA2-COMM-014 — the WhatsApp monthly quota is tracked independently
+     * from the SMS quota: exhausting one channel's quota must not affect
+     * the other channel's delivery.
+     */
+    public function test_whatsapp_monthly_quota_is_independent_from_sms_quota(): void
+    {
+        config()->set('communication.monthly_channel_quotas.whatsapp', 1);
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'sms_enabled' => true,
+            'whatsapp_enabled' => true,
+            'categories' => ['hr' => true],
+        ]);
+        CommunicationEvent::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'event_name' => 'communication_dispatched',
+            'channel' => 'whatsapp',
+            'status' => 'queued',
+            'provider' => 'audit',
+            'template_key' => 'absence_approved',
+            'occurred_at' => now(),
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['sms', 'whatsapp']);
+
+        $this->assertSame('queued', $result['results']['sms']);
+        $this->assertSame('skipped', $result['results']['whatsapp']);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'whatsapp',
+            'status' => 'skipped',
+            'error_message' => 'Monthly channel quota exceeded.',
+        ]);
+    }
+
+    /**
+     * PA2-COMM-014 — every requested channel of a single multi-channel
+     * dispatch must leave its own complete audit trail (channel, status,
+     * provider, template) so support/QA can reconstruct exactly what was
+     * attempted for a given notification, per channel.
+     */
+    public function test_multi_channel_dispatch_leaves_one_audit_event_per_channel(): void
+    {
+        Mail::fake();
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'email_enabled' => true,
+            'sms_enabled' => true,
+            'whatsapp_enabled' => true,
+            'categories' => ['hr' => true],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['app', 'email', 'sms', 'whatsapp']);
+
+        $this->assertSame(4, CommunicationEvent::query()->where('notification_id', $result['notification_id'])->count());
+        foreach (['app', 'email', 'sms', 'whatsapp'] as $channel) {
+            $this->assertDatabaseHas('communication_events', [
+                'notification_id' => $result['notification_id'],
+                'channel' => $channel,
+                'template_key' => 'absence_approved',
+                'event_name' => 'communication_dispatched',
+            ]);
+        }
+    }
+
+    /**
      * PA2-COMM-007 — a transient email transport failure is retried up to
      * `communication.email_retry.max_attempts` before recording a final
      * `failed` audit event, instead of failing on the very first attempt.
