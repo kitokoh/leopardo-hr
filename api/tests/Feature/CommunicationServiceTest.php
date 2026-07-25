@@ -93,6 +93,8 @@ class CommunicationServiceTest extends TestCase
             'push_enabled' => true,
             'sms_enabled' => true,
             'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+            'whatsapp_consent_at' => now(),
             'categories' => ['payroll' => true],
         ]);
 
@@ -258,7 +260,6 @@ class CommunicationServiceTest extends TestCase
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'app_enabled' => true,
-            'sms_enabled' => true,
             'whatsapp_enabled' => true,
             'categories' => ['hr' => true],
         ]);
