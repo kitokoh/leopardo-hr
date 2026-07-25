@@ -2,6 +2,7 @@
 
 namespace App\Modules\Planning\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
@@ -10,14 +11,14 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AbsenceService
 {
-    public function create(Employee $employee, array $data): Absence
+    public function create(Employee $employee, array $data, ?UploadedFile $proof = null): Absence
     {
         $type = AbsenceType::findOrFail($data['absence_type_id']);
 
@@ -40,6 +41,11 @@ class AbsenceService
             throw new AbsenceDateConflictException;
         }
 
+        // PA2-MOB-006: persist the optional supporting document (medical
+        // note, justification letter, etc.) under a company-scoped path so
+        // it is visible to both the employee and the deciding manager.
+        $proofPath = $proof?->store('absences/proofs/'.$employee->company_id, 'local');
+
         $absence = Absence::create([
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
@@ -49,6 +55,7 @@ class AbsenceService
             'days_count' => $daysCount,
             'status' => 'pending',
             'reason' => $data['reason'] ?? null,
+            'proof_path' => $proofPath,
         ]);
 
         AbsenceRequested::dispatch($absence);
@@ -188,4 +195,3 @@ class AbsenceService
         ]);
     }
 }
-
