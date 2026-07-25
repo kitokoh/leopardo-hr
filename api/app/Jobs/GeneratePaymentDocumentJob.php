@@ -61,7 +61,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext()];
     }
 
-    public function handle(CommunicationService $communication): void
+    public function handle(CommunicationService $communicationService): void
     {
         /** @var PaymentDocument|null $document */
         $document = PaymentDocument::query()
@@ -106,9 +106,10 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
                 'error_message' => null,
             ]);
 
-            // PA2-COMM-010 — Document ready: tell the employee without
-            // blocking the UI (they were never made to wait synchronously).
-            $this->notifyDocumentStatus($communication, $document, 'payment_document_ready');
+            // PA2-PAY-004: the employee is notified in-app once their
+            // payslip/advance-receipt PDF has finished generating and is
+            // downloadable, instead of having to poll for it.
+            $this->notifyDocumentReady($communicationService, $document);
         } catch (Throwable $e) {
             $document->update([
                 'status' => PaymentDocument::STATUS_FAILED,
@@ -124,33 +125,28 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
     }
 
     /**
-     * PA2-COMM-010 — Best-effort employee notification for a payment
-     * document lifecycle transition (processing / ready / failed). Routed
-     * through the same CommunicationService pipeline as every other
-     * notification so preferences, quiet hours and audit events stay
-     * consistent; a delivery failure here is logged but never rethrown.
+     * Notifies the document's owning employee that their PDF is ready to
+     * download. Best-effort: a notification failure must not fail the job
+     * or mark an otherwise successfully generated document as failed.
      */
-    private function notifyDocumentStatus(CommunicationService $communication, PaymentDocument $document, string $templateKey): void
+    private function notifyDocumentReady(CommunicationService $communicationService, PaymentDocument $document): void
     {
-        if ($document->employee_id === null) {
+        $employee = $document->employee;
+
+        if ($employee === null) {
             return;
         }
 
         try {
-            $employee = $document->employee;
-
-            if ($employee === null) {
-                return;
-            }
-
-            $communication->notifyEmployee($employee, $templateKey, [
+            $communicationService->notifyEmployee($employee, 'payment_document_ready', [
                 'category' => 'payroll',
                 'document_type' => $document->document_type,
+                'payment_document_id' => $document->id,
                 'payroll_run_id' => $document->payroll_run_id,
                 'salary_advance_id' => $document->salary_advance_id,
-            ]);
+            ], ['app']);
         } catch (Throwable $e) {
-            Log::warning("GeneratePaymentDocumentJob: notification '{$templateKey}' failed for document #{$document->id}: {$e->getMessage()}");
+            Log::warning("GeneratePaymentDocumentJob: notification failed for document #{$document->id}: {$e->getMessage()}");
         }
     }
 
