@@ -13,6 +13,9 @@ class Absence {
   final String? companyName;
   final String? reason;
   final String? rejectionReason;
+  // PA2-MOB-006: whether a supporting document (medical note,
+  // justification letter, etc.) is attached to this request.
+  final bool hasProof;
   final DateTime? createdAt;
 
   Absence({
@@ -30,13 +33,15 @@ class Absence {
     this.companyName,
     this.reason,
     this.rejectionReason,
+    this.hasProof = false,
     this.createdAt,
   });
 
   factory Absence.fromJson(Map<String, dynamic> json) {
     final employee = json['employee'];
-    final employeeMap =
-        employee is Map ? employee.cast<String, dynamic>() : null;
+    final employeeMap = employee is Map
+        ? employee.cast<String, dynamic>()
+        : null;
     final company = json['company'];
     final companyMap = company is Map ? company.cast<String, dynamic>() : null;
     final firstName = employeeMap?['first_name']?.toString().trim() ?? '';
@@ -54,8 +59,8 @@ class Absence {
       status: json['status'] as String,
       employeeName:
           (json['employee_name']?.toString().trim().isNotEmpty ?? false)
-              ? json['employee_name'].toString().trim()
-              : (composedName.isEmpty ? null : composedName),
+          ? json['employee_name'].toString().trim()
+          : (composedName.isEmpty ? null : composedName),
       employeeEmail: employeeMap?['email']?.toString(),
       companyId:
           json['company_id']?.toString() ??
@@ -64,6 +69,9 @@ class Absence {
           json['company_name']?.toString() ?? companyMap?['name']?.toString(),
       reason: json['reason'] as String?,
       rejectionReason: json['rejected_reason'] as String?,
+      hasProof:
+          json['has_proof'] as bool? ??
+          (json['proof_path']?.toString().isNotEmpty ?? false),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
     );
   }

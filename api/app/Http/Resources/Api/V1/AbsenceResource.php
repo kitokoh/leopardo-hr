@@ -24,6 +24,10 @@ class AbsenceResource extends JsonResource
             'status' => $this->status,
             'reason' => $this->reason,
             'proof_path' => $this->proof_path,
+            // PA2-MOB-006: convenience flag for clients so they don't need
+            // to know the internal storage path shape to decide whether to
+            // show a "view attachment" action.
+            'has_proof' => (bool) $this->proof_path,
             'approved_by' => $this->approved_by,
             'rejected_reason' => $this->rejected_reason,
             'employee' => $this->whenLoaded('employee', fn () => [
@@ -52,4 +56,3 @@ class AbsenceResource extends JsonResource
         ];
     }
 }
-
