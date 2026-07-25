@@ -13,6 +13,8 @@ use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;
 use App\Modules\Notification\Infrastructure\Services\Providers\MailMessageProvider;
+use App\Modules\Notification\Infrastructure\Services\Providers\TwilioSmsMessageProvider;
+use App\Modules\Notification\Infrastructure\Services\Providers\TwilioWhatsAppMessageProvider;
 use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -370,6 +372,25 @@ class CommunicationService
             return new MailMessageProvider(
                 (int) config('communication.email_retry.max_attempts', 3),
                 (int) config('communication.email_retry.base_delay_ms', 500),
+            );
+        }
+
+        // PA2-JOB-003 - Twilio-backed SMS/WhatsApp providers. Both reuse the
+        // same bounded caller-side retry policy as email (PA2-COMM-007) via
+        // RetryableMessageProviderInterface; each provider itself no-ops
+        // (status `skipped`) when its own credentials are not configured,
+        // so an incomplete environment never throws here.
+        if ($channel === 'sms' && $configured === 'twilio') {
+            return new TwilioSmsMessageProvider(
+                (int) config('communication.sms_retry.max_attempts', 3),
+                (int) config('communication.sms_retry.base_delay_ms', 500),
+            );
+        }
+
+        if ($channel === 'whatsapp' && $configured === 'twilio') {
+            return new TwilioWhatsAppMessageProvider(
+                (int) config('communication.whatsapp_retry.max_attempts', 3),
+                (int) config('communication.whatsapp_retry.base_delay_ms', 500),
             );
         }
 

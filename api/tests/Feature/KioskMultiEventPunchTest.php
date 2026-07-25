@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -122,6 +124,63 @@ class KioskMultiEventPunchTest extends TestCase
             'employee_id' => $employee->id,
             'external_event_id' => 'evt-mission-002',
             'work_type' => 'mission',
+        ]);
+    }
+
+    public function test_kiosk_offline_sync_writes_an_audit_log_row_per_punch(): void
+    {
+        // PA2-ATT-001 - the multi-event punch model must be auditable on
+        // every entry point, including the offline kiosk sync path
+        // (AttendanceService::importExternalPunch()), which previously
+        // never dispatched AttendanceCheckedIn/AttendanceCheckedOut and was
+        // therefore invisible to the existing AuditLogger listener that
+        // already covers the direct mobile check-in/check-out endpoints.
+        [$manager, $employee] = $this->seedCompanyManagerAndBiometricEmployee();
+        [$deviceCode, $syncToken] = $this->registerKiosk($manager);
+
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/sync', [
+                'events' => [
+                    [
+                        'identifier' => 'FP-001',
+                        'action' => 'check_in',
+                        'occurred_at' => '2026-04-19T08:00:00Z',
+                        'external_event_id' => 'evt-audit-001',
+                        'biometric_type' => 'fingerprint',
+                        'work_type' => 'mission',
+                    ],
+                    [
+                        'identifier' => 'FP-001',
+                        'action' => 'check_out',
+                        'occurred_at' => '2026-04-19T17:00:00Z',
+                        'external_event_id' => 'evt-audit-002',
+                        'biometric_type' => 'fingerprint',
+                        'work_type' => 'mission',
+                    ],
+                ],
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.processed_count', 2);
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $log = AttendanceLog::query()->where('employee_id', $employee->id)->firstOrFail();
+
+        // The check-in creates the row ("created"), the check-out later
+        // updates the same row ("updated") — one audit_logs row per event,
+        // matching the direct mobile check-in/check-out behaviour.
+        $this->assertSame(
+            2,
+            AuditLog::query()->where('auditable_id', $log->id)->count(),
+            'Expected one audit_logs row for the offline check-in and one for the offline check-out.'
+        );
+        $this->assertDatabaseHas('audit_logs', [
+            'auditable_id' => $log->id,
+            'action' => 'checked_in',
+        ]);
+        $this->assertDatabaseHas('audit_logs', [
+            'auditable_id' => $log->id,
+            'action' => 'checked_out',
         ]);
     }
 

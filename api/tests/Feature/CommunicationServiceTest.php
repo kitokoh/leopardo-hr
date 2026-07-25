@@ -182,6 +182,56 @@ class CommunicationServiceTest extends TestCase
     }
 
     /**
+     * PA2-JOB-003 — when an operator opts into the real Twilio-backed
+     * providers (`COMMUNICATION_SMS_PROVIDER=twilio` /
+     * `COMMUNICATION_WHATSAPP_PROVIDER=twilio` plus TWILIO_* credentials),
+     * `CommunicationService` actually calls the Twilio REST API instead of
+     * the audit-only fallback.
+     */
+    public function test_sms_and_whatsapp_dispatch_via_twilio_when_configured(): void
+    {
+        config()->set('communication.providers.sms', 'twilio');
+        config()->set('communication.providers.whatsapp', 'twilio');
+        config()->set('services.twilio.account_sid', 'AC_test_sid');
+        config()->set('services.twilio.auth_token', 'test_token');
+        config()->set('services.twilio.from', '+15550001111');
+        config()->set('services.twilio.whatsapp_from', 'whatsapp:+14155238886');
+
+        \Illuminate\Support\Facades\Http::fake([
+            'api.twilio.com/*' => \Illuminate\Support\Facades\Http::response(['sid' => 'SM123'], 201),
+        ]);
+
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'sms_enabled' => true,
+            'whatsapp_enabled' => true,
+            'categories' => ['payroll' => true],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['sms', 'whatsapp']);
+
+        $this->assertSame('queued', $result['results']['sms']);
+        $this->assertSame('queued', $result['results']['whatsapp']);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'sms',
+            'status' => 'queued',
+            'provider' => 'twilio',
+        ]);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'whatsapp',
+            'status' => 'queued',
+            'provider' => 'twilio',
+        ]);
+
+        \Illuminate\Support\Facades\Http::assertSentCount(2);
+    }
+
+    /**
      * PA2-COMM-007 — a transient email transport failure is retried up to
      * `communication.email_retry.max_attempts` before recording a final
      * `failed` audit event, instead of failing on the very first attempt.
