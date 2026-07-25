@@ -17,6 +17,12 @@ return [
     'providers' => [
         'email' => env('COMMUNICATION_EMAIL_PROVIDER', 'mail'),
         'push' => env('COMMUNICATION_PUSH_PROVIDER', 'firebase'),
+        // PA2-JOB-003 - real Twilio-backed SMS/WhatsApp providers now exist
+        // (see Notification/Infrastructure/Services/Providers) but default
+        // to the safe audit-only fallback, same as an unset/unknown provider
+        // name. Operators opt in explicitly via
+        // COMMUNICATION_SMS_PROVIDER=twilio / COMMUNICATION_WHATSAPP_PROVIDER=twilio
+        // plus the TWILIO_* credentials once a real account is available.
         'sms' => env('COMMUNICATION_SMS_PROVIDER', 'audit'),
         'whatsapp' => env('COMMUNICATION_WHATSAPP_PROVIDER', 'audit'),
     ],
@@ -49,6 +55,27 @@ return [
     'email_retry' => [
         'max_attempts' => (int) env('COMMUNICATION_EMAIL_MAX_ATTEMPTS', 3),
         'base_delay_ms' => (int) env('COMMUNICATION_EMAIL_RETRY_BASE_DELAY_MS', 500),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SMS / WhatsApp provider retry (PA2-JOB-003)
+    |--------------------------------------------------------------------------
+    |
+    | Same bounded caller-side retry policy as `email_retry` above, applied
+    | by `CommunicationService` to the Twilio-backed SMS and WhatsApp
+    | providers.
+    |
+    */
+
+    'sms_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_SMS_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_SMS_RETRY_BASE_DELAY_MS', 500),
+    ],
+
+    'whatsapp_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_WHATSAPP_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_WHATSAPP_RETRY_BASE_DELAY_MS', 500),
     ],
 
     'public_metadata_keys' => [

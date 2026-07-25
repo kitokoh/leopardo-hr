@@ -25,6 +25,12 @@
         .mini h3 { margin:0 0 6px; font-size:14px; }
         .pill { display:inline-flex; align-items:center; border:1px solid #99f6e4; background:#ccfbf1; color:#115e59; border-radius:999px; padding:3px 8px; font-size:12px; font-weight:900; }
         .muted { color:var(--muted); }
+        .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+        .tab { border:1px solid var(--border); background:#fff; color:#334155; border-radius:999px; padding:6px 12px; font-weight:800; font-size:13px; cursor:pointer; }
+        .tab.active { background:#0f172a; color:white; border-color:#0f172a; }
+        .snippet-wrap { position:relative; }
+        .snippet-wrap pre { min-height:auto; max-height:340px; overflow:auto; }
+        .copy-btn { position:absolute; top:10px; right:10px; background:#334155; }
         @media (max-width: 980px) { .developer-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
         @media (max-width: 820px) { .grid { grid-template-columns:1fr; } }
         @media (max-width: 560px) { .developer-grid { grid-template-columns:1fr; } }
@@ -163,6 +169,20 @@
         <h2>Resultat</h2>
         <pre id="output">Pret.</pre>
     </section>
+
+    <section class="card">
+        <h2>Exemples de code (sandbox)</h2>
+        <p class="muted">Meme requete que ci-dessus, prete a copier dans un terminal ou un script. Le token Bearer affiche est celui charge par le profil demo actif ; remplacez-le par un token sandbox personnel avant tout usage hors test.</p>
+        <div class="tabs">
+            <button class="tab active" type="button" data-lang="curl">curl</button>
+            <button class="tab" type="button" data-lang="javascript">JavaScript (fetch)</button>
+            <button class="tab" type="button" data-lang="php">PHP</button>
+        </div>
+        <div class="snippet-wrap">
+            <pre id="snippetOutput">Pret.</pre>
+            <button id="copySnippet" class="copy-btn" type="button">Copier</button>
+        </div>
+    </section>
 </main>
 <script>
 const defaultApiBase = `${window.location.origin}/api/v1`;
@@ -242,6 +262,7 @@ async function login() {
         token = nextToken;
         tokenStatus.textContent = 'Token client charge.';
     }
+    updateSnippet(isPlatform);
 }
 
 async function sendRequest(platform = false) {
@@ -253,6 +274,7 @@ async function sendRequest(platform = false) {
         ...(verb !== 'GET' && payload ? { body: payload } : {}),
     });
     print(result);
+    updateSnippet(platform);
 }
 
 document.getElementById('loadDemo').addEventListener('click', loadDemoUsers);
@@ -265,9 +287,117 @@ document.querySelectorAll('[data-endpoint]').forEach((button) => {
         method.value = 'GET';
         body.value = '';
         sendRequest(button.dataset.platform === '1');
+        updateSnippet(button.dataset.platform === '1');
     });
 });
+
+// PA2-API-007: sandbox code snippets (curl / JavaScript / PHP) generated from
+// the current explorer state (base URL, endpoint, method, body, active token).
+const snippetOutput = document.getElementById('snippetOutput');
+const copySnippetBtn = document.getElementById('copySnippet');
+let activeSnippetLang = 'curl';
+let lastRequestUsedPlatform = false;
+
+function currentToken(isPlatform) {
+    return isPlatform ? (platformToken || 'YOUR_SANDBOX_TOKEN') : (token || 'YOUR_SANDBOX_TOKEN');
+}
+
+function shellQuote(value) {
+    return `'${String(value).replace(/'/g, `'\\''`)}'`;
+}
+
+function buildCurlSnippet(isPlatform) {
+    const apiBase = baseUrl.value.replace(/\/+$/, '');
+    const verb = method.value;
+    const url = `${apiBase}${endpoint.value}`;
+    const payload = body.value.trim();
+    const lines = [
+        `curl -X ${verb} ${shellQuote(url)} \\`,
+        `  -H 'Accept: application/json' \\`,
+        `  -H 'Content-Type: application/json' \\`,
+        `  -H 'Authorization: Bearer ${currentToken(isPlatform)}'`,
+    ];
+    if (verb !== 'GET' && payload) {
+        lines[lines.length - 1] += ' \\';
+        lines.push(`  -d ${shellQuote(payload)}`);
+    }
+    return lines.join('\n');
+}
+
+function buildJavaScriptSnippet(isPlatform) {
+    const apiBase = baseUrl.value.replace(/\/+$/, '');
+    const verb = method.value;
+    const url = `${apiBase}${endpoint.value}`;
+    const payload = body.value.trim();
+    const bodyLine = verb !== 'GET' && payload ? `,\n  body: JSON.stringify(${payload})` : '';
+    return [
+        `const response = await fetch(${JSON.stringify(url)}, {`,
+        `  method: ${JSON.stringify(verb)},`,
+        `  headers: {`,
+        `    Accept: 'application/json',`,
+        `    'Content-Type': 'application/json',`,
+        `    Authorization: 'Bearer ${currentToken(isPlatform)}',`,
+        `  }${bodyLine},`,
+        `});`,
+        ``,
+        `const data = await response.json();`,
+        `console.log(response.status, data);`,
+    ].join('\n');
+}
+
+function buildPhpSnippet(isPlatform) {
+    const apiBase = baseUrl.value.replace(/\/+$/, '');
+    const verb = method.value;
+    const url = `${apiBase}${endpoint.value}`;
+    const payload = body.value.trim();
+    const lines = [
+        `<?php`,
+        ``,
+        `$client = new \\GuzzleHttp\\Client();`,
+        ``,
+        `$response = $client->request('${verb}', '${url}', [`,
+        `    'headers' => [`,
+        `        'Accept' => 'application/json',`,
+        `        'Authorization' => 'Bearer ${currentToken(isPlatform)}',`,
+        `    ],`,
+    ];
+    if (verb !== 'GET' && payload) {
+        lines.push(`    'json' => ${payload},`);
+    }
+    lines.push(`]);`, ``, `echo $response->getBody();`);
+    return lines.join('\n');
+}
+
+function updateSnippet(isPlatform = lastRequestUsedPlatform) {
+    lastRequestUsedPlatform = isPlatform;
+    const builders = { curl: buildCurlSnippet, javascript: buildJavaScriptSnippet, php: buildPhpSnippet };
+    const builder = builders[activeSnippetLang] || builders.curl;
+    snippetOutput.textContent = builder(isPlatform);
+}
+
+document.querySelectorAll('.tab[data-lang]').forEach((tabButton) => {
+    tabButton.addEventListener('click', () => {
+        document.querySelectorAll('.tab[data-lang]').forEach((btn) => btn.classList.remove('active'));
+        tabButton.classList.add('active');
+        activeSnippetLang = tabButton.dataset.lang;
+        updateSnippet();
+    });
+});
+
+copySnippetBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(snippetOutput.textContent).then(() => {
+        const original = copySnippetBtn.textContent;
+        copySnippetBtn.textContent = 'Copie !';
+        setTimeout(() => { copySnippetBtn.textContent = original; }, 1500);
+    });
+});
+
+[endpoint, method, body, baseUrl].forEach((field) => {
+    field.addEventListener('input', () => updateSnippet());
+});
+
 loadDemoUsers().catch((error) => print(String(error)));
+updateSnippet();
 </script>
 </body>
 </html>

@@ -31,6 +31,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
+ * @property-read string $source
+ * @property-read string|null $note
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class CompanyRequest extends Model
@@ -81,5 +83,37 @@ class CompanyRequest extends Model
     public function isPending(): bool
     {
         return $this->status === 'pending';
+    }
+
+    /**
+     * PA2-ADM-004: acquisition channel of this lead, resolved from the
+     * structured `signup_payload.source` captured by the self-service
+     * trial flow, falling back to a legacy `description` marker
+     * ("... — source: X") and finally to a generic label for requests
+     * created by the manager-initiated company request flow.
+     */
+    public function getSourceAttribute(): string
+    {
+        $payload = $this->signup_payload;
+        if (is_array($payload) && ! empty($payload['source']) && is_string($payload['source'])) {
+            return $payload['source'];
+        }
+
+        $description = (string) ($this->description ?? '');
+        if (preg_match('/source:\s*([^\r\n]+)/i', $description, $matches) === 1) {
+            return trim($matches[1]);
+        }
+
+        return $this->user_id !== null ? 'manager_request' : 'direct';
+    }
+
+    /**
+     * PA2-ADM-004: short note shown on the CRM pipeline card — prefers the
+     * admin's own note, falling back to the lead's own description/notes
+     * so the platform team always has context even before reviewing.
+     */
+    public function getNoteAttribute(): ?string
+    {
+        return $this->admin_notes ?: ($this->notes ?: $this->description);
     }
 }

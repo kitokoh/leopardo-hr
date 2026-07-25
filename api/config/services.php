@@ -36,6 +36,17 @@ return [
         'credentials' => env('FIREBASE_SERVICE_ACCOUNT_JSON'),
     ],
 
+    // PA2-JOB-003 - Twilio credentials shared by the SMS and WhatsApp
+    // Cloud API-compatible communication providers. `whatsapp_from` is the
+    // Twilio WhatsApp-enabled sender number (E.164, e.g. "whatsapp:+14155238886");
+    // `from` is the plain SMS sender number.
+    'twilio' => [
+        'account_sid' => env('TWILIO_ACCOUNT_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'from' => env('TWILIO_SMS_FROM'),
+        'whatsapp_from' => env('TWILIO_WHATSAPP_FROM'),
+    ],
+
     'stripe' => [
         'secret' => env('STRIPE_SECRET_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
