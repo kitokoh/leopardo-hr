@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
 
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
@@ -44,13 +46,46 @@ class CompanyRequestsScreen extends ConsumerWidget {
                       )
                       .toList(),
                 ),
-          loading: () => const MobileEmptyLoading(label: 'Chargement demandes'),
+          loading: () => const _CompanyRequestsLoading(),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
             onRetry: () => ref.invalidate(platformCompanyRequestsProvider),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _CompanyRequestsLoading extends StatelessWidget {
+  const _CompanyRequestsLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+        3,
+        (index) => MobilePanel(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              const ShimmerLoading(width: 40, height: 40, borderRadius: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    ShimmerLoading(width: 150, height: 14),
+                    SizedBox(height: 8),
+                    ShimmerLoading(width: double.infinity, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -88,7 +123,7 @@ class _CompanyRequestCard extends ConsumerWidget {
       iconColor: AppColors.warning,
       title: request.companyName,
       subtitle: '${request.city}, ${request.country} - ${request.email}',
-      trailing: MobileStatusPill(
+      trailing: LeopardoBadge(
         label: request.status,
         color: AppColors.warning,
       ),

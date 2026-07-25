@@ -255,6 +255,8 @@ trait CreatesMvpSchema
             $table->timestampTz('locked_until')->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('email_verified_at')->nullable();
+            $table->timestampTz('email_bounced_at')->nullable();
+            $table->string('email_bounce_reason', 255)->nullable();
             $table->json('extra_data')->nullable();
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
@@ -493,6 +495,11 @@ trait CreatesMvpSchema
             $table->string('payment_reference')->nullable();
             $table->text('payment_note')->nullable();
             $table->timestampTz('employee_confirmed_at')->nullable();
+            $table->text('dispute_reason')->nullable();
+            $table->timestampTz('disputed_at')->nullable();
+            $table->timestampTz('dispute_resolved_at')->nullable();
+            $table->unsignedBigInteger('dispute_resolved_by')->nullable();
+            $table->text('dispute_resolution_note')->nullable();
             $table->string('validation_status', 32)->default('pending');
             $table->text('decision_comment')->nullable();
             $table->unsignedSmallInteger('repayment_months')->default(1);

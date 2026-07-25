@@ -11,6 +11,8 @@ class PayrollBalance {
   final double advances;
   final double paid;
   final double remaining;
+  final double overtimeHours;
+  final double overtimePay;
   final String nextPaymentDate;
   final int? paySlipId;
   final String? paySlipStatus;
@@ -30,6 +32,8 @@ class PayrollBalance {
     required this.paid,
     required this.remaining,
     required this.nextPaymentDate,
+    this.overtimeHours = 0,
+    this.overtimePay = 0,
     this.paySlipId,
     this.paySlipStatus,
     this.receiptAvailable = false,
@@ -52,6 +56,12 @@ class PayrollBalance {
       advances: _asDouble(json['advances']),
       paid: _asDouble(json['paid']),
       remaining: _asDouble(json['remaining']),
+      // PA2-PAY-010: overtime hours/pay for the current cycle, aggregated
+      // by the API from attendance logs (see PayrollCycleService::
+      // cycleOvertimeHours()/estimateOvertimePay()). Defaults to 0 for any
+      // backend still on the pre-PA2-PAY-010 payload shape.
+      overtimeHours: _asDouble(json['overtime_hours']),
+      overtimePay: _asDouble(json['overtime_pay']),
       nextPaymentDate: (json['next_payment_date'] ?? '').toString(),
       paySlipId: _nullableInt(paySlip['id']),
       paySlipStatus: paySlip['status']?.toString(),
@@ -87,6 +97,8 @@ class PayrollMobileSummary {
   final double advances;
   final double paid;
   final double remaining;
+  final double overtimeHours;
+  final double overtimePay;
 
   const PayrollMobileSummary({
     required this.items,
@@ -94,6 +106,8 @@ class PayrollMobileSummary {
     required this.advances,
     required this.paid,
     required this.remaining,
+    this.overtimeHours = 0,
+    this.overtimePay = 0,
   });
 
   factory PayrollMobileSummary.fromJson(Map<String, dynamic> json) {
@@ -112,6 +126,9 @@ class PayrollMobileSummary {
       advances: PayrollBalance._asDouble(totals['advances']),
       paid: PayrollBalance._asDouble(totals['paid']),
       remaining: PayrollBalance._asDouble(totals['remaining']),
+      // PA2-PAY-010: team-wide overtime totals for the manager dashboard.
+      overtimeHours: PayrollBalance._asDouble(totals['overtime_hours']),
+      overtimePay: PayrollBalance._asDouble(totals['overtime_pay']),
     );
   }
 }

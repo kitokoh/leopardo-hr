@@ -11,6 +11,7 @@ use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
+use App\Events\EmployeeRoleAssigned;
 use App\Events\CompanyCreated;
 use App\Events\PayrollValidated;
 use App\Events\SubscriptionPaid;
@@ -32,6 +33,7 @@ class EventServiceProvider extends ServiceProvider
         AbsenceApproved::class => [AuditLogger::class, WebhookListener::class],
         AbsenceRejected::class => [AuditLogger::class, WebhookListener::class],
         PayrollValidated::class => [AuditLogger::class, WebhookListener::class],
+        EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],
         SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
     ];
