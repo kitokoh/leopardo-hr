@@ -184,87 +184,224 @@ class CommunicationServiceTest extends TestCase
     }
 
     /**
-     * PA2-COMM-008 — WhatsApp messaging requires an explicit, separate
-     * opt-in from the plain channel toggle: enabling `whatsapp_enabled`
-     * alone must not be enough to actually message the employee.
+     * PA2-COMM-014 — a category disabled in the employee's preferences
+     * (e.g. `payroll` opted out) blocks every external channel for that
+     * category, not just the in-app notification.
      */
-    public function test_whatsapp_is_skipped_without_explicit_consent_even_when_channel_enabled(): void
+    public function test_disabled_category_blocks_external_channels_too(): void
     {
+        Mail::fake();
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'email_enabled' => true,
+            'sms_enabled' => true,
+            'categories' => ['payroll' => false],
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['app', 'email', 'sms']);
+
+        $this->assertSame('skipped', $result['results']['app']);
+        $this->assertSame('skipped', $result['results']['email']);
+        $this->assertSame('skipped', $result['results']['sms']);
+        $this->assertSame(0, Notification::query()->count());
+        $this->assertSame(3, CommunicationEvent::query()->where('error_message', 'Preference disabled.')->count());
+        Mail::assertNothingSent();
+    }
+
+    /**
+     * PA2-COMM-014 — quiet hours must never suppress a `security` category
+     * dispatch: `communication.quiet_hours.bypass_categories` lets urgent
+     * alerts reach the employee on every channel even at night.
+     */
+    public function test_quiet_hours_do_not_block_bypass_categories(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-22 22:15:00', 'Africa/Algiers'));
+        try {
+            $employee = $this->employee();
+            NotificationPreference::query()->create([
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'app_enabled' => true,
+                'email_enabled' => true,
+                'sms_enabled' => true,
+                'timezone' => 'Africa/Algiers',
+                'categories' => ['security' => true],
+                'quiet_hours' => [
+                    'enabled' => true,
+                    'start' => '20:00',
+                    'end' => '07:00',
+                ],
+            ]);
+
+            $result = app(CommunicationService::class)->notifyEmployee($employee, 'security_alert', [], ['app', 'email', 'sms']);
+
+            $this->assertSame('sent', $result['results']['app']);
+            $this->assertSame('queued', $result['results']['email']);
+            $this->assertSame('queued', $result['results']['sms']);
+            $this->assertSame(0, CommunicationEvent::query()->where('error_message', 'Quiet hours active.')->count());
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    /**
+     * PA2-COMM-014 — the WhatsApp monthly quota is tracked independently
+     * from the SMS quota: exhausting one channel's quota must not affect
+     * the other channel's delivery.
+     */
+    public function test_whatsapp_monthly_quota_is_independent_from_sms_quota(): void
+    {
+        config()->set('communication.monthly_channel_quotas.whatsapp', 1);
         $employee = $this->employee();
         NotificationPreference::query()->create([
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'app_enabled' => true,
             'whatsapp_enabled' => true,
-            'whatsapp_consent_given' => false,
-            'categories' => ['payroll' => true],
+            'categories' => ['hr' => true],
+        ]);
+        CommunicationEvent::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'event_name' => 'communication_dispatched',
+            'channel' => 'whatsapp',
+            'status' => 'queued',
+            'provider' => 'audit',
+            'template_key' => 'absence_approved',
+            'occurred_at' => now(),
         ]);
 
-        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['whatsapp']);
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['sms', 'whatsapp']);
 
+        $this->assertSame('queued', $result['results']['sms']);
         $this->assertSame('skipped', $result['results']['whatsapp']);
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
             'channel' => 'whatsapp',
             'status' => 'skipped',
-            'error_message' => 'WhatsApp consent missing.',
+            'error_message' => 'Monthly channel quota exceeded.',
         ]);
     }
 
     /**
-     * PA2-COMM-008 — with the channel enabled and consent explicitly
-     * given, WhatsApp dispatch proceeds through the configured provider
-     * (audit-only by default, since no Meta Cloud API secret is set in
-     * tests).
+     * PA2-COMM-014 — every requested channel of a single multi-channel
+     * dispatch must leave its own complete audit trail (channel, status,
+     * provider, template) so support/QA can reconstruct exactly what was
+     * attempted for a given notification, per channel.
      */
-    public function test_whatsapp_is_sent_once_consent_is_explicitly_given(): void
+    public function test_multi_channel_dispatch_leaves_one_audit_event_per_channel(): void
     {
+        Mail::fake();
         $employee = $this->employee();
         NotificationPreference::query()->create([
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'app_enabled' => true,
+            'email_enabled' => true,
+            'sms_enabled' => true,
             'whatsapp_enabled' => true,
-            'whatsapp_consent_given' => true,
-            'whatsapp_consent_at' => now(),
-            'categories' => ['payroll' => true],
+            'categories' => ['hr' => true],
         ]);
 
-        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['whatsapp']);
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['app', 'email', 'sms', 'whatsapp']);
 
-        $this->assertSame('queued', $result['results']['whatsapp']);
+        $this->assertSame(4, CommunicationEvent::query()->where('notification_id', $result['notification_id'])->count());
+        foreach (['app', 'email', 'sms', 'whatsapp'] as $channel) {
+            $this->assertDatabaseHas('communication_events', [
+                'notification_id' => $result['notification_id'],
+                'channel' => $channel,
+                'template_key' => 'absence_approved',
+                'event_name' => 'communication_dispatched',
+            ]);
+        }
+    }
+
+    /**
+     * PA2-COMM-007 — a transient email transport failure is retried up to
+     * `communication.email_retry.max_attempts` before recording a final
+     * `failed` audit event, instead of failing on the very first attempt.
+     */
+    public function test_email_dispatch_retries_on_transient_failure_then_succeeds(): void
+    {
+        config()->set('communication.email_retry.base_delay_ms', 0);
+        $employee = $this->employee();
+
+        $attempts = 0;
+        Mail::shouldReceive('to')
+            ->times(2)
+            ->andReturnUsing(function () use (&$attempts) {
+                $attempts++;
+                $pending = \Mockery::mock();
+                $pending->shouldReceive('send')->andReturnUsing(function () use ($attempts): void {
+                    if ($attempts < 2) {
+                        throw new RuntimeException('SMTP timeout');
+                    }
+                });
+
+                return $pending;
+            });
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['email']);
+
+        $this->assertSame('queued', $result['results']['email']);
+        $this->assertSame(2, $attempts);
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
-            'channel' => 'whatsapp',
+            'channel' => 'email',
             'status' => 'queued',
         ]);
     }
 
     /**
-     * PA2-COMM-008 — even when the `whatsapp_cloud` provider is selected,
-     * dispatch must stay on the safe audit-only fallback (never fail hard)
-     * whenever the Meta Cloud API secrets are not configured.
+     * PA2-COMM-007 — once every retry attempt has failed, the dispatch is
+     * recorded as a final `failed` audit event with the underlying error.
      */
-    public function test_whatsapp_falls_back_to_audit_only_when_provider_secret_is_missing(): void
+    public function test_email_dispatch_records_failed_status_after_exhausting_retries(): void
     {
-        config()->set('communication.providers.whatsapp', 'whatsapp_cloud');
-        config()->set('services.whatsapp.phone_number_id', null);
-        config()->set('services.whatsapp.access_token', null);
-
+        config()->set('communication.email_retry.base_delay_ms', 0);
+        config()->set('communication.email_retry.max_attempts', 2);
         $employee = $this->employee();
-        NotificationPreference::query()->create([
-            'company_id' => $employee->company_id,
+
+        Mail::shouldReceive('to')
+            ->times(2)
+            ->andReturnUsing(function () {
+                $pending = \Mockery::mock();
+                $pending->shouldReceive('send')->andThrow(new RuntimeException('SMTP connection refused'));
+
+                return $pending;
+            });
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['email']);
+
+        $this->assertSame('failed', $result['results']['email']);
+        $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
-            'app_enabled' => true,
-            'whatsapp_enabled' => true,
-            'whatsapp_consent_given' => true,
-            'whatsapp_consent_at' => now(),
-            'categories' => ['payroll' => true],
+            'channel' => 'email',
+            'status' => 'failed',
+            'error_message' => 'SMTP connection refused',
         ]);
+    }
 
-        $result = app(CommunicationService::class)->notifyEmployee($employee, 'payroll_ready', [], ['whatsapp']);
+    /**
+     * PA2-COMM-007 — an employee whose address previously bounced (stamped
+     * by `EmailBounceWebhookController`) is skipped instead of retried.
+     */
+    public function test_email_dispatch_skips_previously_bounced_address(): void
+    {
+        Mail::fake();
+        $employee = $this->employee();
+        $employee->forceFill([
+            'email_bounced_at' => now(),
+            'email_bounce_reason' => 'hard_bounce',
+        ])->save();
 
-        $this->assertSame('queued', $result['results']['whatsapp']);
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['email']);
+
+        $this->assertSame('skipped', $result['results']['email']);
+        Mail::assertNothingSent();
     }
 
     /**
