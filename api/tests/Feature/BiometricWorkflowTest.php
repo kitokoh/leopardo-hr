@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
@@ -243,6 +244,141 @@ class BiometricWorkflowTest extends TestCase
             'external_event_id' => 'evt-002',
             'synced_from_offline' => true,
         ]);
+    }
+
+    /**
+     * PA2-KIO-004: the kiosk employee-info lookup must surface the employee's
+     * biometric consent/enrollment status (enabled flags + pending mobile
+     * enrollment request) so field staff can see it without leaving the
+     * kiosk screen.
+     */
+    public function test_kiosk_employee_info_surfaces_biometric_enrollment_status(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'services',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'plan_id' => 1,
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Manager',
+            'last_name' => 'Principal',
+            'email' => 'manager@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+
+        $enrolledEmployee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Karim',
+            'last_name' => 'Employe',
+            'email' => 'karim@company.test',
+            'matricule' => 'EMP-001',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+            'biometric_fingerprint_enabled' => true,
+            'biometric_consent_at' => now(),
+        ]);
+
+        $pendingEmployee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Sara',
+            'last_name' => 'Nouvelle',
+            'email' => 'sara@company.test',
+            'matricule' => 'EMP-002',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        BiometricEnrollmentRequest::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $pendingEmployee->id,
+            'status' => 'pending',
+            'requested_face_enabled' => true,
+            'requested_fingerprint_enabled' => false,
+            'request_source' => 'mobile',
+            'submitted_at' => now(),
+        ]);
+
+        $unenrolledEmployee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Yacine',
+            'last_name' => 'SansBiometrie',
+            'email' => 'yacine@company.test',
+            'matricule' => 'EMP-003',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        if (! \Illuminate\Support\Facades\Schema::hasTable('leave_balances')) {
+            \Illuminate\Support\Facades\Schema::create('leave_balances', function (\Illuminate\Database\Schema\Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->unsignedInteger('absence_type_id')->nullable();
+                $table->decimal('balance', 6, 2)->default(0);
+                $table->decimal('used', 6, 2)->default(0);
+                $table->decimal('pending', 6, 2)->default(0);
+                $table->unsignedSmallInteger('year');
+                $table->timestampTz('updated_at')->nullable();
+            });
+        }
+
+        DB::statement('SET search_path TO public');
+
+        $kioskResponse = $this->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/kiosks', [
+                'name' => 'Entree principale',
+                'biometric_mode' => 'mixed',
+            ])
+            ->assertCreated();
+
+        $deviceCode = $kioskResponse->json('data.device_code');
+        $syncToken = $kioskResponse->json('data.sync_token');
+
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/employee-info', [
+                'identifier' => 'EMP-001',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.biometric_enrollment.fingerprint_enabled', true)
+            ->assertJsonPath('data.biometric_enrollment.face_enabled', false)
+            ->assertJsonPath('data.biometric_enrollment.pending_request', false);
+
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/employee-info', [
+                'identifier' => 'EMP-002',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.biometric_enrollment.fingerprint_enabled', false)
+            ->assertJsonPath('data.biometric_enrollment.face_enabled', false)
+            ->assertJsonPath('data.biometric_enrollment.pending_request', true)
+            ->assertJsonPath('data.biometric_enrollment.latest_request_status', 'pending');
+
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/employee-info', [
+                'identifier' => 'EMP-003',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.biometric_enrollment.fingerprint_enabled', false)
+            ->assertJsonPath('data.biometric_enrollment.face_enabled', false)
+            ->assertJsonPath('data.biometric_enrollment.pending_request', false)
+            ->assertJsonPath('data.biometric_enrollment.latest_request_status', null);
     }
 }
 
