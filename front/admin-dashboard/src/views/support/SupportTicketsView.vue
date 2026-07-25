@@ -6,6 +6,12 @@
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
           Conversations ouvertes par les entreprises clientes, triées par priorité.
         </p>
+        <div v-if="companyFilter.id" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-brand-700 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-300">
+          Filtre : {{ companyFilter.name || 'Entreprise sélectionnée' }}
+          <button type="button" class="rounded-full p-0.5 hover:bg-brand-100 dark:hover:bg-brand-900/50" @click="clearCompanyFilter">
+            <XMarkIcon class="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
       <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="loadTickets">
         <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
@@ -189,6 +195,7 @@
 
 <script setup>
 import { nextTick, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import {
   ArrowPathIcon,
@@ -197,7 +204,8 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   InboxIcon,
-  PaperAirplaneIcon
+  PaperAirplaneIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
@@ -206,12 +214,21 @@ import { toIntlLocale } from '@/i18n/index.js'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
+const route = useRoute()
+const router = useRouter()
 
 const isLoading = ref(false)
 const isReplying = ref(false)
 const isTriaging = ref(false)
 const activeStatus = ref('all')
 const activePriority = ref('all')
+// PA2-ADM-003: when arriving from a company detail page via
+// "Voir tous les tickets" (?company_id=...), scope the ticket list to that
+// company only, and surface a chip so the admin can clear the filter.
+const companyFilter = ref({
+  id: typeof route.query.company_id === 'string' ? route.query.company_id : '',
+  name: typeof route.query.company_name === 'string' ? route.query.company_name : '',
+})
 const tickets = ref([])
 const selectedTicket = ref(null)
 const replyBody = ref('')
@@ -243,6 +260,7 @@ async function loadTickets() {
     const params = {}
     if (activeStatus.value !== 'all') params.status = activeStatus.value
     if (activePriority.value !== 'all') params.priority = activePriority.value
+    if (companyFilter.value.id) params.company_id = companyFilter.value.id
 
     const response = await api.get('/platform/support-tickets', { params })
     tickets.value = response.data?.data || []
@@ -322,6 +340,12 @@ async function applyTriage() {
 
 function setStatusFilter(status) {
   activeStatus.value = status
+  loadTickets()
+}
+
+function clearCompanyFilter() {
+  companyFilter.value = { id: '', name: '' }
+  router.replace({ name: 'support-tickets' })
   loadTickets()
 }
 
