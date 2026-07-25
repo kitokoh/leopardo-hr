@@ -2,12 +2,14 @@ import 'dart:io';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
@@ -29,6 +31,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _emailController;
+  late final TextEditingController _personalEmailController;
+  late final TextEditingController _recoveryEmailController;
+  late final TextEditingController _personalPhoneController;
   final TextEditingController _currentPasswordController =
       TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -38,6 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       TextEditingController();
   final TextEditingController _fingerprintDeviceController =
       TextEditingController();
+  final TextEditingController _companyQrController = TextEditingController();
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
     'ar': 'العربية',
@@ -69,6 +75,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     _lastNameController = TextEditingController(text: employee?.lastName ?? '');
     _emailController = TextEditingController(text: employee?.email ?? '');
+    _personalEmailController = TextEditingController(
+      text: employee?.personalEmail ?? '',
+    );
+    _recoveryEmailController = TextEditingController(
+      text: employee?.recoveryEmail ?? '',
+    );
+    _personalPhoneController = TextEditingController(
+      text: employee?.personalPhone ?? '',
+    );
     _selectedLanguage = _languageLabels.containsKey(employee?.language)
         ? employee!.language
         : (_languageLabels.containsKey(deviceLanguage) ? deviceLanguage : 'fr');
@@ -108,11 +123,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _personalEmailController.dispose();
+    _recoveryEmailController.dispose();
+    _personalPhoneController.dispose();
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     _biometricNoteController.dispose();
     _fingerprintDeviceController.dispose();
+    _companyQrController.dispose();
     super.dispose();
   }
 
@@ -141,6 +160,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildAccountOverviewSection(isManager: isManager),
           const SizedBox(height: 20),
           _buildProfileSection(context, authState),
+          const SizedBox(height: 20),
+          _buildQrOnboardingSection(context),
+          const SizedBox(height: 20),
+          _buildCareerSection(),
+          const SizedBox(height: 20),
+          _buildCabinetSection(),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
           const SizedBox(height: 20),
@@ -305,6 +330,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               },
             ),
             const SizedBox(height: 16),
+            Text(
+              'Contacts personnels',
+              style: AppTypography.bodySmall.copyWith(
+                color: MobileSurface.secondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _personalEmailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email personnel (optionnel)',
+              ),
+              validator: _optionalEmailValidator,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _recoveryEmailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email de secours (optionnel)',
+              ),
+              validator: _optionalEmailValidator,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _personalPhoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Telephone personnel (optionnel)',
+              ),
+            ),
+            const SizedBox(height: 16),
             if (authState.error != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -323,6 +382,373 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  String? _optionalEmailValidator(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return null;
+    if (!trimmed.contains('@') || !trimmed.contains('.')) {
+      return 'Email invalide';
+    }
+    return null;
+  }
+
+  Widget _buildQrOnboardingSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const MobileIconBubble(
+                icon: Icons.qr_code_2_rounded,
+                color: AppColors.rh,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'QR professionnel',
+                      style: AppTypography.subtitle.copyWith(
+                        color: MobileSurface.text,
+                      ),
+                    ),
+                    Text(
+                      'Partagez votre profil ou scannez le QR d une entreprise.',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          FutureBuilder<EmployeeQrPayload>(
+            future:
+                ref.read(settingsRepositoryProvider).loadEmployeeQrPayload(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const LinearProgressIndicator(minHeight: 2);
+              }
+              if (snapshot.hasError || snapshot.data == null) {
+                return Text(
+                  'QR indisponible pour le moment.',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                );
+              }
+
+              final qr = snapshot.data!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  LeopardoQrCard(
+                    data: qr.token,
+                    title: 'Mon QR manager',
+                    subtitle:
+                        'Un collegue ou un RH peut le scanner pour pre-remplir une invitation.',
+                    expiresAt: qr.expiresAt,
+                    copyLabel: 'Copier aussi le jeton',
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 18),
+          OutlinedButton.icon(
+            onPressed: () async {
+              final data = await Clipboard.getData(Clipboard.kTextPlain);
+              final text = data?.text?.trim();
+              if (text == null || text.isEmpty) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Aucun QR entreprise dans le presse-papiers.',
+                    ),
+                  ),
+                );
+                return;
+              }
+              _companyQrController.text = text;
+            },
+            icon: const Icon(Icons.content_paste_rounded),
+            label: const Text('Coller le QR entreprise'),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _companyQrController,
+            minLines: 2,
+            maxLines: 4,
+            style: const TextStyle(color: MobileSurface.text),
+            decoration: const InputDecoration(
+              labelText: 'QR entreprise',
+              hintText: 'Coller le QR fourni par le manager ou le RH',
+              alignLabelWithHint: true,
+            ),
+          ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: () => _submitCompanyQr(context),
+            icon: const Icon(Icons.domain_add_rounded),
+            label: const Text('Demander l integration'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCareerRow(EmployeeCareerEntry entry) {
+    final period =
+        '${entry.startDate ?? 'Date inconnue'} - ${entry.endDate ?? (entry.current ? 'Aujourd hui' : 'En cours')}';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: MobileSurface.chip,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: MobileSurface.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: entry.current ? AppColors.rh : MobileSurface.muted,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.jobTitle ?? 'Poste non renseigne',
+                  style: AppTypography.body.copyWith(
+                    color: MobileSurface.text,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${entry.companyName ?? 'Entreprise'} - $period',
+                  style: AppTypography.caption.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCareerSection() {
+    return FutureBuilder<EmployeeCareer>(
+      future: ref.read(settingsRepositoryProvider).loadCareer(),
+      builder: (context, snapshot) {
+        final career = snapshot.data;
+        final timeline = career?.timeline ?? const <EmployeeCareerEntry>[];
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: MobileSurface.cardDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const MobileIconBubble(
+                    icon: Icons.work_history_rounded,
+                    color: AppColors.rh,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Parcours professionnel',
+                          style: AppTypography.subtitle.copyWith(
+                            color: MobileSurface.text,
+                          ),
+                        ),
+                        Text(
+                          career?.availableForNewCompany == true
+                              ? 'Disponible pour une nouvelle entreprise'
+                              : 'Rattache a ${career?.currentCompanyName ?? 'votre entreprise'}',
+                          style: AppTypography.caption.copyWith(
+                            color: MobileSurface.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const LinearProgressIndicator(minHeight: 2)
+              else if (timeline.isEmpty)
+                Text(
+                  'Aucun parcours enregistre pour le moment.',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                )
+              else
+                ...timeline.take(3).map(_buildCareerRow),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCabinetSection() {
+    return FutureBuilder<CabinetStats>(
+      future: ref.read(settingsRepositoryProvider).loadCabinetStats(),
+      builder: (context, snapshot) {
+        final stats = snapshot.data;
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: MobileSurface.cardDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const MobileIconBubble(
+                    icon: Icons.inventory_2_rounded,
+                    color: AppColors.cabinet,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Placard numerique',
+                          style: AppTypography.subtitle.copyWith(
+                            color: MobileSurface.text,
+                          ),
+                        ),
+                        Text(
+                          'CV, contrats, diplomes et documents administratifs.',
+                          style: AppTypography.caption.copyWith(
+                            color: MobileSurface.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const LinearProgressIndicator(minHeight: 2)
+              else
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildCabinetMetric(
+                        '${stats?.documents ?? 0}',
+                        'documents',
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildCabinetMetric(
+                        '${stats?.shared ?? 0}',
+                        'partages',
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildCabinetMetric(
+                        '${stats?.publicDocuments ?? 0}',
+                        'publics',
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/cabinet'),
+                icon: const Icon(Icons.folder_open_rounded),
+                label: const Text('Ouvrir mon placard'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(44),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCabinetMetric(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: MobileSurface.chip,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: MobileSurface.border),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: AppTypography.subtitle.copyWith(color: AppColors.cabinet),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: AppTypography.caption.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submitCompanyQr(BuildContext context) async {
+    final token = _companyQrController.text.trim();
+    if (token.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Collez le QR entreprise.')));
+      return;
+    }
+
+    try {
+      final message =
+          await ref.read(settingsRepositoryProvider).submitCompanyQr(token);
+      if (!context.mounted) return;
+      _companyQrController.clear();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('QR refuse : $e')));
+    }
   }
 
   Widget _buildLanguageSection(BuildContext context, AuthState authState) {
@@ -816,6 +1242,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
           email: _emailController.text,
+          personalEmail: _personalEmailController.text,
+          recoveryEmail: _recoveryEmailController.text,
+          personalPhone: _personalPhoneController.text,
         );
 
     if (!mounted) return;
