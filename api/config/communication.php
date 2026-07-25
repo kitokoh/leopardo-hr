@@ -39,6 +39,8 @@ return [
         'auto_check_out',
         'category',
         'company_id',
+        'conversation_message_id',
+        'conversation_thread_id',
         'date',
         'employee_id',
         'feature_key',
@@ -100,6 +102,12 @@ return [
             'title_key' => 'notifications.task_comment_added_title',
             'body_key' => 'notifications.task_comment_added_body',
             'vars' => ['task', 'author'],
+        ],
+        'conversation_message_received' => [
+            'category' => 'communication',
+            'title_key' => 'notifications.conversation_message_received_title',
+            'body_key' => 'notifications.conversation_message_received_body',
+            'vars' => ['author', 'thread'],
         ],
         'platform_announcement' => [
             'category' => 'platform',

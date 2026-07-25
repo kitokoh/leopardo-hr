@@ -3,6 +3,19 @@
 Toutes les modifications notables de ce projet sont documentées ici.
 Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- **Employee-manager discussion threads (PA2-COMM-002)** : fil de discussion privé entre un employé et son manager
+  - Modèles `ConversationThread` / `ConversationMessage` (scopés par tenant via `BelongsToCompany`)
+  - Fil libre ou rattaché à un sujet existant (`salary_advance`, `attendance_correction`, `absence`) appartenant au même employé/entreprise
+  - Un seul fil par binôme employé/manager pour un même sujet ; réutilisation automatique du fil existant
+  - Pièce jointe unique par message (5 Mo max), téléchargement restreint aux participants du fil
+  - Statut lu/non-lu par participant, notification in-app (`conversation_message_received`) à chaque nouveau message
+  - RBAC : l'employé ne voit que ses propres fils, le manager ne voit que les fils de ses subordonnés directs
+  - Endpoints : `GET/POST /api/v1/conversations`, `GET /api/v1/conversations/{thread}`, `POST /api/v1/conversations/{thread}/messages`, `GET /api/v1/conversations/{thread}/messages/{message}/attachment`
+  - Tests Feature : `ConversationControllerTest` (isolation tenant, RBAC manager/employé, pièce jointe, notifications)
+
 ## [4.21.0] - 2026-07-01
 
 ### Changed

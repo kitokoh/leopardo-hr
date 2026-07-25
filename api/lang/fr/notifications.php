@@ -29,4 +29,7 @@ return [
 
     'company_announcement_title' => 'Annonce de l’entreprise',
     'company_announcement_body' => 'Une nouvelle annonce a été publiée dans votre entreprise.',
+
+    'conversation_message_received_title' => 'Nouveau message de :author',
+    'conversation_message_received_body' => ':author a répondu dans « :thread ».',
 ];
