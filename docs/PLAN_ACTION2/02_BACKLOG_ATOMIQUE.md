@@ -44,7 +44,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-MOB-001 | P0 | Smoke runtime anti page noire | 3 apps mobiles, CI | premier ecran visible sans await bloquant, StartupGate degrade, noms APK personnalises |
+| PA2-MOB-001 | P0 | Fait le 2026-07-25 (`21_AUDIT_STATUT_PA2_MOB_001.md`): StartupGate deja livre, noms APK personnalises ajoutes a `mobile-distribute.yml` | 3 apps mobiles, CI | FAIT: premier ecran visible sans await bloquant, StartupGate degrade, noms APK personnalises |
 | PA2-MOB-002 | P0 | Connexion demo et reelle par profil | 3 apps mobiles, API | employee, manager, platform admin login; token stocke; logout nettoie device token |
 | PA2-MOB-003 | P0 | Pointage employee multi-evenements | API, employee mobile | arrivee simple, pause, reprise, mission, depart, heure supp; details jour listent tout |
 | PA2-MOB-004 | P0 | Liste equipe manager non bloquante | API, manager mobile | liste employee avec statut present/pause/absent/conge/mission, pas de spinner infini |
