@@ -19,6 +19,7 @@ const state = {
   currentTab: 'punch',
   lastStatusRefreshAt: null,
   isPunching: false,
+  isRetryingSync: false,
 };
 
 // ── Selectors ────────────────────────────────────────
@@ -38,6 +39,7 @@ const els = {
   syncLabel: $('#syncLabel'),
   checkInBtn: $('#checkInButton'),
   checkOutBtn: $('#checkOutButton'),
+  syncRetryBtn: $('#syncRetryBtn'),
 };
 
 // ── Utilities ────────────────────────────────────────
@@ -147,6 +149,15 @@ function renderStatus() {
     ? t('sync.online')
     : t('sync.offline', { error: state.status.last_error || t('error.networkUnavailable') });
 
+  // PA2-KIO-003: surface an actionable retry action next to the sync
+  // status pill whenever the kiosk is offline or has a pending error, so
+  // field staff are not forced to open the separate admin page just to
+  // force a resync.
+  if (els.syncRetryBtn) {
+    const hasPendingIssue = !ok || Number(state.status.queue_count || 0) > 0;
+    els.syncRetryBtn.classList.toggle('hidden', !hasPendingIssue);
+  }
+
   window.dispatchEvent(new CustomEvent('leopardo:kiosk-status', {
     detail: {
       online: ok,
@@ -168,6 +179,27 @@ async function refreshStatus() {
     if (els.lastSyncAt) {
       els.lastSyncAt.textContent = t('error.bridgeUnavailableShort');
     }
+  }
+}
+
+// PA2-KIO-003: actionable retry for the sync status pill. Forces a full
+// roster + offline-queue sync through the local bridge and gives immediate
+// feedback (success or the concrete error), instead of leaving the kiosk
+// stuck showing "offline" with no in-context way to act on it.
+async function retrySync() {
+  if (!els.syncRetryBtn || state.isRetryingSync) return;
+  state.isRetryingSync = true;
+  els.syncRetryBtn.disabled = true;
+  setStatus('#statusBox', t('sync.retry.inProgress'));
+  try {
+    await fetchJson(`${CONFIG.localBridgeUrl}/sync/all`, { method: 'POST', body: '{}' });
+    setStatus('#statusBox', t('sync.retry.success'));
+  } catch (error) {
+    setStatus('#statusBox', t('sync.retry.failed', { error: error.message || t('error.networkUnavailable') }), true);
+  } finally {
+    state.isRetryingSync = false;
+    els.syncRetryBtn.disabled = false;
+    await refreshStatus();
   }
 }
 
@@ -440,6 +472,11 @@ function init() {
   // Punch
   els.checkInBtn.addEventListener('click', () => submitPunch('check_in'));
   els.checkOutBtn.addEventListener('click', () => submitPunch('check_out'));
+
+  // PA2-KIO-003: actionable sync retry button next to the status pill
+  if (els.syncRetryBtn) {
+    els.syncRetryBtn.addEventListener('click', retrySync);
+  }
   els.identifier.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') { event.preventDefault(); submitPunch('check_in'); }
   });
