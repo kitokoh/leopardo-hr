@@ -898,6 +898,35 @@ trait CreatesMvpSchema
             $table->index('platform_support_ticket_id');
         });
 
+        // PA2-MKT-007 — Marketing acquisition leads (public schema, not
+        // tenant-scoped; see database/migrations/public/2026_07_26_000001_...).
+        Schema::create('marketing_leads', function (Blueprint $table): void {
+            $table->id();
+            $table->string('external_id', 80)->unique();
+            $table->string('type', 30);
+            $table->string('email', 255);
+            $table->string('locale', 5)->default('fr');
+            $table->string('country', 2)->nullable();
+            $table->string('page', 300)->nullable();
+            $table->string('source', 120)->nullable();
+            $table->string('campaign', 120)->nullable();
+            $table->string('ip', 64)->nullable();
+            $table->string('referrer', 500)->nullable();
+            $table->text('payload')->nullable();
+            $table->string('status', 20)->default('new');
+            $table->text('note')->nullable();
+            $table->uuid('converted_company_id')->nullable();
+            $table->boolean('crm_forwarded')->default(false);
+            $table->boolean('email_forwarded')->default(false);
+            $table->timestampTz('captured_at')->nullable();
+            $table->timestamps();
+
+            $table->index(['type']);
+            $table->index(['source']);
+            $table->index(['status']);
+            $table->index(['created_at']);
+        });
+
         // PA2-ADM-006 — Secure super-admin impersonation sessions (public
         // schema; see database/migrations/public/2026_07_23_000003_...).
         Schema::create('platform_impersonation_sessions', function (Blueprint $table): void {
@@ -2004,6 +2033,7 @@ trait CreatesMvpSchema
         $cascade = DB::getDriverName() === 'pgsql' ? ' CASCADE' : '';
 
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "marketing_leads"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_announcement_companies"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_impersonation_sessions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "platform_support_messages"'.$cascade);
