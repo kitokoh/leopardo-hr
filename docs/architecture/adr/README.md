@@ -15,6 +15,7 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0007](0007-progressive-migration-strategy.md) | Acceptee | Strategie de migration progressive flat -> modules DDD (skeleton, cablage, nettoyage) |
 | [0008](0008-payment-consent-signature-model.md) | Acceptee | Modele de consentement/signature de paiement, sans PKI premature |
 | [0009](0009-ai-agent-tool-contracts-and-human-validation.md) | Acceptee | Contrats d'outils pour l'agent IA : permissions RBAC, audit et validation humaine avant toute ecriture |
+| [0010](0010-marketplace-plugin-permissions-billing-webhooks.md) | Acceptee | Plugins marketplace : scopes Sanctum existants, gating via FeaturePlanMatrix, revenu via Partner/Commission, webhooks via AVAILABLE_EVENTS |
 
 ## Format
 
