@@ -161,6 +161,17 @@ return [
             'title' => 'Réception d’avance confirmée',
             'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
         ],
+        // PA2-PAY-015 — employee dispute ("reclamation")
+        'salary_advance_disputed' => [
+            'category' => 'payroll',
+            'title' => 'Litige sur une avance sur salaire',
+            'body' => 'L’employé conteste avoir reçu le paiement de son avance sur salaire tel que déclaré. Merci de vérifier et de résoudre le litige.',
+        ],
+        'salary_advance_dispute_resolved' => [
+            'category' => 'payroll',
+            'title' => 'Litige sur l’avance résolu',
+            'body' => 'Le litige concernant votre avance sur salaire a été résolu par votre manager.',
+        ],
         'attendance_auto_closed' => [
             'category' => 'hr',
             'title' => 'Journée de pointage clôturée automatiquement',

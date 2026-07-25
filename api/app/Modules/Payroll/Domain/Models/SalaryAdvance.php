@@ -52,6 +52,9 @@ class SalaryAdvance extends Model
         'payment_declared_at', 'payment_declared_by',
         'payment_reference', 'payment_note',
         'employee_confirmed_at', 'validation_status',
+        // PA2-PAY-015 — employee dispute
+        'dispute_reason', 'disputed_at',
+        'dispute_resolved_at', 'dispute_resolved_by', 'dispute_resolution_note',
     ];
 
     protected $casts = [
@@ -61,6 +64,9 @@ class SalaryAdvance extends Model
         'manager_approved_at' => 'datetime',
         'payment_declared_at' => 'datetime',
         'employee_confirmed_at' => 'datetime',
+        // PA2-PAY-015
+        'disputed_at' => 'datetime',
+        'dispute_resolved_at' => 'datetime',
     ];
 
     /** @return BelongsTo<Employee, $this> */
@@ -73,6 +79,12 @@ class SalaryAdvance extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');
+    }
+
+    /** @return BelongsTo<Employee, $this> */
+    public function disputeResolver(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'dispute_resolved_by');
     }
 
     /**
