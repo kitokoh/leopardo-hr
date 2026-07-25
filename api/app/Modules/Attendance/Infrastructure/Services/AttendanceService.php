@@ -230,6 +230,13 @@ class AttendanceService
                 ], $this->buildPunchMeta($company, $employee, $dto, 'external_check_out')),
             ])->save();
 
+            // PA2-ATT-001 - the offline/external kiosk sync path must be
+            // auditable exactly like the direct mobile check-in/check-out
+            // endpoints: dispatch the same domain event so AuditLogger
+            // records who/when an external punch closed a session, instead
+            // of this path silently bypassing the audit trail.
+            AttendanceCheckedOut::dispatch($log);
+
             return $log;
         }
 
@@ -257,7 +264,7 @@ class AttendanceService
             $status = $lateMinutes > 0 ? 'late' : 'ontime';
         }
 
-        return AttendanceLog::query()->create([
+        $log = AttendanceLog::query()->create([
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'schedule_id' => $schedule?->id,
@@ -277,6 +284,13 @@ class AttendanceService
             'gps_lng' => $dto->gps_lng,
             'punch_meta' => $this->buildPunchMeta($company, $employee, $dto, 'external_check_in'),
         ]);
+
+        // PA2-ATT-001 - same rationale as the check_out branch above: an
+        // offline-synced external check-in must leave the same audit trail
+        // as a direct mobile check-in.
+        AttendanceCheckedIn::dispatch($log);
+
+        return $log;
     }
 
     public function recalculateLog(AttendanceLog $log): AttendanceLog
