@@ -104,14 +104,26 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
           source: 'hero_email_trial',
           timestamp: new Date().toISOString(),
         }),
+        signal: AbortSignal.timeout(20000),
       })
 
+      const result = await response.json().catch(() => null)
+
       if (!response.ok) {
-        throw new Error('trial_request_failed')
+        setStatus('error')
+        setMessage((result && typeof result.message === 'string' && result.message) || copy.error)
+        return
       }
 
       setStatus('success')
-      setMessage(copy.success)
+      // `provisioned === false` means the backend could not send an OTP right
+      // now (cold-start/timeout) but the lead was captured; the API already
+      // returns a message explaining the team will follow up under 24h.
+      setMessage(
+        result && result.provisioned === false && typeof result.message === 'string'
+          ? result.message
+          : copy.success
+      )
       setEmail('')
     } catch {
       setStatus('error')

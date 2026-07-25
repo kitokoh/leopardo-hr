@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr'),
+    Locale('tr')
   ];
 
   /// No description provided for @appTitle.
@@ -545,6 +545,156 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Erreur : impossible de contacter l assistant.'**
   String get aiChatErrorMessage;
+
+  /// No description provided for @authBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get authBackTooltip;
+
+  /// No description provided for @authEmployeeLoginSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion employe'**
+  String get authEmployeeLoginSubtitle;
+
+  /// No description provided for @authManagerLoginSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion Manager / RH'**
+  String get authManagerLoginSubtitle;
+
+  /// No description provided for @authEmailProfessionalLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email professionnel'**
+  String get authEmailProfessionalLabel;
+
+  /// No description provided for @authEmailLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get authEmailLabel;
+
+  /// No description provided for @authEmailRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email obligatoire'**
+  String get authEmailRequired;
+
+  /// No description provided for @authEmailInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email invalide'**
+  String get authEmailInvalid;
+
+  /// No description provided for @authPasswordLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get authPasswordLabel;
+
+  /// No description provided for @authPasswordRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe obligatoire'**
+  String get authPasswordRequired;
+
+  /// No description provided for @authPasswordTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe trop court'**
+  String get authPasswordTooShort;
+
+  /// No description provided for @authContinueWithGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Google'**
+  String get authContinueWithGoogle;
+
+  /// No description provided for @authActivateInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer mon invitation'**
+  String get authActivateInvitation;
+
+  /// No description provided for @authPersonalAccountLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte perso'**
+  String get authPersonalAccountLink;
+
+  /// No description provided for @authActivateManagerAccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer mon acces manager'**
+  String get authActivateManagerAccess;
+
+  /// No description provided for @commonOr.
+  ///
+  /// In fr, this message translates to:
+  /// **'ou'**
+  String get commonOr;
+
+  /// No description provided for @authTryDemoAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tester avec un compte demo'**
+  String get authTryDemoAccount;
+
+  /// No description provided for @platformLoginTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Leopardo Platform'**
+  String get platformLoginTitle;
+
+  /// No description provided for @platformLoginSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cockpit mobile reserve a l administration de la plateforme.'**
+  String get platformLoginSubtitle;
+
+  /// No description provided for @platformLogin2faNotice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.'**
+  String get platformLogin2faNotice;
+
+  /// No description provided for @platformLoginEmailLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email super-admin'**
+  String get platformLoginEmailLabel;
+
+  /// No description provided for @platformLoginEmailRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email requis'**
+  String get platformLoginEmailRequired;
+
+  /// No description provided for @platformLoginPasswordRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe requis'**
+  String get platformLoginPasswordRequired;
+
+  /// No description provided for @platformLogin2faLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code 2FA si active'**
+  String get platformLogin2faLabel;
+
+  /// No description provided for @platformLoginSubmitting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion...'**
+  String get platformLoginSubmitting;
+
+  /// No description provided for @platformLoginUseDemoAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser le compte demo'**
+  String get platformLoginUseDemoAccount;
 }
 
 class _AppLocalizationsDelegate
@@ -578,9 +728,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }
