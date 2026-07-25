@@ -17,7 +17,18 @@ return [
     'providers' => [
         'email' => env('COMMUNICATION_EMAIL_PROVIDER', 'mail'),
         'push' => env('COMMUNICATION_PUSH_PROVIDER', 'firebase'),
+        // PA2-JOB-003 - real Twilio-backed SMS/WhatsApp providers now exist
+        // (see Notification/Infrastructure/Services/Providers) but default
+        // to the safe audit-only fallback, same as an unset/unknown provider
+        // name. Operators opt in explicitly via
+        // COMMUNICATION_SMS_PROVIDER=twilio / COMMUNICATION_WHATSAPP_PROVIDER=twilio
+        // plus the TWILIO_* credentials once a real account is available.
         'sms' => env('COMMUNICATION_SMS_PROVIDER', 'audit'),
+        // 'audit' (default) logs every dispatch without calling any real
+        // provider; 'whatsapp_cloud' switches to the Meta WhatsApp Business
+        // Cloud API once WHATSAPP_PHONE_NUMBER_ID/WHATSAPP_ACCESS_TOKEN are
+        // set (PA2-COMM-008) — falls back to 'audit' automatically if either
+        // secret is missing.
         'whatsapp' => env('COMMUNICATION_WHATSAPP_PROVIDER', 'audit'),
     ],
 
@@ -51,17 +62,42 @@ return [
         'base_delay_ms' => (int) env('COMMUNICATION_EMAIL_RETRY_BASE_DELAY_MS', 500),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | SMS / WhatsApp provider retry (PA2-JOB-003)
+    |--------------------------------------------------------------------------
+    |
+    | Same bounded caller-side retry policy as `email_retry` above, applied
+    | by `CommunicationService` to the Twilio-backed SMS and WhatsApp
+    | providers.
+    |
+    */
+
+    'sms_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_SMS_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_SMS_RETRY_BASE_DELAY_MS', 500),
+    ],
+
+    'whatsapp_retry' => [
+        'max_attempts' => (int) env('COMMUNICATION_WHATSAPP_MAX_ATTEMPTS', 3),
+        'base_delay_ms' => (int) env('COMMUNICATION_WHATSAPP_RETRY_BASE_DELAY_MS', 500),
+    ],
+
     'public_metadata_keys' => [
         'absence_id',
         'attendance_log_id',
         'auto_check_out',
         'category',
         'company_id',
+        'conversation_message_id',
+        'conversation_thread_id',
         'date',
+        'document_type',
         'employee_id',
         'feature_key',
         'hours_worked',
         'locale',
+        'payment_document_id',
         'payment_reference',
         'payroll_run_id',
         'redirect_url',
@@ -131,6 +167,12 @@ return [
             'body_key' => 'notifications.task_comment_added_body',
             'vars' => ['task', 'author'],
         ],
+        'conversation_message_received' => [
+            'category' => 'communication',
+            'title_key' => 'notifications.conversation_message_received_title',
+            'body_key' => 'notifications.conversation_message_received_body',
+            'vars' => ['author', 'thread'],
+        ],
         'platform_announcement' => [
             'category' => 'platform',
             'title_key' => 'notifications.platform_announcement_title',
@@ -161,16 +203,23 @@ return [
             'title' => 'Réception d’avance confirmée',
             'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
         ],
-        // PA2-PAY-015 — employee dispute ("reclamation")
-        'salary_advance_disputed' => [
+        // PA2-COMM-010 — Payment document lifecycle: lets the employee know a
+        // receipt/payslip/bordereau is being prepared, then that it is ready,
+        // without the UI having to block or poll blindly for it.
+        'payment_document_processing' => [
             'category' => 'payroll',
-            'title' => 'Litige sur une avance sur salaire',
-            'body' => 'L’employé conteste avoir reçu le paiement de son avance sur salaire tel que déclaré. Merci de vérifier et de résoudre le litige.',
+            'title_key' => 'notifications.payment_document_processing_title',
+            'body_key' => 'notifications.payment_document_processing_body',
         ],
-        'salary_advance_dispute_resolved' => [
+        'payment_document_ready' => [
             'category' => 'payroll',
-            'title' => 'Litige sur l’avance résolu',
-            'body' => 'Le litige concernant votre avance sur salaire a été résolu par votre manager.',
+            'title_key' => 'notifications.payment_document_ready_title',
+            'body_key' => 'notifications.payment_document_ready_body',
+        ],
+        'payment_document_failed' => [
+            'category' => 'payroll',
+            'title_key' => 'notifications.payment_document_failed_title',
+            'body_key' => 'notifications.payment_document_failed_body',
         ],
         'attendance_auto_closed' => [
             'category' => 'hr',
@@ -181,6 +230,14 @@ return [
             'category' => 'attendance',
             'title' => 'Pointage hors zone',
             'body' => 'Un employé a pointé hors de la zone géographique attendue.',
+        ],
+        'payment_document_ready' => [
+            // PA2-PAY-004 — async payslip/advance-receipt PDF generation:
+            // notifies the employee as soon as the document is stored and
+            // downloadable, instead of them having to poll for it.
+            'category' => 'payroll',
+            'title_key' => 'notifications.payment_document_ready_title',
+            'body_key' => 'notifications.payment_document_ready_body',
         ],
     ],
 ];

@@ -24,6 +24,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingQrController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\AnnouncementController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\SseTokenController;
@@ -65,6 +66,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/daily-summary', [MeController::class, 'dailySummary']);
     Route::get('/me/quick-estimate', [MeController::class, 'quickEstimate']);
     Route::get('/me/monthly-summary', [MeController::class, 'monthlySummary']);
+    Route::get('/me/attendance-anomalies', [MeController::class, 'attendanceAnomalies']); // PA2-ATT-004
     Route::get('/me/balance', [PayrollCycleController::class, 'myBalance']);
     Route::get('/me/ledger', [LedgerController::class, 'myLedger']); // PA2-PAY-007
 
@@ -162,6 +164,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
     Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
+
+    // ── Module 5 (complement) — Conversations employé/manager (PA2-COMM-002) ──
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::post('/conversations', [ConversationController::class, 'store']);
+    Route::get('/conversations/{thread}', [ConversationController::class, 'show'])->whereNumber('thread');
+    Route::post('/conversations/{thread}/messages', [ConversationController::class, 'storeMessage'])->whereNumber('thread');
+    Route::get('/conversations/{thread}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])
+        ->whereNumber('thread')->whereNumber('message')->name('conversations.messages.attachment');
 
     // ── Module 5 (complement) — Company announcements (PA2-COMM-004) ──────────
     // PA2-COMM-011 — Moderation: publish/cancel a draft or scheduled announcement.

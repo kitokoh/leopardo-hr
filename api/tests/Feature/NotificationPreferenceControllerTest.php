@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -99,6 +99,57 @@ class NotificationPreferenceControllerTest extends TestCase
         $this->assertSame(0, CommunicationEvent::query()->count());
     }
 
+    /**
+     * PA2-COMM-014 — the notification preferences update audit event
+     * (`notification_preferences_updated`) must persist which channels
+     * were left enabled, so support/QA can audit an opt-out without
+     * having to compare the record before/after in production data.
+     */
+    public function test_update_audit_event_metadata_captures_channel_state(): void
+    {
+        $employee = $this->employee();
+        Sanctum::actingAs($employee);
+
+        $this->patchJson('/api/v1/notification-preferences', [
+            'sms_enabled' => true,
+            'whatsapp_enabled' => false,
+        ])->assertOk();
+
+        $event = CommunicationEvent::query()
+            ->where('employee_id', $employee->id)
+            ->where('event_name', 'notification_preferences_updated')
+            ->firstOrFail();
+
+        $this->assertSame(true, $event->metadata['channels']['sms']);
+        $this->assertSame(false, $event->metadata['channels']['whatsapp']);
+    }
+
+    /**
+     * PA2-COMM-014 — quotas are configured globally per channel, but the
+     * preferences endpoint must still expose whichever quiet hours window
+     * an employee has actually saved so mobile/web can display it back
+     * accurately (regression guard for the update round-trip).
+     */
+    public function test_update_round_trips_quiet_hours_window(): void
+    {
+        $employee = $this->employee();
+        Sanctum::actingAs($employee);
+
+        $this->patchJson('/api/v1/notification-preferences', [
+            'quiet_hours' => [
+                'enabled' => true,
+                'start' => '21:30',
+                'end' => '06:45',
+            ],
+        ])->assertOk();
+
+        $this->getJson('/api/v1/notification-preferences')
+            ->assertOk()
+            ->assertJsonPath('data.quiet_hours.enabled', true)
+            ->assertJsonPath('data.quiet_hours.start', '21:30')
+            ->assertJsonPath('data.quiet_hours.end', '06:45');
+    }
+
     private function employee(): Employee
     {
         $company = Company::factory()->create(['timezone' => 'Africa/Algiers']);
@@ -109,4 +160,3 @@ class NotificationPreferenceControllerTest extends TestCase
         ]);
     }
 }
-

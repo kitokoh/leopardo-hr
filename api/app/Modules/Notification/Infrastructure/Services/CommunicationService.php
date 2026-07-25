@@ -12,7 +12,7 @@ use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;
-use App\Modules\Notification\Infrastructure\Services\Providers\MailMessageProvider;
+use App\Modules\Notification\Infrastructure\Services\Providers\WhatsappCloudApiMessageProvider;
 use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -48,7 +48,10 @@ class CommunicationService
         foreach ($requestedChannels as $channel) {
             if ($this->allows($preference, $channel, $category) === false) {
                 $results[$channel] = 'skipped';
-                $this->recordEvent($employee, $notification, $templateKey, $channel, 'skipped', $metadata, 'Preference disabled.');
+                $reason = $channel === 'whatsapp' && $preference->{$channel.'_enabled'} && ! $preference->hasWhatsappConsent()
+                    ? 'WhatsApp consent missing.'
+                    : 'Preference disabled.';
+                $this->recordEvent($employee, $notification, $templateKey, $channel, 'skipped', $metadata, $reason);
 
                 continue;
             }
@@ -186,6 +189,14 @@ class CommunicationService
         $channelAllowed = (bool) ($preference->{$flag} ?? false);
 
         if ($channelAllowed === false) {
+            return false;
+        }
+
+        // PA2-COMM-008 - WhatsApp Business messaging requires an explicit,
+        // timestamped opt-in distinct from the channel toggle itself (Meta
+        // Cloud API policy). A recipient who enabled the channel but never
+        // completed the separate consent step is never messaged.
+        if ($channel === 'whatsapp' && $preference->hasWhatsappConsent() === false) {
             return false;
         }
 
@@ -366,11 +377,19 @@ class CommunicationService
     {
         $configured = config('communication.providers.'.$channel, 'audit');
 
-        if ($channel === 'email' && $configured === 'mail') {
-            return new MailMessageProvider(
-                (int) config('communication.email_retry.max_attempts', 3),
-                (int) config('communication.email_retry.base_delay_ms', 500),
-            );
+        if ($channel === 'whatsapp' && $configured !== 'audit') {
+            $provider = $this->whatsappCloudApiProvider();
+
+            if ($provider !== null) {
+                return $provider;
+            }
+
+            Log::warning('WhatsApp provider configured but secrets are missing, falling back to audit-only provider', [
+                'channel' => $channel,
+                'provider' => $configured,
+            ]);
+
+            return new AuditMessageProvider;
         }
 
         if ($configured !== 'audit') {
@@ -381,6 +400,30 @@ class CommunicationService
         }
 
         return new AuditMessageProvider;
+    }
+
+    /**
+     * PA2-COMM-008 - Only ever returns a real provider when both Meta Cloud
+     * API secrets are configured; otherwise every WhatsApp dispatch stays
+     * on the audit-only fallback so a missing secret never surfaces as a
+     * hard failure to the caller.
+     */
+    private function whatsappCloudApiProvider(): ?WhatsappCloudApiMessageProvider
+    {
+        $phoneNumberId = config('services.whatsapp.phone_number_id');
+        $accessToken = config('services.whatsapp.access_token');
+
+        if (! is_string($phoneNumberId) || $phoneNumberId === '' || ! is_string($accessToken) || $accessToken === '') {
+            return null;
+        }
+
+        $baseUrl = config('services.whatsapp.api_base_url', 'https://graph.facebook.com/v19.0');
+
+        return new WhatsappCloudApiMessageProvider(
+            $phoneNumberId,
+            $accessToken,
+            is_string($baseUrl) && $baseUrl !== '' ? $baseUrl : 'https://graph.facebook.com/v19.0',
+        );
     }
 
     /**

@@ -30,9 +30,6 @@ return [
     'company_announcement_title' => 'Annonce de l’entreprise',
     'company_announcement_body' => 'Une nouvelle annonce a été publiée dans votre entreprise.',
 
-    'bulk_payment_completed_title' => 'Paiement en masse terminé (:succeeded/:total)',
-    'bulk_payment_completed_body' => 'Le paiement en masse a été traité avec succès : :succeeded bulletin(s) sur :total.',
-
-    'bulk_payment_completed_with_errors_title' => 'Paiement en masse terminé avec erreurs (:succeeded/:total)',
-    'bulk_payment_completed_with_errors_body' => 'Le paiement en masse est terminé : :succeeded bulletin(s) sur :total traité(s) avec succès, :failed échec(s). Consultez le journal d’audit pour le détail.',
+    'payment_document_ready_title' => 'Document prêt',
+    'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
 ];

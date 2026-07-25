@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -60,7 +61,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext()];
     }
 
-    public function handle(): void
+    public function handle(CommunicationService $communicationService): void
     {
         /** @var PaymentDocument|null $document */
         $document = PaymentDocument::query()
@@ -78,6 +79,11 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             'status' => PaymentDocument::STATUS_GENERATING,
             'error_message' => null,
         ]);
+
+        // PA2-COMM-010 — Let the employee know their document is being
+        // prepared instead of leaving the UI to poll silently. Best-effort:
+        // a notification failure must never block PDF generation.
+        $this->notifyDocumentStatus($communication, $document, 'payment_document_processing');
 
         try {
             // Tenant context (search_path + current_company) is already active
@@ -99,15 +105,48 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
                 'generated_at' => now(),
                 'error_message' => null,
             ]);
+
+            // PA2-PAY-004: the employee is notified in-app once their
+            // payslip/advance-receipt PDF has finished generating and is
+            // downloadable, instead of having to poll for it.
+            $this->notifyDocumentReady($communicationService, $document);
         } catch (Throwable $e) {
             $document->update([
                 'status' => PaymentDocument::STATUS_FAILED,
                 'error_message' => $e->getMessage(),
             ]);
 
+            $this->notifyDocumentStatus($communication, $document, 'payment_document_failed');
+
             report($e);
 
             throw $e;
+        }
+    }
+
+    /**
+     * Notifies the document's owning employee that their PDF is ready to
+     * download. Best-effort: a notification failure must not fail the job
+     * or mark an otherwise successfully generated document as failed.
+     */
+    private function notifyDocumentReady(CommunicationService $communicationService, PaymentDocument $document): void
+    {
+        $employee = $document->employee;
+
+        if ($employee === null) {
+            return;
+        }
+
+        try {
+            $communicationService->notifyEmployee($employee, 'payment_document_ready', [
+                'category' => 'payroll',
+                'document_type' => $document->document_type,
+                'payment_document_id' => $document->id,
+                'payroll_run_id' => $document->payroll_run_id,
+                'salary_advance_id' => $document->salary_advance_id,
+            ], ['app']);
+        } catch (Throwable $e) {
+            Log::warning("GeneratePaymentDocumentJob: notification failed for document #{$document->id}: {$e->getMessage()}");
         }
     }
 

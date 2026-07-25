@@ -5,10 +5,10 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-MKT-001 | P0 | Hero vitrine vendeur avec preuve produit visible | `front/web` | H1 positionne Leopardo comme OS mobile-first, capture email visible, visuel produit reel ou video existante, CTA `/signup` et `/demo` sans lien mort |
-| PA2-MKT-002 | P0 | Parcours essai gratuit sans friction | `front/web`, API trial | Email-only hero + formulaire guide envoient un lead/trial coherent, erreurs lisibles, cold-start API gere |
+| PA2-MKT-002 | P0 | Fait le 2026-07-25 (issue #949): bug corrige ou le formulaire guide (`SignupForm`) affichait un faux ecran "code OTP envoye" meme quand le backend tombait en fallback `provisioned:false` (cold-start/timeout) - un nouvel ecran "pending" honnete est affiche a la place; le formulaire hero email-only (`QuickTrialEmailForm`) affiche desormais le message reel du backend (y compris le fallback 24h) au lieu d'un message generique, et gere un timeout explicite | `front/web`, API trial | FAIT: email-only hero + formulaire guide envoient un lead/trial coherent, erreurs lisibles (message backend reel affiche), cold-start API gere (fallback `provisioned:false` correctement distingue d'un OTP envoye) |
 | PA2-MKT-003 | P0 | Pricing credible pour PME terrain | `front/web` | offres Free trial 30 jours, Starter, Pro, Business/Enterprise; devise et pays parametrables; FAQ objections clients |
-| PA2-MKT-004 | P1 | Page download commerciale | `front/web` | employee, manager, platform admin, kiosk expliqués; liens Firebase/store fallback reels; pas d'ancre morte |
-| PA2-MKT-005 | P1 | Ressources au lieu de blog archaique | `front/web` | navigation "Ressources" contient guides, articles, docs, download; metadata SEO par page |
+| PA2-MKT-004 | P1 | Fait le 2026-07-25 (issue #951): section kiosk ZKTeco ajoutee a `/download` (biometrie/QR, bridge offline, provisioning manager) avec CTA `/docs#kiosk` et `/contact?topic=download-kiosk`; `id="kiosk"` ajoute a `/docs` (etait un ancre morte, jamais definie) | `front/web` | FAIT: employee, manager, platform admin, kiosk expliques; liens Firebase/store fallback reels et guide/contact kiosk reels; plus aucune ancre morte |
+| PA2-MKT-005 | P1 | Fait le 2026-07-25: nav Ressources deja livree (guides/blog/docs/download); SEO metadata + sitemap ajoutes pour /docs et /download (gap trouve et corrige) | `front/web` | FAIT: navigation "Ressources" contient guides, articles, docs, download; metadata SEO par page |
 | PA2-MKT-006 | P1 | Trust proof et social proof | `front/web` | section "trusted by/pilotes" adaptable, chiffres prudents, videos/assets existants integres |
 | PA2-MKT-007 | P2 | Funnel CRM marketing | `front/web`, API CRM | signup/demo/contact/newsletter alimentent une pipeline admin avec source, campagne, langue, pays |
 | PA2-MKT-008 | P0 | ~~Domaine~~ Fait le 2026-07-21: `gestionemployer-backend.vercel.app` confirme en ligne sans SSO/auth/`noindex` (verifie live : `robots.txt`/`sitemap.xml` publics, contenu reel) ; `leopardo.com` retire de `DEPLOYMENT_PRODUCTION.md`/`DEPLOYMENT_STAGING.md`/`PILOTAGE.md`/`.env.local.example`/fallbacks code (n'est pas possede, sert une entreprise tierce sans rapport) ; `staging.leopardo.com` documente comme non deploye plutot que laisse comme cible active | `front/web/vercel.json`, DNS, `docs/DEPLOYMENT_PRODUCTION.md`, `docs/DEPLOYMENT_STAGING.md`, `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md` | FAIT: sous-domaine `vercel.app` de production sert la vitrine sans authentification ni `noindex` (verifie) ; `leopardo.com` retire de la doc active hors mention explicite "si achete a l'avenir" |
@@ -33,7 +33,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-ADM-001 | P0 | Login admin premium + demo | `front/admin-dashboard` | design moderne, bouton demo, erreurs auth propres, logout clair |
+| PA2-ADM-001 | P0 | Fait (PR #742, durci par `9536c563`; audit 2026-07-25, `20_AUDIT_STATUT_PA2_ADM_001.md`): design moderne, bouton demo, erreurs auth, logout dedie, deja sous test e2e | `front/admin-dashboard` | FAIT: design moderne, bouton demo, erreurs auth propres, logout clair |
 | PA2-ADM-002 | P0 | Console creation client | `front/admin-dashboard`, API | workflow creation client identique mobile admin, validation pays/devise, etat trial/active |
 | PA2-ADM-003 | P0 | Fiche entreprise actionnable | `front/admin-dashboard` | resume, abonnement, activation, activite, risques, liens support |
 | PA2-ADM-004 | P1 | Pipeline CRM platform | `front/admin-dashboard`, API | leads trial/demo/contact visibles, statut, source, note, conversion client |
@@ -44,14 +44,14 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-MOB-001 | P0 | Smoke runtime anti page noire | 3 apps mobiles, CI | premier ecran visible sans await bloquant, StartupGate degrade, noms APK personnalises |
+| PA2-MOB-001 | P0 | Fait le 2026-07-25 (`21_AUDIT_STATUT_PA2_MOB_001.md`): StartupGate deja livre, noms APK personnalises ajoutes a `mobile-distribute.yml` | 3 apps mobiles, CI | FAIT: premier ecran visible sans await bloquant, StartupGate degrade, noms APK personnalises |
 | PA2-MOB-002 | P0 | Connexion demo et reelle par profil | 3 apps mobiles, API | employee, manager, platform admin login; token stocke; logout nettoie device token |
 | PA2-MOB-003 | P0 | Pointage employee multi-evenements | API, employee mobile | arrivee simple, pause, reprise, mission, depart, heure supp; details jour listent tout |
 | PA2-MOB-004 | P0 | Liste equipe manager non bloquante | API, manager mobile | liste employee avec statut present/pause/absent/conge/mission, pas de spinner infini |
 | PA2-MOB-005 | P0 | Ajout employee manager | API, manager mobile | formulaire complet salaire/date/role + QR onboarding, employee apparait ensuite |
 | PA2-MOB-006 | P1 | Demandes avance/absence detaillees | API, employee/manager | **PARTIEL (audit 2026-07-22, `14_AUDIT_STATUT_PA2_MOB_006_A_009.md`)** : qui/quoi/combien/pourquoi et approve/reject livres pour absences et avances; piece jointe absente (modele mobile absence n'expose pas `proof_path`; avances sans champ justificatif backend). Reste = `PA2-MOB-016` |
 | PA2-MOB-007 | P1 | Gestion RH mobile | API, manager mobile | **PARTIEL (audit 2026-07-22)** : nommer/revoquer RH et permissions visibles livres (`team_screen.dart`); aucun audit des changements de role. Reste = `PA2-MOB-015` |
-| PA2-MOB-008 | P1 | Mon compte premium portable | employee/manager | **FAIT (audit 2026-07-22)** : parcours professionnel, contacts personnels, placard numerique, QR, biometrie tous verifies presents dans `settings_screen.dart` |
+| PA2-MOB-008 | P1 | Mon compte premium portable | employee/manager | Fait le 2026-07-25: le audit 2026-07-22 avait verifie uniquement `leopardo_employee/settings_screen.dart` (Issue #978 restait ouverte car `leopardo_manager/settings_screen.dart` n'avait ni parcours, ni placard, ni QR, ni contacts personnels). `leopardo_manager` aligne desormais sur `leopardo_employee`: `_buildQrOnboardingSection`, `_buildCareerSection`, `_buildCabinetSection`, contacts personnels (`personal_email`/`recovery_email`/`personal_phone`) dans le formulaire profil | FAIT: parcours professionnel, contacts personnels, placard numerique, QR, biometrie tous presents dans `settings_screen.dart` des deux apps (employee et manager) |
 | PA2-MOB-009 | P1 | Mobile admin creation/activation client | platform admin | **FAIT, clos (Issue #979)** : creer entreprise, activer, voir abonnement, pays/devise/langue |
 | PA2-MOB-010 | P2 | Design system mobile 2026 | core + apps | composants unifies, contrastes lisibles, boutons actionnables, dark mode coherent |
 | PA2-MOB-011 | P1 | Eliminer les litteraux hex dupliques dans les ecrans pointage | `leopardo_employee`/`leopardo_manager`/`leopardo_hr` (attendance, smart_attendance), `leopardo_platform_admin/lib/main.dart` | zero `Color(0x...)` litteral hors `AppColors`/`AppTheme`; couleurs Material non gouvernees mappees ou ajoutees au token system; garde CI anti-recidive |
@@ -65,7 +65,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-KIO-001 | P0 | Kiosk onboarding appareil | API, kiosk | manager provisionne device, sync token, roster, annonces; mode offline conserve |
+| PA2-KIO-001 | P0 | Fait (audit 2026-07-25, `22_AUDIT_STATUT_PA2_KIO_001.md`): provisioning/sync token/roster/annonces/offline tous deja livres et testes | API, kiosk | FAIT: manager provisionne device, sync token, roster, annonces; mode offline conserve |
 | PA2-KIO-002 | P1 | Punch kiosk biometrie/QR | kiosk, API | check-in/out via device, QR fallback, audit device, sync retry |
 | PA2-KIO-003 | P1 | UI kiosk terrain moderne | `front/zkteco-kiosk` | lisible sur tablette/terminal, gros boutons, statut sync, erreur actionnable |
 | PA2-KIO-004 | P2 | Enrolement biometrie mobile vers kiosk | mobile, API | employee soumet consentement, empreinte/visage reference, statut visible |
@@ -77,7 +77,7 @@
 |---|---|---|---|---|
 | PA2-API-001 | P0 | Reponses JSON standard | API | success/data/meta/error coherents, pagination standard, tests contrat |
 | PA2-API-002 | P0 | RBAC multi-tenant preuve | API tests | employee/manager/superadmin/kiosk scopes; test non-regression fuite tenant |
-| PA2-API-003 | P0 | Matrice frontend/API complete | docs, tests | chaque bouton critique a route/endpoints/test ou justification |
+| PA2-API-003 | P0 | Fait le 2026-07-25: 6 routes critiques admin web (calcul/validation run paie, liste bulletins, PDF bulletin, approbation/rejet conge) ajoutees a `FrontendApiContractTest` (121/121 vert), completant `MATRICE_BOUTONS_CRITIQUES.md` avec des tests reels, pas seulement un audit manuel | docs, tests | FAIT: chaque bouton critique a route/endpoints/test ou justification |
 | PA2-API-004 | P1 | OpenAPI premium | `api/openapi.yaml`, docs | auth, erreurs, permissions, webhooks, exemples request/response |
 | PA2-API-005 | P1 | Rate limit et brute-force | API | login/trial/kiosk/webhooks proteges, erreurs douces, logs securite |
 | PA2-API-006 | P1 | Webhooks sortants partenaires | API jobs | event types, signatures, retry, dead-letter, doc dev |
@@ -109,7 +109,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-I18N-001 | P0 | Strategie anti hardcode | docs/tools | guide Jules, dette par surface, interdiction nouveau texte dur critique |
+| PA2-I18N-001 | P0 | Fait le 2026-07-25: strategie consolidee (`18_STRATEGIE_ANTI_HARDCODE_I18N.md`) reliant guide Jules + dette par surface + garde CI, deja livres separement sous PA2-I18N-007/014/015 | docs/tools | FAIT: guide Jules, dette par surface, interdiction nouveau texte dur critique |
 | PA2-I18N-002 | P1 | Catalogues vitrine FR/EN/TR/AR | `front/web` | hero/pricing/download/signup traduits, RTL arabe propre |
 | PA2-I18N-003 | P1 | Devises multi-pays runtime | API/mobile/web | DZD fallback seulement technique, XOF/XAF/EUR/TRY selon pays |
 | PA2-I18N-004 | P2 | Accessibilite formulaires | web/mobile | contrastes, labels, erreurs, navigation clavier web |
@@ -119,7 +119,7 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-STR-001 | P0 | Positionnement commercial final | docs, vitrine | "OS de gestion d'entreprise mobile-first" avec proposition claire par persona |
-| PA2-STR-002 | P1 | One-pager commercial | docs/commercial | offre, ROI, modules, objections, pricing, cas d'usage PME terrain |
+| PA2-STR-002 | P1 | Fait le 2026-07-25: one-pager reecrit avec pricing reel (`03_MODELE_ECONOMIQUE.md`), ROI, objections, 5 cas d'usage PME terrain (`LEOPARDO_ONE_PAGER.md`) | docs/commercial | FAIT: offre, ROI, modules, objections, pricing, cas d'usage PME terrain |
 | PA2-STR-003 | P1 | Documentation testeurs/pilotes | docs | liens apps/API/web/admin/kiosk, comptes demo, scenarios de test |
 | PA2-STR-004 | P2 | Marketplace architecture note | docs/API | modules/plugins, permissions, billing futur, webhooks |
 | PA2-STR-005 | P2 | IA-ready tool contracts | docs/API | actions metier exposees via permissions et audit, validation humaine pour actions sensibles |
@@ -205,7 +205,7 @@
 | PA2-QA-005 | P1 | ~~Tests charge k6 paie~~ Fait le 2026-07-25 : `dev-hub/load/k6/payroll-progressive-scale.js` cree, memes 4 paliers 10/20/50/100 VUs que `attendance-punch-scale.js` (PA2-QA-004), couvrant preview paie (`payroll/cycles/preview`, lecture), batch paiement (`payroll-runs/{id}/bulk-pay` + poll statut, mutation optionnelle) et notification async (poll `observability/queues`, PA2-QA-006) | dev-hub/k6 | preview paie, batch paiement, notification async |
 | PA2-QA-006 | P1 | Observabilite Redis/jobs | API/admin | queue depth, failed jobs, last run, alertes visibles |
 | PA2-QA-007 | P1 | Audit CORS et cold-start | API/web/mobile | web vitrine et apps gerent Render cold-start et CORS proprement |
-| PA2-QA-008 | P2 | Lighthouse vitrine conversion | CI/manual | score et poids assets surveilles sans bloquer inutilement |
+| PA2-QA-008 | P2 | Fait le 2026-07-25 (issue #1073): `lighthouse.yml` passe de manuel-uniquement a PR/push sur `front/web` + hebdomadaire, avec `budget.json` (poids par type d'asset) et etape non bloquante (`continue-on-error`) | CI/manual | FAIT: score et poids assets surveilles sans bloquer inutilement |
 | PA2-QA-009 | P2 | Accessibilite mobile lisibilite | mobile | contrastes, textes visibles, pas de bouton sans action |
 | PA2-QA-010 | P2 | Rapport release pilote | docs | checklist go/no-go par surface avec preuves |
 
