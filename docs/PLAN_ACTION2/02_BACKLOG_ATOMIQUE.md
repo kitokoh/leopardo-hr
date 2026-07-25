@@ -65,7 +65,7 @@
 
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
-| PA2-KIO-001 | P0 | Kiosk onboarding appareil | API, kiosk | manager provisionne device, sync token, roster, annonces; mode offline conserve |
+| PA2-KIO-001 | P0 | Fait (audit 2026-07-25, `22_AUDIT_STATUT_PA2_KIO_001.md`): provisioning/sync token/roster/annonces/offline tous deja livres et testes | API, kiosk | FAIT: manager provisionne device, sync token, roster, annonces; mode offline conserve |
 | PA2-KIO-002 | P1 | Punch kiosk biometrie/QR | kiosk, API | check-in/out via device, QR fallback, audit device, sync retry |
 | PA2-KIO-003 | P1 | UI kiosk terrain moderne | `front/zkteco-kiosk` | lisible sur tablette/terminal, gros boutons, statut sync, erreur actionnable |
 | PA2-KIO-004 | P2 | Enrolement biometrie mobile vers kiosk | mobile, API | employee soumet consentement, empreinte/visage reference, statut visible |
