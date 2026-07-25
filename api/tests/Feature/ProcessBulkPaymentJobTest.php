@@ -152,6 +152,73 @@ class ProcessBulkPaymentJobTest extends TestCase
     }
 
     /**
+     * PA2-PAY-005 — a manager can select a specific subset of pay slips to
+     * pay in a batch, instead of always paying every eligible slip in the
+     * run. Only the selected slips are processed and paid; the run itself
+     * must stay non-'paid' while other eligible slips are still pending,
+     * so a later batch (or the default "pay everyone" call) can still
+     * pick them up.
+     */
+    public function test_bulk_payment_with_pay_slip_ids_only_processes_the_selected_subset(): void
+    {
+        Queue::fake();
+
+        [$company, $manager] = $this->companyAndManager();
+        $run = $this->payrollRun($company);
+        $selectedEmployee = Employee::factory()->create(['company_id' => $company->id]);
+        $otherEmployee = Employee::factory()->create(['company_id' => $company->id]);
+
+        $selectedSlip = $this->paySlip($run, $selectedEmployee);
+        $otherSlip = $this->paySlip($run, $otherEmployee);
+
+        (new ProcessBulkPaymentJob($run->id, $manager->id, [$selectedSlip->id]))->handle();
+
+        // The run must NOT be marked paid: $otherSlip is still eligible and
+        // was intentionally excluded from this batch.
+        $run->refresh();
+        $this->assertNotSame('paid', $run->status);
+
+        Queue::assertPushed(
+            GeneratePaymentDocumentJob::class,
+            fn (GeneratePaymentDocumentJob $job): bool => true
+        );
+        Queue::assertPushed(GeneratePaySlipPdfJob::class, 1);
+        Queue::assertPushed(GeneratePaymentDocumentJob::class, 1);
+
+        $audit = AuditLog::query()
+            ->where('auditable_type', PayrollRun::class)
+            ->where('auditable_id', $run->id)
+            ->where('action', 'bulk_payment_processed')
+            ->first();
+
+        $this->assertNotNull($audit);
+        $this->assertSame(1, $audit->new_values['total_slips']);
+        $this->assertSame(1, $audit->new_values['succeeded']);
+    }
+
+    /**
+     * When the selected subset covers every eligible slip in the run, the
+     * run must still end up 'paid' — selecting "all of them one by one"
+     * behaves the same as the default "pay everyone" call.
+     */
+    public function test_bulk_payment_marks_run_paid_when_selected_subset_covers_all_eligible_slips(): void
+    {
+        Queue::fake();
+
+        [$company, $manager] = $this->companyAndManager();
+        $run = $this->payrollRun($company);
+        $employeeA = Employee::factory()->create(['company_id' => $company->id]);
+        $employeeB = Employee::factory()->create(['company_id' => $company->id]);
+        $slipA = $this->paySlip($run, $employeeA);
+        $slipB = $this->paySlip($run, $employeeB);
+
+        (new ProcessBulkPaymentJob($run->id, $manager->id, [$slipA->id, $slipB->id]))->handle();
+
+        $run->refresh();
+        $this->assertSame('paid', $run->status);
+    }
+
+    /**
      * @return array{0: Company, 1: Employee}
      */
     private function companyAndManager(): array
