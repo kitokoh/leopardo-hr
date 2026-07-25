@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Modules\Absence\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\AbsenceResource;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\AbsenceIndexRequest;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\StoreAbsenceRequest;
-use App\Http\Resources\Api\V1\AbsenceResource;
 use App\Modules\Planning\Domain\Models\Absence;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Infrastructure\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AbsenceController extends Controller
 {
@@ -29,7 +31,7 @@ class AbsenceController extends Controller
             ->select([
                 'id', 'company_id', 'employee_id', 'absence_type_id',
                 'start_date', 'end_date', 'days_count', 'status', 'reason',
-                'approved_by', 'rejected_reason', 'created_at', 'updated_at',
+                'proof_path', 'approved_by', 'rejected_reason', 'created_at', 'updated_at',
             ])
             ->with([
                 'absenceType:id,name,code,deducts_leave',
@@ -47,19 +49,19 @@ class AbsenceController extends Controller
         }
 
         if ($request->filled('month') && $request->filled('year')) {
-            $month      = $request->integer('month');
-            $year       = $request->integer('year');
+            $month = $request->integer('month');
+            $year = $request->integer('year');
             $periodStart = Carbon::createFromDate($year, $month, 1)->startOfDay();
-            $periodEnd   = $periodStart->copy()->endOfMonth();
+            $periodEnd = $periodStart->copy()->endOfMonth();
             $query
                 ->where('start_date', '<=', $periodEnd->toDateString())
                 ->where('end_date', '>=', $periodStart->toDateString());
         }
 
         $validated = $request->validated();
-        $perPage   = (int) ($validated['per_page'] ?? 15);
-        $sortBy    = (string) ($validated['sort_by'] ?? 'created_at');
-        $sortDir   = (string) ($validated['sort_dir'] ?? 'desc');
+        $perPage = (int) ($validated['per_page'] ?? 15);
+        $sortBy = (string) ($validated['sort_by'] ?? 'created_at');
+        $sortDir = (string) ($validated['sort_dir'] ?? 'desc');
 
         $paginated = $query->orderBy($sortBy, $sortDir)->orderByDesc('id')->paginate($perPage);
 
@@ -69,8 +71,8 @@ class AbsenceController extends Controller
     public function store(StoreAbsenceRequest $request): JsonResponse
     {
         /** @var Employee $actor */
-        $actor   = $request->user();
-        $absence = $this->absenceService->create($actor, $request->validated());
+        $actor = $request->user();
+        $absence = $this->absenceService->create($actor, $request->validated(), $request->file('proof'));
 
         return (new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
@@ -159,5 +161,35 @@ class AbsenceController extends Controller
             'employee:id,first_name,last_name,email,company_id',
         ]));
     }
-}
 
+    /**
+     * PA2-MOB-006: stream the supporting document attached to an absence
+     * request. Only the requesting employee or a manager of the same
+     * company may download it.
+     */
+    public function downloadProof(Request $request, Absence $absence): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if (! $actor->isManager() && $absence->employee_id !== $actor->id) {
+            abort(403);
+        }
+
+        if (! $absence->proof_path) {
+            abort(404, 'NO_PROOF_ATTACHED');
+        }
+
+        $disk = Storage::disk('local');
+
+        if (! $disk->exists($absence->proof_path)) {
+            abort(404, 'PROOF_FILE_MISSING');
+        }
+
+        return $disk->response($absence->proof_path);
+    }
+}
