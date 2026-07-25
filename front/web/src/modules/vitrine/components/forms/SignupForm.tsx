@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   Building2,
   CheckCircle,
+  Clock3,
   ClipboardCopy,
   Download,
   LogIn,
@@ -33,7 +34,7 @@ interface SignupFormProps {
   className?: string;
 }
 
-type Step = 'form' | 'otp' | 'success';
+type Step = 'form' | 'otp' | 'pending' | 'success';
 
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
@@ -72,6 +73,7 @@ export function SignupForm({
     trial?: { days: number; ends_at: string };
     company?: { name: string };
   } | null>(null);
+  const [pendingMessage, setPendingMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
   const copyPassword = async (password: string) => {
@@ -108,8 +110,20 @@ export function SignupForm({
         });
 
         setPendingEmail(data.email);
-        setCurrentStep('otp');
         dispatch({ type: 'RESET' });
+
+        if (response.provisioned === false) {
+          // Backend could not send an OTP right now (e.g. cold-start timeout).
+          // The lead was still captured, so tell the user honestly instead of
+          // showing a verification screen for a code that was never sent.
+          setPendingMessage(
+            response.message ||
+              "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables."
+          );
+          setCurrentStep('pending');
+        } else {
+          setCurrentStep('otp');
+        }
       } else {
         dispatch({
           type: 'SUBMIT_ERROR',
@@ -456,6 +470,49 @@ export function SignupForm({
 
             <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
               Le code est valide pendant 30 minutes. Verifiez vos spams si vous ne le trouvez pas.
+            </p>
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════ */}
+        {/* STEP 2b: Pending (cold-start fallback)   */}
+        {/* ═══════════════════════════════════════ */}
+        {currentStep === 'pending' && (
+          <motion.div
+            key="step-pending"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/40">
+              <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+            </div>
+
+            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+              Demande d'essai recue
+            </h2>
+            <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              {pendingMessage}
+            </p>
+            <p className="mb-6 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              {pendingEmail}
+            </p>
+
+            <div className="rounded-xl bg-slate-50 px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
+              Notre systeme de creation d'espace instantane est momentanement
+              indisponible (redemarrage serveur). Votre demande est bien
+              enregistree : une personne de l'equipe Leopardo vous contactera
+              par email sous 24h ouvrables avec un acces adapte a votre
+              contexte.
+            </div>
+
+            <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
+              Vous avez deja un compte?{' '}
+              <a href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
+                Se connecter
+              </a>
             </p>
           </motion.div>
         )}
