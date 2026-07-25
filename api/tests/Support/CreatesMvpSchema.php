@@ -486,6 +486,9 @@ trait CreatesMvpSchema
             // company's currency setting changes later.
             $table->char('currency', 3)->nullable();
             $table->text('reason')->nullable();
+            // PA2-MOB-006: optional supporting document (justification,
+            // quote, invoice, etc.) attached at request time.
+            $table->string('proof_path', 255)->nullable();
             $table->string('status', 20)->default('pending');
             $table->unsignedInteger('approved_by')->nullable();
             $table->timestampTz('manager_approved_at')->nullable();
