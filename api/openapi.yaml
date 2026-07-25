@@ -5591,6 +5591,8 @@ paths:
                           advances: { type: number, format: float }
                           paid: { type: number, format: float }
                           remaining: { type: number, format: float }
+                          overtime_hours: { type: number, format: float }
+                          overtime_pay: { type: number, format: float }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -12601,6 +12603,14 @@ components:
         remaining:
           type: number
           format: float
+        overtime_hours:
+          type: number
+          format: float
+          description: "PA2-PAY-010 - heures supplementaires enregistrees pour le cycle courant (agregation attendance_logs.overtime_hours)."
+        overtime_pay:
+          type: number
+          format: float
+          description: "PA2-PAY-010 - estimation du paiement des heures supplementaires (taux horaire estime x1.5), a titre indicatif pour le dashboard manager."
         pay_slip:
           type: object
           properties:
