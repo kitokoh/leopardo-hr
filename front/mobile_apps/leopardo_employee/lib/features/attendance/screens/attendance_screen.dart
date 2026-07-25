@@ -10,6 +10,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/pulse_button.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/attendance/providers/attendance_provider.dart';
+import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 
@@ -1021,80 +1022,94 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         minChildSize: 0.42,
         maxChildSize: 0.92,
         builder: (context, controller) => SafeArea(
-          child: ListView(
-            controller: controller,
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-            children: [
-              const _SheetHandle(),
-              const SizedBox(height: 16),
-              _SheetHeader(
-                title: 'Details de la journee',
-                subtitle: DateFormat(
-                  'EEEE d MMMM yyyy',
-                  'fr_FR',
-                ).format(day.date),
-              ),
-              const SizedBox(height: 16),
-              Row(
+          child: Consumer(
+            builder: (context, ref, _) {
+              final anomaliesAsync =
+                  ref.watch(monthlyAnomaliesProvider(day.date));
+              final dayAnomalies = anomaliesAsync.maybeWhen(
+                data: (report) => report.forDate(_dateKey(day.date)),
+                orElse: () => const <AttendanceAnomaly>[],
+              );
+              return ListView(
+                controller: controller,
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
                 children: [
-                  Expanded(
-                    child: _DetailMetric(
-                      label: 'Temps travaille',
-                      value: day.hoursFormatted,
-                      color: AppColors.mobileDarkTextSoft,
+                  const _SheetHandle(),
+                  const SizedBox(height: 16),
+                  _SheetHeader(
+                    title: 'Details de la journee',
+                    subtitle: DateFormat(
+                      'EEEE d MMMM yyyy',
+                      'fr_FR',
+                    ).format(day.date),
+                  ),
+                  if (dayAnomalies.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    ...dayAnomalies.map(_AnomalyTile.new),
+                  ],
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _DetailMetric(
+                          label: 'Temps travaille',
+                          value: day.hoursFormatted,
+                          color: AppColors.mobileDarkTextSoft,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _DetailMetric(
+                          label: 'Heures supp',
+                          value: day.overtimeFormatted,
+                          color: AppColors.rh,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _DetailMetric(
+                          label: 'Pauses',
+                          value: '${day.breakMinutes} min',
+                          color: AppColors.warning,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _DetailMetric(
+                          label: 'Gain estime',
+                          value:
+                              '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
+                          color: AppColors.rh,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  const Text(
+                    'Pointages',
+                    style: TextStyle(
+                      color: _secondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.6,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _DetailMetric(
-                      label: 'Heures supp',
-                      value: day.overtimeFormatted,
-                      color: AppColors.rh,
-                    ),
-                  ),
+                  const SizedBox(height: 10),
+                  if (day.sessions.isEmpty)
+                    const _SheetMessage(
+                      icon: Icons.event_busy_outlined,
+                      title: 'Aucune session',
+                      body: 'Cette journee ne contient pas encore de pointage.',
+                    )
+                  else
+                    ...day.sessions.map(_SessionDetailTile.new),
                 ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _DetailMetric(
-                      label: 'Pauses',
-                      value: '${day.breakMinutes} min',
-                      color: AppColors.warning,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _DetailMetric(
-                      label: 'Gain estime',
-                      value:
-                          '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
-                      color: AppColors.rh,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              const Text(
-                'Pointages',
-                style: TextStyle(
-                  color: _secondary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.6,
-                ),
-              ),
-              const SizedBox(height: 10),
-              if (day.sessions.isEmpty)
-                const _SheetMessage(
-                  icon: Icons.event_busy_outlined,
-                  title: 'Aucune session',
-                  body: 'Cette journee ne contient pas encore de pointage.',
-                )
-              else
-                ...day.sessions.map(_SessionDetailTile.new),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -1376,6 +1391,84 @@ class _ActionTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// PA2-ATT-004 - Single anomaly row shown at the top of the day-detail sheet
+/// so an employee can see, in their own words, what looked unusual about a
+/// given day (late arrival, missing check-out, excessive overtime, etc.)
+/// without needing to ask a manager.
+class _AnomalyTile extends StatelessWidget {
+  final AttendanceAnomaly anomaly;
+
+  const _AnomalyTile(this.anomaly);
+
+  Color get _color {
+    switch (anomaly.severity) {
+      case 'critical':
+        return AppColors.danger;
+      case 'warning':
+        return AppColors.warning;
+      default:
+        return AppColors.mobileDarkTextSoft;
+    }
+  }
+
+  IconData get _icon {
+    switch (anomaly.severity) {
+      case 'critical':
+        return Icons.error_outline;
+      case 'warning':
+        return Icons.warning_amber_outlined;
+      default:
+        return Icons.info_outline;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _color;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.32)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(_icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  anomaly.title,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (anomaly.recommendedAction.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    anomaly.recommendedAction,
+                    style: const TextStyle(
+                      color: _AttendanceScreenState._muted,
+                      fontSize: 11.5,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

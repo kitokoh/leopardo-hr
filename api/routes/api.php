@@ -32,6 +32,8 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use Illuminate\Support\Facades\Route;
@@ -127,6 +129,13 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/company/branding', [CompanyBrandingController::class, 'show']);
         Route::patch('/company/branding', [CompanyBrandingController::class, 'update']);
 
+        // PA2-COMM-012 — Pilot client support center: a manager/employee can
+        // open a support ticket and reply on their own company's tickets.
+        Route::get('/support-tickets', [SupportTicketController::class, 'index']);
+        Route::post('/support-tickets', [SupportTicketController::class, 'store']);
+        Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->whereNumber('supportTicket');
+        Route::post('/support-tickets/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->whereNumber('supportTicket');
+
         Route::get('/onboarding/checklist', OnboardingChecklistController::class);
     });
 
@@ -193,6 +202,13 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
 
         Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
+
+        // PA2-COMM-012 — Pilot client support center: super-admin triage of
+        // tenant-opened support tickets (status, priority, assignment, reply).
+        Route::get('/support-tickets', [PlatformSupportTicketController::class, 'index']);
+        Route::get('/support-tickets/{supportTicket}', [PlatformSupportTicketController::class, 'show'])->whereNumber('supportTicket');
+        Route::post('/support-tickets/{supportTicket}/reply', [PlatformSupportTicketController::class, 'reply'])->whereNumber('supportTicket');
+        Route::patch('/support-tickets/{supportTicket}/triage', [PlatformSupportTicketController::class, 'triage'])->whereNumber('supportTicket');
 
         // PA2-COMM-005 — Platform-wide announcements (maintenance, feature,
         // incident, action required) broadcast by super-admin to all or a

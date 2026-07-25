@@ -46,9 +46,16 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
     private ?string $resolvedCompanyId = null;
 
+    /**
+     * @param  array<int, int>|null  $paySlipIds  Optional subset of pay_slips.id
+     *     to pay in this batch (PA2-PAY-005 "selection multiple"). Null
+     *     (the default) preserves the previous "pay every eligible slip
+     *     in the run" behaviour.
+     */
     public function __construct(
         public readonly int $payrollRunId,
         public readonly int $triggeredById,
+        public readonly ?array $paySlipIds = null,
     ) {
         $this->onQueue('payroll');
     }
@@ -86,11 +93,19 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
         $this->updateProgress(0, 'starting');
 
-        // ── Step 1: Collect all pay slips for this run ──────────────────────
+        // ── Step 1: Collect the pay slips to process for this run ─────────
+        // PA2-PAY-005: when the manager selected a specific subset of pay
+        // slips, only those (still eligible) slips are processed; any
+        // requested id that doesn't belong to this run or isn't eligible is
+        // silently ignored rather than failing the whole batch.
         /** @var Collection<int, PaySlip> $slips */
         $slips = PaySlip::query()
             ->where('payroll_run_id', $run->id)
             ->whereIn('status', ['calculated', 'validated'])
+            ->when(
+                $this->paySlipIds !== null,
+                fn ($query) => $query->whereIn('id', $this->paySlipIds),
+            )
             ->get();
 
         $total = $slips->count();
@@ -129,14 +144,27 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
         $succeeded = $total - count($failures);
         $finalStatus = $failures === [] ? 'completed' : 'completed_with_errors';
 
-        // ── Step 2: Mark payroll run as paid ────────────────────────────────
+        // ── Step 2: Mark payroll run as paid, if fully settled ──────────────
         // The run is marked paid even with partial failures: the successful
         // slips were genuinely paid and must not be re-processed on retry;
         // failures are surfaced separately for manual follow-up.
-        $run->update([
-            'status' => 'paid',
-            'paid_at' => now(),
-        ]);
+        //
+        // PA2-PAY-005: when the manager only selected a subset of pay slips,
+        // other eligible slips in the run may still be awaiting payment —
+        // the run must stay in its current status (not be marked 'paid')
+        // until every calculated/validated slip has actually been paid.
+        $remainingUnpaid = PaySlip::query()
+            ->where('payroll_run_id', $run->id)
+            ->whereIn('status', ['calculated', 'validated'])
+            ->whereNotIn('id', $slips->pluck('id'))
+            ->exists();
+
+        if (! $remainingUnpaid) {
+            $run->update([
+                'status' => 'paid',
+                'paid_at' => now(),
+            ]);
+        }
 
         $this->updateProgress($total, $finalStatus, $total, $failures);
 
