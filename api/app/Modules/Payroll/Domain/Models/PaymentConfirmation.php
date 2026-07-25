@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Domain\Models;
 
+use App\Shared\Traits\Auditable;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,11 @@ use Illuminate\Support\Carbon;
  */
 class PaymentConfirmation extends Model
 {
+    // PA2-PAY-006 - Every consent/signature confirmation is written to
+    // audit_logs (who confirmed, when, and the resulting document hash),
+    // giving the "consent model" a durable, tamper-evident audit trail
+    // without introducing a premature PKI/certificate stack.
+    use Auditable;
     use BelongsToCompany;
 
     protected $fillable = [
