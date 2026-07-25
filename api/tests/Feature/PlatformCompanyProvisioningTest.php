@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Mail\UserInvitationMail;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Mail\UserInvitationMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -185,6 +185,61 @@ class PlatformCompanyProvisioningTest extends TestCase
             ]);
     }
 
+    public function test_company_creation_seeds_default_schedule_from_country_rules(): void
+    {
+        // PA2-COUNTRY-002: choosing a country should not only derive
+        // currency/timezone but also seed a default Schedule matching that
+        // country's labor-code baseline (e.g. France: 35h/week, Saturday +
+        // Sunday rest; Tunisia: 48h/week, Sunday rest only).
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 3,
+            'name' => 'Starter',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = SuperAdmin::query()->create([
+            'name' => 'Platform Admin',
+            'email' => 'admin-schedule@leopardo-rh.com',
+            'password_hash' => Hash::make('admin'),
+        ]);
+
+        $response = $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Societe France',
+                'sector' => 'Industrie',
+                'country' => 'FR',
+                'city' => 'Paris',
+                'email' => 'contact@societe-france.fr',
+                'plan_id' => 3,
+                'manager_first_name' => 'Camille',
+                'manager_last_name' => 'Dubois',
+                'manager_email' => 'camille.dubois@societe-france.fr',
+            ]);
+
+        $response->assertCreated();
+        $companyId = $response->json('data.company.id');
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $schedule = DB::table('schedules')
+            ->where('company_id', $companyId)
+            ->where('is_default', true)
+            ->first();
+
+        DB::statement('SET search_path TO public');
+
+        $this->assertNotNull($schedule, 'Expected a default Schedule to be seeded for the new company.');
+        $this->assertSame([6, 7], json_decode($schedule->rest_days, true));
+        $this->assertSame([1, 2, 3, 4, 5], json_decode($schedule->work_days, true));
+        $this->assertEquals(35.0, (float) $schedule->overtime_threshold_weekly);
+    }
+
     public function test_super_admin_api_login_returns_token(): void
     {
         $superAdmin = SuperAdmin::query()->create([
@@ -204,4 +259,3 @@ class PlatformCompanyProvisioningTest extends TestCase
         $response->assertJsonPath('token_type', 'Bearer');
     }
 }
-
