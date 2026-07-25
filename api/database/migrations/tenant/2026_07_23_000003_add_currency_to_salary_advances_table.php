@@ -32,9 +32,15 @@ return new class extends Migration
 
         // Backfill existing rows from their owning company's current
         // currency so historical advances are not left with a NULL value.
+        //
+        // `companies` lives in the `public` schema while this migration runs
+        // against a tenant schema (search_path=<tenant>,public in
+        // production, but CI runs tenant migrations with
+        // search_path=shared_tenants only, no `public`). Schema-qualify the
+        // join target so it resolves correctly regardless of search_path.
         DB::table('salary_advances')
-            ->join('companies', 'companies.id', '=', 'salary_advances.company_id')
-            ->update(['salary_advances.currency' => DB::raw('companies.currency')]);
+            ->join('public.companies', 'public.companies.id', '=', 'salary_advances.company_id')
+            ->update(['salary_advances.currency' => DB::raw('public.companies.currency')]);
     }
 
     public function down(): void
