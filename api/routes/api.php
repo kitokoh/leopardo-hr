@@ -14,6 +14,7 @@ use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
 use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
@@ -81,6 +82,10 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
+        // PA2-COMM-007 - Email provider bounce/complaint notifications
+        // (Postmark, SES, Mailgun, ...), protected by a shared secret header
+        // instead of Sanctum since the caller is a third-party mail provider.
+        Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
     });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
