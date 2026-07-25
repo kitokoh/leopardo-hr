@@ -88,11 +88,11 @@
 | ID | Priorite | Ticket | Surface | Definition of Done |
 |---|---|---|---|---|
 | PA2-JOB-001 | P0 | Redis/queues readiness | infra, API | health queue, worker runbook, retry, failed jobs visibles |
-| PA2-JOB-002 | P0 | Notifications FCM production | API, mobile | device tokens, preferences, push employee/manager, history, fallback polling |
-| PA2-JOB-003 | P1 | Communication multi-canal | API | email/SMS/WhatsApp providers audit-only ou actifs selon env, quotas, quiet hours |
-| PA2-JOB-004 | P1 | Traitements paie asynchrones | API jobs | recalculs, PDF, notifications post-paiement ne bloquent pas UI |
-| PA2-JOB-005 | P1 | k6 stress tests gates | `dev-hub/k6`, Actions | scenarios 10/20/50/100 users, lancement manuel ou path-based |
-| PA2-JOB-006 | P2 | Observabilite go-live | docs, dashboard | uptime, logs, queue depth, DB health, alerting minimal |
+| PA2-JOB-002 | P0 | ~~Notifications FCM production~~ Fait (audit 2026-07-25, `17_AUDIT_STATUT_PA2_JOB_001_A_006.md`) : livre sous plusieurs tickets `PA2-COMM-*` (device tokens `DeviceTokenController`, preferences `NotificationPreference`, push `PushNotificationService`, fallback polling `PA2-COMM-013`), jamais rattache a l'issue #996 | API, mobile | device tokens, preferences, push employee/manager, history, fallback polling |
+| PA2-JOB-003 | P1 | ~~Communication multi-canal~~ Fait cote code (audit 2026-07-25) mais integration bloquee tant que `PA2-COMM-008` (PR #1208, conflit `notifications.php`) n'est pas mergee ; SMS reste intentionnellement audit-only | API | email/SMS/WhatsApp providers audit-only ou actifs selon env, quotas, quiet hours |
+| PA2-JOB-004 | P1 | ~~Traitements paie asynchrones~~ Fait cote code (audit 2026-07-25, `GeneratePaySlipPdfJob`/`ProcessBulkPaymentJob`/`PrecalculatePayrollRuns` via PA2-PAY-012/013/014) mais integration bloquee tant que `PA2-COMM-010` (PR #1205, conflit `notifications.php`) n'est pas mergee | API jobs | recalculs, PDF, notifications post-paiement ne bloquent pas UI |
+| PA2-JOB-005 | P1 | ~~k6 stress tests gates~~ Partiel (audit 2026-07-25) : volet pointage fait (`attendance-punch-scale.js`, PA2-QA-004), volet paie progressif 10/20/50/100 manquant (`payroll-500-batch.js` est un scenario fixe) — reste = `PA2-QA-005` | `dev-hub/k6`, Actions | scenarios 10/20/50/100 users, lancement manuel ou path-based |
+| PA2-JOB-006 | P2 | ~~Observabilite go-live~~ Fait (audit 2026-07-25) : livre integralement par `PA2-QA-006` (`QueueObservabilityController`, dependance PA2-JOB-001 citee dans son propre docblock), jamais rattache a l'issue #1000 | docs, dashboard | uptime, logs, queue depth, DB health, alerting minimal |
 
 ## Paie, avances et documents
 
