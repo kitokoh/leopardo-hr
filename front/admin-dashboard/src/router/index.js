@@ -116,6 +116,15 @@ const routes = [
         }
       },
       {
+        path: '/support-tickets',
+        name: 'support-tickets',
+        component: () => import('@/views/support/SupportTicketsView.vue'),
+        meta: {
+          title: 'Centre support client',
+          icon: 'LifebuoyIcon'
+        }
+      },
+      {
         path: '/crm/pipeline',
         name: 'crm-pipeline',
         component: () => import('@/views/crm/CrmPipelineView.vue'),

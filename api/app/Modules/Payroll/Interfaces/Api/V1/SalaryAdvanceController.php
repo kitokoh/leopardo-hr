@@ -13,6 +13,8 @@ use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Modules\Payroll\Infrastructure\Services\LedgerService;
 use App\Modules\Payroll\Infrastructure\Services\SalaryAdvanceService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\DecideSalaryAdvanceRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\DisputeSalaryAdvanceRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\ResolveSalaryAdvanceDisputeRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\SalaryAdvanceIndexRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StoreSalaryAdvanceRequest;
 use Illuminate\Http\JsonResponse;
@@ -208,6 +210,85 @@ class SalaryAdvanceController extends Controller
                 $this->salaryAdvanceService->notifyRecipient($salaryAdvance, $manager, 'salary_advance_received');
             }
         }
+
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
+    }
+
+    /**
+     * PUT /salary-advances/{id}/dispute
+     * Employee opens a dispute instead of confirming reception (PA2-PAY-015):
+     * the payment was declared by the manager but the employee reports it
+     * was not actually received as described (wrong amount, never handed
+     * over, wrong recipient, etc.).
+     */
+    public function dispute(DisputeSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($salaryAdvance->employee_id !== $actor->id) {
+            abort(403, 'Only the advance owner can dispute it.');
+        }
+        if ($salaryAdvance->validation_status !== 'payment_declared') {
+            return response()->json(['message' => 'Payment must be declared before it can be disputed.'], 422);
+        }
+
+        $salaryAdvance->update([
+            'dispute_reason' => $request->validated('dispute_reason'),
+            'disputed_at' => now(),
+            'validation_status' => 'disputed',
+        ]);
+        $salaryAdvance = $salaryAdvance->fresh();
+
+        if ($salaryAdvance->payment_declared_by) {
+            $manager = Employee::query()->withoutGlobalScopes()->find($salaryAdvance->payment_declared_by);
+            if ($manager instanceof Employee) {
+                $this->salaryAdvanceService->notifyRecipient($salaryAdvance, $manager, 'salary_advance_disputed');
+            }
+        }
+
+        return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
+    }
+
+    /**
+     * PUT /salary-advances/{id}/resolve-dispute
+     * Manager (principal | comptable | rh) resolves a previously-opened
+     * dispute: either `confirmed` (the payment was actually correct, the
+     * advance moves to `employee_confirmed`) or `reopened` (the dispute was
+     * legitimate, the advance goes back to `payment_declared` so the
+     * manager can correct the payment and the employee can confirm again).
+     */
+    public function resolveDispute(ResolveSalaryAdvanceDisputeRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403, 'Manager role required.');
+        }
+        if ($salaryAdvance->validation_status !== 'disputed') {
+            return response()->json(['message' => 'Advance is not currently disputed.'], 422);
+        }
+
+        $resolution = $request->validated('resolution');
+        $note = $request->validated('dispute_resolution_note');
+
+        $salaryAdvance->update([
+            'dispute_resolved_at' => now(),
+            'dispute_resolved_by' => $actor->id,
+            'dispute_resolution_note' => $note,
+            'validation_status' => $resolution === 'confirmed' ? 'employee_confirmed' : 'payment_declared',
+            'employee_confirmed_at' => $resolution === 'confirmed' ? now() : null,
+        ]);
+        $salaryAdvance = $salaryAdvance->fresh();
+
+        $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_dispute_resolved');
 
         return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
     }
