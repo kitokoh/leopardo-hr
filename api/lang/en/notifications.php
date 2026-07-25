@@ -29,4 +29,7 @@ return [
 
     'company_announcement_title' => 'Company announcement',
     'company_announcement_body' => 'A new announcement was published in your company.',
+
+    'payment_document_ready_title' => 'Document ready',
+    'payment_document_ready_body' => 'Your payment document is generated and available to download.',
 ];

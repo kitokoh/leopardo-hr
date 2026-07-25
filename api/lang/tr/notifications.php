@@ -29,4 +29,7 @@ return [
 
     'company_announcement_title' => 'Şirket duyurusu',
     'company_announcement_body' => 'Şirketinizde yeni bir duyuru yayınlandı.',
+
+    'payment_document_ready_title' => 'Belge hazır',
+    'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
 ];
