@@ -43,7 +43,32 @@ class AttendanceLog extends Model
     use BelongsToCompany;
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'employee_id',
+        'schedule_id',
+        'date',
+        'session_number',
+        'check_in',
+        'check_out',
+        'method',
+        'source_device_code',
+        'external_event_id',
+        'biometric_type',
+        'synced_from_offline',
+        'work_type',
+        'punch_note',
+        'punch_meta',
+        'punch_photo_path',
+        'status',
+        'hours_worked',
+        'overtime_hours',
+        'late_minutes',
+        'gps_lat',
+        'gps_lng',
+        'corrected_by',
+        'correction_note',
+    ];
 
     protected $casts = [
         'date'                 => 'date',

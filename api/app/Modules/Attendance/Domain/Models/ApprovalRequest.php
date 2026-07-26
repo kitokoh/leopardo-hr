@@ -26,7 +26,15 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class ApprovalRequest extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'workflow_id',
+        'approvable_type',
+        'approvable_id',
+        'requester_id',
+        'current_level',
+        'status',
+    ];
 
     /** @return BelongsTo<ApprovalWorkflow, $this> */
     public function workflow(): BelongsTo

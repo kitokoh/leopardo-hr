@@ -11,6 +11,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ZktecoSyncLog extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'zkteco_device_id',
+        'direction',
+        'sync_type',
+        'records_count',
+        'errors_count',
+        'status',
+        'error_message',
+        'started_at',
+        'completed_at',
+    ];
 }
 
