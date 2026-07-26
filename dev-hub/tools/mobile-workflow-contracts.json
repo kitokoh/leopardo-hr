@@ -231,7 +231,7 @@
             "lib/src/features/auth/platform_login_screen.dart",
             "lib/src/features/dashboard/platform_dashboard_screen.dart"
           ],
-          "sourceTokens": ["platformAuthControllerProvider", ".login(", ".logout()", "Se connecter"]
+          "sourceTokens": ["platformAuthControllerProvider", ".login(", ".logout()", "l10n.login"]
         },
         {
           "name": "platform_companies",
