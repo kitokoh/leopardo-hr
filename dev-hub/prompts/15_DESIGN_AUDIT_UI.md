@@ -2,7 +2,7 @@
 
 > **Quand l'utiliser :** Pour améliorer l'UI/UX d'une partie du projet (Vitrine, Dashboard Admin, Mobile) afin de la rendre "Premium".
 > **Durée estimée :** Long (Créatif et itératif)
-> **Prérequis :** Savoir utiliser l'outil `generate_image` d'Antigravity.
+> **Prérequis :** Savoir utiliser l'intégration Google Stitch (MCP).
 
 ## Instructions
 
@@ -12,10 +12,12 @@ Tu es chargé d'auditer et d'améliorer le design d'une interface de Leopardo RH
    - Regarde le code actuel (composants, tokens CSS, Tailwind, couleurs).
    - Identifie les faiblesses : couleurs ternes, espacements irréguliers, manque d'animations, design trop "plat" (ex: vieilles cartes blanches avec ombres basiques).
 
-2. **PROPOSE UN MOCKUP VISUEL (OBLIGATOIRE) :**
-   - Utilise ton outil `generate_image` pour générer une ou plusieurs propositions de la nouvelle interface.
-   - Demande-toi : "Est-ce premium ? Y a-t-il du glassmorphism, un beau dark mode, des dégradés subtils ?"
-   - Attends le feedback de l'utilisateur sur ces images avant de coder.
+2. **PROPOSE UN MOCKUP VISUEL AVEC STITCH MCP (OBLIGATOIRE) :**
+   - N'utilise plus de simples images générées. Utilise l'outil `call_mcp_tool` pour invoquer `StitchMCP`.
+   - Commence par récupérer le projet Leopardo RH existant via `list_projects` ou `get_project`.
+   - Utilise `generate_screen_from_text` ou `edit_screens` pour générer une interface interactive, moderne et avec l'ADN visuel Leopardo.
+   - Assure-toi que la maquette utilise les règles de design premium (glassmorphism, dégradés subtils, contrastes).
+   - Présente cette maquette interactive à l'utilisateur et attends sa validation avant de coder.
 
 3. **IMPLÉMENTATION (Après validation visuelle) :**
    - **Structure** : Utilise des composants sémantiques.
