@@ -230,7 +230,7 @@ export function SignupForm({
               Tester Leopardo avec votre entreprise
             </h2>
             <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Creez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.
+              Creez votre espace d&apos;essai en 2 minutes. Aucune carte bancaire requise.
             </p>
 
             {formState.isError && (
@@ -329,7 +329,7 @@ export function SignupForm({
 
               {role === 'operations' && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-                  Nous preparerons un parcours axe terrain : pointage, taches, kiosk et suivi d'equipe.
+                  Nous preparerons un parcours axe terrain : pointage, taches, kiosk et suivi d&apos;equipe.
                 </div>
               )}
 
@@ -343,9 +343,9 @@ export function SignupForm({
                   {...register('agreeToTerms')}
                 />
                 <label htmlFor="agreeToTerms" className="text-sm text-slate-600 dark:text-slate-400">
-                  J'accepte les{' '}
+                  J&apos;accepte les{' '}
                   <a href="/terms" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                    conditions d'utilisation
+                    conditions d&apos;utilisation
                   </a>{' '}
                   et la{' '}
                   <a href="/privacy" className="font-semibold text-emerald-600 hover:text-emerald-700">
@@ -491,7 +491,7 @@ export function SignupForm({
             </div>
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-              Demande d'essai recue
+              Demande d&apos;essai recue
             </h2>
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
               {pendingMessage}
@@ -501,9 +501,9 @@ export function SignupForm({
             </p>
 
             <div className="rounded-xl bg-slate-50 px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-              Notre systeme de creation d'espace instantane est momentanement
+              Notre systeme de creation d&apos;espace instantane est momentanement
               indisponible (redemarrage serveur). Votre demande est bien
-              enregistree : une personne de l'equipe Leopardo vous contactera
+              enregistree : une personne de l&apos;equipe Leopardo vous contactera
               par email sous 24h ouvrables avec un acces adapte a votre
               contexte.
             </div>
@@ -609,7 +609,7 @@ export function SignupForm({
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     <Download className="h-4 w-4" />
-                    Telecharger l'app
+                    Telecharger l&apos;app
                   </a>
                 </div>
 

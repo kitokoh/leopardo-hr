@@ -475,7 +475,7 @@ export const getMonitoringStatus = () => {
   };
 };
 
-export default {
+const monitoringModule = {
   initializeGA4,
   trackPageView,
   trackConversion,
@@ -498,5 +498,6 @@ export default {
   getEnvironment,
   isMonitoringEnabled,
   getMonitoringStatus,
-
 };
+
+export default monitoringModule;
