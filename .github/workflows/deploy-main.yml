@@ -23,6 +23,9 @@ jobs:
   prepare:
     name: Prepare deployment context
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     outputs:
       should_deploy: ${{ steps.final.outputs.should_deploy }}
       ref: ${{ steps.context.outputs.ref }}
@@ -87,6 +90,7 @@ jobs:
         with:
           ref: ${{ steps.context.outputs.sha }}
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Resolve parent commit for change detection
         if: steps.context.outputs.should_deploy == 'pending-validation'
@@ -216,6 +220,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare
     if: needs.prepare.outputs.should_deploy == 'true'
+    permissions:
+      contents: read
 
     steps:
       - name: Validate Render secret
@@ -277,6 +283,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [prepare, deploy-api]
     if: needs.prepare.outputs.should_deploy == 'true'
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -301,10 +309,51 @@ jobs:
             android_package: com.leopardo.platformadmin
 
     steps:
+      # Defense in depth (CodeQL actions/untrusted-checkout): `needs.prepare.outputs.sha`
+      # is already gated in the `prepare` job to only ever resolve to a SHA whose
+      # upstream workflow_run succeeded, was triggered by a `push` (never a fork
+      # pull_request/pull_request_target), targeted `main`, and ran in this base
+      # repository. CodeQL's actions dataflow analysis cannot see that cross-job
+      # validation, so this job independently re-verifies - right before checkout,
+      # in a privileged (secrets-bearing) context - that the resolved SHA is
+      # actually main itself or an ancestor of main before ever checking it out.
+      - name: Verify deployment SHA is on main before privileged checkout
+        id: verify_sha
+        uses: actions/github-script@v9
+        env:
+          DEPLOY_SHA: ${{ needs.prepare.outputs.sha }}
+        with:
+          script: |
+            const sha = process.env.DEPLOY_SHA;
+            if (!sha) {
+              core.setFailed('No deployment SHA was resolved by the prepare job.');
+              return;
+            }
+
+            const { data } = await github.rest.repos.compareCommitsWithBasehead({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              basehead: `main...${sha}`,
+            });
+
+            core.info(`Comparison of ${sha} against main: status=${data.status}, ahead_by=${data.ahead_by}, behind_by=${data.behind_by}`);
+
+            // "identical" means sha IS the tip of main; "behind" means sha is an
+            // ancestor of main (an older, already-merged commit). Both are safe:
+            // they only ever reference code that a trusted collaborator already
+            // pushed to the protected main branch. "ahead" or "diverged" would mean
+            // the SHA carries commits that are not on main - i.e. potentially
+            // attacker-controlled content smuggled through the workflow_run event -
+            // and must never be checked out here.
+            if (data.status !== 'identical' && data.status !== 'behind') {
+              core.setFailed(`Refusing privileged checkout of ${sha}: it is not main or an ancestor of main (status=${data.status}).`);
+            }
+
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           ref: ${{ needs.prepare.outputs.sha }}
+          persist-credentials: false
 
       - name: Resolve Firebase distribution readiness
         id: firebase_ready
