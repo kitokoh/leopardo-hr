@@ -106,7 +106,7 @@ if [ ${#touched_php_files[@]} -eq 0 ]; then
   exit 0
 fi
 
-declare -A touched_modules
+declare -A touched_modules=()
 
 for f in "${touched_php_files[@]}"; do
   rel="${f#"${API_DIR}"/}"
