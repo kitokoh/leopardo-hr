@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Navbar, HeroSection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
@@ -11,10 +12,32 @@ const subjects = [
   'Support technique',
   'Partenariat',
   'Presse & Médias',
+  'Mot de passe oublié',
+  'Mise à niveau (upgrade)',
+  'Téléchargement - Kiosque',
+  'Téléchargement - Windows',
+  'Téléchargement - macOS',
+  'Communauté',
   'Autre',
 ];
 
-export default function ContactPage() {
+// Maps the `?topic=` query param (used by links across login, dashboard,
+// navbar/footer and the download page) to a matching entry in `subjects`.
+// See issue #1304: without this mapping the "Sujet" select always fell
+// back to its default value regardless of which link was clicked.
+const TOPIC_TO_SUBJECT: Record<string, string> = {
+  password: 'Mot de passe oublié',
+  upgrade: 'Mise à niveau (upgrade)',
+  support: 'Support technique',
+  community: 'Communauté',
+  'download-kiosk': 'Téléchargement - Kiosque',
+  'download-windows': 'Téléchargement - Windows',
+  'download-macos': 'Téléchargement - macOS',
+  download: 'Information générale',
+};
+
+function ContactPageInner() {
+  const searchParams = useSearchParams();
   const [isDark, setIsDark] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -28,6 +51,18 @@ export default function ContactPage() {
     subject: '',
     message: '',
   });
+
+  // Prefill the "Sujet" select from the `?topic=` query param so contextual
+  // links (forgot password, upgrade, support, download, community) land on
+  // the right subject instead of the default empty option (issue #1304).
+  useEffect(() => {
+    const topic = searchParams.get('topic');
+    if (!topic) return;
+    const mapped = TOPIC_TO_SUBJECT[topic];
+    if (mapped) {
+      setForm(prev => ({ ...prev, subject: mapped }));
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -192,5 +227,13 @@ export default function ContactPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={null}>
+      <ContactPageInner />
+    </Suspense>
   );
 }
