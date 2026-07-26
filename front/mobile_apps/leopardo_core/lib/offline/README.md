@@ -33,6 +33,10 @@ final syncService = SyncService(
   dio: Dio(),
   edgeBaseUrl: 'http://leopardo.local:7878',
   cloudBaseUrl: 'https://api.leopardo.app',
+  // Cloud-issued UUID for this Edge node (distinct from edgeToken).
+  // Obtained at enrollment together with the token — see the
+  // `install_command` returned by `POST /api/v1/edge` (Cloud admin API).
+  edgeNodeId: prefs.getString('edge_node_id') ?? '',
   edgeToken: prefs.getString('edge_token') ?? '',
 );
 syncService.start();
