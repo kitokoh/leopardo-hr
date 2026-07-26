@@ -35,7 +35,8 @@ export function useIntersectionObserver(
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
 
   useEffect(() => {
-    if (!ref.current) return;
+    const element = ref.current;
+    if (!element) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -58,12 +59,10 @@ export function useIntersectionObserver(
       }
     );
 
-    observer.observe(ref.current);
+    observer.observe(element);
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
+      observer.unobserve(element);
     };
   }, [threshold, root, rootMargin, triggerOnce]);
 
@@ -89,7 +88,8 @@ export function useIntersectionObserverCallback(
   const hasTriggered = useRef(false);
 
   useEffect(() => {
-    if (!ref.current) return;
+    const element = ref.current;
+    if (!element) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -113,12 +113,10 @@ export function useIntersectionObserverCallback(
       }
     );
 
-    observer.observe(ref.current);
+    observer.observe(element);
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
+      observer.unobserve(element);
     };
   }, [callback, threshold, root, rootMargin, triggerOnce]);
 

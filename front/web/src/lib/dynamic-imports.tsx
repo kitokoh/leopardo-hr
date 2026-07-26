@@ -275,7 +275,7 @@ export const bundleOptimization = {
   ],
 };
 
-export default {
+const dynamicImportsConfig = {
   createDynamicComponent,
   lazyLoadSections,
   lazyLoadComponents,
@@ -284,3 +284,5 @@ export default {
   routeCodeSplitting,
   bundleOptimization,
 };
+
+export default dynamicImportsConfig;
