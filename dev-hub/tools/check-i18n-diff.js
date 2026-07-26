@@ -154,50 +154,72 @@ function main() {
   ensureCommit(baseSha);
   ensureCommit(headSha);
 
-  const changedFilesRaw = git(['diff', '--name-only', '--diff-filter=ACMR', baseSha, headSha]);
-  const changedFiles = changedFilesRaw.split('\n').filter(Boolean).filter(isWatchedFile);
+  // -M enables rename detection: without it, a pure `git mv` (no content
+  // change) is reported as the old path deleted + the new path added, so
+  // a per-file diff for the new path alone would show the *entire* moved
+  // file as newly added lines and flag long-shipped, already-translated
+  // strings as new violations (false positive discovered by PA2-MKT-011,
+  // issue #1281). Rename detection only works when git can see both the
+  // old and new paths together, so the full diff is computed once (not
+  // re-filtered per file via a `-- <path>` pathspec, which would hide the
+  // old path from that comparison and silently disable the rename match)
+  // and then split by file below.
+  const fullDiff = git(['diff', '-M', '-U0', baseSha, headSha]);
+  const diffFileHeaderPattern = /^diff --git a\/.*? b\/(.+)$/;
+
+  const changedFiles = [];
+  const violations = [];
+  let violationCount = 0;
+
+  let currentFile = null;
+  let currentNewLine = 0;
+
+  for (const rawLine of fullDiff.split('\n')) {
+    const fileHeaderMatch = rawLine.match(diffFileHeaderPattern);
+    if (fileHeaderMatch) {
+      currentFile = isWatchedFile(fileHeaderMatch[1]) ? fileHeaderMatch[1] : null;
+      if (currentFile) {
+        changedFiles.push(currentFile);
+      }
+      currentNewLine = 0;
+      continue;
+    }
+
+    if (!currentFile) {
+      continue;
+    }
+
+    const hunkMatch = rawLine.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+    if (hunkMatch) {
+      currentNewLine = parseInt(hunkMatch[1], 10);
+      continue;
+    }
+    if (!rawLine.startsWith('+') || rawLine.startsWith('+++')) {
+      continue;
+    }
+    const content = rawLine.slice(1);
+    const lineNo = currentNewLine;
+    currentNewLine += 1;
+
+    const trimmed = content.trim();
+    if (/^(\/\/|#|\*|<!--)/.test(trimmed)) continue;
+    if (/^\s*(import|export)\s/.test(content)) continue;
+    if (translationCallPattern.test(content)) continue;
+    if (devLogLinePattern.test(content) || todoLinePattern.test(content)) continue;
+
+    stringLiteralPattern.lastIndex = 0;
+    let match;
+    while ((match = stringLiteralPattern.exec(content)) !== null) {
+      const flagged = classifyLiteral(match[2]);
+      if (!flagged) continue;
+      violationCount += 1;
+      violations.push({ file: currentFile, line: lineNo, text: flagged });
+    }
+  }
 
   if (changedFiles.length === 0) {
     console.log('No files under PA2-I18N-014 risk surfaces changed in this diff — nothing to check.');
     return;
-  }
-
-  let violationCount = 0;
-  const violations = [];
-
-  for (const filePath of changedFiles) {
-    const diffOutput = git(['diff', '-U0', baseSha, headSha, '--', filePath]);
-    const lines = diffOutput.split('\n');
-    let currentNewLine = 0;
-
-    for (const rawLine of lines) {
-      const hunkMatch = rawLine.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
-      if (hunkMatch) {
-        currentNewLine = parseInt(hunkMatch[1], 10);
-        continue;
-      }
-      if (!rawLine.startsWith('+') || rawLine.startsWith('+++')) {
-        continue;
-      }
-      const content = rawLine.slice(1);
-      const lineNo = currentNewLine;
-      currentNewLine += 1;
-
-      const trimmed = content.trim();
-      if (/^(\/\/|#|\*|<!--)/.test(trimmed)) continue;
-      if (/^\s*(import|export)\s/.test(content)) continue;
-      if (translationCallPattern.test(content)) continue;
-      if (devLogLinePattern.test(content) || todoLinePattern.test(content)) continue;
-
-      stringLiteralPattern.lastIndex = 0;
-      let match;
-      while ((match = stringLiteralPattern.exec(content)) !== null) {
-        const flagged = classifyLiteral(match[2]);
-        if (!flagged) continue;
-        violationCount += 1;
-        violations.push({ file: filePath, line: lineNo, text: flagged });
-      }
-    }
   }
 
   console.log(`Checked ${changedFiles.length} file(s) under PA2-I18N-014 risk surfaces.`);

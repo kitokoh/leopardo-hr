@@ -63,6 +63,8 @@ tags:
     description: "Onboarding entreprise, checklist de configuration initiale et QR codes."
   - name: "Training"
     description: "Formations, sessions, inscriptions et parcours de developpement."
+  - name: "Marketing"
+    description: "Connexion du compte social (agregateur Ayrshare) et gestion des publications reseaux sociaux d'un tenant."
   - name: "Platform Admin"
     description: "Administration super-admin : gestion tenants, plans, metriques globales."
 
@@ -8286,6 +8288,182 @@ paths:
       security: [{ BearerAuth: [] }]
       responses:
         "200": { description: "Liste des paiements partenaires" }
+
+  # ── Marketing (Ayrshare / reseaux sociaux) ─────────────────────────────────────
+  /marketing/social-account:
+    get:
+      tags: ["Marketing"]
+      summary: "Compte social connecte du tenant"
+      description: "Reserve aux managers principal/marketing (middleware api.manager:marketing,principal)."
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200": { description: "Compte social connecte" }
+        "404": { description: "Aucun compte social connecte pour l'entreprise" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+
+  /marketing/social-account/connect:
+    post:
+      tags: ["Marketing"]
+      summary: "Connecter un compte social (agregateur Ayrshare)"
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [display_name]
+              properties:
+                display_name: { type: string, maxLength: 120 }
+                provider: { type: string, enum: [ayrshare], default: ayrshare }
+      responses:
+        "201": { description: "Compte social connecte (cree ou reactive)" }
+        "422": { $ref: "#/components/responses/Validation422" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+
+  /marketing/social-account/disconnect:
+    post:
+      tags: ["Marketing"]
+      summary: "Deconnecter le compte social du tenant"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200": { description: "Compte social marque comme revoque" }
+        "404": { description: "Aucun compte social connecte pour l'entreprise" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+
+  /marketing/social-posts:
+    get:
+      tags: ["Marketing"]
+      summary: "Lister les publications reseaux sociaux du tenant"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 15 }
+      responses:
+        "200": { description: "Liste paginee des publications" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Marketing"]
+      summary: "Creer une publication (brouillon, ou planifiee/publiee si scheduled_at fourni)"
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content, target_platforms]
+              properties:
+                content: { type: string, maxLength: 5000 }
+                target_platforms:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [linkedin, facebook_page, facebook_group, twitter, instagram, youtube, tiktok, pinterest, reddit, telegram, gmb, bluesky, threads]
+                media_paths:
+                  type: array
+                  items: { type: string, maxLength: 2000 }
+                scheduled_at:
+                  type: string
+                  format: date-time
+                  description: "Optionnel. Absent = brouillon (statut draft). Date future = planifie (statut scheduled), publie automatiquement par le job PublishScheduledSocialPost quand echu."
+      responses:
+        "201": { description: "Publication cree (draft ou scheduled)" }
+        "422": { $ref: "#/components/responses/Validation422" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+
+  /marketing/social-posts/{socialPost}:
+    get:
+      tags: ["Marketing"]
+      summary: "Detail d'une publication"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: "Detail de la publication" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    patch:
+      tags: ["Marketing"]
+      summary: "Modifier une publication (draft uniquement)"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content: { type: string, maxLength: 5000 }
+                target_platforms:
+                  type: array
+                  items:
+                    type: string
+                    enum: [linkedin, facebook_page, facebook_group, twitter, instagram, youtube, tiktok, pinterest, reddit, telegram, gmb, bluesky, threads]
+                media_paths:
+                  type: array
+                  items: { type: string, maxLength: 2000 }
+      responses:
+        "200": { description: "Publication mise a jour" }
+        "422": { $ref: "#/components/responses/Validation422" }
+        "403": { description: "Publication deja publiee, non modifiable (SocialPostPolicy::update)" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "401": { $ref: "#/components/responses/Error401" }
+    delete:
+      tags: ["Marketing"]
+      summary: "Supprimer une publication (draft uniquement)"
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: "Publication supprimee" }
+        "403": { description: "Publication deja publiee, non supprimable" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "401": { $ref: "#/components/responses/Error401" }
+
+  /marketing/social-posts/{socialPost}/publish:
+    post:
+      tags: ["Marketing"]
+      summary: "Publier immediatement ou (re)planifier une publication"
+      description: "scheduled_at absent = publication immediate via l'agregateur Ayrshare (SocialPublishingService::publishNow) ; scheduled_at futur = planification (statut scheduled), publie automatiquement par le job PublishScheduledSocialPost quand echu."
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scheduled_at: { type: string, format: date-time }
+      responses:
+        "200": { description: "Publication publiee ou (re)planifiee" }
+        "422": { $ref: "#/components/responses/Validation422" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
 
   # ── Onboarding Setup ─────────────────────────────────────────────────────────
   /onboarding-setup/checklist:
