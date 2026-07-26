@@ -404,7 +404,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
      * dropped just because no direct hierarchy has been configured yet.
      * Never includes the employee themself.
      *
-     * @return Collection<int, self>
+     * @return Collection<int, static>
      */
     public function resolveAlertRecipients(): Collection
     {
