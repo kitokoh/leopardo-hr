@@ -1,4 +1,6 @@
+import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
@@ -27,19 +29,29 @@ class AttendanceRepository {
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
-    final response = await apiClient.requestWithRetry(
-      '/attendance/check-in',
-      method: 'POST',
-      data: {
-        'device_timezone': _deviceTimezoneContext(),
-        if (gpsLat != null) 'gps_lat': gpsLat,
-        if (gpsLng != null) 'gps_lng': gpsLng,
-        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
-      },
-      maxRetriesOverride: 0,
-      timeoutOverride: _actionTimeout,
-    );
-    return AttendanceLog.fromJson(_dataMap(response.data));
+    final payload = {
+      'device_timezone': _deviceTimezoneContext(),
+      if (gpsLat != null) 'gps_lat': gpsLat,
+      if (gpsLng != null) 'gps_lng': gpsLng,
+      if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+    };
+
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/attendance/check-in',
+        method: 'POST',
+        data: payload,
+        maxRetriesOverride: 0,
+        timeoutOverride: _actionTimeout,
+      );
+      return AttendanceLog.fromJson(_dataMap(response.data));
+    } catch (e) {
+      if (_isOfflineError(e)) {
+        await _saveOfflinePunch('check-in', payload);
+        return _offlinePendingLog(checkIn: true);
+      }
+      rethrow;
+    }
   }
 
   Future<AttendanceLog> checkOut({
@@ -47,19 +59,68 @@ class AttendanceRepository {
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
-    final response = await apiClient.requestWithRetry(
-      '/attendance/check-out',
-      method: 'POST',
-      data: {
-        'device_timezone': _deviceTimezoneContext(),
-        if (gpsLat != null) 'gps_lat': gpsLat,
-        if (gpsLng != null) 'gps_lng': gpsLng,
-        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
-      },
-      maxRetriesOverride: 0,
-      timeoutOverride: _actionTimeout,
+    final payload = {
+      'device_timezone': _deviceTimezoneContext(),
+      if (gpsLat != null) 'gps_lat': gpsLat,
+      if (gpsLng != null) 'gps_lng': gpsLng,
+      if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+    };
+
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/attendance/check-out',
+        method: 'POST',
+        data: payload,
+        maxRetriesOverride: 0,
+        timeoutOverride: _actionTimeout,
+      );
+      return AttendanceLog.fromJson(_dataMap(response.data));
+    } catch (e) {
+      if (_isOfflineError(e)) {
+        await _saveOfflinePunch('check-out', payload);
+        return _offlinePendingLog(checkIn: false);
+      }
+      rethrow;
+    }
+  }
+
+  /// Mirrors the fallback used by `leopardo_employee`'s
+  /// `AttendanceRepository`: on a network failure, queue the punch in the
+  /// same `offline_punches` Hive box so [OfflineSyncService] (wired up in
+  /// `leopardo_core`) can replay it once connectivity returns, instead of
+  /// letting the raw `ApiException` reach the UI and lose the punch
+  /// (issue #1289).
+  static bool _isOfflineError(Object e) {
+    return e is ApiException &&
+        (e.message.toLowerCase().contains('connexion') ||
+            e.message.toLowerCase().contains('internet'));
+  }
+
+  static Future<void> _saveOfflinePunch(
+    String type,
+    Map<String, dynamic> payload,
+  ) async {
+    final box = Hive.isBoxOpen('offline_punches')
+        ? Hive.box<Map<dynamic, dynamic>>('offline_punches')
+        : await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+    await box.add({
+      'type': type,
+      'payload': payload,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+  }
+
+  static AttendanceLog _offlinePendingLog({required bool checkIn}) {
+    final now = DateTime.now();
+    return AttendanceLog(
+      id: 0,
+      employeeId: 0,
+      date: DateTime(now.year, now.month, now.day),
+      status: 'offline_sync_pending',
+      employeeName: 'Vous',
+      checkIn: checkIn ? now : null,
+      checkOut: checkIn ? null : now,
     );
-    return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
   Future<AttendanceLog> updateAttendanceLog({

@@ -292,6 +292,10 @@ class LeopardoApp extends ConsumerWidget {
               .read(pushNotificationServiceProvider)
               .initialize(apiClient: ref.read(apiClientProvider)),
         );
+        // Replay any check-in/check-out saved offline while disconnected
+        // (issue #1289): without this the offline_punches Hive box is
+        // never drained.
+        unawaited(ref.read(offlineSyncServiceProvider).init());
       }
     });
 
