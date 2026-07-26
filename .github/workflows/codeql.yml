@@ -2,7 +2,7 @@ name: CodeQL - Leopardo RH
 
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [main]
   push:
     branches: [main]
   schedule:
