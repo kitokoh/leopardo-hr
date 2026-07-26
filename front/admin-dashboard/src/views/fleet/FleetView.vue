@@ -71,6 +71,12 @@
         <StatusBadge :status="value" :map="severityMap" />
       </template>
     </DataTable>
+
+    <VehicleDetailModal
+      v-if="selectedVehicleId"
+      :vehicle-id="selectedVehicleId"
+      @close="selectedVehicleId = null"
+    />
   </div>
 </template>
 
@@ -80,12 +86,14 @@ import api, { downloadApiFile } from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import VehicleDetailModal from '@/components/fleet/VehicleDetailModal.vue'
 
 const loading = ref(false)
 const error = ref('')
 const vehicles = ref([])
 const alerts = ref([])
 const activeTab = ref('map')
+const selectedVehicleId = ref(null)
 const mapContainer = ref(null)
 let leafletMap = null
 
@@ -186,7 +194,9 @@ async function fetchData() {
   }
 }
 
-function viewVehicle(id) { /* TODO: detail modal */ }
+function viewVehicle(id) {
+  selectedVehicleId.value = id
+}
 function exportVehicles() { downloadApiFile('/v1/export/vehicles?format=csv', 'vehicles.csv') }
 
 onMounted(async () => {
