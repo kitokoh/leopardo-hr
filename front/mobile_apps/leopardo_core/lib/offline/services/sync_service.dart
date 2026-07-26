@@ -17,7 +17,8 @@ class SyncService {
   final Dio _dio;
   final String _edgeBaseUrl;   // e.g. http://leopardo.local:7878
   final String _cloudBaseUrl;  // e.g. https://api.leopardo.app
-  final String _edgeToken;
+  final String _edgeNodeId;    // Cloud-issued UUID for this Edge node
+  final String _edgeToken;     // Bearer secret, distinct from _edgeNodeId
 
   SyncMode _currentMode = SyncMode.offline;
   Timer? _syncTimer;
@@ -32,11 +33,13 @@ class SyncService {
     required Dio dio,
     required String edgeBaseUrl,
     required String cloudBaseUrl,
+    required String edgeNodeId,
     required String edgeToken,
   })  : _db = db,
         _dio = dio,
         _edgeBaseUrl = edgeBaseUrl,
         _cloudBaseUrl = cloudBaseUrl,
+        _edgeNodeId = edgeNodeId,
         _edgeToken = edgeToken;
 
   /// Initialise connectivity monitoring + periodic sync.
@@ -137,9 +140,12 @@ class SyncService {
         }).toList();
 
         try {
-          final target = _currentMode == SyncMode.cloud
-              ? '$_cloudBaseUrl/api/v1/edge-node/${_edgeToken.substring(0, 8)}/push'
-              : '$_edgeBaseUrl/api/v1/edge/push';
+          // Both the Cloud API and the local Edge node instance expose the
+          // same EdgeSync module routes (the Edge box runs the same Laravel
+          // app image), so the path is identical — only the base URL and
+          // the real edgeNodeId (a Cloud-issued UUID, distinct from the
+          // bearer edgeToken) differ.
+          final target = '${_activeBaseUrl()}/api/v1/edge-node/$_edgeNodeId/push';
 
           await _dio.post(
             target,
@@ -170,11 +176,13 @@ class SyncService {
     return SyncResult.success(sent: sent, failed: failed);
   }
 
+  /// The Cloud or Edge base URL currently in use, matching [_currentMode].
+  String _activeBaseUrl() =>
+      _currentMode == SyncMode.cloud ? _cloudBaseUrl : _edgeBaseUrl;
+
   Future<void> _pullDelta() async {
     try {
-      final url = _currentMode == SyncMode.cloud
-          ? '$_cloudBaseUrl/api/v1/edge-node/${_edgeToken.substring(0, 8)}/pull'
-          : '$_edgeBaseUrl/api/v1/edge/pull';
+      final url = '${_activeBaseUrl()}/api/v1/edge-node/$_edgeNodeId/pull';
 
       final response = await _dio.get(
         url,
