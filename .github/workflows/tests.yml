@@ -3,14 +3,14 @@ name: Tests - Leopardo RH
 on:
   workflow_dispatch:
   pull_request:
-    branches: [develop, main]
+    branches: [main]
     paths:
       - 'api/**'
       - 'front/admin-dashboard/**'
       - '.github/workflows/tests.yml'
       - '.github/workflows/phpstan-baseline.yml'
   push:
-    branches: [develop, main]
+    branches: [main]
     paths:
       - 'api/**'
       - 'front/admin-dashboard/**'

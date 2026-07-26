@@ -3,7 +3,7 @@ name: Backend Jobs CI
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
     paths:
       - 'api/app/Jobs/**'
       - 'api/app/Listeners/**'

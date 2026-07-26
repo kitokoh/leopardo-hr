@@ -3,12 +3,12 @@ name: Web CI - Leopardo Admin
 on:
   workflow_dispatch:
   push:
-    branches: [main, develop, staging]
+    branches: [main]
     paths:
       - 'front/admin-dashboard/**'
       - '.github/workflows/web-ci.yml'
   pull_request:
-    branches: [main, develop, staging]
+    branches: [main]
     paths:
       - 'front/admin-dashboard/**'
       - '.github/workflows/web-ci.yml'

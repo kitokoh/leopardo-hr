@@ -10,7 +10,7 @@ name: Backend Coverage Gate
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 permissions:
   contents: read

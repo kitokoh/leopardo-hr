@@ -3,7 +3,7 @@ name: Mobile Apps CI - Flutter
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
     paths:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
@@ -19,7 +19,7 @@ on:
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - '.github/workflows/mobile-apps-ci.yml'
   push:
-    branches: [main, develop]
+    branches: [main]
     paths:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
