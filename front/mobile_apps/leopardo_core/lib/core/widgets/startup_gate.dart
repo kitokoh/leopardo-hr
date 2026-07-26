@@ -176,7 +176,7 @@ class _StartupGateState extends State<StartupGate> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            if (_startupWarning == null)
+                            if (_startupWarning == null) ...[
                               const SizedBox(
                                 width: 24,
                                 height: 24,
@@ -186,7 +186,20 @@ class _StartupGateState extends State<StartupGate> {
                                     Color(0xFF10B981),
                                   ),
                                 ),
-                              )
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Ouverture de votre espace...',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(
+                                    0xFFBBCABF,
+                                  ), // on-surface-variant
+                                  fontSize: 14,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ]
                             else
                               Text(
                                 _startupWarning!,
