@@ -162,7 +162,10 @@ import {
   ChartPieIcon,
   ShieldCheckIcon,
   FunnelIcon,
-  LifebuoyIcon
+  LifebuoyIcon,
+  ServerIcon,
+  ArrowTrendingUpIcon,
+  ChartBarSquareIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -304,6 +307,24 @@ const navigation = computed(() => [
     title: 'Pipeline CRM',
     path: '/crm/pipeline',
     icon: FunnelIcon
+  },
+  {
+    name: 'predictions',
+    title: 'Dashboard Prédictif IA',
+    path: '/predictions',
+    icon: ChartBarSquareIcon
+  },
+  {
+    name: 'growth',
+    title: 'Administration Growth',
+    path: '/growth',
+    icon: ArrowTrendingUpIcon
+  },
+  {
+    name: 'edge',
+    title: 'Edge Nodes',
+    path: '/edge',
+    icon: ServerIcon
   },
   {
     name: 'system',
