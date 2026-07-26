@@ -11,9 +11,19 @@ class OfflineSyncService {
 
   OfflineSyncService(this.apiClient, this.connectivity);
 
+  bool _initialized = false;
+
   Future<void> init() async {
-    _offlineBox = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
-    
+    // Guard against being called more than once for the same instance
+    // (e.g. logout followed by a fresh login in the same app session):
+    // without this, each call would attach another connectivity listener.
+    if (_initialized) return;
+    _initialized = true;
+
+    _offlineBox = Hive.isBoxOpen('offline_punches')
+        ? Hive.box<Map<dynamic, dynamic>>('offline_punches')
+        : await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+
     // Listen to network changes
     _connectivitySub = connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
       if (results.any((result) => result != ConnectivityResult.none)) {
