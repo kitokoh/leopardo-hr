@@ -1,6 +1,8 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/location/attendance_location_service.dart';
+import 'package:leopardo_core/core/services/offline_sync_service.dart';
 import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
@@ -42,6 +44,16 @@ final pushNotificationServiceProvider = Provider<PushNotificationService>((
   ref,
 ) {
   return PushNotificationService();
+});
+
+/// Replays the `offline_punches` Hive box written by [AttendanceRepository]
+/// (see issue #1290) whenever connectivity comes back. Without this, offline
+/// check-in/check-out attempts stay stuck in Hive forever.
+final offlineSyncServiceProvider = Provider<OfflineSyncService>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  final service = OfflineSyncService(apiClient, Connectivity());
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final attendanceLocationServiceProvider = Provider<AttendanceLocationService>((
