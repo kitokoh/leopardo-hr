@@ -8,7 +8,7 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 
 ## Regles obligatoires
 
-- **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/` (ex: `docs/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
+- **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
 
 - Avant de travailler sur une branche existante, faire `git fetch origin main` puis comparer avec `origin/main`.
 - `main` distant est la source de verite. Le local doit rester aligne sur `origin/main` apres chaque intervention terminee.
