@@ -1,6 +1,7 @@
 ## 📝 Pull Request Overview
 
 **Issue Reference:** Fixes #
+> ⚠️ **Obligatoire (PA2-OPS-008) :** cette PR doit obligatoirement inclure `Closes #XXX` (ou `Fixes #XXX` / `Resolves #XXX`) dans son titre ou sa description, sauf si elle est explicitement typee `docs:`/`chore:`. Un garde CI bloquant (`.github/workflows/plan-action2-claim-guard.yml`, `dev-hub/tools/check-pr-closes-issue.sh`) refuse toute PR qui ne le fait pas.
 **Category:** [Feature / Bug Fix / Documentation / Refactor]
 **PA2 Ticket ID:** `PA2-XXX-000` (laisser vide/supprimer si cette PR ne livre aucun ticket du backlog `docs/PLAN_ACTION2/`; voir PA2-AUTO-004 pour le garde CI correspondant)
 

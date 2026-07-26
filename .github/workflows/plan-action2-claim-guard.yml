@@ -12,6 +12,12 @@ name: PLAN_ACTION2 Claim Guard
 # PR sans aucun ID PA2-* et non explicitement typee docs:/chore:, pour que
 # les PR de backlog produit sans ticket trace restent visibles au reviewer
 # meme si elles ne collisionnent avec rien (donc invisibles au garde #1).
+#
+# PA2-OPS-008: troisieme garde, BLOQUANTE cette fois (contrairement au garde
+# #2 ci-dessus), qui refuse toute PR qui ne reference aucune issue GitHub
+# fermee ('Closes #XXX'/'Fixes #XXX'/'Resolves #XXX'), sauf typage docs:/
+# chore:. Grave dans le marbre la methodologie "GitHub Issues comme source
+# de verite" au lieu des anciens dossiers PLAN_ACTION.
 
 on:
   pull_request:
@@ -42,3 +48,10 @@ jobs:
         run: |
           chmod +x dev-hub/tools/check-plan-action2-pr-id.sh
           dev-hub/tools/check-plan-action2-pr-id.sh "${{ github.repository }}" "${{ github.event.pull_request.number }}"
+
+      - name: Require the PR to close a GitHub Issue (PA2-OPS-008)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/check-pr-closes-issue.sh
+          dev-hub/tools/check-pr-closes-issue.sh "${{ github.repository }}" "${{ github.event.pull_request.number }}"
