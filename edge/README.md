@@ -52,6 +52,16 @@ docker compose exec edge-api php artisan edge:sync-daemon
 docker compose ps
 ```
 
+## Dockerfiles
+
+This directory has three Dockerfiles with distinct roles — do not assume they are interchangeable:
+
+| File                  | Used by                          | Purpose                                                        |
+|-----------------------|-----------------------------------|-----------------------------------------------------------------|
+| `Dockerfile.edge`     | `edge/docker-compose.yml`         | Local/dev image (`edge-api`, `edge-ui` services), php-fpm + nginx + supervisor |
+| `Dockerfile.publish`  | `edge/publish.sh`                 | Production image published to Docker Hub as `leopardo/edge-api` |
+| `Dockerfile`          | *(not currently wired in)*        | Standalone FrankenPHP + embedded PWA reference image; build manually if needed |
+
 ## Sécurité
 
 - Licence JWT (RS256) signée par Leopardo Cloud
