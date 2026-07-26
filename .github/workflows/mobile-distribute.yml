@@ -139,8 +139,15 @@ jobs:
       - name: Validate required secrets for staging distribution
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
         shell: bash
+        # actions/excessive-secrets-exposure: dynamic secrets[matrix.app.firebase_secret]
+        # lookups make the runner receive every org/repo secret because GitHub
+        # cannot statically tell which one will be read. The static ternary below
+        # only ever resolves to one literal `secrets.NAME` reference per matrix
+        # value, so only the 4 Firebase app-id secrets (plus FIREBASE_TOKEN) are
+        # exposed to this job, matching the CodeQL rule's own "Correct Usage"
+        # example (per-branch literal secret access instead of dynamic indexing).
         env:
-          FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
@@ -157,11 +164,13 @@ jobs:
       - name: Validate app Firebase config presence
         if: env.SHOULD_BUILD == 'true'
         shell: bash
+        # actions/excessive-secrets-exposure: see rationale on the
+        # "Validate required secrets for staging distribution" step above.
         env:
           PROJECT_PATH: ${{ matrix.app.project_path }}
           APP_NAME: ${{ matrix.app.name }}
           ANDROID_PACKAGE: ${{ matrix.app.android_package }}
-          FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
           set -euo pipefail
@@ -275,8 +284,10 @@ jobs:
       - name: Firebase App Distribution (staging)
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
         uses: wzieba/Firebase-Distribution-Github-Action@v1
+        # actions/excessive-secrets-exposure: see rationale on the
+        # "Validate required secrets for staging distribution" step above.
         with:
-          appId: ${{ secrets[matrix.app.firebase_secret] }}
+          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testeurs-internes
           file: ${{ env.BUILD_FILE }}
@@ -289,8 +300,10 @@ jobs:
       - name: Verify Firebase App Distribution release is visible
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
         shell: bash
+        # actions/excessive-secrets-exposure: see rationale on the
+        # "Validate required secrets for staging distribution" step above.
         env:
-          FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           FIREBASE_READBACK_REQUIRED: ${{ secrets.FIREBASE_READBACK_REQUIRED }}
