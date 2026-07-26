@@ -97,7 +97,7 @@ class EdgeController extends Controller
         fi
 
         if [ ! -f keys/edge_license_public.pem ]; then
-            echo "🔑 Téléchargement de la clé publique de licence..."
+            echo "🔑 Retrieving Edge license public key..."
             curl -fsSL "\$CLOUD_API_URL/edge/license-public-key" -o keys/edge_license_public.pem
         fi
 
