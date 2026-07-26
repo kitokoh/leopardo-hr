@@ -6,6 +6,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
@@ -219,6 +220,11 @@ class KioskController extends Controller
                     'status' => $todayAttendance->status,
                 ] : null,
                 'leave_balances' => $leaveBalance,
+                // PA2-KIO-004: surface the employee's mobile-submitted biometric
+                // enrollment consent/status on the kiosk so field staff can see
+                // at a glance whether biometric punch is enabled/pending/rejected
+                // for this employee, without leaving the kiosk screen.
+                'biometric_enrollment' => $this->serializeBiometricEnrollmentStatus($employee),
             ],
         ]);
     }
@@ -421,6 +427,46 @@ class KioskController extends Controller
             'status' => $kiosk->status,
             'biometric_mode' => $kiosk->biometric_mode,
             'trusted_device_label' => $kiosk->trusted_device_label,
+        ];
+    }
+
+    /**
+     * PA2-KIO-004: build a compact biometric consent/enrollment status block
+     * for the kiosk employee-info screen.
+     *
+     * Reports whether face/fingerprint biometrics are already enabled for
+     * punch (with the consent timestamp collected via the mobile enrollment
+     * flow), and the state of the most recent enrollment request submitted
+     * from the employee's mobile app (pending manager approval, approved,
+     * or rejected) so kiosk operators know why biometric punch may not be
+     * available yet for a given employee.
+     */
+    /**
+     * @return array{face_enabled: bool, fingerprint_enabled: bool, consented_at: string|null, pending_request: bool, latest_request_status: string|null, latest_request_submitted_at: string|null}
+     */
+    private function serializeBiometricEnrollmentStatus(Employee $employee): array
+    {
+        $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
+        $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
+
+        $faceEnabled = $hasFaceColumn ? (bool) ($employee->biometric_face_enabled ?? false) : false;
+        $fingerprintEnabled = $hasFingerprintColumn ? (bool) ($employee->biometric_fingerprint_enabled ?? false) : false;
+
+        $latestRequest = null;
+        if (Schema::hasTable('biometric_enrollment_requests')) {
+            $latestRequest = BiometricEnrollmentRequest::query()
+                ->where('employee_id', $employee->id)
+                ->latest('id')
+                ->first();
+        }
+
+        return [
+            'face_enabled' => $faceEnabled,
+            'fingerprint_enabled' => $fingerprintEnabled,
+            'consented_at' => $this->nullableIsoString($employee->biometric_consent_at ?? null),
+            'pending_request' => $latestRequest && $latestRequest->status === 'pending',
+            'latest_request_status' => $latestRequest?->status,
+            'latest_request_submitted_at' => $latestRequest ? $this->nullableIsoString($latestRequest->submitted_at) : null,
         ];
     }
 
