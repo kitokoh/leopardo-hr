@@ -8,6 +8,7 @@
 
 | Règle | Pourquoi |
 |-------|----------|
+| Créer des tickets ou coder un nouveau module sans fichier de spécification `docs/` | La conception doit être validée avant l'exécution |
 | Créer des fichiers dans `docs/PLAN_ACTION2/` ou `docs/PLAN_ACTION/` | Archivés. Le backlog est sur GitHub Issues |
 | Lire les dossiers `docs/archive/` pour chercher du travail | Obsolètes. Utilise `gh issue list` |
 | Merger une PR avec des checks CI rouges | Main doit rester vert |
