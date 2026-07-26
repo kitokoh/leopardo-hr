@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property array<mixed> $repayment_plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property 'pending'|'manager_approved'|'payment_declared'|'employee_confirmed'|'disputed'|'rejected' $validation_status Fine-grained double-validation state; the `disputed` value was added by the 2026_07_24_000001 migration on top of the original 2026_05_31_000001 enum column, so it must be declared explicitly here (Larastan otherwise infers the type from the original migration's enum definition only).
  *
  * @mixin Builder<static>
  */

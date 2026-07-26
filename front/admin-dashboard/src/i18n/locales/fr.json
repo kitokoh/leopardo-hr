@@ -40,7 +40,22 @@
     "personal_account": {
       "create": "Creer un compte personnel",
       "explanation": "Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace."
-    }
+    },
+    "back_tooltip": "Retour",
+    "employee_login_subtitle": "Connexion employe",
+    "manager_login_subtitle": "Connexion Manager / RH",
+    "email_professional_label": "Email professionnel",
+    "email_label": "Email",
+    "email_required": "Email obligatoire",
+    "email_invalid": "Email invalide",
+    "password_label": "Mot de passe",
+    "password_required": "Mot de passe obligatoire",
+    "password_too_short": "Mot de passe trop court",
+    "continue_with_google": "Continuer avec Google",
+    "activate_invitation": "Activer mon invitation",
+    "personal_account_link": "Compte perso",
+    "activate_manager_access": "Activer mon acces manager",
+    "try_demo_account": "Tester avec un compte demo"
   },
   "common": {
     "language": {
@@ -55,7 +70,8 @@
         "en-US": "Anglais (Etats-Unis)",
         "en-GB": "Anglais (Royaume-Uni)"
       }
-    }
+    },
+    "or": "ou"
   },
   "modules": {
     "attendance": "Pointage",
@@ -63,6 +79,79 @@
     "cabinet": "Coffre documentaire",
     "notifications": "Notifications",
     "evaluations": "Evaluations"
+  },
+  "emails": {
+    "invitation": {
+      "subject": "Vous etes invite(e) a rejoindre :company sur Leopardo RH",
+      "greeting": "Bonjour :name,",
+      "body": "Vous avez ete invite(e) a rejoindre :company. Cliquez sur le lien ci-dessous pour activer votre compte.",
+      "action": "Activer mon compte",
+      "footer": "Si vous n avez pas demande cette action, ignorez cet email."
+    },
+    "reset_password": {
+      "subject": "Reinitialisation de votre mot de passe",
+      "greeting": "Bonjour :name,",
+      "body": "Cliquez sur le lien ci-dessous pour reinitialiser votre mot de passe.",
+      "action": "Reinitialiser le mot de passe",
+      "footer": "Si vous n avez pas demande cette action, ignorez cet email."
+    },
+    "payroll_ready": {
+      "subject": "Votre bulletin de paie est disponible",
+      "greeting": "Bonjour :name,",
+      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo RH.",
+      "action": "Voir mon bulletin",
+      "footer": "Merci de verifier vos informations avant export comptable."
+    },
+    "absence_approved": {
+      "subject": "Votre absence a ete approuvee",
+      "greeting": "Bonjour :name,",
+      "body": "Votre demande d absence pour :period a ete approuvee.",
+      "action": "Voir la demande",
+      "footer": "Le planning equipe a ete mis a jour."
+    },
+    "absence_rejected": {
+      "subject": "Votre absence a ete refusee",
+      "greeting": "Bonjour :name,",
+      "body": "Votre demande d absence pour :period a ete refusee.",
+      "action": "Voir la demande",
+      "footer": "Consultez votre manager si vous avez besoin d un complement."
+    }
+  },
+  "profile": {
+    "title": "Mon profil",
+    "subtitle": "Informations personnelles et langue",
+    "loading": "Chargement du profil...",
+    "back_tooltip": "Retour",
+    "job_title_unset": "Poste non renseigne",
+    "details_title": "Informations",
+    "email_label": "Email",
+    "department_label": "Departement",
+    "job_title_label": "Poste",
+    "matricule_label": "Matricule",
+    "value_unset": "Non renseigne",
+    "open_settings": "Ouvrir les parametres du compte",
+    "language_updated": "Langue mise a jour.",
+    "language_saving": "Mise a jour...",
+    "language_save": "Mettre a jour la langue"
+  },
+  "ai_chat": {
+    "title": "Assistant IA",
+    "back_tooltip": "Retour",
+    "send_tooltip": "Envoyer",
+    "input_hint": "Tapez votre message...",
+    "empty_state_title": "Posez vos questions RH",
+    "error_message": "Erreur : impossible de contacter l assistant."
+  },
+  "platform_login": {
+    "title": "Leopardo Platform",
+    "subtitle": "Cockpit mobile reserve a l administration de la plateforme.",
+    "2fa_notice": "Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.",
+    "email_label": "Email super-admin",
+    "email_required": "Email requis",
+    "password_required": "Mot de passe requis",
+    "2fa_label": "Code 2FA si active",
+    "submitting": "Connexion...",
+    "use_demo_account": "Utiliser le compte demo"
   },
   "users": {
     "page": {
@@ -155,43 +244,6 @@
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
-    }
-  },
-  "emails": {
-    "invitation": {
-      "subject": "Vous etes invite(e) a rejoindre :company sur Leopardo RH",
-      "greeting": "Bonjour :name,",
-      "body": "Vous avez ete invite(e) a rejoindre :company. Cliquez sur le lien ci-dessous pour activer votre compte.",
-      "action": "Activer mon compte",
-      "footer": "Si vous n avez pas demande cette action, ignorez cet email."
-    },
-    "reset_password": {
-      "subject": "Reinitialisation de votre mot de passe",
-      "greeting": "Bonjour :name,",
-      "body": "Cliquez sur le lien ci-dessous pour reinitialiser votre mot de passe.",
-      "action": "Reinitialiser le mot de passe",
-      "footer": "Si vous n avez pas demande cette action, ignorez cet email."
-    },
-    "payroll_ready": {
-      "subject": "Votre bulletin de paie est disponible",
-      "greeting": "Bonjour :name,",
-      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo RH.",
-      "action": "Voir mon bulletin",
-      "footer": "Merci de verifier vos informations avant export comptable."
-    },
-    "absence_approved": {
-      "subject": "Votre absence a ete approuvee",
-      "greeting": "Bonjour :name,",
-      "body": "Votre demande d absence pour :period a ete approuvee.",
-      "action": "Voir la demande",
-      "footer": "Le planning equipe a ete mis a jour."
-    },
-    "absence_rejected": {
-      "subject": "Votre absence a ete refusee",
-      "greeting": "Bonjour :name,",
-      "body": "Votre demande d absence pour :period a ete refusee.",
-      "action": "Voir la demande",
-      "footer": "Consultez votre manager si vous avez besoin d un complement."
     }
   }
 }
