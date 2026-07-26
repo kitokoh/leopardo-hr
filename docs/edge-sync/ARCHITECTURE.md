@@ -154,33 +154,44 @@ LocalDepartments     -- Cache départements
 
 ### 5.1 Push (Edge → Cloud)
 ```
-Edge SQLite (sync_queue: pending)
+Edge SQLite (sync_queue: pending)          [Edge, edge:sync-daemon]
     ↓
-SyncEngineService::push()
+EdgeDaemonSyncClient::push()               [Edge]
     ↓
-Batch par 100 records
+Batch par 100 records, HTTP réel (Http::withToken)
     ↓
-POST /api/v1/edge-node/{id}/push
+POST /api/v1/edge-node/{id}/push           [Edge → Cloud, over the wire]
     ↓
-ProcessSyncQueueJob (async)
+EdgeNodeController::pushFromEdge()         [Cloud]
     ↓
-applyToCloud() avec résolution de conflits
+ProcessSyncQueueJob (async)                [Cloud]
+    ↓
+SyncEngineService::applyToCloud() avec résolution de conflits  [Cloud only]
     ↓
 sync_queue: status = synced | conflict | failed
 ```
 
 ### 5.2 Pull (Cloud → Edge)
 ```
-SyncEngineService::pull()
+EdgeDaemonSyncClient::pull()               [Edge, edge:sync-daemon]
     ↓
-GET /api/v1/edge-node/{id}/pull
+GET /api/v1/edge-node/{id}/pull, HTTP réel (Http::withToken)
     ↓
-CloudDeltaBuilder::build() → delta depuis last_sync_at
+EdgeNodeController::pullDelta()            [Cloud]
     ↓
-Edge applique le delta localement
+CloudDeltaBuilder::build() → delta depuis last_sync_at  [Cloud]
     ↓
-edge_nodes.last_sync_at = now()
+Edge applique le delta localement (upsert SQLite)
+    ↓
+edge_nodes.last_sync_at = now()            [Cloud]
 ```
+
+> **Note d'architecture (issue #1286)** : `SyncEngineService` (push/pull) ne
+> s'exécute **jamais** côté Edge — c'est un service Cloud-only, invoqué
+> uniquement par `EdgeNodeController`/`ProcessSyncQueueJob` en réponse à un
+> vrai appel HTTP entrant. Le daemon Edge (`edge:sync-daemon`) utilise
+> `EdgeDaemonSyncClient`, qui effectue le push/pull HTTP réel vers le Cloud
+> au lieu d'écrire directement dans une base de données locale.
 
 ### 5.3 Flutter Sync
 ```
