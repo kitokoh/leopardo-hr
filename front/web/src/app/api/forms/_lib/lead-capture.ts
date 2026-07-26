@@ -1,6 +1,34 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 type MarketingLeadType = 'signup' | 'demo_request' | 'newsletter' | 'contact';
+
+/**
+ * Whether marketing forms are enabled for the vitrine, mirroring
+ * `NEXT_PUBLIC_ENABLE_FORMS` (see `modules/vitrine/lib/env.ts`). Read
+ * directly from `process.env` here (not `getEnvConfig()`) because this
+ * runs in the Next.js API route runtime, not the vitrine module tree.
+ * Defaults to enabled to preserve current behavior when unset.
+ */
+export function areFormsEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_ENABLE_FORMS !== 'false';
+}
+
+/**
+ * Standard 503 response returned by every `/api/forms/*` route when
+ * `NEXT_PUBLIC_ENABLE_FORMS=false` (issue #1305: the flag was previously
+ * defined but never enforced anywhere, so submissions always succeeded
+ * regardless of its value).
+ */
+export function formsDisabledResponse(): NextResponse {
+  return NextResponse.json(
+    {
+      success: false,
+      message: 'Les formulaires sont temporairement desactives.',
+      error: 'FORMS_DISABLED',
+    },
+    { status: 503 }
+  );
+}
 
 export type MarketingLeadPayload = {
   type: MarketingLeadType;
