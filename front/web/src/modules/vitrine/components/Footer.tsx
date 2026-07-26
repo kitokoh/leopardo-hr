@@ -10,6 +10,7 @@ const SOCIAL_LINKS = [
   { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
 ]
 import { NewsletterForm } from './NewsletterForm'
+import { getEnvConfig } from '../lib/env'
 
 function getFooterHref(sectionIndex: number, linkIndex: number): string {
   const key = `${sectionIndex}-${linkIndex}`
@@ -50,6 +51,9 @@ function getFooterHref(sectionIndex: number, linkIndex: number): string {
 export function Footer() {
   const { copy, locale, options } = useVitrineLocale()
   const activeLocale = options.find((option) => option.value === locale)
+  // The Blog link ('1-2' -> /blog) is hidden when NEXT_PUBLIC_ENABLE_BLOG is
+  // disabled, since the route itself now 404s in that case (issue #1305).
+  const { enableBlog } = getEnvConfig()
 
   return (
     <footer className="relative bg-white dark:bg-slate-950 border-t border-slate-200/80 dark:border-slate-800/80">
@@ -90,6 +94,7 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {section.links.map((link, linkIndex) => {
                   const href = getFooterHref(index, linkIndex)
+                  if (href === '/blog' && !enableBlog) return null
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
