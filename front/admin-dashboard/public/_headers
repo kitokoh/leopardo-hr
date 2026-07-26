@@ -1,0 +1,37 @@
+# Cloudflare Pages custom headers.
+# https://developers.cloudflare.com/pages/configuration/headers/
+#
+# Vite copies everything under public/ verbatim into dist/, so this file
+# ships to dist/_headers and Cloudflare Pages picks it up automatically on
+# deploy — no build-step wiring required.
+#
+# Issue #1300: front/admin-dashboard had zero security headers at all
+# (it's a static SPA served via Cloudflare Pages, so there's no Vite/Node
+# server config to attach them to). This adds the same baseline security
+# headers front/web already has via next.config.ts/vercel.json, plus a
+# Content-Security-Policy.
+#
+# The CSP starts in Report-Only mode: violations get logged to the browser
+# console without breaking anything while we watch a report. Once a
+# production report is clean, switch the header key below from
+# `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
+# enforce it.
+#
+# Origins referenced below come from what the admin dashboard actually
+# loads/calls today:
+#  - connect-src: VITE_API_URL (REST) and VITE_WEBSOCKET_URL (Socket.IO
+#    realtime notifications, see src/stores/realtime.js) both point at the
+#    Render-hosted Cloud API by default; wildcarded to https:/wss: so any
+#    tenant-configured backend origin still works without editing this file.
+#  - img-src: ui-avatars.com (generated user avatars) and OpenStreetMap tile
+#    servers (Leaflet fleet map, src/views/fleet/FleetView.vue).
+#  - style-src/font-src: Google Fonts (Inter, loaded via <link> in
+#    index.html).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
