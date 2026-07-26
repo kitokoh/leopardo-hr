@@ -57,7 +57,7 @@ class EdgeOfflineScenarioTest extends TestCase
             'edge_version' => '1.0.0',
             'capabilities' => ['features' => ['attendance', 'absence']],
             'license_expires_at' => now()->addDays(30),
-            'metadata' => ['edge_token' => 'offline-test-token'],
+            'metadata' => ['edge_token' => hash('sha256', 'offline-test-token')],
         ]);
     }
 

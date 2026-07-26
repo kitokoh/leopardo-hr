@@ -71,7 +71,11 @@ class EdgeNodeController extends Controller
             'edge_version'       => '1.0.0',
             'capabilities'       => $validated['capabilities'] ?? [],
             'license_expires_at' => now()->addDays(config('edge.license_validity_days', 30)),
-            'metadata'           => ['edge_token' => $edgeToken],
+            // The plaintext token is never persisted: only its SHA-256 digest is
+            // stored, matching the hashed-secret pattern already used by the
+            // ZKTeco kiosk (AttendanceKiosk.sync_token_hash). The plaintext value
+            // is returned once below, in the registration response only.
+            'metadata'           => ['edge_token' => hash('sha256', $edgeToken)],
         ]);
 
         $license = $this->licenseService->issueLicense(
@@ -234,10 +238,13 @@ class EdgeNodeController extends Controller
 
     private function authorizeEdgeToken(Request $request, EdgeNode $node): void
     {
-        $expectedToken = $node->metadata['edge_token'] ?? null;
+        $expectedTokenHash = $node->metadata['edge_token'] ?? null;
+        $providedToken     = $request->bearerToken() ?? '';
 
         abort_unless(
-            $expectedToken && $request->bearerToken() === $expectedToken,
+            $expectedTokenHash !== null
+                && $providedToken !== ''
+                && hash_equals((string) $expectedTokenHash, hash('sha256', $providedToken)),
             401,
             'Invalid or missing Edge token.'
         );
