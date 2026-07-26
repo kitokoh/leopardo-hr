@@ -1,6 +1,14 @@
 # =============================================================================
-# Leopardo Edge API — Docker image
+# Leopardo Edge API — Docker image (standalone, FrankenPHP)
 # Tag cible : leopardo/edge-api:1.0.0
+#
+# STATUS: standalone reference image, not currently wired into
+# edge/docker-compose.yml (which builds edge-api/edge-ui from Dockerfile.edge)
+# nor into edge/publish.sh (which uses Dockerfile.publish). Build it manually
+# from the repo root if you need the FrankenPHP + embedded PWA variant.
+# See the other Dockerfile* files in this directory for their actual role:
+#   - Dockerfile.edge    -> used by edge/docker-compose.yml (local/dev stack)
+#   - Dockerfile.publish -> used by edge/publish.sh (Docker Hub release image)
 #
 # Build :
 #   docker build -t leopardo/edge-api:1.0.0 -f edge/Dockerfile .

@@ -1,5 +1,12 @@
 # ============================================================
 # Leopardo Edge API — Lightweight Laravel for Edge deployment
+#
+# STATUS: this is the ACTIVE Dockerfile for local/dev usage — it is the
+# one built by edge/docker-compose.yml (edge-api and edge-ui services,
+# via `docker compose up` from this directory). See Dockerfile.publish
+# for the production release image built by edge/publish.sh, and
+# Dockerfile (no suffix) for a standalone FrankenPHP reference image
+# that is not currently wired into any build script.
 # ============================================================
 FROM php:8.4-fpm-alpine
 

@@ -2,6 +2,12 @@
 # Leopardo Edge API — Production Docker Image
 # Published to: leopardo/edge-api:VERSION
 #
+# STATUS: this is the ACTIVE Dockerfile used by edge/publish.sh to build
+# and push the public leopardo/edge-api image to Docker Hub. See
+# Dockerfile.edge for the local/dev image built by edge/docker-compose.yml,
+# and Dockerfile (no suffix) for a standalone FrankenPHP reference image
+# that is not currently wired into any build script.
+#
 # Build: docker build -f Dockerfile.publish -t leopardo/edge-api:1.0.0 .
 # Push:  docker push leopardo/edge-api:1.0.0
 # ============================================================
