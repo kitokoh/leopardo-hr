@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/glass_tile.dart';
 import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
@@ -20,7 +21,8 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience = employee?.mobileExperience ??
+    final experience =
+        employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],
@@ -29,9 +31,10 @@ class HomeScreen extends ConsumerWidget {
     final stage = experience.stage;
     final quickActions = experience.quickActions.take(3).toList();
     final activeModules = experience.activeModules.take(4).toList();
-    final firstName = employee?.firstName.isNotEmpty == true
-        ? employee!.firstName
-        : employee?.email.split('@').first ?? '';
+    final firstName =
+        employee?.firstName.isNotEmpty == true
+            ? employee!.firstName
+            : employee?.email.split('@').first ?? '';
     final branding = ref.watch(
       tenantBrandingProvider.select(
         (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
@@ -70,9 +73,10 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
-                      subtitle: stage == 'new'
-                          ? 'Les premiers gestes vraiment utiles.'
-                          : 'Vos trois gestes RH du jour.',
+                      subtitle:
+                          stage == 'new'
+                              ? 'Les premiers gestes vraiment utiles.'
+                              : 'Vos trois gestes RH du jour.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -255,9 +259,10 @@ class _QuickActionsGrid extends StatelessWidget {
           childAspectRatio: 1.04,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children: actions
-              .map((action) => _QuickActionCard(action: action))
-              .toList(),
+          children:
+              actions
+                  .map((action) => _QuickActionCard(action: action))
+                  .toList(),
         );
       },
     );
@@ -272,60 +277,13 @@ class _QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.forDomain(action.domain);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
+    return GlassTile(
+      title: action.title,
+      subtitle: action.description,
+      icon: MobileExperienceIcons.forAction(action.key, action.icon),
+      iconColor: color,
       onTap: () => context.push(action.route),
-      child: Ink(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: MobileSurface.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MobileSurface.border, width: 0.7),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.tint(
-                      context,
-                      color,
-                      lightAlpha: 0.16,
-                      darkAlpha: 0.24,
-                    ),
-                  ),
-                  child: Icon(
-                    MobileExperienceIcons.forAction(action.key, action.icon),
-                    color: color,
-                  ),
-                ),
-                const Spacer(),
-                Icon(Icons.arrow_outward, color: muted, size: 18),
-              ],
-            ),
-            const Spacer(),
-            Text(
-              action.title,
-              style: AppTypography.subtitle.copyWith(color: text),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              action.description,
-              style: AppTypography.bodySmall.copyWith(color: muted),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -363,54 +321,15 @@ class _ModuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.forDomain(module.domain);
-    final text = AppColors.textPrimaryFor(context);
-    const muted = MobileSurface.secondary;
 
-    return InkWell(
-      onTap: module.isActive ? () => context.push(module.route!) : null,
-      borderRadius: BorderRadius.circular(24),
-      child: Ink(
-        width: 206,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.tint(
-                  context,
-                  color,
-                  lightAlpha: 0.16,
-                  darkAlpha: 0.24,
-                ),
-              ),
-              child: Icon(
-                MobileExperienceIcons.forModule(module.key),
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              module.title,
-              style: AppTypography.subtitle.copyWith(color: text),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              module.description,
-              style: AppTypography.bodySmall.copyWith(color: muted),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+    return SizedBox(
+      width: 180,
+      child: GlassTile(
+        title: module.title,
+        subtitle: module.description,
+        icon: MobileExperienceIcons.forModule(module.key),
+        iconColor: color,
+        onTap: module.isActive ? () => context.push(module.route!) : () {},
       ),
     );
   }

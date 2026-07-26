@@ -50,7 +50,6 @@ const config: Config = {
           900: "#164e63",
           950: "#082f49",
         },
-        // Neutral - Slate
         slate: {
           50: "#f8fafc",
           100: "#f1f5f9",
@@ -64,6 +63,17 @@ const config: Config = {
           900: "#0f172a",
           950: "#020617",
         },
+        surface: {
+          DEFAULT: '#0b1326',
+          bright: '#31394d',
+          variant: '#2d3449',
+          tint: '#4edea3',
+        },
+        'on-surface': {
+          DEFAULT: '#dae2fd',
+          variant: '#bbcabf',
+        },
+        'stitch-bg': '#0b1326'
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
