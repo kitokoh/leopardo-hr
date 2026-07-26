@@ -127,7 +127,19 @@
       <template #cell-status="{ value }">
         <StatusBadge :status="value" :map="stageStatusMap" />
       </template>
+      <template #row-actions="{ row }">
+        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800" @click="viewApplicant(row)">
+          Detail
+        </button>
+      </template>
     </DataTable>
+
+    <ApplicantDetailModal
+      v-if="selectedApplicantId"
+      :applicant-id="selectedApplicantId"
+      @close="selectedApplicantId = null"
+      @updated="fetchData"
+    />
   </div>
 </template>
 
@@ -138,6 +150,7 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import KanbanBoard from '@/components/common/KanbanBoard.vue'
+import ApplicantDetailModal from '@/components/recruitment/ApplicantDetailModal.vue'
 
 const loading = ref(false)
 const error = ref('')
@@ -151,6 +164,7 @@ const jobForm = ref({
   location: '',
   contract_type: 'cdi',
 })
+const selectedApplicantId = ref(null)
 
 const stats = ref({ open_jobs: 0, total_applicants: 0, interviews: 0, hired: 0 })
 
@@ -219,7 +233,9 @@ function viewJobPipeline(job) {
   activeTab.value = 'pipeline'
 }
 
-function viewApplicant() {}
+function viewApplicant(applicant) {
+  selectedApplicantId.value = applicant.id
+}
 
 function normalizePaginated(payload) {
   if (Array.isArray(payload)) return payload
