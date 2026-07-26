@@ -74,8 +74,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  const mixpanelToken = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
+  // Analytics scripts (GA4, Mixpanel) are only loaded when the vitrine
+  // feature flag is explicitly enabled. Previously `gaId`/`mixpanelToken`
+  // were read and injected independently of `NEXT_PUBLIC_ENABLE_ANALYTICS`,
+  // so setting the flag to `false` (its documented default) had no effect
+  // on whether these third-party trackers actually loaded (issue #1305).
+  const analyticsEnabled = process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true';
+  const gaId = analyticsEnabled ? process.env.NEXT_PUBLIC_GA_ID : undefined;
+  const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
   return (
     <html lang="fr" suppressHydrationWarning>

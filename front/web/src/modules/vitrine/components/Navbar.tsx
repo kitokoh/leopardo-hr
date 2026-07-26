@@ -25,6 +25,7 @@ import {
   X,
 } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { getEnvConfig } from '../lib/env'
 
 type Props = {
   isDark: boolean
@@ -52,6 +53,25 @@ type NavEntry = NavLink | NavDropdown
 
 function isDropdown(entry: NavEntry): entry is NavDropdown {
   return 'items' in entry
+}
+
+// Hide the Blog link when NEXT_PUBLIC_ENABLE_BLOG is disabled (issue #1305):
+// the route itself now returns 404 in that case (see blog/layout.tsx), so
+// the nav must not keep pointing at it.
+function filterNavEntries(entries: NavEntry[]): NavEntry[] {
+  const { enableBlog } = getEnvConfig()
+  if (enableBlog) return entries
+
+  return entries.reduce<NavEntry[]>((acc, entry) => {
+    if (!isDropdown(entry)) {
+      acc.push(entry)
+      return acc
+    }
+
+    const items = entry.items.filter((item) => item.href !== '/blog')
+    if (items.length > 0) acc.push({ ...entry, items })
+    return acc
+  }, [])
 }
 
 const navByLocale: Record<string, NavEntry[]> = {
@@ -214,7 +234,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { copy, locale, options, setLocale } = useVitrineLocale()
-  const entries = navByLocale[locale] ?? navByLocale.fr
+  const entries = filterNavEntries(navByLocale[locale] ?? navByLocale.fr)
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40)
