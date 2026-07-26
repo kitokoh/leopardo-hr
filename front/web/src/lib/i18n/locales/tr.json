@@ -40,7 +40,22 @@
     "personal_account": {
       "create": "Kisisel hesap olustur",
       "explanation": "Kisisel hesap: belgelerinizi duzenleyin, sonra alaninizdan bir sirket olusturun veya katilin."
-    }
+    },
+    "back_tooltip": "Geri",
+    "employee_login_subtitle": "Calisan girisi",
+    "manager_login_subtitle": "Yonetici / IK girisi",
+    "email_professional_label": "Is e-postasi",
+    "email_label": "E-posta",
+    "email_required": "E-posta zorunlu",
+    "email_invalid": "Gecersiz e-posta",
+    "password_label": "Sifre",
+    "password_required": "Sifre zorunlu",
+    "password_too_short": "Sifre cok kisa",
+    "continue_with_google": "Google ile devam et",
+    "activate_invitation": "Davetimi etkinlestir",
+    "personal_account_link": "Kisisel hesap",
+    "activate_manager_access": "Yonetici erisimimi etkinlestir",
+    "try_demo_account": "Demo hesabini dene"
   },
   "common": {
     "language": {
@@ -55,7 +70,8 @@
         "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
         "en-GB": "Ingilizce (Birlesik Krallik)"
       }
-    }
+    },
+    "or": "veya"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -99,6 +115,135 @@
       "body": ":period donemi icin izin talebiniz reddedildi.",
       "action": "Talebi gor",
       "footer": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun."
+    }
+  },
+  "profile": {
+    "title": "Profilim",
+    "subtitle": "Kisisel bilgiler ve dil",
+    "loading": "Profil yukleniyor...",
+    "back_tooltip": "Geri",
+    "job_title_unset": "Unvan belirtilmedi",
+    "details_title": "Bilgiler",
+    "email_label": "E-posta",
+    "department_label": "Departman",
+    "job_title_label": "Unvan",
+    "matricule_label": "Personel numarasi",
+    "value_unset": "Belirtilmedi",
+    "open_settings": "Hesap ayarlarini ac",
+    "language_updated": "Dil guncellendi.",
+    "language_saving": "Guncelleniyor...",
+    "language_save": "Dili guncelle"
+  },
+  "ai_chat": {
+    "title": "Yapay Zeka Asistani",
+    "back_tooltip": "Geri",
+    "send_tooltip": "Gonder",
+    "input_hint": "Mesajinizi yazin...",
+    "empty_state_title": "IK sorularinizi sorun",
+    "error_message": "Hata: asistana ulasilamadi."
+  },
+  "platform_login": {
+    "title": "Leopardo Platform",
+    "subtitle": "Platform yonetimine ayrilmis mobil kokpit.",
+    "2fa_notice": "Bu hesap platformu korur: kimlik dogrulama uygulamanizdaki 2FA kodunu girin.",
+    "email_label": "Super yonetici e-postasi",
+    "email_required": "E-posta zorunlu",
+    "password_required": "Sifre zorunlu",
+    "2fa_label": "Etkinse 2FA kodu",
+    "submitting": "Giris yapiliyor...",
+    "use_demo_account": "Demo hesabini kullan"
+  },
+  "users": {
+    "page": {
+      "title": "Kullanici Yonetimi",
+      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
+    },
+    "actions": {
+      "bulk": "Islemler (:count)",
+      "export": "Disa Aktar",
+      "new": "Yeni"
+    },
+    "filters": {
+      "search": {
+        "label": "Ara",
+        "placeholder": "Ad, e-posta, sirket..."
+      },
+      "status": {
+        "label": "Durum",
+        "all": "Tum durumlar",
+        "active": "Aktif",
+        "inactive": "Pasif",
+        "suspended": "Askiya alindi",
+        "pending": "Beklemede"
+      },
+      "role": {
+        "label": "Rol",
+        "all": "Tum roller",
+        "admin": "Yonetici",
+        "manager": "Mudur",
+        "employee": "Calisan",
+        "hr": "IK"
+      },
+      "company": {
+        "label": "Sirket",
+        "all": "Tum sirketler"
+      },
+      "registrationDate": {
+        "label": "Kayit tarihi",
+        "all": "Tum tarihler",
+        "today": "Bugun",
+        "week": "Bu hafta",
+        "month": "Bu ay",
+        "quarter": "Bu ceyrek"
+      },
+      "lastLogin": {
+        "label": "Son giris",
+        "all": "Tumu",
+        "today": "Bugun",
+        "week": "Bu hafta",
+        "month": "Bu ay",
+        "never": "Hic giris yapmadi"
+      },
+      "segment": {
+        "label": "Segment",
+        "all": "Tum segmentler",
+        "champions": "Sadikler",
+        "loyal": "Bagli",
+        "potential": "Potansiyel",
+        "new": "Yeni",
+        "atRisk": "Risk altinda"
+      },
+      "advanced": {
+        "show": "Gelismis filtreleri goster",
+        "hide": "Gelismis filtreleri gizle"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count secildi",
+      "activate": "Etkinlestir",
+      "deactivate": "Devre disi birak",
+      "suspend": "Askiya al",
+      "export": "Disa Aktar",
+      "cancel": "Vazgec"
+    },
+    "toast": {
+      "loadError": "Kullanicilar yuklenirken hata olustu",
+      "bulkActivated": ":count kullanici etkinlestirildi",
+      "bulkDeactivated": ":count kullanici devre disi birakildi",
+      "bulkSuspended": ":count kullanici askiya alindi",
+      "bulkError": "Toplu islem basarisiz oldu",
+      "deleted": "Kullanici silindi",
+      "deleteError": "Kullanici silinirken hata olustu",
+      "impersonating": ":name olarak giris yapiliyor",
+      "created": "Kullanici basariyla olusturuldu",
+      "updated": "Kullanici guncellendi",
+      "exportInProgress": "Disa aktarim yapiliyor...",
+      "exportDone": "Disa aktarim tamamlandi",
+      "exportError": "Disa aktarim basarisiz oldu",
+      "selectionExportDone": "Secim disa aktarimi tamamlandi"
+    },
+    "confirm": {
+      "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
     }
   }
 }

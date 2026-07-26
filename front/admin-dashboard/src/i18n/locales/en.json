@@ -40,7 +40,22 @@
     "personal_account": {
       "create": "Create a personal account",
       "explanation": "Personal account: organize your documents, then create or join a company from your space."
-    }
+    },
+    "back_tooltip": "Back",
+    "employee_login_subtitle": "Employee sign-in",
+    "manager_login_subtitle": "Manager / HR sign-in",
+    "email_professional_label": "Work email",
+    "email_label": "Email",
+    "email_required": "Email required",
+    "email_invalid": "Invalid email",
+    "password_label": "Password",
+    "password_required": "Password required",
+    "password_too_short": "Password too short",
+    "continue_with_google": "Continue with Google",
+    "activate_invitation": "Activate my invitation",
+    "personal_account_link": "Personal account",
+    "activate_manager_access": "Activate my manager access",
+    "try_demo_account": "Try a demo account"
   },
   "common": {
     "language": {
@@ -55,7 +70,8 @@
         "en-US": "English (United States)",
         "en-GB": "English (United Kingdom)"
       }
-    }
+    },
+    "or": "or"
   },
   "modules": {
     "attendance": "Attendance",
@@ -63,6 +79,79 @@
     "cabinet": "Document vault",
     "notifications": "Notifications",
     "evaluations": "Evaluations"
+  },
+  "emails": {
+    "invitation": {
+      "subject": "You are invited to join :company on Leopardo HR",
+      "greeting": "Hello :name,",
+      "body": "You have been invited to join :company. Click the link below to activate your account.",
+      "action": "Activate my account",
+      "footer": "If you did not request this action, ignore this email."
+    },
+    "reset_password": {
+      "subject": "Reset your password",
+      "greeting": "Hello :name,",
+      "body": "Click the link below to reset your password.",
+      "action": "Reset password",
+      "footer": "If you did not request this action, ignore this email."
+    },
+    "payroll_ready": {
+      "subject": "Your payslip is ready",
+      "greeting": "Hello :name,",
+      "body": "Your payslip for :period is ready. You can review it in Leopardo HR.",
+      "action": "View my payslip",
+      "footer": "Please review your information before accounting export."
+    },
+    "absence_approved": {
+      "subject": "Your leave request has been approved",
+      "greeting": "Hello :name,",
+      "body": "Your leave request for :period has been approved.",
+      "action": "View request",
+      "footer": "The team schedule has been updated."
+    },
+    "absence_rejected": {
+      "subject": "Your leave request has been rejected",
+      "greeting": "Hello :name,",
+      "body": "Your leave request for :period has been rejected.",
+      "action": "View request",
+      "footer": "Please contact your manager if you need more details."
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Personal information and language",
+    "loading": "Loading profile...",
+    "back_tooltip": "Back",
+    "job_title_unset": "Job title not set",
+    "details_title": "Information",
+    "email_label": "Email",
+    "department_label": "Department",
+    "job_title_label": "Job title",
+    "matricule_label": "Employee ID",
+    "value_unset": "Not set",
+    "open_settings": "Open account settings",
+    "language_updated": "Language updated.",
+    "language_saving": "Updating...",
+    "language_save": "Update language"
+  },
+  "ai_chat": {
+    "title": "AI Assistant",
+    "back_tooltip": "Back",
+    "send_tooltip": "Send",
+    "input_hint": "Type your message...",
+    "empty_state_title": "Ask your HR questions",
+    "error_message": "Error: unable to reach the assistant."
+  },
+  "platform_login": {
+    "title": "Leopardo Platform",
+    "subtitle": "Mobile cockpit reserved for platform administration.",
+    "2fa_notice": "This account protects the platform: enter the 2FA code from your authenticator app.",
+    "email_label": "Super-admin email",
+    "email_required": "Email required",
+    "password_required": "Password required",
+    "2fa_label": "2FA code if enabled",
+    "submitting": "Signing in...",
+    "use_demo_account": "Use the demo account"
   },
   "users": {
     "page": {
@@ -155,43 +244,6 @@
     },
     "confirm": {
       "delete": "Are you sure you want to delete :name?"
-    }
-  },
-  "emails": {
-    "invitation": {
-      "subject": "You are invited to join :company on Leopardo HR",
-      "greeting": "Hello :name,",
-      "body": "You have been invited to join :company. Click the link below to activate your account.",
-      "action": "Activate my account",
-      "footer": "If you did not request this action, ignore this email."
-    },
-    "reset_password": {
-      "subject": "Reset your password",
-      "greeting": "Hello :name,",
-      "body": "Click the link below to reset your password.",
-      "action": "Reset password",
-      "footer": "If you did not request this action, ignore this email."
-    },
-    "payroll_ready": {
-      "subject": "Your payslip is ready",
-      "greeting": "Hello :name,",
-      "body": "Your payslip for :period is ready. You can review it in Leopardo HR.",
-      "action": "View my payslip",
-      "footer": "Please review your information before accounting export."
-    },
-    "absence_approved": {
-      "subject": "Your leave request has been approved",
-      "greeting": "Hello :name,",
-      "body": "Your leave request for :period has been approved.",
-      "action": "View request",
-      "footer": "The team schedule has been updated."
-    },
-    "absence_rejected": {
-      "subject": "Your leave request has been rejected",
-      "greeting": "Hello :name,",
-      "body": "Your leave request for :period has been rejected.",
-      "action": "View request",
-      "footer": "Please contact your manager if you need more details."
     }
   }
 }
