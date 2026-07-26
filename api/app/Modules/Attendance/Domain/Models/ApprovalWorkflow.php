@@ -20,7 +20,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ApprovalWorkflow extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'model_type',
+        'levels',
+        'auto_approve_below',
+        'escalation_hours',
+        'active',
+    ];
 
     protected $casts = [
         'levels' => 'array',
