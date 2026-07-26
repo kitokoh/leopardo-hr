@@ -1,6 +1,55 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+/**
+ * Content-Security-Policy (Report-Only for now).
+ *
+ * Issue #1300: front/web had every other common security header (HSTS,
+ * X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
+ * Permissions-Policy) but no CSP at all. We start in
+ * `Content-Security-Policy-Report-Only` mode so violations are reported to
+ * the browser console/devtools without breaking GA4, Mixpanel, Sentry, or
+ * the Stripe-backed checkout flow while the report is reviewed. Once a
+ * production report comes back clean, swap the header key below from
+ * `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
+ * enforce it.
+ *
+ * Origins below come from what actually gets loaded today:
+ *  - script-src: GA4 (googletagmanager.com), Mixpanel (mxpnl.com), Sentry
+ *    browser bundle (sentry-cdn.com). 'unsafe-inline' is required because
+ *    the GA4/Mixpanel bootstrap snippets in src/app/layout.tsx are inline
+ *    <script> tags (no nonce/hash wiring yet).
+ *  - connect-src: the Cloud API (NEXT_PUBLIC_API_URL) plus the GA4/Mixpanel/
+ *    Sentry ingestion endpoints those SDKs call at runtime.
+ *  - img-src/style-src: kept permissive (data:, 'unsafe-inline') because
+ *    Tailwind v4 and framer-motion inject inline styles, and GA/Mixpanel
+ *    send 1x1 tracking pixels.
+ */
+const apiOrigin = (() => {
+  try {
+    return new URL(
+      process.env.NEXT_PUBLIC_API_URL || "https://gestionemployerbackend.onrender.com"
+    ).origin;
+  } catch {
+    return "https://gestionemployerbackend.onrender.com";
+  }
+})();
+
+const cspDirectives = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn4.mxpnl.com https://cdn.mxpnl.com https://browser.sentry-cdn.com`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https:",
+  "font-src 'self' data:",
+  `connect-src 'self' ${apiOrigin} https://www.google-analytics.com https://www.googletagmanager.com https://api.mixpanel.com https://*.sentry.io https://*.ingest.sentry.io`,
+  "frame-src 'self' https://js.stripe.com https://checkout.stripe.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "upgrade-insecure-requests",
+].join("; ");
+
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   turbopack: {
@@ -65,6 +114,12 @@ const nextConfig: NextConfig = {
         {
           key: "Permissions-Policy",
           value: "geolocation=(), microphone=(), camera=()",
+        },
+        {
+          // Report-only for now — see comment above cspDirectives. Flip to
+          // "Content-Security-Policy" once the report is verified clean.
+          key: "Content-Security-Policy-Report-Only",
+          value: cspDirectives,
         },
       ],
     },
