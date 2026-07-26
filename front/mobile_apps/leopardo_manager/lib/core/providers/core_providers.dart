@@ -1,6 +1,8 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/location/attendance_location_service.dart';
+import 'package:leopardo_core/core/services/offline_sync_service.dart';
 import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
@@ -44,6 +46,15 @@ final pushNotificationServiceProvider = Provider<PushNotificationService>((
   ref,
 ) {
   return PushNotificationService();
+});
+
+/// Replays the `offline_punches` Hive box written by [AttendanceRepository]
+/// when check-in/check-out fails offline (see issue #1289).
+final offlineSyncServiceProvider = Provider<OfflineSyncService>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  final service = OfflineSyncService(apiClient, Connectivity());
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final attendanceLocationServiceProvider = Provider<AttendanceLocationService>((
