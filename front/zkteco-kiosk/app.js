@@ -257,6 +257,7 @@ async function searchEmployeeInfo() {
     const emp = data.data.employee;
     const att = data.data.today_attendance;
     const balances = data.data.leave_balances || [];
+    const biometric = data.data.biometric_enrollment || null;
 
     // Avatar
     const avatarEl = $('#empAvatar');
@@ -281,6 +282,12 @@ async function searchEmployeeInfo() {
       attEl.innerHTML = html;
     } else {
       attEl.innerHTML = `<span class="att-badge att-pending">${t('info.attendance.pending')}</span>`;
+    }
+
+    // Biometric enrollment status (PA2-KIO-004)
+    const bioEl = $('#empBiometric');
+    if (bioEl) {
+      bioEl.innerHTML = renderBiometricStatus(biometric);
     }
 
     // Leave balances
@@ -429,6 +436,36 @@ function formatDateTime(isoString) {
   } catch {
     return String(isoString);
   }
+}
+
+// PA2-KIO-004: render the employee's biometric enrollment consent/status
+// badge on the kiosk employee-info screen (enabled / pending / rejected / none).
+function renderBiometricStatus(biometric) {
+  if (!biometric) {
+    return `<span class="att-badge att-pending">${t('info.biometric.unavailable')}</span>`;
+  }
+
+  const badges = [];
+
+  if (biometric.face_enabled) {
+    badges.push(`<span class="att-badge att-in">${t('info.biometric.faceEnabled')}</span>`);
+  }
+
+  if (biometric.fingerprint_enabled) {
+    badges.push(`<span class="att-badge att-in">${t('info.biometric.fingerprintEnabled')}</span>`);
+  }
+
+  if (biometric.pending_request) {
+    badges.push(`<span class="att-badge att-pending">${t('info.biometric.pending')}</span>`);
+  } else if (biometric.latest_request_status === 'rejected') {
+    badges.push(`<span class="att-badge att-out">${t('info.biometric.rejected')}</span>`);
+  }
+
+  if (badges.length === 0) {
+    badges.push(`<span class="att-badge att-pending">${t('info.biometric.none')}</span>`);
+  }
+
+  return badges.join('');
 }
 
 function escapeHtml(str) {
