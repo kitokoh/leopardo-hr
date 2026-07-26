@@ -1,8 +1,10 @@
 # AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-07-19 (audit doc — le fichier a continue d'etre edite apres le 2026-06-13 sans que cet en-tete soit rafraichi ; voir `git log -- AGENTS.md` pour les dates reelles des sections recentes)
+Derniere mise a jour : 2026-07-26
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
+
+> **NOUVEL AGENT ? Commence par lire `dev-hub/prompts/00_AGENT_QUICK_CARD.md` (2 min) pour une carte de reference rapide. Ce fichier AGENTS.md est le guide complet.**
 
 ## Regles obligatoires
 
@@ -32,6 +34,17 @@ La gestion du projet Leopardo RH se fait desormais **exclusivement via GitHub Is
 - Une fois le travail complet et verifie localement (tests pertinents, `shellcheck`/lint si applicable), passez la PR draft en "Ready for review" : `gh pr ready <numero>`.
 - Ne jamais merger sa propre PR sans que les checks CI obligatoires (`gh pr checks <numero>`) soient verts.
 - Assurez-vous que la description de la PR indique clairement quelle issue P0/P1 est resolue.
+
+### Bibliotheque de prompts operationnels
+
+Le dossier `dev-hub/prompts/` contient des prompts numerotes prets a l'emploi pour piloter les agents. Chaque prompt est un fichier Markdown autonome avec des instructions executables.
+
+- **Carte rapide** : `dev-hub/prompts/00_AGENT_QUICK_CARD.md` — resume des regles vitales (2 min)
+- **Vider le backlog** : `dev-hub/prompts/01_DRAIN_BACKLOG.md` — traiter tous les tickets
+- **Audits** : prompts 02, 05-09 — auditer chaque surface du projet
+- **CI/Merge** : prompts 03, 12 — reparer la CI, merger les branches
+- **Anti-regression** : `dev-hub/prompts/13_REGRESSION_GUARD.md` — traquer les patterns interdits
+- Voir `dev-hub/prompts/README.md` pour l'index complet
 
 ## Strategie CI rapide
 
