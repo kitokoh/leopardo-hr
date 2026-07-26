@@ -70,7 +70,7 @@ class EdgeController extends Controller
 
         check_deps() {
             local missing=()
-            for cmd in docker curl openssl; do
+            for cmd in docker curl; do
                 command -v "\$cmd" &>/dev/null || missing+=("\$cmd")
             done
             if [ \${#missing[@]} -gt 0 ]; then
@@ -96,10 +96,9 @@ class EdgeController extends Controller
             curl -fsSL "\$CLOUD_API_URL/edge/download/env-example" -o .env.edge
         fi
 
-        if [ ! -f keys/edge_license_private.pem ]; then
-            echo "🔑 Génération des clés RS256..."
-            openssl genrsa -out keys/edge_license_private.pem 2048 2>/dev/null
-            openssl rsa -in keys/edge_license_private.pem -pubout -out keys/edge_license_public.pem 2>/dev/null
+        if [ ! -f keys/edge_license_public.pem ]; then
+            echo "🔑 Retrieving Edge license public key..."
+            curl -fsSL "\$CLOUD_API_URL/edge/license-public-key" -o keys/edge_license_public.pem
         fi
 
         echo "🚀 Démarrage du nœud Edge..."
