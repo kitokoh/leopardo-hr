@@ -8,6 +8,8 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 
 ## Regles obligatoires
 
+- **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/` (ex: `docs/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
+
 - Avant de travailler sur une branche existante, faire `git fetch origin main` puis comparer avec `origin/main`.
 - `main` distant est la source de verite. Le local doit rester aligne sur `origin/main` apres chaque intervention terminee.
 - Ne pas pousser directement sur `main` si la branche est protegee. Creer un PR, attendre les checks GitHub Actions, puis merger et supprimer la branche.
@@ -15,6 +17,21 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 - Ne jamais perdre les stashes existants. Verifier `git stash list` avant toute operation destructive.
 - Chaque changement de comportement, migration, CI ou procedure doit avoir une entree `CHANGELOG.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
+
+## 🗺️ Cartographie de l'Ecosysteme Leopardo RH (A respecter strictement)
+
+Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles definis "noir sur blanc" :
+
+### Les 5 Applications Mobiles Flutter (`front/mobile_apps/`)
+- **`leopardo_manager`** : Application dediee a la gestion du tenant (entreprise). Vue globale, affectation des roles, evolution.
+- **`leopardo_hr`** : Application dediee aux Ressources Humaines. Suivi des employes, presences/absences, taches, et gestion du recrutement (ATS).
+- **`leopardo_marketing`** : Application dediee aux marketeurs. Planification et publication en "1-clic" sur les differents reseaux sociaux.
+- **`leopardo_platform_admin`** : Application ultra-securisee pour le Super-Admin (proprietaire du SaaS) pour gerer les abonnements et l'infrastructure.
+- **`leopardo_kiosk`** : Application dediee au materiel physique (tablette pointeuse/biometrie).
+
+### L'Ecosysteme Web (`front/`)
+- **La Web App Client (`front/web` et admin-dashboard)** : Le portail web client est **unique**. Un employe, un RH ou un Manager se connecte au meme portail, mais l'interface s'adapte dynamiquement et change completement en fonction du role (RBAC).
+- **La Web App Super-Admin** : Interface web reservee exclusivement a l'administration de la plateforme Leopardo (SaaS).
 
 ## ⚠️ NOUVELLE METHODE DE GESTION DE PROJET (Juillet 2026)
 
