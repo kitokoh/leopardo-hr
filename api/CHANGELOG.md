@@ -6,6 +6,11 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Security
+- **Constant-time comparison and hashed storage for `edge_token`** — `EdgeNodeController` now hashes the Edge node authentication token at rest (`hash('sha256', $token)`) instead of storing it in cleartext, and verifies incoming tokens with `hash_equals()` instead of a plain string comparison
+  - Removes a timing side-channel that could let an attacker recover a valid `edge_token` byte-by-byte via response-time measurements
+  - Removes plaintext token exposure in the database (backups, dumps, read replicas) — only the SHA-256 digest is persisted
+  - No behavior change for legitimate Edge nodes: token issuance/rotation and existing valid tokens continue to authenticate identically
+  - Tests: `EdgeSyncTest`, `EdgeOfflineScenarioTest` updated and passing
 - **Mass-assignment hardening on 13 Eloquent models** — replaced `protected $guarded = [];` with explicit `protected $fillable = [...]` allow-lists on `AttendanceLog`, `ApprovalRequest`, `ApprovalWorkflow`, `ApprovalDecision`, `KioskAnnouncement`, `AttendanceCorrectionRequest`, `AttendanceKiosk`, `BiometricEnrollmentRequest`, `ZktecoDevice`, `ZktecoSyncLog`, `CalendarEvent`, `CalendarConnection` (Attendance module) and `ScheduledTaskRun` (Platform module)
   - No known active exploit today (all write paths already used explicit field lists), but `$guarded = []` removed Laravel's mass-assignment safety net for any future `Model::create($request->all())`-style shortcut
   - Allow-lists built from each model's actual migration columns and real write call sites; no behavior change — existing test suite passes identically before/after

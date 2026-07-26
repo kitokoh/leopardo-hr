@@ -49,7 +49,7 @@ class EdgeSyncTest extends TestCase
             'edge_version' => '1.0.0',
             'capabilities' => ['features' => ['attendance', 'absence'], 'max_employees' => 100],
             'license_expires_at' => now()->addDays(30),
-            'metadata' => ['edge_token' => 'test-edge-token-xxx'],
+            'metadata' => ['edge_token' => hash('sha256', 'test-edge-token-xxx')],
         ]);
     }
 
