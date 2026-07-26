@@ -344,7 +344,7 @@ function PlanSummaryCard({
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
             <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-              {cfg.trialDays} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai
+              {cfg.trialDays} jours gratuits inclus · Aucune CB débitée avant la fin de l&apos;essai
             </p>
           </div>
         )}
@@ -440,11 +440,11 @@ function StepRecap({
 
       {cfg.isFree ? (
         <div className="mt-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-sm text-emerald-800 dark:text-emerald-300">
-          <strong>Plan 100% gratuit.</strong> Aucune carte bancaire requise. Commencez immédiatement, jusqu'à 5 employés.
+          <strong>Plan 100% gratuit.</strong> Aucune carte bancaire requise. Commencez immédiatement, jusqu&apos;à 5 employés.
         </div>
       ) : (
         <div className="mt-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 text-sm text-blue-800 dark:text-blue-300">
-          <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera débitée qu'après la période d'essai. Annulez à tout moment depuis votre tableau de bord.
+          <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera débitée qu&apos;après la période d&apos;essai. Annulez à tout moment depuis votre tableau de bord.
         </div>
       )}
 
@@ -1042,7 +1042,7 @@ function StepPayment({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Date d'expiration
+              Date d&apos;expiration
             </label>
             <input
               type="text"
@@ -1107,7 +1107,7 @@ function StepPayment({
             <span className="font-bold text-emerald-600">{cfg.trialDays} jours</span>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-3 pt-3 flex items-center justify-between">
-            <span className="font-bold text-slate-900 dark:text-white">Dû aujourd'hui</span>
+            <span className="font-bold text-slate-900 dark:text-white">Dû aujourd&apos;hui</span>
             <span className="font-black text-lg text-emerald-600">EUR 0,00</span>
           </div>
         </div>
@@ -1130,7 +1130,7 @@ function StepPayment({
           ) : (
             <>
               <Lock className="w-4 h-4" />
-              Démarrer l'essai gratuit — EUR 0,00 dû maintenant
+              Démarrer l&apos;essai gratuit — EUR 0,00 dû maintenant
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -1139,7 +1139,7 @@ function StepPayment({
         <p className="text-center text-xs text-slate-400 dark:text-slate-500">
           En confirmant, vous acceptez nos{' '}
           <Link href="/terms" className="underline underline-offset-2 hover:text-slate-600">
-            conditions d'utilisation
+            conditions d&apos;utilisation
           </Link>{' '}
           et notre{' '}
           <Link href="/privacy" className="underline underline-offset-2 hover:text-slate-600">

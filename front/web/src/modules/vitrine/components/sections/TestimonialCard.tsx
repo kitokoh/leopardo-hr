@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
+import Image from 'next/image';
 
 export interface TestimonialCardProps {
   quote: string;
@@ -71,10 +72,12 @@ export function TestimonialCard({
         <div className="flex items-center gap-4">
           {avatar ? (
             <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-              <img
+              <Image
                 src={avatar}
                 alt={author}
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                sizes="48px"
+                className="object-cover"
               />
             </div>
           ) : (

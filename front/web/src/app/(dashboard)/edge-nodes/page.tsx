@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect, useSyncExternalStore } from 'react';
+import { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Plus, RefreshCw, ShieldAlert, Wifi, WifiOff, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
@@ -52,13 +52,7 @@ export default function EdgeNodesPage() {
   const [installCommand, setInstallCommand] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchNodes();
-    const interval = setInterval(fetchNodes, 30000); // refresh every 30s
-    return () => clearInterval(interval);
-  }, []);
-
-  async function fetchNodes() {
+  const fetchNodes = useCallback(async () => {
     try {
       const res = await apiFetch('/edge');
       const data = await res.json();
@@ -69,7 +63,13 @@ export default function EdgeNodesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [labels.loadError]);
+
+  useEffect(() => {
+    fetchNodes();
+    const interval = setInterval(fetchNodes, 30000); // refresh every 30s
+    return () => clearInterval(interval);
+  }, [fetchNodes]);
 
   async function triggerSync(nodeId: string) {
     setSyncing(nodeId);

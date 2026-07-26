@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const safeLog = (..._args: unknown[]) => {};
 
@@ -108,6 +108,28 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Sync pending data when back online
+  const syncPendingData = useCallback(async () => {
+    if (!swRegistration) return;
+
+    try {
+      // Sync forms
+      const syncRegistration = swRegistration as SyncCapableRegistration;
+      if (syncRegistration.sync) {
+        await syncRegistration.sync.register('sync-forms');
+        safeLog('[PWA] Sync forms registered');
+      }
+
+      // Sync analytics
+      if (syncRegistration.sync) {
+        await syncRegistration.sync.register('sync-analytics');
+        safeLog('[PWA] Sync analytics registered');
+      }
+    } catch (error) {
+      safeLog('[PWA] Sync registration failed:', error);
+    }
+  }, [swRegistration]);
+
   // Handle online/offline events
   useEffect(() => {
     const handleOnline = () => {
@@ -128,10 +150,10 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [syncPendingData]);
 
   // Prompt for installation
-  const promptInstall = async () => {
+  const promptInstall = useCallback(async () => {
     if (!deferredPrompt) {
       safeLog('[PWA] Install prompt not available');
       return;
@@ -145,29 +167,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       safeLog('[PWA] Installation prompt failed:', error);
     }
-  };
-
-  // Sync pending data when back online
-  const syncPendingData = async () => {
-    if (!swRegistration) return;
-
-    try {
-      // Sync forms
-      const syncRegistration = swRegistration as SyncCapableRegistration;
-      if (syncRegistration.sync) {
-        await syncRegistration.sync.register('sync-forms');
-        safeLog('[PWA] Sync forms registered');
-      }
-
-      // Sync analytics
-      if (syncRegistration.sync) {
-        await syncRegistration.sync.register('sync-analytics');
-        safeLog('[PWA] Sync analytics registered');
-      }
-    } catch (error) {
-      safeLog('[PWA] Sync registration failed:', error);
-    }
-  };
+  }, [deferredPrompt]);
 
   // Expose PWA functions to window
   useEffect(() => {
@@ -178,7 +178,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
       deferredPrompt: !!deferredPrompt,
       swRegistration,
     };
-  }, [deferredPrompt, isInstalled, isOnline, swRegistration]);
+  }, [deferredPrompt, isInstalled, isOnline, promptInstall, swRegistration]);
 
   return <>{children}</>;
 }

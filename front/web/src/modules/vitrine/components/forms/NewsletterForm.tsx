@@ -123,7 +123,7 @@ export function NewsletterForm({
             icon={<ArrowRight className="w-4 h-4" />}
             iconPosition="right"
           >
-            S'inscrire
+            S&apos;inscrire
           </Button>
         </form>
         {formState.isSuccess && (
@@ -177,7 +177,7 @@ export function NewsletterForm({
               loading={formState.isSubmitting}
               disabled={formState.isSubmitting || formState.isSuccess}
             >
-              S'inscrire
+              S&apos;inscrire
             </Button>
           </form>
         </div>
