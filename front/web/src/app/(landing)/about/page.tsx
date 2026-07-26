@@ -126,7 +126,7 @@ export default function AboutPage() {
             <div className="prose dark:prose-invert max-w-none">
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
                 Leopardo a été fondée en 2020 par Ahmed Benali, un entrepreneur passionné qui a constaté que les PME
-                manquaient d'une solution RH complète et abordable. Après avoir géré les ressources humaines avec Excel
+                manquaient d&apos;une solution RH complète et abordable. Après avoir géré les ressources humaines avec Excel
                 pendant des années, il a décidé de créer une plateforme qui changerait tout.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
@@ -319,7 +319,7 @@ export default function AboutPage() {
               Nous Recrutons!
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Vous êtes passionné par la technologie et l'innovation? Rejoignez notre équipe et aidez-nous à transformer
+              Vous êtes passionné par la technologie et l&apos;innovation? Rejoignez notre équipe et aidez-nous à transformer
               la gestion RH pour les PME.
             </p>
             <motion.a
@@ -328,7 +328,7 @@ export default function AboutPage() {
               whileTap={{ scale: 0.95 }}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors"
             >
-              Voir les Offres d'Emploi
+              Voir les Offres d&apos;Emploi
               <ArrowRight className="w-5 h-5" />
             </motion.a>
           </motion.div>

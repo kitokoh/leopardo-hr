@@ -172,7 +172,7 @@ function SuccessInner() {
 
             <p className="text-xl text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed">
               {company ? `${company} — ` : ''} Plan <strong className="text-slate-900 dark:text-white">{plan}</strong>
-              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 30 jours offerts, aucune carte débitée aujourd'hui.
+              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 30 jours offerts, aucune carte débitée aujourd&apos;hui.
             </p>
           </motion.div>
 
@@ -205,11 +205,11 @@ function SuccessInner() {
                 <span className="text-sm font-bold text-slate-900 dark:text-white">{plan}</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Période d'essai</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Période d&apos;essai</span>
                 <span className="text-sm font-bold text-emerald-600">30 jours gratuits</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Débité aujourd'hui</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Débité aujourd&apos;hui</span>
                 <span className="text-sm font-black text-emerald-600">EUR 0,00</span>
               </div>
               {isSandbox && (
@@ -250,7 +250,7 @@ function SuccessInner() {
           >
             <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             <p className="text-sm text-blue-800 dark:text-blue-300">
-              <strong>Un email de confirmation</strong> a été envoyé à <strong>{email || 'votre adresse'}</strong> avec vos identifiants d'accès et les instructions de démarrage.
+              <strong>Un email de confirmation</strong> a été envoyé à <strong>{email || 'votre adresse'}</strong> avec vos identifiants d&apos;accès et les instructions de démarrage.
             </p>
           </motion.div>
 

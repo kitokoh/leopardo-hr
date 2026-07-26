@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Check, LogIn, LogOut, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
@@ -189,9 +190,11 @@ export default function SmartAttendanceSessionDetailPage() {
             <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-4">
                 {session.employee_photo ? (
-                  <img
+                  <Image
                     src={session.employee_photo}
                     alt={session.employee_name ?? ''}
+                    width={64}
+                    height={64}
                     className="h-16 w-16 rounded-2xl object-cover"
                   />
                 ) : (

@@ -319,7 +319,7 @@ export function getRevalidationTime(path: string): number {
   return 3600; // Default 1 hour
 }
 
-export default {
+const cachingConfig = {
   cacheHeaders,
   isrConfig,
   compressionConfig,
@@ -332,3 +332,5 @@ export default {
   shouldCache,
   getRevalidationTime,
 };
+
+export default cachingConfig;
