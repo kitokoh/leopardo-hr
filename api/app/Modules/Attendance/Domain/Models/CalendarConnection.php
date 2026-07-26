@@ -23,7 +23,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CalendarConnection extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'employee_id',
+        'provider',
+        'access_token',
+        'refresh_token',
+        'calendar_id',
+        'token_expires_at',
+        'sync_leaves',
+        'sync_training',
+        'is_active',
+        'last_synced_at',
+    ];
 
     protected $casts = [
         'token_expires_at' => 'datetime',

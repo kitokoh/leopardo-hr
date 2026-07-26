@@ -26,7 +26,18 @@ class AttendanceKiosk extends Model
 {
     use BelongsToCompany;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'location_label',
+        'device_code',
+        'status',
+        'biometric_mode',
+        'trusted_device_label',
+        'sync_token_hash',
+        'last_seen_at',
+        'last_sync_at',
+    ];
 
     protected $casts = [
         'last_seen_at' => 'datetime',

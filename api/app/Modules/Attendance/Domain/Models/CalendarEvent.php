@@ -20,7 +20,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CalendarEvent extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'employee_id',
+        'external_event_id',
+        'provider',
+        'title',
+        'description',
+        'starts_at',
+        'ends_at',
+        'all_day',
+        'source_type',
+        'source_id',
+        'sync_status',
+    ];
 
     protected $casts = [
         'starts_at' => 'datetime',

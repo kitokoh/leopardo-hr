@@ -25,7 +25,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class AttendanceCorrectionRequest extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'employee_id',
+        'attendance_log_id',
+        'date',
+        'requested_check_in',
+        'requested_check_out',
+        'reason',
+        'status',
+        'reviewed_by',
+        'reviewed_at',
+    ];
 
     protected $casts = [
         'date' => 'date',
