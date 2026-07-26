@@ -1,8 +1,14 @@
 const path = require('path');
 const { localeCatalogs, repoRoot, updateVersions, writeJson } = require('./utils');
 
+// Note: the legacy `front/mobile` Flutter app was deleted repo-wide in #754
+// ("Delete deprecated legacy front/mobile/ codebase") and superseded by
+// `front/mobile_apps/leopardo_core`. This sync target was left behind and
+// kept re-materializing an untracked `front/mobile/lib/l10n/` directory on
+// every run, which `git diff --exit-code` in the I18N Enterprise CI job
+// never saw as a failure by itself but which also masked the real drift
+// below. Removed; leopardo_core is the only live mobile l10n target.
 const outputDirs = [
-  path.join(repoRoot, 'front', 'mobile', 'lib', 'l10n'),
   path.join(repoRoot, 'front', 'mobile_apps', 'leopardo_core', 'lib', 'l10n'),
 ];
 const keyAliases = {

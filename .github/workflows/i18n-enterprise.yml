@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - 'shared/i18n/**'
-      - 'front/mobile/lib/l10n/**'
       - 'front/mobile_apps/leopardo_core/lib/l10n/**'
       - 'front/mobile_apps/leopardo_employee/lib/**'
       - 'front/mobile_apps/leopardo_manager/lib/**'
@@ -24,7 +23,6 @@ on:
       - main
     paths:
       - 'shared/i18n/**'
-      - 'front/mobile/lib/l10n/**'
       - 'front/mobile_apps/leopardo_core/lib/l10n/**'
       - 'front/mobile_apps/leopardo_employee/lib/**'
       - 'front/mobile_apps/leopardo_manager/lib/**'
