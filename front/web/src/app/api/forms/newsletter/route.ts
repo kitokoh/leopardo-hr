@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { captureMarketingLead, getClientIp } from '../_lib/lead-capture';
+import { areFormsEnabled, captureMarketingLead, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 
 const rateLimiter = new RateLimiter(10, 15 * 60 * 1000);
@@ -14,6 +14,10 @@ const newsletterSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if (!areFormsEnabled()) {
+    return formsDisabledResponse();
+  }
+
   try {
     const ip = getClientIp(request);
 
