@@ -35,13 +35,9 @@ use Throwable;
  */
 class ScheduledTaskRunRecorder
 {
-    /** @var array<string, float> Start time (microtime) per task name, keyed for this process only. */
-    private array $startedAt = [];
-
     public function onStarting(ScheduledTaskStarting $event): void
     {
         $name = $this->taskName($event->task);
-        $this->startedAt[$name] = microtime(true);
 
         $this->upsert($name, [
             'started_at' => now(),
