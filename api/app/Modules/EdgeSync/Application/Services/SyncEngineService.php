@@ -10,8 +10,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Core Sync Engine — orchestrates bidirectional data synchronisation
- * between Leopardo Edge nodes and the Cloud.
+ * Cloud-side sync engine — applies records an Edge node pushed over HTTP,
+ * and resolves conflicts against the Cloud database.
+ *
+ * IMPORTANT: this service only ever runs on Cloud, invoked by
+ * {@see \App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController::sync()}
+ * (manual admin-triggered sync) and
+ * {@see \App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob}
+ * (async processing after a real Edge push landed in sync_queue via
+ * EdgeNodeController::pushFromEdge()). It must never be invoked from the
+ * `edge:sync-daemon` command running on an Edge deployment — that daemon
+ * uses {@see \App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient}
+ * instead, which performs the actual over-the-wire HTTP push/pull against
+ * this Cloud API rather than writing to whatever local database connection
+ * happens to be configured.
  *
  * Conflict resolution strategy:
  *   1. Same record modified on both sides → "last write wins" by default.
@@ -123,16 +135,16 @@ class SyncEngineService
     }
 
     /**
-     * Pull Cloud data → Edge node (delta since last_sync_at).
+     * Pull is a Cloud-side no-op here: the Edge node itself initiates the
+     * pull by calling GET /api/v1/edge-node/{id}/pull
+     * (EdgeNodeController::pullDelta(), backed by CloudDeltaBuilder). This
+     * method exists only so sync() can report a consistent SyncLog shape
+     * for the manual admin-triggered sync() path above.
      *
      * @return array{received:int, conflicts:int, resolved:int}
      */
     public function pull(EdgeNode $node): array
     {
-        // In a real deployment, the Edge node calls /api/v1/edge-node/{id}/pull
-        // and applies the delta locally via CloudDeltaBuilder.
-        // Here we record the pull intent; actual transfer is handled
-        // by EdgeNodeController@pullDelta.
         return ['received' => 0, 'conflicts' => 0, 'resolved' => 0];
     }
 
