@@ -212,6 +212,51 @@ test.describe('Client web feature gates', () => {
     await expect(page.locator('body')).not.toContainText('Module non inclus');
   });
 
+  test('marketing manager can access the social calendar page', async ({ page }) => {
+    await page.route('**/api/v1/marketing/social-account', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'SOCIAL_ACCOUNT_NOT_FOUND',
+          message: "Aucun compte social connecte pour l'entreprise.",
+        }),
+      });
+    });
+    await page.route('**/api/v1/marketing/social-posts**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [], meta: { current_page: 1, last_page: 1 } }),
+      });
+    });
+
+    await seedSession(page, {
+      manager_role: 'marketing',
+      capabilities: {
+        marketing: true,
+      },
+      company: {
+        id: 'company-1',
+        name: 'TechCorp Algerie SARL',
+        features: {
+          marketing: true,
+        },
+      },
+    });
+
+    await page.goto('/social', { waitUntil: 'domcontentloaded' });
+
+    await expect(page).toHaveURL(/\/social$/);
+    await expect(page.locator('body')).toContainText('Calendrier Marketing');
+    await expect(page.locator('body')).not.toContainText('Module non inclus');
+
+    // The marketing sub-nav lets the marketer switch to the list view without
+    // losing the module's feature-gated access.
+    await page.getByRole('navigation', { name: 'Navigation Marketing' }).getByRole('link', { name: 'Liste & compte' }).click();
+    await expect(page).toHaveURL(/\/social-marketing$/);
+  });
+
   test('non-marketing manager role is locked out of the marketing module', async ({ page }) => {
     await seedSession(page, {
       manager_role: 'rh',
