@@ -180,6 +180,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/billing': 'billing',
   '/settings/developer': 'integrations',
   '/social-marketing': 'marketing',
+  '/social': 'marketing',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {

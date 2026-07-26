@@ -15,6 +15,7 @@ livrée par PR séparée, avec CI verte, puis mergée sur `main`.
 | 2 | Policies, Actions, client Ayrshare, tests | ✅ Mergée | #858 |
 | 3 | Cron de publication planifiée + contrôleurs/routes API | ✅ Prête (branche `codex/marketing-phase3-api-cron`) | — |
 | 4 | UI web dashboard Marketing | ✅ Prête (branche `codex/marketing-phase4-web-ui`) | — |
+| 4.1 | Calendrier visuel `/social` + `PostEditor` (issue #1281) | ✅ Livrée | issue #1281 |
 | 5 | Onglet Marketing dans l'app mobile `leopardo_manager` | ⏳ À faire | — |
 
 ---
@@ -200,6 +201,59 @@ Plan détaillé : `docs/archive/PLAN_ACTION/74_PLAN_MARKETING_PHASE4_WEB_UI.md`.
 - Hors scope Phase 4 (reporté) : upload média direct (S3), calendrier
   visuel des posts planifiés (la liste triée par date de création
   suffit pour ce lot).
+
+## Phase 4.1 — Calendrier visuel + PostEditor (issue #1281, PA2-MKT-011)
+
+Le calendrier visuel reporté en Phase 4 a été redemandé explicitement par
+l'issue GitHub #1281 ("Dashboard Web Marketing (Lot 2)"), avec trois
+critères d'acceptation précis : layout dédié `(marketing)`, page
+calendrier `/social`, composant `PostEditor`.
+
+- [x] `src/app/(dashboard)/(marketing)/layout.tsx` (nouveau) : layout
+      dédié aux surfaces Marketing, imbriqué sous `(dashboard)/layout.tsx`
+      (qui garde l'auth guard, la sidebar et le panneau "module non
+      inclus") ; ajoute une sous-navigation à onglets
+      Calendrier (`/social`) / Liste & compte (`/social-marketing`).
+- [x] `src/app/(dashboard)/(marketing)/social/page.tsx` (nouveau) : grille
+      mensuelle (Lundi-Dimanche), un post s'affiche sur le jour de
+      `scheduled_at`, sinon `published_at`, sinon `created_at` (aucun post
+      ne disparaît silencieusement du calendrier) ; clic sur un jour ouvre
+      `PostEditor` pré-rempli avec la date choisie ; clic sur un post ouvre
+      un aperçu (contenu, plateformes, erreur) avec actions "Publier
+      maintenant"/"Supprimer" pour les statuts `draft`/`scheduled`, même
+      règle que `SocialPostPolicy` ; bouton "Vue liste" et bandeau
+      d'avertissement (compte non connecté) qui renvoient vers
+      `/social-marketing`.
+- [x] `src/modules/marketing/components/PostEditor.tsx` (nouveau) :
+      composant de composition de post extrait (contenu + plateformes +
+      planification optionnelle), réutilisé par `/social` (nouveau post
+      depuis un jour du calendrier) ; `src/modules/marketing/types.ts`
+      centralise les types partagés (`SocialAccount`, `SocialPost`,
+      `SUPPORTED_PLATFORMS`, `STATUS_STYLES`) entre `/social` et
+      `/social-marketing`, qui consomme désormais ces mêmes exports au
+      lieu de sa propre copie dupliquée.
+- [x] `src/app/(dashboard)/social-marketing/page.tsx` déplacé (git mv,
+      contenu inchangé à part l'import des types partagés) vers
+      `src/app/(dashboard)/(marketing)/social-marketing/page.tsx` afin de
+      bénéficier du même layout/sous-navigation Marketing ; l'URL publique
+      `/social-marketing` ne change pas (les groupes de routes Next.js
+      `(nom)` n'apparaissent jamais dans le chemin).
+- [x] `src/lib/client-features.ts` : `/social` ajouté à `ROUTE_TO_MODULE`
+      (même module `marketing`, mêmes règles de rôle/plan que
+      `/social-marketing`).
+- [x] Tests : 2 nouvelles suites unitaires (`PostEditor.test.tsx`,
+      `types.test.ts`, 11 tests) + 1 nouveau test e2e
+      (`client-feature-gates.spec.ts`, accès manager marketing à `/social`
+      + navigation vers `/social-marketing`). Vérifié en local : `tsc
+      --noEmit` (0 erreur), `eslint` (0 warning), `next build` (route
+      `/social` générée statique, aucune régression sur les 65 autres
+      routes), suite Jest complète (267/267 verts), suite e2e
+      `client-feature-gates.spec.ts` complète (7/7 verts, chromium).
+- Hors scope Phase 4.1 (reporté) : filtre serveur par mois sur
+  `GET /marketing/social-posts` (le calendrier pagine côté client via
+  `per_page=100` avec un plafond de sécurité de 20 pages ; volumes réels
+  actuels bien en-dessous) ; drag-and-drop pour replanifier un post
+  existant depuis le calendrier.
 
 ## Phase 5 — Mobile (à faire)
 
