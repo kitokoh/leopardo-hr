@@ -26,6 +26,7 @@ class ApplicantResource extends JsonResource
             'stage' => $this->stage,
             'rating' => $this->rating,
             'resume_url' => $this->resume_url,
+            'notes' => $this->notes,
             'interviews' => $this->whenLoaded('interviews'),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
