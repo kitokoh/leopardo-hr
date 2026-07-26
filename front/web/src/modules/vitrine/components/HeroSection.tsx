@@ -191,9 +191,9 @@ export function HeroSection() {
   const scale = useTransform(scrollYProgress, [0, 0.6], [1, 0.92])
 
   return (
-    <section ref={ref} className="relative min-h-[92dvh] flex items-center justify-center overflow-hidden">
+    <section ref={ref} className="relative min-h-[92dvh] flex items-center justify-center overflow-hidden bg-white dark:bg-stitch-bg">
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,0.10),transparent_34%,rgba(34,211,238,0.08))]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-slate-50/80 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-slate-50/80 dark:from-stitch-bg dark:via-stitch-bg dark:to-surface" />
       <div
         className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
         style={{
@@ -205,127 +205,144 @@ export function HeroSection() {
 
       <ParticleField />
 
-      <motion.div style={{ y, opacity, scale }} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        <div className="text-center max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.8 }}
-            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-sm font-medium mb-10 backdrop-blur-sm"
-          >
-            <Sparkles className="w-4 h-4 animate-pulse" />
-            <span>{copy.hero.badge}</span>
-            <span className="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full">
-              {copy.hero.badgeNew}
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl sm:text-6xl lg:text-[5.5rem] font-black tracking-tight leading-[0.95] mb-8"
-          >
-            <span className="block bg-gradient-to-b from-slate-900 via-slate-800 to-slate-600 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent">
-              {copy.hero.titleTop}
-            </span>
-            <span className="block mt-2 bg-gradient-to-r from-emerald-500 via-emerald-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x">
-              {copy.hero.titleBottom}
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.35 }}
-            className="text-lg sm:text-xl lg:text-2xl text-slate-500 dark:text-slate-400 mb-14 max-w-3xl mx-auto leading-relaxed font-light"
-          >
-            {copy.hero.subtitle}{' '}
-            <span className="text-slate-900 dark:text-white font-medium">{copy.hero.subtitleHighlight}</span>{' '}
-            {copy.hero.subtitleTail}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="/signup"
-              className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
+      <motion.div style={{ y, opacity, scale }} className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+        {/* Split Screen Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Side: Content & Lead Capture */}
+          <div className="text-left max-w-2xl mx-auto lg:mx-0">
+            <motion.div
+              initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.8 }}
+              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-sm font-medium mb-10 backdrop-blur-sm shadow-glass-sm"
             >
-              <span className="relative z-10 flex items-center gap-2.5 text-base">
-                {copy.hero.primaryCta}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              <Sparkles className="w-4 h-4 animate-pulse" />
+              <span>{copy.hero.badge}</span>
+              <span className="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-emerald-500/20">
+                {copy.hero.badgeNew}
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </Link>
+            </motion.div>
 
-            <Link href="/demo" className="group flex items-center gap-3.5 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all duration-300 hover:shadow-xl">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
-              </div>
-              {copy.hero.secondaryCta}
-            </Link>
-          </motion.div>
-
-          {/* One-field guided trial request */}
-          <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
-
-          {/* Mobile apps availability bar - Workforce OS / Mobile-First Company OS */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.65 }}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
-          >
-            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-              <Smartphone className="w-4 h-4 text-emerald-500" />
-              <span className="font-medium">{copy.hero.mobileBadge ?? 'Available on mobile'}</span>
-              <span className="text-slate-300 dark:text-slate-600">-</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {['Employee', 'Manager', 'Platform Admin'].map((label) => (
-                <span
-                  key={label}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-xs font-semibold"
-                >
-                  <Smartphone className="w-3 h-3" />
-                  {label}
-                </span>
-              ))}
-            </div>
-            <Link
-              href="/download"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1] mb-8"
             >
-              <Download className="w-4 h-4" />
-              {copy.hero.downloadCta ?? 'Download'}
-            </Link>
-          </motion.div>
+              <span className="block bg-gradient-to-br from-slate-900 to-slate-600 dark:from-white dark:to-on-surface-variant bg-clip-text text-transparent">
+                {copy.hero.titleTop}
+              </span>
+              <span className="block mt-2 bg-gradient-to-r from-emerald-400 via-emerald-500 to-cyan-400 bg-clip-text text-transparent animate-gradient-x drop-shadow-sm">
+                {copy.hero.titleBottom}
+              </span>
+            </motion.h1>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.7 }}
-            className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-          >
-            {copy.hero.stats.map((stat, index) => {
-              const StatIcon = statIcons[index] || TrendingUp
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.35 }}
+              className="text-lg sm:text-xl text-slate-500 dark:text-on-surface-variant mb-10 leading-relaxed font-light"
+            >
+              {copy.hero.subtitle}{' '}
+              <span className="text-slate-900 dark:text-on-surface font-medium">{copy.hero.subtitleHighlight}</span>{' '}
+              {copy.hero.subtitleTail}
+            </motion.p>
 
-              return (
-                <div key={`${stat.label}-${index}`} className="text-center group">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <StatIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                  </div>
-                  <div className="text-sm text-slate-500 dark:text-slate-500 mt-1.5 font-medium">{stat.label}</div>
+            <div className="mb-10">
+              {/* One-field guided trial request */}
+              <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="flex flex-col sm:flex-row items-center gap-4"
+            >
+              <Link
+                href="/demo"
+                className="group flex items-center gap-3.5 px-8 py-4 bg-white dark:bg-surface-bright text-slate-900 dark:text-on-surface font-semibold rounded-2xl border border-slate-200 dark:border-surface-variant hover:border-emerald-300 dark:hover:border-emerald-500/50 transition-all duration-300 hover:shadow-glass-lg backdrop-blur-xl"
+              >
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
                 </div>
-              )
-            })}
+                {copy.hero.secondaryCta}
+              </Link>
+            </motion.div>
+
+            {/* Mobile apps availability bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.65 }}
+              className="mt-10 flex flex-wrap items-center gap-3"
+            >
+              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-on-surface-variant">
+                <Smartphone className="w-4 h-4 text-emerald-500" />
+                <span className="font-medium">{copy.hero.mobileBadge ?? 'Available on mobile'}</span>
+                <span className="text-slate-300 dark:text-surface-variant">-</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {['Employee', 'Manager', 'Admin'].map((label) => (
+                  <span
+                    key={label}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-xs font-semibold"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+          
+          {/* Right Side: Abstract Visuals / Cards */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="relative hidden lg:block h-[600px] w-full"
+          >
+            {/* Abstract Decorative Elements representing Glassmorphism floating cards */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-full h-full max-w-md">
+                {/* Floating Card 1 */}
+                <motion.div
+                  animate={{ y: [-10, 10, -10] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute top-10 right-0 w-64 p-6 rounded-3xl bg-white/10 dark:bg-surface-bright/40 border border-white/20 dark:border-white/10 backdrop-blur-2xl shadow-glass-lg"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-4">
+                    <TrendingUp className="w-6 h-6 text-emerald-500" />
+                  </div>
+                  <div className="h-4 w-3/4 bg-slate-200/50 dark:bg-surface-variant rounded mb-3" />
+                  <div className="h-3 w-1/2 bg-slate-200/30 dark:bg-surface-variant/50 rounded" />
+                </motion.div>
+
+                {/* Floating Card 2 */}
+                <motion.div
+                  animate={{ y: [15, -15, 15] }}
+                  transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                  className="absolute bottom-20 left-0 w-72 p-6 rounded-3xl bg-white/50 dark:bg-surface/60 border border-white/40 dark:border-surface-variant backdrop-blur-xl shadow-2xl"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex -space-x-3">
+                      {[1,2,3].map(i => (
+                        <div key={i} className="w-10 h-10 rounded-full bg-slate-200 dark:bg-surface-bright border-2 border-white dark:border-stitch-bg flex items-center justify-center">
+                          <Users className="w-4 h-4 text-slate-400" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-3 py-1 bg-emerald-500/20 text-emerald-500 rounded-full text-xs font-bold">+24%</div>
+                  </div>
+                  <div className="h-4 w-full bg-slate-200/50 dark:bg-surface-variant rounded mb-2" />
+                  <div className="h-4 w-5/6 bg-slate-200/50 dark:bg-surface-variant rounded" />
+                </motion.div>
+
+                {/* Background Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
+              </div>
+            </div>
           </motion.div>
         </div>
       </motion.div>
@@ -339,7 +356,7 @@ export function HeroSection() {
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-6 h-10 rounded-full border-2 border-slate-300 dark:border-slate-700 flex items-start justify-center p-1.5"
+          className="w-6 h-10 rounded-full border-2 border-slate-300 dark:border-surface-variant flex items-start justify-center p-1.5"
         >
           <motion.div
             animate={{ opacity: [1, 0.3, 1], y: [0, 12, 0] }}

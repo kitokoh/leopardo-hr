@@ -110,68 +110,125 @@ class _StartupGateState extends State<StartupGate> {
             child: Directionality(
               textDirection: TextDirection.ltr,
               child: Material(
-                color: AppColors.mobileDarkBg,
-                child: SafeArea(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(28),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 58,
-                            height: 58,
-                            decoration: const BoxDecoration(
-                              color: AppColors.rh,
-                              shape: BoxShape.circle,
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'L',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
+                color: const Color(0xFF0B1326), // Stitch-bg
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF0B1326),
+                        Color(0xFF131B2E), // surface_container_low
+                      ],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Glowing Logo
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(
+                                  0xFF10B981,
+                                ).withValues(alpha: 0.1),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.3),
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF10B981,
+                                    ).withValues(alpha: 0.3),
+                                    blurRadius: 30,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                          Text(
-                            widget.appName,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.mobileDarkText,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _startupWarning ?? 'Ouverture de votre espace...',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.mobileDarkMutedAlt,
-                              fontSize: 13,
-                              height: 1.35,
-                            ),
-                          ),
-                          if (_startupWarning != null) ...[
-                            const SizedBox(height: 18),
-                            OutlinedButton(
-                              onPressed:
-                                  () => setState(() {
-                                    _showStartupGuard = false;
-                                  }),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.mobileDarkText,
-                                side: const BorderSide(
-                                  color: AppColors.mobileDarkBorder,
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'L',
+                                style: TextStyle(
+                                  color: Color(0xFF4EDEA3),
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
-                              child: const Text('Continuer'),
                             ),
+                            const SizedBox(height: 32),
+                            Text(
+                              widget.appName,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Color(0xFFDAE2FD), // on-surface
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            if (_startupWarning == null)
+                              const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF10B981),
+                                  ),
+                                ),
+                              )
+                            else
+                              Text(
+                                _startupWarning!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Color(
+                                    0xFFBBCABF,
+                                  ), // on-surface-variant
+                                  fontSize: 14,
+                                  height: 1.4,
+                                ),
+                              ),
+                            if (_startupWarning != null) ...[
+                              const SizedBox(height: 24),
+                              OutlinedButton(
+                                onPressed:
+                                    () => setState(() {
+                                      _showStartupGuard = false;
+                                    }),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFFDAE2FD),
+                                  side: BorderSide(
+                                    color: const Color(
+                                      0xFFDAE2FD,
+                                    ).withValues(alpha: 0.2),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Continuer',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
                   ),
