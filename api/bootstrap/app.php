@@ -42,6 +42,22 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('attendance:auto-close')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
+        // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /
+        // license-expiry monitoring was implemented but never scheduled; a
+        // silent/offline Edge node at a client site (or an expiring/expired
+        // offline license) went completely unnoticed in production.
+        //
+        // NOTE: two competing monitoring commands exist for historical
+        // reasons — edge:monitor (Eloquent EdgeNode model, matches the
+        // canonical UUID schema actually created in production) and
+        // edge:detect-silent-nodes (raw DB::table('edge_nodes') query on
+        // legacy bigint columns like node_id/alert_muted that do not exist
+        // in the canonical schema). Only edge:monitor is schedule-safe here;
+        // scheduling edge:detect-silent-nodes as-is would fail every run
+        // with a "column does not exist" SQL error. See issue #1291 for the
+        // schema unification work and docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md
+        // sections 1.3 and 1.4.
+        $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
