@@ -5,6 +5,11 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ## [Unreleased]
 
+### Security
+- **Mass-assignment hardening on 13 Eloquent models** — replaced `protected $guarded = [];` with explicit `protected $fillable = [...]` allow-lists on `AttendanceLog`, `ApprovalRequest`, `ApprovalWorkflow`, `ApprovalDecision`, `KioskAnnouncement`, `AttendanceCorrectionRequest`, `AttendanceKiosk`, `BiometricEnrollmentRequest`, `ZktecoDevice`, `ZktecoSyncLog`, `CalendarEvent`, `CalendarConnection` (Attendance module) and `ScheduledTaskRun` (Platform module)
+  - No known active exploit today (all write paths already used explicit field lists), but `$guarded = []` removed Laravel's mass-assignment safety net for any future `Model::create($request->all())`-style shortcut
+  - Allow-lists built from each model's actual migration columns and real write call sites; no behavior change — existing test suite passes identically before/after
+
 ### Added
 - **Employee-manager discussion threads (PA2-COMM-002)** : fil de discussion privé entre un employé et son manager
   - Modèles `ConversationThread` / `ConversationMessage` (scopés par tenant via `BelongsToCompany`)

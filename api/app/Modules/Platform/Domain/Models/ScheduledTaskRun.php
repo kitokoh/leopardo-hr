@@ -31,7 +31,15 @@ class ScheduledTaskRun extends Model
 
     protected $table = 'scheduled_task_runs';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'started_at',
+        'finished_at',
+        'runtime_ms',
+        'status',
+        'exit_code',
+        'output',
+    ];
 
     protected $casts = [
         'started_at' => 'datetime',

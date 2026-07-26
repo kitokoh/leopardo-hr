@@ -22,7 +22,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class ApprovalDecision extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'approval_request_id',
+        'level',
+        'approver_id',
+        'decision',
+        'comment',
+        'decided_at',
+    ];
 
     public const UPDATED_AT = null;
 

@@ -11,6 +11,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class KioskAnnouncement extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'title',
+        'body',
+        'priority',
+        'is_active',
+        'starts_at',
+        'expires_at',
+    ];
 }
 
