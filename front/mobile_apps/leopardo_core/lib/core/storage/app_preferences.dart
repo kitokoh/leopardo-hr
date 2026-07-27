@@ -9,6 +9,9 @@ class AppPreferences {
   static const String _biometricNoteKey = 'settings_biometric_note';
   static const String _preferredLanguageKey = 'settings_preferred_language';
   static const String _isRtlKey = 'settings_is_rtl';
+  static const String _edgeNodeIdKey = 'edge_node_id';
+  static const String _edgeTokenKey = 'edge_token';
+  static const String _edgeBaseUrlKey = 'edge_base_url';
 
   static final Map<String, Object?> _memory = <String, Object?>{};
 
@@ -44,6 +47,36 @@ class AppPreferences {
   String get preferredLanguage =>
       (_read(_preferredLanguageKey, '') as String).trim();
   bool get isRtl => _read(_isRtlKey, false) as bool;
+
+  /// Cloud-issued UUID for this device's paired Edge node (see issue #1287 /
+  /// docs/edge-sync/ARCHITECTURE.md). Empty when the device has never been
+  /// paired with an Edge node — [SyncService] then simply never reaches
+  /// `SyncMode.edge` and behaves as cloud/offline only.
+  String get edgeNodeId => (_read(_edgeNodeIdKey, '') as String).trim();
+
+  /// Bearer secret returned once at Edge node registration
+  /// (`EdgeNodeController::store()`), distinct from [edgeNodeId].
+  String get edgeToken => (_read(_edgeTokenKey, '') as String).trim();
+
+  /// Local network base URL of the paired Edge box, e.g.
+  /// `http://leopardo.local:7878`. Empty means "not configured".
+  String get edgeBaseUrl => (_read(_edgeBaseUrlKey, '') as String).trim();
+
+  Future<void> saveEdgeEnrollment({
+    required String edgeNodeId,
+    required String edgeToken,
+    required String edgeBaseUrl,
+  }) async {
+    await _write(_edgeNodeIdKey, edgeNodeId.trim());
+    await _write(_edgeTokenKey, edgeToken.trim());
+    await _write(_edgeBaseUrlKey, edgeBaseUrl.trim());
+  }
+
+  Future<void> clearEdgeEnrollment() async {
+    await _delete(_edgeNodeIdKey);
+    await _delete(_edgeTokenKey);
+    await _delete(_edgeBaseUrlKey);
+  }
 
   Future<void> saveBiometricSettings({
     required bool biometricEnabled,
