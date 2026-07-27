@@ -7794,6 +7794,272 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
+  /audit-logs/export-csv:
+    get:
+      tags: ["Admin"]
+      summary: "Exporter le journal d'audit en CSV"
+      description: |
+        Reserve au manager `principal`. Applique les memes filtres que `GET /audit-logs`
+        (action, user_id, from, to) et retourne un flux CSV (`Content-Type: text/csv`).
+      parameters:
+        - name: action
+          in: query
+          schema: { type: string }
+        - name: user_id
+          in: query
+          schema: { type: integer }
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Flux CSV du journal d'audit"
+          content:
+            text/csv:
+              schema: { type: string, format: binary }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /audit-logs/{auditLog}:
+    get:
+      tags: ["Admin"]
+      summary: "Voir un evenement d'audit"
+      description: "Reserve au manager `principal`. Journal en lecture seule (append-only), pas de update/delete."
+      parameters:
+        - name: auditLog
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail de l'evenement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AuditLog"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  # --- HR Predictions (AI) ---
+  # Reserve aux managers avec role principal ou rh (App\Modules\HR\...\PredictionController).
+  /predictions/turnover:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Predire le risque de turnover par employe"
+      parameters:
+        - name: months
+          in: query
+          description: "Horizon d'analyse historique en mois"
+          schema: { type: integer, default: 6 }
+      responses:
+        "200":
+          description: "Predictions de turnover"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /predictions/absenteeism:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Predire les risques d'absenteisme"
+      parameters:
+        - name: horizon
+          in: query
+          description: "Horizon de prediction en mois"
+          schema: { type: integer, default: 3 }
+      responses:
+        "200":
+          description: "Predictions d'absenteisme"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /predictions/notifications:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Notifications RH proactives generees par l'IA"
+      responses:
+        "200":
+          description: "Liste de notifications proactives"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  # --- SSO (SAML 2.0 / OpenID Connect) ---
+  # Plan 15 item K2. providers/callbacks sont publics; status/configure/disable requierent role principal.
+  /sso/providers:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les fournisseurs SSO supportes"
+      security: []
+      responses:
+        "200":
+          description: "Liste des fournisseurs (saml, oidc)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { type: string }
+
+  /sso/saml/{companyId}/callback:
+    post:
+      tags: ["Platform"]
+      summary: "Callback SAML 2.0 (IdP -> SP)"
+      description: "Endpoint public recevant l'assertion SAML de l'IdP. Stub — validation complete a implementer."
+      security: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                SAMLResponse: { type: string }
+      responses:
+        "200":
+          description: "Assertion recue"
+        "400":
+          description: "SAMLResponse manquant"
+        "422":
+          description: "Erreur de traitement de l'assertion"
+
+  /sso/oidc/{companyId}/callback:
+    get:
+      tags: ["Platform"]
+      summary: "Callback OpenID Connect (IdP -> SP)"
+      description: "Endpoint public recevant le code/id_token OIDC. Stub — echange token a implementer."
+      security: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: code
+          in: query
+          schema: { type: string }
+        - name: state
+          in: query
+          schema: { type: string }
+        - name: id_token
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Callback traite"
+        "400":
+          description: "Code ou id_token manquant"
+        "422":
+          description: "Erreur d'echange de token"
+
+  /sso/status:
+    get:
+      tags: ["Platform"]
+      summary: "Statut SSO de l'entreprise"
+      description: "Reserve au manager `principal`."
+      responses:
+        "200":
+          description: "Statut SSO"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      enabled: { type: boolean }
+                      provider: { type: string, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /sso/configure:
+    post:
+      tags: ["Platform"]
+      summary: "Configurer le SSO de l'entreprise"
+      description: "Reserve au manager `principal`."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, entity_id, sso_url]
+              properties:
+                provider: { type: string, enum: [saml, oidc] }
+                entity_id: { type: string, format: uri }
+                sso_url: { type: string, format: uri }
+                slo_url: { type: string, format: uri, nullable: true }
+                certificate: { type: string, nullable: true }
+                client_id: { type: string, nullable: true }
+                client_secret: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "SSO configure avec succes"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /sso/disable:
+    delete:
+      tags: ["Platform"]
+      summary: "Desactiver le SSO de l'entreprise"
+      description: "Reserve au manager `principal`."
+      responses:
+        "200":
+          description: "SSO desactive"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
   # --- Webhooks ---
   # Manager-facing CRUD for outbound partner webhooks (App\Modules\Billing\Interfaces\Api\V1\WebhookController).
   # Auth: Sanctum Bearer, tenant-scoped by `company_id`. Only employees with the `principal` manager
