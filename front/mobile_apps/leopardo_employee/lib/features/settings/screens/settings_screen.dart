@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' show PlatformDispatcher;
 
@@ -15,6 +16,8 @@ import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
+import 'package:leopardo_core/core/storage/app_preferences.dart';
+import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:local_auth/local_auth.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -44,6 +47,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _fingerprintDeviceController =
       TextEditingController();
   final TextEditingController _companyQrController = TextEditingController();
+  final TextEditingController _edgeNodeIdController = TextEditingController();
+  final TextEditingController _edgeTokenController = TextEditingController();
+  final TextEditingController _edgeBaseUrlController = TextEditingController();
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
     'ar': 'العربية',
@@ -60,6 +66,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _fingerprintEnabled = false;
   bool _faceEnabled = false;
   bool _attendanceConsent = false;
+  bool _edgeSaving = false;
   File? _selectedFaceImage;
   BiometricEnrollment? _latestEnrollment;
   String _selectedLanguage = 'fr';
@@ -89,6 +96,46 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : (_languageLabels.containsKey(deviceLanguage) ? deviceLanguage : 'fr');
     _loadLocalSettings();
     _loadEnrollmentStatus();
+    _loadEdgeSettings();
+  }
+
+  void _loadEdgeSettings() {
+    final preferences = ref.read(appPreferencesProvider);
+    _edgeNodeIdController.text = preferences.edgeNodeId;
+    _edgeTokenController.text = preferences.edgeToken;
+    _edgeBaseUrlController.text = preferences.edgeBaseUrl;
+  }
+
+  Future<void> _saveEdgeSettings(BuildContext context) async {
+    setState(() => _edgeSaving = true);
+    try {
+      await ref.read(appPreferencesProvider).saveEdgeEnrollment(
+            edgeNodeId: _edgeNodeIdController.text,
+            edgeToken: _edgeTokenController.text,
+            edgeBaseUrl: _edgeBaseUrlController.text,
+          );
+      // Re-run mode detection immediately so the sync banner reflects the
+      // newly paired Edge node without waiting for the next periodic tick
+      // or connectivity change (see issue #1287).
+      unawaited(ref.read(syncServiceProvider).syncNow());
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Parametres Edge enregistres.')),
+      );
+    } finally {
+      if (mounted) setState(() => _edgeSaving = false);
+    }
+  }
+
+  Future<void> _clearEdgeSettings(BuildContext context) async {
+    await ref.read(appPreferencesProvider).clearEdgeEnrollment();
+    _edgeNodeIdController.clear();
+    _edgeTokenController.clear();
+    _edgeBaseUrlController.clear();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Appairage Edge supprime.')),
+    );
   }
 
   Future<void> _loadLocalSettings() async {
@@ -132,6 +179,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _biometricNoteController.dispose();
     _fingerprintDeviceController.dispose();
     _companyQrController.dispose();
+    _edgeNodeIdController.dispose();
+    _edgeTokenController.dispose();
+    _edgeBaseUrlController.dispose();
     super.dispose();
   }
 
@@ -172,6 +222,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildPasswordSection(context, authState),
           const SizedBox(height: 20),
           _buildBiometricSection(context),
+          const SizedBox(height: 20),
+          _buildEdgeSection(context),
           const SizedBox(height: 28),
           _buildLogoutSection(context),
           SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
@@ -999,6 +1051,111 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: AppTypography.caption.copyWith(
               color: MobileSurface.secondary,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEdgeSection(BuildContext context) {
+    final syncService = ref.watch(syncServiceProvider);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const MobileIconBubble(
+                icon: Icons.lan_rounded,
+                color: AppColors.info,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Noeud Edge (reseau local)',
+                      style: AppTypography.subtitle.copyWith(
+                        color: MobileSurface.text,
+                      ),
+                    ),
+                    Text(
+                      'Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          StreamBuilder<SyncMode>(
+            stream: syncService.modeStream,
+            initialData: syncService.currentMode,
+            builder: (context, snapshot) {
+              final mode = snapshot.data ?? SyncMode.offline;
+              final label = switch (mode) {
+                SyncMode.cloud => 'Connecte au Cloud',
+                SyncMode.edge => 'Connecte au noeud Edge local',
+                SyncMode.offline => 'Hors ligne',
+              };
+              return Text(
+                'Statut actuel: $label',
+                style: AppTypography.bodySmall.copyWith(
+                  color: MobileSurface.secondary,
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _edgeBaseUrlController,
+            decoration: const InputDecoration(
+              labelText: 'Adresse du noeud Edge',
+              hintText: 'http://leopardo.local:7878',
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _edgeNodeIdController,
+            decoration: const InputDecoration(
+              labelText: 'Identifiant du noeud (UUID)',
+              hintText: 'Fourni par votre administrateur',
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _edgeTokenController,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: 'Jeton Edge',
+              hintText: 'Fourni une seule fois a l enregistrement',
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed:
+                      _edgeSaving ? null : () => _saveEdgeSettings(context),
+                  child: Text(
+                    _edgeSaving ? 'Enregistrement...' : 'Enregistrer',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              OutlinedButton(
+                onPressed: () => _clearEdgeSettings(context),
+                child: const Text('Retirer'),
+              ),
+            ],
           ),
         ],
       ),
