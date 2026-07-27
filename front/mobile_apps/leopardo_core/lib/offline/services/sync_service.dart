@@ -58,15 +58,22 @@ class SyncService {
   }
 
   Future<void> _detectMode() async {
-    // 1. Try Edge node (local network first)
-    final edgeReachable = await _ping('$_edgeBaseUrl/api/edge/health');
+    // 1. Try Edge node (local network first).
+    //
+    // The Edge box runs the same Laravel app image as the Cloud API (see
+    // edge/docker-compose.yml + the EdgeSync module routes), which exposes
+    // the health probe at `api/v1/edge/health` (see
+    // api/app/Modules/EdgeSync/routes/api.php) — not `api/edge/health`,
+    // which does not exist and would always fail the reachability check.
+    final edgeReachable = await _ping('$_edgeBaseUrl/api/v1/edge/health');
     if (edgeReachable) {
       _setMode(SyncMode.edge);
       return;
     }
 
-    // 2. Try Cloud
-    final cloudReachable = await _ping('$_cloudBaseUrl/api/health');
+    // 2. Try Cloud. The Cloud API exposes its liveness probe at
+    // `api/v1/health` (see api/routes/api.php), not `api/health`.
+    final cloudReachable = await _ping('$_cloudBaseUrl/api/v1/health');
     if (cloudReachable) {
       _setMode(SyncMode.cloud);
       return;

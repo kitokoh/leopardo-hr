@@ -63,6 +63,16 @@ Try Edge (http://leopardo.local)
     → Fail → Mode Offline
 ```
 
+> **Statut de câblage (issue #1287)** : cette détection est effectivement
+> câblée dans `leopardo_employee` (`syncServiceProvider` dans
+> `core/providers/core_providers.dart`, démarré depuis `app.dart` au
+> lancement de l'app). Le mode Edge n'est atteint que si l'utilisateur a
+> renseigné l'URL/UUID/jeton du nœud Edge depuis **Paramètres → Nœud Edge**
+> (`AppPreferences.saveEdgeEnrollment`) — sans cet appairage explicite,
+> l'app oscille simplement entre Cloud et Offline, comme avant. Les apps
+> `manager`, `hr` et `platform_admin` n'ont pas ce besoin produit aujourd'hui
+> et ne sont pas câblées.
+
 ---
 
 ## 3. Structure des Composants
