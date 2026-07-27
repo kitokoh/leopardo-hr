@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
+use Illuminate\Support\Facades\DB;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -49,6 +50,61 @@ class PublicCareerControllerTest extends TestCase
         $response->assertOk();
         $response->assertJsonCount(1, 'data');
         $response->assertJsonPath('data.0.title', 'Published Job');
+    }
+
+    public function test_it_exposes_company_branding_meta_on_the_listing(): void
+    {
+        $company = Company::factory()->create(['name' => 'Acme Corp']);
+        DB::table($this->companiesTable())
+            ->where('id', $company->id)
+            ->update(['metadata' => json_encode([
+                'branding' => [
+                    'display_name' => 'Acme Careers',
+                    'logo_url' => 'https://cdn.example.com/acme-logo.png',
+                    'primary_color' => '#ff0000',
+                    'accent_color' => '#00ff00',
+                ],
+            ], JSON_THROW_ON_ERROR)]);
+
+        JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Published Job',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->getJson("/api/v1/public/careers/{$company->slug}");
+
+        $response->assertOk();
+        $response->assertJsonPath('meta.company.slug', $company->slug);
+        $response->assertJsonPath('meta.company.display_name', 'Acme Careers');
+        $response->assertJsonPath('meta.company.logo_url', 'https://cdn.example.com/acme-logo.png');
+        $response->assertJsonPath('meta.company.primary_color', '#FF0000');
+        $response->assertJsonPath('meta.company.accent_color', '#00FF00');
+    }
+
+    public function test_it_falls_back_to_default_branding_when_unconfigured(): void
+    {
+        $company = Company::factory()->create(['name' => 'Bare Corp']);
+        $job = JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Backend Engineer',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->getJson("/api/v1/public/careers/{$company->slug}/jobs/{$job->id}");
+
+        $response->assertOk();
+        $response->assertJsonPath('meta.company.display_name', 'Bare Corp');
+        $response->assertJsonPath('meta.company.logo_url', null);
+        $response->assertJsonPath('meta.company.primary_color', '#10B981');
+        $response->assertJsonPath('meta.company.accent_color', '#2563EB');
+    }
+
+    private function companiesTable(): string
+    {
+        return DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies';
     }
 
     public function test_it_does_not_leak_jobs_from_another_company(): void

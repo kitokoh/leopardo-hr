@@ -55,7 +55,13 @@ class PublicCareerController extends Controller
 
             $jobs = $query->orderByDesc('published_at')->paginate($request->integer('per_page', 15));
 
-            return JobPostingResource::collection($jobs)->response();
+            return JobPostingResource::collection($jobs)
+                ->additional([
+                    'meta' => [
+                        'company' => $this->companyPayload($company),
+                    ],
+                ])
+                ->response();
         });
     }
 
@@ -75,7 +81,13 @@ class PublicCareerController extends Controller
                 ->with('department:id,name')
                 ->findOrFail($jobPosting);
 
-            return (new JobPostingResource($job))->response();
+            return (new JobPostingResource($job))
+                ->additional([
+                    'meta' => [
+                        'company' => $this->companyPayload($company),
+                    ],
+                ])
+                ->response();
         });
     }
 
@@ -172,5 +184,36 @@ class PublicCareerController extends Controller
             ->where('slug', $companySlug)
             ->where('status', '!=', 'suspended')
             ->firstOrFail();
+    }
+
+    /**
+     * Issue #1325 — the public careers page (front/web) needs the tenant's
+     * display name, logo and brand colors to render itself, without
+     * exposing any authenticated-only branding fields (logo_path/logo_disk
+     * are internal storage details). Falls back to sane defaults when the
+     * tenant never configured branding (see CompanyBrandingController).
+     *
+     * @return array<string, mixed>
+     */
+    private function companyPayload(Company $company): array
+    {
+        $metadata = $company->metadata ?? [];
+        $branding = is_array($metadata['branding'] ?? null) ? $metadata['branding'] : [];
+
+        return [
+            'id' => $company->id,
+            'name' => $company->name,
+            'slug' => $company->slug,
+            'display_name' => (is_string($branding['display_name'] ?? null) && $branding['display_name'] !== '')
+                ? $branding['display_name']
+                : $company->name,
+            'logo_url' => is_string($branding['logo_url'] ?? null) ? $branding['logo_url'] : null,
+            'primary_color' => (is_string($branding['primary_color'] ?? null) && preg_match('/^#[0-9A-Fa-f]{6}$/', $branding['primary_color']) === 1)
+                ? strtoupper($branding['primary_color'])
+                : '#10B981',
+            'accent_color' => (is_string($branding['accent_color'] ?? null) && preg_match('/^#[0-9A-Fa-f]{6}$/', $branding['accent_color']) === 1)
+                ? strtoupper($branding['accent_color'])
+                : '#2563EB',
+        ];
     }
 }
