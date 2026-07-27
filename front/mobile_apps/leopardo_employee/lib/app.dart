@@ -39,6 +39,7 @@ import 'package:leopardo_employee/features/smart_attendance/screens/smart_attend
 import 'package:leopardo_employee/features/smart_attendance/screens/background_permission_onboarding_screen.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+import 'package:leopardo_employee/offline_wrapper.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
@@ -247,6 +248,15 @@ class LeopardoApp extends ConsumerWidget {
       }
     });
 
+    // Edge/Cloud/Offline mode detection (issue #1287): without this,
+    // `leopardo_core/lib/offline/*` (SyncService, EdgeDatabase,
+    // AttendanceOfflineService) stays fully dead code and the app can never
+    // detect or use a locally-paired Edge node. `syncServiceProvider`
+    // itself calls `SyncService.start()` exactly once, the first time it is
+    // read (see core_providers.dart) — watching it here just keeps it alive
+    // for the app's lifetime and exposes it to the status banner below.
+    final syncService = ref.watch(syncServiceProvider);
+
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
@@ -295,7 +305,10 @@ class LeopardoApp extends ConsumerWidget {
       builder: (context, child) {
         return Directionality(
           textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-          child: child ?? const SizedBox.shrink(),
+          child: OfflineWrapper(
+            syncService: syncService,
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
       },
       localeResolutionCallback: (requestedLocale, supportedLocales) {
