@@ -11,7 +11,7 @@ use App\Modules\Billing\Interfaces\Api\V1\PlatformCompanySubscriptionController;
 use App\Modules\Billing\Interfaces\Api\V1\PlatformPlanController;
 use App\Modules\Billing\Interfaces\Api\V1\SelfServiceTrialController;
 use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
-use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController;
+use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
@@ -237,11 +237,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
         Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
 
-        // Edge node management (super-admin)
+        // Edge node management (super-admin).
+        // Uses EdgeNodeController against the canonical UUID edge_nodes
+        // schema (see issue #1291) — the legacy bigint-schema EdgeController
+        // equivalents were removed because that schema is never created.
         Route::prefix('edge/nodes')->group(function (): void {
-            Route::get('/', [EdgeController::class, 'listNodes']);
-            Route::post('/{id}/sync', [EdgeController::class, 'forceSync'])->whereNumber('id');
-            Route::delete('/{id}', [EdgeController::class, 'revokeNode'])->whereNumber('id');
+            Route::get('/', [EdgeNodeController::class, 'listAllNodes']);
+            Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
+            Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode']);
         });
     });
 });
