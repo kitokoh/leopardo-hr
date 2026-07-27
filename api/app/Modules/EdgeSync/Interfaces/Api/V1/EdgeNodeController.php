@@ -234,6 +234,60 @@ class EdgeNodeController extends Controller
         return response()->json($result, $result['valid'] ? 200 : 422);
     }
 
+    // ── Platform Super-Admin Routes (issue #1291) ──────
+    //
+    // These replace the dead legacy EdgeController::listNodes()/forceSync()/
+    // revokeNode() methods, which queried a bigint `edge_nodes` schema
+    // (columns node_id/pending_count/license_valid/alert_muted/revoked_at)
+    // that is never actually created — the real schema (created by
+    // 2026_06_29_000001_create_edge_sync_tables.php) is the UUID/slug one
+    // this controller's EdgeNode model already targets. Cross-tenant here
+    // is intentional: these are platform-wide, super-admin-only endpoints.
+
+    /**
+     * List every Edge node across all tenants (platform overview).
+     * GET /api/v1/platform/edge/nodes
+     */
+    public function listAllNodes(): JsonResponse
+    {
+        $nodes = EdgeNode::with(['company:id,name', 'syncLogs' => fn ($q) => $q->latest()->limit(1)])
+            ->orderByDesc('last_seen_at')
+            ->get()
+            ->map(fn (EdgeNode $node) => array_merge($node->toArray(), [
+                'is_online'     => $node->isOnline(),
+                'license_valid' => $node->isLicenseValid(),
+                'company_name'  => $node->company?->name,
+            ]));
+
+        return response()->json(['data' => $nodes]);
+    }
+
+    /**
+     * Force a manual sync for any tenant's Edge node (platform override).
+     * POST /api/v1/platform/edge/nodes/{nodeId}/sync
+     */
+    public function forceSync(string $nodeId): JsonResponse
+    {
+        $node = EdgeNode::findOrFail($nodeId);
+        $log  = $this->syncEngine->sync($node);
+
+        return response()->json(['data' => $log]);
+    }
+
+    /**
+     * Revoke an Edge node and its active license (platform override).
+     * DELETE /api/v1/platform/edge/nodes/{nodeId}
+     */
+    public function revokeNode(string $nodeId): JsonResponse
+    {
+        $node = EdgeNode::findOrFail($nodeId);
+
+        $node->update(['status' => 'suspended']);
+        $this->licenseService->revokeLicense($node);
+
+        return response()->json(['status' => 'revoked', 'data' => $node->fresh()]);
+    }
+
     // ── Private Helpers ───────────────────────────────────
 
     private function authorizeEdgeToken(Request $request, EdgeNode $node): void

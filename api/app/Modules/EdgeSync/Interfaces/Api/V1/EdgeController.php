@@ -22,14 +22,25 @@ use Illuminate\Support\Facades\Log;
  *   GET  /edge/download/docker-compose.yml → docker-compose pré-configuré
  *   GET  /edge/license-public-key          → clé publique RS256 (PEM)
  *
- * Routes protégées (super_admin_api) :
- *   GET    /platform/edge/nodes              → liste des nœuds
- *   POST   /platform/edge/nodes/{id}/sync   → forcer sync
- *   DELETE /platform/edge/nodes/{id}         → révoquer
- *
  * Routes nœud Edge (token EDGE_TOKEN) :
  *   POST /edge/heartbeat   → heartbeat depuis le nœud
  *   POST /edge/sync        → réception sync depuis le nœud
+ *
+ * NOTE (issue #1291): the platform super-admin node-management endpoints
+ * (`GET/POST/DELETE /platform/edge/nodes*`) used to live on this class as
+ * listNodes()/forceSync()/revokeNode(), built against a legacy bigint
+ * `edge_nodes` schema (columns `node_id`, `pending_count`, `license_valid`,
+ * `alert_muted`, `revoked_at`) that is never actually created in
+ * production — the canonical schema created by
+ * 2026_06_29_000001_create_edge_sync_tables.php (module EdgeSync DDD) uses
+ * a UUID primary key, `slug`, and `metadata` JSON instead, and the legacy
+ * migration (2026_06_30_000001_create_edge_nodes_table.php) neutralizes
+ * itself whenever the canonical table already exists. Any real call to
+ * those three methods would therefore fail with a "column ... does not
+ * exist" SQL error against the tables actually created in every
+ * environment. They have been removed here; the equivalent super-admin
+ * node-management endpoints now live on {@see EdgeNodeController} against
+ * the canonical UUID schema (see routes/api.php `platform/edge/nodes*`).
  */
 class EdgeController extends Controller
 {
@@ -267,61 +278,5 @@ class EdgeController extends Controller
             'status'      => 'ok',
             'server_time' => Carbon::now()->toIso8601String(),
         ]);
-    }
-
-    // =========================================================================
-    // Gestion nœuds (platform super-admin)
-    // =========================================================================
-
-    /** GET /platform/edge/nodes */
-    public function listNodes(): JsonResponse
-    {
-        $nodes = DB::table('edge_nodes as n')
-            ->join('companies as c', 'c.id', '=', 'n.company_id')
-            ->select([
-                'n.id', 'n.node_id', 'n.name', 'n.status',
-                'n.ip_address', 'n.last_seen_at', 'n.pending_count',
-                'n.license_valid', 'n.license_expires_at',
-                'n.alert_muted', 'n.version',
-                'c.name as company_name',
-            ])
-            ->orderBy('n.status')
-            ->orderBy('n.name')
-            ->get();
-
-        return response()->json(['data' => $nodes]);
-    }
-
-    /** POST /platform/edge/nodes/{id}/sync */
-    public function forceSync(int $id): JsonResponse
-    {
-        $node = DB::table('edge_nodes')->find($id);
-        if (! $node) {
-            return response()->json(['error' => 'not_found'], 404);
-        }
-
-        DB::table('edge_nodes')->where('id', $id)->update([
-            'sync_requested_at' => Carbon::now(),
-        ]);
-
-        return response()->json(['status' => 'sync_requested']);
-    }
-
-    /** DELETE /platform/edge/nodes/{id} */
-    public function revokeNode(int $id): JsonResponse
-    {
-        $node = DB::table('edge_nodes')->find($id);
-        if (! $node) {
-            return response()->json(['error' => 'not_found'], 404);
-        }
-
-        DB::table('edge_nodes')->where('id', $id)->update([
-            'status'     => 'revoked',
-            'revoked_at' => Carbon::now(),
-        ]);
-
-        Log::warning('[Edge] Nœud révoqué', ['id' => $id, 'node_id' => $node->node_id ?? '']);
-
-        return response()->json(['status' => 'revoked']);
     }
 }
