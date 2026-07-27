@@ -240,8 +240,8 @@ Route::prefix('v1')->group(function (): void {
         // Edge node management (super-admin)
         Route::prefix('edge/nodes')->group(function (): void {
             Route::get('/', [EdgeController::class, 'listNodes']);
-            Route::post('/{id}/sync', [EdgeController::class, 'forceSync'])->whereNumber('id');
-            Route::delete('/{id}', [EdgeController::class, 'revokeNode'])->whereNumber('id');
+            Route::post('/{id}/sync', [EdgeController::class, 'forceSync'])->whereUuid('id');
+            Route::delete('/{id}', [EdgeController::class, 'revokeNode'])->whereUuid('id');
         });
     });
 });

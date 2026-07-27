@@ -19,11 +19,23 @@ return new class extends Migration
         if (Schema::hasTable('edge_nodes')) {
             // La table edge_nodes est déjà créée par la migration
             // 2026_06_29_000001_create_edge_sync_tables.php (module EdgeSync DDD,
-            // schéma UUID). Cette migration légacy visait un schéma bigint
-            // différent mais n'est reliée à aucune route active
-            // (App\Http\Controllers\Api\V1\EdgeController n'est enregistré
-            // dans aucun fichier de routes). On la neutralise pour éviter le
-            // conflit "relation edge_nodes already exists" en CI/production.
+            // schéma UUID) qui s'exécute toujours avant celle-ci (timestamp
+            // antérieur). Cette migration légacy visait un schéma bigint
+            // différent (node_id/pending_count/license_valid).
+            //
+            // Historique (issue #1291) : App\Modules\EdgeSync\Interfaces\Api\V1\
+            // EdgeController::listNodes/forceSync/revokeNode (routes actives
+            // /platform/edge/nodes*) interrogeaient directement ce schéma
+            // bigint legacy via DB::table('edge_nodes'), ce qui cassait ces
+            // routes en production puisque seul le schéma UUID canonique est
+            // réellement créé. Le correctif consiste à faire passer
+            // EdgeController sur le modèle Eloquent EdgeNode canonique
+            // (App\Modules\EdgeSync\Domain\Models\EdgeNode) plutôt qu'à fusionner
+            // les schémas. Cette migration reste neutralisée pour éviter le
+            // conflit "relation edge_nodes already exists" en CI/production ;
+            // elle est conservée uniquement pour compatibilité avec
+            // d'anciens environnements qui auraient déjà exécuté son up()
+            // avant l'introduction du module EdgeSync DDD.
             return;
         }
 

@@ -7,11 +7,11 @@ namespace App\Modules\EdgeSync\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -30,6 +30,18 @@ use Illuminate\Support\Facades\Log;
  * Routes nœud Edge (token EDGE_TOKEN) :
  *   POST /edge/heartbeat   → heartbeat depuis le nœud
  *   POST /edge/sync        → réception sync depuis le nœud
+ *
+ * NOTE (issue #1291): the platform node-management methods below
+ * (listNodes/forceSync/revokeNode) operate on the canonical EdgeNode
+ * Eloquent model (UUID primary key, `edge_nodes` table created by
+ * App\Modules\EdgeSync\database\migrations\2026_06_29_000001_create_edge_sync_tables).
+ * They previously ran raw DB::table('edge_nodes') queries against a
+ * competing legacy bigint schema (node_id/pending_count/license_valid
+ * columns) that the canonical migration never creates in production,
+ * which made /platform/edge/nodes* fail with "column does not exist"
+ * as soon as the canonical migration ran first. See
+ * database/migrations/tenant/2026_06_30_000001_create_edge_nodes_table.php
+ * for how that legacy migration now self-neutralizes.
  */
 class EdgeController extends Controller
 {
@@ -241,7 +253,16 @@ class EdgeController extends Controller
     // Heartbeat Edge → Cloud
     // =========================================================================
 
-    /** POST /edge/heartbeat */
+    /**
+     * POST /edge/heartbeat
+     *
+     * `node_id` accepts either the canonical EdgeNode UUID or its slug
+     * (both uniquely identify a node). Kept for install scripts that only
+     * know the human-readable slug; nodes provisioned via
+     * EdgeNodeController::store() should prefer
+     * POST /api/v1/edge-node/{nodeId}/heartbeat with their UUID + bearer
+     * token instead, which is the authenticated machine-to-machine route.
+     */
     public function heartbeat(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -251,17 +272,26 @@ class EdgeController extends Controller
             'ip_address'    => ['nullable', 'ip'],
         ]);
 
-        DB::table('edge_nodes')
-            ->where('node_id', $validated['node_id'])
-            ->update([
-                'status'        => 'online',
-                'last_seen_at'  => Carbon::now(),
-                'pending_count' => $validated['pending_count'] ?? 0,
-                'version'       => $validated['version'] ?? null,
-                'ip_address'    => $validated['ip_address'] ?? $request->ip(),
-            ]);
+        $node = EdgeNode::query()
+            ->when(
+                \Illuminate\Support\Str::isUuid($validated['node_id']),
+                fn ($query) => $query->where('id', $validated['node_id'])->orWhere('slug', $validated['node_id']),
+                fn ($query) => $query->where('slug', $validated['node_id']),
+            )
+            ->first();
 
-        Log::info('[Edge] Heartbeat reçu', ['node_id' => $validated['node_id']]);
+        if (! $node) {
+            return response()->json(['error' => 'node_not_found'], 404);
+        }
+
+        $node->update([
+            'status'       => 'active',
+            'last_seen_at' => Carbon::now(),
+            'public_ip'    => $validated['ip_address'] ?? $request->ip(),
+            'edge_version' => $validated['version'] ?? $node->edge_version,
+        ]);
+
+        Log::info('[Edge] Heartbeat reçu', ['node_id' => $node->id]);
 
         return response()->json([
             'status'      => 'ok',
@@ -276,51 +306,64 @@ class EdgeController extends Controller
     /** GET /platform/edge/nodes */
     public function listNodes(): JsonResponse
     {
-        $nodes = DB::table('edge_nodes as n')
-            ->join('companies as c', 'c.id', '=', 'n.company_id')
-            ->select([
-                'n.id', 'n.node_id', 'n.name', 'n.status',
-                'n.ip_address', 'n.last_seen_at', 'n.pending_count',
-                'n.license_valid', 'n.license_expires_at',
-                'n.alert_muted', 'n.version',
-                'c.name as company_name',
-            ])
-            ->orderBy('n.status')
-            ->orderBy('n.name')
-            ->get();
+        $nodes = EdgeNode::query()
+            ->with('company')
+            ->withCount(['syncQueue as pending_count' => function ($query) {
+                $query->where('status', 'pending');
+            }])
+            ->orderByDesc('status')
+            ->orderBy('name')
+            ->get()
+            ->map(function (EdgeNode $node) {
+                /** @var \App\Modules\EdgeSync\Domain\Models\EdgeLicense|null $license */
+                $license = $node->license()->latest('expires_at')->first();
+
+                return [
+                    'id'                 => $node->id,
+                    'node_id'            => $node->slug,
+                    'name'               => $node->name,
+                    'status'             => $node->status,
+                    'ip_address'         => $node->public_ip ?? $node->local_ip,
+                    'last_seen_at'       => $node->last_seen_at,
+                    'pending_count'      => $node->pending_count,
+                    'license_valid'      => $license?->isValid() ?? false,
+                    'license_expires_at' => $license?->expires_at ?? $node->license_expires_at,
+                    'alert_muted'        => (bool) ($node->metadata['alert_muted'] ?? false),
+                    'version'            => $node->edge_version,
+                    'company_name'       => $node->company?->name,
+                ];
+            });
 
         return response()->json(['data' => $nodes]);
     }
 
     /** POST /platform/edge/nodes/{id}/sync */
-    public function forceSync(int $id): JsonResponse
+    public function forceSync(string $id): JsonResponse
     {
-        $node = DB::table('edge_nodes')->find($id);
+        $node = EdgeNode::find($id);
         if (! $node) {
             return response()->json(['error' => 'not_found'], 404);
         }
 
-        DB::table('edge_nodes')->where('id', $id)->update([
-            'sync_requested_at' => Carbon::now(),
-        ]);
+        $node->update(['metadata' => array_merge($node->metadata ?? [], [
+            'sync_requested_at' => Carbon::now()->toIso8601String(),
+        ])]);
 
         return response()->json(['status' => 'sync_requested']);
     }
 
     /** DELETE /platform/edge/nodes/{id} */
-    public function revokeNode(int $id): JsonResponse
+    public function revokeNode(string $id): JsonResponse
     {
-        $node = DB::table('edge_nodes')->find($id);
+        $node = EdgeNode::find($id);
         if (! $node) {
             return response()->json(['error' => 'not_found'], 404);
         }
 
-        DB::table('edge_nodes')->where('id', $id)->update([
-            'status'     => 'revoked',
-            'revoked_at' => Carbon::now(),
-        ]);
+        $node->update(['status' => 'revoked']);
+        $this->licenseService->revokeLicense($node);
 
-        Log::warning('[Edge] Nœud révoqué', ['id' => $id, 'node_id' => $node->node_id ?? '']);
+        Log::warning('[Edge] Nœud révoqué', ['id' => $id, 'slug' => $node->slug]);
 
         return response()->json(['status' => 'revoked']);
     }
