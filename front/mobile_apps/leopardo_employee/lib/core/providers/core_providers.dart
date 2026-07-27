@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/location/attendance_location_service.dart';
@@ -6,6 +7,9 @@ import 'package:leopardo_core/core/services/offline_sync_service.dart';
 import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
+import 'package:leopardo_core/offline/database/edge_database.dart';
+import 'package:leopardo_core/offline/services/attendance_offline_service.dart';
+import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
 import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
@@ -54,6 +58,49 @@ final offlineSyncServiceProvider = Provider<OfflineSyncService>((ref) {
   final service = OfflineSyncService(apiClient, Connectivity());
   ref.onDispose(service.dispose);
   return service;
+});
+
+/// Local SQLite (Drift) database used by the Edge/offline module
+/// (see issue #1287 — `leopardo_core/lib/offline/*` was previously never
+/// wired into any app). Long-lived: closed only when the app itself exits.
+final edgeDatabaseProvider = Provider<EdgeDatabase>((ref) {
+  return EdgeDatabase();
+});
+
+/// Detects Cloud / local-Edge-network / fully-offline connectivity and
+/// syncs the Edge SQLite queue accordingly. Only reaches [SyncMode.edge]
+/// once the device has been paired with an Edge node from Settings (see
+/// [AppPreferences.edgeNodeId]); otherwise it simply oscillates between
+/// cloud and offline, same as before this module existed.
+final syncServiceProvider = Provider<SyncService>((ref) {
+  final preferences = ref.watch(appPreferencesProvider);
+  final db = ref.watch(edgeDatabaseProvider);
+  final service = SyncService(
+    db: db,
+    dio: Dio(),
+    edgeBaseUrl: preferences.edgeBaseUrl.isNotEmpty
+        ? preferences.edgeBaseUrl
+        : 'http://leopardo.local:7878',
+    cloudBaseUrl: ApiClient.resolveBaseUrl().replaceFirst('/api/v1', ''),
+    edgeNodeId: preferences.edgeNodeId,
+    edgeToken: preferences.edgeToken,
+  );
+  service.start();
+  ref.onDispose(service.stop);
+  return service;
+});
+
+/// Offline-first check-in/check-out backed by [EdgeDatabase] + [SyncService]
+/// (see issue #1287). Distinct from [offlineSyncServiceProvider], which only
+/// drains the legacy Hive `offline_punches` fallback queue.
+final attendanceOfflineServiceProvider = Provider<AttendanceOfflineService>((
+  ref,
+) {
+  return AttendanceOfflineService(
+    db: ref.watch(edgeDatabaseProvider),
+    syncService: ref.watch(syncServiceProvider),
+    dio: Dio(),
+  );
 });
 
 final attendanceLocationServiceProvider = Provider<AttendanceLocationService>((
