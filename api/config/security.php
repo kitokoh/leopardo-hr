@@ -14,6 +14,10 @@ return [
         // own dedicated buckets to stay protected against brute-force attempts.
         'web_login_per_minute' => (int) env('RATE_LIMIT_WEB_LOGIN_PER_MINUTE', 10),
         'kiosk_punch_per_minute' => (int) env('RATE_LIMIT_KIOSK_PUNCH_PER_MINUTE', 30),
+        // Public careers portal (job listing, job detail, XML feed, and
+        // candidate application submission) is unauthenticated by design,
+        // so it gets its own dedicated throttle bucket keyed by IP.
+        'public_careers_per_minute' => (int) env('RATE_LIMIT_PUBLIC_CAREERS_PER_MINUTE', 60),
     ],
 
     'plan_rate_limits' => [

@@ -33,11 +33,13 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
+use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
+use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -97,6 +99,17 @@ Route::prefix('v1')->group(function (): void {
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
         Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
+    });
+
+    // Public careers portal (ATS): unauthenticated job listing/detail, the
+    // Google Jobs / Indeed XML feed, and candidate application submission.
+    // Tenant is resolved from {companySlug}, not from Sanctum, since visitors
+    // have no account. See feat(recruitment): ATS Backend - APIs Publiques.
+    Route::middleware(['throttle:public-careers'])->prefix('public/careers')->group(function (): void {
+        Route::get('/{companySlug}', [PublicCareerController::class, 'index']);
+        Route::get('/{companySlug}/feed.xml', [PublicCareerController::class, 'feed']);
+        Route::get('/{companySlug}/jobs/{jobPosting}', [PublicCareerController::class, 'show'])->whereNumber('jobPosting');
+        Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])->whereNumber('jobPosting');
     });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
