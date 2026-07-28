@@ -6,8 +6,8 @@ use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Policies\ExportPolicy;
 use App\Core\Tenant\TenantManager;
+use App\Policies\ExportPolicy;
 use App\Services\TenantManager as LegacyTenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -188,6 +188,14 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('security.rate_limits.kiosk_punch_per_minute', 30))
                 ->by('kiosk-punch:'.$deviceCode.'|'.$request->ip());
         });
+
+        // Public careers portal (job listing/detail/feed + candidate
+        // applications) has no Sanctum guard, so it needs its own IP-keyed
+        // throttle bucket rather than relying on the authenticated 'api' one.
+        RateLimiter::for('public-careers', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.public_careers_per_minute', 60))
+                ->by('public-careers:'.$request->ip());
+        });
     }
 
     private function resolvePlanLimit(string $plan): int
@@ -224,4 +232,3 @@ class AppServiceProvider extends ServiceProvider
         return strtolower(trim($plan));
     }
 }
-
