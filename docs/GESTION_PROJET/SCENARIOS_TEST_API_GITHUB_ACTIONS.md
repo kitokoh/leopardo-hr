@@ -1260,3 +1260,21 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 
 **Endpoints non affectés**
 - Aucun changement sur `login`, `me`, `logout`, `2fa/setup|enable|disable` ni sur les guards `super_admin_web`/`super_admin_api` existants. `PlatformAuthTest` complet vérifié : 12/12 passants.
+
+## Recruitment — Portail carrières public (ATS Backend, issue #1324)
+
+**Nouvelles routes**, toutes non authentifiées (`throttle:public-careers` uniquement, aucun `auth:sanctum`/`tenant` middleware) sous `Route::prefix('public/careers')` dans `api/routes/api.php` (`App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController` / `CandidateApplicationController`) :
+
+- `GET /api/v1/public/careers/{companySlug}` : liste les `JobPosting` `published` (non fermées) de l'entreprise resolue par son `slug` public. 404 si le slug est inconnu.
+  - Scenario a valider : `PublicCareerControllerTest` (listing, filtres, isolation tenant, 404 slug inconnu).
+- `GET /api/v1/public/careers/{companySlug}/feed.xml` : flux XML publisher (Indeed XML / Google for Jobs) des offres publiees de l'entreprise.
+  - Scenario a valider : `PublicCareerControllerTest` (contenu XML, offres brouillon/fermees absentes du flux).
+- `GET /api/v1/public/careers/{companySlug}/jobs/{jobPosting}` : detail d'une offre publiee ; 404 pour brouillon/fermee/inexistante ou offre d'une autre entreprise.
+  - Scenario a valider : `PublicCareerControllerTest` (detail, 404 cross-tenant, 404 brouillon).
+- `POST /api/v1/public/careers/{companySlug}/jobs/{jobPosting}/apply` : soumission de candidature publique (creation `Applicant`, upload CV optionnel ou `resume_url`). 404 si l'offre n'est pas publiee/appartient a une autre entreprise, 422 sur validation.
+  - Scenario a valider : `PublicCareerControllerTest` (candidature valide, validation, cross-tenant refuse).
+
+Le tenant est resolu depuis le `companySlug` de l'URL (jamais depuis Sanctum, puisque le visiteur n'a pas de compte) ; le contexte tenant (search_path + binding `current_company`) n'est actif que pour la duree de la requete.
+
+**Endpoints non affectés**
+- Les endpoints authentifies existants du module Recruitment (`/recruitment/jobs*`, `/recruitment/applicants*`) restent inchanges.
