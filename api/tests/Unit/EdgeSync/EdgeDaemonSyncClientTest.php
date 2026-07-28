@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\EdgeSync;
 
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
 use Illuminate\Support\Facades\Http;
@@ -37,6 +39,33 @@ class EdgeDaemonSyncClientTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+
+        // `sync_queue.edge_node_id` carries a FK to `edge_nodes`, so every
+        // test that inserts SyncQueue rows against NODE_ID needs a matching
+        // EdgeNode (and its parent Company) to satisfy the constraint —
+        // otherwise SQLite raises "FOREIGN KEY constraint failed" before the
+        // client under test ever runs.
+        $company = Company::factory()->create([
+            'slug' => 'edge-daemon-test-co',
+            'status' => 'active',
+        ]);
+
+        // `id` is not in EdgeNode::$fillable, so a plain create() would
+        // silently drop it and let HasUuids generate a random primary key
+        // instead of NODE_ID — use forceCreate() to pin the id the rest of
+        // this test class relies on.
+        EdgeNode::forceCreate([
+            'id' => self::NODE_ID,
+            'company_id' => $company->id,
+            'name' => 'Edge Daemon Test Node',
+            'slug' => 'edge-daemon-test-node',
+            'status' => 'active',
+            'mode' => 'hybrid',
+            'edge_version' => '1.0.0',
+            'capabilities' => [],
+            'license_expires_at' => now()->addDays(30),
+            'metadata' => ['edge_token' => hash('sha256', self::EDGE_TOKEN)],
+        ]);
     }
 
     protected function tearDown(): void
