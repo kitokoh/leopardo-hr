@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -135,6 +136,13 @@ String _uuid() {
 )
 class EdgeDatabase extends _$EdgeDatabase {
   EdgeDatabase() : super(_openConnection());
+
+  /// Test-only constructor that accepts an arbitrary [QueryExecutor] (e.g.
+  /// `NativeDatabase.memory()`) instead of opening the real on-device file
+  /// under the app documents directory. See issue #1296 — this is what lets
+  /// AttendanceOfflineService/SyncService be unit-tested without a device.
+  @visibleForTesting
+  EdgeDatabase.forTesting(super.executor);
 
   @override
   int get schemaVersion => 1;
