@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # PA2-AUTO-005: rapport hebdomadaire d'avancement pour le backlog
-# PLAN_ACTION2 (docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv).
+# PLAN_ACTION2 (docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv).
 #
 # Pourquoi: aucune vue consolidee n'existait pour repondre rapidement a
 # "qu'est-ce qui a ete merge cette semaine ?", "qu'est-ce qui est bloque
@@ -31,7 +31,7 @@ set -euo pipefail
 REPO=""
 SINCE_DAYS=7
 STALE_DAYS=5
-CSV_PATH="docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv"
+CSV_PATH="docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv"
 OUTPUT_PATH=""
 
 usage() {
@@ -42,7 +42,7 @@ Options:
   --repo owner/repo     Repo cible (defaut: origin git remote)
   --since-days N        Fenetre pour la section MERGES (defaut: 7)
   --stale-days N        Seuil d'age pour la section BLOQUES (defaut: 5)
-  --csv PATH            Chemin du CSV canonique (defaut: docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv)
+  --csv PATH            Chemin du CSV canonique (defaut: docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv)
   --output PATH         Ecrit aussi le rapport dans ce fichier (en plus de stdout)
   -h, --help            Affiche cette aide
 EOF

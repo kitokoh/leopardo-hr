@@ -1,6 +1,9 @@
 param(
-    [string]$CsvPath = "docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv",
-    [string]$BacklogPath = "docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md"
+    # PLAN_ACTION2 a ete archive le 2026-07-29 (audit doc) : docs/PLAN_ACTION2/ ne contient
+    # plus qu'un README.md de redirection vers les GitHub Issues. Le CSV/backlog historique
+    # vit desormais dans docs/archive/PLAN_ACTION2/.
+    [string]$CsvPath = "docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv",
+    [string]$BacklogPath = "docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md"
 )
 
 $ErrorActionPreference = "Stop"
