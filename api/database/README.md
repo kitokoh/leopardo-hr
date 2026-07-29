@@ -92,10 +92,13 @@ pg_restore -Fc -U leopardo_user -d leopardo_db backup_TIMESTAMP.dump
 ### Reset complet (local uniquement !)
 
 ```bash
-php artisan migrate:fresh --seed
+php artisan leopardo:migrate --fresh --seed
 # ou avec données de démo :
-php artisan migrate:fresh --seed && php artisan db:seed --class=DemoCompanySeeder
+php artisan leopardo:migrate --fresh --seed --demo
 ```
+
+> `migrate:fresh` seul ne recrée que le schéma `public` — utiliser `leopardo:migrate --fresh`
+> qui recrée aussi `shared_tenants`. Voir `docs/architecture/MULTITENANCY.md`.
 
 ---
 
