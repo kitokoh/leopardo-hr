@@ -33,7 +33,7 @@ To get started quickly, we recommend using Docker:
 
 ```bash
 docker compose up -d
-docker compose exec api php artisan migrate --seed
+docker compose exec api php artisan leopardo:migrate --seed
 ```
 
 The API will be available at `http://localhost:8000`.

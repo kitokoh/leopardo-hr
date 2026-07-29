@@ -17,7 +17,7 @@ Welcome to Leopardo RH! This guide will help you get your environment set up and
 
 3.  **Seed Database**
     ```bash
-    docker exec -it leopardo-api php artisan migrate --seed
+    docker exec -it leopardo-api php artisan leopardo:migrate --seed
     ```
 
 Your API is now live at `http://localhost:8000`.
@@ -40,8 +40,11 @@ If you prefer running Laravel directly:
 
 3.  **Run Migrations**
     ```bash
-    php artisan migrate
+    php artisan leopardo:migrate
     ```
+    > Leopardo RH uses a two-schema multi-tenant model (`public` + `shared_tenants`). Plain
+    > `artisan migrate` only creates the `public` schema tables — always use the custom
+    > `leopardo:migrate` command locally. See `docs/architecture/MULTITENANCY.md`.
 
 4.  **Serve**
     ```bash

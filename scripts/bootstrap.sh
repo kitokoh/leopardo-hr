@@ -24,7 +24,7 @@ sleep 5
 # Run migrations and seeders
 echo "Running migrations and seeds..."
 docker exec leopardo-api php artisan key:generate --force
-docker exec leopardo-api php artisan migrate:fresh --seed --force
+docker exec leopardo-api php artisan leopardo:migrate --fresh --seed --force
 
 echo "✅ Leopardo RH is ready!"
 echo "API: http://localhost:8000"
