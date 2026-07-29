@@ -30,7 +30,17 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    command: php artisan serve --host=0.0.0.0 --port=8000
+    # `./api` is bind-mounted over the image's /var/www/html, so a fresh clone
+    # has no vendor/ until `docker compose exec api composer install` runs (the
+    # documented onboarding step, see DEVELOPMENT.md). Without this wait guard,
+    # `php artisan serve` crashes immediately on first boot (missing
+    # vendor/autoload.php) and, with no restart policy, the container stays
+    # `exited` forever — breaking every documented `docker compose exec api ...`
+    # command. `restart: unless-stopped` + this loop make the container survive
+    # long enough for `composer install` to run, then start serving.
+    command: >
+      sh -c "while [ ! -f vendor/autoload.php ]; do echo 'Waiting for composer install (run: docker compose exec api composer install)...'; sleep 2; done; php artisan serve --host=0.0.0.0 --port=8000"
+    restart: unless-stopped
 
   postgres:
     image: postgres:16-alpine
@@ -87,7 +97,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    command: >
+      sh -c "while [ ! -f vendor/autoload.php ]; do sleep 2; done; php artisan queue:work --sleep=3 --tries=3 --max-time=3600"
     restart: unless-stopped
 
   scheduler:
@@ -117,7 +128,7 @@ services:
       redis:
         condition: service_healthy
     command: >
-      sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
+      sh -c "while [ ! -f vendor/autoload.php ]; do sleep 2; done; while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
     restart: unless-stopped
 
   mailpit:
