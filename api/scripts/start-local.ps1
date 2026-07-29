@@ -52,12 +52,11 @@ try {
     docker compose exec app composer install --no-interaction --prefer-dist
     docker compose exec app php artisan key:generate
     docker compose exec app php artisan config:clear
-    docker compose exec app php artisan migrate --path=database/migrations/public --force
-    docker compose exec app php artisan migrate --path=database/migrations/tenant --force
-    docker compose exec app php artisan db:seed --class=DatabaseSeeder
 
     if ($SeedDemo) {
-        docker compose exec app php artisan db:seed --class=DemoCompanySeeder
+        docker compose exec app php artisan leopardo:migrate --seed --demo --force
+    } else {
+        docker compose exec app php artisan leopardo:migrate --seed --force
     }
 
     if ($RunTests) {

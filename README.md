@@ -116,7 +116,7 @@ docker-compose up -d
 # 3. Bootstrap the Backend
 cd api
 composer install
-php artisan migrate --seed
+php artisan leopardo:migrate --seed
 ```
 
 ---

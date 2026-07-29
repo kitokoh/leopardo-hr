@@ -23,7 +23,7 @@ cp api/.env.example api/.env
 make install      # = docker compose up -d --build + migrate + seed
 # OR manually:
 docker compose up -d --build
-docker compose exec api php artisan migrate --seed
+docker compose exec api php artisan leopardo:migrate --seed
 
 # 4. Access
 # Backend API:      http://localhost:8000/api/v1/health
@@ -61,8 +61,8 @@ cd api
 # Install dependencies
 composer install
 
-# Run migrations
-php artisan migrate --seed
+# Run migrations (public + tenant schemas — see note below)
+php artisan leopardo:migrate --seed
 
 # Run tests
 php artisan test
@@ -76,6 +76,16 @@ php artisan test --filter=PayrollControllerTest
 ./vendor/bin/pint --test
 ./vendor/bin/pint  # fix
 ```
+
+> **Pourquoi `leopardo:migrate` et pas `artisan migrate` ?**
+> Leopardo RH utilise un modele multi-tenant hybride a deux schemas PostgreSQL : `public`
+> (tables partagees) et `shared_tenants` (tables metier : employes, contrats, paie, presence...).
+> `artisan migrate` seul ne lit que `database/migrations/` a la racine et **ne cree jamais le
+> schema `shared_tenants`**. La commande custom `leopardo:migrate` (voir `api/routes/console.php`)
+> bascule le `search_path` et joue les migrations `database/migrations/public/` puis
+> `database/migrations/tenant/` dans le bon ordre. Utilisez toujours `leopardo:migrate` (avec
+> `--fresh`/`--seed`/`--demo` au besoin) en local, jamais `migrate`/`migrate:fresh` nu — voir
+> `docs/architecture/MULTITENANCY.md` pour le detail du modele.
 
 ### Environment Variables
 

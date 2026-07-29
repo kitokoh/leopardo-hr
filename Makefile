@@ -19,7 +19,7 @@ install: ## First-time setup: build, start, migrate, seed
 	@sleep 5
 	$(API) composer install
 	$(ARTISAN) key:generate --force
-	$(ARTISAN) migrate --seed --force
+	$(ARTISAN) leopardo:migrate --seed --force
 	@echo "Leopardo RH is running at http://localhost:8000"
 
 .PHONY: up
@@ -44,12 +44,12 @@ destroy: ## Stop services and remove volumes (WARNING: deletes database)
 ## — Development ——————————————————————————————————————
 
 .PHONY: migrate
-migrate: ## Run database migrations
-	$(ARTISAN) migrate --force
+migrate: ## Run database migrations (public + tenant schemas via leopardo:migrate)
+	$(ARTISAN) leopardo:migrate --force
 
 .PHONY: migrate-fresh
-migrate-fresh: ## Reset database and re-run all migrations with seeders
-	$(ARTISAN) migrate:fresh --seed --force
+migrate-fresh: ## Reset database and re-run all migrations with seeders (public + tenant schemas)
+	$(ARTISAN) leopardo:migrate --fresh --seed --force
 
 .PHONY: seed
 seed: ## Run database seeders

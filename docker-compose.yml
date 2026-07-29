@@ -1,6 +1,6 @@
 # Full-stack dev environment — run from repo root:
 #   docker compose up -d
-#   docker compose exec api php artisan migrate --seed
+#   docker compose exec api php artisan leopardo:migrate --seed
 services:
   api:
     build:
