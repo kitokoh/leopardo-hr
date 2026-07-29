@@ -88,6 +88,37 @@ Index de la documentation technique et stratégique du projet.
 | [`../PILOTAGE.md`](../PILOTAGE.md) | Pilotage projet (filières actives) |
 | [`GOTO_MARKET/`](GOTO_MARKET/) | Stratégie go-to-market |
 | [`GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md`](GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique |
+| [`GTM/`](GTM/) | Templates de prospection, cas clients, good first issues GTM |
+| [`STRATEGIE_COMMERCIALE/`](STRATEGIE_COMMERCIALE/) | Supports business, CRM et exécution commerciale |
+| [`commercial/`](commercial/) | Comparatifs concurrents, dossiers d'appels d'offres, benchmarks |
+| [`vision/`](vision/) | Documents de vision produit long-terme (avril 2026), avec index de canonicité |
+
+---
+
+## 🗂️ Pilotage projet, audits & validation
+
+| Doc | Contenu |
+|---|---|
+| [`GESTION_PROJET/`](GESTION_PROJET/) | Runbooks d'exploitation, scénarios de test, rapports QA/déploiement — voir son propre index complet |
+| [`audits/`](audits/) | Audits ponctuels (doc, CI/CD, global) |
+| [`external-audits/`](external-audits/) | Audits menés par des tiers |
+| [`validation/`](validation/) | Référentiels de validation fonctionnelle et QA par module |
+| [`specifications/`](specifications/) | Spécifications obligatoires de tout nouveau module (règle d'or `AGENTS.md`) |
+| [`CONTEXT/`](CONTEXT/) | Contexte rapide pour une nouvelle IA ou un nouvel intervenant |
+| [`GUIDES/`](GUIDES/) | Guides utilisateurs par rôle, usage quotidien |
+
+---
+
+## 🧩 Domaines techniques additionnels
+
+| Doc | Contenu |
+|---|---|
+| [`admin/`](admin/) | Documentation Super Admin / plateforme |
+| [`ai/`](ai/) | Automatisation et IA intégrées au produit |
+| [`api-mock-data/`](api-mock-data/) | Mocks JSON générés depuis `api/openapi.yaml` pour dev front sans backend |
+| [`edge-sync/`](edge-sync/) | Architecture de synchronisation Edge/Cloud |
+| [`kiosk/`](kiosk/) | Intégration matérielle (bornes de pointage) |
+| [`assets/`](assets/) | Ressources statiques (branding mobile, images) |
 
 ---
 
