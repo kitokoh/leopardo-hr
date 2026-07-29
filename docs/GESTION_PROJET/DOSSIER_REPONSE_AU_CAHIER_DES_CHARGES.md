@@ -1,5 +1,7 @@
 # DOSSIER DE REPONSE AU CAHIER DES CHARGES
 
+> ⚠️ **Instantane daté du 2026-05-10** : ce document decrit l'etat du produit a cette date (mobile = une seule app Flutter dans `front/mobile/`, perimetre MVP core). Depuis, `front/mobile/` a ete retire du depot (PR #754, 2026-06-13) et remplace par 5 apps Flutter distinctes dans `front/mobile_apps/` (`leopardo_core`, `leopardo_employee`, `leopardo_hr`, `leopardo_manager`, `leopardo_platform_admin`), et le produit a largement depasse le perimetre decrit ici (absences/conges, paie complete, ATS/recrutement, multi-pays, etc.). Les chemins ci-dessous ont ete corriges pour rester exacts, mais pour l'etat produit courant se referer a `PILOTAGE.md` (source de verite operationnelle). Conserve comme trace historique de la methodologie de reponse au cahier des charges.
+
 ## Objet du document
 
 Ce document sert de reponse operationnelle au cahier des charges initial.
@@ -22,7 +24,7 @@ Leopardo RH est actuellement structure comme un monorepo contenant:
 
 - une API Laravel multitenant dans `api/`
 - une interface web manager incluse dans l'application Laravel
-- une application mobile Flutter dans `front/mobile/`
+- une application mobile Flutter dans `front/mobile_apps/` (a la date de ce document : `front/mobile/`, chemin retire depuis, voir bandeau en tete)
 - une couche CI/CD GitHub Actions
 - une cible de deploiement cloud basee sur Render pour l'API/web et Firebase App Distribution pour le mobile staging
 
@@ -122,7 +124,7 @@ Le mobile est aligne pour consommer:
 - bootstrap de table `migrations` durci pour eviter les courses au demarrage
 - seeders de base idempotents
 - seed demo sous controle
-- pipeline mobile conditionnelle pour ne lancer les etapes lourdes que si `front/mobile/**` change
+- pipeline mobile conditionnelle pour ne lancer les etapes lourdes que si `front/mobile_apps/**` change (a la date de ce document : `front/mobile/**`, chemin retire depuis, voir bandeau en tete)
 
 ## Fonctionnalites partiellement couvertes ou a confirmer
 
