@@ -96,12 +96,15 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`PROMPTS_EXECUTION/`](PROMPTS_EXECUTION/) | Archive des prompts d'exécution AI (v2 legacy, v3 actif) |
-| [`archive/PLAN_ACTION/`](archive/PLAN_ACTION/) | Plans d'action passés |
-| [`PLAN_ACTION2/`](PLAN_ACTION2/) | Plans d'action post-audit 2026 |
+| [`archive/PLAN_ACTION/`](archive/PLAN_ACTION/) | Plans d'action passés (01-72, tous livrés) |
+| [`PLAN_ACTION2/`](PLAN_ACTION2/) | Plans d'action post-audit 2026 (130 tickets PA2, actif du 2026-06-13 au 2026-07-26) — **clos/obsolète depuis le 2026-07-26**, voir son propre `README.md` |
 | [`notes/`](notes/) | Notes et archives |
 
 > ⚠️ Les dossiers `PROMPTS_EXECUTION/` et `PLAN_ACTION*/` sont des archives de référence.
-> Ne pas les modifier. Consulter `PILOTAGE.md` pour les filières actives.
+> Ne pas les modifier. **Depuis le 2026-07-26, la gestion de projet active se fait exclusivement
+> via GitHub Issues et GitHub Projects** (voir `AGENTS.md`, section « NOUVELLE MÉTHODE DE GESTION
+> DE PROJET ») — ne pas chercher de travail dans `PLAN_ACTION2/` ni y créer de nouveaux tickets.
+> Consulter `PILOTAGE.md` pour les filières actives.
 
 ---
 
