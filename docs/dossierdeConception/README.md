@@ -10,7 +10,7 @@ Ce dossier rassemble la conception fonctionnelle et technique cible du projet.
 
 ## Index rapide
 
-- `00_docs/` : cahier des charges, documents exportes, notes initiales
+- `00_docs/` : cahier des charges, documents exportes, notes initiales (voir aussi `00_docs/dossierSonnet/README.md` pour la canonicite des 4 PDF egalement presents dans `docs/vision/`)
 - `00_vision_marche/` : vision et marche
 - `01_API_CONTRATS_COMPLETS/` : contrats API cibles
 - `02_personas/` : personas et user stories
