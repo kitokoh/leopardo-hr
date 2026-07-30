@@ -24,7 +24,7 @@ leopardo-hr/
 ├── shared/
 │   ├── i18n/               # Traductions partagées (fr, en, ar, tr)
 │   └── mediaForMarketing/  # Assets marketing bruts
-├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes (inclut dev-hub/openapi/v1.yaml, un second fichier de spec actuellement divergent de api/openapi.yaml, source canonique)
+├── dev-hub/                # Outils/SDK/scripts pour développeurs et intégrateurs externes (inclut dev-hub/openapi/v1.yaml, miroir généré depuis api/openapi.yaml — source canonique — par dev-hub/tools/generate-openapi-sdk.mjs, vérifié en CI par openapi-ci.yml)
 ├── docs/                   # Documentation technique et stratégique
 ├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
 ├── postman/                # Collection Postman de l'API

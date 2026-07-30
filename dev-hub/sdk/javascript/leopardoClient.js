@@ -90,6 +90,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
   return {
     request,
 
+    /** Lister les absences */
+    getAbsences(options = {}) {
+      return request("GET", "/absences", options);
+    },
+
+    /** Demander une absence */
+    postAbsences(options = {}) {
+      return request("POST", "/absences", options);
+    },
+
+    /** Annuler une absence (employe proprietaire) */
+    deleteAbsencesByAbsence(options = {}) {
+      return request("DELETE", "/absences/{absence}", options);
+    },
+
+    /** Voir une absence */
+    getAbsencesByAbsence(options = {}) {
+      return request("GET", "/absences/{absence}", options);
+    },
+
+    /** Approuver une absence (manager) */
+    putAbsencesByAbsenceApprove(options = {}) {
+      return request("PUT", "/absences/{absence}/approve", options);
+    },
+
+    /** Rejeter une absence (manager) */
+    putAbsencesByAbsenceReject(options = {}) {
+      return request("PUT", "/absences/{absence}/reject", options);
+    },
+
     /** Couts IA par periode */
     getAiAnalyticsCosts(options = {}) {
       return request("GET", "/ai/analytics/costs", options);
@@ -130,6 +160,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/ai/tools", options);
     },
 
+    /** Lister les workflows d'approbation */
+    getApprovalWorkflows(options = {}) {
+      return request("GET", "/approval-workflows", options);
+    },
+
+    /** Creer un workflow */
+    postApprovalWorkflows(options = {}) {
+      return request("POST", "/approval-workflows", options);
+    },
+
+    /** Supprimer un workflow */
+    deleteApprovalWorkflowsByApprovalWorkflow(options = {}) {
+      return request("DELETE", "/approval-workflows/{approvalWorkflow}", options);
+    },
+
+    /** Modifier un workflow */
+    putApprovalWorkflowsByApprovalWorkflow(options = {}) {
+      return request("PUT", "/approval-workflows/{approvalWorkflow}", options);
+    },
+
+    /** Approuver une demande */
+    postApprovalsByApprovalRequestApprove(options = {}) {
+      return request("POST", "/approvals/{approvalRequest}/approve", options);
+    },
+
+    /** Rejeter une demande */
+    postApprovalsByApprovalRequestReject(options = {}) {
+      return request("POST", "/approvals/{approvalRequest}/reject", options);
+    },
+
+    /** Historique des approbations */
+    getApprovalsHistory(options = {}) {
+      return request("GET", "/approvals/history", options);
+    },
+
+    /** Approbations en attente */
+    getApprovalsPending(options = {}) {
+      return request("GET", "/approvals/pending", options);
+    },
+
     /** Historique de pointage */
     getAttendance(options = {}) {
       return request("GET", "/attendance", options);
@@ -138,6 +208,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier directement un pointage */
     putAttendanceByAttendanceLog(options = {}) {
       return request("PUT", "/attendance/{attendanceLog}", options);
+    },
+
+    /** Telecharger la photo de pointage d'un log */
+    getAttendanceByAttendanceLogPunchPhoto(options = {}) {
+      return request("GET", "/attendance/{attendanceLog}/punch-photo", options);
+    },
+
+    /** Anomalies de pointage */
+    getAttendanceAnomalies(options = {}) {
+      return request("GET", "/attendance/anomalies", options);
     },
 
     /** Check-in */
@@ -150,14 +230,49 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/attendance/check-out", options);
     },
 
+    /** Lister les demandes de correction de pointage */
+    getAttendanceCorrections(options = {}) {
+      return request("GET", "/attendance/corrections", options);
+    },
+
     /** Demander une correction de pointage */
     postAttendanceCorrections(options = {}) {
       return request("POST", "/attendance/corrections", options);
     },
 
+    /** Appliquer une demande de correction de pointage */
+    putAttendanceCorrectionsByCorrectionApprove(options = {}) {
+      return request("PUT", "/attendance/corrections/{correction}/approve", options);
+    },
+
+    /** Refuser une demande de correction de pointage */
+    putAttendanceCorrectionsByCorrectionReject(options = {}) {
+      return request("PUT", "/attendance/corrections/{correction}/reject", options);
+    },
+
+    /** Rapport mensuel de pointage */
+    getAttendanceMonthlyReport(options = {}) {
+      return request("GET", "/attendance/monthly-report", options);
+    },
+
     /** Etat du jour */
     getAttendanceToday(options = {}) {
       return request("GET", "/attendance/today", options);
+    },
+
+    /** Journal d'audit */
+    getAuditLogs(options = {}) {
+      return request("GET", "/audit-logs", options);
+    },
+
+    /** Voir un evenement d'audit */
+    getAuditLogsByAuditLog(options = {}) {
+      return request("GET", "/audit-logs/{auditLog}", options);
+    },
+
+    /** Exporter le journal d'audit en CSV */
+    getAuditLogsExportCsv(options = {}) {
+      return request("GET", "/audit-logs/export-csv", options);
     },
 
     /** Derniere demande biometrie de l'utilisateur courant */
@@ -173,6 +288,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Changer le mot de passe */
     postAuthChangePassword(options = {}) {
       return request("POST", "/auth/change-password", options);
+    },
+
+    /** Connexion Google OAuth */
+    postAuthGoogleToken(options = {}) {
+      return request("POST", "/auth/google/token", options);
+    },
+
+    /** Changer la langue */
+    patchAuthLanguage(options = {}) {
+      return request("PATCH", "/auth/language", options);
     },
 
     /** Connexion employee */
@@ -195,6 +320,66 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/auth/profile", options);
     },
 
+    /** Rafraichir le token */
+    postAuthRefreshToken(options = {}) {
+      return request("POST", "/auth/refresh-token", options);
+    },
+
+    /** Inscription employe */
+    postAuthRegister(options = {}) {
+      return request("POST", "/auth/register", options);
+    },
+
+    /** Lister les exports bancaires */
+    getBankExports(options = {}) {
+      return request("GET", "/bank-exports", options);
+    },
+
+    /** Generer un export bancaire */
+    postBankExports(options = {}) {
+      return request("POST", "/bank-exports", options);
+    },
+
+    /** Telecharger un export bancaire */
+    getBankExportsByBankExportDownload(options = {}) {
+      return request("GET", "/bank-exports/{bankExport}/download", options);
+    },
+
+    /** Annuler l'abonnement */
+    postBillingCancel(options = {}) {
+      return request("POST", "/billing/cancel", options);
+    },
+
+    /** Lister les factures */
+    getBillingInvoices(options = {}) {
+      return request("GET", "/billing/invoices", options);
+    },
+
+    /** Voir une facture */
+    getBillingInvoicesById(options = {}) {
+      return request("GET", "/billing/invoices/{id}", options);
+    },
+
+    /** Telecharger facture PDF */
+    getBillingInvoicesByIdPdf(options = {}) {
+      return request("GET", "/billing/invoices/{id}/pdf", options);
+    },
+
+    /** Renouveler l'abonnement */
+    postBillingRenew(options = {}) {
+      return request("POST", "/billing/renew", options);
+    },
+
+    /** Voir l'abonnement courant */
+    getBillingSubscription(options = {}) {
+      return request("GET", "/billing/subscription", options);
+    },
+
+    /** Upgrader l'abonnement */
+    postBillingUpgrade(options = {}) {
+      return request("POST", "/billing/upgrade", options);
+    },
+
     /** Lister les demandes biometrie de la company */
     getBiometricEnrollmentRequests(options = {}) {
       return request("GET", "/biometric-enrollment-requests", options);
@@ -208,6 +393,66 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Rejeter une demande biometrie */
     postBiometricEnrollmentRequestsByIdReject(options = {}) {
       return request("POST", "/biometric-enrollment-requests/{id}/reject", options);
+    },
+
+    /** Lister les documents */
+    getCabinetDocuments(options = {}) {
+      return request("GET", "/cabinet/documents", options);
+    },
+
+    /** Uploader un document */
+    postCabinetDocuments(options = {}) {
+      return request("POST", "/cabinet/documents", options);
+    },
+
+    /** Supprimer un document */
+    deleteCabinetDocumentsByCabinetDocument(options = {}) {
+      return request("DELETE", "/cabinet/documents/{cabinetDocument}", options);
+    },
+
+    /** Voir un document */
+    getCabinetDocumentsByCabinetDocument(options = {}) {
+      return request("GET", "/cabinet/documents/{cabinetDocument}", options);
+    },
+
+    /** Modifier un document */
+    putCabinetDocumentsByCabinetDocument(options = {}) {
+      return request("PUT", "/cabinet/documents/{cabinetDocument}", options);
+    },
+
+    /** Telecharger un document */
+    getCabinetDocumentsByCabinetDocumentDownload(options = {}) {
+      return request("GET", "/cabinet/documents/{cabinetDocument}/download", options);
+    },
+
+    /** Deplacer un document */
+    postCabinetDocumentsByCabinetDocumentMove(options = {}) {
+      return request("POST", "/cabinet/documents/{cabinetDocument}/move", options);
+    },
+
+    /** Lister les dossiers */
+    getCabinetFolders(options = {}) {
+      return request("GET", "/cabinet/folders", options);
+    },
+
+    /** Creer un dossier */
+    postCabinetFolders(options = {}) {
+      return request("POST", "/cabinet/folders", options);
+    },
+
+    /** Supprimer un dossier */
+    deleteCabinetFoldersByCabinetFolder(options = {}) {
+      return request("DELETE", "/cabinet/folders/{cabinetFolder}", options);
+    },
+
+    /** Voir un dossier */
+    getCabinetFoldersByCabinetFolder(options = {}) {
+      return request("GET", "/cabinet/folders/{cabinetFolder}", options);
+    },
+
+    /** Modifier un dossier */
+    putCabinetFoldersByCabinetFolder(options = {}) {
+      return request("PUT", "/cabinet/folders/{cabinetFolder}", options);
     },
 
     /** Lister les cameras */
@@ -295,6 +540,126 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/communication/analytics", options);
     },
 
+    /** Lire l'identite visuelle de l'entreprise courante */
+    getCompanyBranding(options = {}) {
+      return request("GET", "/company/branding", options);
+    },
+
+    /** Mettre a jour l'identite visuelle entreprise */
+    patchCompanyBranding(options = {}) {
+      return request("PATCH", "/company/branding", options);
+    },
+
+    /** Generer le QR onboarding entreprise */
+    getCompanyQrOnboarding(options = {}) {
+      return request("GET", "/company/qr-onboarding", options);
+    },
+
+    /** Creer un employe depuis QR */
+    postCompanyQrOnboardingCreateEmployee(options = {}) {
+      return request("POST", "/company/qr-onboarding/create-employee", options);
+    },
+
+    /** Lire un QR employe pour pre-remplir l'ajout manager */
+    postCompanyQrOnboardingScanEmployee(options = {}) {
+      return request("POST", "/company/qr-onboarding/scan-employee", options);
+    },
+
+    /** Lister les contrats */
+    getContracts(options = {}) {
+      return request("GET", "/contracts", options);
+    },
+
+    /** Creer un contrat */
+    postContracts(options = {}) {
+      return request("POST", "/contracts", options);
+    },
+
+    /** Voir un contrat */
+    getContractsByContract(options = {}) {
+      return request("GET", "/contracts/{contract}", options);
+    },
+
+    /** Modifier un contrat */
+    putContractsByContract(options = {}) {
+      return request("PUT", "/contracts/{contract}", options);
+    },
+
+    /** Activer un contrat draft */
+    postContractsByContractActivate(options = {}) {
+      return request("POST", "/contracts/{contract}/activate", options);
+    },
+
+    /** Lister les avenants */
+    getContractsByContractAmendments(options = {}) {
+      return request("GET", "/contracts/{contract}/amendments", options);
+    },
+
+    /** Creer un avenant */
+    postContractsByContractAmendments(options = {}) {
+      return request("POST", "/contracts/{contract}/amendments", options);
+    },
+
+    /** Donnees PDF du contrat */
+    getContractsByContractGeneratePdf(options = {}) {
+      return request("GET", "/contracts/{contract}/generate-pdf", options);
+    },
+
+    /** Renouveler un contrat */
+    postContractsByContractRenew(options = {}) {
+      return request("POST", "/contracts/{contract}/renew", options);
+    },
+
+    /** Suspendre un contrat actif */
+    postContractsByContractSuspend(options = {}) {
+      return request("POST", "/contracts/{contract}/suspend", options);
+    },
+
+    /** Resilier un contrat */
+    postContractsByContractTerminate(options = {}) {
+      return request("POST", "/contracts/{contract}/terminate", options);
+    },
+
+    /** Contrats expirant bientot */
+    getContractsExpiring(options = {}) {
+      return request("GET", "/contracts/expiring", options);
+    },
+
+    /** KPIs detailles */
+    getDashboardKpi(options = {}) {
+      return request("GET", "/dashboard/kpi", options);
+    },
+
+    /** Lire les signaux manager du jour */
+    getDashboardManagerDigest(options = {}) {
+      return request("GET", "/dashboard/manager-digest", options);
+    },
+
+    /** Activite recente */
+    getDashboardRecentActivity(options = {}) {
+      return request("GET", "/dashboard/recent-activity", options);
+    },
+
+    /** Resume dashboard */
+    getDashboardSummary(options = {}) {
+      return request("GET", "/dashboard/summary", options);
+    },
+
+    /** Supprimer le token FCM du device courant au logout */
+    deleteDeviceTokens(options = {}) {
+      return request("DELETE", "/device-tokens", options);
+    },
+
+    /** Lister les tokens push actifs de l'utilisateur courant */
+    getDeviceTokens(options = {}) {
+      return request("GET", "/device-tokens", options);
+    },
+
+    /** Enregistrer ou rafraichir le token FCM du device courant */
+    postDeviceTokens(options = {}) {
+      return request("POST", "/device-tokens", options);
+    },
+
     /** Lister les employes */
     getEmployees(options = {}) {
       return request("GET", "/employees", options);
@@ -340,6 +705,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/employees/{employee}/receipt", options);
     },
 
+    /** Importer des employes par CSV */
+    postEmployeesImport(options = {}) {
+      return request("POST", "/employees/import", options);
+    },
+
+    /** Template CSV import */
+    getEmployeesImportTemplate(options = {}) {
+      return request("GET", "/employees/import-template", options);
+    },
+
     /** Lister les evaluations */
     getEvaluations(options = {}) {
       return request("GET", "/evaluations", options);
@@ -380,6 +755,86 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/evaluations/{evaluation}/submit", options);
     },
 
+    /** Lister les notes de frais */
+    getExpenseClaims(options = {}) {
+      return request("GET", "/expense-claims", options);
+    },
+
+    /** Creer une note de frais */
+    postExpenseClaims(options = {}) {
+      return request("POST", "/expense-claims", options);
+    },
+
+    /** Voir une note de frais */
+    getExpenseClaimsByExpenseClaim(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Approuver une note de frais */
+    postExpenseClaimsByExpenseClaimApprove(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/approve", options);
+    },
+
+    /** Rejeter une note de frais */
+    postExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/reject", options);
+    },
+
+    /** Soumettre une note de frais */
+    postExpenseClaimsByExpenseClaimSubmit(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/submit", options);
+    },
+
+    /** Exporter les absences */
+    getExportsAbsences(options = {}) {
+      return request("GET", "/exports/absences", options);
+    },
+
+    /** Exporter le pointage */
+    getExportsAttendance(options = {}) {
+      return request("GET", "/exports/attendance", options);
+    },
+
+    /** Exporter les contrats */
+    getExportsContracts(options = {}) {
+      return request("GET", "/exports/contracts", options);
+    },
+
+    /** Exporter les employes */
+    getExportsEmployees(options = {}) {
+      return request("GET", "/exports/employees", options);
+    },
+
+    /** Historique des exports */
+    getExportsHistory(options = {}) {
+      return request("GET", "/exports/history", options);
+    },
+
+    /** Exporter les bulletins */
+    getExportsPaySlips(options = {}) {
+      return request("GET", "/exports/pay-slips", options);
+    },
+
+    /** Exporter les formations */
+    getExportsTraining(options = {}) {
+      return request("GET", "/exports/training", options);
+    },
+
+    /** Exporter la flotte */
+    getExportsVehicles(options = {}) {
+      return request("GET", "/exports/vehicles", options);
+    },
+
+    /** Lister les feature flags */
+    getFeatures(options = {}) {
+      return request("GET", "/features", options);
+    },
+
+    /** Activer/desactiver une feature */
+    postFeaturesByFeatureToggle(options = {}) {
+      return request("POST", "/features/{feature}/toggle", options);
+    },
+
     /** Carte temps reel des vehicules */
     getFleetLiveMap(options = {}) {
       return request("GET", "/fleet/live-map", options);
@@ -408,6 +863,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Healthcheck live + ready */
     getHealth(options = {}) {
       return request("GET", "/health", options);
+    },
+
+    /** Traductions pour une locale */
+    getI18nByLocale(options = {}) {
+      return request("GET", "/i18n/{locale}", options);
     },
 
     /** Verification interne MediaMTX */
@@ -450,9 +910,154 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/launch-readiness", options);
     },
 
+    /** Lister les accruals */
+    getLeaveAccruals(options = {}) {
+      return request("GET", "/leave-accruals", options);
+    },
+
+    /** Creer un accrual */
+    postLeaveAccruals(options = {}) {
+      return request("POST", "/leave-accruals", options);
+    },
+
+    /** Soldes de conges globaux (manager) */
+    getLeaveBalances(options = {}) {
+      return request("GET", "/leave-balances", options);
+    },
+
+    /** Lister les politiques de conges */
+    getLeavePolicies(options = {}) {
+      return request("GET", "/leave-policies", options);
+    },
+
+    /** Creer une politique de conges */
+    postLeavePolicies(options = {}) {
+      return request("POST", "/leave-policies", options);
+    },
+
+    /** Supprimer une politique */
+    deleteLeavePoliciesByLeavePolicy(options = {}) {
+      return request("DELETE", "/leave-policies/{leavePolicy}", options);
+    },
+
+    /** Voir une politique */
+    getLeavePoliciesByLeavePolicy(options = {}) {
+      return request("GET", "/leave-policies/{leavePolicy}", options);
+    },
+
+    /** Modifier une politique */
+    putLeavePoliciesByLeavePolicy(options = {}) {
+      return request("PUT", "/leave-policies/{leavePolicy}", options);
+    },
+
+    /** Lister les prets */
+    getLoans(options = {}) {
+      return request("GET", "/loans", options);
+    },
+
+    /** Demander un pret */
+    postLoans(options = {}) {
+      return request("POST", "/loans", options);
+    },
+
+    /** Voir un pret */
+    getLoansByEmployeeLoan(options = {}) {
+      return request("GET", "/loans/{employeeLoan}", options);
+    },
+
+    /** Approuver un pret */
+    postLoansByEmployeeLoanApprove(options = {}) {
+      return request("POST", "/loans/{employeeLoan}/approve", options);
+    },
+
+    /** Decaisser un pret */
+    postLoansByEmployeeLoanDisburse(options = {}) {
+      return request("POST", "/loans/{employeeLoan}/disburse", options);
+    },
+
+    /** Compte social connecte du tenant */
+    getMarketingSocialAccount(options = {}) {
+      return request("GET", "/marketing/social-account", options);
+    },
+
+    /** Connecter un compte social (agregateur Ayrshare) */
+    postMarketingSocialAccountConnect(options = {}) {
+      return request("POST", "/marketing/social-account/connect", options);
+    },
+
+    /** Deconnecter le compte social du tenant */
+    postMarketingSocialAccountDisconnect(options = {}) {
+      return request("POST", "/marketing/social-account/disconnect", options);
+    },
+
+    /** Lister les publications reseaux sociaux du tenant */
+    getMarketingSocialPosts(options = {}) {
+      return request("GET", "/marketing/social-posts", options);
+    },
+
+    /** Creer une publication (brouillon, ou planifiee/publiee si scheduled_at fourni) */
+    postMarketingSocialPosts(options = {}) {
+      return request("POST", "/marketing/social-posts", options);
+    },
+
+    /** Supprimer une publication (draft uniquement) */
+    deleteMarketingSocialPostsBySocialPost(options = {}) {
+      return request("DELETE", "/marketing/social-posts/{socialPost}", options);
+    },
+
+    /** Detail d'une publication */
+    getMarketingSocialPostsBySocialPost(options = {}) {
+      return request("GET", "/marketing/social-posts/{socialPost}", options);
+    },
+
+    /** Modifier une publication (draft uniquement) */
+    patchMarketingSocialPostsBySocialPost(options = {}) {
+      return request("PATCH", "/marketing/social-posts/{socialPost}", options);
+    },
+
+    /** Publier immediatement ou (re)planifier une publication */
+    postMarketingSocialPostsBySocialPostPublish(options = {}) {
+      return request("POST", "/marketing/social-posts/{socialPost}/publish", options);
+    },
+
+    /** Mon solde de paie courant */
+    getMeBalance(options = {}) {
+      return request("GET", "/me/balance", options);
+    },
+
+    /** Lire le parcours professionnel durable de l'employe courant */
+    getMeCareer(options = {}) {
+      return request("GET", "/me/career", options);
+    },
+
+    /** Soumettre une demande d'integration via QR entreprise */
+    postMeCompanyQrScan(options = {}) {
+      return request("POST", "/me/company-qr/scan", options);
+    },
+
+    /** Mes contrats */
+    getMeContracts(options = {}) {
+      return request("GET", "/me/contracts", options);
+    },
+
     /** Resume journalier utilisateur courant */
     getMeDailySummary(options = {}) {
       return request("GET", "/me/daily-summary", options);
+    },
+
+    /** Mes soldes de conges */
+    getMeLeaveBalances(options = {}) {
+      return request("GET", "/me/leave-balances", options);
+    },
+
+    /** Mes prets */
+    getMeLoans(options = {}) {
+      return request("GET", "/me/loans", options);
+    },
+
+    /** Mes remboursements de pret */
+    getMeLoansByLoanRepayments(options = {}) {
+      return request("GET", "/me/loans/{loan}/repayments", options);
     },
 
     /** Resume mensuel utilisateur courant */
@@ -460,9 +1065,39 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/me/monthly-summary", options);
     },
 
+    /** Mes bulletins de paie */
+    getMePaySlips(options = {}) {
+      return request("GET", "/me/pay-slips", options);
+    },
+
+    /** Mes documents de paiement */
+    getMePaymentDocuments(options = {}) {
+      return request("GET", "/me/payment-documents", options);
+    },
+
+    /** Telecharger un document de paiement */
+    getMePaymentDocumentsByPaymentDocumentDownload(options = {}) {
+      return request("GET", "/me/payment-documents/{paymentDocument}/download", options);
+    },
+
+    /** Generer le QR profil employe */
+    getMeQrProfile(options = {}) {
+      return request("GET", "/me/qr-profile", options);
+    },
+
     /** Estimation utilisateur courant */
     getMeQuickEstimate(options = {}) {
       return request("GET", "/me/quick-estimate", options);
+    },
+
+    /** Mes formations */
+    getMeTrainings(options = {}) {
+      return request("GET", "/me/trainings", options);
+    },
+
+    /** Auto-inscription a une formation */
+    postMeTrainingsBySessionEnroll(options = {}) {
+      return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
     /** Lire les preferences de notification de l'utilisateur courant */
@@ -495,9 +1130,154 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/notifications/read-all", options);
     },
 
+    /** Marquer une étape comme complète */
+    patchOnboardingSetupByStepKeyComplete(options = {}) {
+      return request("PATCH", "/onboarding-setup/{stepKey}/complete", options);
+    },
+
+    /** Ignorer une étape d'onboarding */
+    patchOnboardingSetupByStepKeySkip(options = {}) {
+      return request("PATCH", "/onboarding-setup/{stepKey}/skip", options);
+    },
+
+    /** Récupérer la checklist d'onboarding */
+    getOnboardingSetupChecklist(options = {}) {
+      return request("GET", "/onboarding-setup/checklist", options);
+    },
+
+    /** Progression globale de l'onboarding */
+    getOnboardingSetupProgress(options = {}) {
+      return request("GET", "/onboarding-setup/progress", options);
+    },
+
+    /** Organigramme complet */
+    getOrgChart(options = {}) {
+      return request("GET", "/org-chart", options);
+    },
+
+    /** Chaine hierarchique */
+    getOrgChartByEmployeeIdManagerChain(options = {}) {
+      return request("GET", "/org-chart/{employeeId}/manager-chain", options);
+    },
+
+    /** Subordonnes d'un employe */
+    getOrgChartByEmployeeIdSubordinates(options = {}) {
+      return request("GET", "/org-chart/{employeeId}/subordinates", options);
+    },
+
+    /** Candidature partenaire */
+    postPartnerApply(options = {}) {
+      return request("POST", "/partner/apply", options);
+    },
+
+    /** Entreprises parrainées par le partenaire */
+    getPartnerCompanies(options = {}) {
+      return request("GET", "/partner/companies", options);
+    },
+
+    /** Demande de versement commission */
+    postPartnerPayout(options = {}) {
+      return request("POST", "/partner/payout", options);
+    },
+
+    /** Statistiques partenaire connecté */
+    getPartnerStats(options = {}) {
+      return request("GET", "/partner/stats", options);
+    },
+
     /** Lister les bulletins du tenant (manager) */
     getPaySlips(options = {}) {
       return request("GET", "/pay-slips", options);
+    },
+
+    /** Voir un bulletin de paie */
+    getPaySlipsByPaySlip(options = {}) {
+      return request("GET", "/pay-slips/{paySlip}", options);
+    },
+
+    /** Telecharger bulletin PDF */
+    getPaySlipsByPaySlipPdf(options = {}) {
+      return request("GET", "/pay-slips/{paySlip}/pdf", options);
+    },
+
+    /** Lister les lots de paiement */
+    getPaymentBatches(options = {}) {
+      return request("GET", "/payment-batches", options);
+    },
+
+    /** Creer un lot de paiement depuis un cycle paie */
+    postPaymentBatches(options = {}) {
+      return request("POST", "/payment-batches", options);
+    },
+
+    /** Detail d'un lot de paiement */
+    getPaymentBatchesByPaymentBatch(options = {}) {
+      return request("GET", "/payment-batches/{paymentBatch}", options);
+    },
+
+    /** Declarer un lot de paiement comme envoye */
+    postPaymentBatchesByPaymentBatchMarkPaid(options = {}) {
+      return request("POST", "/payment-batches/{paymentBatch}/mark-paid", options);
+    },
+
+    /** Confirmer la reception d'un paiement */
+    postPaymentConfirmationsByPaymentItemConfirm(options = {}) {
+      return request("POST", "/payment-confirmations/{paymentItem}/confirm", options);
+    },
+
+    /** Alias mobile pour documents de paiement d'un cycle */
+    getPaymentsByPayrollRunDocuments(options = {}) {
+      return request("GET", "/payments/{payrollRun}/documents", options);
+    },
+
+    /** Lister les sessions de paie */
+    getPayrollRuns(options = {}) {
+      return request("GET", "/payroll-runs", options);
+    },
+
+    /** Creer une session de paie */
+    postPayrollRuns(options = {}) {
+      return request("POST", "/payroll-runs", options);
+    },
+
+    /** Voir une session de paie */
+    getPayrollRunsByPayrollRun(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}", options);
+    },
+
+    /** Calculer la paie */
+    postPayrollRunsByPayrollRunCalculate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/calculate", options);
+    },
+
+    /** Annuler une session de paie */
+    postPayrollRunsByPayrollRunCancel(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/cancel", options);
+    },
+
+    /** Documents de paiement d'un cycle paie */
+    getPayrollRunsByPayrollRunPaymentDocuments(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/payment-documents", options);
+    },
+
+    /** Resume de la session de paie */
+    getPayrollRunsByPayrollRunSummary(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/summary", options);
+    },
+
+    /** Valider la session de paie */
+    postPayrollRunsByPayrollRunValidate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/validate", options);
+    },
+
+    /** Previsualiser un cycle de paie candidat */
+    getPayrollCyclesPreview(options = {}) {
+      return request("GET", "/payroll/cycles/preview", options);
+    },
+
+    /** Resume mobile des soldes paie equipe */
+    getPayrollMobileSummary(options = {}) {
+      return request("GET", "/payroll/mobile-summary", options);
     },
 
     /** Connexion super-admin */
@@ -570,6 +1350,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/platform/company-requests/{id}", options);
     },
 
+    /** Lister les pays supportes et leurs defaults */
+    getPlatformCountryDefaults(options = {}) {
+      return request("GET", "/platform/country-defaults", options);
+    },
+
+    /** Lister les partenaires (admin) */
+    getPlatformGrowthPartners(options = {}) {
+      return request("GET", "/platform/growth/partners", options);
+    },
+
+    /** Mettre à jour le taux de commission d'un partenaire */
+    patchPlatformGrowthPartnersByPartnerRate(options = {}) {
+      return request("PATCH", "/platform/growth/partners/{partner}/rate", options);
+    },
+
+    /** Lister les demandes de versement */
+    getPlatformGrowthPayouts(options = {}) {
+      return request("GET", "/platform/growth/payouts", options);
+    },
+
     /** Agregats business du cockpit super-admin */
     getPlatformMetricsOverview(options = {}) {
       return request("GET", "/platform/metrics/overview", options);
@@ -578,6 +1378,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister le catalogue des plans SaaS */
     getPlatformPlans(options = {}) {
       return request("GET", "/platform/plans", options);
+    },
+
+    /** Lister les postes */
+    getPositions(options = {}) {
+      return request("GET", "/positions", options);
+    },
+
+    /** Creer un poste */
+    postPositions(options = {}) {
+      return request("POST", "/positions", options);
+    },
+
+    /** Supprimer un poste */
+    deletePositionsByPosition(options = {}) {
+      return request("DELETE", "/positions/{position}", options);
+    },
+
+    /** Voir un poste */
+    getPositionsByPosition(options = {}) {
+      return request("GET", "/positions/{position}", options);
+    },
+
+    /** Modifier un poste */
+    putPositionsByPosition(options = {}) {
+      return request("PUT", "/positions/{position}", options);
+    },
+
+    /** Predire les risques d'absenteisme */
+    getPredictionsAbsenteeism(options = {}) {
+      return request("GET", "/predictions/absenteeism", options);
+    },
+
+    /** Notifications RH proactives generees par l'IA */
+    getPredictionsNotifications(options = {}) {
+      return request("GET", "/predictions/notifications", options);
+    },
+
+    /** Predire le risque de turnover par employe */
+    getPredictionsTurnover(options = {}) {
+      return request("GET", "/predictions/turnover", options);
     },
 
     /** Enregistrer ou retirer le consentement biometrique */
@@ -625,6 +1465,236 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/projects/{project}", options);
     },
 
+    /** Envoyer une notification push de test a un employe */
+    postPushNotificationsSend(options = {}) {
+      return request("POST", "/push-notifications/send", options);
+    },
+
+    /** Modifier un candidat */
+    putRecruitmentApplicantsByApplicant(options = {}) {
+      return request("PUT", "/recruitment/applicants/{applicant}", options);
+    },
+
+    /** Planifier un entretien */
+    postRecruitmentApplicantsByApplicantInterviews(options = {}) {
+      return request("POST", "/recruitment/applicants/{applicant}/interviews", options);
+    },
+
+    /** Modifier un entretien */
+    putRecruitmentInterviewsByInterview(options = {}) {
+      return request("PUT", "/recruitment/interviews/{interview}", options);
+    },
+
+    /** Lister les offres d'emploi */
+    getRecruitmentJobs(options = {}) {
+      return request("GET", "/recruitment/jobs", options);
+    },
+
+    /** Creer une offre d'emploi */
+    postRecruitmentJobs(options = {}) {
+      return request("POST", "/recruitment/jobs", options);
+    },
+
+    /** Voir une offre */
+    getRecruitmentJobsByJobPosting(options = {}) {
+      return request("GET", "/recruitment/jobs/{jobPosting}", options);
+    },
+
+    /** Modifier une offre */
+    putRecruitmentJobsByJobPosting(options = {}) {
+      return request("PUT", "/recruitment/jobs/{jobPosting}", options);
+    },
+
+    /** Lister les candidats */
+    getRecruitmentJobsByJobPostingApplicants(options = {}) {
+      return request("GET", "/recruitment/jobs/{jobPosting}/applicants", options);
+    },
+
+    /** Ajouter un candidat */
+    postRecruitmentJobsByJobPostingApplicants(options = {}) {
+      return request("POST", "/recruitment/jobs/{jobPosting}/applicants", options);
+    },
+
+    /** Cloturer une offre */
+    postRecruitmentJobsByJobPostingClose(options = {}) {
+      return request("POST", "/recruitment/jobs/{jobPosting}/close", options);
+    },
+
+    /** Publier une offre */
+    postRecruitmentJobsByJobPostingPublish(options = {}) {
+      return request("POST", "/recruitment/jobs/{jobPosting}/publish", options);
+    },
+
+    /** Lister les avances sur salaire */
+    getSalaryAdvances(options = {}) {
+      return request("GET", "/salary-advances", options);
+    },
+
+    /** Demander une avance sur salaire */
+    postSalaryAdvances(options = {}) {
+      return request("POST", "/salary-advances", options);
+    },
+
+    /** Annuler une avance (employe proprietaire) */
+    deleteSalaryAdvancesBySalaryAdvance(options = {}) {
+      return request("DELETE", "/salary-advances/{salaryAdvance}", options);
+    },
+
+    /** Voir une avance */
+    getSalaryAdvancesBySalaryAdvance(options = {}) {
+      return request("GET", "/salary-advances/{salaryAdvance}", options);
+    },
+
+    /** Approuver une avance (manager) */
+    putSalaryAdvancesBySalaryAdvanceApprove(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/approve", options);
+    },
+
+    /** Confirmer la reception de l'avance (employe) */
+    putSalaryAdvancesBySalaryAdvanceConfirmReceived(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", options);
+    },
+
+    /** Valider une avance avant paiement (manager/RH) */
+    putSalaryAdvancesBySalaryAdvanceManagerApprove(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", options);
+    },
+
+    /** Declarer l'avance comme envoyee (manager/RH) */
+    putSalaryAdvancesBySalaryAdvanceMarkPaid(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", options);
+    },
+
+    /** Rejeter une avance (manager) */
+    putSalaryAdvancesBySalaryAdvanceReject(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/reject", options);
+    },
+
+    /** Lister les horaires de l'entreprise */
+    getSchedules(options = {}) {
+      return request("GET", "/schedules", options);
+    },
+
+    /** Creer un horaire de travail */
+    postSchedules(options = {}) {
+      return request("POST", "/schedules", options);
+    },
+
+    /** Supprimer un horaire non defaut */
+    deleteSchedulesBySchedule(options = {}) {
+      return request("DELETE", "/schedules/{schedule}", options);
+    },
+
+    /** Modifier un horaire */
+    putSchedulesBySchedule(options = {}) {
+      return request("PUT", "/schedules/{schedule}", options);
+    },
+
+    /** Affecter un horaire/regle entreprise a des employes */
+    postSchedulesByScheduleAssignEmployees(options = {}) {
+      return request("POST", "/schedules/{schedule}/assign-employees", options);
+    },
+
+    /** Lister les sites */
+    getSites(options = {}) {
+      return request("GET", "/sites", options);
+    },
+
+    /** Creer un site */
+    postSites(options = {}) {
+      return request("POST", "/sites", options);
+    },
+
+    /** Supprimer un site */
+    deleteSitesBySite(options = {}) {
+      return request("DELETE", "/sites/{site}", options);
+    },
+
+    /** Voir un site */
+    getSitesBySite(options = {}) {
+      return request("GET", "/sites/{site}", options);
+    },
+
+    /** Modifier un site */
+    putSitesBySite(options = {}) {
+      return request("PUT", "/sites/{site}", options);
+    },
+
+    /** Lire la configuration de mode active pour l'employe connecte */
+    getSmartAttendanceConfig(options = {}) {
+      return request("GET", "/smart-attendance/config", options);
+    },
+
+    /** Mettre à jour la configuration GPS (admin) */
+    putSmartAttendanceConfig(options = {}) {
+      return request("PUT", "/smart-attendance/config", options);
+    },
+
+    /** Statistiques du jour — Smart Attendance (manager/RH) */
+    getSmartAttendanceDashboard(options = {}) {
+      return request("GET", "/smart-attendance/dashboard", options);
+    },
+
+    /** Envoyer un événement géographique (entrée/sortie de zone) */
+    postSmartAttendanceGeoEvents(options = {}) {
+      return request("POST", "/smart-attendance/geo-events", options);
+    },
+
+    /** Lire les préférences de pointage de l'employé */
+    getSmartAttendancePreferences(options = {}) {
+      return request("GET", "/smart-attendance/preferences", options);
+    },
+
+    /** Mettre à jour les préférences de pointage */
+    putSmartAttendancePreferences(options = {}) {
+      return request("PUT", "/smart-attendance/preferences", options);
+    },
+
+    /** Lister les sessions GPS */
+    getSmartAttendanceSessions(options = {}) {
+      return request("GET", "/smart-attendance/sessions", options);
+    },
+
+    /** Détail d'une session GPS */
+    getSmartAttendanceSessionsById(options = {}) {
+      return request("GET", "/smart-attendance/sessions/{id}", options);
+    },
+
+    /** Valider ou rejeter une session GPS (manager/RH) */
+    postSmartAttendanceSessionsByIdValidate(options = {}) {
+      return request("POST", "/smart-attendance/sessions/{id}/validate", options);
+    },
+
+    /** Configurer le SSO de l'entreprise */
+    postSsoConfigure(options = {}) {
+      return request("POST", "/sso/configure", options);
+    },
+
+    /** Desactiver le SSO de l'entreprise */
+    deleteSsoDisable(options = {}) {
+      return request("DELETE", "/sso/disable", options);
+    },
+
+    /** Callback OpenID Connect (IdP -> SP) */
+    getSsoOidcByCompanyIdCallback(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/callback", options);
+    },
+
+    /** Lister les fournisseurs SSO supportes */
+    getSsoProviders(options = {}) {
+      return request("GET", "/sso/providers", options);
+    },
+
+    /** Callback SAML 2.0 (IdP -> SP) */
+    postSsoSamlByCompanyIdCallback(options = {}) {
+      return request("POST", "/sso/saml/{companyId}/callback", options);
+    },
+
+    /** Statut SSO de l'entreprise */
+    getSsoStatus(options = {}) {
+      return request("GET", "/sso/status", options);
+    },
+
     /** Lister les taches */
     getTasks(options = {}) {
       return request("GET", "/tasks", options);
@@ -660,6 +1730,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/tasks/{task}/comments", options);
     },
 
+    /** Lister les taches du jour */
+    getTasksToday(options = {}) {
+      return request("GET", "/tasks/today", options);
+    },
+
     /** Synchroniser les devices Traccar */
     postTrackingSyncDevices(options = {}) {
       return request("POST", "/tracking/sync-devices", options);
@@ -673,6 +1748,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Synchroniser les trajets Traccar */
     postTrackingSyncTrips(options = {}) {
       return request("POST", "/tracking/sync-trips", options);
+    },
+
+    /** Lister les formations */
+    getTrainingCourses(options = {}) {
+      return request("GET", "/training/courses", options);
+    },
+
+    /** Creer une formation */
+    postTrainingCourses(options = {}) {
+      return request("POST", "/training/courses", options);
+    },
+
+    /** Voir une formation */
+    getTrainingCoursesByTrainingCourse(options = {}) {
+      return request("GET", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Modifier une formation */
+    putTrainingCoursesByTrainingCourse(options = {}) {
+      return request("PUT", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Lister les sessions d'une formation */
+    getTrainingCoursesByTrainingCourseSessions(options = {}) {
+      return request("GET", "/training/courses/{trainingCourse}/sessions", options);
+    },
+
+    /** Creer une session de formation */
+    postTrainingCoursesByTrainingCourseSessions(options = {}) {
+      return request("POST", "/training/courses/{trainingCourse}/sessions", options);
+    },
+
+    /** Modifier une inscription */
+    putTrainingEnrollmentsByTrainingEnrollment(options = {}) {
+      return request("PUT", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Modifier une session */
+    putTrainingSessionsByTrainingSession(options = {}) {
+      return request("PUT", "/training/sessions/{trainingSession}", options);
+    },
+
+    /** Inscrire un employe */
+    postTrainingSessionsByTrainingSessionEnroll(options = {}) {
+      return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
     /** Liste de toutes les alertes vehicules */
@@ -778,10 +1898,50 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Viewer public par token */
     getViewCam(options = {}) {
       return request("GET", "/view/cam", options);
+    },
+
+    /** Lister les webhooks de l'entreprise */
+    getWebhooks(options = {}) {
+      return request("GET", "/webhooks", options);
+    },
+
+    /** Creer un webhook */
+    postWebhooks(options = {}) {
+      return request("POST", "/webhooks", options);
+    },
+
+    /** Supprimer un webhook */
+    deleteWebhooksByWebhook(options = {}) {
+      return request("DELETE", "/webhooks/{webhook}", options);
+    },
+
+    /** Voir un webhook et ses dernieres livraisons */
+    getWebhooksByWebhook(options = {}) {
+      return request("GET", "/webhooks/{webhook}", options);
+    },
+
+    /** Modifier un webhook */
+    putWebhooksByWebhook(options = {}) {
+      return request("PUT", "/webhooks/{webhook}", options);
+    },
+
+    /** Lister les livraisons webhook dead-letter (retries epuises) */
+    getWebhooksByWebhookDeadLetters(options = {}) {
+      return request("GET", "/webhooks/{webhook}/dead-letters", options);
+    },
+
+    /** Rejouer une livraison webhook dead-letter */
+    postWebhooksByWebhookDeadLettersByDeliveryReplay(options = {}) {
+      return request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", options);
+    },
+
+    /** Lister les types d'evenements webhook disponibles */
+    getWebhooksEvents(options = {}) {
+      return request("GET", "/webhooks/events", options);
     }
   };
 }
 
 export default createLeopardoClient;
 
-export const openApiVersion = "4.1.81-2026-04-28";
+export const openApiVersion = "4.16.190-2026-05-29";
