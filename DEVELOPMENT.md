@@ -23,7 +23,7 @@ cp api/.env.example api/.env
 make install      # = docker compose up -d --build + migrate + seed
 # OR manually:
 docker compose up -d --build
-docker compose exec api php artisan migrate --seed
+docker compose exec api php artisan leopardo:migrate --seed
 
 # 4. Access
 # Backend API:      http://localhost:8000/api/v1/health
@@ -61,8 +61,8 @@ cd api
 # Install dependencies
 composer install
 
-# Run migrations
-php artisan migrate --seed
+# Run migrations (public + tenant schemas — see "Why leopardo:migrate" below)
+php artisan leopardo:migrate --seed
 
 # Run tests
 php artisan test
@@ -76,6 +76,26 @@ php artisan test --filter=PayrollControllerTest
 ./vendor/bin/pint --test
 ./vendor/bin/pint  # fix
 ```
+
+### Why `leopardo:migrate` and not `artisan migrate`
+
+Leopardo RH is multi-tenant: each request is served from one of **two PostgreSQL schemas**
+(`public` for shared/platform tables, `shared_tenants` for the ~71 tenant tables — employees,
+contracts, payroll, attendance, etc. — see `docs/architecture/MULTITENANCY.md`).
+
+Laravel's native `artisan migrate` / `migrate:fresh` only reads `database/migrations/` at the
+project root by default. On this codebase that directory only contains 2 files; the other 94
+migrations live under `database/migrations/public/` and `database/migrations/tenant/`, which are
+never picked up without an explicit `--path`. Running plain `artisan migrate` silently succeeds
+but never creates the tenant schema, so the API answers on `/health` and then 500s on every
+business route (employees, payroll, attendance...).
+
+The custom command `leopardo:migrate` (defined in `api/routes/console.php`) runs both migration
+paths in the correct order and toggles PostgreSQL's `search_path` between `public` and
+`shared_tenants` accordingly. **Always use `leopardo:migrate` (or `make migrate` /
+`make migrate-fresh`) instead of bare `artisan migrate`** for local onboarding, seeding, and
+resets. Options: `--fresh` drops both schemas first, `--seed` runs `DatabaseSeeder`, `--demo`
+additionally seeds demo company data (local/dev only).
 
 ### Environment Variables
 

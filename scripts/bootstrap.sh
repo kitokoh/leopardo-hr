@@ -22,9 +22,13 @@ echo "Waiting for database..."
 sleep 5
 
 # Run migrations and seeders
+# NOTE: use the custom `leopardo:migrate` command, not bare `artisan migrate:fresh`.
+# This project is multi-tenant (public + shared_tenants schemas); plain `artisan
+# migrate*` only reads database/migrations/ at the root and silently skips the
+# ~71 tenant tables. See DEVELOPMENT.md ("Why leopardo:migrate") for details.
 echo "Running migrations and seeds..."
 docker exec leopardo-api php artisan key:generate --force
-docker exec leopardo-api php artisan migrate:fresh --seed --force
+docker exec leopardo-api php artisan leopardo:migrate --fresh --seed --force
 
 echo "✅ Leopardo RH is ready!"
 echo "API: http://localhost:8000"

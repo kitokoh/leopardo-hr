@@ -25,3 +25,15 @@ web:
   - '.github/workflows/deploy-main.yml'
   - 'docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md'
   - 'docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md'
+# `onboarding`: files that document/drive the local Docker onboarding path
+# (Issue #1393 — `artisan migrate` vs `leopardo:migrate`). Any change to these
+# re-runs the onboarding-smoke job so a regression to the documented Quick
+# Start flow is caught in CI instead of only by a human contributor.
+onboarding:
+  - 'Makefile'
+  - 'DEVELOPMENT.md'
+  - 'scripts/bootstrap.sh'
+  - 'docker-compose.yml'
+  - 'api/routes/console.php'
+  - 'api/database/migrations/**'
+  - '.github/workflows/tests.yml'

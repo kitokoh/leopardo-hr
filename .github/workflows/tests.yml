@@ -39,6 +39,7 @@ jobs:
     outputs:
       api_changed: ${{ steps.changes.outputs.api }}
       web_changed: ${{ steps.changes.outputs.web }}
+      onboarding_changed: ${{ steps.changes.outputs.onboarding }}
 
     steps:
       - name: Checkout code
@@ -65,6 +66,7 @@ jobs:
         run: |
           echo "API changed: ${{ steps.changes.outputs.api }}"
           echo "Web changed: ${{ steps.changes.outputs.web }}"
+          echo "Onboarding changed: ${{ steps.changes.outputs.onboarding }}"
 
   mobile-flutter-stable-compat:
     name: Mobile Flutter (Stable Channel)
@@ -170,6 +172,82 @@ jobs:
         run: |
           echo "Backend feature tests failed."
           exit 1
+
+  onboarding-smoke:
+    name: Onboarding Smoke (docker compose + leopardo:migrate)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.onboarding_changed == 'true'
+    # Issue #1393: replays the exact local onboarding path documented in
+    # DEVELOPMENT.md's Quick Start (docker compose up + leopardo:migrate --seed)
+    # and asserts a tenant route returns real data instead of a 500, so a
+    # regression to bare `artisan migrate` (which never creates the 71 tenant
+    # tables) fails CI instead of only breaking new contributors' onboarding.
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Copy environment file
+        run: cp api/.env.example api/.env
+
+      - name: Build and start core services
+        run: docker compose up -d --build api postgres redis
+
+      - name: Wait for API health endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/api/v1/health >/dev/null 2>&1; then
+              echo "API is healthy."
+              exit 0
+            fi
+            echo "Waiting for API... ($i/30)"
+            sleep 3
+          done
+          echo "API never became healthy."
+          docker compose logs api
+          exit 1
+
+      - name: Generate app key
+        run: docker compose exec -T api php artisan key:generate --force
+
+      - name: Run leopardo:migrate --seed --demo (documented onboarding path)
+        run: docker compose exec -T api php artisan leopardo:migrate --seed --demo --force
+
+      - name: Verify a tenant route returns non-empty employee data
+        shell: bash
+        run: |
+          set -euo pipefail
+          token=$(curl -fsS -X POST http://localhost:8000/api/v1/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"email":"ahmed.benali@techcorp-algerie.dz","password":"password123","device_name":"onboarding-smoke"}' \
+            | php -r 'echo json_decode(file_get_contents("php://stdin"), true)["token"] ?? "";')
+
+          if [[ -z "${token}" ]]; then
+            echo "Failed to obtain a demo manager token — tenant schema was likely not created."
+            exit 1
+          fi
+
+          employees=$(curl -fsS http://localhost:8000/api/v1/employees \
+            -H "Authorization: Bearer ${token}")
+
+          count=$(echo "${employees}" | php -r 'echo count(json_decode(file_get_contents("php://stdin"), true)["data"] ?? []);')
+
+          echo "Employees returned: ${count}"
+          if [[ "${count}" -lt 1 ]]; then
+            echo "Expected at least one employee from the demo tenant, got ${count}."
+            exit 1
+          fi
+
+      - name: Dump service logs
+        if: always()
+        run: docker compose logs
+
+      - name: Tear down services
+        if: always()
+        run: docker compose down -v
 
   backend-security:
     name: Backend Security (Composer Audit)
@@ -615,6 +693,7 @@ jobs:
     needs:
       - detect-changes
       - backend-tests
+      - onboarding-smoke
       - backend-security
       - backend-quality
       - backend-coverage
@@ -663,6 +742,7 @@ jobs:
 
           ## Job Results
           - Backend Tests: ${{ needs.backend-tests.result }}
+          - Onboarding Smoke: ${{ needs.onboarding-smoke.result }}
           - Backend Security: ${{ needs.backend-security.result }}
           - Backend Quality: ${{ needs.backend-quality.result }}
           - Backend Coverage: ${{ needs.backend-coverage.result }}
@@ -736,6 +816,7 @@ jobs:
       - name: All checks passed
         if: |
           (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') &&
+          (needs.onboarding-smoke.result == 'success' || needs.onboarding-smoke.result == 'skipped') &&
           (needs.backend-security.result == 'success' || needs.backend-security.result == 'skipped') &&
           (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') &&
           (needs.backend-coverage.result == 'success' || needs.backend-coverage.result == 'skipped') &&
@@ -746,6 +827,7 @@ jobs:
       - name: Checks failed
         if: |
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-tests.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.onboarding-smoke.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-security.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-quality.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-coverage.result) ||
