@@ -47,9 +47,9 @@
 
 set -euo pipefail
 
-CSV_PATH="docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv"
-ROADMAP_PATH="docs/PLAN_ACTION2/04_ROADMAP_RELEASES.md"
-BACKLOG_PATH="docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md"
+CSV_PATH="docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv"
+ROADMAP_PATH="docs/archive/PLAN_ACTION2/04_ROADMAP_RELEASES.md"
+BACKLOG_PATH="docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md"
 REPO=""
 OUTPUT_PATH=""
 GIT_REF=""
@@ -59,9 +59,9 @@ usage() {
 Usage: dev-hub/tools/plan-action2-readiness-dashboard.sh [options]
 
 Options:
-  --csv PATH        Chemin du CSV canonique (defaut: docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv)
-  --roadmap PATH    Chemin de la roadmap par release (defaut: docs/PLAN_ACTION2/04_ROADMAP_RELEASES.md)
-  --backlog PATH    Chemin du backlog detaille (defaut: docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md)
+  --csv PATH        Chemin du CSV canonique (defaut: docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv)
+  --roadmap PATH    Chemin de la roadmap par release (defaut: docs/archive/PLAN_ACTION2/04_ROADMAP_RELEASES.md)
+  --backlog PATH    Chemin du backlog detaille (defaut: docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md)
   --ref gitref      Ref git a utiliser comme historique "deja livre" (defaut: origin/main, puis main, puis HEAD)
   --repo owner/repo Active le croisement PR ouvertes via `gh` pour detecter "en cours"
   --output PATH     Ecrit aussi le rapport dans ce fichier (en plus de stdout)

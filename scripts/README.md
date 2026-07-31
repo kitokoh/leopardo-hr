@@ -29,7 +29,7 @@ git commit -m "chore(cleanup): remove legacy HR flat files"
 ## generate-plan-action2-issues.sh
 
 PA2-AUTO-003 : génère les issues GitHub manquantes à partir du CSV canonique
-`docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv`. Dry-run par défaut.
+`docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv`. Dry-run par défaut.
 
 ```bash
 # Voir ce qui serait créé (aucune écriture)
