@@ -3,13 +3,13 @@ name: PLAN_ACTION2 Project Sync
 on:
   pull_request:
     paths:
-      - "docs/PLAN_ACTION2/**"
+      - "docs/archive/PLAN_ACTION2/**"
       - "dev-hub/tools/*plan-action2*.ps1"
       - ".github/workflows/plan-action2-project.yml"
   push:
     branches: [main]
     paths:
-      - "docs/PLAN_ACTION2/**"
+      - "docs/archive/PLAN_ACTION2/**"
       - "dev-hub/tools/*plan-action2*.ps1"
       - ".github/workflows/plan-action2-project.yml"
   workflow_dispatch:
