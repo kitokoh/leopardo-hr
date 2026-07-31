@@ -74,7 +74,7 @@ jobs:
           docker compose exec -T api php artisan key:generate --force
 
       - name: leopardo:migrate --seed --demo (the documented onboarding command)
-        run: docker compose exec -T api php artisan leopardo:migrate --seed --demo --force
+        run: docker compose exec -T api php artisan leopardo:migrate --seed --demo
 
       - name: Health check must report DB ok
         run: |

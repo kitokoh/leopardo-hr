@@ -54,9 +54,9 @@ try {
     docker compose exec app php artisan config:clear
 
     if ($SeedDemo) {
-        docker compose exec app php artisan leopardo:migrate --seed --demo --force
+        docker compose exec app php artisan leopardo:migrate --seed --demo
     } else {
-        docker compose exec app php artisan leopardo:migrate --seed --force
+        docker compose exec app php artisan leopardo:migrate --seed
     }
 
     if ($RunTests) {
