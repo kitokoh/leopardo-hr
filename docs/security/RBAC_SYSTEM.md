@@ -78,4 +78,4 @@ Au-delà des checks record-par-record des Policies, les listings utilisent `isTe
 
 ---
 
-Pour plus de détails, voir [Security Policy](SECURITY.md) et `docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` (tickets `PA2-SEC-001` à `PA2-SEC-005`).
+Pour plus de détails, voir [Security Policy](SECURITY.md) et `docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md` (tickets `PA2-SEC-001` à `PA2-SEC-005`).

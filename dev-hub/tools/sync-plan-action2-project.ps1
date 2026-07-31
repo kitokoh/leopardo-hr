@@ -6,7 +6,7 @@ param(
     [int]$ProjectNumber,
 
     [string]$OwnerType = "user",
-    [string]$CsvPath = "docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv",
+    [string]$CsvPath = "docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv",
     [string]$Token = $env:PLAN_ACTION2_PROJECT_TOKEN,
     [switch]$DryRun
 )
@@ -85,7 +85,7 @@ Dependencies: $($row.Dependencies)
 Acceptance Criteria:
 $($row."Acceptance Criteria")
 
-Source: docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv
+Source: docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv
 "@
 
     if ($DryRun) {
