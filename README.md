@@ -134,6 +134,8 @@ Explore our comprehensive guides for every role and layer:
 | 📱 **Interfaces** | [Mobile Setup](docs/mobile/README.md) • [Kiosk Mode](docs/kiosk/README.md) • [Web Admin](docs/admin/README.md) |
 | 🚀 **Operations** | [Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md) • [Testing Suite](docs/testing/TESTING.md) • [Observability](docs/architecture/OBSERVABILITY.md) |
 | 🧭 **Gouvernance & Onboarding agent** | [AGENTS.md](AGENTS.md) • [PILOTAGE.md](PILOTAGE.md) (source de vérité opérationnelle courante) • [docs/CONTEXT/](docs/CONTEXT/README.md) (onboarding structuré) |
+| 📐 **Conception & Gestion de projet** | [Dossier de conception](docs/dossierdeConception/README.md) (cahier des charges source, UML) • [Spécifications](docs/specifications/README.md) (règle d'or avant tout module) • [Gestion projet](docs/GESTION_PROJET/README.md) (runbooks, audits d'écarts) |
+| 📚 **Index complet de la doc** | [docs/README.md](docs/README.md) (toutes les sections ci-dessus + stratégie commerciale, GTM, historique/archive) |
 
 ---
 

@@ -4,7 +4,7 @@
 # French message (string literal containing an accented character) inside
 # an API controller, instead of going through the `__('xxx.yyy')` catalog.
 #
-# Context: docs/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md PA2-I18N-007 found a
+# Context: docs/archive/PLAN_ACTION2/02_BACKLOG_ATOMIQUE.md PA2-I18N-007 found a
 # hardcoded French string in
 # api/app/Modules/SmartAttendance/Interfaces/Api/V1/GeoSessionController.php
 # (already fixed to use __('attendance.geo_session_approved')) plus several
