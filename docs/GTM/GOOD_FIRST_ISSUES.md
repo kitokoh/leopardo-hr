@@ -8,8 +8,9 @@
 > (`front/mobile/` renommé en `front/mobile_apps/*`, `app/Http/Controllers/Api/V1/` remplacé par
 > `app/Modules/*/Interfaces/Api/V1/Controllers/`) — retirés ou corrigés ici.
 >
-> Voir aussi `docs/GESTION_PROJET/GOOD_FIRST_ISSUES.md` (liste sœur, périmètre gestion projet,
-> à auditer de la même façon avant de créer de nouvelles issues depuis ce fichier).
+> `docs/GESTION_PROJET/GOOD_FIRST_ISSUES.md` (ancienne liste sœur, mêmes problèmes de chemins
+> obsolètes) a été supprimé le 2026-07-29 (audit doc) : ce fichier-ci est désormais la seule
+> liste «good first issues» du dépôt.
 
 ## Issues ouvertes actuellement
 
