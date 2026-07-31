@@ -102,9 +102,9 @@ test.describe('Recruitment flow', () => {
 
     await page.goto('/recruitment')
     await page.getByRole('button', { name: /Postes/i }).click()
-    await page.getByPlaceholder(/Intitule du poste/i).fill('Chef de rang')
+    await page.getByPlaceholder(/Intitul./i).fill('Chef de rang')
     await page.getByPlaceholder(/Lieu/i).fill('Oran')
-    await page.getByRole('button', { name: /Creer le poste/i }).click()
+    await page.getByRole('button', { name: /Cr.er le poste/i }).click()
 
     await expect(page.getByText('Chef de rang')).toBeVisible()
 
