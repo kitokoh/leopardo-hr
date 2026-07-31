@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # PA2-AUTO-003: genere les issues GitHub manquantes a partir du CSV
-# canonique docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv (source de
+# canonique docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv (source de
 # verite deja validee par dev-hub/tools/validate-plan-action2.ps1 /
 # .github/workflows/plan-action2-project.yml).
 #
@@ -43,7 +43,7 @@ APPLY=0
 MILESTONE=""
 OWNER=""
 LABEL_FILTER=""
-CSV_PATH="docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv"
+CSV_PATH="docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv"
 
 usage() {
   cat <<'EOF'
@@ -55,7 +55,7 @@ Options:
   --milestone TITLE       Milestone existant a assigner aux issues creees
   --owner LOGIN           Login GitHub a auto-assigner aux issues creees
   --label-filter PREFIX   Ne traiter que les IDs commencant par ce prefixe (ex: PA2-I18N)
-  --csv PATH              Chemin du CSV (defaut: docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv)
+  --csv PATH              Chemin du CSV (defaut: docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv)
   -h, --help              Affiche cette aide
 EOF
 }
