@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useReducer, useState, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -344,13 +345,13 @@ export function SignupForm({
                 />
                 <label htmlFor="agreeToTerms" className="text-sm text-slate-600 dark:text-slate-400">
                   J&apos;accepte les{' '}
-                  <a href="/terms" className="font-semibold text-emerald-600 hover:text-emerald-700">
+                  <Link href="/terms" className="font-semibold text-emerald-600 hover:text-emerald-700">
                     conditions d&apos;utilisation
-                  </a>{' '}
+                  </Link>{' '}
                   et la{' '}
-                  <a href="/privacy" className="font-semibold text-emerald-600 hover:text-emerald-700">
+                  <Link href="/privacy" className="font-semibold text-emerald-600 hover:text-emerald-700">
                     politique de confidentialite
-                  </a>
+                  </Link>
                 </label>
               </div>
               {errors.agreeToTerms && (
@@ -376,9 +377,9 @@ export function SignupForm({
 
               <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                 Vous avez deja un compte?{' '}
-                <a href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
+                <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                   Se connecter
-                </a>
+                </Link>
               </p>
             </form>
           </motion.div>
@@ -510,9 +511,9 @@ export function SignupForm({
 
             <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
               Vous avez deja un compte?{' '}
-              <a href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
+              <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                 Se connecter
-              </a>
+              </Link>
             </p>
           </motion.div>
         )}
@@ -597,20 +598,20 @@ export function SignupForm({
                 )}
 
                 <div className="flex flex-col gap-2 sm:flex-row">
-                  <a
+                  <Link
                     href="/auth/login"
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700"
                   >
                     <LogIn className="h-4 w-4" />
                     Se connecter
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/download"
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     <Download className="h-4 w-4" />
                     Telecharger l&apos;app
-                  </a>
+                  </Link>
                 </div>
 
                 <p className="text-center text-xs text-slate-400 dark:text-slate-500">
