@@ -1,5 +1,5 @@
 param(
-    [string]$CsvPath = "docs/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv",
+    [string]$CsvPath = "docs/archive/PLAN_ACTION2/03_GITHUB_PROJECT_IMPORT.csv",
     [string]$Priority = "",
     [string]$Area = "",
     [string]$OutputPath = ""
