@@ -1,5 +1,9 @@
 # PLAN_ACTION2 - Leopardo Mobile-First Company OS
 
+> ⚠️ **STATUT : CLÔTURÉ ET ARCHIVÉ (2026-07-29).** Depuis la bascule PA2-OPS-008 (issue #1279), les GitHub Issues sont la source de vérité unique du backlog (`gh issue list`) ; voir `AGENTS.md`.
+> Ce dossier a été déplacé de `docs/PLAN_ACTION2/` vers `docs/archive/PLAN_ACTION2/` le 2026-07-29 pour matérialiser sa clôture (audit doc) ; le contenu est inchangé, seul l'emplacement a changé. Conservé pour traçabilité historique uniquement — ne pas y chercher de travail en cours.
+> `docs/PLAN_ACTION2/` (sans `archive/`) ne contient plus que `README.md` de redirection.
+
 Version: 1.1  
 Date: 2026-06-13  
 Statut: pret pour decoupage GitHub Projects
