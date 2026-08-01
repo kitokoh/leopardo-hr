@@ -5,7 +5,7 @@ import json
 from urllib import error, parse, request as urllib_request
 
 
-open_api_version = "4.1.81-2026-04-28"
+open_api_version = "4.16.190-2026-05-29"
 
 
 class LeopardoApiError(Exception):
@@ -92,6 +92,30 @@ class LeopardoClient:
                 body=parsed_body,
             ) from exc
 
+    def get_absences(self, **kwargs):
+        """Lister les absences"""
+        return self.request("GET", "/absences", **kwargs)
+
+    def post_absences(self, **kwargs):
+        """Demander une absence"""
+        return self.request("POST", "/absences", **kwargs)
+
+    def delete_absences_by_absence(self, **kwargs):
+        """Annuler une absence (employe proprietaire)"""
+        return self.request("DELETE", "/absences/{absence}", **kwargs)
+
+    def get_absences_by_absence(self, **kwargs):
+        """Voir une absence"""
+        return self.request("GET", "/absences/{absence}", **kwargs)
+
+    def put_absences_by_absence_approve(self, **kwargs):
+        """Approuver une absence (manager)"""
+        return self.request("PUT", "/absences/{absence}/approve", **kwargs)
+
+    def put_absences_by_absence_reject(self, **kwargs):
+        """Rejeter une absence (manager)"""
+        return self.request("PUT", "/absences/{absence}/reject", **kwargs)
+
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
         return self.request("GET", "/ai/analytics/costs", **kwargs)
@@ -124,6 +148,38 @@ class LeopardoClient:
         """Liste des outils IA disponibles"""
         return self.request("GET", "/ai/tools", **kwargs)
 
+    def get_approval_workflows(self, **kwargs):
+        """Lister les workflows d'approbation"""
+        return self.request("GET", "/approval-workflows", **kwargs)
+
+    def post_approval_workflows(self, **kwargs):
+        """Creer un workflow"""
+        return self.request("POST", "/approval-workflows", **kwargs)
+
+    def delete_approval_workflows_by_approvalworkflow(self, **kwargs):
+        """Supprimer un workflow"""
+        return self.request("DELETE", "/approval-workflows/{approvalWorkflow}", **kwargs)
+
+    def put_approval_workflows_by_approvalworkflow(self, **kwargs):
+        """Modifier un workflow"""
+        return self.request("PUT", "/approval-workflows/{approvalWorkflow}", **kwargs)
+
+    def post_approvals_by_approvalrequest_approve(self, **kwargs):
+        """Approuver une demande"""
+        return self.request("POST", "/approvals/{approvalRequest}/approve", **kwargs)
+
+    def post_approvals_by_approvalrequest_reject(self, **kwargs):
+        """Rejeter une demande"""
+        return self.request("POST", "/approvals/{approvalRequest}/reject", **kwargs)
+
+    def get_approvals_history(self, **kwargs):
+        """Historique des approbations"""
+        return self.request("GET", "/approvals/history", **kwargs)
+
+    def get_approvals_pending(self, **kwargs):
+        """Approbations en attente"""
+        return self.request("GET", "/approvals/pending", **kwargs)
+
     def get_attendance(self, **kwargs):
         """Historique de pointage"""
         return self.request("GET", "/attendance", **kwargs)
@@ -131,6 +187,14 @@ class LeopardoClient:
     def put_attendance_by_attendancelog(self, **kwargs):
         """Modifier directement un pointage"""
         return self.request("PUT", "/attendance/{attendanceLog}", **kwargs)
+
+    def get_attendance_by_attendancelog_punch_photo(self, **kwargs):
+        """Telecharger la photo de pointage d'un log"""
+        return self.request("GET", "/attendance/{attendanceLog}/punch-photo", **kwargs)
+
+    def get_attendance_anomalies(self, **kwargs):
+        """Anomalies de pointage"""
+        return self.request("GET", "/attendance/anomalies", **kwargs)
 
     def post_attendance_check_in(self, **kwargs):
         """Check-in"""
@@ -140,13 +204,41 @@ class LeopardoClient:
         """Check-out"""
         return self.request("POST", "/attendance/check-out", **kwargs)
 
+    def get_attendance_corrections(self, **kwargs):
+        """Lister les demandes de correction de pointage"""
+        return self.request("GET", "/attendance/corrections", **kwargs)
+
     def post_attendance_corrections(self, **kwargs):
         """Demander une correction de pointage"""
         return self.request("POST", "/attendance/corrections", **kwargs)
 
+    def put_attendance_corrections_by_correction_approve(self, **kwargs):
+        """Appliquer une demande de correction de pointage"""
+        return self.request("PUT", "/attendance/corrections/{correction}/approve", **kwargs)
+
+    def put_attendance_corrections_by_correction_reject(self, **kwargs):
+        """Refuser une demande de correction de pointage"""
+        return self.request("PUT", "/attendance/corrections/{correction}/reject", **kwargs)
+
+    def get_attendance_monthly_report(self, **kwargs):
+        """Rapport mensuel de pointage"""
+        return self.request("GET", "/attendance/monthly-report", **kwargs)
+
     def get_attendance_today(self, **kwargs):
         """Etat du jour"""
         return self.request("GET", "/attendance/today", **kwargs)
+
+    def get_audit_logs(self, **kwargs):
+        """Journal d'audit"""
+        return self.request("GET", "/audit-logs", **kwargs)
+
+    def get_audit_logs_by_auditlog(self, **kwargs):
+        """Voir un evenement d'audit"""
+        return self.request("GET", "/audit-logs/{auditLog}", **kwargs)
+
+    def get_audit_logs_export_csv(self, **kwargs):
+        """Exporter le journal d'audit en CSV"""
+        return self.request("GET", "/audit-logs/export-csv", **kwargs)
 
     def get_auth_biometric_enrollment(self, **kwargs):
         """Derniere demande biometrie de l'utilisateur courant"""
@@ -159,6 +251,14 @@ class LeopardoClient:
     def post_auth_change_password(self, **kwargs):
         """Changer le mot de passe"""
         return self.request("POST", "/auth/change-password", **kwargs)
+
+    def post_auth_google_token(self, **kwargs):
+        """Connexion Google OAuth"""
+        return self.request("POST", "/auth/google/token", **kwargs)
+
+    def patch_auth_language(self, **kwargs):
+        """Changer la langue"""
+        return self.request("PATCH", "/auth/language", **kwargs)
 
     def post_auth_login(self, **kwargs):
         """Connexion employee"""
@@ -176,6 +276,54 @@ class LeopardoClient:
         """Mettre a jour le profil courant"""
         return self.request("PATCH", "/auth/profile", **kwargs)
 
+    def post_auth_refresh_token(self, **kwargs):
+        """Rafraichir le token"""
+        return self.request("POST", "/auth/refresh-token", **kwargs)
+
+    def post_auth_register(self, **kwargs):
+        """Inscription employe"""
+        return self.request("POST", "/auth/register", **kwargs)
+
+    def get_bank_exports(self, **kwargs):
+        """Lister les exports bancaires"""
+        return self.request("GET", "/bank-exports", **kwargs)
+
+    def post_bank_exports(self, **kwargs):
+        """Generer un export bancaire"""
+        return self.request("POST", "/bank-exports", **kwargs)
+
+    def get_bank_exports_by_bankexport_download(self, **kwargs):
+        """Telecharger un export bancaire"""
+        return self.request("GET", "/bank-exports/{bankExport}/download", **kwargs)
+
+    def post_billing_cancel(self, **kwargs):
+        """Annuler l'abonnement"""
+        return self.request("POST", "/billing/cancel", **kwargs)
+
+    def get_billing_invoices(self, **kwargs):
+        """Lister les factures"""
+        return self.request("GET", "/billing/invoices", **kwargs)
+
+    def get_billing_invoices_by_id(self, **kwargs):
+        """Voir une facture"""
+        return self.request("GET", "/billing/invoices/{id}", **kwargs)
+
+    def get_billing_invoices_by_id_pdf(self, **kwargs):
+        """Telecharger facture PDF"""
+        return self.request("GET", "/billing/invoices/{id}/pdf", **kwargs)
+
+    def post_billing_renew(self, **kwargs):
+        """Renouveler l'abonnement"""
+        return self.request("POST", "/billing/renew", **kwargs)
+
+    def get_billing_subscription(self, **kwargs):
+        """Voir l'abonnement courant"""
+        return self.request("GET", "/billing/subscription", **kwargs)
+
+    def post_billing_upgrade(self, **kwargs):
+        """Upgrader l'abonnement"""
+        return self.request("POST", "/billing/upgrade", **kwargs)
+
     def get_biometric_enrollment_requests(self, **kwargs):
         """Lister les demandes biometrie de la company"""
         return self.request("GET", "/biometric-enrollment-requests", **kwargs)
@@ -187,6 +335,54 @@ class LeopardoClient:
     def post_biometric_enrollment_requests_by_id_reject(self, **kwargs):
         """Rejeter une demande biometrie"""
         return self.request("POST", "/biometric-enrollment-requests/{id}/reject", **kwargs)
+
+    def get_cabinet_documents(self, **kwargs):
+        """Lister les documents"""
+        return self.request("GET", "/cabinet/documents", **kwargs)
+
+    def post_cabinet_documents(self, **kwargs):
+        """Uploader un document"""
+        return self.request("POST", "/cabinet/documents", **kwargs)
+
+    def delete_cabinet_documents_by_cabinetdocument(self, **kwargs):
+        """Supprimer un document"""
+        return self.request("DELETE", "/cabinet/documents/{cabinetDocument}", **kwargs)
+
+    def get_cabinet_documents_by_cabinetdocument(self, **kwargs):
+        """Voir un document"""
+        return self.request("GET", "/cabinet/documents/{cabinetDocument}", **kwargs)
+
+    def put_cabinet_documents_by_cabinetdocument(self, **kwargs):
+        """Modifier un document"""
+        return self.request("PUT", "/cabinet/documents/{cabinetDocument}", **kwargs)
+
+    def get_cabinet_documents_by_cabinetdocument_download(self, **kwargs):
+        """Telecharger un document"""
+        return self.request("GET", "/cabinet/documents/{cabinetDocument}/download", **kwargs)
+
+    def post_cabinet_documents_by_cabinetdocument_move(self, **kwargs):
+        """Deplacer un document"""
+        return self.request("POST", "/cabinet/documents/{cabinetDocument}/move", **kwargs)
+
+    def get_cabinet_folders(self, **kwargs):
+        """Lister les dossiers"""
+        return self.request("GET", "/cabinet/folders", **kwargs)
+
+    def post_cabinet_folders(self, **kwargs):
+        """Creer un dossier"""
+        return self.request("POST", "/cabinet/folders", **kwargs)
+
+    def delete_cabinet_folders_by_cabinetfolder(self, **kwargs):
+        """Supprimer un dossier"""
+        return self.request("DELETE", "/cabinet/folders/{cabinetFolder}", **kwargs)
+
+    def get_cabinet_folders_by_cabinetfolder(self, **kwargs):
+        """Voir un dossier"""
+        return self.request("GET", "/cabinet/folders/{cabinetFolder}", **kwargs)
+
+    def put_cabinet_folders_by_cabinetfolder(self, **kwargs):
+        """Modifier un dossier"""
+        return self.request("PUT", "/cabinet/folders/{cabinetFolder}", **kwargs)
 
     def get_cameras(self, **kwargs):
         """Lister les cameras"""
@@ -256,6 +452,102 @@ class LeopardoClient:
         """Analytics communication tenant"""
         return self.request("GET", "/communication/analytics", **kwargs)
 
+    def get_company_branding(self, **kwargs):
+        """Lire l'identite visuelle de l'entreprise courante"""
+        return self.request("GET", "/company/branding", **kwargs)
+
+    def patch_company_branding(self, **kwargs):
+        """Mettre a jour l'identite visuelle entreprise"""
+        return self.request("PATCH", "/company/branding", **kwargs)
+
+    def get_company_qr_onboarding(self, **kwargs):
+        """Generer le QR onboarding entreprise"""
+        return self.request("GET", "/company/qr-onboarding", **kwargs)
+
+    def post_company_qr_onboarding_create_employee(self, **kwargs):
+        """Creer un employe depuis QR"""
+        return self.request("POST", "/company/qr-onboarding/create-employee", **kwargs)
+
+    def post_company_qr_onboarding_scan_employee(self, **kwargs):
+        """Lire un QR employe pour pre-remplir l'ajout manager"""
+        return self.request("POST", "/company/qr-onboarding/scan-employee", **kwargs)
+
+    def get_contracts(self, **kwargs):
+        """Lister les contrats"""
+        return self.request("GET", "/contracts", **kwargs)
+
+    def post_contracts(self, **kwargs):
+        """Creer un contrat"""
+        return self.request("POST", "/contracts", **kwargs)
+
+    def get_contracts_by_contract(self, **kwargs):
+        """Voir un contrat"""
+        return self.request("GET", "/contracts/{contract}", **kwargs)
+
+    def put_contracts_by_contract(self, **kwargs):
+        """Modifier un contrat"""
+        return self.request("PUT", "/contracts/{contract}", **kwargs)
+
+    def post_contracts_by_contract_activate(self, **kwargs):
+        """Activer un contrat draft"""
+        return self.request("POST", "/contracts/{contract}/activate", **kwargs)
+
+    def get_contracts_by_contract_amendments(self, **kwargs):
+        """Lister les avenants"""
+        return self.request("GET", "/contracts/{contract}/amendments", **kwargs)
+
+    def post_contracts_by_contract_amendments(self, **kwargs):
+        """Creer un avenant"""
+        return self.request("POST", "/contracts/{contract}/amendments", **kwargs)
+
+    def get_contracts_by_contract_generate_pdf(self, **kwargs):
+        """Donnees PDF du contrat"""
+        return self.request("GET", "/contracts/{contract}/generate-pdf", **kwargs)
+
+    def post_contracts_by_contract_renew(self, **kwargs):
+        """Renouveler un contrat"""
+        return self.request("POST", "/contracts/{contract}/renew", **kwargs)
+
+    def post_contracts_by_contract_suspend(self, **kwargs):
+        """Suspendre un contrat actif"""
+        return self.request("POST", "/contracts/{contract}/suspend", **kwargs)
+
+    def post_contracts_by_contract_terminate(self, **kwargs):
+        """Resilier un contrat"""
+        return self.request("POST", "/contracts/{contract}/terminate", **kwargs)
+
+    def get_contracts_expiring(self, **kwargs):
+        """Contrats expirant bientot"""
+        return self.request("GET", "/contracts/expiring", **kwargs)
+
+    def get_dashboard_kpi(self, **kwargs):
+        """KPIs detailles"""
+        return self.request("GET", "/dashboard/kpi", **kwargs)
+
+    def get_dashboard_manager_digest(self, **kwargs):
+        """Lire les signaux manager du jour"""
+        return self.request("GET", "/dashboard/manager-digest", **kwargs)
+
+    def get_dashboard_recent_activity(self, **kwargs):
+        """Activite recente"""
+        return self.request("GET", "/dashboard/recent-activity", **kwargs)
+
+    def get_dashboard_summary(self, **kwargs):
+        """Resume dashboard"""
+        return self.request("GET", "/dashboard/summary", **kwargs)
+
+    def delete_device_tokens(self, **kwargs):
+        """Supprimer le token FCM du device courant au logout"""
+        return self.request("DELETE", "/device-tokens", **kwargs)
+
+    def get_device_tokens(self, **kwargs):
+        """Lister les tokens push actifs de l'utilisateur courant"""
+        return self.request("GET", "/device-tokens", **kwargs)
+
+    def post_device_tokens(self, **kwargs):
+        """Enregistrer ou rafraichir le token FCM du device courant"""
+        return self.request("POST", "/device-tokens", **kwargs)
+
     def get_employees(self, **kwargs):
         """Lister les employes"""
         return self.request("GET", "/employees", **kwargs)
@@ -292,6 +584,14 @@ class LeopardoClient:
         """Telecharger le PDF d'estimation"""
         return self.request("GET", "/employees/{employee}/receipt", **kwargs)
 
+    def post_employees_import(self, **kwargs):
+        """Importer des employes par CSV"""
+        return self.request("POST", "/employees/import", **kwargs)
+
+    def get_employees_import_template(self, **kwargs):
+        """Template CSV import"""
+        return self.request("GET", "/employees/import-template", **kwargs)
+
     def get_evaluations(self, **kwargs):
         """Lister les evaluations"""
         return self.request("GET", "/evaluations", **kwargs)
@@ -324,6 +624,70 @@ class LeopardoClient:
         """Soumettre une evaluation"""
         return self.request("PUT", "/evaluations/{evaluation}/submit", **kwargs)
 
+    def get_expense_claims(self, **kwargs):
+        """Lister les notes de frais"""
+        return self.request("GET", "/expense-claims", **kwargs)
+
+    def post_expense_claims(self, **kwargs):
+        """Creer une note de frais"""
+        return self.request("POST", "/expense-claims", **kwargs)
+
+    def get_expense_claims_by_expenseclaim(self, **kwargs):
+        """Voir une note de frais"""
+        return self.request("GET", "/expense-claims/{expenseClaim}", **kwargs)
+
+    def post_expense_claims_by_expenseclaim_approve(self, **kwargs):
+        """Approuver une note de frais"""
+        return self.request("POST", "/expense-claims/{expenseClaim}/approve", **kwargs)
+
+    def post_expense_claims_by_expenseclaim_reject(self, **kwargs):
+        """Rejeter une note de frais"""
+        return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
+
+    def post_expense_claims_by_expenseclaim_submit(self, **kwargs):
+        """Soumettre une note de frais"""
+        return self.request("POST", "/expense-claims/{expenseClaim}/submit", **kwargs)
+
+    def get_exports_absences(self, **kwargs):
+        """Exporter les absences"""
+        return self.request("GET", "/exports/absences", **kwargs)
+
+    def get_exports_attendance(self, **kwargs):
+        """Exporter le pointage"""
+        return self.request("GET", "/exports/attendance", **kwargs)
+
+    def get_exports_contracts(self, **kwargs):
+        """Exporter les contrats"""
+        return self.request("GET", "/exports/contracts", **kwargs)
+
+    def get_exports_employees(self, **kwargs):
+        """Exporter les employes"""
+        return self.request("GET", "/exports/employees", **kwargs)
+
+    def get_exports_history(self, **kwargs):
+        """Historique des exports"""
+        return self.request("GET", "/exports/history", **kwargs)
+
+    def get_exports_pay_slips(self, **kwargs):
+        """Exporter les bulletins"""
+        return self.request("GET", "/exports/pay-slips", **kwargs)
+
+    def get_exports_training(self, **kwargs):
+        """Exporter les formations"""
+        return self.request("GET", "/exports/training", **kwargs)
+
+    def get_exports_vehicles(self, **kwargs):
+        """Exporter la flotte"""
+        return self.request("GET", "/exports/vehicles", **kwargs)
+
+    def get_features(self, **kwargs):
+        """Lister les feature flags"""
+        return self.request("GET", "/features", **kwargs)
+
+    def post_features_by_feature_toggle(self, **kwargs):
+        """Activer/desactiver une feature"""
+        return self.request("POST", "/features/{feature}/toggle", **kwargs)
+
     def get_fleet_live_map(self, **kwargs):
         """Carte temps reel des vehicules"""
         return self.request("GET", "/fleet/live-map", **kwargs)
@@ -347,6 +711,10 @@ class LeopardoClient:
     def get_health(self, **kwargs):
         """Healthcheck live + ready"""
         return self.request("GET", "/health", **kwargs)
+
+    def get_i18n_by_locale(self, **kwargs):
+        """Traductions pour une locale"""
+        return self.request("GET", "/i18n/{locale}", **kwargs)
 
     def get_internal_camera_token_verify(self, **kwargs):
         """Verification interne MediaMTX"""
@@ -380,17 +748,157 @@ class LeopardoClient:
         """Lire le score de readiness lancement du tenant"""
         return self.request("GET", "/launch-readiness", **kwargs)
 
+    def get_leave_accruals(self, **kwargs):
+        """Lister les accruals"""
+        return self.request("GET", "/leave-accruals", **kwargs)
+
+    def post_leave_accruals(self, **kwargs):
+        """Creer un accrual"""
+        return self.request("POST", "/leave-accruals", **kwargs)
+
+    def get_leave_balances(self, **kwargs):
+        """Soldes de conges globaux (manager)"""
+        return self.request("GET", "/leave-balances", **kwargs)
+
+    def get_leave_policies(self, **kwargs):
+        """Lister les politiques de conges"""
+        return self.request("GET", "/leave-policies", **kwargs)
+
+    def post_leave_policies(self, **kwargs):
+        """Creer une politique de conges"""
+        return self.request("POST", "/leave-policies", **kwargs)
+
+    def delete_leave_policies_by_leavepolicy(self, **kwargs):
+        """Supprimer une politique"""
+        return self.request("DELETE", "/leave-policies/{leavePolicy}", **kwargs)
+
+    def get_leave_policies_by_leavepolicy(self, **kwargs):
+        """Voir une politique"""
+        return self.request("GET", "/leave-policies/{leavePolicy}", **kwargs)
+
+    def put_leave_policies_by_leavepolicy(self, **kwargs):
+        """Modifier une politique"""
+        return self.request("PUT", "/leave-policies/{leavePolicy}", **kwargs)
+
+    def get_loans(self, **kwargs):
+        """Lister les prets"""
+        return self.request("GET", "/loans", **kwargs)
+
+    def post_loans(self, **kwargs):
+        """Demander un pret"""
+        return self.request("POST", "/loans", **kwargs)
+
+    def get_loans_by_employeeloan(self, **kwargs):
+        """Voir un pret"""
+        return self.request("GET", "/loans/{employeeLoan}", **kwargs)
+
+    def post_loans_by_employeeloan_approve(self, **kwargs):
+        """Approuver un pret"""
+        return self.request("POST", "/loans/{employeeLoan}/approve", **kwargs)
+
+    def post_loans_by_employeeloan_disburse(self, **kwargs):
+        """Decaisser un pret"""
+        return self.request("POST", "/loans/{employeeLoan}/disburse", **kwargs)
+
+    def get_marketing_social_account(self, **kwargs):
+        """Compte social connecte du tenant"""
+        return self.request("GET", "/marketing/social-account", **kwargs)
+
+    def post_marketing_social_account_connect(self, **kwargs):
+        """Connecter un compte social (agregateur Ayrshare)"""
+        return self.request("POST", "/marketing/social-account/connect", **kwargs)
+
+    def post_marketing_social_account_disconnect(self, **kwargs):
+        """Deconnecter le compte social du tenant"""
+        return self.request("POST", "/marketing/social-account/disconnect", **kwargs)
+
+    def get_marketing_social_posts(self, **kwargs):
+        """Lister les publications reseaux sociaux du tenant"""
+        return self.request("GET", "/marketing/social-posts", **kwargs)
+
+    def post_marketing_social_posts(self, **kwargs):
+        """Creer une publication (brouillon, ou planifiee/publiee si scheduled_at fourni)"""
+        return self.request("POST", "/marketing/social-posts", **kwargs)
+
+    def delete_marketing_social_posts_by_socialpost(self, **kwargs):
+        """Supprimer une publication (draft uniquement)"""
+        return self.request("DELETE", "/marketing/social-posts/{socialPost}", **kwargs)
+
+    def get_marketing_social_posts_by_socialpost(self, **kwargs):
+        """Detail d'une publication"""
+        return self.request("GET", "/marketing/social-posts/{socialPost}", **kwargs)
+
+    def patch_marketing_social_posts_by_socialpost(self, **kwargs):
+        """Modifier une publication (draft uniquement)"""
+        return self.request("PATCH", "/marketing/social-posts/{socialPost}", **kwargs)
+
+    def post_marketing_social_posts_by_socialpost_publish(self, **kwargs):
+        """Publier immediatement ou (re)planifier une publication"""
+        return self.request("POST", "/marketing/social-posts/{socialPost}/publish", **kwargs)
+
+    def get_me_balance(self, **kwargs):
+        """Mon solde de paie courant"""
+        return self.request("GET", "/me/balance", **kwargs)
+
+    def get_me_career(self, **kwargs):
+        """Lire le parcours professionnel durable de l'employe courant"""
+        return self.request("GET", "/me/career", **kwargs)
+
+    def post_me_company_qr_scan(self, **kwargs):
+        """Soumettre une demande d'integration via QR entreprise"""
+        return self.request("POST", "/me/company-qr/scan", **kwargs)
+
+    def get_me_contracts(self, **kwargs):
+        """Mes contrats"""
+        return self.request("GET", "/me/contracts", **kwargs)
+
     def get_me_daily_summary(self, **kwargs):
         """Resume journalier utilisateur courant"""
         return self.request("GET", "/me/daily-summary", **kwargs)
+
+    def get_me_leave_balances(self, **kwargs):
+        """Mes soldes de conges"""
+        return self.request("GET", "/me/leave-balances", **kwargs)
+
+    def get_me_loans(self, **kwargs):
+        """Mes prets"""
+        return self.request("GET", "/me/loans", **kwargs)
+
+    def get_me_loans_by_loan_repayments(self, **kwargs):
+        """Mes remboursements de pret"""
+        return self.request("GET", "/me/loans/{loan}/repayments", **kwargs)
 
     def get_me_monthly_summary(self, **kwargs):
         """Resume mensuel utilisateur courant"""
         return self.request("GET", "/me/monthly-summary", **kwargs)
 
+    def get_me_pay_slips(self, **kwargs):
+        """Mes bulletins de paie"""
+        return self.request("GET", "/me/pay-slips", **kwargs)
+
+    def get_me_payment_documents(self, **kwargs):
+        """Mes documents de paiement"""
+        return self.request("GET", "/me/payment-documents", **kwargs)
+
+    def get_me_payment_documents_by_paymentdocument_download(self, **kwargs):
+        """Telecharger un document de paiement"""
+        return self.request("GET", "/me/payment-documents/{paymentDocument}/download", **kwargs)
+
+    def get_me_qr_profile(self, **kwargs):
+        """Generer le QR profil employe"""
+        return self.request("GET", "/me/qr-profile", **kwargs)
+
     def get_me_quick_estimate(self, **kwargs):
         """Estimation utilisateur courant"""
         return self.request("GET", "/me/quick-estimate", **kwargs)
+
+    def get_me_trainings(self, **kwargs):
+        """Mes formations"""
+        return self.request("GET", "/me/trainings", **kwargs)
+
+    def post_me_trainings_by_session_enroll(self, **kwargs):
+        """Auto-inscription a une formation"""
+        return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
 
     def get_notification_preferences(self, **kwargs):
         """Lire les preferences de notification de l'utilisateur courant"""
@@ -416,9 +924,125 @@ class LeopardoClient:
         """Marquer toutes les notifications comme lues"""
         return self.request("PUT", "/notifications/read-all", **kwargs)
 
+    def patch_onboarding_setup_by_stepkey_complete(self, **kwargs):
+        """Marquer une étape comme complète"""
+        return self.request("PATCH", "/onboarding-setup/{stepKey}/complete", **kwargs)
+
+    def patch_onboarding_setup_by_stepkey_skip(self, **kwargs):
+        """Ignorer une étape d'onboarding"""
+        return self.request("PATCH", "/onboarding-setup/{stepKey}/skip", **kwargs)
+
+    def get_onboarding_setup_checklist(self, **kwargs):
+        """Récupérer la checklist d'onboarding"""
+        return self.request("GET", "/onboarding-setup/checklist", **kwargs)
+
+    def get_onboarding_setup_progress(self, **kwargs):
+        """Progression globale de l'onboarding"""
+        return self.request("GET", "/onboarding-setup/progress", **kwargs)
+
+    def get_org_chart(self, **kwargs):
+        """Organigramme complet"""
+        return self.request("GET", "/org-chart", **kwargs)
+
+    def get_org_chart_by_employeeid_manager_chain(self, **kwargs):
+        """Chaine hierarchique"""
+        return self.request("GET", "/org-chart/{employeeId}/manager-chain", **kwargs)
+
+    def get_org_chart_by_employeeid_subordinates(self, **kwargs):
+        """Subordonnes d'un employe"""
+        return self.request("GET", "/org-chart/{employeeId}/subordinates", **kwargs)
+
+    def post_partner_apply(self, **kwargs):
+        """Candidature partenaire"""
+        return self.request("POST", "/partner/apply", **kwargs)
+
+    def get_partner_companies(self, **kwargs):
+        """Entreprises parrainées par le partenaire"""
+        return self.request("GET", "/partner/companies", **kwargs)
+
+    def post_partner_payout(self, **kwargs):
+        """Demande de versement commission"""
+        return self.request("POST", "/partner/payout", **kwargs)
+
+    def get_partner_stats(self, **kwargs):
+        """Statistiques partenaire connecté"""
+        return self.request("GET", "/partner/stats", **kwargs)
+
     def get_pay_slips(self, **kwargs):
         """Lister les bulletins du tenant (manager)"""
         return self.request("GET", "/pay-slips", **kwargs)
+
+    def get_pay_slips_by_payslip(self, **kwargs):
+        """Voir un bulletin de paie"""
+        return self.request("GET", "/pay-slips/{paySlip}", **kwargs)
+
+    def get_pay_slips_by_payslip_pdf(self, **kwargs):
+        """Telecharger bulletin PDF"""
+        return self.request("GET", "/pay-slips/{paySlip}/pdf", **kwargs)
+
+    def get_payment_batches(self, **kwargs):
+        """Lister les lots de paiement"""
+        return self.request("GET", "/payment-batches", **kwargs)
+
+    def post_payment_batches(self, **kwargs):
+        """Creer un lot de paiement depuis un cycle paie"""
+        return self.request("POST", "/payment-batches", **kwargs)
+
+    def get_payment_batches_by_paymentbatch(self, **kwargs):
+        """Detail d'un lot de paiement"""
+        return self.request("GET", "/payment-batches/{paymentBatch}", **kwargs)
+
+    def post_payment_batches_by_paymentbatch_mark_paid(self, **kwargs):
+        """Declarer un lot de paiement comme envoye"""
+        return self.request("POST", "/payment-batches/{paymentBatch}/mark-paid", **kwargs)
+
+    def post_payment_confirmations_by_paymentitem_confirm(self, **kwargs):
+        """Confirmer la reception d'un paiement"""
+        return self.request("POST", "/payment-confirmations/{paymentItem}/confirm", **kwargs)
+
+    def get_payments_by_payrollrun_documents(self, **kwargs):
+        """Alias mobile pour documents de paiement d'un cycle"""
+        return self.request("GET", "/payments/{payrollRun}/documents", **kwargs)
+
+    def get_payroll_runs(self, **kwargs):
+        """Lister les sessions de paie"""
+        return self.request("GET", "/payroll-runs", **kwargs)
+
+    def post_payroll_runs(self, **kwargs):
+        """Creer une session de paie"""
+        return self.request("POST", "/payroll-runs", **kwargs)
+
+    def get_payroll_runs_by_payrollrun(self, **kwargs):
+        """Voir une session de paie"""
+        return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
+        """Calculer la paie"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/calculate", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_cancel(self, **kwargs):
+        """Annuler une session de paie"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/cancel", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
+        """Documents de paiement d'un cycle paie"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/payment-documents", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_summary(self, **kwargs):
+        """Resume de la session de paie"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/summary", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_validate(self, **kwargs):
+        """Valider la session de paie"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/validate", **kwargs)
+
+    def get_payroll_cycles_preview(self, **kwargs):
+        """Previsualiser un cycle de paie candidat"""
+        return self.request("GET", "/payroll/cycles/preview", **kwargs)
+
+    def get_payroll_mobile_summary(self, **kwargs):
+        """Resume mobile des soldes paie equipe"""
+        return self.request("GET", "/payroll/mobile-summary", **kwargs)
 
     def post_platform_auth_login(self, **kwargs):
         """Connexion super-admin"""
@@ -476,6 +1100,22 @@ class LeopardoClient:
         """Approuver ou rejeter une demande de creation de societe"""
         return self.request("PATCH", "/platform/company-requests/{id}", **kwargs)
 
+    def get_platform_country_defaults(self, **kwargs):
+        """Lister les pays supportes et leurs defaults"""
+        return self.request("GET", "/platform/country-defaults", **kwargs)
+
+    def get_platform_growth_partners(self, **kwargs):
+        """Lister les partenaires (admin)"""
+        return self.request("GET", "/platform/growth/partners", **kwargs)
+
+    def patch_platform_growth_partners_by_partner_rate(self, **kwargs):
+        """Mettre à jour le taux de commission d'un partenaire"""
+        return self.request("PATCH", "/platform/growth/partners/{partner}/rate", **kwargs)
+
+    def get_platform_growth_payouts(self, **kwargs):
+        """Lister les demandes de versement"""
+        return self.request("GET", "/platform/growth/payouts", **kwargs)
+
     def get_platform_metrics_overview(self, **kwargs):
         """Agregats business du cockpit super-admin"""
         return self.request("GET", "/platform/metrics/overview", **kwargs)
@@ -483,6 +1123,38 @@ class LeopardoClient:
     def get_platform_plans(self, **kwargs):
         """Lister le catalogue des plans SaaS"""
         return self.request("GET", "/platform/plans", **kwargs)
+
+    def get_positions(self, **kwargs):
+        """Lister les postes"""
+        return self.request("GET", "/positions", **kwargs)
+
+    def post_positions(self, **kwargs):
+        """Creer un poste"""
+        return self.request("POST", "/positions", **kwargs)
+
+    def delete_positions_by_position(self, **kwargs):
+        """Supprimer un poste"""
+        return self.request("DELETE", "/positions/{position}", **kwargs)
+
+    def get_positions_by_position(self, **kwargs):
+        """Voir un poste"""
+        return self.request("GET", "/positions/{position}", **kwargs)
+
+    def put_positions_by_position(self, **kwargs):
+        """Modifier un poste"""
+        return self.request("PUT", "/positions/{position}", **kwargs)
+
+    def get_predictions_absenteeism(self, **kwargs):
+        """Predire les risques d'absenteisme"""
+        return self.request("GET", "/predictions/absenteeism", **kwargs)
+
+    def get_predictions_notifications(self, **kwargs):
+        """Notifications RH proactives generees par l'IA"""
+        return self.request("GET", "/predictions/notifications", **kwargs)
+
+    def get_predictions_turnover(self, **kwargs):
+        """Predire le risque de turnover par employe"""
+        return self.request("GET", "/predictions/turnover", **kwargs)
 
     def patch_privacy_biometric_consent(self, **kwargs):
         """Enregistrer ou retirer le consentement biometrique"""
@@ -520,6 +1192,190 @@ class LeopardoClient:
         """Mettre a jour un projet"""
         return self.request("PUT", "/projects/{project}", **kwargs)
 
+    def post_push_notifications_send(self, **kwargs):
+        """Envoyer une notification push de test a un employe"""
+        return self.request("POST", "/push-notifications/send", **kwargs)
+
+    def put_recruitment_applicants_by_applicant(self, **kwargs):
+        """Modifier un candidat"""
+        return self.request("PUT", "/recruitment/applicants/{applicant}", **kwargs)
+
+    def post_recruitment_applicants_by_applicant_interviews(self, **kwargs):
+        """Planifier un entretien"""
+        return self.request("POST", "/recruitment/applicants/{applicant}/interviews", **kwargs)
+
+    def put_recruitment_interviews_by_interview(self, **kwargs):
+        """Modifier un entretien"""
+        return self.request("PUT", "/recruitment/interviews/{interview}", **kwargs)
+
+    def get_recruitment_jobs(self, **kwargs):
+        """Lister les offres d'emploi"""
+        return self.request("GET", "/recruitment/jobs", **kwargs)
+
+    def post_recruitment_jobs(self, **kwargs):
+        """Creer une offre d'emploi"""
+        return self.request("POST", "/recruitment/jobs", **kwargs)
+
+    def get_recruitment_jobs_by_jobposting(self, **kwargs):
+        """Voir une offre"""
+        return self.request("GET", "/recruitment/jobs/{jobPosting}", **kwargs)
+
+    def put_recruitment_jobs_by_jobposting(self, **kwargs):
+        """Modifier une offre"""
+        return self.request("PUT", "/recruitment/jobs/{jobPosting}", **kwargs)
+
+    def get_recruitment_jobs_by_jobposting_applicants(self, **kwargs):
+        """Lister les candidats"""
+        return self.request("GET", "/recruitment/jobs/{jobPosting}/applicants", **kwargs)
+
+    def post_recruitment_jobs_by_jobposting_applicants(self, **kwargs):
+        """Ajouter un candidat"""
+        return self.request("POST", "/recruitment/jobs/{jobPosting}/applicants", **kwargs)
+
+    def post_recruitment_jobs_by_jobposting_close(self, **kwargs):
+        """Cloturer une offre"""
+        return self.request("POST", "/recruitment/jobs/{jobPosting}/close", **kwargs)
+
+    def post_recruitment_jobs_by_jobposting_publish(self, **kwargs):
+        """Publier une offre"""
+        return self.request("POST", "/recruitment/jobs/{jobPosting}/publish", **kwargs)
+
+    def get_salary_advances(self, **kwargs):
+        """Lister les avances sur salaire"""
+        return self.request("GET", "/salary-advances", **kwargs)
+
+    def post_salary_advances(self, **kwargs):
+        """Demander une avance sur salaire"""
+        return self.request("POST", "/salary-advances", **kwargs)
+
+    def delete_salary_advances_by_salaryadvance(self, **kwargs):
+        """Annuler une avance (employe proprietaire)"""
+        return self.request("DELETE", "/salary-advances/{salaryAdvance}", **kwargs)
+
+    def get_salary_advances_by_salaryadvance(self, **kwargs):
+        """Voir une avance"""
+        return self.request("GET", "/salary-advances/{salaryAdvance}", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_approve(self, **kwargs):
+        """Approuver une avance (manager)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_confirm_received(self, **kwargs):
+        """Confirmer la reception de l'avance (employe)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_manager_approve(self, **kwargs):
+        """Valider une avance avant paiement (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_mark_paid(self, **kwargs):
+        """Declarer l'avance comme envoyee (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_reject(self, **kwargs):
+        """Rejeter une avance (manager)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/reject", **kwargs)
+
+    def get_schedules(self, **kwargs):
+        """Lister les horaires de l'entreprise"""
+        return self.request("GET", "/schedules", **kwargs)
+
+    def post_schedules(self, **kwargs):
+        """Creer un horaire de travail"""
+        return self.request("POST", "/schedules", **kwargs)
+
+    def delete_schedules_by_schedule(self, **kwargs):
+        """Supprimer un horaire non defaut"""
+        return self.request("DELETE", "/schedules/{schedule}", **kwargs)
+
+    def put_schedules_by_schedule(self, **kwargs):
+        """Modifier un horaire"""
+        return self.request("PUT", "/schedules/{schedule}", **kwargs)
+
+    def post_schedules_by_schedule_assign_employees(self, **kwargs):
+        """Affecter un horaire/regle entreprise a des employes"""
+        return self.request("POST", "/schedules/{schedule}/assign-employees", **kwargs)
+
+    def get_sites(self, **kwargs):
+        """Lister les sites"""
+        return self.request("GET", "/sites", **kwargs)
+
+    def post_sites(self, **kwargs):
+        """Creer un site"""
+        return self.request("POST", "/sites", **kwargs)
+
+    def delete_sites_by_site(self, **kwargs):
+        """Supprimer un site"""
+        return self.request("DELETE", "/sites/{site}", **kwargs)
+
+    def get_sites_by_site(self, **kwargs):
+        """Voir un site"""
+        return self.request("GET", "/sites/{site}", **kwargs)
+
+    def put_sites_by_site(self, **kwargs):
+        """Modifier un site"""
+        return self.request("PUT", "/sites/{site}", **kwargs)
+
+    def get_smart_attendance_config(self, **kwargs):
+        """Lire la configuration de mode active pour l'employe connecte"""
+        return self.request("GET", "/smart-attendance/config", **kwargs)
+
+    def put_smart_attendance_config(self, **kwargs):
+        """Mettre à jour la configuration GPS (admin)"""
+        return self.request("PUT", "/smart-attendance/config", **kwargs)
+
+    def get_smart_attendance_dashboard(self, **kwargs):
+        """Statistiques du jour — Smart Attendance (manager/RH)"""
+        return self.request("GET", "/smart-attendance/dashboard", **kwargs)
+
+    def post_smart_attendance_geo_events(self, **kwargs):
+        """Envoyer un événement géographique (entrée/sortie de zone)"""
+        return self.request("POST", "/smart-attendance/geo-events", **kwargs)
+
+    def get_smart_attendance_preferences(self, **kwargs):
+        """Lire les préférences de pointage de l'employé"""
+        return self.request("GET", "/smart-attendance/preferences", **kwargs)
+
+    def put_smart_attendance_preferences(self, **kwargs):
+        """Mettre à jour les préférences de pointage"""
+        return self.request("PUT", "/smart-attendance/preferences", **kwargs)
+
+    def get_smart_attendance_sessions(self, **kwargs):
+        """Lister les sessions GPS"""
+        return self.request("GET", "/smart-attendance/sessions", **kwargs)
+
+    def get_smart_attendance_sessions_by_id(self, **kwargs):
+        """Détail d'une session GPS"""
+        return self.request("GET", "/smart-attendance/sessions/{id}", **kwargs)
+
+    def post_smart_attendance_sessions_by_id_validate(self, **kwargs):
+        """Valider ou rejeter une session GPS (manager/RH)"""
+        return self.request("POST", "/smart-attendance/sessions/{id}/validate", **kwargs)
+
+    def post_sso_configure(self, **kwargs):
+        """Configurer le SSO de l'entreprise"""
+        return self.request("POST", "/sso/configure", **kwargs)
+
+    def delete_sso_disable(self, **kwargs):
+        """Desactiver le SSO de l'entreprise"""
+        return self.request("DELETE", "/sso/disable", **kwargs)
+
+    def get_sso_oidc_by_companyid_callback(self, **kwargs):
+        """Callback OpenID Connect (IdP -> SP)"""
+        return self.request("GET", "/sso/oidc/{companyId}/callback", **kwargs)
+
+    def get_sso_providers(self, **kwargs):
+        """Lister les fournisseurs SSO supportes"""
+        return self.request("GET", "/sso/providers", **kwargs)
+
+    def post_sso_saml_by_companyid_callback(self, **kwargs):
+        """Callback SAML 2.0 (IdP -> SP)"""
+        return self.request("POST", "/sso/saml/{companyId}/callback", **kwargs)
+
+    def get_sso_status(self, **kwargs):
+        """Statut SSO de l'entreprise"""
+        return self.request("GET", "/sso/status", **kwargs)
+
     def get_tasks(self, **kwargs):
         """Lister les taches"""
         return self.request("GET", "/tasks", **kwargs)
@@ -548,6 +1404,10 @@ class LeopardoClient:
         """Ajouter un commentaire sur une tache"""
         return self.request("POST", "/tasks/{task}/comments", **kwargs)
 
+    def get_tasks_today(self, **kwargs):
+        """Lister les taches du jour"""
+        return self.request("GET", "/tasks/today", **kwargs)
+
     def post_tracking_sync_devices(self, **kwargs):
         """Synchroniser les devices Traccar"""
         return self.request("POST", "/tracking/sync-devices", **kwargs)
@@ -559,6 +1419,42 @@ class LeopardoClient:
     def post_tracking_sync_trips(self, **kwargs):
         """Synchroniser les trajets Traccar"""
         return self.request("POST", "/tracking/sync-trips", **kwargs)
+
+    def get_training_courses(self, **kwargs):
+        """Lister les formations"""
+        return self.request("GET", "/training/courses", **kwargs)
+
+    def post_training_courses(self, **kwargs):
+        """Creer une formation"""
+        return self.request("POST", "/training/courses", **kwargs)
+
+    def get_training_courses_by_trainingcourse(self, **kwargs):
+        """Voir une formation"""
+        return self.request("GET", "/training/courses/{trainingCourse}", **kwargs)
+
+    def put_training_courses_by_trainingcourse(self, **kwargs):
+        """Modifier une formation"""
+        return self.request("PUT", "/training/courses/{trainingCourse}", **kwargs)
+
+    def get_training_courses_by_trainingcourse_sessions(self, **kwargs):
+        """Lister les sessions d'une formation"""
+        return self.request("GET", "/training/courses/{trainingCourse}/sessions", **kwargs)
+
+    def post_training_courses_by_trainingcourse_sessions(self, **kwargs):
+        """Creer une session de formation"""
+        return self.request("POST", "/training/courses/{trainingCourse}/sessions", **kwargs)
+
+    def put_training_enrollments_by_trainingenrollment(self, **kwargs):
+        """Modifier une inscription"""
+        return self.request("PUT", "/training/enrollments/{trainingEnrollment}", **kwargs)
+
+    def put_training_sessions_by_trainingsession(self, **kwargs):
+        """Modifier une session"""
+        return self.request("PUT", "/training/sessions/{trainingSession}", **kwargs)
+
+    def post_training_sessions_by_trainingsession_enroll(self, **kwargs):
+        """Inscrire un employe"""
+        return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
     def get_vehicle_alerts(self, **kwargs):
         """Liste de toutes les alertes vehicules"""
@@ -643,3 +1539,35 @@ class LeopardoClient:
     def get_view_cam(self, **kwargs):
         """Viewer public par token"""
         return self.request("GET", "/view/cam", **kwargs)
+
+    def get_webhooks(self, **kwargs):
+        """Lister les webhooks de l'entreprise"""
+        return self.request("GET", "/webhooks", **kwargs)
+
+    def post_webhooks(self, **kwargs):
+        """Creer un webhook"""
+        return self.request("POST", "/webhooks", **kwargs)
+
+    def delete_webhooks_by_webhook(self, **kwargs):
+        """Supprimer un webhook"""
+        return self.request("DELETE", "/webhooks/{webhook}", **kwargs)
+
+    def get_webhooks_by_webhook(self, **kwargs):
+        """Voir un webhook et ses dernieres livraisons"""
+        return self.request("GET", "/webhooks/{webhook}", **kwargs)
+
+    def put_webhooks_by_webhook(self, **kwargs):
+        """Modifier un webhook"""
+        return self.request("PUT", "/webhooks/{webhook}", **kwargs)
+
+    def get_webhooks_by_webhook_dead_letters(self, **kwargs):
+        """Lister les livraisons webhook dead-letter (retries epuises)"""
+        return self.request("GET", "/webhooks/{webhook}/dead-letters", **kwargs)
+
+    def post_webhooks_by_webhook_dead_letters_by_delivery_replay(self, **kwargs):
+        """Rejouer une livraison webhook dead-letter"""
+        return self.request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", **kwargs)
+
+    def get_webhooks_events(self, **kwargs):
+        """Lister les types d'evenements webhook disponibles"""
+        return self.request("GET", "/webhooks/events", **kwargs)
