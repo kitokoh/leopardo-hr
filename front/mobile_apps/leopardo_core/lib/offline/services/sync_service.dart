@@ -7,6 +7,7 @@ import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 import '../database/edge_database.dart';
 
@@ -27,6 +28,11 @@ class SyncService {
   final _modeController = StreamController<SyncMode>.broadcast();
   Stream<SyncMode> get modeStream => _modeController.stream;
   SyncMode get currentMode => _currentMode;
+
+  /// Test-only hook to force [currentMode] without going through the real
+  /// network reachability probes in [_detectMode]. See issue #1296.
+  @visibleForTesting
+  void debugSetModeForTesting(SyncMode mode) => _setMode(mode);
 
   SyncService({
     required EdgeDatabase db,
@@ -123,11 +129,6 @@ class SyncService {
 
     try {
       final pending = await _db.getPendingItems();
-
-      if (pending.isEmpty) {
-        _isSyncing = false;
-        return SyncResult.success(sent: 0, failed: 0);
-      }
 
       // Batch into groups of 50
       final batches = <List<LocalSyncQueueItem>>[];
