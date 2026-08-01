@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\EdgeSync\Infrastructure\Notifications;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;

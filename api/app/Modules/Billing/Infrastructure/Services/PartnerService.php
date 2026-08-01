@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
