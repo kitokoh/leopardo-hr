@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Fleet\Application\Actions;
 
 use App\Modules\Fleet\Domain\Models\Vehicle;

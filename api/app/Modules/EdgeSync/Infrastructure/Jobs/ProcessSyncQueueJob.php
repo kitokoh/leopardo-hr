@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\EdgeSync\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
