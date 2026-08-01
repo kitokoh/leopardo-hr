@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Domain\Models;
 
-use App\Modules\Payroll\Domain\Models\Payment;
+// Note: App\Modules\Payroll\Domain\Models\Payment is intentionally NOT imported here.
+// Invoice (Billing) must not depend on Payroll's Domain layer — that would create a
+// circular Domain<->Domain dependency (Invoice -> Payment -> Invoice).
+// The `payments()` relation uses the FQCN string so that Eloquent can resolve the
+// model at runtime without introducing a compile-time cross-module dependency.
+// See: docs/architecture/adr/0005-billing-payroll-domain-boundary.md  — Issue #1395.
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,9 +73,9 @@ class Invoice extends Model
         return $this->belongsTo(Subscription::class);
     }
 
-    /** @return HasMany<Payment, $this> */
+    /** @return HasMany<\App\Modules\Payroll\Domain\Models\Payment, $this> */
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(\App\Modules\Payroll\Domain\Models\Payment::class);
     }
 }
