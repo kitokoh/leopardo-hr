@@ -104,12 +104,20 @@ jobs:
           # integralement les modeles/services reels du module Planning (Absence,
           # AbsenceType, LeaveBalance, LeaveBalanceLog, AbsenceService). Derogation
           # documentee dans api/ARCHITECTURE.md.
-          ABSENCE_EXEMPT_LAYERS="Application Domain Infrastructure"
+          #
+          # PA2-ARCH-011 (issue #1414) : meme derogation pour Modules/Expense.
+          # Domain/Application/Infrastructure ont ete supprimes car ils dupliquaient
+          # integralement le modele/service reel du module Planning (ExpenseClaim,
+          # ExpenseItem) — le controller reellement route consommait deja
+          # Planning\...\ExpenseClaim, pas Expense\...\ExpenseClaim. Derogation
+          # documentee dans api/ARCHITECTURE.md.
+          FACADE_ONLY_EXEMPT_LAYERS="Application Domain Infrastructure"
+          FACADE_ONLY_MODULES="Absence Expense"
 
           for MODULE in $MODULES; do
             BASE="api/app/Modules/$MODULE"
             for LAYER in Application Domain Infrastructure Interfaces Providers; do
-              if [ "$MODULE" = "Absence" ] && echo "$ABSENCE_EXEMPT_LAYERS" | grep -qw "$LAYER"; then
+              if echo "$FACADE_ONLY_MODULES" | grep -qw "$MODULE" && echo "$FACADE_ONLY_EXEMPT_LAYERS" | grep -qw "$LAYER"; then
                 continue
               fi
               if [ ! -d "$BASE/$LAYER" ]; then
