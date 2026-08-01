@@ -5,21 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\Domain\Models\CompanyRequest;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
-use App\Core\Tenant\TenantManager;
-use App\Support\CountryDefaults;
+use App\Modules\Billing\Application\Actions\RequestTrialSignup;
+use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\TrialWelcomeMail;
-use App\Jobs\SendTrialDripEmailJob;
-use Illuminate\Support\Str;
 
 /**
  * Self-service trial provisioning endpoint.
@@ -30,8 +19,8 @@ use Illuminate\Support\Str;
 class SelfServiceTrialController extends Controller
 {
     public function __construct(
-        private readonly TenantManager $tenantManager,
-        private readonly \App\Modules\Billing\Infrastructure\Services\PartnerService $partnerService,
+        private readonly RequestTrialSignup $requestTrialSignup,
+        private readonly VerifyTrialSignup $verifyTrialSignup,
     ) {}
 
     /**
@@ -58,8 +47,7 @@ class SelfServiceTrialController extends Controller
 
         $email = strtolower(trim($validated['email']));
 
-        // Check if a manager with this email already exists in any tenant
-        $existingManager = $this->findExistingManager($email);
+        $existingManager = $this->requestTrialSignup->findExistingManager($email);
         if ($existingManager) {
             return new JsonResponse([
                 'success' => false,
@@ -71,29 +59,7 @@ class SelfServiceTrialController extends Controller
             ], 409);
         }
 
-        // Generate OTP
-        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        // Record the request with pending status
-        $this->createPendingCompanyRequest($validated, $email, $otp);
-
-        // Send OTP email
-        [$firstName, $lastName] = $this->managerNameParts($validated, $email);
-        $managerName = trim($firstName . ' ' . $lastName);
-        $country = strtoupper(trim($validated['country'] ?? 'DZ'));
-        $countryDefaults = CountryDefaults::for($country);
-
-        try {
-            Mail::to($email)->send(
-                new \App\Mail\TrialVerificationMail($managerName, $otp, strtolower($countryDefaults['language']))
-            );
-        } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Failed to send OTP email', [
-                'email' => $email,
-                'error' => $e->getMessage(),
-            ]);
-            // Allow testing in local/staging without mailer failing the request
-        }
+        $this->requestTrialSignup->execute($validated);
 
         return new JsonResponse([
             'success' => true,
@@ -119,117 +85,15 @@ class SelfServiceTrialController extends Controller
 
         $email = strtolower(trim($validated['email']));
 
-        // Find the pending request
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
-        }
+        $result = $this->verifyTrialSignup->execute($email, $validated['code']);
 
-        $companyRequest = CompanyRequest::query()
-            ->where('email', $email)
-            ->where('status', 'pending')
-            ->where('verification_token', $validated['code'])
-            ->where('verification_expires_at', '>=', now())
-            ->first();
-
-        if (!$companyRequest) {
+        if ($result['success'] === false) {
             return new JsonResponse([
                 'success' => false,
-                'error' => 'INVALID_OR_EXPIRED_CODE',
-                'message' => 'Code de vérification invalide ou expiré.',
-            ], 400);
+                'error' => $result['error'],
+                'message' => $result['message'],
+            ], $result['status']);
         }
-
-        // Request validated! Time to provision.
-        $payload = $companyRequest->signup_payload ?? [];
-        $companyName = $companyRequest->company_name;
-
-        $country = strtoupper(trim($payload['country'] ?? 'DZ'));
-        if (strlen($country) !== 2) {
-            $country = 'DZ';
-        }
-        $countryDefaults = CountryDefaults::for($country);
-
-        $trialPlan = $this->resolveTrialPlan();
-        if (!$trialPlan) {
-            Log::error('SelfServiceTrial: No active plan found for trial provisioning.');
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'NO_PLAN_AVAILABLE',
-                'message' => 'Le service d\'essai est temporairement indisponible.',
-            ], 503);
-        }
-
-        [$firstName, $lastName] = $this->managerNameParts($payload, $email);
-        $tempPassword = $this->generateReadablePassword();
-
-        try {
-            $result = $this->provisionTrialCompany([
-                'name' => $companyName,
-                'slug' => Str::slug($companyName),
-                'sector' => $this->mapRoleToSector($payload['role'] ?? null),
-                'country' => $country,
-                'city' => 'Non précisé',
-                'email' => $email,
-                'phone' => $payload['phone'] ?? null,
-                'plan_id' => $trialPlan->id,
-                'language' => strtolower($countryDefaults['language']),
-                'currency' => strtoupper($countryDefaults['currency']),
-                'timezone' => $countryDefaults['timezone'],
-                'manager_first_name' => $firstName,
-                'manager_last_name' => $lastName,
-                'manager_email' => $email,
-                'manager_phone' => $payload['phone'] ?? null,
-                'temp_password' => $tempPassword,
-                'employees_range' => $payload['employees'] ?? null,
-                'referral_code' => $payload['referral_code'] ?? null,
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Provisioning failed', [
-                'email' => $email,
-                'company' => $companyName,
-                'error' => $e->getMessage(),
-            ]);
-
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'PROVISIONING_FAILED',
-                'message' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
-            ], 500);
-        }
-
-        // Growth Module: Dispatch CompanyCreated event for partner linking
-        event(new \App\Events\CompanyCreated($result['company']));
-
-        // Update the CompanyRequest to approved
-        $companyRequest->update([
-            'status' => 'approved',
-            'approved_company_id' => $result['company']->id,
-            'verification_token' => null, // Clear token
-        ]);
-
-        Log::info('SelfServiceTrial: Company provisioned after verification', [
-            'company_id' => $result['company']->id,
-            'company_name' => $companyName,
-            'manager_email' => $email,
-            'source' => $payload['source'] ?? 'self_service_trial',
-        ]);
-
-        // Send welcome email with credentials
-        try {
-            Mail::to($email)->send(
-                new TrialWelcomeMail($result['company'], $result['manager'], $tempPassword)
-            );
-        } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Failed to send welcome email', [
-                'email' => $email,
-                'error' => $e->getMessage(),
-            ]);
-        }
-
-        // Dispatch Drip Emails for onboarding
-        SendTrialDripEmailJob::dispatch($result['company'], 1)->delay(now()->addDay());
-        SendTrialDripEmailJob::dispatch($result['company'], 3)->delay(now()->addDays(3));
-        SendTrialDripEmailJob::dispatch($result['company'], 7)->delay(now()->addDays(7));
 
         return new JsonResponse([
             'success' => true,
@@ -241,10 +105,10 @@ class SelfServiceTrialController extends Controller
                     'slug' => $result['company']->slug,
                 ],
                 'manager' => [
-                    'email' => $email,
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'temp_password' => $tempPassword,
+                    'email' => $result['manager_email'],
+                    'first_name' => $result['first_name'],
+                    'last_name' => $result['last_name'],
+                    'temp_password' => $result['temp_password'],
                 ],
                 'trial' => [
                     'days' => 30,
@@ -258,276 +122,4 @@ class SelfServiceTrialController extends Controller
             ],
         ], 201);
     }
-
-    /**
-     * Provision a trial company without requiring a SuperAdmin.
-     *
-     * @return array{company: Company, manager: Employee}
-     */
-    private function provisionTrialCompany(array $payload): array
-    {
-        return DB::transaction(function () use ($payload): array {
-            $slug = $this->resolveUniqueSlug($payload['slug']);
-
-            $company = Company::query()->create([
-                'name' => $payload['name'],
-                'slug' => $slug,
-                'sector' => $payload['sector'],
-                'country' => $payload['country'],
-                'city' => $payload['city'],
-                'email' => $payload['email'],
-                'phone' => $payload['phone'],
-                'plan_id' => $payload['plan_id'],
-                'schema_name' => 'shared_tenants',
-                'tenancy_type' => 'shared',
-                'status' => 'trial',
-                'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays(30)->toDateString(),
-                'language' => $payload['language'],
-                'timezone' => $payload['timezone'],
-                'currency' => $payload['currency'],
-                'metadata' => [
-                    'provisioned_by' => 'self_service_trial',
-                    'employees_range' => $payload['employees_range'],
-                ],
-            ]);
-
-            // Attribution du partenaire si code présent
-            if (!empty($payload['referral_code'])) {
-                $this->partnerService->attributeCompanyToPartner($company, $payload['referral_code']);
-            }
-
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
-            }
-            $this->tenantManager->setTenant($company);
-
-            try {
-                /** @var Employee $manager */
-                $manager = Employee::query()->create([
-                    'company_id' => $company->id,
-                    'first_name' => $payload['manager_first_name'],
-                    'last_name' => $payload['manager_last_name'],
-                    'email' => $payload['manager_email'],
-                    'phone' => $payload['manager_phone'],
-                    'password_hash' => Hash::make($payload['temp_password']),
-                    'role' => 'manager',
-                    'manager_role' => 'principal',
-                    'status' => 'active',
-                    'contract_type' => 'CDI',
-                    'contract_start' => now()->toDateString(),
-                    'salary_type' => 'fixed',
-                    'salary_base' => 0,
-                    'biometric_face_enabled' => false,
-                    'biometric_fingerprint_enabled' => false,
-                    'extra_data' => [
-                        'job_title' => 'Manager principal',
-                        'self_service_trial' => true,
-                    ],
-                ]);
-            } finally {
-                $this->tenantManager->resetToPrevious();
-            }
-
-            return [
-                'company' => $company,
-                'manager' => $manager,
-            ];
-        });
-    }
-
-    private function findExistingManager(string $email): ?Employee
-    {
-        // Check in shared_tenants schema
-        try {
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET search_path TO shared_tenants, public');
-            }
-
-            $employee = Employee::query()
-                ->where('email', $email)
-                ->where('role', 'manager')
-                ->first();
-
-            return $employee;
-        } catch (\Throwable) {
-            return null;
-        } finally {
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET search_path TO public');
-            }
-        }
-    }
-
-    private function resolveTrialPlan(): ?object
-    {
-        $plan = DB::table($this->publicTable('plans'))
-            ->where('is_active', true)
-            ->orderBy('id')
-            ->first()
-            ?? DB::table($this->publicTable('plans'))
-                ->orderBy('id')
-                ->first();
-
-        if ($plan) {
-            return $plan;
-        }
-
-        return $this->createFallbackTrialPlan();
-    }
-
-    private function createFallbackTrialPlan(): ?object
-    {
-        try {
-            $id = DB::table($this->publicTable('plans'))->insertGetId([
-                'name' => 'Trial',
-                'price_monthly' => 0,
-                'price_yearly' => 0,
-                'max_employees' => 50,
-                'features' => json_encode([
-                    'rh' => true,
-                    'tasks' => true,
-                    'attendance' => true,
-                    'mobile_apps' => true,
-                ], JSON_THROW_ON_ERROR),
-                'trial_days' => 30,
-                'is_active' => true,
-            ]);
-
-            return DB::table($this->publicTable('plans'))->where('id', $id)->first();
-        } catch (\Throwable $e) {
-            Log::warning('SelfServiceTrial: unable to create fallback trial plan', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return null;
-        }
-    }
-
-    private function publicTable(string $table): string
-    {
-        return DB::getDriverName() === 'pgsql' ? 'public.'.$table : $table;
-    }
-
-    private function resolveUniqueSlug(string $baseSlug): string
-    {
-        $slug = Str::slug($baseSlug);
-        if (!$slug) {
-            $slug = 'company-'.Str::random(6);
-        }
-        $candidate = $slug;
-        $suffix = 1;
-
-        while (Company::query()->where('slug', $candidate)->exists()) {
-            $suffix++;
-            $candidate = "{$slug}-{$suffix}";
-        }
-
-        return $candidate;
-    }
-
-    /**
-     * Generate a readable temporary password (12 chars, mixed case + digits).
-     */
-    private function generateReadablePassword(): string
-    {
-        $words = ['Leo', 'Rh', 'Go', 'Pro', 'Top', 'Biz', 'App', 'Hub'];
-        $word = $words[array_rand($words)];
-        $digits = str_pad((string) random_int(100, 9999), 4, '0', STR_PAD_LEFT);
-        $suffix = chr(random_int(65, 90)); // A-Z
-
-        return $word.$digits.$suffix.'!';
-    }
-
-    private function mapRoleToSector(?string $role): string
-    {
-        return match ($role) {
-            'founder' => 'Direction générale',
-            'hr' => 'Ressources humaines',
-            'operations' => 'Opérations',
-            default => 'Non précisé',
-        };
-    }
-
-    private function createPendingCompanyRequest(array $validated, string $email, string $otp): void
-    {
-        try {
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET search_path TO public');
-            }
-
-            CompanyRequest::query()->create([
-                'company_name' => trim($validated['company']),
-                'sector' => $this->mapRoleToSector($validated['role'] ?? null),
-                'country' => strtoupper(trim($validated['country'] ?? 'DZ')),
-                'city' => 'Non précisé',
-                'manager_name' => $this->managerNameForCompanyRequest($validated, $email),
-                'manager_phone' => $validated['phone'] ?? null,
-                'notes' => 'Self-service trial signup.',
-                'email' => $email,
-                'phone' => $validated['phone'] ?? null,
-                'description' => 'Self-service trial signup pending verification — source: '.($validated['source'] ?? 'direct'),
-                'status' => 'pending',
-                'verification_token' => $otp,
-                'verification_expires_at' => now()->addMinutes(30),
-                'signup_payload' => $validated,
-            ]);
-        } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Failed to create pending CompanyRequest record', [
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     * @return array{0: string, 1: string}
-     */
-    private function managerNameParts(array $validated, string $email): array
-    {
-        $firstName = trim((string) ($validated['first_name'] ?? ''));
-        $lastName = trim((string) ($validated['last_name'] ?? ''));
-
-        if ($firstName === '') {
-            [$localPart, $domain] = array_pad(explode('@', $email, 2), 2, null);
-            $nameParts = preg_split('/[._\-+]/', $localPart ?: 'manager', 2) ?: ['Manager'];
-            $firstName = ucfirst($nameParts[0] ?? 'Manager');
-
-            if ($lastName === '') {
-                $lastName = isset($nameParts[1]) && trim($nameParts[1]) !== ''
-                    ? ucfirst($nameParts[1])
-                    : ucfirst(strtolower($domain ?: 'principal'));
-            }
-        }
-
-        if ($lastName === '') {
-            $lastName = 'Principal';
-        }
-
-        return [$firstName, $lastName];
-    }
-
-    /**
-     * @param  array<string, mixed>  $validated
-     */
-    private function managerNameForCompanyRequest(array $validated, string $email): string
-    {
-        $name = trim(implode(' ', array_filter([
-            $validated['first_name'] ?? null,
-            $validated['last_name'] ?? null,
-        ], fn ($value) => is_string($value) && trim($value) !== '')));
-
-        if ($name !== '') {
-            return $name;
-        }
-
-        $localPart = explode('@', $email)[0] ?: 'manager';
-
-        return str($localPart)
-            ->replace(['.', '_', '-', '+'], ' ')
-            ->title()
-            ->toString();
-    }
 }
-
-
