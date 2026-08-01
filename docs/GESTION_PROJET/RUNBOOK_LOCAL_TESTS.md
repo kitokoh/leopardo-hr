@@ -33,7 +33,7 @@ docker compose up -d
 docker compose exec app php -v
 docker compose exec app composer install --no-interaction --prefer-dist
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --force
+docker compose exec app php artisan leopardo:migrate
 docker compose exec -e APP_ENV=testing app php artisan test
 ```
 

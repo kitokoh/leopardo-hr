@@ -39,8 +39,7 @@ cd api
 docker compose up -d
 docker compose exec app composer install --no-interaction --prefer-dist
 docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --path=database/migrations/public --force
-docker compose exec app php artisan migrate --path=database/migrations/tenant --force
+docker compose exec app php artisan leopardo:migrate
 docker compose exec app php artisan test
 ```
 
@@ -76,7 +75,7 @@ Possible pour developpeur experimente, mais non prioritaire pour l'equipe.
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan migrate
+php artisan leopardo:migrate
 php artisan serve
 ```
 

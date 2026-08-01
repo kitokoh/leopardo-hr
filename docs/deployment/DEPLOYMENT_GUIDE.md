@@ -67,8 +67,7 @@ Commande de demarrage recommandee :
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-php artisan migrate --force
-php artisan db:seed --class=DatabaseSeeder --force
+php artisan leopardo:migrate --seed
 frankenphp run --config /etc/caddy/Caddyfile
 ```
 

@@ -8,7 +8,7 @@
         "ghcr.io/devcontainers/features/common-utils:2": {},
         "ghcr.io/devcontainers/features/git:1": {}
     },
-    "postCreateCommand": "composer install && php artisan key:generate --force && php artisan migrate --seed --force",
+    "postCreateCommand": "composer install && php artisan key:generate --force && php artisan leopardo:migrate --seed",
     "forwardPorts": [8000, 5432, 6379, 3000, 3001, 8025],
     "portsAttributes": {
         "8000": { "label": "API", "onAutoForward": "notify" },
