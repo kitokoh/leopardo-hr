@@ -24,6 +24,9 @@ class EdgeSyncServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        // EdgeSync migrations live in the central api/database/migrations/tenant/ directory
+        // (2026_06_29_000001_create_edge_sync_tables.php) alongside all other modules.
+        // The module-local database/migrations/ directory has been removed to eliminate
+        // the duplicate-migration collision that caused `migrate:fresh` failures (#1394).
     }
 }
