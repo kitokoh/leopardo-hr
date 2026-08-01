@@ -6,7 +6,12 @@ namespace App\Modules\Billing\Domain\Models;
 
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Domain\Models\Commission;
+// Note: App\Modules\Payroll\Domain\Models\Commission is intentionally NOT imported here.
+// Partner (Billing) must not depend on Payroll's Domain layer — that would create a
+// circular Domain<->Domain dependency (Partner -> Commission -> Partner).
+// The `commissions()` relation uses the FQCN string so that Eloquent can resolve the
+// model at runtime without introducing a compile-time cross-module dependency.
+// See: docs/architecture/adr/0005-billing-payroll-domain-boundary.md  — Issue #1395.
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,9 +58,9 @@ class Partner extends Model
         return $this->hasMany(Company::class, 'referrer_partner_id');
     }
 
-    /** @return HasMany<Commission, $this> */
+    /** @return HasMany<\App\Modules\Payroll\Domain\Models\Commission, $this> */
     public function commissions(): HasMany
     {
-        return $this->hasMany(Commission::class);
+        return $this->hasMany(\App\Modules\Payroll\Domain\Models\Commission::class);
     }
 }
