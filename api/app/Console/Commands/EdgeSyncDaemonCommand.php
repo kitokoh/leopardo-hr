@@ -19,7 +19,7 @@ use Illuminate\Console\Command;
  */
 class EdgeSyncDaemonCommand extends Command
 {
-    protected $signature = 'edge:sync-daemon';
+    protected $signature = 'edge:sync-daemon {--once : Run a single push/pull cycle and exit instead of looping forever. Used by integration tests (issue #1296) and any one-shot/cron invocation.}';
 
     protected $description = 'Run the Edge sync daemon (pushes/pulls over HTTP to the Cloud API)';
 
@@ -50,7 +50,9 @@ class EdgeSyncDaemonCommand extends Command
             batchSize: $batchSize,
         );
 
-        while (true) {
+        $runOnce = (bool) $this->option('once');
+
+        do {
             try {
                 $this->info('[EdgeSync Daemon] Running sync for node ' . $nodeId);
                 $log = $client->sync();
@@ -68,8 +70,12 @@ class EdgeSyncDaemonCommand extends Command
                 $this->error('[EdgeSync Daemon] Error: ' . $e->getMessage());
             }
 
+            if ($runOnce) {
+                break;
+            }
+
             $this->info("[EdgeSync Daemon] Sleeping {$interval} minutes...");
             sleep($interval * 60);
-        }
+        } while (true);
     }
 }
