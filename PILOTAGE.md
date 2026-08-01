@@ -13,6 +13,13 @@
 > sur la réalité, se référer à `docs/REFERENTIEL_PRODUIT/ROADMAP.md` + `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md`
 > pour l'état réel. Voir aussi `docs/GESTION_PROJET/CORRECTIONS.md`.
 
+> ⚠️ **Mise à jour gouvernance (2026-07-26, non encore reflétée dans PROGRAM_VERSION ci-dessus)**
+> Depuis le 2026-07-26, la gestion de projet active se fait **exclusivement via GitHub Issues et
+> GitHub Projects** (voir `AGENTS.md`, section « NOUVELLE MÉTHODE DE GESTION DE PROJET »).
+> `docs/PLAN_ACTION2/` est **clos/obsolète** (voir son propre `README.md`) — ne pas le lire pour y
+> chercher du travail, malgré la mention « Plan d'action actif » encore présente plus bas dans ce
+> fichier au moment de la rédaction de cet avertissement. Voir tableau « GOUVERNANCE DOCUMENTAIRE ».
+
 ---
 
 ## CONVENTION DE VERSIONING
@@ -239,7 +246,7 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | Architecture backend (modules DDD, conventions, TODOs) | `api/ARCHITECTURE.md` | |
 | Architecture système/monorepo | `docs/architecture/ARCHITECTURE.md` + `ARCHITECTURE.md` (racine) | |
 | Plans d'action historiques (01-72, tous livrés) | `docs/archive/PLAN_ACTION/` | **Clos** — conservé pour traçabilité, voir bandeau dans `00_SOMMAIRE.md` |
-| Plan d'action actif | `docs/PLAN_ACTION2/` | Prend le relais de `docs/archive/PLAN_ACTION/` |
+| Gestion de projet active (depuis 2026-07-26) | **GitHub Issues + GitHub Projects** | `docs/PLAN_ACTION2/` (130 tickets PA2, actif du 2026-06-13 au 2026-07-26) est désormais **clos/obsolète** — voir `docs/PLAN_ACTION2/README.md` et la section « NOUVELLE MÉTHODE DE GESTION DE PROJET » d'`AGENTS.md`. Ne pas y chercher de travail ni y créer de nouveaux tickets ; utiliser `gh issue list` |
 | Rapports de validation/QA datés | `docs/validation/*_YYYY_MM_DD.md` | Snapshots figés, jamais mis à jour — voir `docs/validation/README.md` |
 | Contrat API | `api/openapi.yaml` | Spec canonique (référencée par `dev-hub/sdk/MANIFEST.json`). Le second fichier `openapi/openapi.yaml` (racine) qui divergeait a été supprimé (voir `chore(monorepo): fix duplicated mobile CI, dedupe OpenAPI spec...` #840) ; `api/openapi.yaml` est désormais la seule spec présente dans le repo. |
 
