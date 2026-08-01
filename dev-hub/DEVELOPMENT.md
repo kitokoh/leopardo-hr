@@ -22,7 +22,7 @@
 cd api
 docker compose up -d
 docker compose exec app composer install
-docker compose exec app php artisan migrate --seed
+docker compose exec app php artisan leopardo:migrate --seed
 docker compose exec app php artisan serve --host=0.0.0.0 --port=8000
 ```
 
@@ -49,8 +49,9 @@ php artisan key:generate
 #    DB_USERNAME=your_user
 #    DB_PASSWORD=your_password
 
-# 5. Run migrations
-php artisan migrate --seed
+# 5. Run migrations (public + tenant schemas — plain `artisan migrate` will NOT create
+#    the shared_tenants schema, see docs/architecture/MULTITENANCY.md)
+php artisan leopardo:migrate --seed
 
 # 6. Start the server
 php artisan serve
@@ -139,8 +140,8 @@ All checks run on GitHub Actions:
 
 ```bash
 php artisan make:module {Name}     # Scaffold a DDD module
-php artisan migrate                # Run migrations
-php artisan migrate:fresh --seed   # Reset and seed
+php artisan leopardo:migrate        # Run migrations (public + tenant schemas)
+php artisan leopardo:migrate --fresh --seed   # Reset and seed
 php artisan route:list             # List all routes
 php artisan tinker                 # REPL
 ```

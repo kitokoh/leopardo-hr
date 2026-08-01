@@ -1,0 +1,119 @@
+name: Onboarding Smoke Test
+
+# Reproduit exactement le parcours documente dans DEVELOPMENT.md / README.md
+# pour un nouveau contributeur (docker compose up + `leopardo:migrate --seed
+# --demo` + un appel a une route tenant reelle). Garde-fou contre une
+# regression du type "SPEC-001" (onboarding documente qui ne cree jamais le
+# schema shared_tenants) — voir specs/SPEC_001_onboarding_migrate_tenant.md.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "Makefile"
+      - "docker-compose.yml"
+      - "DEVELOPMENT.md"
+      - "scripts/bootstrap.sh"
+      - "api/routes/console.php"
+      - "api/database/migrations/**"
+      - "api/app/Modules/**/database/migrations/**"
+      - ".github/workflows/onboarding-smoke.yml"
+  push:
+    branches: [main]
+    paths:
+      - "Makefile"
+      - "docker-compose.yml"
+      - "DEVELOPMENT.md"
+      - "scripts/bootstrap.sh"
+      - "api/routes/console.php"
+      - "api/database/migrations/**"
+      - "api/app/Modules/**/database/migrations/**"
+      - ".github/workflows/onboarding-smoke.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: onboarding-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  onboarding-smoke:
+    name: Fresh docker compose onboarding (docs parity)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Copy env (as documented in DEVELOPMENT.md)
+        run: cp api/.env.example api/.env
+
+      # Volontairement identique a la commande documentee dans README.md /
+      # DEVELOPMENT.md — pas un raccourci CI. Si cette etape ou une des
+      # suivantes echoue, c'est que la doc d'onboarding elle-meme est cassee.
+      - name: docker compose up --build (as documented)
+        run: docker compose up -d --build postgres redis api
+
+      - name: Wait for API container to accept connections
+        run: |
+          for i in $(seq 1 30); do
+            if curl --fail --silent "http://localhost:8000/api/v1/health/live" >/dev/null 2>&1; then
+              echo "API process is up."
+              break
+            fi
+            echo "Waiting for API container ($i/30)..."
+            sleep 2
+          done
+
+      - name: composer install + key:generate (as documented)
+        run: |
+          docker compose exec -T api composer install --no-interaction --prefer-dist
+          docker compose exec -T api php artisan key:generate --force
+
+      - name: leopardo:migrate --seed --demo (the documented onboarding command)
+        run: docker compose exec -T api php artisan leopardo:migrate --seed --demo
+
+      - name: Health check must report DB ok
+        run: |
+          response=$(curl --fail --silent "http://localhost:8000/api/v1/health")
+          echo "$response"
+          echo "$response" | grep -q '"status":"ok"'
+
+      - name: Login as demo manager and fetch employees (real tenant route)
+        # Regression guard: before SPEC-001's fix, this step failed with
+        # "relation \"employees\" does not exist" (42P01) because the
+        # documented onboarding never created the shared_tenants schema.
+        run: |
+          set -euo pipefail
+
+          echo "Logging in as demo manager (ahmed.benali@techcorp-algerie.dz / password123, seeded by DemoCompanySeeder)..."
+          login_response=$(curl --fail --silent --show-error \
+            --request POST "http://localhost:8000/api/v1/auth/login" \
+            --header "Content-Type: application/json" \
+            --data '{"email":"ahmed.benali@techcorp-algerie.dz","password":"password123","device_name":"onboarding-smoke-ci"}')
+
+          token=$(echo "$login_response" | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "Login did not return a token. Response was:"
+            echo "$login_response"
+            exit 1
+          fi
+
+          echo "Fetching /api/v1/employees with the manager token..."
+          employees_response=$(curl --fail --silent --show-error \
+            "http://localhost:8000/api/v1/employees" \
+            --header "Authorization: Bearer ${token}")
+
+          echo "$employees_response" | python3 -c "import sys, json; data = json.load(sys.stdin); items = data.get('data', data); assert isinstance(items, list) and len(items) > 0, 'Expected a non-empty employee list from the seeded tenant schema'; print(f'Employees returned: {len(items)}')"
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=200
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
