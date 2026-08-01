@@ -282,7 +282,25 @@ jobs:
     name: Distribute mobile staging build
     runs-on: ubuntu-latest
     needs: [prepare, deploy-api]
-    if: needs.prepare.outputs.should_deploy == 'true'
+    # actions/untrusted-checkout (issue #1396, alert #29): the previous same-job
+    # guard ("Verify deployment SHA is on main before privileged checkout" below)
+    # is a real runtime check, but it uses a custom actions/github-script snippet
+    # that CodeQL's static control-check recognizer does not match against any
+    # known pattern, so the checkout step stayed flagged as unverified even
+    # after that fix landed. CodeQL *does* recognize a job-level `if:` that
+    # compares github.event.workflow_run.head_repository.full_name to
+    # github.repository as a valid workflow_run repository check, so this
+    # condition adds that exact recognized guard. It is a redundant safety net
+    # in practice - prepare's should_deploy output already gates on this same
+    # comparison (see the "Resolve deployment source" step) - but it makes the
+    # protection visible to CodeQL at the point of privileged checkout instead
+    # of only in an earlier job it cannot see across. workflow_dispatch (manual
+    # deploy from main) has no workflow_run payload, so it is short-circuited
+    # true and unaffected.
+    if: >
+      needs.prepare.outputs.should_deploy == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.workflow_run.head_repository.full_name == github.repository)
     permissions:
       contents: read
     strategy:
