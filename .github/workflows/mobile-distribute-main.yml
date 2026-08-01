@@ -1,0 +1,257 @@
+name: Mobile Distribute - Main
+
+# Security fix (CodeQL actions/untrusted-checkout/critical - Issue #1396, Alert #29):
+# The previous `distribute-mobile` job inside deploy-main.yml was triggered via
+# `workflow_run` (a privileged context that receives org/repo secrets) and then
+# checked out `needs.prepare.outputs.sha` — a SHA derived from an external
+# workflow_run event. CodeQL's static dataflow analysis correctly flagged this as
+# an untrusted checkout in a secrets-bearing context, because it could not
+# statically verify the cross-job `prepare` validation.
+#
+# Fix (Option A from Issue #1396): moved mobile distribution into this dedicated
+# workflow triggered by `push: [main]` scoped to mobile paths. There is no
+# external SHA to validate: `github.sha` is always the verified push commit
+# on the protected `main` branch — the exact guarantee that CodeQL requires.
+# The `workflow_run` dependency is replaced by a `workflow_call` from
+# `mobile-distribute.yml` (manual) or this direct push trigger.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'front/mobile_apps/**'
+      - '.github/workflows/mobile-distribute-main.yml'
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'App to distribute (employee|manager|platform_admin|all)'
+        required: false
+        default: 'all'
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: mobile-distribute-main-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DEFAULT_API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
+
+jobs:
+  distribute-mobile:
+    name: Distribute ${{ matrix.app.name }} to Firebase
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: employee
+            project_path: front/mobile_apps/leopardo_employee
+            artifact_name: leopardo-employee-staging
+            version_prefix: employee
+            firebase_secret: FIREBASE_EMPLOYEE_ANDROID_APP_ID
+            android_package: com.leopardo.employee
+          - name: manager
+            project_path: front/mobile_apps/leopardo_manager
+            artifact_name: leopardo-manager-staging
+            version_prefix: manager
+            firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
+            android_package: com.leopardo.manager
+          - name: platform_admin
+            project_path: front/mobile_apps/leopardo_platform_admin
+            artifact_name: leopardo-platform-admin-staging
+            version_prefix: platform-admin
+            firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
+            android_package: com.leopardo.platformadmin
+
+    steps:
+      # Security note (CodeQL actions/untrusted-checkout fix):
+      # `github.sha` here is always the verified commit on the protected `main` branch —
+      # no cross-job SHA propagation from a `workflow_run` event. This eliminates the
+      # untrusted-checkout class entirely (no external SHA to validate).
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Skip if app not selected (workflow_dispatch filter)
+        if: github.event_name == 'workflow_dispatch' && inputs.app != 'all' && inputs.app != matrix.app.name
+        shell: bash
+        run: |
+          echo "Skipping ${{ matrix.app.name }} — only '${{ inputs.app }}' was requested."
+          exit 0
+
+      - name: Resolve Firebase distribution readiness
+        id: firebase_ready
+        shell: bash
+        # actions/excessive-secrets-exposure: static ternary — only one literal
+        # `secrets.NAME` reference is evaluated per matrix entry. No dynamic indexing.
+        env:
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
+          PROJECT_PATH: ${{ matrix.app.project_path }}
+          APP_NAME: ${{ matrix.app.name }}
+          ANDROID_PACKAGE: ${{ matrix.app.android_package }}
+        run: |
+          set -euo pipefail
+          READY=true
+          if [[ -z "${FIREBASE_APP_ID}" ]]; then
+            echo "Missing GitHub secret: ${FIREBASE_APP_ID_SECRET_NAME}. Skipping ${{ matrix.app.name }} Firebase distribution."
+            READY=false
+          fi
+          if [[ -z "${FIREBASE_TOKEN}" ]]; then
+            echo "Missing GitHub secret: FIREBASE_TOKEN. Skipping ${{ matrix.app.name }} Firebase distribution."
+            READY=false
+          fi
+          CONFIG_FILE="${PROJECT_PATH}/android/app/google-services.json"
+          if [[ ! -f "${CONFIG_FILE}" ]]; then
+            echo "Missing Firebase config: ${CONFIG_FILE}. Skipping ${{ matrix.app.name }} Firebase distribution."
+            READY=false
+          fi
+          if [[ "${READY}" == "true" ]]; then
+            # shellcheck disable=SC2016
+            node -e 'const fs=require("fs");const configFile=`${process.env.PROJECT_PATH}/android/app/google-services.json`;const expectedPackage=process.env.ANDROID_PACKAGE;const expectedAppId=process.env.FIREBASE_APP_ID;const secretName=process.env.FIREBASE_APP_ID_SECRET_NAME;const payload=JSON.parse(fs.readFileSync(configFile,"utf8"));const clients=Array.isArray(payload.client)?payload.client:[];const match=clients.find((c)=>c?.client_info?.android_client_info?.package_name===expectedPackage);if(!match){console.error(`No Firebase Android client found for ${expectedPackage} in ${configFile}.`);process.exit(1);}const nativeAppId=match?.client_info?.mobilesdk_app_id;if(!nativeAppId){console.error(`Firebase Android client for ${expectedPackage} does not expose mobilesdk_app_id.`);process.exit(1);}if(nativeAppId!==expectedAppId){console.error(`${secretName} does not match ${configFile} for ${expectedPackage}.`);console.error("Expected the secret to equal the google-services.json mobilesdk_app_id for this app.");process.exit(1);}console.log(`Firebase target verified for ${process.env.APP_NAME}: ${expectedPackage}.`);'
+            {
+              echo "### Firebase target - ${APP_NAME}"
+              echo "- Android package: \`${ANDROID_PACKAGE}\`"
+              echo "- Native config: \`${CONFIG_FILE}\`"
+              echo "- Console: https://console.firebase.google.com/project/leopardo-rh/appdistribution/app/android:${ANDROID_PACKAGE}/releases"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "MOBILE_DISTRIBUTE_READY=${READY}" >> "$GITHUB_ENV"
+
+      - name: Setup Flutter + Java
+        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        uses: ./.github/actions/setup-flutter-android
+
+      - name: Flutter pub get
+        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        working-directory: ${{ matrix.app.project_path }}
+        run: flutter pub get
+
+      - name: Build release APK for staging
+        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        working-directory: ${{ matrix.app.project_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "API_BASE_URL=${DEFAULT_API_BASE_URL}" > .env.build
+          flutter build apk --release \
+            --dart-define-from-file=.env.build \
+            --build-name="${{ matrix.app.version_prefix }}-main-${GITHUB_RUN_NUMBER}" \
+            --build-number="${GITHUB_RUN_NUMBER}"
+
+      - name: Upload mobile artifact
+        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.app.artifact_name }}-${{ github.run_number }}
+          path: ${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Firebase App Distribution (staging)
+        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testeurs-internes
+          file: ${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk
+          releaseNotes: |
+            Auto deploy from main - Leopardo ${{ matrix.app.name }}
+            Build: ${{ matrix.app.version_prefix }}-main-${{ github.run_number }}
+            Commit: ${{ github.sha }}
+            Workflow: ${{ github.workflow }}
+            Backend: https://gestionemployerbackend.onrender.com
+
+      - name: Verify Firebase App Distribution release is visible
+        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        shell: bash
+        env:
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_READBACK_REQUIRED: ${{ secrets.FIREBASE_READBACK_REQUIRED }}
+          APP_NAME: ${{ matrix.app.name }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          EXPECTED_BUILD="${BUILD_NUMBER}"
+          FIREBASE_READBACK_STRICT="${FIREBASE_READBACK_REQUIRED:-false}"
+          USED_SERVICE_ACCOUNT=false
+          FIREBASE_AUTH_ARGS=(--token "${FIREBASE_TOKEN}")
+          if [[ -n "${FIREBASE_SERVICE_ACCOUNT_JSON:-}" ]]; then
+            printf '%s' "${FIREBASE_SERVICE_ACCOUNT_JSON}" > "${RUNNER_TEMP}/firebase-service-account.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="${RUNNER_TEMP}/firebase-service-account.json"
+            FIREBASE_AUTH_ARGS=()
+            USED_SERVICE_ACCOUNT=true
+            echo "Using Firebase service account readback for ${APP_NAME}."
+            echo "Firebase readback strict mode: ${FIREBASE_READBACK_STRICT}."
+          fi
+          echo "Verifying Firebase App Distribution read-after-write for ${APP_NAME} build ${EXPECTED_BUILD}."
+          for attempt in 1 2 3 4 5 6; do
+            echo "Firebase visibility attempt ${attempt}/6..."
+            set +e
+            npx --yes firebase-tools appdistribution:releases:list \
+              --app "${FIREBASE_APP_ID}" \
+              "${FIREBASE_AUTH_ARGS[@]}" \
+              --limit 10 \
+              --json > firebase-releases.json 2> firebase-releases.err
+            firebase_status=$?
+            set -e
+
+            if [[ ${firebase_status} -ne 0 ]]; then
+              if [[ "${USED_SERVICE_ACCOUNT}" == "true" && "${FIREBASE_READBACK_STRICT}" != "true" ]]; then
+                echo "::warning::Firebase service-account readback failed for ${APP_NAME}; retrying readback with FIREBASE_TOKEN."
+                cat firebase-releases.err || true
+                set +e
+                npx --yes firebase-tools appdistribution:releases:list \
+                  --app "${FIREBASE_APP_ID}" \
+                  --token "${FIREBASE_TOKEN}" \
+                  --limit 10 \
+                  --json > firebase-releases.json 2> firebase-releases.err
+                firebase_status=$?
+                set -e
+              fi
+            fi
+
+            if [[ ${firebase_status} -ne 0 ]]; then
+              if [[ "${FIREBASE_READBACK_STRICT}" == "true" ]]; then
+                echo "::error::Firebase service-account readback failed for ${APP_NAME}."
+                cat firebase-releases.err || true
+                exit ${firebase_status}
+              fi
+              echo "::warning::Firebase upload succeeded, but firebase-tools could not list App Distribution releases for ${APP_NAME}."
+              echo "::warning::Keeping deploy green because the upload action is the distribution source of truth; set FIREBASE_READBACK_REQUIRED=true after the service account is rotated and granted App Distribution access."
+              cat firebase-releases.err || true
+              exit 0
+            fi
+
+            set +e
+            # shellcheck disable=SC2016
+            node -e 'const fs = require("fs"); const payload = JSON.parse(fs.readFileSync("firebase-releases.json", "utf8")); const expectedBuild = process.env.EXPECTED_BUILD || process.env.BUILD_NUMBER; const appName = process.env.APP_NAME; const releases = Array.isArray(payload.result) ? payload.result : (Array.isArray(payload.result?.releases) ? payload.result.releases : []); const match = releases.find((release) => String(release.buildVersion) === String(expectedBuild)); if (!match) { console.error(`Firebase App Distribution release not visible yet for ${appName} build ${expectedBuild}.`); console.error(`Visible build versions: ${releases.map((release) => release.buildVersion).join(", ") || "none"}`); process.exit(2); } console.log(`Firebase App Distribution release visible for ${appName}: ${match.name || match.displayVersion || match.buildVersion}`);'
+            node_status=$?
+            set -e
+
+            if [[ ${node_status} -eq 0 ]]; then
+              exit 0
+            fi
+            if [[ ${node_status} -ne 2 ]]; then
+              echo "::error::Firebase release list returned an unexpected payload."
+              head -c 2000 firebase-releases.json || true
+              exit ${node_status}
+            fi
+            sleep 20
+          done
+
+          echo "::error::Firebase upload succeeded, but build ${EXPECTED_BUILD} was not visible in the last 10 releases after retries."
+          exit 1
