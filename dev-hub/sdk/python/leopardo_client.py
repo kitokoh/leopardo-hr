@@ -296,9 +296,9 @@ class LeopardoClient:
         """Telecharger un export bancaire"""
         return self.request("GET", "/bank-exports/{bankExport}/download", **kwargs)
 
-    def post_billing_cancel(self, **kwargs):
-        """Annuler l'abonnement"""
-        return self.request("POST", "/billing/cancel", **kwargs)
+    def createbillingcheckoutsession(self, **kwargs):
+        """Creer une session Stripe Checkout pour souscrire/upgrader (manager)"""
+        return self.request("POST", "/billing/checkout", **kwargs)
 
     def get_billing_invoices(self, **kwargs):
         """Lister les factures"""
@@ -312,17 +312,25 @@ class LeopardoClient:
         """Telecharger facture PDF"""
         return self.request("GET", "/billing/invoices/{id}/pdf", **kwargs)
 
-    def post_billing_renew(self, **kwargs):
-        """Renouveler l'abonnement"""
-        return self.request("POST", "/billing/renew", **kwargs)
+    def createbillingportalsession(self, **kwargs):
+        """Creer une session Stripe Customer Portal pour gerer l'abonnement (manager)"""
+        return self.request("GET", "/billing/portal", **kwargs)
 
     def get_billing_subscription(self, **kwargs):
         """Voir l'abonnement courant"""
         return self.request("GET", "/billing/subscription", **kwargs)
 
-    def post_billing_upgrade(self, **kwargs):
-        """Upgrader l'abonnement"""
-        return self.request("POST", "/billing/upgrade", **kwargs)
+    def cancelsubscription(self, **kwargs):
+        """Annuler l'abonnement (manager)"""
+        return self.request("POST", "/billing/subscription/cancel", **kwargs)
+
+    def renewsubscription(self, **kwargs):
+        """Renouveler l'abonnement (manager)"""
+        return self.request("POST", "/billing/subscription/renew", **kwargs)
+
+    def upgradesubscription(self, **kwargs):
+        """Upgrader l'abonnement (manager)"""
+        return self.request("POST", "/billing/subscription/upgrade", **kwargs)
 
     def get_biometric_enrollment_requests(self, **kwargs):
         """Lister les demandes biometrie de la company"""
@@ -520,6 +528,10 @@ class LeopardoClient:
         """Contrats expirant bientot"""
         return self.request("GET", "/contracts/expiring", **kwargs)
 
+    def simulatecotisations(self, **kwargs):
+        """Simuler les cotisations sociales employe/employeur pour un salaire brut donne, sans persister (manager)"""
+        return self.request("POST", "/cotisation-simulation", **kwargs)
+
     def get_dashboard_kpi(self, **kwargs):
         """KPIs detailles"""
         return self.request("GET", "/dashboard/kpi", **kwargs)
@@ -648,6 +660,10 @@ class LeopardoClient:
         """Soumettre une note de frais"""
         return self.request("POST", "/expense-claims/{expenseClaim}/submit", **kwargs)
 
+    def exportpayslips(self, **kwargs):
+        """Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement"""
+        return self.request("GET", "/export/pay-slips", **kwargs)
+
     def get_exports_absences(self, **kwargs):
         """Exporter les absences"""
         return self.request("GET", "/exports/absences", **kwargs)
@@ -680,13 +696,37 @@ class LeopardoClient:
         """Exporter la flotte"""
         return self.request("GET", "/exports/vehicles", **kwargs)
 
-    def get_features(self, **kwargs):
-        """Lister les feature flags"""
-        return self.request("GET", "/features", **kwargs)
+    def checkfeatureflag(self, **kwargs):
+        """Verifier si une fonctionnalite est activee pour le plan de l'entreprise courante"""
+        return self.request("GET", "/feature-flags/check/{featureKey}", **kwargs)
 
-    def post_features_by_feature_toggle(self, **kwargs):
-        """Activer/desactiver une feature"""
-        return self.request("POST", "/features/{feature}/toggle", **kwargs)
+    def getfeatureflagmatrix(self, **kwargs):
+        """Voir la matrice complete feature x plan"""
+        return self.request("GET", "/feature-flags/matrix", **kwargs)
+
+    def updatefeatureflagmatrix(self, **kwargs):
+        """Modifier la matrice feature x plan (reserve a l'administration plateforme)"""
+        return self.request("PUT", "/feature-flags/matrix", **kwargs)
+
+    def getfeaturebykey(self, **kwargs):
+        """Voir le detail d'une fonctionnalite du registre"""
+        return self.request("GET", "/features/{key}", **kwargs)
+
+    def getfeatureregistrystatistics(self, **kwargs):
+        """Statistiques du registre de fonctionnalites (admin)"""
+        return self.request("GET", "/features/admin/statistics", **kwargs)
+
+    def synchronizefeatureregistry(self, **kwargs):
+        """Synchroniser manuellement le registre de fonctionnalites (admin)"""
+        return self.request("POST", "/features/admin/synchronize", **kwargs)
+
+    def getcompatiblefeatures(self, **kwargs):
+        """Lister les fonctionnalites compatibles avec une version mobile donnee"""
+        return self.request("GET", "/features/compatible/{version}", **kwargs)
+
+    def getfeaturemanifest(self, **kwargs):
+        """Obtenir le manifeste des fonctionnalites disponibles pour l'utilisateur courant"""
+        return self.request("GET", "/features/manifest", **kwargs)
 
     def get_fleet_live_map(self, **kwargs):
         """Carte temps reel des vehicules"""
@@ -876,6 +916,14 @@ class LeopardoClient:
         """Mes bulletins de paie"""
         return self.request("GET", "/me/pay-slips", **kwargs)
 
+    def showmypayslip(self, **kwargs):
+        """Voir un de mes bulletins de paie"""
+        return self.request("GET", "/me/pay-slips/{paySlip}", **kwargs)
+
+    def downloadmypayslippdf(self, **kwargs):
+        """Telecharger un de mes bulletins de paie en PDF"""
+        return self.request("GET", "/me/pay-slips/{paySlip}/pdf", **kwargs)
+
     def get_me_payment_documents(self, **kwargs):
         """Mes documents de paiement"""
         return self.request("GET", "/me/payment-documents", **kwargs)
@@ -1023,6 +1071,10 @@ class LeopardoClient:
     def post_payroll_runs_by_payrollrun_cancel(self, **kwargs):
         """Annuler une session de paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/cancel", **kwargs)
+
+    def listpayrollrunpayslips(self, **kwargs):
+        """Lister les bulletins de paie d'une session"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
 
     def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
         """Documents de paiement d'un cycle paie"""
@@ -1264,6 +1316,10 @@ class LeopardoClient:
         """Confirmer la reception de l'avance (employe)"""
         return self.request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", **kwargs)
 
+    def disputesalaryadvance(self, **kwargs):
+        """Ouvrir une reclamation sur une avance dont le paiement a ete declare mais non recu (employe)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/dispute", **kwargs)
+
     def put_salary_advances_by_salaryadvance_manager_approve(self, **kwargs):
         """Valider une avance avant paiement (manager/RH)"""
         return self.request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", **kwargs)
@@ -1272,9 +1328,57 @@ class LeopardoClient:
         """Declarer l'avance comme envoyee (manager/RH)"""
         return self.request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", **kwargs)
 
+    def downloadsalaryadvanceproof(self, **kwargs):
+        """Telecharger le justificatif joint a une demande d'avance (employe proprietaire ou manager)"""
+        return self.request("GET", "/salary-advances/{salaryAdvance}/proof", **kwargs)
+
     def put_salary_advances_by_salaryadvance_reject(self, **kwargs):
         """Rejeter une avance (manager)"""
         return self.request("PUT", "/salary-advances/{salaryAdvance}/reject", **kwargs)
+
+    def resolvesalaryadvancedispute(self, **kwargs):
+        """Resoudre une reclamation sur une avance (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/resolve-dispute", **kwargs)
+
+    def listsalarycomponents(self, **kwargs):
+        """Lister les composants de salaire (manager)"""
+        return self.request("GET", "/salary-components", **kwargs)
+
+    def createsalarycomponent(self, **kwargs):
+        """Creer un composant de salaire (manager)"""
+        return self.request("POST", "/salary-components", **kwargs)
+
+    def deletesalarycomponent(self, **kwargs):
+        """Supprimer un composant de salaire (manager)"""
+        return self.request("DELETE", "/salary-components/{salaryComponent}", **kwargs)
+
+    def showsalarycomponent(self, **kwargs):
+        """Voir un composant de salaire (manager)"""
+        return self.request("GET", "/salary-components/{salaryComponent}", **kwargs)
+
+    def updatesalarycomponent(self, **kwargs):
+        """Modifier un composant de salaire (manager)"""
+        return self.request("PUT", "/salary-components/{salaryComponent}", **kwargs)
+
+    def listsalarystructures(self, **kwargs):
+        """Lister les structures salariales (manager)"""
+        return self.request("GET", "/salary-structures", **kwargs)
+
+    def createsalarystructure(self, **kwargs):
+        """Creer une structure salariale (manager)"""
+        return self.request("POST", "/salary-structures", **kwargs)
+
+    def deletesalarystructure(self, **kwargs):
+        """Supprimer une structure salariale (manager)"""
+        return self.request("DELETE", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def showsalarystructure(self, **kwargs):
+        """Voir une structure salariale avec ses composants (manager)"""
+        return self.request("GET", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def updatesalarystructure(self, **kwargs):
+        """Modifier une structure salariale (manager)"""
+        return self.request("PUT", "/salary-structures/{salaryStructure}", **kwargs)
 
     def get_schedules(self, **kwargs):
         """Lister les horaires de l'entreprise"""
@@ -1352,6 +1456,34 @@ class LeopardoClient:
         """Valider ou rejeter une session GPS (manager/RH)"""
         return self.request("POST", "/smart-attendance/sessions/{id}/validate", **kwargs)
 
+    def listsocialcontributions(self, **kwargs):
+        """Lister les regles de cotisations sociales (manager)"""
+        return self.request("GET", "/social-contributions", **kwargs)
+
+    def createsocialcontribution(self, **kwargs):
+        """Creer une regle de cotisation sociale (manager)"""
+        return self.request("POST", "/social-contributions", **kwargs)
+
+    def deletesocialcontribution(self, **kwargs):
+        """Supprimer une regle de cotisation sociale (manager)"""
+        return self.request("DELETE", "/social-contributions/{socialContribution}", **kwargs)
+
+    def updatesocialcontribution(self, **kwargs):
+        """Modifier une regle de cotisation sociale (manager)"""
+        return self.request("PUT", "/social-contributions/{socialContribution}", **kwargs)
+
+    def generatecnasdzdeclaration(self, **kwargs):
+        """Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs"""
+        return self.request("POST", "/social-declarations/cnas-dz", **kwargs)
+
+    def generatecnssmadeclaration(self, **kwargs):
+        """Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs"""
+        return self.request("POST", "/social-declarations/cnss-ma", **kwargs)
+
+    def generatedsnfrdeclaration(self, **kwargs):
+        """Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne"""
+        return self.request("POST", "/social-declarations/dsn-fr", **kwargs)
+
     def post_sso_configure(self, **kwargs):
         """Configurer le SSO de l'entreprise"""
         return self.request("POST", "/sso/configure", **kwargs)
@@ -1407,6 +1539,22 @@ class LeopardoClient:
     def get_tasks_today(self, **kwargs):
         """Lister les taches du jour"""
         return self.request("GET", "/tasks/today", **kwargs)
+
+    def listtaxslabs(self, **kwargs):
+        """Lister le bareme fiscal (tranches d'impot) (manager)"""
+        return self.request("GET", "/tax-slabs", **kwargs)
+
+    def createtaxslab(self, **kwargs):
+        """Creer une tranche d'impot (manager)"""
+        return self.request("POST", "/tax-slabs", **kwargs)
+
+    def deletetaxslab(self, **kwargs):
+        """Supprimer une tranche d'impot (manager)"""
+        return self.request("DELETE", "/tax-slabs/{taxSlab}", **kwargs)
+
+    def updatetaxslab(self, **kwargs):
+        """Modifier une tranche d'impot (manager)"""
+        return self.request("PUT", "/tax-slabs/{taxSlab}", **kwargs)
 
     def post_tracking_sync_devices(self, **kwargs):
         """Synchroniser les devices Traccar"""
@@ -1571,3 +1719,39 @@ class LeopardoClient:
     def get_webhooks_events(self, **kwargs):
         """Lister les types d'evenements webhook disponibles"""
         return self.request("GET", "/webhooks/events", **kwargs)
+
+    def listzktecodevices(self, **kwargs):
+        """Lister les pointeuses ZKTeco de l'entreprise (manager)"""
+        return self.request("GET", "/zkteco/devices", **kwargs)
+
+    def registerzktecodevice(self, **kwargs):
+        """Enregistrer une nouvelle pointeuse ZKTeco (manager)"""
+        return self.request("POST", "/zkteco/devices", **kwargs)
+
+    def deletezktecodevice(self, **kwargs):
+        """Supprimer une pointeuse ZKTeco (manager)"""
+        return self.request("DELETE", "/zkteco/devices/{id}", **kwargs)
+
+    def showzktecodevice(self, **kwargs):
+        """Voir une pointeuse ZKTeco avec son historique de synchronisation (manager)"""
+        return self.request("GET", "/zkteco/devices/{id}", **kwargs)
+
+    def updatezktecodevice(self, **kwargs):
+        """Modifier une pointeuse ZKTeco (manager)"""
+        return self.request("PUT", "/zkteco/devices/{id}", **kwargs)
+
+    def listzktecosynclogs(self, **kwargs):
+        """Lister l'historique de synchronisation d'une pointeuse (manager)"""
+        return self.request("GET", "/zkteco/devices/{id}/sync-logs", **kwargs)
+
+    def pushzktecousers(self, **kwargs):
+        """Pousser la liste des employes vers la pointeuse (manager)"""
+        return self.request("POST", "/zkteco/devices/{serialNumber}/push-users", **kwargs)
+
+    def zktecoheartbeat(self, **kwargs):
+        """Signal de vie envoye par la pointeuse elle-meme (pas d'authentification employe)"""
+        return self.request("POST", "/zkteco/heartbeat/{serialNumber}", **kwargs)
+
+    def zktecosyncattendance(self, **kwargs):
+        """Pousser des pointages bruts depuis l'appareil vers le serveur (appele par l'appareil)"""
+        return self.request("POST", "/zkteco/sync-attendance/{serialNumber}", **kwargs)
