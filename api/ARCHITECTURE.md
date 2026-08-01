@@ -68,7 +68,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
-| `Modules/Expense` | ✅ routes/modules/expense.php | ✅ complet | `ExpenseServiceProvider` |
+| `Modules/Expense` | ✅ routes/modules/expense.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-008, Issue #1414) | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/modules/notification.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
@@ -81,6 +81,8 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 
 > **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
+
+> **Derogation documentee — `Modules/Expense` (PA2-ARCH-008, Issue #1414)** : meme schema que `Modules/Absence`. Les couches `Domain/Application/Infrastructure` du module Expense (`ExpenseClaim`, `ExpenseItem`, `ExpenseRepositoryInterface`, `ExpenseNotDraftException`, `CreateExpenseClaim`, `SubmitExpenseClaim`, `CreateExpenseDTO`, `ExpenseService`) etaient du code mort — `ExpenseClaimController` a toujours consomme `Planning\Domain\Models\{ExpenseClaim,ExpenseItem}` directement. Ces 8 fichiers ont ete supprimes (Issue #1414) ; `Modules/Expense` reste une facade HTTP (`Interfaces/` + `Providers/`) qui consomme `Planning\...` directement. `AuthServiceProvider` enregistre `ExpenseClaimPolicy` sur `Planning\Domain\Models\ExpenseClaim` (le vrai modele utilise par le controller).
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Training` | ✅ routes/modules/* | ✅ complet | `TrainingServiceProvider` |

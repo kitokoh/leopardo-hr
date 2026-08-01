@@ -10,7 +10,6 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
-use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
@@ -96,12 +95,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/kiosks', [KioskController::class, 'register']);
 
     // ── Module 1 — Absences ───────────────────────────────────────────────────
-    Route::get('/absences', [AbsenceController::class, 'index']);
-    Route::post('/absences', [AbsenceController::class, 'store']);
-    Route::get('/absences/{absence}', [AbsenceController::class, 'show'])->whereNumber('absence');
-    Route::put('/absences/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
-    Route::put('/absences/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
-    Route::delete('/absences/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
+    // Routes absences gérées exclusivement par routes/modules/absence.php
+    // (source unique, plus complet : inclut /proof, approve/reject via PUT et POST).
+    // Ne pas redéclarer ici — cf. dérogation architecture documentée dans api/ARCHITECTURE.md.
 
     // ── Module 2 — Salary Advances ────────────────────────────────────────────
     Route::get('/salary-advances', [SalaryAdvanceController::class, 'index']);
@@ -160,7 +156,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy'])->whereNumber('schedule');
 
     // ── Module 5 — Notifications ──────────────────────────────────────────────
-    Route::get('/notifications', [NotificationController::class, 'index']);
+    // GET /notifications est déclaré dans routes/modules/dashboard.php (source unique).
+    // Ce fichier conserve uniquement les routes complémentaires absentes de dashboard.php :
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');

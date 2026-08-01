@@ -13,7 +13,8 @@ use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
-use App\Modules\Expense\Domain\Models\ExpenseClaim;
+// Expense facade uses Planning models directly (derogation documented in api/ARCHITECTURE.md — Issue #1414)
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
