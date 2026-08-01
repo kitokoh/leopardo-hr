@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Recruitment\Infrastructure\Services;
 
 use App\Modules\Recruitment\Domain\Models\Applicant;

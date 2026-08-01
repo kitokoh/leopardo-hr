@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Absence\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
