@@ -4,12 +4,18 @@ on:
   pull_request:
     paths:
       - "api/openapi.yaml"
+      - "dev-hub/openapi/v1.yaml"
+      - "dev-hub/sdk/**"
+      - "dev-hub/tools/generate-openapi-sdk.mjs"
       - ".github/workflows/openapi-ci.yml"
   push:
     branches:
       - main
     paths:
       - "api/openapi.yaml"
+      - "dev-hub/openapi/v1.yaml"
+      - "dev-hub/sdk/**"
+      - "dev-hub/tools/generate-openapi-sdk.mjs"
       - ".github/workflows/openapi-ci.yml"
 
 permissions:
@@ -25,3 +31,15 @@ jobs:
 
       - name: Lint api/openapi.yaml
         run: npx --yes @redocly/cli@1.34.5 lint api/openapi.yaml
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+
+      - name: Check dev-hub OpenAPI mirror + generated SDKs are in sync (issue #1397)
+        # dev-hub/openapi/v1.yaml is generated from api/openapi.yaml by
+        # dev-hub/tools/generate-openapi-sdk.mjs so external integrators never
+        # see a stale/divergent stub. This fails the build if api/openapi.yaml
+        # changed without regenerating dev-hub/openapi/v1.yaml and the SDKs.
+        run: node dev-hub/tools/generate-openapi-sdk.mjs --check
