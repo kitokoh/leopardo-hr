@@ -91,10 +91,12 @@ Les **nouveaux modules** suivent la structure DDD (template dans `stubs/module-t
 Domain/         # Entites, Value Objects, Repository Interfaces, Domain Events
 Application/    # Use Cases, DTOs, Command/Query handlers
 Infrastructure/ # Implementations Repository, Integrations externes
-Interfaces/     # Controllers, Resources, Requests
+Interfaces/     # Controllers, Requests (Resources : voir derogation PA2-ARCH-010 ci-dessous)
 ```
 
 Les modules existants (pre-sprint) gardent la structure Laravel classique.
+
+> **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : les classes `JsonResource` restent **centralisees** dans `app/Http/Resources/Api/V1/`, y compris pour les nouveaux modules, plutot que placees dans `Interfaces/Api/V1/Resources/` de chaque module. Raison : plusieurs Resources sont partagees entre modules (ex. `LoanResource` par `HR`+`Payroll`), et les placer dans le module createur forcerait les autres modules consommateurs a faire un import inter-module, ce qui viole l'interdiction §2.7/§2.3 (« un module n'importe jamais directement les classes d'un autre module »). Voir `api/ARCHITECTURE.md` pour le detail. Une Resource strictement interne a un seul module et jamais partagee peut exceptionnellement rester dans `Interfaces/Api/V1/Resources/` du module.
 
 ### 2.8 i18n
 
