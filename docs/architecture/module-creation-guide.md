@@ -95,8 +95,16 @@ api/app/Modules/MonNouveauModule/
 ├── Interfaces/
 │   └── Api/V1/
 │       ├── Controllers/ ← HTTP controllers
-│       ├── Requests/    ← Form requests
-│       └── Resources/   ← API resources
+│       └── Requests/    ← Form requests
 └── Providers/
     └── MonNouveauModuleServiceProvider.php
 ```
+
+> **API Resources : namespace centralise (derogation documentee PA2-ARCH-010)**
+> Les classes `JsonResource` de ton nouveau module vont dans `app/Http/Resources/Api/V1/`
+> (meme dossier que tous les autres modules), **pas** dans `Interfaces/Api/V1/Resources/`.
+> Raison : plusieurs Resources sont partagees entre modules, et un module ne doit jamais
+> importer directement une classe d'un autre module — les centraliser evite ce couplage.
+> Voir `api/ARCHITECTURE.md` (section "Modules existants") pour le detail de la derogation.
+> Exception : une Resource strictement interne a ce module et jamais consommee ailleurs
+> peut rester dans `Interfaces/Api/V1/Resources/` si tu preferes.
