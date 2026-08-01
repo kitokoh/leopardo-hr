@@ -152,9 +152,48 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 #### Priorité basse
 
-- [ ] PHPStan modules : monter le niveau de 3 → 5 (objectif réaliste)
+- [x] PHPStan modules : monté le niveau de 3 → 5 (objectif réaliste). CI job
+  `phpstan-modules` (bloquant) tourne sur `phpstan-modules.neon`.
 - [ ] Application layer : enrichir les Actions dans Growth, Platform, Onboarding, Training
   (trop peu d'Actions, controllers trop épais)
+
+### Trajectoire PHPStan (niveau actuel → cible)
+
+_Issue #1413, complétant le suivi de la ligne ci-dessus._
+
+| Config | Portée | Niveau actuel | Statut CI | Cible |
+|---|---|---|---|---|
+| `phpstan.neon` | tout `app/` | `max` | non branché à un job CI dédié (voir `phpstan-modules`/`phpstan-strict` ci-dessous) | n/a |
+| `phpstan-modules.neon` | `app/Core`, `app/Modules`, `app/Shared` | `5` | **bloquant** (`architecture-check.yml`, job `phpstan-modules`) | rester à 5 pour l'instant ; réévaluer une montée à 6/7 une fois `phpstan-strict` stabilisé (voir ci-dessous) |
+| `phpstan-strict.neon` | `app/Core`, `app/Modules`, `app/Shared` | `8` | **bloquant sur delta uniquement** depuis #1413 (`phpstan-strict-baseline.neon`, 2950 erreurs pré-existantes gelées ; `continue-on-error` retiré du job `phpstan-strict`) | réduire progressivement la baseline module par module (voir répartition ci-dessous), jamais l'augmenter |
+
+**Répartition de la baseline `phpstan-strict` par module (2950 erreurs, 2026-08-01) :**
+
+| Module | Erreurs |
+|---|---|
+| hors DDD (`app/Console`, `app/Http`, `app/AI`, `app/Enums`, `app/Exceptions`, ...) | 2220 |
+| HR | 110 |
+| Attendance | 108 |
+| Payroll | 100 |
+| Planning | 58 |
+| EdgeSync | 50 |
+| Billing | 48 |
+| Core/Auth | 40 |
+| SmartAttendance | 35 |
+| Notification | 26 |
+| Core/Feature | 25 |
+| Platform | 22 |
+| Cabinet / Shared | 15 chacun |
+| Expense / Fleet | 12 chacun |
+| Cameras | 10 |
+| Growth | 9 |
+| Recruitment / Training | 8 chacun |
+| Onboarding | 7 |
+| Marketing | 6 |
+| Core/Tenant | 5 |
+| Absence | 4 |
+
+Convergence visée : `phpstan-modules` (5) et `phpstan-strict` (8) ne sont pas censés converger vers un seul niveau à court terme — `phpstan-modules` reste le gate rapide et bloquant sur tout PR touchant `app/Core`/`app/Modules`/`app/Shared`, tandis que `phpstan-strict` sert de garde anti-régression progressive sur le typage strict (niveau 8) sans bloquer sur la dette existante. Toute réduction de la baseline (fichier corrigé et retiré de `phpstan-strict-baseline.neon`) doit être faite module par module, dans des PR dédiées, pour rester revuable.
 
 ### ✅ Nettoyage complet — bilan cumulé (PR #824 + phase2)
 
