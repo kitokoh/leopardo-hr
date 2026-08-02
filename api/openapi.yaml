@@ -4497,6 +4497,119 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
+  /salary-advances/{salaryAdvance}/dispute:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Ouvrir une reclamation sur une avance dont le paiement a ete declare mais non recu (employe)"
+      description: "PA2-PAY-015. Requiert que validation_status soit payment_declared."
+      operationId: disputeSalaryAdvance
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dispute_reason]
+              properties:
+                dispute_reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 1000
+      responses:
+        "200":
+          description: "Reclamation ouverte"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Seul le proprietaire de l'avance peut la contester"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Le paiement doit avoir ete declare avant de pouvoir etre conteste"
+
+  /salary-advances/{salaryAdvance}/resolve-dispute:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Resoudre une reclamation sur une avance (manager/RH)"
+      description: "PA2-PAY-015. Requiert que validation_status soit disputed. resolution=confirmed repasse a employee_confirmed ; resolution=reopened repasse a payment_declared."
+      operationId: resolveSalaryAdvanceDispute
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resolution]
+              properties:
+                resolution:
+                  type: string
+                  enum: [confirmed, reopened]
+                dispute_resolution_note:
+                  type: string
+                  nullable: true
+                  maxLength: 1000
+      responses:
+        "200":
+          description: "Reclamation resolue"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "L'avance n'est pas actuellement en litige"
+
+  /salary-advances/{salaryAdvance}/proof:
+    get:
+      tags: ["Salary Advances"]
+      summary: "Telecharger le justificatif joint a une demande d'avance (employe proprietaire ou manager)"
+      description: "PA2-MOB-006. Retourne le fichier binaire (image ou PDF) attache lors de la creation de la demande."
+      operationId: downloadSalaryAdvanceProof
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier binaire du justificatif"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Avance introuvable, ou aucun justificatif joint, ou fichier manquant sur le disque"
+
   # --- Leave Policies ---
   /leave-policies:
     get:
@@ -5392,6 +5505,58 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /me/pay-slips/{paySlip}:
+    get:
+      tags: ["Me"]
+      summary: "Voir un de mes bulletins de paie"
+      operationId: showMyPaySlip
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail du bulletin (doit appartenir a l'employe connecte)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PaySlip"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /me/pay-slips/{paySlip}/pdf:
+    get:
+      tags: ["Me"]
+      summary: "Telecharger un de mes bulletins de paie en PDF"
+      operationId: downloadMyPaySlipPdf
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier PDF"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/balance:
     get:
       tags: ["Me"]
@@ -6091,7 +6256,70 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /payroll-runs/{payrollRun}/pay-slips:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les bulletins de paie d'une session"
+      operationId: listPayrollRunPaySlips
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des bulletins de la session"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaySlip"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   # --- Pay Slips ---
+  /export/pay-slips:
+    get:
+      tags: ["Payroll"]
+      summary: "Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement"
+      description: "Retourne au plus 10000 lignes de la table pay_slips filtrees par company_id. format=csv renvoie le contenu CSV encode dans un champ JSON (pas de flux binaire direct)."
+      operationId: exportPaySlips
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [json, csv, xlsx], default: json }
+      responses:
+        "200":
+          description: "Export au format demande"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      format: { type: string, enum: [json, csv] }
+                      records:
+                        type: array
+                        items: { type: object }
+                        description: "Present seulement quand format=json"
+                      content:
+                        type: string
+                        description: "Contenu CSV brut, present seulement quand format=csv ou xlsx"
+                      filename: { type: string }
+                      count: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Reserve aux managers"
+
   /pay-slips/{paySlip}:
     get:
       tags: ["Payroll"]
@@ -6133,6 +6361,702 @@ paths:
                 format: binary
         "401":
           $ref: "#/components/responses/Error401"
+
+  # --- Payroll Engine : Structures salariales, composants, bareme fiscal, cotisations ---
+  /salary-structures:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les structures salariales (manager)"
+      operationId: listSalaryStructures
+      parameters:
+        - name: country_code
+          in: query
+          schema: { type: string }
+        - name: active_only
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: "Liste des structures"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SalaryStructure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Creer une structure salariale (manager)"
+      operationId: createSalaryStructure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, base_salary, currency, country_code]
+              properties:
+                name: { type: string, maxLength: 150 }
+                base_salary: { type: number, minimum: 0 }
+                currency: { type: string, minLength: 3, maxLength: 3 }
+                country_code:
+                  type: string
+                  enum: [DZ, MA, TN, FR, TR, SN, CM, CF, TD, CG, GA, GQ, CI, ML, BF, BJ, TG, NE, CA]
+                frequency:
+                  type: string
+                  enum: [monthly, bi_weekly, weekly]
+                  nullable: true
+      responses:
+        "201":
+          description: "Structure creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryStructure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /salary-structures/{salaryStructure}:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Voir une structure salariale avec ses composants (manager)"
+      operationId: showSalaryStructure
+      parameters:
+        - name: salaryStructure
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail de la structure, composants inclus"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryStructure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Modifier une structure salariale (manager)"
+      operationId: updateSalaryStructure
+      parameters:
+        - name: salaryStructure
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 150 }
+                base_salary: { type: number, minimum: 0 }
+                currency: { type: string, minLength: 3, maxLength: 3 }
+                country_code:
+                  type: string
+                  enum: [DZ, MA, TN, FR, TR, SN, CM, CF, TD, CG, GA, GQ, CI, ML, BF, BJ, TG, NE, CA]
+                frequency:
+                  type: string
+                  enum: [monthly, bi_weekly, weekly]
+                active: { type: boolean }
+      responses:
+        "200":
+          description: "Structure mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryStructure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer une structure salariale (manager)"
+      operationId: deleteSalaryStructure
+      parameters:
+        - name: salaryStructure
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Structure supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /salary-components:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les composants de salaire (manager)"
+      operationId: listSalaryComponents
+      parameters:
+        - name: salary_structure_id
+          in: query
+          schema: { type: integer }
+        - name: type
+          in: query
+          schema: { type: string, enum: [earning, deduction, employer_contribution] }
+        - name: active_only
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: "Liste des composants, triee par order"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SalaryComponent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Creer un composant de salaire (manager)"
+      operationId: createSalaryComponent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, code, type, calculation_type]
+              properties:
+                salary_structure_id: { type: integer, nullable: true }
+                name: { type: string, maxLength: 150 }
+                code: { type: string, maxLength: 50 }
+                type: { type: string, enum: [earning, deduction, employer_contribution] }
+                calculation_type: { type: string, enum: [fixed, percentage_of_base, percentage_of_gross, formula] }
+                amount: { type: number, minimum: 0, nullable: true }
+                percentage: { type: number, minimum: 0, maximum: 100, nullable: true }
+                formula: { type: string, maxLength: 500, nullable: true }
+                is_taxable: { type: boolean, nullable: true }
+                is_recurring: { type: boolean, nullable: true }
+                order: { type: integer, minimum: 0, nullable: true }
+      responses:
+        "201":
+          description: "Composant cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryComponent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /salary-components/{salaryComponent}:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Voir un composant de salaire (manager)"
+      operationId: showSalaryComponent
+      parameters:
+        - name: salaryComponent
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail du composant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryComponent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Modifier un composant de salaire (manager)"
+      operationId: updateSalaryComponent
+      parameters:
+        - name: salaryComponent
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 150 }
+                code: { type: string, maxLength: 50 }
+                type: { type: string, enum: [earning, deduction, employer_contribution] }
+                calculation_type: { type: string, enum: [fixed, percentage_of_base, percentage_of_gross, formula] }
+                amount: { type: number, minimum: 0, nullable: true }
+                percentage: { type: number, minimum: 0, maximum: 100, nullable: true }
+                formula: { type: string, maxLength: 500, nullable: true }
+                is_taxable: { type: boolean }
+                is_recurring: { type: boolean }
+                order: { type: integer, minimum: 0 }
+                active: { type: boolean }
+      responses:
+        "200":
+          description: "Composant mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryComponent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer un composant de salaire (manager)"
+      operationId: deleteSalaryComponent
+      parameters:
+        - name: salaryComponent
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Composant supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /tax-slabs:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister le bareme fiscal (tranches d'impot) (manager)"
+      operationId: listTaxSlabs
+      parameters:
+        - name: country_code
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Liste des tranches, triees par pays puis montant min"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Creer une tranche d'impot (manager)"
+      operationId: createTaxSlab
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country_code, name, min_amount, rate, effective_from]
+              properties:
+                country_code:
+                  type: string
+                  enum: [DZ, MA, TN, FR, TR, SN, CM, CF, TD, CG, GA, GQ, CI, ML, BF, BJ, TG, NE, CA]
+                name: { type: string, maxLength: 150 }
+                min_amount: { type: number, minimum: 0 }
+                max_amount: { type: number, minimum: 0, nullable: true }
+                rate: { type: number, minimum: 0, maximum: 100 }
+                fixed_deduction: { type: number, minimum: 0, nullable: true }
+                effective_from: { type: string, format: date }
+                effective_to: { type: string, format: date, nullable: true }
+      responses:
+        "201":
+          description: "Tranche creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /tax-slabs/{taxSlab}:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Modifier une tranche d'impot (manager)"
+      operationId: updateTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 150 }
+                min_amount: { type: number, minimum: 0 }
+                max_amount: { type: number, minimum: 0, nullable: true }
+                rate: { type: number, minimum: 0, maximum: 100 }
+                fixed_deduction: { type: number, minimum: 0 }
+                effective_from: { type: string, format: date }
+                effective_to: { type: string, format: date, nullable: true }
+      responses:
+        "200":
+          description: "Tranche mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer une tranche d'impot (manager)"
+      operationId: deleteTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Tranche supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /social-contributions:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les regles de cotisations sociales (manager)"
+      operationId: listSocialContributions
+      responses:
+        "200":
+          description: "Liste des cotisations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Creer une regle de cotisation sociale (manager)"
+      description: "PA2-ARCH-004 : l'unicite de 'code' est scopee par (company_id, effective_from), pas globale, pour permettre un nouveau taux date sans supprimer l'historique utilise par d'anciennes sessions de paie."
+      operationId: createSocialContribution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country_code, name, code, type, rate, effective_from]
+              properties:
+                country_code:
+                  type: string
+                  enum: [DZ, MA, TN, FR, TR, SN, CM, CF, TD, CG, GA, GQ, CI, ML, BF, BJ, TG, NE, CA]
+                name: { type: string, maxLength: 150 }
+                code: { type: string, maxLength: 50 }
+                type: { type: string, enum: [employee, employer] }
+                rate: { type: number, minimum: 0, maximum: 100 }
+                cap: { type: number, minimum: 0, nullable: true }
+                effective_from: { type: string, format: date }
+                effective_to: { type: string, format: date, nullable: true }
+      responses:
+        "201":
+          description: "Cotisation creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /social-contributions/{socialContribution}:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Modifier une regle de cotisation sociale (manager)"
+      operationId: updateSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 150 }
+                type: { type: string, enum: [employee, employer] }
+                rate: { type: number, minimum: 0, maximum: 100 }
+                cap: { type: number, minimum: 0, nullable: true }
+                effective_from: { type: string, format: date }
+                effective_to: { type: string, format: date, nullable: true }
+      responses:
+        "200":
+          description: "Cotisation mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer une regle de cotisation sociale (manager)"
+      operationId: deleteSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Cotisation supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /social-declarations/cnas-dz:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs"
+      description: "Agrege les bulletins valides (pay_slips.status=validated) des 3 mois du trimestre demande, par employe."
+      operationId: generateCnasDzDeclaration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quarter, year]
+              properties:
+                quarter: { type: string, enum: [Q1, Q2, Q3, Q4] }
+                year: { type: integer, minimum: 2020, maximum: 2099 }
+      responses:
+        "200":
+          description: "Declaration CNAS generee (lignes par employe : salaire brut cumule, mois travailles)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /social-declarations/cnss-ma:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs"
+      description: "Agrege les bulletins valides et les jours de presence (attendance_logs) des 3 mois du trimestre demande, par employe."
+      operationId: generateCnssMaDeclaration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quarter, year]
+              properties:
+                quarter: { type: string, enum: [Q1, Q2, Q3, Q4] }
+                year: { type: integer, minimum: 2020, maximum: 2099 }
+      responses:
+        "200":
+          description: "Declaration CNSS generee (lignes par employe : salaire brut cumule, jours travailles)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /social-declarations/dsn-fr:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne"
+      description: "Agrege les bulletins valides du mois/annee demandes, par employe (identite, contrat, brut/net/net imposable, heures travaillees)."
+      operationId: generateDsnFrDeclaration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [month, year]
+              properties:
+                month: { type: integer, minimum: 1, maximum: 12 }
+                year: { type: integer, minimum: 2020, maximum: 2099 }
+      responses:
+        "200":
+          description: "DSN generee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /cotisation-simulation:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Simuler les cotisations sociales employe/employeur pour un salaire brut donne, sans persister (manager)"
+      description: "Taux de cotisation en dur par pays (CNAS/CNSS/Securite Sociale/CNSS-TN/SGK/IPRES/CNPS selon le pays), pas de bareme fiscal IRG/IR/PAS applique (net_before_tax = brut - cotisations salariales uniquement)."
+      operationId: simulateCotisations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country_code, gross_salary]
+              properties:
+                country_code:
+                  type: string
+                  enum: [DZ, MA, FR, TN, TR, SN, CM, CF, TD, CG, GA, GQ, CI, ML, BF, BJ, TG, NE, CA]
+                gross_salary: { type: number, minimum: 0 }
+      responses:
+        "200":
+          description: "Simulation des cotisations et net estime"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country_code: { type: string }
+                      gross_salary: { type: number }
+                      employee_contributions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name: { type: string }
+                            rate: { type: number }
+                            amount: { type: number }
+                      employer_contributions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name: { type: string }
+                            rate: { type: number }
+                            amount: { type: number }
+                      total_employee_deduction: { type: number }
+                      total_employer_cost: { type: number }
+                      net_before_tax: { type: number }
+                      total_cost_employer: { type: number }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   # --- Bank Export ---
   /bank-exports:
@@ -6201,10 +7125,11 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /billing/upgrade:
+  /billing/subscription/upgrade:
     post:
       tags: ["Billing"]
-      summary: "Upgrader l'abonnement"
+      summary: "Upgrader l'abonnement (manager)"
+      operationId: upgradeSubscription
       requestBody:
         required: true
         content:
@@ -6215,16 +7140,14 @@ paths:
               properties:
                 plan:
                   type: string
-                  enum: [starter, pro, enterprise]
-                billing_cycle:
+                  enum: [starter, business, enterprise]
+                payment_method:
                   type: string
-                  enum: [monthly, yearly]
-                payment_method_id:
-                  type: string
+                  enum: [stripe, bank_transfer, manual]
                   nullable: true
       responses:
         "200":
-          description: "Abonnement mis a jour"
+          description: "Abonnement mis a jour (cree s'il n'existait pas encore)"
           content:
             application/json:
               schema:
@@ -6234,13 +7157,16 @@ paths:
                     $ref: "#/components/schemas/Subscription"
         "401":
           $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /billing/cancel:
+  /billing/subscription/cancel:
     post:
       tags: ["Billing"]
-      summary: "Annuler l'abonnement"
+      summary: "Annuler l'abonnement (manager)"
+      operationId: cancelSubscription
       requestBody:
         content:
           application/json:
@@ -6250,22 +7176,10 @@ paths:
                 reason:
                   type: string
                   nullable: true
-                feedback:
-                  type: string
-                  nullable: true
+                  maxLength: 1000
       responses:
         "200":
           description: "Abonnement annule"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /billing/renew:
-    post:
-      tags: ["Billing"]
-      summary: "Renouveler l'abonnement"
-      responses:
-        "200":
-          description: "Abonnement renouvele"
           content:
             application/json:
               schema:
@@ -6275,6 +7189,114 @@ paths:
                     $ref: "#/components/schemas/Subscription"
         "401":
           $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Aucun abonnement trouve pour cette entreprise"
+
+  /billing/subscription/renew:
+    post:
+      tags: ["Billing"]
+      summary: "Renouveler l'abonnement (manager)"
+      operationId: renewSubscription
+      responses:
+        "200":
+          description: "Abonnement renouvele, nouvelle periode d'un mois"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Aucun abonnement trouve pour cette entreprise"
+
+  /billing/checkout:
+    post:
+      tags: ["Billing"]
+      summary: "Creer une session Stripe Checkout pour souscrire/upgrader (manager)"
+      operationId: createBillingCheckoutSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan, success_url, cancel_url]
+              properties:
+                plan:
+                  type: string
+                  enum: [starter, business, enterprise]
+                success_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+                cancel_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Session Stripe Checkout creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      checkout_url:
+                        type: string
+                        format: uri
+                      session_id:
+                        type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "500":
+          description: "Echec de creation de la session Stripe"
+        "503":
+          description: "Stripe non configure sur cet environnement"
+
+  /billing/portal:
+    get:
+      tags: ["Billing"]
+      summary: "Creer une session Stripe Customer Portal pour gerer l'abonnement (manager)"
+      operationId: createBillingPortalSession
+      parameters:
+        - name: return_url
+          in: query
+          required: true
+          schema: { type: string, format: uri, maxLength: 500 }
+      responses:
+        "200":
+          description: "URL du portail client Stripe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      portal_url:
+                        type: string
+                        format: uri
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Aucun compte de paiement Stripe associe a cette entreprise"
+        "422":
+          $ref: "#/components/responses/Validation422"
+        "500":
+          description: "Echec d'acces au portail de facturation"
 
   /billing/invoices:
     get:
@@ -8426,32 +9448,199 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   # --- Features / i18n ---
-  /features:
+  /features/manifest:
     get:
       tags: ["Admin"]
-      summary: "Lister les feature flags"
+      summary: "Obtenir le manifeste des fonctionnalites disponibles pour l'utilisateur courant"
+      operationId: getFeatureManifest
+      parameters:
+        - name: mobile_version
+          in: query
+          required: false
+          schema: { type: string, default: "1.0.0" }
       responses:
         "200":
-          description: "Liste des features"
+          description: "Manifeste filtre selon les permissions de l'utilisateur"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      features: { type: array, items: { type: object } }
+                      total_features: { type: integer }
+                      user_id: { type: integer }
+                      user_role: { type: string }
+                  meta:
+                    type: object
+                    properties:
+                      generated_for_user: { type: integer }
+                      mobile_version: { type: string }
+                      api_version: { type: string }
+                      cache_ttl: { type: integer }
         "401":
           $ref: "#/components/responses/Error401"
+        "500":
+          description: "Echec de generation du manifeste"
 
-  /features/{feature}/toggle:
-    post:
+  /features/compatible/{version}:
+    get:
       tags: ["Admin"]
-      summary: "Activer/desactiver une feature"
+      summary: "Lister les fonctionnalites compatibles avec une version mobile donnee"
+      operationId: getCompatibleFeatures
       parameters:
-        - name: feature
+        - name: version
           in: path
           required: true
           schema: { type: string }
       responses:
         "200":
-          description: "Feature modifiee"
+          description: "Fonctionnalites compatibles, filtrees selon les permissions"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      mobile_version: { type: string }
+                      total_features: { type: integer }
+                      features: { type: array, items: { type: object } }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "500":
+          description: "Echec de recuperation des fonctionnalites"
+
+  /features/admin/statistics:
+    get:
+      tags: ["Admin"]
+      summary: "Statistiques du registre de fonctionnalites (admin)"
+      operationId: getFeatureRegistryStatistics
+      responses:
+        "200":
+          description: "Statistiques du registre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: object }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
-          $ref: "#/components/responses/Error403"
+          description: "Acces admin requis"
+
+  /features/admin/synchronize:
+    post:
+      tags: ["Admin"]
+      summary: "Synchroniser manuellement le registre de fonctionnalites (admin)"
+      operationId: synchronizeFeatureRegistry
+      responses:
+        "200":
+          description: "Synchronisation terminee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: object }
+                  message: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Acces admin requis"
+
+  /features/{key}:
+    get:
+      tags: ["Admin"]
+      summary: "Voir le detail d'une fonctionnalite du registre"
+      operationId: getFeatureByKey
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Detail de la fonctionnalite"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Permissions insuffisantes pour cette fonctionnalite"
+        "404":
+          description: "Fonctionnalite introuvable"
+
+  /feature-flags/matrix:
+    get:
+      tags: ["Billing"]
+      summary: "Voir la matrice complete feature x plan"
+      operationId: getFeatureFlagMatrix
+      responses:
+        "200":
+          description: "Matrice groupee par feature_key puis par plan"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      additionalProperties: { type: boolean }
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Billing"]
+      summary: "Modifier la matrice feature x plan (reserve a l'administration plateforme)"
+      operationId: updateFeatureFlagMatrix
+      responses:
+        "403":
+          description: "Ecriture reservee a l'administration plateforme ; cet endpoint tenant renvoie toujours 403"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /feature-flags/check/{featureKey}:
+    get:
+      tags: ["Billing"]
+      summary: "Verifier si une fonctionnalite est activee pour le plan de l'entreprise courante"
+      operationId: checkFeatureFlag
+      parameters:
+        - name: featureKey
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Statut de la fonctionnalite pour le plan courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      feature: { type: string }
+                      plan: { type: string }
+                      enabled: { type: boolean }
+                      limit: { type: integer, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /i18n/{locale}:
     get:
@@ -9029,6 +10218,292 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SmartAttendanceDashboard"
+
+  # --- ZKTeco (pointeuses biometriques) ---
+  /zkteco/devices:
+    get:
+      tags: ["ZKTeco"]
+      summary: "Lister les pointeuses ZKTeco de l'entreprise (manager)"
+      operationId: listZktecoDevices
+      responses:
+        "200":
+          description: "Liste des appareils"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ZktecoDevice"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["ZKTeco"]
+      summary: "Enregistrer une nouvelle pointeuse ZKTeco (manager)"
+      operationId: registerZktecoDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [serial_number, name]
+              properties:
+                serial_number: { type: string, maxLength: 100 }
+                name: { type: string, maxLength: 120 }
+                ip_address: { type: string, format: ipv4, nullable: true }
+                port: { type: integer, minimum: 1, maximum: 65535, nullable: true }
+                protocol: { type: string, enum: [tcp, udp, cloud_api], nullable: true }
+                location_label: { type: string, maxLength: 120, nullable: true }
+                model: { type: string, maxLength: 60, nullable: true }
+                firmware_version: { type: string, maxLength: 60, nullable: true }
+      responses:
+        "201":
+          description: "Appareil enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ZktecoDevice"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /zkteco/devices/{id}:
+    get:
+      tags: ["ZKTeco"]
+      summary: "Voir une pointeuse ZKTeco avec son historique de synchronisation (manager)"
+      operationId: showZktecoDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail de l'appareil + 10 dernieres synchronisations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ZktecoDevice"
+                  sync_history:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ZktecoSyncLog"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["ZKTeco"]
+      summary: "Modifier une pointeuse ZKTeco (manager)"
+      operationId: updateZktecoDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 120 }
+                ip_address: { type: string, format: ipv4, nullable: true }
+                port: { type: integer, minimum: 1, maximum: 65535, nullable: true }
+                protocol: { type: string, enum: [tcp, udp, cloud_api], nullable: true }
+                location_label: { type: string, maxLength: 120, nullable: true }
+                status: { type: string, enum: [online, offline, maintenance], nullable: true }
+      responses:
+        "200":
+          description: "Appareil mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ZktecoDevice"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["ZKTeco"]
+      summary: "Supprimer une pointeuse ZKTeco (manager)"
+      operationId: deleteZktecoDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Appareil supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /zkteco/devices/{id}/sync-logs:
+    get:
+      tags: ["ZKTeco"]
+      summary: "Lister l'historique de synchronisation d'une pointeuse (manager)"
+      operationId: listZktecoSyncLogs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: "Historique de synchronisation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ZktecoSyncLog"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /zkteco/heartbeat/{serialNumber}:
+    post:
+      tags: ["ZKTeco"]
+      summary: "Signal de vie envoye par la pointeuse elle-meme (pas d'authentification employe)"
+      description: "Appele directement par le firmware de l'appareil, pas par l'app mobile/web. Marque l'appareil online et met a jour last_seen_at."
+      operationId: zktecoHeartbeat
+      parameters:
+        - name: serialNumber
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Heartbeat enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      device_id: { type: integer }
+                      status: { type: string, enum: [online] }
+                      server_time: { type: string, format: date-time }
+        "404":
+          description: "Aucune pointeuse enregistree avec ce numero de serie"
+
+  /zkteco/sync-attendance/{serialNumber}:
+    post:
+      tags: ["ZKTeco"]
+      summary: "Pousser des pointages bruts depuis l'appareil vers le serveur (appele par l'appareil)"
+      operationId: zktecoSyncAttendance
+      parameters:
+        - name: serialNumber
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [records]
+              properties:
+                records:
+                  type: array
+                  items:
+                    type: object
+                    required: [user_id, timestamp]
+                    properties:
+                      user_id: { type: string }
+                      timestamp: { type: string, format: date-time }
+                      punch_type: { type: integer, minimum: 0, maximum: 5, nullable: true }
+                      badge_number: { type: string, nullable: true }
+      responses:
+        "201":
+          description: "Lot de pointages traite"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      sync_id: { type: integer }
+                      records_processed: { type: integer }
+                      errors: { type: integer }
+                      status: { type: string }
+        "404":
+          description: "Aucune pointeuse enregistree avec ce numero de serie"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /zkteco/devices/{serialNumber}/push-users:
+    post:
+      tags: ["ZKTeco"]
+      summary: "Pousser la liste des employes vers la pointeuse (manager)"
+      operationId: pushZktecoUsers
+      parameters:
+        - name: serialNumber
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Synchronisation des utilisateurs lancee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      sync_id: { type: integer }
+                      users_count: { type: integer }
+                      status: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          description: "Aucune pointeuse enregistree avec ce numero de serie"
 
 components:
   securitySchemes:
@@ -13547,6 +15022,154 @@ components:
         created_at:
           type: string
           format: date-time
+
+    SalaryStructure:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        base_salary:
+          type: number
+        currency:
+          type: string
+        is_active:
+          type: boolean
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/SalaryComponent"
+          description: "Present seulement quand la relation components est chargee (GET /salary-structures/{id})"
+        created_at:
+          type: string
+          format: date-time
+
+    SalaryComponent:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        type:
+          type: string
+          enum: [earning, deduction, employer_contribution]
+        amount:
+          type: number
+          nullable: true
+        percentage:
+          type: number
+          nullable: true
+        is_taxable:
+          type: boolean
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    TaxSlab:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        country_code:
+          type: string
+        min_amount:
+          type: number
+        max_amount:
+          type: number
+          nullable: true
+        rate:
+          type: number
+        effective_from:
+          type: string
+          format: date
+        effective_to:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    SocialContribution:
+      type: object
+      description: "ATTENTION (voir issue trackee dans ce depot) : SocialContributionResource expose employee_rate/employer_rate/is_active mais le modele SocialContribution n'a que rate (unique, selon type=employee|employer) et pas de colonne is_active ; ces trois champs sont donc toujours null en pratique tant que la Resource n'est pas corrigee pour refleter les vraies colonnes du modele (rate, type, cap)."
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        country_code:
+          type: string
+        employee_rate:
+          type: number
+          nullable: true
+          description: "Toujours null actuellement, bug connu de SocialContributionResource"
+        employer_rate:
+          type: number
+          nullable: true
+          description: "Toujours null actuellement, bug connu de SocialContributionResource"
+        cap:
+          type: number
+          nullable: true
+        is_active:
+          type: boolean
+          nullable: true
+          description: "Toujours null actuellement, bug connu de SocialContributionResource (pas de colonne is_active sur le modele)"
+        created_at:
+          type: string
+          format: date-time
+
+    ZktecoDevice:
+      type: object
+      description: "Modele Eloquent expose directement (pas de Resource) par ZktecoController."
+      properties:
+        id: { type: integer }
+        company_id: { type: string }
+        serial_number: { type: string }
+        name: { type: string }
+        ip_address: { type: string, nullable: true }
+        port: { type: integer, nullable: true }
+        protocol: { type: string, enum: [tcp, udp, cloud_api], nullable: true }
+        location_label: { type: string, nullable: true }
+        status: { type: string, enum: [online, offline, maintenance] }
+        model: { type: string, nullable: true }
+        firmware_version: { type: string, nullable: true }
+        employee_capacity: { type: integer, nullable: true }
+        fingerprint_capacity: { type: integer, nullable: true }
+        face_capacity: { type: integer, nullable: true }
+        capabilities: { type: object, nullable: true }
+        last_heartbeat_at: { type: string, format: date-time, nullable: true }
+        last_sync_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    ZktecoSyncLog:
+      type: object
+      description: "Modele Eloquent expose directement (pas de Resource) par ZktecoController."
+      properties:
+        id: { type: integer }
+        zkteco_device_id: { type: integer }
+        direction: { type: string, description: "push ou pull" }
+        sync_type: { type: string, description: "attendance ou users" }
+        records_count: { type: integer }
+        errors_count: { type: integer }
+        status: { type: string }
+        error_message: { type: string, nullable: true }
+        started_at: { type: string, format: date-time, nullable: true }
+        completed_at: { type: string, format: date-time, nullable: true }
 
     Subscription:
       type: object
