@@ -5,13 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
 
 /// Tableau de bord Smart Attendance — Manager
-///
-/// Affiche :
-/// - Compteurs du jour (sessions détectées, en attente, approuvées, rejetées)
-/// - Bouton vers la liste des sessions à valider
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
   const SmartAttendanceDashboardScreen({super.key});
 
@@ -23,7 +20,7 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
     return MobilePage(
       appBar: MobileTopBar(
         title: 'Smart Attendance',
-        subtitle: 'Pointage GPS — tableau de bord équipe',
+        subtitle: 'Pointage GPS — tableau de bord',
         leading: IconButton(
           tooltip: 'Retour',
           icon: const Icon(Icons.arrow_back_rounded),
@@ -42,11 +39,16 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
       ),
       children: [
         RefreshIndicator(
+          color: AppColors.rh,
+          backgroundColor: MobileSurface.card,
           onRefresh: () async {
             ref.invalidate(smartAttendanceDashboardProvider);
             ref.invalidate(pendingGeoSessionsProvider);
           },
-          child: Column(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            shrinkWrap: true,
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
               // ── Stats du jour ──────────────────────────────────────
               dashAsync.when(
@@ -54,12 +56,12 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
                 loading: () => const Center(
                   child: Padding(
                     padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(color: AppColors.rh),
                   ),
                 ),
                 error: (e, _) => _ErrorCard(message: e.toString()),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               // ── Bouton sessions pending ────────────────────────────
               pendingAsync.when(
@@ -84,7 +86,6 @@ class _StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // API: { today: "2026-07-01", stats: { detected: N, ... }, pending: [...] }
     final counters = stats['stats'] as Map<String, dynamic>? ?? {};
     final detected = counters['detected'] ?? 0;
     final pending = counters['pending_validation'] ?? 0;
@@ -102,35 +103,43 @@ class _StatsGrid extends StatelessWidget {
       children: [
         Text(
           "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textMutedDark,
+          style: AppTypography.subtitle.copyWith(
+            color: MobileSurface.text,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 1.6,
+          childAspectRatio: 1.4,
           children: [
             _StatCard(
               label: 'Détectées',
               value: detected,
               color: AppColors.rh,
+              icon: Icons.radar_outlined,
             ),
             _StatCard(
-                label: 'En attente', value: pending, color: Colors.orange),
+              label: 'En attente',
+              value: pending,
+              color: AppColors.warning,
+              icon: Icons.pending_actions_outlined,
+            ),
             _StatCard(
               label: 'Approuvées',
               value: approved,
-              color: Colors.green,
+              color: AppColors.success,
+              icon: Icons.check_circle_outline,
             ),
             _StatCard(
               label: 'Rejetées',
               value: rejected,
               color: AppColors.danger,
+              icon: Icons.cancel_outlined,
             ),
           ],
         ),
@@ -144,30 +153,35 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    required this.icon,
   });
   final String label;
   final dynamic value;
   final Color color;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.mobileDarkSurface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
+      borderColor: color.withValues(alpha: 0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('$value', style: AppTypography.title.copyWith(color: color)),
-          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('$value', style: AppTypography.title.copyWith(color: color, fontSize: 28)),
+              Icon(icon, color: color.withValues(alpha: 0.8), size: 24),
+            ],
+          ),
+          const Spacer(),
           Text(
             label,
             style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textMutedDark,
+              color: MobileSurface.muted,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -184,19 +198,28 @@ class _PendingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (count == 0) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.mobileDarkSurface,
-          borderRadius: BorderRadius.circular(12),
-        ),
+      return GlassCard(
+        padding: const EdgeInsets.all(20),
+        borderColor: AppColors.success.withValues(alpha: 0.4),
         child: Row(
           children: [
-            const Icon(Icons.check_circle_outline, color: Colors.green),
-            const SizedBox(width: 12),
-            Text(
-              'Aucune session en attente de validation',
-              style: AppTypography.body.copyWith(color: AppColors.textDark),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.check_circle, color: AppColors.success),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                'Aucune session en attente',
+                style: AppTypography.body.copyWith(
+                  color: MobileSurface.text,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
         ),
@@ -205,21 +228,24 @@ class _PendingCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.orange.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
-        ),
+      child: GlassCard(
+        padding: const EdgeInsets.all(20),
+        borderColor: AppColors.warning.withValues(alpha: 0.5),
         child: Row(
           children: [
-            const Icon(
-              Icons.pending_actions_rounded,
-              color: Colors.orange,
-              size: 28,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.rule_folder_outlined,
+                color: AppColors.warning,
+                size: 28,
+              ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,19 +253,21 @@ class _PendingCard extends StatelessWidget {
                   Text(
                     '$count session${count > 1 ? 's' : ''} en attente',
                     style: AppTypography.subtitle.copyWith(
-                      color: Colors.orange,
+                      color: AppColors.warning,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
                     'Appuyez pour valider ou rejeter',
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textMutedDark,
+                      color: MobileSurface.muted,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: Colors.orange),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.warning),
           ],
         ),
       ),
@@ -253,15 +281,20 @@ class _ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.danger.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        'Erreur : $message',
-        style: AppTypography.bodySmall.copyWith(color: AppColors.danger),
+      borderColor: AppColors.danger.withValues(alpha: 0.5),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppColors.danger),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Erreur : $message',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.danger),
+            ),
+          ),
+        ],
       ),
     );
   }

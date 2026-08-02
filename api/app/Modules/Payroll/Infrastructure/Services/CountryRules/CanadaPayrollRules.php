@@ -170,7 +170,7 @@ class CanadaPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'Placeholder: no official Canadian public-holiday calendar is wired in yet, and statutory holidays '.
+        return 'placeholder: no official Canadian public-holiday calendar is wired in yet, and statutory holidays '.
             'differ by province/territory; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
