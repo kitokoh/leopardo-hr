@@ -32,7 +32,7 @@ class AdvancedReportController extends Controller
             abort(403);
         }
 
-        $pipeline = $this->applicantPipelineReader->countByStatus((int) $user->company_id);
+        $pipeline = $this->applicantPipelineReader->countByStatus($user->company_id);
 
         return response()->json(['data' => $pipeline]);
     }

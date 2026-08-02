@@ -48,6 +48,8 @@ import 'package:leopardo_manager/features/smart_attendance/screens/smart_attenda
 import 'package:leopardo_manager/features/smart_attendance/screens/pending_sessions_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
+import 'package:leopardo_manager/features/home/screens/manager_main_shell.dart';
+
 final routerProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
 
@@ -93,6 +95,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // --- Public routes (no bottom nav) ---
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
@@ -101,68 +104,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
-      ),
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-      GoRoute(
-        path: '/modules',
-        builder: (context, state) => const ModulesHubScreen(),
-      ),
-      GoRoute(
-        path: '/absences',
-        builder: (context, state) => const AbsenceListScreen(),
-      ),
-      GoRoute(
-        path: '/salary-advances',
-        builder: (context, state) => const SalaryAdvanceListScreen(),
-      ),
-      GoRoute(
-        path: '/payrolls',
-        builder: (context, state) => const PayrollListScreen(),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationListScreen(),
-      ),
-      GoRoute(
-        path: '/evaluations',
-        builder: (context, state) => const EvaluationListScreen(),
-      ),
-      GoRoute(
-        path: '/attendance',
-        builder: (context, state) => const AttendanceScreen(),
-      ),
-      GoRoute(
-        path: '/history',
-        builder: (context, state) => const HistoryScreen(),
-      ),
-      GoRoute(
-        path: '/me/monthly',
-        builder: (context, state) => const MonthlySummaryScreen(),
-      ),
-      GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
-      GoRoute(
-        path: '/tasks',
-        builder: (context, state) => const TaskListScreen(),
-      ),
-      GoRoute(
-        path: '/modules/rh',
-        builder: (context, state) => const ModulesScreen(),
-      ),
-      GoRoute(
-        path: '/cabinet',
-        builder: (context, state) => const CabinetScreen(),
-      ),
-      GoRoute(
-        path: '/cabinet/:folderId',
-        builder: (context, state) {
-          final folderId = int.parse(state.pathParameters['folderId']!);
-          final folderName = state.extra as String?;
-          return CabinetScreen(folderId: folderId, folderName: folderName);
-        },
-      ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: '/user-register',
@@ -180,78 +121,147 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/company-request',
         builder: (context, state) => const CompanyRequestScreen(),
       ),
-      GoRoute(
-        path: '/contracts',
-        builder: (context, state) => const ContractScreen(),
-      ),
-      GoRoute(
-        path: '/training',
-        builder: (context, state) => const TrainingScreen(),
-      ),
-      GoRoute(
-        path: '/expenses',
-        builder: (context, state) => const ExpenseListScreen(),
-      ),
-      GoRoute(
-        path: '/ai-chat',
-        builder: (context, state) => const AiChatScreen(),
-      ),
-      GoRoute(
-        path: '/ai-voice',
-        builder: (context, state) => const AiVoiceScreen(),
-      ),
-      GoRoute(
-        path: '/vehicle-map',
-        builder: (context, state) => const VehicleMapScreen(),
-      ),
-      GoRoute(
-        path: '/approvals',
-        builder: (context, state) => const ApprovalScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding',
-        builder: (context, state) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/organigramme',
-        builder: (context, state) => const OrganigrammeScreen(),
-      ),
-      GoRoute(
-        path: '/schedules',
-        builder: (context, state) => const ScheduleListScreen(),
-      ),
-      GoRoute(
-        path: '/company/branding',
-        builder: (context, state) => const CompanyBrandingScreen(),
-      ),
-      GoRoute(
-        path: '/manager/dashboard',
-        builder: (context, state) => const ManagerPlaceholderScreen(
-          title: 'Tableau de bord manager',
-          description:
-              'Emplacement reserve au cockpit equipe, KPI RH et priorites du jour.',
-        ),
-      ),
-      GoRoute(
-        path: '/manager/attendance',
-        builder: (context, state) => const ManagerAttendanceMonitoringScreen(),
-      ),
-      GoRoute(
-        path: '/manager/anomalies',
-        builder: (context, state) => const ManagerAnomaliesScreen(),
-      ),
-      GoRoute(
-        path: '/manager/corrections',
-        builder: (context, state) => const ManagerCorrectionsScreen(),
-      ),
-      // ── Smart Attendance ──────────────────────────────────────────
-      GoRoute(
-        path: '/smart-attendance',
-        builder: (context, state) => const SmartAttendanceDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/smart-attendance/pending',
-        builder: (context, state) => const PendingGeoSessionsScreen(),
+
+      // --- Authenticated routes with bottom nav ---
+      ShellRoute(
+        builder: (context, state, child) => ManagerMainShell(child: child),
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/modules',
+            builder: (context, state) => const ModulesHubScreen(),
+          ),
+          GoRoute(
+            path: '/absences',
+            builder: (context, state) => const AbsenceListScreen(),
+          ),
+          GoRoute(
+            path: '/salary-advances',
+            builder: (context, state) => const SalaryAdvanceListScreen(),
+          ),
+          GoRoute(
+            path: '/payrolls',
+            builder: (context, state) => const PayrollListScreen(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) => const NotificationListScreen(),
+          ),
+          GoRoute(
+            path: '/evaluations',
+            builder: (context, state) => const EvaluationListScreen(),
+          ),
+          GoRoute(
+            path: '/attendance',
+            builder: (context, state) => const AttendanceScreen(),
+          ),
+          GoRoute(
+            path: '/history',
+            builder: (context, state) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: '/me/monthly',
+            builder: (context, state) => const MonthlySummaryScreen(),
+          ),
+          GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
+          GoRoute(
+            path: '/tasks',
+            builder: (context, state) => const TaskListScreen(),
+          ),
+          GoRoute(
+            path: '/modules/rh',
+            builder: (context, state) => const ModulesScreen(),
+          ),
+          GoRoute(
+            path: '/cabinet',
+            builder: (context, state) => const CabinetScreen(),
+          ),
+          GoRoute(
+            path: '/cabinet/:folderId',
+            builder: (context, state) {
+              final folderId = int.parse(state.pathParameters['folderId']!);
+              final folderName = state.extra as String?;
+              return CabinetScreen(folderId: folderId, folderName: folderName);
+            },
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/contracts',
+            builder: (context, state) => const ContractScreen(),
+          ),
+          GoRoute(
+            path: '/training',
+            builder: (context, state) => const TrainingScreen(),
+          ),
+          GoRoute(
+            path: '/expenses',
+            builder: (context, state) => const ExpenseListScreen(),
+          ),
+          GoRoute(
+            path: '/ai-chat',
+            builder: (context, state) => const AiChatScreen(),
+          ),
+          GoRoute(
+            path: '/ai-voice',
+            builder: (context, state) => const AiVoiceScreen(),
+          ),
+          GoRoute(
+            path: '/vehicle-map',
+            builder: (context, state) => const VehicleMapScreen(),
+          ),
+          GoRoute(
+            path: '/approvals',
+            builder: (context, state) => const ApprovalScreen(),
+          ),
+          GoRoute(
+            path: '/onboarding',
+            builder: (context, state) => const OnboardingScreen(),
+          ),
+          GoRoute(
+            path: '/organigramme',
+            builder: (context, state) => const OrganigrammeScreen(),
+          ),
+          GoRoute(
+            path: '/schedules',
+            builder: (context, state) => const ScheduleListScreen(),
+          ),
+          GoRoute(
+            path: '/company/branding',
+            builder: (context, state) => const CompanyBrandingScreen(),
+          ),
+          GoRoute(
+            path: '/manager/dashboard',
+            builder: (context, state) => const ManagerPlaceholderScreen(
+              title: 'Tableau de bord manager',
+              description:
+                  'Emplacement reserve au cockpit equipe, KPI RH et priorites du jour.',
+            ),
+          ),
+          GoRoute(
+            path: '/manager/attendance',
+            builder: (context, state) => const ManagerAttendanceMonitoringScreen(),
+          ),
+          GoRoute(
+            path: '/manager/anomalies',
+            builder: (context, state) => const ManagerAnomaliesScreen(),
+          ),
+          GoRoute(
+            path: '/manager/corrections',
+            builder: (context, state) => const ManagerCorrectionsScreen(),
+          ),
+          // ── Smart Attendance ──────────────────────────────────────────
+          GoRoute(
+            path: '/smart-attendance',
+            builder: (context, state) => const SmartAttendanceDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/smart-attendance/pending',
+            builder: (context, state) => const PendingGeoSessionsScreen(),
+          ),
+        ],
       ),
     ],
   );
