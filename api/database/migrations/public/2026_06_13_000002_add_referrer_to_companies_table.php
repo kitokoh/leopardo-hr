@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('companies', 'referrer_partner_id')) {
+            return;
+        }
+
         Schema::table('companies', function (Blueprint $table) {
             $table->unsignedBigInteger('referrer_partner_id')->nullable()->after('plan_id');
 
