@@ -12,6 +12,7 @@ use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;
+use App\Modules\Notification\Infrastructure\Services\Providers\MailMessageProvider;
 use App\Modules\Notification\Infrastructure\Services\Providers\WhatsappCloudApiMessageProvider;
 use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
