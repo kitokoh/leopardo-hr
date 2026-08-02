@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +52,7 @@ class TrainingScreen extends ConsumerWidget {
                   itemCount: enrollments.length,
                   itemBuilder: (context, index) {
                     final enrollment = enrollments[index];
-                    return Card(
+                    return GlassCard(
                       color: AppColors.cardDark,
                       margin: const EdgeInsets.only(bottom: 12),
                       child: Padding(
@@ -174,3 +175,4 @@ class _StatusChip extends StatelessWidget {
     );
   }
 }
+

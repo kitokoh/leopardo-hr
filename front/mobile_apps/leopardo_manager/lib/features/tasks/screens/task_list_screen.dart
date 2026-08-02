@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -61,7 +62,7 @@ class TaskListScreen extends ConsumerWidget {
             return ListView.builder(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
               itemCount: tasks.length,
-              itemBuilder: (_, index) => _TaskCard(task: tasks[index]),
+              itemBuilder: (_, index) => _TaskGlassCard(task: tasks[index]),
             );
           },
         ),
@@ -83,7 +84,7 @@ class TaskListScreen extends ConsumerWidget {
 }
 
 class _TaskCard extends StatelessWidget {
-  const _TaskCard({required this.task});
+  const _TaskGlassCard({required this.task});
 
   final Task task;
 
@@ -94,7 +95,7 @@ class _TaskCard extends StatelessWidget {
         ? 'Aujourd hui'
         : DateFormat('d MMM', 'fr_FR').format(task.dueDate!);
 
-    return MobileListCard(
+    return MobileListGlassCard(
       icon: task.isDone ? Icons.task_alt_rounded : Icons.radio_button_unchecked,
       iconColor: task.isDone ? AppColors.rh : color,
       title: task.title,
@@ -506,3 +507,4 @@ class _TaskTemplate {
   final String priority;
   final int estimatedMinutes;
 }
+

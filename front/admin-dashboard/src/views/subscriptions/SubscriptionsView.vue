@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -18,7 +18,7 @@
       <StatsCard title="MRR Portefeuille" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
       <StatsCard title="Abonnements Actifs" :value="subscriptionMetrics.active" icon="CheckBadgeIcon" color="green" />
       <StatsCard title="Retards Paiement" :value="subscriptionMetrics.past_due" icon="ClockIcon" color="yellow" />
-      <StatsCard title="Impayés Totaux" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="ExclamationCircleIcon" color="red" />
+      <StatsCard title="ImpayÃ©s Totaux" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="ExclamationCircleIcon" color="red" />
     </div>
 
     <div class="grid grid-cols-1 gap-8 xl:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
@@ -29,7 +29,7 @@
             <Squares2X2Icon class="h-5 w-5 text-brand-500" />
             Catalogue des Offres
           </h2>
-          <p class="mt-1 text-sm font-medium text-slate-500">Source de vérité API pour les quotas et fonctionnalités.</p>
+          <p class="mt-1 text-sm font-medium text-slate-500">Source de vÃ©ritÃ© API pour les quotas et fonctionnalitÃ©s.</p>
         </div>
 
         <div v-if="isLoading && plans.length === 0" class="flex h-64 items-center justify-center">
@@ -40,13 +40,13 @@
           <article
             v-for="plan in plans"
             :key="plan.id"
-            class="group relative flex flex-col rounded-3xl border border-slate-200/60 bg-white/50 backdrop-blur-md p-6 shadow-sm transition-all hover:shadow-glass-lg hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-900/40 overflow-hidden"
+            class="group relative flex flex-col rounded-3xl border border-slate-200/60 glass-card/50 backdrop-blur-md p-6 shadow-sm transition-all hover:shadow-glass-lg hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-900/40 overflow-hidden"
           >
             <div class="flex items-start justify-between gap-3 relative z-10">
               <div>
                 <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{{ plan.name }}</h3>
                 <p class="mt-1 text-sm font-bold text-slate-500">
-                  {{ plan.max_employees || 'Illimité' }} employés · {{ plan.trial_days }}j essai
+                  {{ plan.max_employees || 'IllimitÃ©' }} employÃ©s Â· {{ plan.trial_days }}j essai
                 </p>
               </div>
               <span :class="['rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border', plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200']">
@@ -58,7 +58,7 @@
               <span class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ formatCurrency(plan.price_monthly) }}</span>
               <span class="text-sm font-bold text-slate-500">/ mois</span>
             </div>
-            <p class="mt-1 text-xs font-bold text-brand-600/70 uppercase tracking-widest">{{ formatCurrency(plan.price_yearly) }} facturé annuellement</p>
+            <p class="mt-1 text-xs font-bold text-brand-600/70 uppercase tracking-widest">{{ formatCurrency(plan.price_yearly) }} facturÃ© annuellement</p>
 
             <div class="mt-6 flex flex-wrap gap-2 relative z-10">
               <span
@@ -80,12 +80,12 @@
       <section class="space-y-6">
         <div class="card">
           <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-800/50 dark:bg-slate-800/30">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Santé Commerciale</h2>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">SantÃ© Commerciale</h2>
           </div>
           <div class="p-6">
             <dl class="space-y-4">
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">ARR Estimé</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">ARR EstimÃ©</dt>
                 <dd class="text-sm font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.arr, revenue.currency) }}</dd>
               </div>
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -93,11 +93,11 @@
                 <dd class="text-sm font-black text-emerald-600">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
               </div>
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Total Abonnés</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Total AbonnÃ©s</dt>
                 <dd class="text-sm font-black text-slate-900 dark:text-white">{{ subscriptionMetrics.total }}</dd>
               </div>
               <div class="flex items-center justify-between">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Périodes d'essai</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">PÃ©riodes d'essai</dt>
                 <dd class="text-sm font-black text-blue-600">{{ subscriptionMetrics.trial }}</dd>
               </div>
             </dl>
@@ -106,7 +106,7 @@
 
         <div class="card">
           <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-800/50 dark:bg-slate-800/30">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Priorités Rétention</h2>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">PrioritÃ©s RÃ©tention</h2>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800">
             <article v-for="item in priorityClients" :key="item.company.id" class="p-4 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-900/50">
@@ -114,19 +114,19 @@
                 <div class="min-w-0 flex-1">
                   <p class="text-sm font-black text-slate-900 dark:text-white truncate uppercase">{{ item.company.name }}</p>
                   <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    {{ item.plan.name || 'Sans plan' }} · <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ item.risk_level }} risk</span>
+                    {{ item.plan.name || 'Sans plan' }} Â· <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ item.risk_level }} risk</span>
                   </p>
                 </div>
                 <router-link class="shrink-0 rounded-lg bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400 transition-colors" :to="`/companies/${item.company.id}`">
-                  Gérer
+                  GÃ©rer
                 </router-link>
               </div>
               <p v-if="item.next_action" class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
-                <span class="text-brand-500 mr-1">→</span> {{ item.next_action.label }}
+                <span class="text-brand-500 mr-1">â†’</span> {{ item.next_action.label }}
               </p>
             </article>
             <div v-if="priorityClients.length === 0 && !isLoading" class="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Aucun risque immédiat détecté
+              Aucun risque immÃ©diat dÃ©tectÃ©
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ function formatFeatureLabel(feature) {
     rh: 'RH',
     finance: 'Finance',
     ai: 'Leo IA',
-    cameras: 'Vidéo',
+    cameras: 'VidÃ©o',
     tracking: 'Suivi',
     planning: 'Planning',
     training: 'Formations',
@@ -248,3 +248,4 @@ function formatCurrency(value, currency = 'EUR') {
 
 onMounted(loadSubscriptions)
 </script>
+

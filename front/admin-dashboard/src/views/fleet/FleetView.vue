@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <StatsCard title="Vehicules" :value="stats.total" icon="ChartBarIcon" color="blue" />
@@ -13,7 +13,7 @@
         :key="tab.key"
         :class="[
           'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50'
+          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 hover:glass-bg'
         ]"
         @click="activeTab = tab.key"
       >
@@ -21,7 +21,7 @@
       </button>
     </div>
 
-    <div v-if="activeTab === 'map'" class="rounded-lg bg-white shadow">
+    <div v-if="activeTab === 'map'" class="rounded-lg glass-card shadow">
       <div class="border-b border-gray-200 px-6 py-4">
         <h2 class="text-lg font-semibold text-gray-900">Carte des vehicules</h2>
         <p class="text-sm text-gray-500">Position en temps reel des vehicules de la flotte.</p>
@@ -205,3 +205,4 @@ onMounted(async () => {
   if (activeTab.value === 'map') initMap()
 })
 </script>
+

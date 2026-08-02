@@ -1,15 +1,16 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
 
-/// Écran de sélection du mode de pointage préféré pour l'employé.
+/// Ã‰cran de sÃ©lection du mode de pointage prÃ©fÃ©rÃ© pour l'employÃ©.
 ///
-/// Affiché uniquement si l'entreprise n'impose pas de mode forcé.
-/// L'employé peut choisir parmi : GPS Auto / QR Code / Manuel.
+/// AffichÃ© uniquement si l'entreprise n'impose pas de mode forcÃ©.
+/// L'employÃ© peut choisir parmi : GPS Auto / QR Code / Manuel.
 class AttendanceModePickerScreen extends ConsumerStatefulWidget {
-  /// Mode actuellement actif (pour pré-sélectionner)
+  /// Mode actuellement actif (pour prÃ©-sÃ©lectionner)
   final String currentMode;
 
   const AttendanceModePickerScreen({
@@ -24,7 +25,7 @@ class AttendanceModePickerScreen extends ConsumerStatefulWidget {
 
 class _AttendanceModePickerScreenState
     extends ConsumerState<AttendanceModePickerScreen> {
-  // Couleurs de l'app (cohérentes avec AttendanceScreen)
+  // Couleurs de l'app (cohÃ©rentes avec AttendanceScreen)
   static const Color _bg = AppColors.mobileDarkBg;
   static const Color _text = AppColors.mobileDarkText;
   static const Color _muted = AppColors.mobileDarkMuted;
@@ -41,7 +42,7 @@ class _AttendanceModePickerScreenState
     _selectedMode = widget.currentMode;
   }
 
-  /// Liste des modes disponibles avec leur libellé, icône et description.
+  /// Liste des modes disponibles avec leur libellÃ©, icÃ´ne et description.
   List<Map<String, dynamic>> get _modes => [
         {
           'id': 'gps_auto',
@@ -49,9 +50,9 @@ class _AttendanceModePickerScreenState
           'icon': Icons.location_on_rounded,
           'color': AppColors.mobileAccentGreen,
           'description':
-              'Votre présence est détectée automatiquement dès que vous entrez '
+              'Votre prÃ©sence est dÃ©tectÃ©e automatiquement dÃ¨s que vous entrez '
                   'dans la zone de l\'entreprise. Aucune action requise de votre part.',
-          'badge': 'Recommandé',
+          'badge': 'RecommandÃ©',
         },
         {
           'id': 'qr_code',
@@ -59,8 +60,8 @@ class _AttendanceModePickerScreenState
           'icon': Icons.qr_code_scanner_rounded,
           'color': AppColors.mobileAccentPurple,
           'description':
-              'Scannez le QR Code affiché à l\'entrée de l\'entreprise pour '
-                  'pointer votre arrivée et votre départ.',
+              'Scannez le QR Code affichÃ© Ã  l\'entrÃ©e de l\'entreprise pour '
+                  'pointer votre arrivÃ©e et votre dÃ©part.',
           'badge': null,
         },
         {
@@ -69,8 +70,8 @@ class _AttendanceModePickerScreenState
           'icon': Icons.touch_app_rounded,
           'color': _muted,
           'description':
-              'Pointez manuellement en appuyant sur les boutons Arrivée et '
-                  'Départ dans l\'écran de présence.',
+              'Pointez manuellement en appuyant sur les boutons ArrivÃ©e et '
+                  'DÃ©part dans l\'Ã©cran de prÃ©sence.',
           'badge': null,
         },
       ];
@@ -90,14 +91,14 @@ class _AttendanceModePickerScreenState
       if (mounted) {
         // Invalidation du provider pour recharger la config
         ref.invalidate(smartAttendanceConfigProvider);
-        context.pop(true); // Retourner true = succès
+        context.pop(true); // Retourner true = succÃ¨s
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isSaving = false;
           _error =
-              'Impossible de sauvegarder votre préférence. Vérifiez votre connexion.';
+              'Impossible de sauvegarder votre prÃ©fÃ©rence. VÃ©rifiez votre connexion.';
         });
       }
     }
@@ -124,11 +125,11 @@ class _AttendanceModePickerScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // En-tête descriptif
+            // En-tÃªte descriptif
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               child: Text(
-                'Choisissez comment vous souhaitez pointer votre présence chaque jour.',
+                'Choisissez comment vous souhaitez pointer votre prÃ©sence chaque jour.',
                 style: TextStyle(
                   color: _muted,
                   fontSize: 14,
@@ -145,7 +146,7 @@ class _AttendanceModePickerScreenState
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final mode = _modes[index];
-                  return _ModeCard(
+                  return _ModeGlassCard(
                     modeId: mode['id'] as String,
                     label: mode['label'] as String,
                     icon: mode['icon'] as IconData,
@@ -161,7 +162,7 @@ class _AttendanceModePickerScreenState
               ),
             ),
 
-            // Erreur éventuelle
+            // Erreur Ã©ventuelle
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -225,7 +226,7 @@ class _AttendanceModePickerScreenState
   }
 }
 
-/// Carte de sélection d'un mode de pointage.
+/// Carte de sÃ©lection d'un mode de pointage.
 class _ModeCard extends StatelessWidget {
   final String modeId;
   final String label;
@@ -241,7 +242,7 @@ class _ModeCard extends StatelessWidget {
   static const Color _muted = AppColors.mobileDarkMuted;
   static const Color _border = AppColors.mobileDarkBorder;
 
-  const _ModeCard({
+  const _ModeGlassCard({
     required this.modeId,
     required this.label,
     required this.icon,
@@ -270,7 +271,7 @@ class _ModeCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icône du mode
+            // IcÃ´ne du mode
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -330,7 +331,7 @@ class _ModeCard extends StatelessWidget {
               ),
             ),
 
-            // Indicateur de sélection
+            // Indicateur de sÃ©lection
             const SizedBox(width: 8),
             Icon(
               isSelected
@@ -345,3 +346,4 @@ class _ModeCard extends StatelessWidget {
     );
   }
 }
+

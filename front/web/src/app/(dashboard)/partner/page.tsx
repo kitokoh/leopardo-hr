@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api-client';
@@ -106,9 +106,9 @@ export default function PartnerDashboard() {
   if (status === 'not_applied') {
     return (
       <div className="mx-auto max-w-2xl">
-        <div className="rounded-3xl border border-brand-100 bg-white p-8 text-center shadow-premium">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-50">
-            <Users className="h-10 w-10 text-brand-600" aria-hidden="true" />
+        <div className="rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-premium">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
+            <Users className="h-10 w-10 text-emerald-600" aria-hidden="true" />
           </div>
           <h1 className="mb-4 text-3xl font-black text-slate-950">Devenir Partenaire</h1>
           <p className="mb-8 leading-relaxed text-slate-600">
@@ -118,13 +118,13 @@ export default function PartnerDashboard() {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleApply('individual')}
-              className="rounded-2xl bg-brand-600 px-8 py-4 font-bold text-white transition-all hover:bg-brand-700"
+              className="rounded-2xl bg-emerald-600 px-8 py-4 font-bold text-white transition-all hover:bg-emerald-700"
             >
               Postuler en tant qu&apos;Individuel
             </button>
             <button
               onClick={() => handleApply('agency')}
-              className="rounded-2xl border border-brand-600 px-8 py-4 font-bold text-brand-600 transition-all hover:bg-brand-50"
+              className="rounded-2xl border border-emerald-600 px-8 py-4 font-bold text-emerald-600 transition-all hover:bg-emerald-50"
             >
               Postuler en tant qu&apos;Agence
             </button>
@@ -151,11 +151,11 @@ export default function PartnerDashboard() {
   return (
     <ModulePageShell
       title="Dashboard Partenaire"
-      subtitle="Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+      subtitle="Suivez vos conversions et vos commissions Leopardo RH â€” statut partenaire actif."
       accentClassName="bg-gradient-to-br from-brand-500/10 via-white to-white"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <MetricCard label="Conversions" value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-brand-600 bg-brand-50" />
+        <MetricCard label="Conversions" value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-emerald-600 bg-emerald-50" />
         <MetricCard label="Gains Totaux" value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' \u20ac'} icon={Coins} accent="text-emerald-600 bg-emerald-50" />
         <MetricCard label="En attente" value={((data?.stats?.pending_approval || 0) / 100).toFixed(2) + ' \u20ac'} icon={Clock3} accent="text-amber-600 bg-amber-50" />
         <MetricCard label="Solde Retirable" value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' \u20ac'} icon={Wallet} accent="text-security-dark bg-security-light" />
@@ -169,7 +169,7 @@ export default function PartnerDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-app-border bg-slate-50/50">
+                <tr className="border-b border-app-border bg-transparent/50">
                   <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Tenant ID</th>
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Date</th>
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
@@ -178,7 +178,7 @@ export default function PartnerDashboard() {
               </thead>
               <tbody className="divide-y divide-app-border">
                 {data?.recent_commissions?.map(comm => (
-                  <tr key={comm.id} className="transition-colors hover:bg-slate-50/60">
+                  <tr key={comm.id} className="transition-colors hover:bg-transparent/60">
                     <td className="px-6 py-4 font-mono text-sm font-bold text-slate-950">{comm.company_id.substring(0, 8)}...</td>
                     <td className="px-4 py-4 text-sm text-slate-500">{new Date(comm.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-4">
@@ -222,7 +222,7 @@ export default function PartnerDashboard() {
             </div>
           </section>
 
-          <section className="rounded-3xl bg-brand-600 p-6 text-white shadow-lg shadow-brand-500/20">
+          <section className="rounded-3xl bg-emerald-600 p-6 text-white shadow-lg shadow-brand-500/20">
             <div className="mb-4 flex items-center gap-2 opacity-90">
               <Link2 className="h-4 w-4" aria-hidden="true" />
               <h3 className="text-xs font-bold uppercase tracking-widest">Lien de parrainage</h3>
@@ -233,7 +233,7 @@ export default function PartnerDashboard() {
             <button
               onClick={handleCopyLink}
               disabled={!referralLink}
-              className="w-full rounded-xl bg-white py-2 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-50 disabled:opacity-50"
+              className="w-full rounded-xl bg-white py-2 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-50"
             >
               {copied ? 'Copie !' : 'Copier mon lien'}
             </button>
@@ -255,3 +255,4 @@ function MetricCard({ label, value, icon: Icon, accent }: { label: string; value
     </div>
   );
 }
+

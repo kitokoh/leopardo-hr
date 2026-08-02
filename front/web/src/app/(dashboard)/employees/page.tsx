@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { ApiError, apiFetch } from '@/lib/api-client';
@@ -64,7 +64,7 @@ export default function EmployeesPage() {
   return (
     <ModulePageShell
       title="Equipe"
-      subtitle="Vue manager branchee a l’API RH: liste des collaborateurs, statut et points d’entree essentiels."
+      subtitle="Vue manager branchee a lâ€™API RH: liste des collaborateurs, statut et points dâ€™entree essentiels."
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {error ? (
@@ -121,3 +121,4 @@ export default function EmployeesPage() {
     </ModulePageShell>
   );
 }
+

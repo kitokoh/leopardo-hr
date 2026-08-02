@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -199,7 +199,7 @@ export default function MarketingPage() {
   }), [posts]);
 
   const statCards = [
-    { label: 'Publications', value: stats.total, icon: Megaphone, accent: 'text-brand-600 bg-brand-50' },
+    { label: 'Publications', value: stats.total, icon: Megaphone, accent: 'text-emerald-600 bg-emerald-50' },
     { label: 'Planifiees', value: stats.scheduled, icon: Clock, accent: 'text-info bg-info/10' },
     { label: 'Publiees', value: stats.published, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
     { label: 'Echecs', value: stats.failed, icon: AlertTriangle, accent: 'text-red-500 bg-red-50' },
@@ -229,7 +229,7 @@ export default function MarketingPage() {
               <div>
                 <p className="text-sm font-bold text-slate-950">{account.display_name ?? 'Compte social'}</p>
                 <p className="text-xs text-slate-500">
-                  Fournisseur : {account.provider} · Connecte depuis {account.connected_at ?? 'date inconnue'}
+                  Fournisseur : {account.provider} Â· Connecte depuis {account.connected_at ?? 'date inconnue'}
                 </p>
                 {account.connected_platforms && account.connected_platforms.length > 0 ? (
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -251,7 +251,7 @@ export default function MarketingPage() {
                 <button
                   onClick={handleDisconnect}
                   disabled={disconnecting}
-                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
                 >
                   <Unlink className="h-4 w-4" /> {disconnecting ? 'Deconnexion...' : 'Deconnecter'}
                 </button>
@@ -266,16 +266,16 @@ export default function MarketingPage() {
                 <input
                   id="marketing-display-name"
                   type="text"
-                  placeholder="Ex: Leopardo RH — Reseaux sociaux"
+                  placeholder="Ex: Leopardo RH â€” Reseaux sociaux"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <button
                 onClick={handleConnect}
                 disabled={!displayName.trim() || connecting}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
               >
                 <Link2 className="h-4 w-4" /> {connecting ? 'Connexion...' : 'Connecter mon compte'}
               </button>
@@ -318,7 +318,7 @@ export default function MarketingPage() {
                 onChange={(e) => setContent(e.target.value)}
                 rows={3}
                 maxLength={5000}
-                className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">Plateformes cibles</p>
@@ -332,8 +332,8 @@ export default function MarketingPage() {
                         onClick={() => togglePlatform(platform.value)}
                         className={`rounded-full border px-3 py-1.5 text-xs font-bold transition ${
                           active
-                            ? 'border-brand-500 bg-brand-50 text-brand-700'
-                            : 'border-app-border text-slate-600 hover:bg-slate-50'
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                            : 'border-app-border text-slate-600 hover:bg-transparent'
                         }`}
                       >
                         {platform.label}
@@ -352,13 +352,13 @@ export default function MarketingPage() {
                     type="datetime-local"
                     value={scheduledAt}
                     onChange={(e) => setScheduledAt(e.target.value)}
-                    className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
                 <button
                   onClick={handleCreatePost}
                   disabled={!content.trim() || selectedPlatforms.length === 0 || submitting}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
                 >
                   <Plus className="h-4 w-4" /> {submitting ? 'Creation...' : (scheduledAt ? 'Planifier' : 'Enregistrer en brouillon')}
                 </button>
@@ -405,7 +405,7 @@ export default function MarketingPage() {
                             onClick={() => handlePublishNow(post)}
                             disabled={pendingActionId === post.id}
                             title="Publier maintenant"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600 disabled:opacity-50"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600 disabled:opacity-50"
                           >
                             <Send className="h-4 w-4" />
                           </button>
@@ -429,7 +429,7 @@ export default function MarketingPage() {
                 <button
                   onClick={() => void loadPosts(page + 1, true)}
                   disabled={postsLoading}
-                  className="rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                  className="rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
                 >
                   Charger plus
                 </button>
@@ -441,3 +441,4 @@ export default function MarketingPage() {
     </ModulePageShell>
   );
 }
+

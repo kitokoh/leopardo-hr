@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -190,18 +191,18 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                       'rejected' => AppColors.danger,
                       _ => AppColors.warning,
                     };
-                    return Card(
+                    return GlassCard(
                       color: AppColors.cardDark,
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
                         title: Text(
-                          '${claim.category} — ${claim.amount.toStringAsFixed(2)} ${claim.currency}',
+                          '${claim.category} â€” ${claim.amount.toStringAsFixed(2)} ${claim.currency}',
                           style: AppTypography.subtitle.copyWith(
                             color: AppColors.textDark,
                           ),
                         ),
                         subtitle: Text(
-                          '${claim.date}${claim.description != null ? " • ${claim.description}" : ""}',
+                          '${claim.date}${claim.description != null ? " â€¢ ${claim.description}" : ""}',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMutedDark,
                           ),
@@ -256,3 +257,4 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
     );
   }
 }
+

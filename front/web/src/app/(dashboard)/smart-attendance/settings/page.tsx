@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 const emptySubscribe = () => () => {};
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type ForcedMode = 'gps_auto' | 'qr_code' | 'manual' | null;
 
@@ -33,7 +33,7 @@ type FormState = {
   radius: string;
 };
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function SmartAttendanceSettingsPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
@@ -131,7 +131,7 @@ export default function SmartAttendanceSettingsPage() {
 
       {/* Current mode */}
       {currentSettings && !loading ? (
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        <section className="rounded-2xl border border-slate-200 bg-transparent p-5">
           <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.currentModeLabel}</p>
           <p className="mt-1 text-lg font-black text-slate-900">
             {modeLabels[currentSettings.forced_mode ?? ''] ?? (currentSettings.forced_mode ?? labels.modeFree)}
@@ -185,7 +185,7 @@ export default function SmartAttendanceSettingsPage() {
                 {labels.modeFieldLabel}
               </label>
               <select
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
                 value={form.forced_mode}
                 onChange={(e) => setForm((f) => ({ ...f, forced_mode: e.target.value }))}
                 disabled={saving}
@@ -201,7 +201,7 @@ export default function SmartAttendanceSettingsPage() {
             </div>
 
             {/* GPS toggle */}
-            <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-transparent px-4 py-3">
               <div>
                 <p className="text-sm font-bold text-slate-900">{labels.gpsToggleTitle}</p>
                 <p className="text-xs text-slate-500">{labels.gpsToggleSubtitle}</p>
@@ -288,7 +288,7 @@ export default function SmartAttendanceSettingsPage() {
                 type="button"
                 onClick={() => void loadSettings()}
                 disabled={saving || loading}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
               >
                 {labels.cancel}
               </button>
@@ -299,3 +299,4 @@ export default function SmartAttendanceSettingsPage() {
     </ModulePageShell>
   );
 }
+

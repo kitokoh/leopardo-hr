@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -18,7 +19,7 @@ class EvaluationListScreen extends ConsumerWidget {
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Mes Évaluations',
+          'Mes Ã‰valuations',
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
@@ -31,21 +32,21 @@ class EvaluationListScreen extends ConsumerWidget {
         data: (evaluations) => evaluations.isEmpty
             ? const EmptyState(
                 icon: Icons.assignment_turned_in,
-                title: 'Aucune évaluation',
+                title: 'Aucune Ã©valuation',
                 description:
-                    'Vous n\'avez pas encore d\'évaluation enregistrée.',
+                    'Vous n\'avez pas encore d\'Ã©valuation enregistrÃ©e.',
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(20),
                 itemCount: evaluations.length,
                 itemBuilder: (context, index) {
                   final evaluation = evaluations[index];
-                  return Card(
+                  return GlassCard(
                     color: AppColors.cardDark,
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       title: Text(
-                        'Période: ${evaluation.period}',
+                        'PÃ©riode: ${evaluation.period}',
                         style: AppTypography.subtitle.copyWith(
                           color: AppColors.textDark,
                         ),
@@ -90,3 +91,4 @@ class EvaluationListScreen extends ConsumerWidget {
     }
   }
 }
+

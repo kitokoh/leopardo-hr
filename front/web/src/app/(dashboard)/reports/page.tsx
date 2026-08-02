@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
@@ -92,7 +92,7 @@ const reports: ReportConfig[] = [
     title: 'Suivi Formations',
     description: 'Taux de participation et completion des formations.',
     icon: TrendingUp,
-    color: 'text-brand-600 bg-brand-50',
+    color: 'text-emerald-600 bg-emerald-50',
     endpoint: '/reports/training-completion',
     params: [],
   },
@@ -192,7 +192,7 @@ export default function ReportsPage() {
                     type={p.type}
                     value={params[report.id]?.[p.key] || ''}
                     onChange={e => updateParam(report.id, p.key, e.target.value)}
-                    className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               ))}
@@ -201,7 +201,7 @@ export default function ReportsPage() {
             <button
               onClick={() => generateReport(report)}
               disabled={generating === report.id}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
             >
               {generating === report.id ? (
                 <>
@@ -227,3 +227,4 @@ export default function ReportsPage() {
     </ModulePageShell>
   );
 }
+

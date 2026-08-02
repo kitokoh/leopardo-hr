@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Portefeuille Clients</h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-          Adoption, risque, revenus récurrents et prochaine action par entreprise.
+          Adoption, risque, revenus rÃ©currents et prochaine action par entreprise.
         </p>
       </div>
       <div class="flex flex-wrap gap-3">
@@ -30,8 +30,8 @@
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
       <div class="flex flex-col gap-4 border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Répertoire des Entreprises</h2>
-          <p class="text-sm text-slate-500">Liste classée par score de santé et priorité commerciale.</p>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">RÃ©pertoire des Entreprises</h2>
+          <p class="text-sm text-slate-500">Liste classÃ©e par score de santÃ© et prioritÃ© commerciale.</p>
         </div>
         <div class="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
           <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30">
@@ -56,7 +56,7 @@
 
       <div v-else-if="errorMessage" class="m-6 rounded-2xl bg-red-50 p-8 text-center border border-red-100 dark:bg-red-950/20 dark:border-red-900/30">
         <p class="text-sm font-bold text-red-600">{{ errorMessage }}</p>
-        <button class="btn-secondary mt-4" @click="fetchPortfolio">Réessayer</button>
+        <button class="btn-secondary mt-4" @click="fetchPortfolio">RÃ©essayer</button>
       </div>
 
       <div v-else class="overflow-x-auto">
@@ -65,9 +65,9 @@
             <tr>
               <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Entreprise</th>
               <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Plan & MRR</th>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Santé Opér.</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">SantÃ© OpÃ©r.</th>
               <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Pointage (30j)</th>
-              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Action Recommandée</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Action RecommandÃ©e</th>
               <th class="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Gestion</th>
             </tr>
           </thead>
@@ -81,7 +81,7 @@
                   <div>
                     <div class="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{{ item.company.name }}</div>
                     <div class="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest">
-                      {{ item.company.status }} · {{ item.company.country }}
+                      {{ item.company.status }} Â· {{ item.company.country }}
                     </div>
                   </div>
                 </div>
@@ -127,10 +127,10 @@
         aria-modal="true"
         aria-labelledby="create-client-title"
       >
-        <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-0">
-          <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 bg-white/90 px-6 py-5 dark:border-slate-800 dark:bg-slate-950/90 backdrop-blur-md">
+        <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 glass-card shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-0">
+          <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 glass-card/90 px-6 py-5 dark:border-slate-800 dark:bg-slate-950/90 backdrop-blur-md">
             <div>
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">Système</p>
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">SystÃ¨me</p>
               <h2 id="create-client-title" class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
                 Provisionnement Client
               </h2>
@@ -163,7 +163,7 @@
                 </select>
               </div>
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Ville de déploiement *</label>
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Ville de dÃ©ploiement *</label>
                 <input v-model.trim="createForm.city" class="form-input" required maxlength="100" placeholder="Alger" />
               </div>
             </div>
@@ -180,7 +180,7 @@
                   <p class="mt-1 text-sm font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.timezone }}</p>
                 </div>
                 <div>
-                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">Langue Défaut</p>
+                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">Langue DÃ©faut</p>
                   <p class="mt-1 text-sm font-black text-slate-900 dark:text-white uppercase">{{ selectedCountryDefault.language }}</p>
                 </div>
               </div>
@@ -188,7 +188,7 @@
 
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 pt-4">
               <div class="space-y-1.5">
-                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Prénom Manager *</label>
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">PrÃ©nom Manager *</label>
                 <input v-model.trim="createForm.manager_first_name" class="form-input" required maxlength="100" placeholder="Amina" />
               </div>
               <div class="space-y-1.5">
@@ -206,14 +206,14 @@
                 v-model="activateImmediately"
                 :class="[activateImmediately ? 'bg-brand-600' : 'bg-slate-200 dark:bg-slate-700', 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950']"
               >
-                <span class="sr-only">Activer immédiatement</span>
+                <span class="sr-only">Activer immÃ©diatement</span>
                 <span
                   aria-hidden="true"
-                  :class="[activateImmediately ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"
+                  :class="[activateImmediately ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full glass-card shadow ring-0 transition duration-200 ease-in-out']"
                 />
               </Switch>
               <div>
-                <span class="block text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Activer le client immédiatement</span>
+                <span class="block text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Activer le client immÃ©diatement</span>
                 <span class="mt-0.5 block text-xs font-medium text-slate-500">Sinon le client reste en essai (trial).</span>
               </div>
             </div>
@@ -231,7 +231,7 @@
                 <PlusIcon v-if="!isCreating" class="mr-2 h-4 w-4" />
                 <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 <!-- Creer le client -->
-                {{ isCreating ? 'Provisionnement...' : 'Créer le client' }}
+                {{ isCreating ? 'Provisionnement...' : 'CrÃ©er le client' }}
               </button>
             </div>
           </form>
@@ -389,7 +389,7 @@ async function submitCreateClient() {
     const company = response.data?.data?.company
 
     showCreateModal.value = false
-    toast.success('Client créé et invitation manager envoyée.')
+    toast.success('Client crÃ©Ã© et invitation manager envoyÃ©e.')
     await fetchPortfolio()
 
     if (company?.id) {
@@ -429,6 +429,7 @@ onMounted(() => {
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 bg-white/50 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400;
+  @apply block w-full rounded-2xl border border-slate-200 glass-card/50 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400;
 }
 </style>
+

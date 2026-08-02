@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -8,7 +8,7 @@ import { getPricingPlans } from '../data/pricing'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
 function showsCurrency(price: string) {
-  return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض'].includes(price)
+  return !['Sur devis', 'Custom', 'Teklif', 'Ø­Ø³Ø¨ Ø§Ù„Ø¹Ø±Ø¶'].includes(price)
 }
 
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
@@ -25,14 +25,14 @@ const savingsLabel: Record<string, string> = {
   fr: 'Economisez 20%',
   en: 'Save 20%',
   tr: '%20 tasarruf',
-  ar: 'وفّر 20%',
+  ar: 'ÙˆÙÙ‘Ø± 20%',
 }
 
 const billingToggle: Record<string, { monthly: string; annual: string }> = {
   fr: { monthly: 'Mensuel', annual: 'Annuel' },
   en: { monthly: 'Monthly', annual: 'Annual' },
   tr: { monthly: 'Aylik', annual: 'Yillik' },
-  ar: { monthly: 'شهري', annual: 'سنوي' },
+  ar: { monthly: 'Ø´Ù‡Ø±ÙŠ', annual: 'Ø³Ù†ÙˆÙŠ' },
 }
 
 export function PricingSection() {
@@ -177,7 +177,7 @@ export function PricingSection() {
             href="/pricing"
             className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
           >
-            {locale === 'fr' ? 'Voir la comparaison complete' : locale === 'tr' ? 'Tam karsilastirmayi gorun' : locale === 'ar' ? 'عرض المقارنة الكاملة' : 'View full comparison'}
+            {locale === 'fr' ? 'Voir la comparaison complete' : locale === 'tr' ? 'Tam karsilastirmayi gorun' : locale === 'ar' ? 'Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù‚Ø§Ø±Ù†Ø© Ø§Ù„ÙƒØ§Ù…Ù„Ø©' : 'View full comparison'}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -185,3 +185,4 @@ export function PricingSection() {
     </section>
   )
 }
+
