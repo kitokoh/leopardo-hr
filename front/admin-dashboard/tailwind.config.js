@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+﻿/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
@@ -73,17 +73,28 @@ export default {
           900: '#18181b',
           950: '#09090b',
         },
+        surface: {
+          DEFAULT: '#0b1326',
+          bright: '#31394d',
+          variant: '#2d3449',
+          tint: '#4edea3',
+        },
+        'on-surface': {
+          DEFAULT: '#dae2fd',
+          variant: '#bbcabf',
+        },
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          200: '#a7f3d0',
+          300: '#6ee7b7',
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065f46',
+          900: '#064e3b',
+          950: '#022c22',
         },
         gray: {
           50: '#f9fafb',
@@ -139,3 +150,4 @@ export default {
     require('@tailwindcss/forms'),
   ],
 }
+
