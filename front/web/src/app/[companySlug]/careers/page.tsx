@@ -7,6 +7,7 @@ import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import {
+  getPublicCareersCompany,
   getPublicJobPostings,
   CONTRACT_TYPE_LABELS,
   REMOTE_POLICY_LABELS,
@@ -18,27 +19,39 @@ interface CareersPortalPageProps {
 
 export async function generateMetadata({ params }: CareersPortalPageProps): Promise<Metadata> {
   const { companySlug } = await params;
-  const jobs = await getPublicJobPostings(companySlug);
+  const [jobs, company] = await Promise.all([
+    getPublicJobPostings(companySlug),
+    getPublicCareersCompany(companySlug),
+  ]);
 
   if (jobs === null) {
     return { title: 'Portail carrieres introuvable' };
   }
 
+  const displayName = company?.display_name ?? '';
+
   return generateSEOMetadata({
-    title: `Carrieres - ${jobs.length} offre${jobs.length > 1 ? 's' : ''} d'emploi`,
-    description: `Decouvrez les offres d'emploi ouvertes chez cette entreprise et postulez en ligne en quelques minutes.`,
+    title: `Carrieres${displayName ? ` - ${displayName}` : ''} - ${jobs.length} offre${jobs.length > 1 ? 's' : ''} d'emploi`,
+    description: `Decouvrez les offres d'emploi ouvertes chez ${displayName || 'cette entreprise'} et postulez en ligne en quelques minutes.`,
     canonical: `https://leopardo.com/${companySlug}/careers`,
     ogType: 'website',
+    ogImage: company?.logo_url ?? undefined,
   });
 }
 
 export default async function CareersPortalPage({ params }: CareersPortalPageProps) {
   const { companySlug } = await params;
-  const jobs = await getPublicJobPostings(companySlug);
+  const [jobs, company] = await Promise.all([
+    getPublicJobPostings(companySlug),
+    getPublicCareersCompany(companySlug),
+  ]);
 
   if (jobs === null) {
     notFound();
   }
+
+  const brandColor = company?.primary_color ?? '#10B981';
+  const displayName = company?.display_name ?? 'notre equipe';
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
@@ -56,14 +69,31 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
         }}
       />
 
-      <section className="py-20 bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-950/20 dark:to-slate-950">
+      {/* Issue #1330: branding dynamique selon le tenant — logo + couleur
+          principale de l'entreprise cliente, avec repli sur les couleurs
+          Leopardo par defaut si le tenant n'a pas configure de branding. */}
+      <section
+        className="py-20 bg-gradient-to-b to-white dark:to-slate-950"
+        style={{ backgroundImage: `linear-gradient(to bottom, ${brandColor}1A, transparent)` }}
+      >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold uppercase tracking-wide">
+          {company?.logo_url && (
+            // eslint-disable-next-line @next/next/no-img-element -- external, per-tenant logo URL; not part of the Next.js image domain allowlist.
+            <img
+              src={company.logo_url}
+              alt={`Logo ${displayName}`}
+              className="mx-auto mb-4 h-12 w-auto object-contain"
+            />
+          )}
+          <span
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide"
+            style={{ backgroundColor: `${brandColor}1A`, color: brandColor }}
+          >
             <Briefcase className="w-3.5 h-3.5" />
             Carrieres
           </span>
           <h1 className="mt-4 text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
-            Rejoignez notre equipe
+            Rejoignez {displayName}
           </h1>
           <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
             {jobs.length > 0
