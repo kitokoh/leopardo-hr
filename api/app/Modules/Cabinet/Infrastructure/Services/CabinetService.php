@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Cabinet\Infrastructure\Services;
 
 use App\Mail\CabinetShareMail;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Modules\Billing\Infrastructure\Services\WebhookDispatcher;
