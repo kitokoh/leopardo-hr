@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -45,7 +45,7 @@
   --color-ia-light: #ede9fe;
   --color-ia-dark: #5b21b6;
 
-  /* Sémantique */
+  /* SÃ©mantique */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
@@ -81,27 +81,27 @@ html {
 /* Custom Components for Modern Glass aesthetic */
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all duration-200;
+    @apply inline-flex items-center px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200;
   }
 
   .card {
-    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
+    @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
   }
 
   .glass-card {
-    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/20 dark:border-slate-800/50 shadow-glass rounded-3xl;
+    @apply bg-surface-variant/40 dark:bg-surface-variant/40 backdrop-blur-2xl border border-white/10 dark:border-white/10 shadow-glass rounded-3xl;
   }
 
   .glass-effect {
-    @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/20 dark:border-slate-800/50;
+    @apply bg-surface/60 dark:bg-surface/60 backdrop-blur-lg border border-white/10 dark:border-white/10;
   }
 
   .stat-card {
-    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
+    @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
   }
 }
 
@@ -125,3 +125,4 @@ html {
 .dark ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
 }
+
