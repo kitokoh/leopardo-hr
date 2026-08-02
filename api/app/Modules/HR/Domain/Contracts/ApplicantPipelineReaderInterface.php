@@ -22,5 +22,5 @@ interface ApplicantPipelineReaderInterface
      *
      * @return Collection<string, int> keyed by status, value is the count
      */
-    public function countByStatus(int $companyId): Collection;
+    public function countByStatus(string $companyId): Collection;
 }

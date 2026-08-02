@@ -89,7 +89,7 @@ class TurkeyPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'Placeholder: no official Turkish public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'placeholder: no official Turkish public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string
