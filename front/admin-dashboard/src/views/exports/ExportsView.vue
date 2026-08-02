@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       <div
         v-for="report in reportTypes"
         :key="report.key"
-        class="rounded-lg bg-white p-5 shadow ring-1 ring-gray-200"
+        class="rounded-lg glass-card p-5 shadow ring-1 ring-gray-200"
       >
         <div class="flex items-start gap-3">
           <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="rounded-lg bg-white shadow">
+    <div class="rounded-lg glass-card shadow">
       <div class="border-b border-gray-200 px-6 py-4">
         <h2 class="text-lg font-semibold text-gray-900">Rapports RH personnalises</h2>
         <p class="text-sm text-gray-500">Generez des rapports avances avec filtres de periode et departement.</p>
@@ -71,7 +71,7 @@
         <div v-if="hrReportResult" class="mt-6">
           <div class="overflow-x-auto rounded-md border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+              <thead class="glass-bg">
                 <tr>
                   <th v-for="col in hrReportResult.columns" :key="col" class="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                     {{ col }}
@@ -190,3 +190,4 @@ async function fetchHistory() {
 
 onMounted(fetchHistory)
 </script>
+

@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,14 +38,14 @@ class PersonalSpaceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Votre compte est prêt. Vous pouvez maintenant rejoindre une entreprise ou en créer une nouvelle.',
+              'Votre compte est prÃªt. Vous pouvez maintenant rejoindre une entreprise ou en crÃ©er une nouvelle.',
               style: AppTypography.body.copyWith(
                 color: AppColors.textSecondaryFor(context),
               ),
             ),
             const SizedBox(height: 32),
-            _ActionCard(
-              title: 'Créer mon entreprise',
+            _ActionGlassCard(
+              title: 'CrÃ©er mon entreprise',
               description:
                   'Envoyez une demande pour enregistrer votre entreprise sur Leopardo RH.',
               icon: Icons.business_center_outlined,
@@ -52,8 +53,8 @@ class PersonalSpaceScreen extends ConsumerWidget {
               onTap: () => context.push('/company-request'),
             ),
             const SizedBox(height: 16),
-            _ActionCard(
-              title: 'Rejoindre une équipe',
+            _ActionGlassCard(
+              title: 'Rejoindre une Ã©quipe',
               description:
                   'Attendez que votre employeur vous invite via votre email : ${employee?.email}',
               icon: Icons.group_add_outlined,
@@ -82,7 +83,7 @@ class _ActionCard extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _ActionCard({
+  const _ActionGlassCard({
     required this.title,
     required this.description,
     required this.icon,
@@ -144,3 +145,4 @@ class _ActionCard extends StatelessWidget {
     );
   }
 }
+

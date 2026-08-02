@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <StatsCard title="Demandes en attente" :value="stats.pending" icon="ChartBarIcon" color="yellow" />
@@ -14,7 +14,7 @@
         type="button"
         :class="[
           'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50'
+          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 hover:glass-bg'
         ]"
         @click="activeTab = tab.key"
       >
@@ -62,7 +62,7 @@
       @export="exportBalances"
     />
 
-    <div v-else class="rounded-lg bg-white p-6 shadow">
+    <div v-else class="rounded-lg glass-card p-6 shadow">
       <h2 class="mb-4 text-lg font-semibold text-gray-900">
         Politiques de conges
       </h2>
@@ -160,7 +160,7 @@ function formatDays(row) {
 function formatPolicyDetail(policy) {
   const amt = policy.accrual_amount ?? '-'
   const typ = policy.accrual_type ?? '-'
-  const carry = policy.carry_forward ? ' · Report autorise' : ''
+  const carry = policy.carry_forward ? ' Â· Report autorise' : ''
   return `${amt} j (${typ})${carry}`
 }
 
@@ -300,3 +300,4 @@ function exportBalances() {
 
 onMounted(fetchData)
 </script>
+

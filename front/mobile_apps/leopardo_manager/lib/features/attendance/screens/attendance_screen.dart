@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -114,19 +115,19 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 onTap: () => _handlePunch(isCheckedIn),
               ),
               const SizedBox(height: 22),
-              _buildTodayCard(attState),
+              _buildTodayGlassCard(attState),
               if (attState.error != null) ...[
                 const SizedBox(height: 12),
-                _buildNoticeCard(attState.error!, AppColors.danger),
+                _buildNoticeGlassCard(attState.error!, AppColors.danger),
               ] else if (attState.notice != null) ...[
                 const SizedBox(height: 12),
-                _buildNoticeCard(attState.notice!, AppColors.warning),
+                _buildNoticeGlassCard(attState.notice!, AppColors.warning),
               ],
               const SizedBox(height: 24),
               _buildSectionTitle('CETTE SEMAINE'),
               const SizedBox(height: 10),
               if (weekAsync.hasError)
-                _buildNoticeCard(
+                _buildNoticeGlassCard(
                   'Semaine indisponible pour l instant. Le pointage reste utilisable.',
                   AppColors.warning,
                 ),
@@ -413,7 +414,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 
 
-  Widget _buildTodayCard(AttendanceState state) {
+  Widget _buildTodayGlassCard(AttendanceState state) {
     final log = state.todayLog;
     final checkIn = _formatTime(log?.checkIn);
     final checkOut = _formatTime(log?.checkOut);
@@ -547,7 +548,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                           day.isAbsent
                               ? 'Absent'
                               : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
-                                  '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
+                                  '${day.lateMinutes > 0 ? ' Â· +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
                       ],
@@ -658,7 +659,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildNoticeCard(String message, Color color) {
+  Widget _buildNoticeGlassCard(String message, Color color) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1243,3 +1244,4 @@ class AttendanceDaySummary {
     return '${hours}h${mins.toString().padLeft(2, '0')}';
   }
 }
+

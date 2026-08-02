@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,14 +12,14 @@ import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 
 /// Dedicated employee profile screen: photo, identity, role, and quick
 /// language switcher. Reads the current [Employee] straight from
-/// [authProvider] — no mocked data. Follows the ConsumerWidget +
+/// [authProvider] â€” no mocked data. Follows the ConsumerWidget +
 /// FutureProvider pattern already used across `features/settings`.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
-    'ar': 'العربية',
+    'ar': 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
     'tr': 'Turkce',
     'en': 'English',
   };
@@ -47,9 +48,9 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 _ProfileHeader(employee: employee),
                 const SizedBox(height: 20),
-                _ProfileDetailsCard(employee: employee),
+                _ProfileDetailsGlassCard(employee: employee),
                 const SizedBox(height: 20),
-                _ProfileLanguageCard(
+                _ProfileLanguageGlassCard(
                   employee: employee,
                   languageLabels: _languageLabels,
                 ),
@@ -135,7 +136,7 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileDetailsCard extends StatelessWidget {
-  const _ProfileDetailsCard({required this.employee});
+  const _ProfileDetailsGlassCard({required this.employee});
 
   final Employee employee;
 
@@ -228,7 +229,7 @@ class _ProfileInfoRow extends StatelessWidget {
 }
 
 class _ProfileLanguageCard extends ConsumerStatefulWidget {
-  const _ProfileLanguageCard({
+  const _ProfileLanguageGlassCard({
     required this.employee,
     required this.languageLabels,
   });
@@ -320,3 +321,4 @@ class _ProfileLanguageCardState extends ConsumerState<_ProfileLanguageCard> {
     );
   }
 }
+

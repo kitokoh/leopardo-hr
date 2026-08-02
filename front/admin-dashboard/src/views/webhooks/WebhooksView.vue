@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
@@ -65,7 +65,7 @@
     </DataTable>
 
     <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
-      <div class="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+      <div class="w-full max-w-lg rounded-lg glass-card p-6 shadow-xl">
         <h3 class="text-lg font-semibold text-gray-900">{{ editingWebhook ? 'Modifier' : 'Nouveau' }} webhook</h3>
         <form class="mt-4 space-y-4" @submit.prevent="saveWebhook">
           <div>
@@ -92,7 +92,7 @@
             </label>
           </div>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" @click="closeModal">
+            <button type="button" class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:glass-bg" @click="closeModal">
               Annuler
             </button>
             <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50" :disabled="saving">
@@ -204,3 +204,4 @@ async function deleteWebhook(id) {
 
 onMounted(fetchData)
 </script>
+

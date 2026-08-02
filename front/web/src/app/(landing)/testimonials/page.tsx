@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
@@ -9,20 +9,20 @@ const testimonials = [
   {
     name: 'Amina Belkacem',
     role: 'DRH',
-    company: 'TechCorp Algérie',
+    company: 'TechCorp AlgÃ©rie',
     industry: 'Technologie',
-    employees: '120 employés',
-    quote: 'Leopardo RH a transformé notre gestion des pointages. Nous avons réduit de 80% le temps consacré au suivi des présences grâce au module ZKTeco intégré.',
+    employees: '120 employÃ©s',
+    quote: 'Leopardo RH a transformÃ© notre gestion des pointages. Nous avons rÃ©duit de 80% le temps consacrÃ© au suivi des prÃ©sences grÃ¢ce au module ZKTeco intÃ©grÃ©.',
     rating: 5,
     avatar: 'AB',
   },
   {
     name: 'Mehdi Ouazzani',
-    role: 'Directeur Général',
+    role: 'Directeur GÃ©nÃ©ral',
     company: 'Atlas Industries',
     industry: 'Manufacture',
-    employees: '350 employés',
-    quote: 'La paie multi-pays nous a permis de gérer 3 filiales (Maroc, Tunisie, France) depuis une seule plateforme. Le ROI a été visible dès le premier mois.',
+    employees: '350 employÃ©s',
+    quote: 'La paie multi-pays nous a permis de gÃ©rer 3 filiales (Maroc, Tunisie, France) depuis une seule plateforme. Le ROI a Ã©tÃ© visible dÃ¨s le premier mois.',
     rating: 5,
     avatar: 'MO',
   },
@@ -30,9 +30,9 @@ const testimonials = [
     name: 'Fatima Zahra Idrissi',
     role: 'Responsable Paie',
     company: 'GreenEnergy SARL',
-    industry: 'Énergie',
-    employees: '85 employés',
-    quote: 'Les bulletins de paie PDF générés automatiquement et les exports SEPA nous font gagner 3 jours par mois. L\'interface est intuitive même pour notre équipe non-technique.',
+    industry: 'Ã‰nergie',
+    employees: '85 employÃ©s',
+    quote: 'Les bulletins de paie PDF gÃ©nÃ©rÃ©s automatiquement et les exports SEPA nous font gagner 3 jours par mois. L\'interface est intuitive mÃªme pour notre Ã©quipe non-technique.',
     rating: 5,
     avatar: 'FZ',
   },
@@ -41,8 +41,8 @@ const testimonials = [
     role: 'CEO',
     company: 'LogiTrans Express',
     industry: 'Transport & Logistique',
-    employees: '200 employés',
-    quote: 'Le suivi de flotte véhicules combiné à la gestion RH est unique sur le marché. Nos chauffeurs pointent depuis le kiosque ZKTeco et on suit tout en temps réel.',
+    employees: '200 employÃ©s',
+    quote: 'Le suivi de flotte vÃ©hicules combinÃ© Ã  la gestion RH est unique sur le marchÃ©. Nos chauffeurs pointent depuis le kiosque ZKTeco et on suit tout en temps rÃ©el.',
     rating: 4,
     avatar: 'KB',
   },
@@ -51,18 +51,18 @@ const testimonials = [
     role: 'Office Manager',
     company: 'Digital Agency Pro',
     industry: 'Marketing Digital',
-    employees: '45 employés',
-    quote: 'Le module de recrutement et le suivi des formations nous ont permis de structurer notre croissance. On est passé de 15 à 45 employés sans augmenter l\'équipe RH.',
+    employees: '45 employÃ©s',
+    quote: 'Le module de recrutement et le suivi des formations nous ont permis de structurer notre croissance. On est passÃ© de 15 Ã  45 employÃ©s sans augmenter l\'Ã©quipe RH.',
     rating: 5,
     avatar: 'SM',
   },
   {
     name: 'Youssef El Amrani',
     role: 'DAF',
-    company: 'BâtiConstruct Group',
+    company: 'BÃ¢tiConstruct Group',
     industry: 'BTP',
-    employees: '500+ employés',
-    quote: 'Pour le BTP avec des chantiers multiples, la gestion des absences et le pointage mobile sont essentiels. Leopardo RH comprend les réalités du terrain.',
+    employees: '500+ employÃ©s',
+    quote: 'Pour le BTP avec des chantiers multiples, la gestion des absences et le pointage mobile sont essentiels. Leopardo RH comprend les rÃ©alitÃ©s du terrain.',
     rating: 5,
     avatar: 'YE',
   },
@@ -70,7 +70,7 @@ const testimonials = [
 
 const stats = [
   { value: '500+', label: 'Entreprises clientes' },
-  { value: '50 000+', label: 'Employés gérés' },
+  { value: '50 000+', label: 'EmployÃ©s gÃ©rÃ©s' },
   { value: '4.8/5', label: 'Note moyenne' },
   { value: '6', label: 'Pays couverts' },
 ];
@@ -85,10 +85,10 @@ export default function TestimonialsPage() {
 
       <HeroSection
         headline="Ils nous font confiance"
-        subheadline="Découvrez comment nos clients transforment leur gestion RH avec Leopardo"
-        ctaPrimary={{ text: 'Démarrer l\'essai gratuit', href: '/signup' }}
-        ctaSecondary={{ text: 'Voir les études de cas', href: '/case-studies' }}
-        badge={{ text: 'Témoignages', icon: <Star className="w-3 h-3" /> }}
+        subheadline="DÃ©couvrez comment nos clients transforment leur gestion RH avec Leopardo"
+        ctaPrimary={{ text: 'DÃ©marrer l\'essai gratuit', href: '/signup' }}
+        ctaSecondary={{ text: 'Voir les Ã©tudes de cas', href: '/case-studies' }}
+        badge={{ text: 'TÃ©moignages', icon: <Star className="w-3 h-3" /> }}
       />
 
       {/* Stats Banner */}
@@ -112,7 +112,7 @@ export default function TestimonialsPage() {
       </section>
 
       {/* Testimonials Grid */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900">
+      <section className="py-24 bg-transparent dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((t, i) => (
@@ -163,12 +163,13 @@ export default function TestimonialsPage() {
 
       <CTASection
         title="Rejoignez nos 500+ clients satisfaits"
-        description="Démarrez votre essai gratuit de 14 jours"
+        description="DÃ©marrez votre essai gratuit de 14 jours"
         primaryCta={{ text: 'Commencer maintenant', href: '/signup' }}
-        secondaryCta={{ text: 'Demander une démo', href: '/demo' }}
+        secondaryCta={{ text: 'Demander une dÃ©mo', href: '/demo' }}
       />
 
       <Footer />
     </div>
   );
 }
+

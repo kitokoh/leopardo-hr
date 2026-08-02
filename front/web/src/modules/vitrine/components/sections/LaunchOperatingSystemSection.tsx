@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -61,17 +61,17 @@ const copyByLocale: Record<AppLocale, LaunchCopy> = {
     ],
   },
   ar: {
-    badge: 'تشغيل تجريبي خلال 7 أيام',
-    title: 'حوّل فرقك الميدانية إلى نظام تشغيل شركة يعمل من الهاتف أولا.',
+    badge: 'ØªØ´ØºÙŠÙ„ ØªØ¬Ø±ÙŠØ¨ÙŠ Ø®Ù„Ø§Ù„ 7 Ø£ÙŠØ§Ù…',
+    title: 'Ø­ÙˆÙ‘Ù„ ÙØ±Ù‚Ùƒ Ø§Ù„Ù…ÙŠØ¯Ø§Ù†ÙŠØ© Ø¥Ù„Ù‰ Ù†Ø¸Ø§Ù… ØªØ´ØºÙŠÙ„ Ø´Ø±ÙƒØ© ÙŠØ¹Ù…Ù„ Ù…Ù† Ø§Ù„Ù‡Ø§ØªÙ Ø£ÙˆÙ„Ø§.',
     subtitle:
-      'يجمع Leopardo الحضور، الطلبات، المديرين، الرواتب المبسطة، الوثائق، الإشعارات والكشك في مسار واحد قابل للاستخدام منذ الأسبوع الأول.',
-    primary: 'ابدأ تجربة تشغيل',
-    secondary: 'شاهد التطبيقات',
+      'ÙŠØ¬Ù…Ø¹ Leopardo Ø§Ù„Ø­Ø¶ÙˆØ±ØŒ Ø§Ù„Ø·Ù„Ø¨Ø§ØªØŒ Ø§Ù„Ù…Ø¯ÙŠØ±ÙŠÙ†ØŒ Ø§Ù„Ø±ÙˆØ§ØªØ¨ Ø§Ù„Ù…Ø¨Ø³Ø·Ø©ØŒ Ø§Ù„ÙˆØ«Ø§Ø¦Ù‚ØŒ Ø§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª ÙˆØ§Ù„ÙƒØ´Ùƒ ÙÙŠ Ù…Ø³Ø§Ø± ÙˆØ§Ø­Ø¯ Ù‚Ø§Ø¨Ù„ Ù„Ù„Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù…Ù†Ø° Ø§Ù„Ø£Ø³Ø¨ÙˆØ¹ Ø§Ù„Ø£ÙˆÙ„.',
+    primary: 'Ø§Ø¨Ø¯Ø£ ØªØ¬Ø±Ø¨Ø© ØªØ´ØºÙŠÙ„',
+    secondary: 'Ø´Ø§Ù‡Ø¯ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚Ø§Øª',
     outcomes: [
-      { title: 'اليوم 1', detail: 'إنشاء الشركة وتفعيل المدير وضبط البلد والعملة واللغة.' },
-      { title: 'اليوم 2-3', detail: 'إضافة الموظفين بالنموذج أو QR وتعيين الجداول والقواعد.' },
-      { title: 'اليوم 4-5', detail: 'الحضور عبر الهاتف أو الكشك وطلبات الغياب والسلف تظهر للمدير.' },
-      { title: 'اليوم 6-7', detail: 'لوحة القيادة والتصدير والإشعارات وأول التقارير جاهزة.' },
+      { title: 'Ø§Ù„ÙŠÙˆÙ… 1', detail: 'Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø´Ø±ÙƒØ© ÙˆØªÙØ¹ÙŠÙ„ Ø§Ù„Ù…Ø¯ÙŠØ± ÙˆØ¶Ø¨Ø· Ø§Ù„Ø¨Ù„Ø¯ ÙˆØ§Ù„Ø¹Ù…Ù„Ø© ÙˆØ§Ù„Ù„ØºØ©.' },
+      { title: 'Ø§Ù„ÙŠÙˆÙ… 2-3', detail: 'Ø¥Ø¶Ø§ÙØ© Ø§Ù„Ù…ÙˆØ¸ÙÙŠÙ† Ø¨Ø§Ù„Ù†Ù…ÙˆØ°Ø¬ Ø£Ùˆ QR ÙˆØªØ¹ÙŠÙŠÙ† Ø§Ù„Ø¬Ø¯Ø§ÙˆÙ„ ÙˆØ§Ù„Ù‚ÙˆØ§Ø¹Ø¯.' },
+      { title: 'Ø§Ù„ÙŠÙˆÙ… 4-5', detail: 'Ø§Ù„Ø­Ø¶ÙˆØ± Ø¹Ø¨Ø± Ø§Ù„Ù‡Ø§ØªÙ Ø£Ùˆ Ø§Ù„ÙƒØ´Ùƒ ÙˆØ·Ù„Ø¨Ø§Øª Ø§Ù„ØºÙŠØ§Ø¨ ÙˆØ§Ù„Ø³Ù„Ù ØªØ¸Ù‡Ø± Ù„Ù„Ù…Ø¯ÙŠØ±.' },
+      { title: 'Ø§Ù„ÙŠÙˆÙ… 6-7', detail: 'Ù„ÙˆØ­Ø© Ø§Ù„Ù‚ÙŠØ§Ø¯Ø© ÙˆØ§Ù„ØªØµØ¯ÙŠØ± ÙˆØ§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª ÙˆØ£ÙˆÙ„ Ø§Ù„ØªÙ‚Ø§Ø±ÙŠØ± Ø¬Ø§Ù‡Ø²Ø©.' },
     ],
   },
 };
@@ -131,7 +131,7 @@ export function LaunchOperatingSystemSection({ locale }: { locale: AppLocale }) 
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.08 }}
-                  className="rounded-3xl border border-slate-200 bg-slate-50/80 p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-950/5 dark:border-slate-800 dark:bg-slate-900/70 dark:hover:border-emerald-900"
+                  className="rounded-3xl border border-slate-200 bg-transparent/80 p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-950/5 dark:border-slate-800 dark:bg-slate-900/70 dark:hover:border-emerald-900"
                 >
                   <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
                     <Icon className="h-5 w-5" />
@@ -147,4 +147,5 @@ export function LaunchOperatingSystemSection({ locale }: { locale: AppLocale }) 
     </section>
   );
 }
+
 

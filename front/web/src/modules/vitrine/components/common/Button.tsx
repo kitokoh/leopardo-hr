@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -23,7 +23,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   secondary:
     'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700',
   outline:
-    'border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800',
+    'border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-transparent dark:hover:bg-slate-800',
   ghost: 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800',
 };
 
@@ -76,3 +76,4 @@ export function Button({
     </motion.button>
   );
 }
+

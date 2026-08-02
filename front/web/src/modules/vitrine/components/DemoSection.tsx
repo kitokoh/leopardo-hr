@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
@@ -80,7 +80,7 @@ export function DemoSection() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.3 + index * 0.1 }}
-                        className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 text-center"
+                        className="bg-transparent dark:bg-slate-800/50 rounded-xl p-3 text-center"
                       >
                         <stat.icon className={`w-5 h-5 mx-auto mb-1.5 ${stat.color}`} />
                         <div className="text-lg font-black text-slate-900 dark:text-white">{stat.value}</div>
@@ -89,7 +89,7 @@ export function DemoSection() {
                     ))}
                   </div>
 
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 aspect-[2/1] flex items-center justify-center">
+                  <div className="bg-transparent dark:bg-slate-800/50 rounded-xl p-4 aspect-[2/1] flex items-center justify-center">
                     <BarChart3 className="w-16 h-16 text-emerald-300 dark:text-emerald-800" />
                   </div>
                 </div>
@@ -101,3 +101,4 @@ export function DemoSection() {
     </section>
   )
 }
+

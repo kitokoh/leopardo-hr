@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
@@ -95,7 +95,7 @@ export default function ContractsPage() {
     { label: 'Actifs', value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
     { label: 'Expirant bientot', value: stats.expiring, icon: AlertTriangle, accent: 'text-amber-600 bg-amber-50' },
     { label: 'Suspendus', value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
-    { label: 'Total', value: stats.total, icon: FileText, accent: 'text-brand-600 bg-brand-50' },
+    { label: 'Total', value: stats.total, icon: FileText, accent: 'text-emerald-600 bg-emerald-50' },
   ];
 
   return (
@@ -130,7 +130,7 @@ export default function ContractsPage() {
             placeholder="Rechercher un employe ou un type de contrat..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <select
@@ -152,7 +152,7 @@ export default function ContractsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-app-border bg-slate-50/50">
+              <tr className="border-b border-app-border bg-transparent/50">
                 <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Employe</th>
                 <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Type</th>
                 <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Debut</th>
@@ -167,7 +167,7 @@ export default function ContractsPage() {
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Aucun contrat trouve.</td></tr>
               ) : filtered.map(c => (
-                <tr key={c.id} className="transition-colors hover:bg-slate-50/60">
+                <tr key={c.id} className="transition-colors hover:bg-transparent/60">
                   <td className="px-6 py-4 font-bold text-slate-950">{c.employee_name}</td>
                   <td className="px-4 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">{c.type}</td>
                   <td className="px-4 py-4 text-slate-600">
@@ -176,7 +176,7 @@ export default function ContractsPage() {
                   <td className="px-4 py-4 text-slate-600">{c.end_date || 'Indefini'}</td>
                   <td className="px-4 py-4 text-center">{statusBadge(c.status)}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Telecharger PDF">
+                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title="Telecharger PDF">
                       <Download className="h-4 w-4" />
                     </button>
                   </td>
@@ -189,3 +189,4 @@ export default function ContractsPage() {
     </ModulePageShell>
   );
 }
+

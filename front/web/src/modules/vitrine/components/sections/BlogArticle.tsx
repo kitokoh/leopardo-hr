@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -188,7 +188,7 @@ export function BlogArticle({
             >
               {/* Table of Contents */}
               {tableOfContents.length > 0 && (
-                <div className="sticky top-24 mb-8 p-6 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                <div className="sticky top-24 mb-8 p-6 rounded-xl bg-transparent dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">
                     {tableOfContentsLabel}
                   </h3>
@@ -208,7 +208,7 @@ export function BlogArticle({
               )}
 
               {/* Author Card */}
-              <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+              <div className="p-6 rounded-xl bg-transparent dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                 <div className="relative w-16 h-16 rounded-full overflow-hidden mb-4 flex-shrink-0">
                   <Image
                     src={post.author.avatar}
@@ -318,3 +318,4 @@ export function BlogArticle({
     </>
   );
 }
+

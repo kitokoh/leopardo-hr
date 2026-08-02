@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Suspense, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -240,7 +240,7 @@ function LoginInner() {
               : locale === 'tr'
                 ? `Sunucu baslatiliyor, deneme ${attempt + 1}/4...`
                 : locale === 'ar'
-                  ? `...${attempt + 1}/4 الخادم يستيقظ، المحاولة`
+                  ? `...${attempt + 1}/4 Ø§Ù„Ø®Ø§Ø¯Ù… ÙŠØ³ØªÙŠÙ‚Ø¸ØŒ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©`
                   : `Server is waking up, attempt ${attempt + 1}/4...`,
           );
         },
@@ -331,10 +331,10 @@ function LoginInner() {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6 text-slate-950 dark:text-white sm:px-6 lg:px-8 relative overflow-hidden">
+    <main className="min-h-screen bg-transparent dark:bg-slate-950 px-4 py-6 text-slate-950 dark:text-white sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
@@ -346,7 +346,7 @@ function LoginInner() {
           <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(45,212,191,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
 
           {/* Internal section decoration */}
-          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-500/20 rounded-full blur-3xl"></div>
+          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl"></div>
 
           <div className="relative">
             <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200 transition hover:text-white">
@@ -404,9 +404,9 @@ function LoginInner() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">{labels.login.clientSpace}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">{labels.login.clientSpace}</p>
               <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white uppercase italic">
-                {labels.login.title.split(' ')[0]} <span className="text-brand-600 not-italic font-black">{labels.login.title.split(' ').slice(1).join(' ')}</span>
+                {labels.login.title.split(' ')[0]} <span className="text-emerald-600 not-italic font-black">{labels.login.title.split(' ').slice(1).join(' ')}</span>
               </h2>
               <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{labels.login.subtitle}</p>
             </div>
@@ -416,8 +416,8 @@ function LoginInner() {
                 <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   {registeredPlan === 'free'
-                    ? 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.'
-                    : 'Inscription reçue ! Connectez-vous pour continuer.'}
+                    ? 'Compte crÃ©Ã© ! Connectez-vous pour accÃ©der Ã  votre espace gratuit.'
+                    : 'Inscription reÃ§ue ! Connectez-vous pour continuer.'}
                 </div>
               )}
               {error ? (
@@ -439,7 +439,7 @@ function LoginInner() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-bold text-sm"
+                  className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
                   placeholder="manager@entreprise.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -457,7 +457,7 @@ function LoginInner() {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     required
-                    className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 px-4 pr-12 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-bold text-sm"
+                    className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 pr-12 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
                     placeholder={labels.login.password}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -492,7 +492,7 @@ function LoginInner() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 transition hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LockKeyhole className="h-4 w-4" aria-hidden="true" />}
                 {submitting ? labels.login.loading : labels.login.submit}
@@ -500,7 +500,7 @@ function LoginInner() {
 
               <a
                 href={googleAuthHref()}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
               >
                 <Globe2 className="h-4 w-4" aria-hidden="true" />
                 {locale === 'fr'
@@ -508,7 +508,7 @@ function LoginInner() {
                   : locale === 'tr'
                     ? 'Google ile devam et'
                     : locale === 'ar'
-                      ? 'المتابعة عبر Google'
+                      ? 'Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø© Ø¹Ø¨Ø± Google'
                       : 'Continue with Google'}
               </a>
 
@@ -520,7 +520,7 @@ function LoginInner() {
                       : locale === 'tr'
                         ? 'Demo sunucusu uyaniyor, 60 saniye kadar surebilir...'
                         : locale === 'ar'
-                          ? '...خادم العرض يستيقظ، قد يستغرق حتى 60 ثانية'
+                          ? '...Ø®Ø§Ø¯Ù… Ø§Ù„Ø¹Ø±Ø¶ ÙŠØ³ØªÙŠÙ‚Ø¸ØŒ Ù‚Ø¯ ÙŠØ³ØªØºØ±Ù‚ Ø­ØªÙ‰ 60 Ø«Ø§Ù†ÙŠØ©'
                           : 'Demo server is waking up, this may take up to 60 seconds...'}
                   </p>
                   {retryAttempt > 0 && (
@@ -618,3 +618,4 @@ export default function LoginPage() {
     </Suspense>
   );
 }
+

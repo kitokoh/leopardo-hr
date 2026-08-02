@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
@@ -46,12 +46,12 @@
       </div>
     </div>
     <div v-else-if="!loading" class="rounded-lg bg-green-50 p-4 text-center text-sm text-green-700">
-      Aucune notification proactive — tout est en ordre.
+      Aucune notification proactive â€” tout est en ordre.
     </div>
 
     <!-- Turnover Prediction -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <div class="rounded-lg bg-white p-6 shadow">
+      <div class="rounded-lg glass-card p-6 shadow">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Prediction turnover</h2>
         <div v-if="loadingTurnover" class="py-8 text-center text-sm text-gray-500">Analyse en cours...</div>
         <template v-else-if="turnover">
@@ -86,7 +86,7 @@
           <div v-if="turnover.high_risk_employees.length > 0" class="mt-4">
             <h3 class="mb-2 text-sm font-medium text-gray-700">Employes a risque eleve</h3>
             <div class="space-y-1">
-              <div v-for="emp in turnover.high_risk_employees.slice(0, 5)" :key="emp.employee_id" class="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
+              <div v-for="emp in turnover.high_risk_employees.slice(0, 5)" :key="emp.employee_id" class="flex items-center justify-between rounded glass-bg px-3 py-2">
                 <span class="text-sm text-gray-900">{{ emp.name }}</span>
                 <div class="flex items-center gap-2">
                   <span v-for="factor in emp.factors.slice(0, 2)" :key="factor" class="rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-700">{{ factor }}</span>
@@ -99,7 +99,7 @@
       </div>
 
       <!-- Absenteeism Prediction -->
-      <div class="rounded-lg bg-white p-6 shadow">
+      <div class="rounded-lg glass-card p-6 shadow">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Prediction absenteisme</h2>
         <div v-if="loadingAbsenteeism" class="py-8 text-center text-sm text-gray-500">Analyse en cours...</div>
         <template v-else-if="absenteeism">
@@ -110,7 +110,7 @@
           <div v-if="absenteeism.high_risk_periods.length > 0">
             <h3 class="mb-2 text-sm font-medium text-gray-700">Periodes a risque</h3>
             <div class="space-y-2">
-              <div v-for="period in absenteeism.high_risk_periods" :key="period.month" class="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
+              <div v-for="period in absenteeism.high_risk_periods" :key="period.month" class="flex items-center justify-between rounded glass-bg px-3 py-2">
                 <span class="text-sm text-gray-600">{{ period.month }}</span>
                 <span class="text-sm font-medium text-gray-900">{{ period.predicted_rate }} jours</span>
               </div>
@@ -119,7 +119,7 @@
           <div v-if="absenteeism.department_predictions.length > 0" class="mt-4">
             <h3 class="mb-2 text-sm font-medium text-gray-700">Prediction par departement</h3>
             <div class="space-y-2">
-              <div v-for="dept in absenteeism.department_predictions.slice(0, 5)" :key="dept.department" class="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
+              <div v-for="dept in absenteeism.department_predictions.slice(0, 5)" :key="dept.department" class="flex items-center justify-between rounded glass-bg px-3 py-2">
                 <span class="text-sm text-gray-600">{{ dept.department }}</span>
                 <div class="text-right">
                   <span class="text-sm font-medium text-gray-900">{{ dept.predicted_days }}j</span>
@@ -195,3 +195,4 @@ function refreshAll() {
 
 onMounted(refreshAll)
 </script>
+

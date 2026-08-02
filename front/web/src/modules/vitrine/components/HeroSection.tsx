@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
@@ -142,7 +142,7 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
         onSubmit={onSubmit}
         className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-2 shadow-2xl shadow-emerald-500/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/85 sm:flex-row"
       >
-        <label className="flex min-h-14 flex-1 items-center gap-3 rounded-xl bg-slate-50 px-4 text-left dark:bg-slate-950/60">
+        <label className="flex min-h-14 flex-1 items-center gap-3 rounded-xl bg-transparent px-4 text-left dark:bg-slate-950/60">
           <Mail className="h-5 w-5 flex-shrink-0 text-emerald-500" />
           <span className="sr-only">Email</span>
           <input
@@ -368,3 +368,4 @@ export function HeroSection() {
     </section>
   )
 }
+
