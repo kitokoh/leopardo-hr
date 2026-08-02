@@ -83,7 +83,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         // PA2-COMM-010 — Let the employee know their document is being
         // prepared instead of leaving the UI to poll silently. Best-effort:
         // a notification failure must never block PDF generation.
-        $this->notifyDocumentStatus($communication, $document, 'payment_document_processing');
+        $this->notifyDocumentStatus($communicationService, $document, 'payment_document_processing');
 
         try {
             // Tenant context (search_path + current_company) is already active
@@ -116,7 +116,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
                 'error_message' => $e->getMessage(),
             ]);
 
-            $this->notifyDocumentStatus($communication, $document, 'payment_document_failed');
+            $this->notifyDocumentStatus($communicationService, $document, 'payment_document_failed');
 
             report($e);
 
@@ -147,6 +147,34 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             ], ['app']);
         } catch (Throwable $e) {
             Log::warning("GeneratePaymentDocumentJob: notification failed for document #{$document->id}: {$e->getMessage()}");
+        }
+    }
+
+    /**
+     * PA2-COMM-010 — Best-effort employee notification for a payment
+     * document lifecycle transition (processing / failed). Routed through
+     * the same CommunicationService pipeline as every other notification
+     * so preferences, quiet hours and audit events stay consistent; a
+     * delivery failure here is logged but never rethrown.
+     */
+    private function notifyDocumentStatus(CommunicationService $communicationService, PaymentDocument $document, string $templateKey): void
+    {
+        $employee = $document->employee;
+
+        if ($employee === null) {
+            return;
+        }
+
+        try {
+            $communicationService->notifyEmployee($employee, $templateKey, [
+                'category' => 'payroll',
+                'document_type' => $document->document_type,
+                'payment_document_id' => $document->id,
+                'payroll_run_id' => $document->payroll_run_id,
+                'salary_advance_id' => $document->salary_advance_id,
+            ], ['app']);
+        } catch (Throwable $e) {
+            Log::warning("GeneratePaymentDocumentJob: notification '{$templateKey}' failed for document #{$document->id}: {$e->getMessage()}");
         }
     }
 
