@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -89,19 +89,19 @@ html {
   }
 
   .card {
-    @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
+    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
   }
 
   .glass-card {
-    @apply bg-surface-variant/40 dark:bg-surface-variant/40 backdrop-blur-2xl border border-white/10 dark:border-white/10 shadow-glass rounded-3xl;
+    @apply bg-slate-100/40 dark:bg-slate-800/40 backdrop-blur-2xl border border-white/10 dark:border-white/10 shadow-glass rounded-3xl;
   }
 
   .glass-effect {
-    @apply bg-surface/60 dark:bg-surface/60 backdrop-blur-lg border border-white/10 dark:border-white/10;
+    @apply bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/10 dark:border-white/10;
   }
 
   .stat-card {
-    @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
+    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
   }
 }
 
