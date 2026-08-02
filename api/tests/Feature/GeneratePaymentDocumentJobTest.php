@@ -66,7 +66,7 @@ class GeneratePaymentDocumentJobTest extends TestCase
 
         $document = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($advance, $employee->id);
 
-        (new GeneratePaymentDocumentJob($document->id))->handle();
+        app()->call([new GeneratePaymentDocumentJob($document->id), 'handle']);
 
         $document->refresh();
 
@@ -120,8 +120,8 @@ class GeneratePaymentDocumentJobTest extends TestCase
         $documentA = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($advanceA, $employeeA->id);
         $documentB = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($advanceB, $employeeB->id);
 
-        (new GeneratePaymentDocumentJob($documentA->id))->handle();
-        (new GeneratePaymentDocumentJob($documentB->id))->handle();
+        (new GeneratePaymentDocumentJob($documentA->id))->handle(app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class));
+        (new GeneratePaymentDocumentJob($documentB->id))->handle(app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class));
 
         $documentA->refresh();
         $documentB->refresh();
@@ -164,7 +164,7 @@ class GeneratePaymentDocumentJobTest extends TestCase
         $thrown = null;
 
         try {
-            (new GeneratePaymentDocumentJob($document->id))->handle();
+            (new GeneratePaymentDocumentJob($document->id))->handle(app(\App\Modules\Notification\Infrastructure\Services\CommunicationService::class));
         } catch (\Throwable $e) {
             $thrown = $e;
         }

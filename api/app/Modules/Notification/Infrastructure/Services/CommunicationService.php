@@ -392,6 +392,13 @@ class CommunicationService
             return new AuditMessageProvider;
         }
 
+        if ($channel === 'email' && $configured === 'mail') {
+            return new MailMessageProvider(
+                (int) config('communication.email_retry.max_attempts', 3),
+                (int) config('communication.email_retry.base_delay_ms', 500),
+            );
+        }
+
         if ($configured !== 'audit') {
             Log::warning('Communication provider not implemented yet, falling back to audit-only provider', [
                 'channel' => $channel,

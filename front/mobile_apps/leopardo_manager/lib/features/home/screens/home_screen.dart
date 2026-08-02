@@ -9,6 +9,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
 import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
@@ -181,20 +182,8 @@ class _HeroHeader extends StatelessWidget {
       'fr_FR',
     ).add_d().add_MMMM().format(DateTime.now());
 
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: MobileSurface.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: MobileSurface.border, width: 0.7),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.rh.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -305,13 +294,8 @@ class _QuickActionCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () => context.push(action.route),
-      child: Ink(
+      child: GlassCard(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: MobileSurface.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: MobileSurface.border, width: 0.7),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -396,14 +380,9 @@ class _ModuleCard extends StatelessWidget {
     return InkWell(
       onTap: module.isActive ? () => context.push(module.route!) : null,
       borderRadius: BorderRadius.circular(24),
-      child: Ink(
+      child: GlassCard(
         width: 206,
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -508,13 +487,8 @@ class _ManagerDigestCard extends ConsumerWidget {
     final digest = ref.watch(managerDigestProvider);
     final resolvedDigest = digest.asData?.value;
 
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.borderFor(context)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
