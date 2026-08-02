@@ -37,13 +37,30 @@ export interface PublicJobPosting {
   created_at: string | null;
 }
 
+/**
+ * Per-tenant branding exposed by `PublicCareerController::companyPayload()`
+ * (issue #1325) so the careers portal (issue #1330) can render the client
+ * company's identity instead of Leopardo's own — logo, display name and
+ * brand colors — on an otherwise generic, unauthenticated page.
+ */
+export interface PublicCareersCompany {
+  id: number;
+  name: string;
+  slug: string;
+  display_name: string;
+  logo_url: string | null;
+  primary_color: string;
+  accent_color: string;
+}
+
 interface PaginatedResponse<T> {
   data: T[];
-  meta?: { current_page: number; last_page: number; total: number };
+  meta?: { current_page?: number; last_page?: number; total?: number; company: PublicCareersCompany };
 }
 
 interface ShowResponse<T> {
   data: T;
+  meta?: { company: PublicCareersCompany };
 }
 
 async function careersFetch(path: string, init?: RequestInit): Promise<Response> {
@@ -103,6 +120,31 @@ export async function getPublicJobPosting(
 
   const payload = (await response.json()) as ShowResponse<PublicJobPosting>;
   return payload.data;
+}
+
+/**
+ * Fetches the tenant branding (`meta.company`) exposed by the careers index
+ * endpoint (issue #1330, criterion "Branding dynamique selon le tenant").
+ * Reuses the same `/public/careers/{companySlug}` request the listing page
+ * already issues for `getPublicJobPostings`; Next.js's per-request fetch
+ * cache (see `careersFetch`'s `next.revalidate`) dedupes identical requests
+ * within the same render, so calling both from the same page is not an
+ * extra round trip in practice. Returns null for an unknown company slug so
+ * pages can fall back to Leopardo's own default branding.
+ */
+export async function getPublicCareersCompany(companySlug: string): Promise<PublicCareersCompany | null> {
+  const response = await careersFetch(`/${encodeURIComponent(companySlug)}?per_page=1`);
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to load company branding for ${companySlug}: HTTP ${response.status}`);
+  }
+
+  const payload = (await response.json()) as PaginatedResponse<PublicJobPosting>;
+  return payload.meta?.company ?? null;
 }
 
 export interface SubmitApplicationInput {
