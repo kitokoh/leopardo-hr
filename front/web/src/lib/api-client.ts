@@ -124,7 +124,19 @@ export async function apiFetch(
   options: RequestInit = {},
   retryOptions?: RetryOptions,
 ) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
+  // Security fix (#1299): The auth token is now stored in a httpOnly cookie
+  // (`leopardo_token`) set by the Next.js /api/v1/auth/login proxy route.
+  // The browser sends it automatically on every same-origin request — no JS
+  // code needs to read or attach it. We no longer read from localStorage here.
+  // The proxy route (src/app/api/v1/[...path]/route.ts) reads the httpOnly
+  // cookie server-side and injects it as a Bearer Authorization header before
+  // forwarding the request to Laravel.
+  //
+  // For backward compat during the migration window, we still fall back to a
+  // localStorage token if one happens to be present. This allows existing
+  // sessions to continue working without a forced logout. Remove this fallback
+  // after one full session expiry cycle (7 days post-deploy).
+  const legacyToken = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
   const isLoginRequest = endpoint === '/auth/login' || endpoint === '/platform/auth/login';
   const timeoutMs = isLoginRequest ? 60000 : 20000;
 
@@ -132,7 +144,9 @@ export async function apiFetch(
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Accept-Language': typeof window !== 'undefined' ? getPreferredLocale() : 'fr',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    // Only attach legacy token explicitly if present (cookie-based sessions
+    // do not need this header — the proxy injects it server-side)
+    ...(legacyToken ? { 'Authorization': `Bearer ${legacyToken}` } : {}),
     ...options.headers,
   };
 
