@@ -40,8 +40,16 @@ class EdgeSyncDaemonIntegrationTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * @group integration
+     * @group slow
+     */
     public function test_real_edge_sync_daemon_process_pushes_queued_records_over_real_http_to_a_real_cloud_server(): void
     {
+        if (env('CI') && ! env('RUN_INTEGRATION_TESTS')) {
+            $this->markTestSkipped('EdgeSync integration test skipped in CI (requires RUN_INTEGRATION_TESTS=true).');
+        }
+
         $this->setUpMvpSchema();
 
         $company = Company::factory()->create([
