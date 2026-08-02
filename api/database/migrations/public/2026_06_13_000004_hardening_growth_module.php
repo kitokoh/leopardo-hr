@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -46,9 +47,14 @@ return new class extends Migration
         }
 
         if (Schema::hasTable('partner_clicks')) {
-            Schema::table('partner_clicks', function (Blueprint $table) {
-                $table->index(['partner_link_id', 'clicked_at']);
-            });
+            if (DB::getDriverName() === 'pgsql') {
+                // PostgreSQL supports IF NOT EXISTS for indexes natively.
+                DB::statement('CREATE INDEX IF NOT EXISTS partner_clicks_partner_link_id_clicked_at_index ON partner_clicks (partner_link_id, clicked_at)');
+            } else {
+                Schema::table('partner_clicks', function (Blueprint $table) {
+                    $table->index(['partner_link_id', 'clicked_at']);
+                });
+            }
         }
 
         if (! Schema::hasTable('partner_payout_requests')) {
