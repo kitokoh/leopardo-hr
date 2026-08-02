@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
@@ -310,7 +310,7 @@ export function HeroSection() {
                 <motion.div
                   animate={{ y: [-10, 10, -10] }}
                   transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute top-10 right-0 w-64 p-6 rounded-3xl bg-white/10 dark:bg-surface-bright/40 border border-white/20 dark:border-white/10 backdrop-blur-2xl shadow-glass-lg"
+                  className="absolute top-10 right-0 w-64 p-6 rounded-3xl bg-white/10 dark:bg-slate-900/40 border border-white/20 dark:border-white/10 backdrop-blur-2xl shadow-glass-lg"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-4">
                     <TrendingUp className="w-6 h-6 text-emerald-500" />
