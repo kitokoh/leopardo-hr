@@ -222,6 +222,138 @@ export const pageMetadata = {
     ],
     ogImage: `${siteUrl}/og/download.png`,
   },
+
+  contact: {
+    title: "Contactez-nous | Support et Ventes Leopardo RH",
+    description:
+      "Une question sur Leopardo RH ? Contactez notre equipe commerciale ou support par email, telephone ou formulaire.",
+    keywords: [
+      "contact Leopardo RH",
+      "support RH SaaS",
+      "demande commerciale",
+      "assistance logiciel RH",
+    ],
+    ogImage: `${siteUrl}/og/contact.png`,
+  },
+
+  faq: {
+    title: "Questions Frequentes | FAQ Leopardo RH",
+    description:
+      "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, securite, integrations et support.",
+    keywords: [
+      "FAQ Leopardo RH",
+      "questions logiciel RH",
+      "aide gestion employes",
+      "support paie SaaS",
+    ],
+    ogImage: `${siteUrl}/og/faq.png`,
+  },
+
+  testimonials: {
+    title: "Temoignages Clients | Avis sur Leopardo RH",
+    description:
+      "Decouvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
+    keywords: [
+      "temoignages Leopardo RH",
+      "avis clients logiciel RH",
+      "retours utilisateurs paie SaaS",
+      "case success RH PME",
+    ],
+    ogImage: `${siteUrl}/og/testimonials.png`,
+  },
+
+  caseStudies: {
+    title: "Etudes de Cas | Success Stories Leopardo RH",
+    description:
+      "Etudes de cas detaillees d'entreprises ayant deploye Leopardo RH pour automatiser paie, pointage et absences.",
+    keywords: [
+      "etudes de cas RH",
+      "success story paie SaaS",
+      "cas client Leopardo RH",
+      "ROI logiciel RH",
+    ],
+    ogImage: `${siteUrl}/og/case-studies.png`,
+  },
+
+  videos: {
+    title: "Videos & Demonstrations | Leopardo RH en Action",
+    description:
+      "Regardez nos tutoriels et demonstrations video : configuration ZKTeco, paie multi-pays et prise en main de Leopardo RH.",
+    keywords: [
+      "videos Leopardo RH",
+      "demo logiciel RH",
+      "tutoriel pointage biometrique",
+      "demonstration paie SaaS",
+    ],
+    ogImage: `${siteUrl}/og/videos.png`,
+  },
+
+  branding: {
+    title: "Branding & Personnalisation | Leopardo RH Multi-Tenant",
+    description:
+      "Personnalisez Leopardo RH avec votre logo, vos couleurs et votre nom d'affichage sur web et mobile, isolation tenant garantie.",
+    keywords: [
+      "branding SaaS RH",
+      "personnalisation multi-tenant",
+      "logo entreprise application RH",
+      "theme personnalise paie",
+    ],
+    ogImage: `${siteUrl}/og/branding.png`,
+  },
+
+  careers: {
+    title: "Carrieres | Rejoignez l'Equipe Leopardo RH",
+    description:
+      "Decouvrez nos offres d'emploi et rejoignez l'equipe qui construit la plateforme RH de reference pour les PME.",
+    keywords: [
+      "carrieres Leopardo RH",
+      "emploi logiciel RH",
+      "recrutement startup SaaS",
+      "offres emploi tech RH",
+    ],
+    ogImage: `${siteUrl}/og/careers.png`,
+  },
+
+  mobile: {
+    title: "Applications Mobiles | Leopardo RH sur Android et iOS",
+    description:
+      "Applications mobiles Leopardo RH pour employes, managers et administrateurs : pointage, absences et validation en mobilite.",
+    keywords: [
+      "application mobile RH",
+      "pointage mobile Android iOS",
+      "app manager RH",
+      "app employe pointage",
+    ],
+    ogImage: `${siteUrl}/og/mobile.png`,
+  },
+
+  signup: {
+    title: "Essai Guide Gratuit | Decouvrez Leopardo RH",
+    description:
+      "Demandez votre essai guide gratuit de Leopardo RH : aucun mot de passe requis, un espace de demonstration provisionne automatiquement.",
+    keywords: [
+      "essai gratuit RH",
+      "demo Leopardo RH",
+      "sandbox logiciel RH",
+      "inscription essai paie SaaS",
+    ],
+    ogImage: `${siteUrl}/og/signup.png`,
+    robots: "noindex, follow",
+  },
+
+  checkout: {
+    title: "Choisissez votre Plan | Abonnement Leopardo RH",
+    description:
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+    keywords: [
+      "abonnement Leopardo RH",
+      "souscription plan RH",
+      "checkout SaaS RH",
+      "paiement plan paie",
+    ],
+    ogImage: `${siteUrl}/og/checkout.png`,
+    robots: "noindex, follow",
+  },
 };
 
 /**
