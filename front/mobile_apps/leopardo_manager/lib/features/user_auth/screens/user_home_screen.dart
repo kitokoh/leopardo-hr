@@ -1,4 +1,4 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -242,7 +242,7 @@ class _QuickActionCard extends StatelessWidget {
   }
 }
 
-class _EmployeeLinkCard extends StatelessWidget {
+class _EmployeeLinkGlassCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
@@ -276,7 +276,7 @@ class _EmployeeLinkCard extends StatelessWidget {
   }
 }
 
-class _CompanyRequestCard extends StatelessWidget {
+class _CompanyRequestGlassCard extends StatelessWidget {
   final String companyName;
   final String status;
 
