@@ -79,7 +79,7 @@ class RequestTrialSignup
         if ($firstName === '') {
             [$localPart, $domain] = array_pad(explode('@', $email, 2), 2, null);
             $nameParts = preg_split('/[._\-+]/', $localPart ?: 'manager', 2) ?: ['Manager'];
-            $firstName = ucfirst($nameParts[0] ?? 'Manager');
+            $firstName = ucfirst($nameParts[0]);
 
             if ($lastName === '') {
                 $lastName = isset($nameParts[1]) && trim($nameParts[1]) !== ''
