@@ -251,7 +251,11 @@ class SalaryAdvanceSecurityTest extends TestCase
             'employee_id' => $employee->id,
             'type' => 'payroll',
         ]);
-        $employeeNotifications = Notification::query()->where('employee_id', $employee->id)->pluck('data')->all();
+        $employeeNotifications = Notification::query()
+            ->where('employee_id', $employee->id)
+            ->where('company_id', $company->id)
+            ->where('type', 'payroll')
+            ->pluck('data')->all();
         $this->assertCount(2, $employeeNotifications); // manager_approved + payment_declared
 
         $this->assertDatabaseHas('notifications', [
