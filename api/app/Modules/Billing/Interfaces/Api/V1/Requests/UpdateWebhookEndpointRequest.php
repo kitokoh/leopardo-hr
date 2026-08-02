@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Billing\Interfaces\Api\V1\Requests;
 
 use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
