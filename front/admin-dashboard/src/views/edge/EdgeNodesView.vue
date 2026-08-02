@@ -1,11 +1,11 @@
-<template>
+﻿<template>
   <div class="p-6 max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Nodes Edge</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Gestion des nodes Edge Leopardo — synchronisation offline-first
+          Gestion des nodes Edge Leopardo â€” synchronisation offline-first
         </p>
       </div>
       <button
@@ -13,39 +13,39 @@
         :disabled="loading"
         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span :class="['inline-block w-4 h-4', loading ? 'animate-spin' : '']">↻</span>
+        <span :class="['inline-block w-4 h-4', loading ? 'animate-spin' : '']">â†»</span>
         Actualiser
       </button>
     </div>
 
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
-      <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
-      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
-      <EdgeStatCard label="Licences expirées" :value="stats.licenseExpired" icon="⚠️" color="red" />
+      <EdgeStatCard label="Nodes total" :value="stats.total" icon="ðŸ–¥ï¸" color="indigo" />
+      <EdgeStatCard label="En ligne" :value="stats.online" icon="âœ…" color="green" />
+      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="â­•" color="gray" />
+      <EdgeStatCard label="Licences expirÃ©es" :value="stats.licenseExpired" icon="âš ï¸" color="red" />
     </div>
 
     <!-- Nodes table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="glass-card dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
-        <div class="text-4xl mb-3 animate-spin inline-block">↻</div>
-        <p>Chargement des nodes…</p>
+        <div class="text-4xl mb-3 animate-spin inline-block">â†»</div>
+        <p>Chargement des nodesâ€¦</p>
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
-        <div class="text-4xl mb-3 opacity-30">🖥️</div>
-        <p class="font-medium">Aucun node Edge enregistré</p>
-        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
+        <div class="text-4xl mb-3 opacity-30">ðŸ–¥ï¸</div>
+        <p class="font-medium">Aucun node Edge enregistrÃ©</p>
+        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrÃ©s via l'API Edge.</p>
       </div>
 
       <table v-else class="w-full text-sm">
         <thead>
-          <tr class="bg-gray-50 dark:bg-gray-700/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <tr class="glass-bg dark:bg-gray-700/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             <th class="px-4 py-3 font-medium">Node</th>
             <th class="px-4 py-3 font-medium">Statut</th>
             <th class="px-4 py-3 font-medium">Licence</th>
-            <th class="px-4 py-3 font-medium">Dernière sync</th>
+            <th class="px-4 py-3 font-medium">DerniÃ¨re sync</th>
             <th class="px-4 py-3 font-medium">En attente</th>
             <th class="px-4 py-3 font-medium">Actions</th>
           </tr>
@@ -54,7 +54,7 @@
           <tr
             v-for="node in nodes"
             :key="node.id"
-            class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+            class="hover:glass-bg dark:hover:bg-gray-700/30 transition-colors"
           >
             <td class="px-4 py-3">
               <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">{{ node.node_id }}</div>
@@ -88,7 +88,7 @@
             </td>
 
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-              {{ node.last_sync_at ? formatRelative(node.last_sync_at) : '—' }}
+              {{ node.last_sync_at ? formatRelative(node.last_sync_at) : 'â€”' }}
             </td>
 
             <td class="px-4 py-3">
@@ -104,11 +104,11 @@
                   :disabled="!node.is_online || syncingNodeId === node.id"
                   class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {{ syncingNodeId === node.id ? 'Sync…' : 'Sync' }}
+                  {{ syncingNodeId === node.id ? 'Syncâ€¦' : 'Sync' }}
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
-                  Détails
+                  DÃ©tails
                 </button>
               </div>
             </td>
@@ -186,9 +186,9 @@ function licenseClass(status) {
 function licenseLabel(status) {
   const map = {
     active: 'Active',
-    expiring_soon: 'Expire bientôt',
-    expired: 'Expirée',
-    revoked: 'Révoquée',
+    expiring_soon: 'Expire bientÃ´t',
+    expired: 'ExpirÃ©e',
+    revoked: 'RÃ©voquÃ©e',
   };
   return map[status] ?? status;
 }
@@ -200,7 +200,7 @@ function formatDate(iso) {
 function formatRelative(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "à l'instant";
+  if (mins < 1) return "Ã  l'instant";
   if (mins < 60) return `il y a ${mins} min`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `il y a ${hrs} h`;
@@ -224,3 +224,4 @@ onUnmounted(() => {
   if (refreshTimer) clearInterval(refreshTimer);
 });
 </script>
+

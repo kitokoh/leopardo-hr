@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import { Factory, Landmark, Plane, Radio, ShoppingBag, Truck, Cpu, HardHat } from 'lucide-react';
@@ -9,7 +9,7 @@ import type { ComponentType } from 'react';
  * PA2-MKT-011: this section previously listed 22 real, named, well-known
  * companies (Arcelik, Sonatrach, SAP, Aramco, Turkish Airlines, Emirates,
  * ...) under an implicit "they trust us" badge with zero authorization or
- * proof of any customer relationship — a reputational and potential
+ * proof of any customer relationship â€” a reputational and potential
  * trademark-misuse risk, not just a marketing credibility gap (see
  * docs/PLAN_ACTION2/13_PLAN_ACTION_EN_VIGUEUR_2026-07-20.md section 2.7 and
  * the PA2-MKT-011 backlog entry).
@@ -86,17 +86,17 @@ const copyByLocale: Record<AppLocale, Copy> = {
     },
   },
   ar: {
-    title: 'مصمم لقطاعك',
-    subtitle: 'يخدم Leopardo RH الشركات في تركيا وشمال أفريقيا وأوروبا وأفريقيا والعالم العربي التي تحتاج إلى رواتب متعددة البلدان وحضور ميداني موثوق.',
+    title: 'Ù…ØµÙ…Ù… Ù„Ù‚Ø·Ø§Ø¹Ùƒ',
+    subtitle: 'ÙŠØ®Ø¯Ù… Leopardo RH Ø§Ù„Ø´Ø±ÙƒØ§Øª ÙÙŠ ØªØ±ÙƒÙŠØ§ ÙˆØ´Ù…Ø§Ù„ Ø£ÙØ±ÙŠÙ‚ÙŠØ§ ÙˆØ£ÙˆØ±ÙˆØ¨Ø§ ÙˆØ£ÙØ±ÙŠÙ‚ÙŠØ§ ÙˆØ§Ù„Ø¹Ø§Ù„Ù… Ø§Ù„Ø¹Ø±Ø¨ÙŠ Ø§Ù„ØªÙŠ ØªØ­ØªØ§Ø¬ Ø¥Ù„Ù‰ Ø±ÙˆØ§ØªØ¨ Ù…ØªØ¹Ø¯Ø¯Ø© Ø§Ù„Ø¨Ù„Ø¯Ø§Ù† ÙˆØ­Ø¶ÙˆØ± Ù…ÙŠØ¯Ø§Ù†ÙŠ Ù…ÙˆØ«ÙˆÙ‚.',
     sectorLabels: {
-      industry: 'الصناعة',
-      energy: 'الطاقة والبناء',
-      finance: 'المالية والخدمات',
-      aviation: 'الطيران والنقل',
-      telecom: 'الاتصالات',
-      retail: 'التجزئة والتوزيع',
-      logistics: 'اللوجستيات',
-      tech: 'التكنولوجيا',
+      industry: 'Ø§Ù„ØµÙ†Ø§Ø¹Ø©',
+      energy: 'Ø§Ù„Ø·Ø§Ù‚Ø© ÙˆØ§Ù„Ø¨Ù†Ø§Ø¡',
+      finance: 'Ø§Ù„Ù…Ø§Ù„ÙŠØ© ÙˆØ§Ù„Ø®Ø¯Ù…Ø§Øª',
+      aviation: 'Ø§Ù„Ø·ÙŠØ±Ø§Ù† ÙˆØ§Ù„Ù†Ù‚Ù„',
+      telecom: 'Ø§Ù„Ø§ØªØµØ§Ù„Ø§Øª',
+      retail: 'Ø§Ù„ØªØ¬Ø²Ø¦Ø© ÙˆØ§Ù„ØªÙˆØ²ÙŠØ¹',
+      logistics: 'Ø§Ù„Ù„ÙˆØ¬Ø³ØªÙŠØ§Øª',
+      tech: 'Ø§Ù„ØªÙƒÙ†ÙˆÙ„ÙˆØ¬ÙŠØ§',
     },
   },
 };
@@ -126,7 +126,7 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
   const duplicated = [...sectors, ...sectors];
 
   return (
-    <section className="relative py-16 overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+    <section className="relative py-16 overflow-hidden bg-transparent dark:bg-slate-900/50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -176,3 +176,4 @@ export function TrustedBrands({ locale = 'fr' }: TrustedBrandsProps) {
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-8 animate-fade-in">
     <!-- Header -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -16,7 +16,7 @@
     <!-- Stats -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Runs ce mois" :value="stats.runs_this_month" icon="ChartBarIcon" color="blue" />
-      <StatsCard title="Bulletins générés" :value="stats.slips_generated" icon="UsersIcon" color="green" />
+      <StatsCard title="Bulletins gÃ©nÃ©rÃ©s" :value="stats.slips_generated" icon="UsersIcon" color="green" />
       <StatsCard title="Masse salariale" :value="formattedMasse" icon="CurrencyEuroIcon" color="purple" />
       <StatsCard title="Attente validation" :value="stats.pending_validation" icon="ChartBarIcon" color="yellow" />
     </div>
@@ -27,11 +27,11 @@
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">
-              Résumé du run {{ runSummary.run?.id }}
+              RÃ©sumÃ© du run {{ runSummary.run?.id }}
             </h3>
             <p class="mt-1 text-sm text-gray-600">
               {{ formatPeriod(runSummary.run?.period_start, runSummary.run?.period_end) }}
-              · Statut {{ runSummary.run?.status }}
+              Â· Statut {{ runSummary.run?.status }}
             </p>
           </div>
           <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900" @click="runSummary = null">
@@ -92,7 +92,7 @@
         :class="[
           'px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 uppercase tracking-wider',
           activeTab === tab.key
-            ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-premium'
+            ? 'glass-card dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-premium'
             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
         ]"
         @click="activeTab = tab.key"
@@ -145,13 +145,13 @@
             <option value="">Tous les mois</option>
             <option v-for="(label, idx) in monthLabels" :key="idx" :value="idx">{{ label }}</option>
           </select>
-          <label for="payroll-run-year" class="sr-only">Année</label>
+          <label for="payroll-run-year" class="sr-only">AnnÃ©e</label>
           <select
             id="payroll-run-year"
             v-model="runFilterYear"
             class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 py-2 pl-3 pr-8 text-sm text-slate-900 dark:text-white focus:border-brand-500 focus:ring-brand-500"
           >
-            <option value="">Toutes les années</option>
+            <option value="">Toutes les annÃ©es</option>
             <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
           </select>
           <button
@@ -160,7 +160,7 @@
             class="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             @click="runFilterMonth = ''; runFilterYear = ''"
           >
-            Réinitialiser
+            RÃ©initialiser
           </button>
         </div>
       </template>
@@ -232,8 +232,8 @@ const stats = ref({ runs_this_month: 0, slips_generated: 0, total_net: 0, pendin
 const structures = ref([])
 
 const monthLabels = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+  'Janvier', 'FÃ©vrier', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'AoÃ»t', 'Septembre', 'Octobre', 'Novembre', 'DÃ©cembre',
 ]
 
 const initialDate = new Date()
@@ -312,7 +312,7 @@ function formatPeriod(start, end) {
   if (!start || !end) return '-'
   const a = typeof start === 'string' ? start.slice(0, 10) : start
   const b = typeof end === 'string' ? end.slice(0, 10) : end
-  return `${a} → ${b}`
+  return `${a} â†’ ${b}`
 }
 
 function slipEmployeeLabel(slip) {
@@ -512,3 +512,4 @@ async function downloadPaySlipPdf(id) {
 
 onMounted(fetchData)
 </script>
+

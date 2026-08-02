@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -213,7 +213,7 @@ export default function TrainingPage() {
                 >
                   <button
                     onClick={() => toggleExpand(course.id)}
-                    className="flex w-full items-center justify-between gap-3 p-5 text-left transition hover:bg-slate-50/60"
+                    className="flex w-full items-center justify-between gap-3 p-5 text-left transition hover:bg-transparent/60"
                   >
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
@@ -249,9 +249,9 @@ export default function TrainingPage() {
                             <p className="text-sm text-slate-400">Aucune session pour cette formation.</p>
                           ) : (
                             sessions.map((session) => (
-                              <div key={session.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-app-border bg-slate-50 px-3 py-2">
+                              <div key={session.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-app-border bg-transparent px-3 py-2">
                                 <div className="flex items-center gap-3 text-xs text-slate-600">
-                                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{session.start_date ?? '—'} au {session.end_date ?? '—'}</span>
+                                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{session.start_date ?? 'â€”'} au {session.end_date ?? 'â€”'}</span>
                                   {session.location ? <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{session.location}</span> : null}
                                   <span className="flex items-center gap-1"><Users className="h-3 w-3" />{session.enrollments?.length ?? 0} inscrits</span>
                                 </div>
@@ -294,13 +294,13 @@ export default function TrainingPage() {
                   placeholder="Titre *"
                   value={newCourse.title}
                   onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
-                  className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <textarea
                   placeholder="Description"
                   value={newCourse.description}
                   onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
-                  className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   rows={2}
                 />
                 <div className="grid grid-cols-2 gap-3">
@@ -309,12 +309,12 @@ export default function TrainingPage() {
                     placeholder="Categorie"
                     value={newCourse.category}
                     onChange={(e) => setNewCourse({ ...newCourse, category: e.target.value })}
-                    className="rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <select
                     value={newCourse.type}
                     onChange={(e) => setNewCourse({ ...newCourse, type: e.target.value })}
-                    className="rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900"
+                    className="rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900"
                   >
                     <option value="internal">Interne</option>
                     <option value="external">Externe</option>
@@ -328,14 +328,14 @@ export default function TrainingPage() {
                     placeholder="Prestataire"
                     value={newCourse.provider}
                     onChange={(e) => setNewCourse({ ...newCourse, provider: e.target.value })}
-                    className="rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <input
                     type="number"
                     placeholder="Duree (h)"
                     value={newCourse.duration_hours}
                     onChange={(e) => setNewCourse({ ...newCourse, duration_hours: e.target.value })}
-                    className="rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
                 <input
@@ -343,11 +343,11 @@ export default function TrainingPage() {
                   placeholder="Participants max"
                   value={newCourse.max_participants}
                   onChange={(e) => setNewCourse({ ...newCourse, max_participants: e.target.value })}
-                  className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
               <div className="mt-5 flex gap-3">
-                <button onClick={() => setShowCreateModal(false)} className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">Annuler</button>
+                <button onClick={() => setShowCreateModal(false)} className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent">Annuler</button>
                 <button
                   onClick={handleCreate}
                   disabled={!newCourse.title.trim() || creating}
@@ -363,3 +363,4 @@ export default function TrainingPage() {
     </>
   );
 }
+

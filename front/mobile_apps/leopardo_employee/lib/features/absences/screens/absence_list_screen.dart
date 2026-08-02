@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 final dateLabel =
                     '${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)}';
 
-                return MobileListCard(
+                return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
                   title: absence.absenceTypeName ?? 'Absence',
@@ -567,3 +568,4 @@ class _AbsenceTypeOption {
     );
   }
 }
+

@@ -1,13 +1,13 @@
-<template>
+﻿<template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Centre support client</h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-          Conversations ouvertes par les entreprises clientes, triées par priorité.
+          Conversations ouvertes par les entreprises clientes, triÃ©es par prioritÃ©.
         </p>
         <div v-if="companyFilter.id" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-brand-700 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-300">
-          Filtre : {{ companyFilter.name || 'Entreprise sélectionnée' }}
+          Filtre : {{ companyFilter.name || 'Entreprise sÃ©lectionnÃ©e' }}
           <button type="button" class="rounded-full p-0.5 hover:bg-brand-100 dark:hover:bg-brand-900/50" @click="clearCompanyFilter">
             <XMarkIcon class="h-3.5 w-3.5" />
           </button>
@@ -23,8 +23,8 @@
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Ouverts" :value="statusCounts.open" icon="ChatBubbleBottomCenterTextIcon" color="blue" />
       <StatsCard title="En attente client" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
-      <StatsCard title="Résolus" :value="statusCounts.resolved" icon="CheckCircleIcon" color="green" />
-      <StatsCard title="Fermés" :value="statusCounts.closed" icon="XCircleIcon" color="red" />
+      <StatsCard title="RÃ©solus" :value="statusCounts.resolved" icon="CheckCircleIcon" color="green" />
+      <StatsCard title="FermÃ©s" :value="statusCounts.closed" icon="XCircleIcon" color="red" />
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -38,7 +38,7 @@
               :class="[
                 'px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all rounded-xl',
                 activeStatus === option.value
-                  ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-white shadow-glass-sm'
+                  ? 'glass-card dark:bg-slate-700 text-brand-600 dark:text-white shadow-glass-sm'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               ]"
               @click="setStatusFilter(option.value)"
@@ -108,7 +108,7 @@
           <div>
             <ChatBubbleBottomCenterTextIcon class="mx-auto h-10 w-10 text-slate-300" />
             <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">
-              Sélectionnez un ticket pour voir la conversation
+              SÃ©lectionnez un ticket pour voir la conversation
             </p>
           </div>
         </div>
@@ -119,7 +119,7 @@
               <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ selectedTicket.subject }}</h2>
                 <p class="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  {{ selectedTicket.company?.name }} · {{ selectedTicket.created_by?.name || 'Contact inconnu' }}
+                  {{ selectedTicket.company?.name }} Â· {{ selectedTicket.created_by?.name || 'Contact inconnu' }}
                 </p>
               </div>
               <div class="flex flex-wrap gap-2">
@@ -163,7 +163,7 @@
               >
                 <p class="whitespace-pre-wrap leading-relaxed">{{ message.body }}</p>
                 <p :class="['mt-1 text-[10px] font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-400']">
-                  {{ message.author_name || (message.from_platform ? 'Équipe Leopardo' : 'Client') }} · {{ formatDate(message.created_at) }}
+                  {{ message.author_name || (message.from_platform ? 'Ã‰quipe Leopardo' : 'Client') }} Â· {{ formatDate(message.created_at) }}
                 </p>
               </div>
             </div>
@@ -175,7 +175,7 @@
                 v-model="replyBody"
                 rows="2"
                 class="form-input flex-1 text-sm"
-                placeholder="Répondre au client..."
+                placeholder="RÃ©pondre au client..."
                 :disabled="isReplying"
               ></textarea>
               <button
@@ -241,12 +241,12 @@ const statusFilters = [
   { value: 'all', label: 'Tous' },
   { value: 'open', label: 'Ouverts' },
   { value: 'pending', label: 'En attente' },
-  { value: 'resolved', label: 'Résolus' },
-  { value: 'closed', label: 'Fermés' },
+  { value: 'resolved', label: 'RÃ©solus' },
+  { value: 'closed', label: 'FermÃ©s' },
 ]
 
 const priorityFilters = [
-  { value: 'all', label: 'Toutes priorités' },
+  { value: 'all', label: 'Toutes prioritÃ©s' },
   { value: 'urgent', label: 'Urgent' },
   { value: 'high', label: 'Haute' },
   { value: 'normal', label: 'Normale' },
@@ -313,7 +313,7 @@ async function sendReply() {
     }
   } catch (error) {
     console.error('Failed to reply to ticket:', error)
-    toast.error('Envoi de la réponse impossible.')
+    toast.error('Envoi de la rÃ©ponse impossible.')
   } finally {
     isReplying.value = false
   }
@@ -328,11 +328,11 @@ async function applyTriage() {
       status: triageStatus.value,
       priority: triagePriority.value,
     })
-    toast.success('Ticket mis à jour.')
+    toast.success('Ticket mis Ã  jour.')
     await loadTickets()
   } catch (error) {
     console.error('Failed to triage ticket:', error)
-    toast.error('Mise à jour du ticket impossible.')
+    toast.error('Mise Ã  jour du ticket impossible.')
   } finally {
     isTriaging.value = false
   }
@@ -365,7 +365,7 @@ function statusClass(status) {
 }
 
 function statusLabel(status) {
-  const labels = { open: 'Ouvert', pending: 'En attente', resolved: 'Résolu', closed: 'Fermé' }
+  const labels = { open: 'Ouvert', pending: 'En attente', resolved: 'RÃ©solu', closed: 'FermÃ©' }
   return labels[status] || status
 }
 
@@ -385,7 +385,7 @@ function priorityLabel(priority) {
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseigné'
+  if (!value) return 'Non renseignÃ©'
 
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'short',
@@ -399,9 +399,10 @@ onMounted(loadTickets)
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 bg-white/50 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 glass-card/50 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
 }
 .form-select {
-  @apply rounded-xl border border-slate-200 bg-white/70 px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-700 outline-none transition focus:border-brand-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200;
+  @apply rounded-xl border border-slate-200 glass-card/70 px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-700 outline-none transition focus:border-brand-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200;
 }
 </style>
+

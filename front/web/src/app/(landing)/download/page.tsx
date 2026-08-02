@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -97,7 +97,7 @@ function testerFallbackLabel(locale: AppLocale): string {
     case 'tr':
       return 'Test listesine katil';
     case 'ar':
-      return 'انضم إلى قائمة الاختبار';
+      return 'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±';
     default:
       return 'Rejoindre les testeurs';
   }
@@ -110,7 +110,7 @@ function firebaseTesterLabel(locale: AppLocale): string {
     case 'tr':
       return 'Test surumunu yukle';
     case 'ar':
-      return 'تثبيت نسخة الاختبار';
+      return 'ØªØ«Ø¨ÙŠØª Ù†Ø³Ø®Ø© Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±';
     default:
       return 'Installer la version test';
   }
@@ -197,7 +197,7 @@ const copy: Record<AppLocale, {
       { icon: <Fingerprint className="w-6 h-6" />, title: 'ZKTeco Synchronization', description: 'Direct connection to ZKTeco biometric terminals. Push/pull attendance in real time via TCP/IP or USB.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'Offline Mode', description: 'Keep working without internet. Attendance data is stored locally and synced automatically when connectivity returns.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Multi-Site Supervision', description: 'Monitor multiple sites from a single workstation. Real-time alerts for access anomalies.' },
-      { icon: <Shield className="w-6 h-6" />, title: 'Encrypted & Secure', description: 'TLS 1.3 encrypted communication. Biometric data stays on the terminal — only identification hashes transit.' },
+      { icon: <Shield className="w-6 h-6" />, title: 'Encrypted & Secure', description: 'TLS 1.3 encrypted communication. Biometric data stays on the terminal â€” only identification hashes transit.' },
       { icon: <Zap className="w-6 h-6" />, title: 'Quick Setup', description: 'Silent MSI installer. GPO/SCCM deployment for enterprise-scale rollouts.' },
       { icon: <HardDrive className="w-6 h-6" />, title: 'Logs & Audit', description: 'Complete operation journal. CSV export for GDPR compliance and internal audit.' },
     ],
@@ -260,40 +260,40 @@ const copy: Record<AppLocale, {
     ],
   },
   ar: {
-    badge: 'تطبيق سطح المكتب',
-    headline: 'ليوباردو لويندوز',
-    subheadline: 'عميل سطح المكتب لمزامنة أجهزة ZKTeco وإدارة وضع عدم الاتصال والإشراف على مواقعك.',
-    downloadCta: 'تحميل لويندوز',
+    badge: 'ØªØ·Ø¨ÙŠÙ‚ Ø³Ø·Ø­ Ø§Ù„Ù…ÙƒØªØ¨',
+    headline: 'Ù„ÙŠÙˆØ¨Ø§Ø±Ø¯Ùˆ Ù„ÙˆÙŠÙ†Ø¯ÙˆØ²',
+    subheadline: 'Ø¹Ù…ÙŠÙ„ Ø³Ø·Ø­ Ø§Ù„Ù…ÙƒØªØ¨ Ù„Ù…Ø²Ø§Ù…Ù†Ø© Ø£Ø¬Ù‡Ø²Ø© ZKTeco ÙˆØ¥Ø¯Ø§Ø±Ø© ÙˆØ¶Ø¹ Ø¹Ø¯Ù… Ø§Ù„Ø§ØªØµØ§Ù„ ÙˆØ§Ù„Ø¥Ø´Ø±Ø§Ù Ø¹Ù„Ù‰ Ù…ÙˆØ§Ù‚Ø¹Ùƒ.',
+    downloadCta: 'ØªØ­Ù…ÙŠÙ„ Ù„ÙˆÙŠÙ†Ø¯ÙˆØ²',
     version: 'v2.1.0',
-    size: '68 ميغابايت',
-    requirement: 'ويندوز 10+ (64-بت)',
+    size: '68 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª',
+    requirement: 'ÙˆÙŠÙ†Ø¯ÙˆØ² 10+ (64-Ø¨Øª)',
     features: [
-      { icon: <Fingerprint className="w-6 h-6" />, title: 'مزامنة ZKTeco', description: 'اتصال مباشر بأجهزة ZKTeco البيومترية. دفع/سحب الحضور في الوقت الفعلي.' },
-      { icon: <WifiOff className="w-6 h-6" />, title: 'وضع عدم الاتصال', description: 'استمر في العمل بدون إنترنت. يتم تخزين بيانات الحضور محلياً ومزامنتها تلقائياً.' },
-      { icon: <Monitor className="w-6 h-6" />, title: 'إشراف متعدد المواقع', description: 'راقب عدة مواقع من محطة عمل واحدة. تنبيهات فورية لحالات الشذوذ.' },
-      { icon: <Shield className="w-6 h-6" />, title: 'مشفر وآمن', description: 'اتصال مشفر TLS 1.3. البيانات البيومترية تبقى على الجهاز.' },
-      { icon: <Zap className="w-6 h-6" />, title: 'إعداد سريع', description: 'مثبت MSI صامت. نشر GPO/SCCM للمؤسسات الكبيرة.' },
-      { icon: <HardDrive className="w-6 h-6" />, title: 'سجلات ومراجعة', description: 'سجل عمليات كامل. تصدير CSV للامتثال والمراجعة الداخلية.' },
+      { icon: <Fingerprint className="w-6 h-6" />, title: 'Ù…Ø²Ø§Ù…Ù†Ø© ZKTeco', description: 'Ø§ØªØµØ§Ù„ Ù…Ø¨Ø§Ø´Ø± Ø¨Ø£Ø¬Ù‡Ø²Ø© ZKTeco Ø§Ù„Ø¨ÙŠÙˆÙ…ØªØ±ÙŠØ©. Ø¯ÙØ¹/Ø³Ø­Ø¨ Ø§Ù„Ø­Ø¶ÙˆØ± ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„ÙØ¹Ù„ÙŠ.' },
+      { icon: <WifiOff className="w-6 h-6" />, title: 'ÙˆØ¶Ø¹ Ø¹Ø¯Ù… Ø§Ù„Ø§ØªØµØ§Ù„', description: 'Ø§Ø³ØªÙ…Ø± ÙÙŠ Ø§Ù„Ø¹Ù…Ù„ Ø¨Ø¯ÙˆÙ† Ø¥Ù†ØªØ±Ù†Øª. ÙŠØªÙ… ØªØ®Ø²ÙŠÙ† Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø­Ø¶ÙˆØ± Ù…Ø­Ù„ÙŠØ§Ù‹ ÙˆÙ…Ø²Ø§Ù…Ù†ØªÙ‡Ø§ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹.' },
+      { icon: <Monitor className="w-6 h-6" />, title: 'Ø¥Ø´Ø±Ø§Ù Ù…ØªØ¹Ø¯Ø¯ Ø§Ù„Ù…ÙˆØ§Ù‚Ø¹', description: 'Ø±Ø§Ù‚Ø¨ Ø¹Ø¯Ø© Ù…ÙˆØ§Ù‚Ø¹ Ù…Ù† Ù…Ø­Ø·Ø© Ø¹Ù…Ù„ ÙˆØ§Ø­Ø¯Ø©. ØªÙ†Ø¨ÙŠÙ‡Ø§Øª ÙÙˆØ±ÙŠØ© Ù„Ø­Ø§Ù„Ø§Øª Ø§Ù„Ø´Ø°ÙˆØ°.' },
+      { icon: <Shield className="w-6 h-6" />, title: 'Ù…Ø´ÙØ± ÙˆØ¢Ù…Ù†', description: 'Ø§ØªØµØ§Ù„ Ù…Ø´ÙØ± TLS 1.3. Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø¨ÙŠÙˆÙ…ØªØ±ÙŠØ© ØªØ¨Ù‚Ù‰ Ø¹Ù„Ù‰ Ø§Ù„Ø¬Ù‡Ø§Ø².' },
+      { icon: <Zap className="w-6 h-6" />, title: 'Ø¥Ø¹Ø¯Ø§Ø¯ Ø³Ø±ÙŠØ¹', description: 'Ù…Ø«Ø¨Øª MSI ØµØ§Ù…Øª. Ù†Ø´Ø± GPO/SCCM Ù„Ù„Ù…Ø¤Ø³Ø³Ø§Øª Ø§Ù„ÙƒØ¨ÙŠØ±Ø©.' },
+      { icon: <HardDrive className="w-6 h-6" />, title: 'Ø³Ø¬Ù„Ø§Øª ÙˆÙ…Ø±Ø§Ø¬Ø¹Ø©', description: 'Ø³Ø¬Ù„ Ø¹Ù…Ù„ÙŠØ§Øª ÙƒØ§Ù…Ù„. ØªØµØ¯ÙŠØ± CSV Ù„Ù„Ø§Ù…ØªØ«Ø§Ù„ ÙˆØ§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© Ø§Ù„Ø¯Ø§Ø®Ù„ÙŠØ©.' },
     ],
     requirements: [
-      { label: 'نظام التشغيل', value: 'ويندوز 10 / 11 (64-بت)' },
-      { label: 'الذاكرة', value: '4 جيجابايت كحد أدنى' },
-      { label: 'القرص', value: '200 ميغابايت مساحة حرة' },
-      { label: 'الشبكة', value: 'LAN لـ ZKTeco، إنترنت للمزامنة السحابية' },
-      { label: '.NET', value: '.NET 8 Runtime (مضمن مع المثبت)' },
+      { label: 'Ù†Ø¸Ø§Ù… Ø§Ù„ØªØ´ØºÙŠÙ„', value: 'ÙˆÙŠÙ†Ø¯ÙˆØ² 10 / 11 (64-Ø¨Øª)' },
+      { label: 'Ø§Ù„Ø°Ø§ÙƒØ±Ø©', value: '4 Ø¬ÙŠØ¬Ø§Ø¨Ø§ÙŠØª ÙƒØ­Ø¯ Ø£Ø¯Ù†Ù‰' },
+      { label: 'Ø§Ù„Ù‚Ø±Øµ', value: '200 Ù…ÙŠØºØ§Ø¨Ø§ÙŠØª Ù…Ø³Ø§Ø­Ø© Ø­Ø±Ø©' },
+      { label: 'Ø§Ù„Ø´Ø¨ÙƒØ©', value: 'LAN Ù„Ù€ ZKTecoØŒ Ø¥Ù†ØªØ±Ù†Øª Ù„Ù„Ù…Ø²Ø§Ù…Ù†Ø© Ø§Ù„Ø³Ø­Ø§Ø¨ÙŠØ©' },
+      { label: '.NET', value: '.NET 8 Runtime (Ù…Ø¶Ù…Ù† Ù…Ø¹ Ø§Ù„Ù…Ø«Ø¨Øª)' },
     ],
     howItWorks: {
-      title: 'كيف يعمل',
+      title: 'ÙƒÙŠÙ ÙŠØ¹Ù…Ù„',
       steps: [
-        { step: '01', title: 'ثبّت', description: 'حمّل وشغّل المثبت. إعداد تلقائي في دقيقتين.' },
-        { step: '02', title: 'اتصل', description: 'أدخل عناوين IP لأجهزة ZKTeco. كشف تلقائي على الشبكة المحلية.' },
-        { step: '03', title: 'زامن', description: 'تتدفق بيانات الحضور تلقائياً إلى Leopardo RH في السحابة.' },
+        { step: '01', title: 'Ø«Ø¨Ù‘Øª', description: 'Ø­Ù…Ù‘Ù„ ÙˆØ´ØºÙ‘Ù„ Ø§Ù„Ù…Ø«Ø¨Øª. Ø¥Ø¹Ø¯Ø§Ø¯ ØªÙ„Ù‚Ø§Ø¦ÙŠ ÙÙŠ Ø¯Ù‚ÙŠÙ‚ØªÙŠÙ†.' },
+        { step: '02', title: 'Ø§ØªØµÙ„', description: 'Ø£Ø¯Ø®Ù„ Ø¹Ù†Ø§ÙˆÙŠÙ† IP Ù„Ø£Ø¬Ù‡Ø²Ø© ZKTeco. ÙƒØ´Ù ØªÙ„Ù‚Ø§Ø¦ÙŠ Ø¹Ù„Ù‰ Ø§Ù„Ø´Ø¨ÙƒØ© Ø§Ù„Ù…Ø­Ù„ÙŠØ©.' },
+        { step: '03', title: 'Ø²Ø§Ù…Ù†', description: 'ØªØªØ¯ÙÙ‚ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø­Ø¶ÙˆØ± ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¥Ù„Ù‰ Leopardo RH ÙÙŠ Ø§Ù„Ø³Ø­Ø§Ø¨Ø©.' },
       ],
     },
     faq: [
-      { question: 'هل عميل ويندوز مجاني؟', answer: 'نعم، عميل سطح المكتب مضمن في جميع خطط Leopardo RH بما في ذلك Starter.' },
-      { question: 'ما الأجهزة المدعومة؟', answer: 'جميع أجهزة ZKTeco (iClock, SpeedFace, ProFace, uFace).' },
-      { question: 'هل يمكن نشره عبر GPO؟', answer: 'نعم، مثبت MSI يدعم النشر الصامت.' },
+      { question: 'Ù‡Ù„ Ø¹Ù…ÙŠÙ„ ÙˆÙŠÙ†Ø¯ÙˆØ² Ù…Ø¬Ø§Ù†ÙŠØŸ', answer: 'Ù†Ø¹Ù…ØŒ Ø¹Ù…ÙŠÙ„ Ø³Ø·Ø­ Ø§Ù„Ù…ÙƒØªØ¨ Ù…Ø¶Ù…Ù† ÙÙŠ Ø¬Ù…ÙŠØ¹ Ø®Ø·Ø· Leopardo RH Ø¨Ù…Ø§ ÙÙŠ Ø°Ù„Ùƒ Starter.' },
+      { question: 'Ù…Ø§ Ø§Ù„Ø£Ø¬Ù‡Ø²Ø© Ø§Ù„Ù…Ø¯Ø¹ÙˆÙ…Ø©ØŸ', answer: 'Ø¬Ù…ÙŠØ¹ Ø£Ø¬Ù‡Ø²Ø© ZKTeco (iClock, SpeedFace, ProFace, uFace).' },
+      { question: 'Ù‡Ù„ ÙŠÙ…ÙƒÙ† Ù†Ø´Ø±Ù‡ Ø¹Ø¨Ø± GPOØŸ', answer: 'Ù†Ø¹Ù…ØŒ Ù…Ø«Ø¨Øª MSI ÙŠØ¯Ø¹Ù… Ø§Ù„Ù†Ø´Ø± Ø§Ù„ØµØ§Ù…Øª.' },
     ],
   },
 };
@@ -393,29 +393,29 @@ const mobileAppsData: Record<AppLocale, {
     ],
   },
   ar: {
-    sectionTitle: 'تطبيقات الجوال',
-    sectionSubtitle: 'الحضور وإدارة الموارد البشرية والإشراف متعدد المستأجرين مباشرة من هاتفك الذكي.',
+    sectionTitle: 'ØªØ·Ø¨ÙŠÙ‚Ø§Øª Ø§Ù„Ø¬ÙˆØ§Ù„',
+    sectionSubtitle: 'Ø§Ù„Ø­Ø¶ÙˆØ± ÙˆØ¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ø¨Ø´Ø±ÙŠØ© ÙˆØ§Ù„Ø¥Ø´Ø±Ø§Ù Ù…ØªØ¹Ø¯Ø¯ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ† Ù…Ø¨Ø§Ø´Ø±Ø© Ù…Ù† Ù‡Ø§ØªÙÙƒ Ø§Ù„Ø°ÙƒÙŠ.',
     apps: [
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'تسجيل الحضور عبر الجوال وطلبات الإجازة وقسائم الرواتب وإشعارات الموظفين.',
-        androidLabel: 'قريبًا على Google Play',
-        iosLabel: 'قريبًا على App Store',
+        description: 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø­Ø¶ÙˆØ± Ø¹Ø¨Ø± Ø§Ù„Ø¬ÙˆØ§Ù„ ÙˆØ·Ù„Ø¨Ø§Øª Ø§Ù„Ø¥Ø¬Ø§Ø²Ø© ÙˆÙ‚Ø³Ø§Ø¦Ù… Ø§Ù„Ø±ÙˆØ§ØªØ¨ ÙˆØ¥Ø´Ø¹Ø§Ø±Ø§Øª Ø§Ù„Ù…ÙˆØ¸ÙÙŠÙ†.',
+        androidLabel: 'Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø¹Ù„Ù‰ Google Play',
+        iosLabel: 'Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø¹Ù„Ù‰ App Store',
       },
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'إدارة الفريق وجدولة المواعيد وسير عمل الموافقات ومراقبة الحضور.',
-        androidLabel: 'قريبًا على Google Play',
-        iosLabel: 'قريبًا على App Store',
+        description: 'Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙØ±ÙŠÙ‚ ÙˆØ¬Ø¯ÙˆÙ„Ø© Ø§Ù„Ù…ÙˆØ§Ø¹ÙŠØ¯ ÙˆØ³ÙŠØ± Ø¹Ù…Ù„ Ø§Ù„Ù…ÙˆØ§ÙÙ‚Ø§Øª ÙˆÙ…Ø±Ø§Ù‚Ø¨Ø© Ø§Ù„Ø­Ø¶ÙˆØ±.',
+        androidLabel: 'Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø¹Ù„Ù‰ Google Play',
+        iosLabel: 'Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø¹Ù„Ù‰ App Store',
       },
       {
         slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'الإشراف متعدد المستأجرين والتكوين العام والتحكم في المستأجرين من الجوال.',
-        androidLabel: 'قريبًا على Google Play',
-        iosLabel: 'قريبًا على App Store',
+        description: 'Ø§Ù„Ø¥Ø´Ø±Ø§Ù Ù…ØªØ¹Ø¯Ø¯ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ† ÙˆØ§Ù„ØªÙƒÙˆÙŠÙ† Ø§Ù„Ø¹Ø§Ù… ÙˆØ§Ù„ØªØ­ÙƒÙ… ÙÙŠ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ† Ù…Ù† Ø§Ù„Ø¬ÙˆØ§Ù„.',
+        androidLabel: 'Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø¹Ù„Ù‰ Google Play',
+        iosLabel: 'Ù‚Ø±ÙŠØ¨Ù‹Ø§ Ø¹Ù„Ù‰ App Store',
       },
     ],
   },
@@ -479,19 +479,19 @@ const kioskCopy: Record<AppLocale, KioskCopy> = {
     note: 'Kiosk, yerel bridge kaynak kodu ile birlikte gelir; ZKTeco okuyucu veya tablet disinda ayrica donanim satin alinmaz.',
   },
   ar: {
-    sectionTitle: 'كشك الميدان (جهاز ZKTeco)',
-    sectionSubtitle: 'كشك دخول بالبصمة/الوجه أو QR للفرق التي تسجل الحضور في الموقع دون الحاجة إلى هاتف ذكي.',
+    sectionTitle: 'ÙƒØ´Ùƒ Ø§Ù„Ù…ÙŠØ¯Ø§Ù† (Ø¬Ù‡Ø§Ø² ZKTeco)',
+    sectionSubtitle: 'ÙƒØ´Ùƒ Ø¯Ø®ÙˆÙ„ Ø¨Ø§Ù„Ø¨ØµÙ…Ø©/Ø§Ù„ÙˆØ¬Ù‡ Ø£Ùˆ QR Ù„Ù„ÙØ±Ù‚ Ø§Ù„ØªÙŠ ØªØ³Ø¬Ù„ Ø§Ù„Ø­Ø¶ÙˆØ± ÙÙŠ Ø§Ù„Ù…ÙˆÙ‚Ø¹ Ø¯ÙˆÙ† Ø§Ù„Ø­Ø§Ø¬Ø© Ø¥Ù„Ù‰ Ù‡Ø§ØªÙ Ø°ÙƒÙŠ.',
     bullets: [
-      'تسجيل الحضور بالبصمة أو الوجه أو رمز QR/رقم الموظف كخيار احتياطي',
-      'يعمل بدون إنترنت: يتم تخزين التسجيلات محلياً ومزامنتها تلقائياً عند عودة الشبكة',
-      'جسر مكتبي محلي (Python) وواجهة لمس بملء الشاشة، يعمل على جهاز كمبيوتر أو مصغر',
-      'يتم تجهيزه من تطبيق المدير: رمز الجهاز ورمز المزامنة يتم إنشاؤهما في ثوانٍ',
+      'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø­Ø¶ÙˆØ± Ø¨Ø§Ù„Ø¨ØµÙ…Ø© Ø£Ùˆ Ø§Ù„ÙˆØ¬Ù‡ Ø£Ùˆ Ø±Ù…Ø² QR/Ø±Ù‚Ù… Ø§Ù„Ù…ÙˆØ¸Ù ÙƒØ®ÙŠØ§Ø± Ø§Ø­ØªÙŠØ§Ø·ÙŠ',
+      'ÙŠØ¹Ù…Ù„ Ø¨Ø¯ÙˆÙ† Ø¥Ù†ØªØ±Ù†Øª: ÙŠØªÙ… ØªØ®Ø²ÙŠÙ† Ø§Ù„ØªØ³Ø¬ÙŠÙ„Ø§Øª Ù…Ø­Ù„ÙŠØ§Ù‹ ÙˆÙ…Ø²Ø§Ù…Ù†ØªÙ‡Ø§ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¹Ù†Ø¯ Ø¹ÙˆØ¯Ø© Ø§Ù„Ø´Ø¨ÙƒØ©',
+      'Ø¬Ø³Ø± Ù…ÙƒØªØ¨ÙŠ Ù…Ø­Ù„ÙŠ (Python) ÙˆÙˆØ§Ø¬Ù‡Ø© Ù„Ù…Ø³ Ø¨Ù…Ù„Ø¡ Ø§Ù„Ø´Ø§Ø´Ø©ØŒ ÙŠØ¹Ù…Ù„ Ø¹Ù„Ù‰ Ø¬Ù‡Ø§Ø² ÙƒÙ…Ø¨ÙŠÙˆØªØ± Ø£Ùˆ Ù…ØµØºØ±',
+      'ÙŠØªÙ… ØªØ¬Ù‡ÙŠØ²Ù‡ Ù…Ù† ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ù…Ø¯ÙŠØ±: Ø±Ù…Ø² Ø§Ù„Ø¬Ù‡Ø§Ø² ÙˆØ±Ù…Ø² Ø§Ù„Ù…Ø²Ø§Ù…Ù†Ø© ÙŠØªÙ… Ø¥Ù†Ø´Ø§Ø¤Ù‡Ù…Ø§ ÙÙŠ Ø«ÙˆØ§Ù†Ù',
     ],
-    ctaSetup: 'دليل تثبيت الكشك',
+    ctaSetup: 'Ø¯Ù„ÙŠÙ„ ØªØ«Ø¨ÙŠØª Ø§Ù„ÙƒØ´Ùƒ',
     ctaSetupHref: '/docs#kiosk',
-    ctaContact: 'طلب مساعدة للتثبيت',
+    ctaContact: 'Ø·Ù„Ø¨ Ù…Ø³Ø§Ø¹Ø¯Ø© Ù„Ù„ØªØ«Ø¨ÙŠØª',
     ctaContactHref: '/contact?topic=download-kiosk',
-    note: 'يأتي الكشك مع الكود المصدري للجسر المحلي؛ لا حاجة لشراء جهاز منفصل بخلاف قارئ ZKTeco أو جهاز لوحي.',
+    note: 'ÙŠØ£ØªÙŠ Ø§Ù„ÙƒØ´Ùƒ Ù…Ø¹ Ø§Ù„ÙƒÙˆØ¯ Ø§Ù„Ù…ØµØ¯Ø±ÙŠ Ù„Ù„Ø¬Ø³Ø± Ø§Ù„Ù…Ø­Ù„ÙŠØ› Ù„Ø§ Ø­Ø§Ø¬Ø© Ù„Ø´Ø±Ø§Ø¡ Ø¬Ù‡Ø§Ø² Ù…Ù†ÙØµÙ„ Ø¨Ø®Ù„Ø§Ù Ù‚Ø§Ø±Ø¦ ZKTeco Ø£Ùˆ Ø¬Ù‡Ø§Ø² Ù„ÙˆØ­ÙŠ.',
   },
 };
 
@@ -515,10 +515,10 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
     { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'iPhone uzerinde yonetici ve calisan deneyimi.', href: '/download#mobile-apps'},
   ],
   ar: [
-    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'مزامنة ZKTeco ووضع عدم الاتصال وإشراف المواقع.', href: '/contact?topic=download-windows' },
-    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'عميل مكتبي لفرق الميدان والمسؤولين.', href: '/contact?topic=download-macos' },
-    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'الحضور عبر الهاتف وطلبات الموارد البشرية والإشعارات.', href: '/download#mobile-apps'},
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'تجربة موبايل للمديرين والموظفين على iPhone.', href: '/download#mobile-apps'},
+    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Ù…Ø²Ø§Ù…Ù†Ø© ZKTeco ÙˆÙˆØ¶Ø¹ Ø¹Ø¯Ù… Ø§Ù„Ø§ØªØµØ§Ù„ ÙˆØ¥Ø´Ø±Ø§Ù Ø§Ù„Ù…ÙˆØ§Ù‚Ø¹.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Ø¹Ù…ÙŠÙ„ Ù…ÙƒØªØ¨ÙŠ Ù„ÙØ±Ù‚ Ø§Ù„Ù…ÙŠØ¯Ø§Ù† ÙˆØ§Ù„Ù…Ø³Ø¤ÙˆÙ„ÙŠÙ†.', href: '/contact?topic=download-macos' },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Ø§Ù„Ø­Ø¶ÙˆØ± Ø¹Ø¨Ø± Ø§Ù„Ù‡Ø§ØªÙ ÙˆØ·Ù„Ø¨Ø§Øª Ø§Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ø¨Ø´Ø±ÙŠØ© ÙˆØ§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'ØªØ¬Ø±Ø¨Ø© Ù…ÙˆØ¨Ø§ÙŠÙ„ Ù„Ù„Ù…Ø¯ÙŠØ±ÙŠÙ† ÙˆØ§Ù„Ù…ÙˆØ¸ÙÙŠÙ† Ø¹Ù„Ù‰ iPhone.', href: '/download#mobile-apps'},
   ],
 };
 
@@ -621,7 +621,7 @@ export default function DownloadPage() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="relative py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-black text-slate-900 dark:text-white text-center mb-16">
             {c.howItWorks.title}
@@ -650,14 +650,14 @@ export default function DownloadPage() {
       <section className="relative py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-black text-slate-900 dark:text-white text-center mb-12">
-            {locale === 'fr' ? 'Configuration requise' : locale === 'tr' ? 'Sistem Gereksinimleri' : locale === 'ar' ? 'متطلبات النظام' : 'System Requirements'}
+            {locale === 'fr' ? 'Configuration requise' : locale === 'tr' ? 'Sistem Gereksinimleri' : locale === 'ar' ? 'Ù…ØªØ·Ù„Ø¨Ø§Øª Ø§Ù„Ù†Ø¸Ø§Ù…' : 'System Requirements'}
           </h2>
           <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden">
             {c.requirements.map((req, index) => (
               <div
                 key={req.label}
                 className={`flex items-center justify-between px-6 py-4 ${
-                  index % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50 dark:bg-slate-900/50'
+                  index % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-transparent dark:bg-slate-900/50'
                 }`}
               >
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">{req.label}</span>
@@ -668,7 +668,7 @@ export default function DownloadPage() {
         </div>
       </section>
 
-      <section className="relative py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="relative py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-black text-slate-900 dark:text-white text-center mb-12">FAQ</h2>
           <div className="space-y-4">
@@ -686,12 +686,12 @@ export default function DownloadPage() {
       </section>
 
       {/* ===== Section Applications Mobiles ===== */}
-      <section id="mobile-apps" className="relative py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section id="mobile-apps" className="relative py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-4">
               <Smartphone className="w-4 h-4" />
-              {locale === 'fr' ? 'Mobile-First' : locale === 'ar' ? 'الأولوية للجوال' : locale === 'tr' ? 'Mobil Oncelikli' : 'Mobile-First'}
+              {locale === 'fr' ? 'Mobile-First' : locale === 'ar' ? 'Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ© Ù„Ù„Ø¬ÙˆØ§Ù„' : locale === 'tr' ? 'Mobil Oncelikli' : 'Mobile-First'}
             </div>
             <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">{mobileApps.sectionTitle}</h2>
             <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">{mobileApps.sectionSubtitle}</p>
@@ -762,7 +762,7 @@ export default function DownloadPage() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-4">
                 <Fingerprint className="w-4 h-4" />
-                {locale === 'fr' ? 'Terrain' : locale === 'ar' ? 'الميدان' : locale === 'tr' ? 'Saha' : 'Field'}
+                {locale === 'fr' ? 'Terrain' : locale === 'ar' ? 'Ø§Ù„Ù…ÙŠØ¯Ø§Ù†' : locale === 'tr' ? 'Saha' : 'Field'}
               </div>
               <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">{kiosk.sectionTitle}</h2>
               <p className="text-lg text-slate-500 dark:text-slate-400 mb-8">{kiosk.sectionSubtitle}</p>
@@ -798,13 +798,13 @@ export default function DownloadPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/60 p-8"
+              className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-transparent dark:bg-slate-900/60 p-8"
             >
               <div className="grid grid-cols-3 gap-4 text-center mb-6">
                 <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
                   <Fingerprint className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    {locale === 'fr' ? 'Biometrie' : locale === 'ar' ? 'البصمة' : locale === 'tr' ? 'Biyometri' : 'Biometrics'}
+                    {locale === 'fr' ? 'Biometrie' : locale === 'ar' ? 'Ø§Ù„Ø¨ØµÙ…Ø©' : locale === 'tr' ? 'Biyometri' : 'Biometrics'}
                   </p>
                 </div>
                 <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
@@ -814,7 +814,7 @@ export default function DownloadPage() {
                 <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
                   <WifiOff className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    {locale === 'fr' ? 'Hors-ligne' : locale === 'ar' ? 'دون اتصال' : locale === 'tr' ? 'Cevrimdisi' : 'Offline'}
+                    {locale === 'fr' ? 'Hors-ligne' : locale === 'ar' ? 'Ø¯ÙˆÙ† Ø§ØªØµØ§Ù„' : locale === 'tr' ? 'Cevrimdisi' : 'Offline'}
                   </p>
                 </div>
               </div>
@@ -828,3 +828,4 @@ export default function DownloadPage() {
     </div>
   );
 }
+

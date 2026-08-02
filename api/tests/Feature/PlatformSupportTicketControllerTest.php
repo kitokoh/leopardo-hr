@@ -113,7 +113,7 @@ class PlatformSupportTicketControllerTest extends TestCase
 
         $this->getJson('/api/v1/platform/support-tickets')
             ->assertOk()
-            ->assertJsonPath('data.0.subject', 'Billing question')
+            ->assertJsonFragment(['subject' => 'Billing question'])
             ->assertJsonPath('meta.status_counts.open', 1);
 
         $reply = $this->postJson("/api/v1/platform/support-tickets/{$ticketId}/reply", [

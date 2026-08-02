@@ -1,19 +1,20 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-/// Écran d'onboarding pour la permission "Toujours autoriser" la localisation
-/// sur Android 11+ (ACCESS_BACKGROUND_LOCATION ne peut pas être demandée
-/// dans le dialog standard — l'utilisateur doit aller dans les paramètres système).
+/// Ã‰cran d'onboarding pour la permission "Toujours autoriser" la localisation
+/// sur Android 11+ (ACCESS_BACKGROUND_LOCATION ne peut pas Ãªtre demandÃ©e
+/// dans le dialog standard â€” l'utilisateur doit aller dans les paramÃ¨tres systÃ¨me).
 ///
-/// À afficher une seule fois, avant l'activation du monitoring GPS.
-/// Naviguer vers cet écran depuis SmartAttendanceScreen quand :
+/// Ã€ afficher une seule fois, avant l'activation du monitoring GPS.
+/// Naviguer vers cet Ã©cran depuis SmartAttendanceScreen quand :
 ///   - Platform.isAndroid
 ///   - backgroundLocationPermission n'est pas granted
 class BackgroundPermissionOnboardingScreen extends StatefulWidget {
-  /// Route de destination après l'onboarding (par défaut : retour en arrière)
+  /// Route de destination aprÃ¨s l'onboarding (par dÃ©faut : retour en arriÃ¨re)
   final String? nextRoute;
 
   const BackgroundPermissionOnboardingScreen({super.key, this.nextRoute});
@@ -122,9 +123,9 @@ class _BackgroundPermissionOnboardingScreenState
               const SizedBox(height: 16),
 
               const Text(
-                'Pour détecter automatiquement votre arrivée et votre départ du bureau, '
-                'Leopardo a besoin d\'accéder à votre position même quand l\'application '
-                'est fermée.',
+                'Pour dÃ©tecter automatiquement votre arrivÃ©e et votre dÃ©part du bureau, '
+                'Leopardo a besoin d\'accÃ©der Ã  votre position mÃªme quand l\'application '
+                'est fermÃ©e.',
                 textAlign: TextAlign.center,
                 style:
                     TextStyle(color: Colors.white70, fontSize: 15, height: 1.5),
@@ -132,19 +133,19 @@ class _BackgroundPermissionOnboardingScreenState
               const SizedBox(height: 24),
 
               // Steps
-              _StepCard(
+              _StepGlassCard(
                 step: '1',
-                text: 'Appuyez sur "Ouvrir les paramètres" ci-dessous',
+                text: 'Appuyez sur "Ouvrir les paramÃ¨tres" ci-dessous',
               ),
               const SizedBox(height: 10),
-              _StepCard(
+              _StepGlassCard(
                 step: '2',
-                text: 'Touchez "Autorisations" → "Position"',
+                text: 'Touchez "Autorisations" â†’ "Position"',
               ),
               const SizedBox(height: 10),
-              _StepCard(
+              _StepGlassCard(
                 step: '3',
-                text: 'Sélectionnez "Toujours autoriser"',
+                text: 'SÃ©lectionnez "Toujours autoriser"',
               ),
 
               const Spacer(),
@@ -160,7 +161,7 @@ class _BackgroundPermissionOnboardingScreenState
                             strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.settings_rounded),
-                label: const Text('Ouvrir les paramètres'),
+                label: const Text('Ouvrir les paramÃ¨tres'),
                 style: FilledButton.styleFrom(
                   backgroundColor: _accent,
                   foregroundColor: Colors.black,
@@ -172,7 +173,7 @@ class _BackgroundPermissionOnboardingScreenState
               ),
               const SizedBox(height: 12),
 
-              // Bouton "Déjà fait"
+              // Bouton "DÃ©jÃ  fait"
               OutlinedButton(
                 onPressed: _checkAndContinue,
                 style: OutlinedButton.styleFrom(
@@ -183,7 +184,7 @@ class _BackgroundPermissionOnboardingScreenState
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('J\'ai déjà autorisé — Continuer'),
+                child: const Text('J\'ai dÃ©jÃ  autorisÃ© â€” Continuer'),
               ),
               const SizedBox(height: 8),
             ],
@@ -195,7 +196,7 @@ class _BackgroundPermissionOnboardingScreenState
 }
 
 class _StepCard extends StatelessWidget {
-  const _StepCard({required this.step, required this.text});
+  const _StepGlassCard({required this.step, required this.text});
   final String step;
   final String text;
 
@@ -234,3 +235,4 @@ class _StepCard extends StatelessWidget {
     );
   }
 }
+

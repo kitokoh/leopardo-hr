@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -130,11 +131,11 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: _BalanceCard(balanceAsync: balanceAsync),
+                      child: _BalanceGlassCard(balanceAsync: balanceAsync),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: _PaymentDocumentsCard(
+                      child: _PaymentDocumentsGlassCard(
                         documentsAsync: documentsAsync,
                         downloadingId: _downloadingDocumentId,
                         onDownload: _downloadPaymentDocument,
@@ -225,9 +226,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _BalanceCard(balanceAsync: balanceAsync),
+              _BalanceGlassCard(balanceAsync: balanceAsync),
               const SizedBox(height: 16),
-              _PaymentDocumentsCard(
+              _PaymentDocumentsGlassCard(
                 documentsAsync: documentsAsync,
                 downloadingId: _downloadingDocumentId,
                 onDownload: _downloadPaymentDocument,
@@ -244,9 +245,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _BalanceCard(balanceAsync: balanceAsync),
+              _BalanceGlassCard(balanceAsync: balanceAsync),
               const SizedBox(height: 16),
-              _PaymentDocumentsCard(
+              _PaymentDocumentsGlassCard(
                 documentsAsync: documentsAsync,
                 downloadingId: _downloadingDocumentId,
                 onDownload: _downloadPaymentDocument,
@@ -265,7 +266,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
 }
 
 class _PaymentDocumentsCard extends StatelessWidget {
-  const _PaymentDocumentsCard({
+  const _PaymentDocumentsGlassCard({
     required this.documentsAsync,
     required this.downloadingId,
     required this.onDownload,
@@ -408,7 +409,7 @@ class _PaymentDocumentTile extends StatelessWidget {
 }
 
 class _BalanceCard extends StatelessWidget {
-  const _BalanceCard({required this.balanceAsync});
+  const _BalanceGlassCard({required this.balanceAsync});
 
   final AsyncValue<PayrollBalance> balanceAsync;
 
@@ -546,3 +547,4 @@ class _MoneyLine extends StatelessWidget {
     );
   }
 }
+

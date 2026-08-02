@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans text-slate-200">
     <!-- Animated Background -->
     <div class="absolute inset-0 z-0">
@@ -12,7 +12,7 @@
 
     <div class="max-w-md w-full space-y-10 relative z-10">
       <div class="text-center">
-        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
+        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl glass-card/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <span class="text-4xl font-black text-white tracking-tighter relative z-10">LRH</span>
         </div>
@@ -20,7 +20,7 @@
           Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
         </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
-          Platform Administration • v4.16
+          Platform Administration â€¢ v4.16
         </p>
         <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
           Connectez-vous a votre espace
@@ -45,14 +45,14 @@
                     autocomplete="email"
                     required
                     autofocus
-                    class="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
+                    class="block w-full rounded-2xl border-0 glass-card/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="admin@leopardo-rh.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Clé d'Accès</label>
+                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">ClÃ© d'AccÃ¨s</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <LockClosedIcon class="h-5 w-5 text-slate-500" />
@@ -64,8 +64,8 @@
                     :type="showPassword ? 'text' : 'password'"
                     autocomplete="current-password"
                     required
-                    class="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
-                    placeholder="••••••••"
+                    class="block w-full rounded-2xl border-0 glass-card/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   />
                   <button
                     type="button"
@@ -88,7 +88,7 @@
                   type="text"
                   inputmode="numeric"
                   required
-                  class="block w-full rounded-2xl border-0 bg-white/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
+                  class="block w-full rounded-2xl border-0 glass-card/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
                   placeholder="000000"
                 />
               </div>
@@ -101,7 +101,7 @@
                   v-model="form.remember"
                   name="remember-me"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-white/10 bg-white/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
+                  class="h-4 w-4 rounded border-white/10 glass-card/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
                 />
                 <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Se souvenir de moi
@@ -166,9 +166,9 @@
 
       <!-- Legal & Info Footer -->
       <div class="flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-600">
-        <span>© 2026 Leopardo Systems</span>
+        <span>Â© 2026 Leopardo Systems</span>
         <div class="flex items-center gap-4">
-          <a href="#" class="hover:text-slate-400 transition-colors">Sécurité</a>
+          <a href="#" class="hover:text-slate-400 transition-colors">SÃ©curitÃ©</a>
           <a href="#" class="hover:text-slate-400 transition-colors">Support</a>
         </div>
       </div>
@@ -178,7 +178,7 @@
     <div v-if="showDemoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" @click="showDemoModal = false"></div>
       <div class="w-full max-w-sm relative glass-card p-8 text-center bg-slate-900 shadow-2xl rounded-3xl border border-white/10 z-10">
-         <h3 class="text-xl font-black text-white uppercase tracking-tight">Accès Démo</h3>
+         <h3 class="text-xl font-black text-white uppercase tracking-tight">AccÃ¨s DÃ©mo</h3>
          <p class="mt-4 text-slate-400 text-sm font-medium italic">administrateurs plateforme</p>
          <div class="mt-8 space-y-3">
            <button
@@ -252,7 +252,7 @@ async function handleLogin() {
       router.push('/')
     } else if (result.requiresTwoFactor) {
       requiresTwoFactor.value = true
-      error.value = result.message || 'Un code de vérification est requis.'
+      error.value = result.message || 'Un code de vÃ©rification est requis.'
     } else {
       error.value = result.message || 'Erreur de connexion'
     }
@@ -271,3 +271,4 @@ input:focus {
   @apply ring-brand-500 border-brand-500 shadow-[0_0_15px_rgba(20,184,166,0.1)];
 }
 </style>
+
