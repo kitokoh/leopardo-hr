@@ -203,6 +203,16 @@ return [
             'title' => 'Réception d’avance confirmée',
             'body' => 'L’employé a confirmé avoir reçu l’avance sur salaire.',
         ],
+        'salary_advance_disputed' => [
+            'category' => 'payroll',
+            'title' => 'Avance sur salaire contestée',
+            'body' => 'Un employé a contesté le paiement de son avance sur salaire.',
+        ],
+        'salary_advance_dispute_resolved' => [
+            'category' => 'payroll',
+            'title' => 'Contestation d\'avance résolue',
+            'body' => 'La contestation de l\'avance sur salaire a été résolue par votre manager.',
+        ],
         // PA2-COMM-010 — Payment document lifecycle: lets the employee know a
         // receipt/payslip/bordereau is being prepared, then that it is ready,
         // without the UI having to block or poll blindly for it.

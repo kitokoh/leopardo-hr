@@ -255,6 +255,7 @@ class SalaryAdvanceSecurityTest extends TestCase
             ->where('employee_id', $employee->id)
             ->where('company_id', $company->id)
             ->where('type', 'payroll')
+            ->whereJsonContains('data->salary_advance_id', $advance->id)
             ->pluck('data')->all();
         $this->assertCount(2, $employeeNotifications); // manager_approved + payment_declared
 
