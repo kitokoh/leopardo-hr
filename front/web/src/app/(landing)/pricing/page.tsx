@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
@@ -28,9 +28,9 @@ import {
   Gift,
 } from 'lucide-react';
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    TYPES
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 type ComparisonFeature = {
   name: string;
   free: boolean | string;
@@ -61,68 +61,68 @@ type PricingPageCopy = {
   cta: { badge: string; headline: string; subheadline: string; primary: string; secondary: string };
 };
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    COPY (fr / en / tr / ar)
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
   fr: {
     hero: {
       badge: 'Tarification transparente',
-      headline: 'Des tarifs pensés pour les équipes terrain',
-      subheadline: 'Commencez gratuitement — sans carte bancaire — et passez à un plan payant quand vous êtes prêt.',
+      headline: 'Des tarifs pensÃ©s pour les Ã©quipes terrain',
+      subheadline: 'Commencez gratuitement â€” sans carte bancaire â€” et passez Ã  un plan payant quand vous Ãªtes prÃªt.',
       primary: 'Commencer gratuitement',
-      secondary: 'Parler à un expert',
+      secondary: 'Parler Ã  un expert',
     },
     plans: {
       badge: 'Nos plans',
-      title: 'Un plan pour chaque étape de votre croissance',
+      title: 'Un plan pour chaque Ã©tape de votre croissance',
       subtitle: 'Commencez petit, montez en puissance sans changer de plateforme.',
       monthly: 'Mensuel',
       annual: 'Annuel',
-      savings: 'Économisez 20%',
+      savings: 'Ã‰conomisez 20%',
       customPrice: 'Sur devis',
       periodMonthly: '/mois',
-      periodAnnual: '/mois facturé annuellement',
-      trialNote: '30 jours offerts · Aucune CB requise',
+      periodAnnual: '/mois facturÃ© annuellement',
+      trialNote: '30 jours offerts Â· Aucune CB requise',
     },
     currency: {
       label: 'Afficher les prix en',
-      approx: 'Conversion approximative depuis le prix de référence en EUR ; le tarif contractuel reste fixé en EUR.',
+      approx: 'Conversion approximative depuis le prix de rÃ©fÃ©rence en EUR ; le tarif contractuel reste fixÃ© en EUR.',
     },
     trust: {
       items: [
         'Plan gratuit sans CB',
-        'Support inclus dès le premier jour',
-        'Données hébergées en Europe',
-        'Résiliation à tout moment',
+        'Support inclus dÃ¨s le premier jour',
+        'DonnÃ©es hÃ©bergÃ©es en Europe',
+        'RÃ©siliation Ã  tout moment',
       ],
     },
     comparison: {
-      badge: 'Comparaison complète',
+      badge: 'Comparaison complÃ¨te',
       title: 'Tout ce qui est inclus',
       subtitle: 'par plan',
-      featureColumn: 'Fonctionnalité',
+      featureColumn: 'FonctionnalitÃ©',
       categories: [
         {
           category: 'Gestion RH',
           features: [
             { name: 'Pointage web & mobile', free: 'Web seulement', starter: true, business: true, enterprise: true },
-            { name: 'Absences & congés', free: true, starter: true, business: true, enterprise: true },
-            { name: 'Calendrier partagé', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Onboarding guidé', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Évaluations & performance', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Absences & congÃ©s', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Calendrier partagÃ©', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Onboarding guidÃ©', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Ã‰valuations & performance', free: false, starter: false, business: true, enterprise: true },
             { name: 'Organigramme dynamique', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Calcul automatisÃ© de la paie', free: false, starter: true, business: true, enterprise: true },
             { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'Multi-pays & multi-devises', free: false, starter: false, business: false, enterprise: true },
-            { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
+            { name: 'ConformitÃ© lÃ©gale avancÃ©e', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
@@ -131,47 +131,47 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
             { name: 'App mobile Employee', free: true, starter: true, business: true, enterprise: true },
             { name: 'App mobile Manager', free: false, starter: true, business: true, enterprise: true },
             { name: 'Mode hors-ligne', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Intégration ZKTeco biométrie', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Kiosque RH dédié', free: false, starter: false, business: true, enterprise: true },
-            { name: 'GPS & géofencing', free: false, starter: false, business: true, enterprise: true },
+            { name: 'IntÃ©gration ZKTeco biomÃ©trie', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Kiosque RH dÃ©diÃ©', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & gÃ©ofencing', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
-          category: 'Sécurité & intégrations',
+          category: 'SÃ©curitÃ© & intÃ©grations',
           features: [
             { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
             { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
-            { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
-            { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SchÃ©ma PostgreSQL isolÃ©', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SLA dÃ©diÃ© & support prioritaire', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
     },
     faq: {
       badge: 'FAQ tarifs',
-      title: 'Questions fréquentes',
-      subtitle: 'Les points à vérifier avant de démarrer',
+      title: 'Questions frÃ©quentes',
+      subtitle: 'Les points Ã  vÃ©rifier avant de dÃ©marrer',
       all: 'Tous',
-      categories: ['Facturation', 'Essai', 'Support', 'Sécurité', 'Technique'],
+      categories: ['Facturation', 'Essai', 'Support', 'SÃ©curitÃ©', 'Technique'],
       items: [
-        { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
-        { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
-        { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
-        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 30 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
-        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Starter : email sous 48h. Business : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
-        { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
-        { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
-        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Business. Sur Free et Starter, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
+        { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. AccÃ¨s immÃ©diat jusqu\'Ã  5 employÃ©s. Vous pouvez passer Ã  un plan payant Ã  tout moment.', category: 'Essai' },
+        { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, Ã  tout moment. Upgrade immÃ©diat, downgrade au prochain cycle. Aucun frais cachÃ©.', category: 'Facturation' },
+        { id: 'per-employee', question: 'Comment fonctionne la facturation par employÃ© ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employÃ© actif (qui a pointÃ© au moins une fois dans le mois). Les employÃ©s inactifs ne sont pas comptÃ©s.', category: 'Facturation' },
+        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalitÃ©s du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'trial-to-paid', question: 'Que se passe-t-il Ã  la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos donnÃ©es restent archivÃ©es 30 jours supplÃ©mentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
+        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communautÃ©. Starter : email sous 48h. Business : prioritÃ© 24h. Enterprise : account manager dÃ©diÃ© + SLA contractuel.', category: 'Support' },
+        { id: 'data-location', question: 'OÃ¹ sont hÃ©bergÃ©es mes donnÃ©es ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'SÃ©curitÃ©' },
+        { id: 'gdpr', question: 'ÃŠtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, donnÃ©es exclusivement en Europe, droit Ã  l\'effacement implÃ©mentÃ©, exports de donnÃ©es sur demande.', category: 'SÃ©curitÃ©' },
+        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles Ã  partir du plan Business. Sur Free et Starter, vous pouvez exporter vos donnÃ©es en CSV/Excel.', category: 'Technique' },
       ],
     },
     cta: {
-      badge: 'Prêt à démarrer',
-      headline: 'Lancez vos RH terrain dès aujourd\'hui',
-      subheadline: 'Rejoignez les équipes qui ont réduit leur temps de paie de 2h à 8 minutes.',
-      primary: 'Démarrer gratuitement',
+      badge: 'PrÃªt Ã  dÃ©marrer',
+      headline: 'Lancez vos RH terrain dÃ¨s aujourd\'hui',
+      subheadline: 'Rejoignez les Ã©quipes qui ont rÃ©duit leur temps de paie de 2h Ã  8 minutes.',
+      primary: 'DÃ©marrer gratuitement',
       secondary: 'Contacter les ventes',
     },
   },
@@ -179,7 +179,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     hero: {
       badge: 'Transparent pricing',
       headline: 'Pricing built for field HR teams',
-      subheadline: 'Start for free — no credit card — and upgrade when you are ready.',
+      subheadline: 'Start for free â€” no credit card â€” and upgrade when you are ready.',
       primary: 'Start for free',
       secondary: 'Talk to an expert',
     },
@@ -193,7 +193,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Custom',
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
-      trialNote: '30 days free · No credit card required',
+      trialNote: '30 days free Â· No credit card required',
     },
     currency: {
       label: 'Show prices in',
@@ -201,7 +201,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'Free plan — no credit card',
+        'Free plan â€” no credit card',
         'Support included from day one',
         'Data hosted in Europe',
         'Cancel anytime',
@@ -287,229 +287,229 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
   },
   tr: {
     hero: {
-      badge: 'Şeffaf fiyatlandırma',
-      headline: 'Saha HR ekipleri için fiyatlandırma',
-      subheadline: 'Ücretsiz başlayın — kredi kartı gerekmez — hazır olduğunuzda yükseltin.',
-      primary: 'Ücretsiz başla',
-      secondary: 'Uzmanla konuş',
+      badge: 'Åžeffaf fiyatlandÄ±rma',
+      headline: 'Saha HR ekipleri iÃ§in fiyatlandÄ±rma',
+      subheadline: 'Ãœcretsiz baÅŸlayÄ±n â€” kredi kartÄ± gerekmez â€” hazÄ±r olduÄŸunuzda yÃ¼kseltin.',
+      primary: 'Ãœcretsiz baÅŸla',
+      secondary: 'Uzmanla konuÅŸ',
     },
     plans: {
-      badge: 'Planlarımız',
-      title: 'Büyümenizin her aşaması için bir plan',
-      subtitle: 'Küçük başlayın, platform değiştirmeden büyüyün.',
-      monthly: 'Aylık',
-      annual: 'Yıllık',
+      badge: 'PlanlarÄ±mÄ±z',
+      title: 'BÃ¼yÃ¼menizin her aÅŸamasÄ± iÃ§in bir plan',
+      subtitle: 'KÃ¼Ã§Ã¼k baÅŸlayÄ±n, platform deÄŸiÅŸtirmeden bÃ¼yÃ¼yÃ¼n.',
+      monthly: 'AylÄ±k',
+      annual: 'YÄ±llÄ±k',
       savings: '%20 tasarruf',
-      customPrice: 'Teklif alın',
+      customPrice: 'Teklif alÄ±n',
       periodMonthly: '/ay',
-      periodAnnual: '/ay yıllık faturalama',
-      trialNote: '30 gün ücretsiz · Kredi kartı gerekmez',
+      periodAnnual: '/ay yÄ±llÄ±k faturalama',
+      trialNote: '30 gÃ¼n Ã¼cretsiz Â· Kredi kartÄ± gerekmez',
     },
     currency: {
-      label: 'Fiyatları şu para birimiyle göster',
-      approx: 'EUR referans fiyatından yaklaşık dönüşüm; sözleşme tutarı EUR olarak kalır.',
+      label: 'FiyatlarÄ± ÅŸu para birimiyle gÃ¶ster',
+      approx: 'EUR referans fiyatÄ±ndan yaklaÅŸÄ±k dÃ¶nÃ¼ÅŸÃ¼m; sÃ¶zleÅŸme tutarÄ± EUR olarak kalÄ±r.',
     },
     trust: {
       items: [
-        'Ücretsiz plan — kredi kartı yok',
-        'İlk günden destek dahil',
-        'Avrupa\'da barındırılan veriler',
-        'İstediğiniz zaman iptal',
+        'Ãœcretsiz plan â€” kredi kartÄ± yok',
+        'Ä°lk gÃ¼nden destek dahil',
+        'Avrupa\'da barÄ±ndÄ±rÄ±lan veriler',
+        'Ä°stediÄŸiniz zaman iptal',
       ],
     },
     comparison: {
-      badge: 'Tam karşılaştırma',
-      title: 'Dahil olan her şey',
-      subtitle: 'plan bazında',
-      featureColumn: 'Özellik',
+      badge: 'Tam karÅŸÄ±laÅŸtÄ±rma',
+      title: 'Dahil olan her ÅŸey',
+      subtitle: 'plan bazÄ±nda',
+      featureColumn: 'Ã–zellik',
       categories: [
         {
-          category: 'İK Yönetimi',
+          category: 'Ä°K YÃ¶netimi',
           features: [
-            { name: 'Web & mobil devam takibi', free: 'Yalnızca web', starter: true, business: true, enterprise: true },
-            { name: 'Devamsızlık & izin', free: true, starter: true, business: true, enterprise: true },
-            { name: 'Paylaşılan takvim', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Rehberli işe alım', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Değerlendirme & performans', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Dinamik organizasyon şeması', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Web & mobil devam takibi', free: 'YalnÄ±zca web', starter: true, business: true, enterprise: true },
+            { name: 'DevamsÄ±zlÄ±k & izin', free: true, starter: true, business: true, enterprise: true },
+            { name: 'PaylaÅŸÄ±lan takvim', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Rehberli iÅŸe alÄ±m', free: false, starter: true, business: true, enterprise: true },
+            { name: 'DeÄŸerlendirme & performans', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dinamik organizasyon ÅŸemasÄ±', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', free: false, starter: true, business: true, enterprise: true },
-            { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: false, enterprise: true },
-            { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Otomatik bordro hesabÄ±', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF bordro dÃ¶kÃ¼mÃ¼', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Muhasebe dÄ±ÅŸa aktarÄ±mÄ±', free: false, starter: false, business: true, enterprise: true },
+            { name: 'MaaÅŸ avansÄ±', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Ã‡ok Ã¼lke & Ã§ok para birimi', free: false, starter: false, business: false, enterprise: true },
+            { name: 'GeliÅŸmiÅŸ yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Saha & Mobil',
           features: [
-            { name: 'Çalışan mobil uygulaması', free: true, starter: true, business: true, enterprise: true },
-            { name: 'Yönetici mobil uygulaması', free: false, starter: true, business: true, enterprise: true },
-            { name: 'Çevrimdışı mod', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Ã‡alÄ±ÅŸan mobil uygulamasÄ±', free: true, starter: true, business: true, enterprise: true },
+            { name: 'YÃ¶netici mobil uygulamasÄ±', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Ã‡evrimdÄ±ÅŸÄ± mod', free: false, starter: true, business: true, enterprise: true },
             { name: 'ZKTeco biyometri entegrasyonu', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Özel HR kiosk', free: false, starter: false, business: true, enterprise: true },
-            { name: 'GPS & coğrafi sınır', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Ã–zel HR kiosk', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & coÄŸrafi sÄ±nÄ±r', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
-          category: 'Güvenlik & Entegrasyonlar',
+          category: 'GÃ¼venlik & Entegrasyonlar',
           features: [
-            { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Belge kasasÄ±', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
             { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
-            { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
-            { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
-            { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
+            { name: 'DeÄŸiÅŸtirilemez denetim kaydÄ±', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Ä°zole PostgreSQL ÅŸemasÄ±', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Ã–zel SLA & destek', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
     },
     faq: {
       badge: 'Fiyat SSS',
-      title: 'Sık sorulan sorular',
-      subtitle: 'Başlamadan önce kontrol edilecek noktalar',
-      all: 'Tümü',
-      categories: ['Faturalama', 'Deneme', 'Destek', 'Güvenlik', 'Teknik'],
+      title: 'SÄ±k sorulan sorular',
+      subtitle: 'BaÅŸlamadan Ã¶nce kontrol edilecek noktalar',
+      all: 'TÃ¼mÃ¼',
+      categories: ['Faturalama', 'Deneme', 'Destek', 'GÃ¼venlik', 'Teknik'],
       items: [
-        { id: 'free-plan', question: 'Free plan gerçekten ücretsiz mi?', answer: 'Evet, %100 ücretsiz. Hiçbir zaman kredi kartı gerekmez. 5 çalışana kadar anında erişim. İstediğiniz zaman ücretli plana geçin.', category: 'Deneme' },
-        { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
-        { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
-        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
-        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 30 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
-        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Starter: 48 saatte e-posta. Business: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
-        { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
-        { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
-        { id: 'api', question: 'Free planda API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Business planından itibaren kullanılabilir. Free ve Starter\'da verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
+        { id: 'free-plan', question: 'Free plan gerÃ§ekten Ã¼cretsiz mi?', answer: 'Evet, %100 Ã¼cretsiz. HiÃ§bir zaman kredi kartÄ± gerekmez. 5 Ã§alÄ±ÅŸana kadar anÄ±nda eriÅŸim. Ä°stediÄŸiniz zaman Ã¼cretli plana geÃ§in.', category: 'Deneme' },
+        { id: 'change-plan', question: 'PlanÄ± deÄŸiÅŸtirebilir miyim?', answer: 'Evet, istediÄŸiniz zaman. YÃ¼kseltme anÄ±nda, dÃ¼ÅŸÃ¼rme bir sonraki dÃ¶nemde uygulanÄ±r. Gizli Ã¼cret yoktur.', category: 'Faturalama' },
+        { id: 'per-employee', question: 'Ã‡alÄ±ÅŸan baÅŸÄ± faturalama nasÄ±l Ã§alÄ±ÅŸÄ±r?', answer: 'Her plan sabit bir temel Ã¼cret artÄ± aktif Ã§alÄ±ÅŸan baÅŸÄ±na Ã¼cret iÃ§erir. O ay en az bir kez giriÅŸ yapan Ã§alÄ±ÅŸanlar aktif sayÄ±lÄ±r.', category: 'Faturalama' },
+        { id: 'free-trial', question: 'Ãœcretli deneme gerÃ§ekten Ã¼cretsiz mi?', answer: 'Evet. Pilot planÄ±n tÃ¼m Ã¶zellikleriyle 30 tam gÃ¼n. Kaydolmak iÃ§in kredi kartÄ± gerekmez.', category: 'Deneme' },
+        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seÃ§ersiniz ya da verileriniz 30 gÃ¼n daha arÅŸivlenir. OnayÄ±nÄ±z olmadan otomatik faturalama yapÄ±lmaz.', category: 'Deneme' },
+        { id: 'support', question: 'Hangi destek saÄŸlanÄ±r?', answer: 'Free: topluluk. Starter: 48 saatte e-posta. Business: 24 saatte Ã¶ncelikli yanÄ±t. Enterprise: Ã¶zel hesap yÃ¶neticisi + sÃ¶zleÅŸmesel SLA.', category: 'Destek' },
+        { id: 'data-location', question: 'Verilerim nerede barÄ±ndÄ±rÄ±lÄ±r?', answer: 'Avrupa\'da (Render EU / Supabase EU). DuraÄŸan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'GÃ¼venlik' },
+        { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnÄ±zca Avrupa\'da, silme hakkÄ± uygulanmÄ±ÅŸ, talep Ã¼zerine veri dÄ±ÅŸa aktarÄ±mÄ±.', category: 'GÃ¼venlik' },
+        { id: 'api', question: 'Free planda API kullanÄ±labilir mi?', answer: 'REST API ve webhook\'lar Business planÄ±ndan itibaren kullanÄ±labilir. Free ve Starter\'da verileri CSV/Excel olarak dÄ±ÅŸa aktarabilirsiniz.', category: 'Teknik' },
       ],
     },
     cta: {
-      badge: 'Başlamaya hazır',
-      headline: 'Saha İK\'nızı bugün başlatın',
-      subheadline: 'Bordro süresini 2 saatten 8 dakikaya düşüren ekiplere katılın.',
-      primary: 'Ücretsiz başla',
-      secondary: 'Satış ekibine ulaş',
+      badge: 'BaÅŸlamaya hazÄ±r',
+      headline: 'Saha Ä°K\'nÄ±zÄ± bugÃ¼n baÅŸlatÄ±n',
+      subheadline: 'Bordro sÃ¼resini 2 saatten 8 dakikaya dÃ¼ÅŸÃ¼ren ekiplere katÄ±lÄ±n.',
+      primary: 'Ãœcretsiz baÅŸla',
+      secondary: 'SatÄ±ÅŸ ekibine ulaÅŸ',
     },
   },
   ar: {
     hero: {
-      badge: 'تسعير شفاف',
-      headline: 'أسعار مصممة لفرق الموارد البشرية الميدانية',
-      subheadline: 'ابدأ مجانًا — بدون بطاقة ائتمان — وانتقل إلى خطة مدفوعة متى كنت مستعدًا.',
-      primary: 'ابدأ مجانًا',
-      secondary: 'تحدث مع خبير',
+      badge: 'ØªØ³Ø¹ÙŠØ± Ø´ÙØ§Ù',
+      headline: 'Ø£Ø³Ø¹Ø§Ø± Ù…ØµÙ…Ù…Ø© Ù„ÙØ±Ù‚ Ø§Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ø¨Ø´Ø±ÙŠØ© Ø§Ù„Ù…ÙŠØ¯Ø§Ù†ÙŠØ©',
+      subheadline: 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ù‹Ø§ â€” Ø¨Ø¯ÙˆÙ† Ø¨Ø·Ø§Ù‚Ø© Ø§Ø¦ØªÙ…Ø§Ù† â€” ÙˆØ§Ù†ØªÙ‚Ù„ Ø¥Ù„Ù‰ Ø®Ø·Ø© Ù…Ø¯ÙÙˆØ¹Ø© Ù…ØªÙ‰ ÙƒÙ†Øª Ù…Ø³ØªØ¹Ø¯Ù‹Ø§.',
+      primary: 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ù‹Ø§',
+      secondary: 'ØªØ­Ø¯Ø« Ù…Ø¹ Ø®Ø¨ÙŠØ±',
     },
     plans: {
-      badge: 'خططنا',
-      title: 'خطة لكل مرحلة من مراحل نموك',
-      subtitle: 'ابدأ صغيرًا، توسع دون تغيير المنصة.',
-      monthly: 'شهري',
-      annual: 'سنوي',
-      savings: 'وفّر 20%',
-      customPrice: 'حسب الطلب',
-      periodMonthly: '/شهر',
-      periodAnnual: '/شهر مع فوترة سنوية',
-      trialNote: '30 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
+      badge: 'Ø®Ø·Ø·Ù†Ø§',
+      title: 'Ø®Ø·Ø© Ù„ÙƒÙ„ Ù…Ø±Ø­Ù„Ø© Ù…Ù† Ù…Ø±Ø§Ø­Ù„ Ù†Ù…ÙˆÙƒ',
+      subtitle: 'Ø§Ø¨Ø¯Ø£ ØµØºÙŠØ±Ù‹Ø§ØŒ ØªÙˆØ³Ø¹ Ø¯ÙˆÙ† ØªØºÙŠÙŠØ± Ø§Ù„Ù…Ù†ØµØ©.',
+      monthly: 'Ø´Ù‡Ø±ÙŠ',
+      annual: 'Ø³Ù†ÙˆÙŠ',
+      savings: 'ÙˆÙÙ‘Ø± 20%',
+      customPrice: 'Ø­Ø³Ø¨ Ø§Ù„Ø·Ù„Ø¨',
+      periodMonthly: '/Ø´Ù‡Ø±',
+      periodAnnual: '/Ø´Ù‡Ø± Ù…Ø¹ ÙÙˆØªØ±Ø© Ø³Ù†ÙˆÙŠØ©',
+      trialNote: '30 ÙŠÙˆÙ…Ù‹Ø§ Ù…Ø¬Ø§Ù†Ù‹Ø§ Â· Ù„Ø§ Ø¨Ø·Ø§Ù‚Ø© Ø§Ø¦ØªÙ…Ø§Ù† Ù…Ø·Ù„ÙˆØ¨Ø©',
     },
     currency: {
-      label: 'عرض الأسعار بعملة',
-      approx: 'تحويل تقريبي من السعر المرجعي باليورو؛ يبقى السعر التعاقدي محددًا باليورو.',
+      label: 'Ø¹Ø±Ø¶ Ø§Ù„Ø£Ø³Ø¹Ø§Ø± Ø¨Ø¹Ù…Ù„Ø©',
+      approx: 'ØªØ­ÙˆÙŠÙ„ ØªÙ‚Ø±ÙŠØ¨ÙŠ Ù…Ù† Ø§Ù„Ø³Ø¹Ø± Ø§Ù„Ù…Ø±Ø¬Ø¹ÙŠ Ø¨Ø§Ù„ÙŠÙˆØ±ÙˆØ› ÙŠØ¨Ù‚Ù‰ Ø§Ù„Ø³Ø¹Ø± Ø§Ù„ØªØ¹Ø§Ù‚Ø¯ÙŠ Ù…Ø­Ø¯Ø¯Ù‹Ø§ Ø¨Ø§Ù„ÙŠÙˆØ±Ùˆ.',
     },
     trust: {
       items: [
-        'خطة مجانية بلا بطاقة ائتمان',
-        'دعم مشمول من اليوم الأول',
-        'بيانات مستضافة في أوروبا',
-        'إلغاء في أي وقت',
+        'Ø®Ø·Ø© Ù…Ø¬Ø§Ù†ÙŠØ© Ø¨Ù„Ø§ Ø¨Ø·Ø§Ù‚Ø© Ø§Ø¦ØªÙ…Ø§Ù†',
+        'Ø¯Ø¹Ù… Ù…Ø´Ù…ÙˆÙ„ Ù…Ù† Ø§Ù„ÙŠÙˆÙ… Ø§Ù„Ø£ÙˆÙ„',
+        'Ø¨ÙŠØ§Ù†Ø§Øª Ù…Ø³ØªØ¶Ø§ÙØ© ÙÙŠ Ø£ÙˆØ±ÙˆØ¨Ø§',
+        'Ø¥Ù„ØºØ§Ø¡ ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª',
       ],
     },
     comparison: {
-      badge: 'مقارنة كاملة',
-      title: 'كل ما هو مشمول',
-      subtitle: 'حسب الخطة',
-      featureColumn: 'الميزة',
+      badge: 'Ù…Ù‚Ø§Ø±Ù†Ø© ÙƒØ§Ù…Ù„Ø©',
+      title: 'ÙƒÙ„ Ù…Ø§ Ù‡Ùˆ Ù…Ø´Ù…ÙˆÙ„',
+      subtitle: 'Ø­Ø³Ø¨ Ø§Ù„Ø®Ø·Ø©',
+      featureColumn: 'Ø§Ù„Ù…ÙŠØ²Ø©',
       categories: [
         {
-          category: 'إدارة الموارد البشرية',
+          category: 'Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ø¨Ø´Ø±ÙŠØ©',
           features: [
-            { name: 'تتبع الحضور ويب وموبايل', free: 'ويب فقط', starter: true, business: true, enterprise: true },
-            { name: 'الغياب والإجازات', free: true, starter: true, business: true, enterprise: true },
-            { name: 'تقويم مشترك', free: false, starter: true, business: true, enterprise: true },
-            { name: 'إعداد موجّه', free: false, starter: true, business: true, enterprise: true },
-            { name: 'التقييمات والأداء', free: false, starter: false, business: true, enterprise: true },
-            { name: 'هيكل تنظيمي ديناميكي', free: false, starter: false, business: true, enterprise: true },
+            { name: 'ØªØªØ¨Ø¹ Ø§Ù„Ø­Ø¶ÙˆØ± ÙˆÙŠØ¨ ÙˆÙ…ÙˆØ¨Ø§ÙŠÙ„', free: 'ÙˆÙŠØ¨ ÙÙ‚Ø·', starter: true, business: true, enterprise: true },
+            { name: 'Ø§Ù„ØºÙŠØ§Ø¨ ÙˆØ§Ù„Ø¥Ø¬Ø§Ø²Ø§Øª', free: true, starter: true, business: true, enterprise: true },
+            { name: 'ØªÙ‚ÙˆÙŠÙ… Ù…Ø´ØªØ±Ùƒ', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Ø¥Ø¹Ø¯Ø§Ø¯ Ù…ÙˆØ¬Ù‘Ù‡', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Ø§Ù„ØªÙ‚ÙŠÙŠÙ…Ø§Øª ÙˆØ§Ù„Ø£Ø¯Ø§Ø¡', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Ù‡ÙŠÙƒÙ„ ØªÙ†Ø¸ÙŠÙ…ÙŠ Ø¯ÙŠÙ†Ø§Ù…ÙŠÙƒÙŠ', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
-          category: 'الرواتب والمالية',
+          category: 'Ø§Ù„Ø±ÙˆØ§ØªØ¨ ÙˆØ§Ù„Ù…Ø§Ù„ÙŠØ©',
           features: [
-            { name: 'حساب رواتب آلي', free: false, starter: true, business: true, enterprise: true },
-            { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
-            { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
-            { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
-            { name: 'متعدد الدول والعملات', free: false, starter: false, business: false, enterprise: true },
-            { name: 'امتثال قانوني متقدم', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Ø­Ø³Ø§Ø¨ Ø±ÙˆØ§ØªØ¨ Ø¢Ù„ÙŠ', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Ù‚Ø³Ø§Ø¦Ù… Ø±ÙˆØ§ØªØ¨ PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ØªØµØ¯ÙŠØ± Ù…Ø­Ø§Ø³Ø¨ÙŠ', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Ø³Ù„Ù Ø§Ù„Ø±ÙˆØ§ØªØ¨', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Ù…ØªØ¹Ø¯Ø¯ Ø§Ù„Ø¯ÙˆÙ„ ÙˆØ§Ù„Ø¹Ù…Ù„Ø§Øª', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Ø§Ù…ØªØ«Ø§Ù„ Ù‚Ø§Ù†ÙˆÙ†ÙŠ Ù…ØªÙ‚Ø¯Ù…', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
-          category: 'الميدان والموبايل',
+          category: 'Ø§Ù„Ù…ÙŠØ¯Ø§Ù† ÙˆØ§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„',
           features: [
-            { name: 'تطبيق موبايل للموظفين', free: true, starter: true, business: true, enterprise: true },
-            { name: 'تطبيق موبايل للمديرين', free: false, starter: true, business: true, enterprise: true },
-            { name: 'وضع عدم الاتصال', free: false, starter: true, business: true, enterprise: true },
-            { name: 'تكامل بصمة ZKTeco', free: false, starter: false, business: true, enterprise: true },
-            { name: 'كشك HR مخصص', free: false, starter: false, business: true, enterprise: true },
-            { name: 'GPS وتحديد المناطق', free: false, starter: false, business: true, enterprise: true },
+            { name: 'ØªØ·Ø¨ÙŠÙ‚ Ù…ÙˆØ¨Ø§ÙŠÙ„ Ù„Ù„Ù…ÙˆØ¸ÙÙŠÙ†', free: true, starter: true, business: true, enterprise: true },
+            { name: 'ØªØ·Ø¨ÙŠÙ‚ Ù…ÙˆØ¨Ø§ÙŠÙ„ Ù„Ù„Ù…Ø¯ÙŠØ±ÙŠÙ†', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ÙˆØ¶Ø¹ Ø¹Ø¯Ù… Ø§Ù„Ø§ØªØµØ§Ù„', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ØªÙƒØ§Ù…Ù„ Ø¨ØµÙ…Ø© ZKTeco', free: false, starter: false, business: true, enterprise: true },
+            { name: 'ÙƒØ´Ùƒ HR Ù…Ø®ØµØµ', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS ÙˆØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø·Ù‚', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
-          category: 'الأمان والتكاملات',
+          category: 'Ø§Ù„Ø£Ù…Ø§Ù† ÙˆØ§Ù„ØªÙƒØ§Ù…Ù„Ø§Øª',
           features: [
-            { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
-            { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Ø®Ø²Ù†Ø© Ø§Ù„Ù…Ø³ØªÙ†Ø¯Ø§Øª', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API ÙˆWebhooks', free: false, starter: false, business: true, enterprise: true },
             { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
-            { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
-            { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
-            { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Ø³Ø¬Ù„ ØªØ¯Ù‚ÙŠÙ‚ ØºÙŠØ± Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªØºÙŠÙŠØ±', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Ù…Ø®Ø·Ø· PostgreSQL Ù…Ø¹Ø²ÙˆÙ„', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SLA Ù…Ø®ØµØµ ÙˆØ¯Ø¹Ù… Ø£ÙˆÙ„ÙˆÙŠ', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
     },
     faq: {
-      badge: 'أسئلة التسعير',
-      title: 'أسئلة شائعة',
-      subtitle: 'ما يجب التحقق منه قبل البدء',
-      all: 'الكل',
-      categories: ['الفوترة', 'التجربة', 'الدعم', 'الأمان', 'التقني'],
+      badge: 'Ø£Ø³Ø¦Ù„Ø© Ø§Ù„ØªØ³Ø¹ÙŠØ±',
+      title: 'Ø£Ø³Ø¦Ù„Ø© Ø´Ø§Ø¦Ø¹Ø©',
+      subtitle: 'Ù…Ø§ ÙŠØ¬Ø¨ Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù†Ù‡ Ù‚Ø¨Ù„ Ø§Ù„Ø¨Ø¯Ø¡',
+      all: 'Ø§Ù„ÙƒÙ„',
+      categories: ['Ø§Ù„ÙÙˆØªØ±Ø©', 'Ø§Ù„ØªØ¬Ø±Ø¨Ø©', 'Ø§Ù„Ø¯Ø¹Ù…', 'Ø§Ù„Ø£Ù…Ø§Ù†', 'Ø§Ù„ØªÙ‚Ù†ÙŠ'],
       items: [
-        { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
-        { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
-        { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
-        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 30 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
-        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Starter: بريد إلكتروني خلال 48 ساعة. Business: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
-        { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
-        { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
-        { id: 'api', question: 'هل API متاح في خطة Free؟', answer: 'REST API والـ Webhooks متاحة من خطة Business. في Free وStarter يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
+        { id: 'free-plan', question: 'Ù‡Ù„ Ø§Ù„Ø®Ø·Ø© Ø§Ù„Ù…Ø¬Ø§Ù†ÙŠØ© Ù…Ø¬Ø§Ù†ÙŠØ© Ø­Ù‚Ù‹Ø§ØŸ', answer: 'Ù†Ø¹Ù…ØŒ Ù…Ø¬Ø§Ù†ÙŠØ© 100%. Ù„Ø§ Ø¨Ø·Ø§Ù‚Ø© Ø§Ø¦ØªÙ…Ø§Ù† Ù…Ø·Ù„ÙˆØ¨Ø© Ø£Ø¨Ø¯Ù‹Ø§. ÙˆØµÙˆÙ„ ÙÙˆØ±ÙŠ Ù„Ø­ØªÙ‰ 5 Ù…ÙˆØ¸ÙÙŠÙ†. ÙŠÙ…ÙƒÙ†Ùƒ Ø§Ù„ØªØ±Ù‚ÙŠØ© Ø¥Ù„Ù‰ Ø®Ø·Ø© Ù…Ø¯ÙÙˆØ¹Ø© ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª.', category: 'Ø§Ù„ØªØ¬Ø±Ø¨Ø©' },
+        { id: 'change-plan', question: 'Ù‡Ù„ ÙŠÙ…ÙƒÙ†Ù†ÙŠ ØªØºÙŠÙŠØ± Ø§Ù„Ø®Ø·Ø© Ù„Ø§Ø­Ù‚Ù‹Ø§ØŸ', answer: 'Ù†Ø¹Ù…ØŒ ÙÙŠ Ø£ÙŠ ÙˆÙ‚Øª. Ø§Ù„ØªØ±Ù‚ÙŠØ© ÙÙˆØ±ÙŠØ© ÙˆØ§Ù„ØªØ®ÙÙŠØ¶ ÙŠÙØ·Ø¨Ù‚ ÙÙŠ Ø§Ù„Ø¯ÙˆØ±Ø© Ø§Ù„ØªØ§Ù„ÙŠØ©. Ù„Ø§ Ø±Ø³ÙˆÙ… Ù…Ø®ÙÙŠØ©.', category: 'Ø§Ù„ÙÙˆØªØ±Ø©' },
+        { id: 'per-employee', question: 'ÙƒÙŠÙ ØªØ¹Ù…Ù„ Ø§Ù„ÙÙˆØªØ±Ø© Ù„ÙƒÙ„ Ù…ÙˆØ¸ÙØŸ', answer: 'ØªØªØ¶Ù…Ù† ÙƒÙ„ Ø®Ø·Ø© Ø±Ø³ÙˆÙ…Ù‹Ø§ Ø£Ø³Ø§Ø³ÙŠØ© Ø«Ø§Ø¨ØªØ© Ø¨Ø§Ù„Ø¥Ø¶Ø§ÙØ© Ø¥Ù„Ù‰ Ø³Ø¹Ø± Ù„ÙƒÙ„ Ù…ÙˆØ¸Ù Ù†Ø´Ø· (Ù…Ù† Ø³Ø¬Ù‘Ù„ Ø­Ø¶ÙˆØ±Ù‹Ø§ Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„ ÙÙŠ Ø§Ù„Ø´Ù‡Ø±).', category: 'Ø§Ù„ÙÙˆØªØ±Ø©' },
+        { id: 'free-trial', question: 'Ù‡Ù„ Ø§Ù„ØªØ¬Ø±Ø¨Ø© Ø§Ù„Ù…Ø¯ÙÙˆØ¹Ø© Ù…Ø¬Ø§Ù†ÙŠØ© Ø­Ù‚Ù‹Ø§ØŸ', answer: 'Ù†Ø¹Ù…. 30 ÙŠÙˆÙ…Ù‹Ø§ ÙƒØ§Ù…Ù„Ø© Ø¨Ø¬Ù…ÙŠØ¹ Ù…Ø²Ø§ÙŠØ§ Ø®Ø·Ø© Pilot. Ù„Ø§ Ø¨Ø·Ø§Ù‚Ø© Ø§Ø¦ØªÙ…Ø§Ù† Ù„Ù„ØªØ³Ø¬ÙŠÙ„.', category: 'Ø§Ù„ØªØ¬Ø±Ø¨Ø©' },
+        { id: 'trial-to-paid', question: 'Ù…Ø§Ø°Ø§ ÙŠØ­Ø¯Ø« Ø¹Ù†Ø¯ Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„ØªØ¬Ø±Ø¨Ø©ØŸ', answer: 'ØªØ®ØªØ§Ø± Ø®Ø·Ø© Ø£Ùˆ ØªØ¨Ù‚Ù‰ Ø¨ÙŠØ§Ù†Ø§ØªÙƒ Ù…Ø¤Ø±Ø´ÙØ© 30 ÙŠÙˆÙ…Ù‹Ø§ Ø¥Ø¶Ø§ÙÙŠØ©. Ù„Ø§ ÙÙˆØªØ±Ø© ØªÙ„Ù‚Ø§Ø¦ÙŠØ© Ø¨Ø¯ÙˆÙ† Ù…ÙˆØ§ÙÙ‚ØªÙƒ.', category: 'Ø§Ù„ØªØ¬Ø±Ø¨Ø©' },
+        { id: 'support', question: 'Ù…Ø§ Ù†ÙˆØ¹ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„Ù…ØªØ§Ø­ØŸ', answer: 'Free: Ù…Ø¬ØªÙ…Ø¹. Starter: Ø¨Ø±ÙŠØ¯ Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ø®Ù„Ø§Ù„ 48 Ø³Ø§Ø¹Ø©. Business: Ø£ÙˆÙ„ÙˆÙŠØ© 24 Ø³Ø§Ø¹Ø©. Enterprise: Ù…Ø¯ÙŠØ± Ø­Ø³Ø§Ø¨ Ù…Ø®ØµØµ + SLA ØªØ¹Ø§Ù‚Ø¯ÙŠ.', category: 'Ø§Ù„Ø¯Ø¹Ù…' },
+        { id: 'data-location', question: 'Ø£ÙŠÙ† ØªÙØ³ØªØ¶Ø§Ù Ø¨ÙŠØ§Ù†Ø§ØªÙŠØŸ', answer: 'ÙÙŠ Ø£ÙˆØ±ÙˆØ¨Ø§ (Render EU / Supabase EU). ØªØ´ÙÙŠØ± AES-256 Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØªØ®Ø²ÙŠÙ† ÙˆTLS 1.3 Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„Ù†Ù‚Ù„. Ø¹Ø²Ù„ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ† Ù…Ø¶Ù…ÙˆÙ†.', category: 'Ø§Ù„Ø£Ù…Ø§Ù†' },
+        { id: 'gdpr', question: 'Ù‡Ù„ Ø£Ù†ØªÙ… Ù…ØªÙˆØ§ÙÙ‚ÙˆÙ† Ù…Ø¹ GDPRØŸ', answer: 'Ù†Ø¹Ù…. DPA Ù…ØªØ§Ø­ØŒ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ÙÙŠ Ø£ÙˆØ±ÙˆØ¨Ø§ Ø­ØµØ±Ù‹Ø§ØŒ Ø­Ù‚ Ø§Ù„Ø­Ø°Ù Ù…ÙØ·Ø¨ÙŽÙ‘Ù‚ØŒ ØªØµØ¯ÙŠØ± Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø¹Ù†Ø¯ Ø§Ù„Ø·Ù„Ø¨.', category: 'Ø§Ù„Ø£Ù…Ø§Ù†' },
+        { id: 'api', question: 'Ù‡Ù„ API Ù…ØªØ§Ø­ ÙÙŠ Ø®Ø·Ø© FreeØŸ', answer: 'REST API ÙˆØ§Ù„Ù€ Webhooks Ù…ØªØ§Ø­Ø© Ù…Ù† Ø®Ø·Ø© Business. ÙÙŠ Free ÙˆStarter ÙŠÙ…ÙƒÙ†Ùƒ ØªØµØ¯ÙŠØ± Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø¨ØµÙŠØºØ© CSV/Excel.', category: 'Ø§Ù„ØªÙ‚Ù†ÙŠ' },
       ],
     },
     cta: {
-      badge: 'جاهز للبدء',
-      headline: 'أطلق إدارة الموارد البشرية الميدانية اليوم',
-      subheadline: 'انضم إلى الفرق التي خفّضت وقت إعداد الرواتب من ساعتين إلى 8 دقائق.',
-      primary: 'ابدأ مجانًا',
-      secondary: 'تواصل مع المبيعات',
+      badge: 'Ø¬Ø§Ù‡Ø² Ù„Ù„Ø¨Ø¯Ø¡',
+      headline: 'Ø£Ø·Ù„Ù‚ Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ø¨Ø´Ø±ÙŠØ© Ø§Ù„Ù…ÙŠØ¯Ø§Ù†ÙŠØ© Ø§Ù„ÙŠÙˆÙ…',
+      subheadline: 'Ø§Ù†Ø¶Ù… Ø¥Ù„Ù‰ Ø§Ù„ÙØ±Ù‚ Ø§Ù„ØªÙŠ Ø®ÙÙ‘Ø¶Øª ÙˆÙ‚Øª Ø¥Ø¹Ø¯Ø§Ø¯ Ø§Ù„Ø±ÙˆØ§ØªØ¨ Ù…Ù† Ø³Ø§Ø¹ØªÙŠÙ† Ø¥Ù„Ù‰ 8 Ø¯Ù‚Ø§Ø¦Ù‚.',
+      primary: 'Ø§Ø¨Ø¯Ø£ Ù…Ø¬Ø§Ù†Ù‹Ø§',
+      secondary: 'ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ù…Ø¨ÙŠØ¹Ø§Øª',
     },
   },
 };
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    PLAN ICONS
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const planIcons = [Gift, Rocket, Crown, Building2] as const;
 const planIconColors = [
   'text-slate-500',
@@ -518,9 +518,9 @@ const planIconColors = [
   'text-violet-500',
 ] as const;
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    AVAILABILITY MARK
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function AvailabilityMark({
   value,
   popular,
@@ -559,9 +559,9 @@ function AvailabilityMark({
   );
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    FAQ ITEM
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function FaqAccordionItem({ item, isOpen, onToggle }: {
   item: FaqItem;
   isOpen: boolean;
@@ -603,9 +603,9 @@ function FaqAccordionItem({ item, isOpen, onToggle }: {
   );
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    HELPER: get comparison feature value by plan name
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function getFeatureValue(feature: ComparisonFeature, planName: string): boolean | string {
   const lower = planName.toLowerCase();
   if (lower === 'free') return feature.free;
@@ -615,9 +615,9 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
   return false;
 }
 
-/* ─────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    PAGE
-───────────────────────────────────────────── */
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default function PricingPage() {
   const [isDark, setIsDark] = useState(false);
   const [isAnnual, setIsAnnual] = useState(true);
@@ -634,18 +634,18 @@ export default function PricingPage() {
   useScrollReveal();
 
   function showsCurrency(price: string) {
-    return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(price);
+    return !['Sur devis', 'Custom', 'Teklif', 'Ø­Ø³Ø¨ Ø§Ù„Ø¹Ø±Ø¶', 'Teklif alÄ±n', 'Ø­Ø³Ø¨ Ø§Ù„Ø·Ù„Ø¨'].includes(price);
   }
 
   const isEurSelected = currencyOption.currency === 'EUR';
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
-    // Free plan → direct account creation, no payment
+    // Free plan â†’ direct account creation, no payment
     if (plan.price === '0') return '/checkout?plan=free';
-    // Enterprise → contact
+    // Enterprise â†’ contact
     if (!showsCurrency(plan.price)) return '/contact?type=enterprise';
-    // Paid plans → checkout with payment
+    // Paid plans â†’ checkout with payment
     if (plan.popular) return '/checkout?plan=business';
     return '/checkout?plan=starter';
   }
@@ -661,7 +661,7 @@ export default function PricingPage() {
     >
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
-      {/* ── HERO ───────────────────────────────── */}
+      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.15),transparent)]" />
@@ -743,7 +743,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── PRICING CARDS ──────────────────────── */}
+      {/* â”€â”€ PRICING CARDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />
 
@@ -822,14 +822,14 @@ export default function PricingPage() {
             </AnimatePresence>
           </div>
 
-          {/* Cards — 4 plans in a responsive grid */}
+          {/* Cards â€” 4 plans in a responsive grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {plans.map((plan, index) => {
               const Icon = planIcons[index % planIcons.length];
               const iconColor = planIconColors[index % planIconColors.length];
               const displayPrice = isAnnual ? plan.annualPrice : plan.price;
               const isFree = plan.price === '0';
-              const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
+              const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'Ø­Ø³Ø¨ Ø§Ù„Ø¹Ø±Ø¶', 'Teklif alÄ±n', 'Ø­Ø³Ø¨ Ø§Ù„Ø·Ù„Ø¨'].includes(displayPrice);
               const ctaHref = getPlanHref(plan);
 
               return (
@@ -900,7 +900,7 @@ export default function PricingPage() {
                       </div>
                       {isFree ? (
                         <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-                          Sans carte bancaire · Pour toujours
+                          Sans carte bancaire Â· Pour toujours
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
@@ -917,7 +917,7 @@ export default function PricingPage() {
                             </p>
                           )}
                           {!isEurSelected && (
-                            <p className="text-xs text-slate-400 dark:text-slate-600">≈ EUR {displayPrice}</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-600">â‰ˆ EUR {displayPrice}</p>
                           )}
                         </div>
                       ) : null}
@@ -978,7 +978,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── COMPARISON TABLE ────────────────────── */}
+      {/* â”€â”€ COMPARISON TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-white dark:from-slate-900/50 dark:to-slate-950" />
 
@@ -1020,7 +1020,7 @@ export default function PricingPage() {
                           {plan.name}
                           {plan.popular && (
                             <span className="text-[9px] px-2 py-0.5 bg-emerald-500 text-white rounded-full font-black uppercase tracking-wider">
-                              ★ top
+                              â˜… top
                             </span>
                           )}
                           {isFree && (
@@ -1078,7 +1078,7 @@ export default function PricingPage() {
                   <td className="py-6 px-6" />
                   {plans.map((plan) => {
                     const isFree = plan.price === '0';
-                    const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(plan.price);
+                    const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'Ø­Ø³Ø¨ Ø§Ù„Ø¹Ø±Ø¶', 'Teklif alÄ±n', 'Ø­Ø³Ø¨ Ø§Ù„Ø·Ù„Ø¨'].includes(plan.price);
                     return (
                       <td key={plan.name} className={`py-6 px-4 text-center ${plan.popular ? 'bg-emerald-50/40 dark:bg-emerald-950/10' : ''}`}>
                         <Link
@@ -1106,7 +1106,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── FAQ ─────────────────────────────────── */}
+      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white to-slate-50/50 dark:from-slate-950 dark:to-slate-900/50" />
 
@@ -1173,21 +1173,21 @@ export default function PricingPage() {
           {/* Still have questions */}
           <div className="mt-10 text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <p className="text-slate-700 dark:text-slate-300 font-semibold mb-3">
-              {locale === 'fr' ? 'Une autre question ?' : locale === 'tr' ? 'Başka sorunuz var mı?' : locale === 'ar' ? 'سؤال آخر؟' : 'Another question?'}
+              {locale === 'fr' ? 'Une autre question ?' : locale === 'tr' ? 'BaÅŸka sorunuz var mÄ±?' : locale === 'ar' ? 'Ø³Ø¤Ø§Ù„ Ø¢Ø®Ø±ØŸ' : 'Another question?'}
             </p>
             <Link
               href="/contact"
               className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:scale-[1.02] transition-transform duration-200 text-sm"
             >
               <MessageCircle className="w-4 h-4" />
-              {locale === 'fr' ? 'Contacter le support' : locale === 'tr' ? 'Destek ile iletişim' : locale === 'ar' ? 'تواصل مع الدعم' : 'Contact support'}
+              {locale === 'fr' ? 'Contacter le support' : locale === 'tr' ? 'Destek ile iletiÅŸim' : locale === 'ar' ? 'ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù…' : 'Contact support'}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── CTA FINAL ───────────────────────────── */}
+      {/* â”€â”€ CTA FINAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-emerald-600 to-cyan-600" />
         <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-white/10 rounded-full blur-[120px]" />
@@ -1257,3 +1257,4 @@ export default function PricingPage() {
     </div>
   );
 }
+
