@@ -57,7 +57,7 @@ class VerifyTrialSignup
         }
 
         $payload = $companyRequest->signup_payload ?? [];
-        $companyName = $companyRequest->company_name;
+        $companyName = (string) ($companyRequest->company_name ?? '');
 
         $country = strtoupper(trim($payload['country'] ?? 'DZ'));
         if (strlen($country) !== 2) {
