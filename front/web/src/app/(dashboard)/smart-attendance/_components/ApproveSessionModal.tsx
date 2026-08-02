@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 
@@ -39,7 +39,7 @@ export function ApproveSessionModal({ employeeName, onConfirm, onCancel, loading
             {labels.approveModalNoteLabel}
           </label>
           <textarea
-            className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-50"
+            className="mt-1.5 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-50"
             rows={3}
             placeholder={labels.approveModalNotePlaceholder}
             value={note}
@@ -53,7 +53,7 @@ export function ApproveSessionModal({ employeeName, onConfirm, onCancel, loading
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
           >
             {labels.cancel}
           </button>
@@ -70,3 +70,4 @@ export function ApproveSessionModal({ employeeName, onConfirm, onCancel, loading
     </div>
   );
 }
+

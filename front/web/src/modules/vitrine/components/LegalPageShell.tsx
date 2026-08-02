@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { ArrowLeft, Globe2, ShieldCheck } from 'lucide-react'
@@ -69,7 +69,7 @@ export function LegalPageShell({ page }: LegalPageShellProps) {
           ))}
         </div>
 
-        <section className="mt-10 rounded-lg border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900">
+        <section className="mt-10 rounded-lg border border-slate-200 bg-transparent p-6 dark:border-slate-800 dark:bg-slate-900">
           <h2 className="text-lg font-black text-slate-950 dark:text-white">{copy.contact.title}</h2>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-300">{copy.contact.body}</p>
           <a
@@ -83,3 +83,4 @@ export function LegalPageShell({ page }: LegalPageShellProps) {
     </main>
   )
 }
+

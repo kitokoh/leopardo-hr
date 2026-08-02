@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -129,7 +130,7 @@ class _EvaluationsTab extends ConsumerWidget {
               }
 
               final item = items[isManager ? index - 1 : index];
-              return _EvaluationCard(
+              return _EvaluationGlassCard(
                 item: item,
                 isManager: isManager,
                 onAction: () => _showEvaluationActions(context, ref, item),
@@ -242,7 +243,7 @@ class _EvaluationsTab extends ConsumerWidget {
 }
 
 class _EvaluationCard extends StatelessWidget {
-  const _EvaluationCard({
+  const _EvaluationGlassCard({
     required this.item,
     required this.isManager,
     required this.onAction,
@@ -259,7 +260,7 @@ class _EvaluationCard extends StatelessWidget {
         : item.evaluator?.fullName ?? 'Manager';
     final score = item.score != null ? item.score!.toStringAsFixed(1) : '-';
 
-    return Card(
+    return GlassCard(
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         title: Text(item.period),
@@ -347,7 +348,7 @@ class _SalaryAdvancesTab extends ConsumerWidget {
               }
 
               final item = items[index - 1];
-              return Card(
+              return GlassCard(
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
                   title: Text('${item.amount?.toStringAsFixed(0) ?? '-'} FCFA'),
@@ -578,7 +579,7 @@ class _PayrollsTab extends ConsumerWidget {
               }
 
               final item = items[isManager ? index - 1 : index];
-              return Card(
+              return GlassCard(
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
                   title: Text(
@@ -779,7 +780,7 @@ class _NotificationsTab extends ConsumerWidget {
               }
 
               final item = items[index - 1];
-              return _NotificationCard(
+              return _NotificationGlassCard(
                 item: item,
                 onTap: () => _showNotificationActions(context, ref, item),
               );
@@ -851,7 +852,7 @@ class _NotificationsTab extends ConsumerWidget {
 }
 
 class _NotificationCard extends StatelessWidget {
-  const _NotificationCard({required this.item, required this.onTap});
+  const _NotificationGlassCard({required this.item, required this.onTap});
 
   final AppNotification item;
   final VoidCallback onTap;
@@ -866,7 +867,7 @@ class _NotificationCard extends StatelessWidget {
     );
     final muted = AppColors.textSecondaryFor(context);
 
-    return Card(
+    return GlassCard(
       color: item.isRead ? null : unreadTint,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
@@ -1350,3 +1351,4 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
     }
   }
 }
+

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
@@ -132,13 +132,13 @@ export default function PayrollPage() {
       <div className="flex gap-2 border-b border-app-border">
         <button
           onClick={() => setTab('slips')}
-          className={`px-4 py-2.5 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${tab === 'slips' ? 'border-brand-500 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2.5 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${tab === 'slips' ? 'border-emerald-500 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           {labels.tabSlips}
         </button>
         <button
           onClick={() => setTab('runs')}
-          className={`px-4 py-2.5 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${tab === 'runs' ? 'border-brand-500 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2.5 text-sm font-bold uppercase tracking-wide border-b-2 transition-colors ${tab === 'runs' ? 'border-emerald-500 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
         >
           {labels.tabRuns}
         </button>
@@ -153,7 +153,7 @@ export default function PayrollPage() {
               placeholder={labels.searchPlaceholder}
               value={search}
               onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-              className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
@@ -161,7 +161,7 @@ export default function PayrollPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-app-border bg-slate-50/50">
+                  <tr className="border-b border-app-border bg-transparent/50">
                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
                     <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
                     <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</th>
@@ -176,7 +176,7 @@ export default function PayrollPage() {
                   ) : paginated.length === 0 ? (
                     <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noPayslips}</td></tr>
                   ) : paginated.map(slip => (
-                    <tr key={slip.id} className="transition-colors hover:bg-slate-50/60">
+                    <tr key={slip.id} className="transition-colors hover:bg-transparent/60">
                       <td className="px-6 py-4 font-bold text-slate-950">{slip.employee_name}</td>
                       <td className="px-4 py-4 text-slate-600">{slip.period}</td>
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(slip.gross_salary)}</td>
@@ -188,8 +188,8 @@ export default function PayrollPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title={labels.downloadPdf}><Download className="h-4 w-4" /></button>
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title={labels.viewDetail}><Eye className="h-4 w-4" /></button>
+                          <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.downloadPdf}><Download className="h-4 w-4" /></button>
+                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.viewDetail}><Eye className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -216,7 +216,7 @@ export default function PayrollPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-app-border bg-slate-50/50">
+                <tr className="border-b border-app-border bg-transparent/50">
                   <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
                   <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployees}</th>
                   <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalGross}</th>
@@ -230,7 +230,7 @@ export default function PayrollPage() {
                 ) : runs.length === 0 ? (
                   <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noRuns}</td></tr>
                 ) : runs.map(run => (
-                  <tr key={run.id} className="transition-colors hover:bg-slate-50/60">
+                  <tr key={run.id} className="transition-colors hover:bg-transparent/60">
                     <td className="px-6 py-4 font-bold text-slate-950">{run.period}</td>
                     <td className="px-4 py-4 text-right text-slate-600">{run.employee_count}</td>
                     <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(run.total_gross)}</td>
@@ -250,3 +250,4 @@ export default function PayrollPage() {
     </ModulePageShell>
   );
 }
+

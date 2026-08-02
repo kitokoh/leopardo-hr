@@ -1,13 +1,13 @@
-<template>
+﻿<template>
   <div class="space-y-6">
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="glass-card p-6">
       <h1 class="text-2xl font-bold text-gray-900">Detail Utilisateur</h1>
       <p class="mt-1 text-sm text-gray-500">
         Vue de synthese du compte utilisateur selectionne.
       </p>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="glass-card p-6">
       <UserDetailModal
         :user="selectedUser"
         :show="true"
@@ -36,3 +36,4 @@ function goBack() {
   router.push('/users')
 }
 </script>
+

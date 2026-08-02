@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import { RejectSessionModal } from './_components/RejectSessionModal';
 
 const emptySubscribe = () => () => {};
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type GeoSession = {
   id: number | string;
@@ -34,23 +34,23 @@ type DashboardPayload = {
   };
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function formatTime(iso: string | null | undefined, intlLocale: string): string {
-  if (!iso) return '—';
+  if (!iso) return 'â€”';
   const d = new Date(iso);
   return d.toLocaleTimeString(intlLocale, { hour: '2-digit', minute: '2-digit' });
 }
 
 function formatDuration(minutes?: number | null): string {
-  if (minutes == null) return '—';
+  if (minutes == null) return 'â€”';
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   if (h === 0) return `${m}min`;
   return `${h}h${m > 0 ? String(m).padStart(2, '0') : ''}`;
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Skeleton â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TableSkeleton() {
   return (
@@ -72,7 +72,7 @@ function TableSkeleton() {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type ModalState =
   | { type: 'approve'; session: GeoSession }
@@ -179,13 +179,13 @@ export default function SmartAttendanceDashboardPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/smart-attendance/sessions"
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 shadow-sm"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent shadow-sm"
           >
             {labels.allSessions}
           </Link>
           <Link
             href="/smart-attendance/settings"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 shadow-sm"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent shadow-sm"
           >
             <Settings className="h-4 w-4" aria-hidden="true" /> {labels.settings}
           </Link>
@@ -212,7 +212,7 @@ export default function SmartAttendanceDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-app-border bg-slate-50/50">
+                  <tr className="border-b border-app-border bg-transparent/50">
                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
                     <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckIn}</th>
                     <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckOut}</th>
@@ -223,7 +223,7 @@ export default function SmartAttendanceDashboardPage() {
                 </thead>
                 <tbody className="divide-y divide-app-border">
                   {pendingSessions.map((session) => (
-                    <tr key={session.id} className="group transition-colors hover:bg-slate-50/60">
+                    <tr key={session.id} className="group transition-colors hover:bg-transparent/60">
                       <td className="px-6 py-4">
                         <Link href={`/smart-attendance/sessions/${session.id}`} className="hover:underline">
                           <p className="font-bold text-slate-900">{session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}</p>
@@ -288,3 +288,4 @@ export default function SmartAttendanceDashboardPage() {
     </>
   );
 }
+

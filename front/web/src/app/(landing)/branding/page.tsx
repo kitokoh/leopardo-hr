@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -26,11 +26,11 @@ type FeatureCopy = { title: string; desc: string; color: string };
 const featuresByLocale: Record<Lang, FeatureCopy[]> = {
   fr: [
     { title: 'Logo entreprise', desc: "Uploadez votre logo (PNG, SVG). Il s'affiche dans l'app mobile, les emails et les bulletins PDF.", color: 'emerald' },
-    { title: "Nom d'affichage", desc: 'Personnalisez le nom affiché dans l\'interface : "Acme Corp" plutôt que votre identifiant technique.', color: 'blue' },
-    { title: 'Couleurs primaires', desc: "Définissez votre couleur principale et votre couleur d'accent. Aperçu en temps réel dans le dashboard.", color: 'violet' },
-    { title: 'Mobile branding', desc: "Le thème se propage dans l'app manager et l'app employee. Headers, boutons et badges adoptent vos couleurs.", color: 'pink' },
-    { title: 'Dashboard admin', desc: "L'espace web du manager reflète votre identité visuelle dès la connexion.", color: 'amber' },
-    { title: 'Isolation tenant', desc: 'Chaque entreprise a son propre branding. Aucun risque de mélange entre tenants.', color: 'red' },
+    { title: "Nom d'affichage", desc: 'Personnalisez le nom affichÃ© dans l\'interface : "Acme Corp" plutÃ´t que votre identifiant technique.', color: 'blue' },
+    { title: 'Couleurs primaires', desc: "DÃ©finissez votre couleur principale et votre couleur d'accent. AperÃ§u en temps rÃ©el dans le dashboard.", color: 'violet' },
+    { title: 'Mobile branding', desc: "Le thÃ¨me se propage dans l'app manager et l'app employee. Headers, boutons et badges adoptent vos couleurs.", color: 'pink' },
+    { title: 'Dashboard admin', desc: "L'espace web du manager reflÃ¨te votre identitÃ© visuelle dÃ¨s la connexion.", color: 'amber' },
+    { title: 'Isolation tenant', desc: 'Chaque entreprise a son propre branding. Aucun risque de mÃ©lange entre tenants.', color: 'red' },
   ],
   en: [
     { title: 'Company logo', desc: 'Upload your logo (PNG, SVG). It appears in the mobile app, emails and PDF payslips.', color: 'emerald' },
@@ -41,20 +41,20 @@ const featuresByLocale: Record<Lang, FeatureCopy[]> = {
     { title: 'Tenant isolation', desc: 'Each company has its own branding. No risk of mixing tenants.', color: 'red' },
   ],
   tr: [
-    { title: 'Şirket logosu', desc: "Logonuzu yükleyin (PNG, SVG). Mobil uygulamada, e-postalarda ve PDF bordrolarda görünür.", color: 'emerald' },
-    { title: 'Görünen ad', desc: 'Arayüzde görünen adı özelleştirin: teknik kimliğiniz yerine "Acme Corp".', color: 'blue' },
-    { title: 'Birincil renkler', desc: 'Ana rengi ve vurgu rengini belirleyin. Panelde gerçek zamanlı önizleme.', color: 'violet' },
-    { title: 'Mobil marka', desc: 'Tema yönetici ve çalışan uygulamalarına yayılır. Başlıklar, düğmeler ve rozetler renklerinizi alır.', color: 'pink' },
-    { title: 'Yönetici paneli', desc: "Yöneticinin web alanı giriş yaptığı anda görsel kimliğinizi yansıtır.", color: 'amber' },
-    { title: 'Kiracı yalıtımı', desc: 'Her şirketin kendi markası vardır. Kiracılar arasında karışma riski yoktur.', color: 'red' },
+    { title: 'Åžirket logosu', desc: "Logonuzu yÃ¼kleyin (PNG, SVG). Mobil uygulamada, e-postalarda ve PDF bordrolarda gÃ¶rÃ¼nÃ¼r.", color: 'emerald' },
+    { title: 'GÃ¶rÃ¼nen ad', desc: 'ArayÃ¼zde gÃ¶rÃ¼nen adÄ± Ã¶zelleÅŸtirin: teknik kimliÄŸiniz yerine "Acme Corp".', color: 'blue' },
+    { title: 'Birincil renkler', desc: 'Ana rengi ve vurgu rengini belirleyin. Panelde gerÃ§ek zamanlÄ± Ã¶nizleme.', color: 'violet' },
+    { title: 'Mobil marka', desc: 'Tema yÃ¶netici ve Ã§alÄ±ÅŸan uygulamalarÄ±na yayÄ±lÄ±r. BaÅŸlÄ±klar, dÃ¼ÄŸmeler ve rozetler renklerinizi alÄ±r.', color: 'pink' },
+    { title: 'YÃ¶netici paneli', desc: "YÃ¶neticinin web alanÄ± giriÅŸ yaptÄ±ÄŸÄ± anda gÃ¶rsel kimliÄŸinizi yansÄ±tÄ±r.", color: 'amber' },
+    { title: 'KiracÄ± yalÄ±tÄ±mÄ±', desc: 'Her ÅŸirketin kendi markasÄ± vardÄ±r. KiracÄ±lar arasÄ±nda karÄ±ÅŸma riski yoktur.', color: 'red' },
   ],
   ar: [
-    { title: 'شعار الشركة', desc: 'ارفع شعارك (PNG، SVG). يظهر في التطبيق الجوال والبريد الإلكتروني وكشوف الرواتب PDF.', color: 'emerald' },
-    { title: 'الاسم المعروض', desc: 'خصّص الاسم المعروض في الواجهة: "Acme Corp" بدل معرفك التقني.', color: 'blue' },
-    { title: 'الألوان الأساسية', desc: 'حدّد لونك الأساسي ولون التمييز. معاينة فورية في لوحة التحكم.', color: 'violet' },
-    { title: 'الهوية على الموبايل', desc: 'ينتقل السمة إلى تطبيقي المدير والموظف. تتبنى الرؤوس والأزرار والشعارات ألوانك.', color: 'pink' },
-    { title: 'لوحة تحكم الإدارة', desc: 'مساحة المدير على الويب تعكس هويتك البصرية من أول تسجيل دخول.', color: 'amber' },
-    { title: 'عزل المستأجرين', desc: 'كل شركة لها هويتها الخاصة. لا خطر لاختلاط الهوية بين المستأجرين.', color: 'red' },
+    { title: 'Ø´Ø¹Ø§Ø± Ø§Ù„Ø´Ø±ÙƒØ©', desc: 'Ø§Ø±ÙØ¹ Ø´Ø¹Ø§Ø±Ùƒ (PNGØŒ SVG). ÙŠØ¸Ù‡Ø± ÙÙŠ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ø¬ÙˆØ§Ù„ ÙˆØ§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ ÙˆÙƒØ´ÙˆÙ Ø§Ù„Ø±ÙˆØ§ØªØ¨ PDF.', color: 'emerald' },
+    { title: 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶', desc: 'Ø®ØµÙ‘Øµ Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶ ÙÙŠ Ø§Ù„ÙˆØ§Ø¬Ù‡Ø©: "Acme Corp" Ø¨Ø¯Ù„ Ù…Ø¹Ø±ÙÙƒ Ø§Ù„ØªÙ‚Ù†ÙŠ.', color: 'blue' },
+    { title: 'Ø§Ù„Ø£Ù„ÙˆØ§Ù† Ø§Ù„Ø£Ø³Ø§Ø³ÙŠØ©', desc: 'Ø­Ø¯Ù‘Ø¯ Ù„ÙˆÙ†Ùƒ Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ ÙˆÙ„ÙˆÙ† Ø§Ù„ØªÙ…ÙŠÙŠØ². Ù…Ø¹Ø§ÙŠÙ†Ø© ÙÙˆØ±ÙŠØ© ÙÙŠ Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ….', color: 'violet' },
+    { title: 'Ø§Ù„Ù‡ÙˆÙŠØ© Ø¹Ù„Ù‰ Ø§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„', desc: 'ÙŠÙ†ØªÙ‚Ù„ Ø§Ù„Ø³Ù…Ø© Ø¥Ù„Ù‰ ØªØ·Ø¨ÙŠÙ‚ÙŠ Ø§Ù„Ù…Ø¯ÙŠØ± ÙˆØ§Ù„Ù…ÙˆØ¸Ù. ØªØªØ¨Ù†Ù‰ Ø§Ù„Ø±Ø¤ÙˆØ³ ÙˆØ§Ù„Ø£Ø²Ø±Ø§Ø± ÙˆØ§Ù„Ø´Ø¹Ø§Ø±Ø§Øª Ø£Ù„ÙˆØ§Ù†Ùƒ.', color: 'pink' },
+    { title: 'Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©', desc: 'Ù…Ø³Ø§Ø­Ø© Ø§Ù„Ù…Ø¯ÙŠØ± Ø¹Ù„Ù‰ Ø§Ù„ÙˆÙŠØ¨ ØªØ¹ÙƒØ³ Ù‡ÙˆÙŠØªÙƒ Ø§Ù„Ø¨ØµØ±ÙŠØ© Ù…Ù† Ø£ÙˆÙ„ ØªØ³Ø¬ÙŠÙ„ Ø¯Ø®ÙˆÙ„.', color: 'amber' },
+    { title: 'Ø¹Ø²Ù„ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ†', desc: 'ÙƒÙ„ Ø´Ø±ÙƒØ© Ù„Ù‡Ø§ Ù‡ÙˆÙŠØªÙ‡Ø§ Ø§Ù„Ø®Ø§ØµØ©. Ù„Ø§ Ø®Ø·Ø± Ù„Ø§Ø®ØªÙ„Ø§Ø· Ø§Ù„Ù‡ÙˆÙŠØ© Ø¨ÙŠÙ† Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ†.', color: 'red' },
   ],
 };
 
@@ -104,8 +104,8 @@ type PlanCopy = { name: string; price: string; features: string[]; highlight: bo
 const plansByLocale: Record<Lang, PlanCopy[]> = {
   fr: [
     { name: 'Starter', price: 'Inclus', features: ['Logo entreprise', "Nom d'affichage"], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisées', 'Branding mobile'], highlight: true },
-    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisé', 'Splash screen mobile custom'], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisÃ©es', 'Branding mobile'], highlight: true },
+    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisÃ©', 'Splash screen mobile custom'], highlight: false },
   ],
   en: [
     { name: 'Starter', price: 'Included', features: ['Company logo', 'Display name'], highlight: false },
@@ -113,14 +113,14 @@ const plansByLocale: Record<Lang, PlanCopy[]> = {
     { name: 'Enterprise', price: 'Custom quote', features: ['Everything in Pro', 'Full white-label', 'Custom domain', 'Custom mobile splash screen'], highlight: false },
   ],
   tr: [
-    { name: 'Starter', price: 'Dahil', features: ['Şirket logosu', 'Görünen ad'], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Şirket logosu', 'Görünen ad', 'Özel renkler', 'Mobil marka'], highlight: true },
-    { name: 'Enterprise', price: 'Teklif alın', features: ["Pro'daki her şey", 'Tam whitelabel', 'Özel alan adı', 'Özel mobil açılış ekranı'], highlight: false },
+    { name: 'Starter', price: 'Dahil', features: ['Åžirket logosu', 'GÃ¶rÃ¼nen ad'], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Åžirket logosu', 'GÃ¶rÃ¼nen ad', 'Ã–zel renkler', 'Mobil marka'], highlight: true },
+    { name: 'Enterprise', price: 'Teklif alÄ±n', features: ["Pro'daki her ÅŸey", 'Tam whitelabel', 'Ã–zel alan adÄ±', 'Ã–zel mobil aÃ§Ä±lÄ±ÅŸ ekranÄ±'], highlight: false },
   ],
   ar: [
-    { name: 'Starter', price: 'مشمول', features: ['شعار الشركة', 'الاسم المعروض'], highlight: false },
-    { name: 'Pro', price: 'بريميوم', features: ['شعار الشركة', 'الاسم المعروض', 'ألوان مخصصة', 'هوية الموبايل'], highlight: true },
-    { name: 'Enterprise', price: 'حسب العرض', features: ['كل ما في Pro', 'علامة بيضاء كاملة', 'نطاق مخصص', 'شاشة بداية مخصصة للتطبيق'], highlight: false },
+    { name: 'Starter', price: 'Ù…Ø´Ù…ÙˆÙ„', features: ['Ø´Ø¹Ø§Ø± Ø§Ù„Ø´Ø±ÙƒØ©', 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶'], highlight: false },
+    { name: 'Pro', price: 'Ø¨Ø±ÙŠÙ…ÙŠÙˆÙ…', features: ['Ø´Ø¹Ø§Ø± Ø§Ù„Ø´Ø±ÙƒØ©', 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶', 'Ø£Ù„ÙˆØ§Ù† Ù…Ø®ØµØµØ©', 'Ù‡ÙˆÙŠØ© Ø§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„'], highlight: true },
+    { name: 'Enterprise', price: 'Ø­Ø³Ø¨ Ø§Ù„Ø¹Ø±Ø¶', features: ['ÙƒÙ„ Ù…Ø§ ÙÙŠ Pro', 'Ø¹Ù„Ø§Ù…Ø© Ø¨ÙŠØ¶Ø§Ø¡ ÙƒØ§Ù…Ù„Ø©', 'Ù†Ø·Ø§Ù‚ Ù…Ø®ØµØµ', 'Ø´Ø§Ø´Ø© Ø¨Ø¯Ø§ÙŠØ© Ù…Ø®ØµØµØ© Ù„Ù„ØªØ·Ø¨ÙŠÙ‚'], highlight: false },
   ],
 };
 
@@ -140,19 +140,19 @@ type BrandingPageCopy = {
 const copy: Record<Lang, BrandingPageCopy> = {
   fr: {
     hero: 'Personnalisation entreprise',
-    heroSub: 'Faites de Leopardo RH votre propre outil. Logo, couleurs, nom — tout reflète votre identité.',
+    heroSub: 'Faites de Leopardo RH votre propre outil. Logo, couleurs, nom â€” tout reflÃ¨te votre identitÃ©.',
     badge: 'Tenant Branding Premium',
     featuresTitle: 'Ce que vous pouvez personnaliser',
     apiSectionTitle: 'API Branding',
     plansTitle: 'Branding selon votre plan',
-    recommendedBadge: 'Recommandé',
-    ctaTitle: 'Prêt à personnaliser votre espace ?',
-    ctaSub: 'Demandez une démo pour voir le branding premium en action.',
-    ctaBtn: 'Démarrer la personnalisation',
+    recommendedBadge: 'RecommandÃ©',
+    ctaTitle: 'PrÃªt Ã  personnaliser votre espace ?',
+    ctaSub: 'Demandez une dÃ©mo pour voir le branding premium en action.',
+    ctaBtn: 'DÃ©marrer la personnalisation',
   },
   en: {
     hero: 'Enterprise Branding',
-    heroSub: 'Make Leopardo RH yours. Logo, colours, name — everything reflects your identity.',
+    heroSub: 'Make Leopardo RH yours. Logo, colours, name â€” everything reflects your identity.',
     badge: 'Tenant Branding Premium',
     featuresTitle: 'What you can customise',
     apiSectionTitle: 'Branding API',
@@ -164,27 +164,27 @@ const copy: Record<Lang, BrandingPageCopy> = {
   },
   tr: {
     hero: 'Kurumsal Marka',
-    heroSub: 'Leopardo RH\'yi kendinize ait yapın. Logo, renkler, isim — her şey kimliğinizi yansıtır.',
-    badge: 'Kiracı Marka Premium',
-    featuresTitle: 'Neler özelleştirilebilir',
+    heroSub: 'Leopardo RH\'yi kendinize ait yapÄ±n. Logo, renkler, isim â€” her ÅŸey kimliÄŸinizi yansÄ±tÄ±r.',
+    badge: 'KiracÄ± Marka Premium',
+    featuresTitle: 'Neler Ã¶zelleÅŸtirilebilir',
     apiSectionTitle: 'Marka API',
-    plansTitle: 'Plana göre marka özelleştirme',
-    recommendedBadge: 'Önerilen',
-    ctaTitle: 'Çalışma alanınızı özelleştirmeye hazır mısınız?',
-    ctaSub: 'Premium markayı aksiyonda görmek için demo talep edin.',
-    ctaBtn: 'Özelleştirmeye başla',
+    plansTitle: 'Plana gÃ¶re marka Ã¶zelleÅŸtirme',
+    recommendedBadge: 'Ã–nerilen',
+    ctaTitle: 'Ã‡alÄ±ÅŸma alanÄ±nÄ±zÄ± Ã¶zelleÅŸtirmeye hazÄ±r mÄ±sÄ±nÄ±z?',
+    ctaSub: 'Premium markayÄ± aksiyonda gÃ¶rmek iÃ§in demo talep edin.',
+    ctaBtn: 'Ã–zelleÅŸtirmeye baÅŸla',
   },
   ar: {
-    hero: 'هوية بصرية للمؤسسة',
-    heroSub: 'اجعل Leopardo RH منصتك الخاصة. شعار، ألوان، اسم — كل شيء يعكس هويتك.',
-    badge: 'هوية المستأجر المميزة',
-    featuresTitle: 'ما يمكنك تخصيصه',
-    apiSectionTitle: 'واجهة برمجة تطبيقات الهوية',
-    plansTitle: 'العلامة التجارية حسب الخطة',
-    recommendedBadge: 'موصى به',
-    ctaTitle: 'هل أنت مستعد لتخصيص مساحتك؟',
-    ctaSub: 'اطلب عرضًا توضيحيًا لمشاهدة الهوية المميزة قيد العمل.',
-    ctaBtn: 'ابدأ التخصيص',
+    hero: 'Ù‡ÙˆÙŠØ© Ø¨ØµØ±ÙŠØ© Ù„Ù„Ù…Ø¤Ø³Ø³Ø©',
+    heroSub: 'Ø§Ø¬Ø¹Ù„ Leopardo RH Ù…Ù†ØµØªÙƒ Ø§Ù„Ø®Ø§ØµØ©. Ø´Ø¹Ø§Ø±ØŒ Ø£Ù„ÙˆØ§Ù†ØŒ Ø§Ø³Ù… â€” ÙƒÙ„ Ø´ÙŠØ¡ ÙŠØ¹ÙƒØ³ Ù‡ÙˆÙŠØªÙƒ.',
+    badge: 'Ù‡ÙˆÙŠØ© Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø± Ø§Ù„Ù…Ù…ÙŠØ²Ø©',
+    featuresTitle: 'Ù…Ø§ ÙŠÙ…ÙƒÙ†Ùƒ ØªØ®ØµÙŠØµÙ‡',
+    apiSectionTitle: 'ÙˆØ§Ø¬Ù‡Ø© Ø¨Ø±Ù…Ø¬Ø© ØªØ·Ø¨ÙŠÙ‚Ø§Øª Ø§Ù„Ù‡ÙˆÙŠØ©',
+    plansTitle: 'Ø§Ù„Ø¹Ù„Ø§Ù…Ø© Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ© Ø­Ø³Ø¨ Ø§Ù„Ø®Ø·Ø©',
+    recommendedBadge: 'Ù…ÙˆØµÙ‰ Ø¨Ù‡',
+    ctaTitle: 'Ù‡Ù„ Ø£Ù†Øª Ù…Ø³ØªØ¹Ø¯ Ù„ØªØ®ØµÙŠØµ Ù…Ø³Ø§Ø­ØªÙƒØŸ',
+    ctaSub: 'Ø§Ø·Ù„Ø¨ Ø¹Ø±Ø¶Ù‹Ø§ ØªÙˆØ¶ÙŠØ­ÙŠÙ‹Ø§ Ù„Ù…Ø´Ø§Ù‡Ø¯Ø© Ø§Ù„Ù‡ÙˆÙŠØ© Ø§Ù„Ù…Ù…ÙŠØ²Ø© Ù‚ÙŠØ¯ Ø§Ù„Ø¹Ù…Ù„.',
+    ctaBtn: 'Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªØ®ØµÙŠØµ',
   },
 };
 
@@ -275,7 +275,7 @@ export default function BrandingPage() {
       </section>
 
       {/* Features grid */}
-      <section className="py-16 px-4 bg-slate-50 dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+      <section className="py-16 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-center">{t.featuresTitle}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -341,7 +341,7 @@ export default function BrandingPage() {
       </section>
 
       {/* Plans */}
-      <section className="py-16 px-4 bg-slate-50 dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+      <section className="py-16 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">{t.plansTitle}</h2>
           <div className="grid sm:grid-cols-3 gap-6">
@@ -405,3 +405,4 @@ export default function BrandingPage() {
     </div>
   );
 }
+

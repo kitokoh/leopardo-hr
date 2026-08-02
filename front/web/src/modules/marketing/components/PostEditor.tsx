@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
@@ -21,7 +21,7 @@ type PostEditorProps = {
 };
 
 /**
- * Module Marketing — Phase 4 (PA2-MKT-011).
+ * Module Marketing â€” Phase 4 (PA2-MKT-011).
  *
  * Standalone post composer: content + target platforms + optional
  * scheduling date. Used by the `/social` calendar page (new post from a
@@ -72,7 +72,7 @@ export function PostEditor({
         onChange={(e) => setContent(e.target.value)}
         rows={4}
         maxLength={5000}
-        className="w-full rounded-xl border border-app-border bg-slate-50 px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
       />
 
       <div>
@@ -88,8 +88,8 @@ export function PostEditor({
                 onClick={() => togglePlatform(platform.value)}
                 className={`rounded-full border px-3 py-1.5 text-xs font-bold transition ${
                   active
-                    ? 'border-brand-500 bg-brand-50 text-brand-700'
-                    : 'border-app-border text-slate-600 hover:bg-slate-50'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                    : 'border-app-border text-slate-600 hover:bg-transparent'
                 }`}
               >
                 {platform.label}
@@ -110,7 +110,7 @@ export function PostEditor({
             type="datetime-local"
             value={scheduledAt}
             onChange={(e) => setScheduledAt(e.target.value)}
-            className="w-full rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="w-full rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 
@@ -120,7 +120,7 @@ export function PostEditor({
               type="button"
               onClick={onCancel}
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-app-border px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-app-border px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-transparent disabled:opacity-50"
             >
               <X className="h-4 w-4" /> Annuler
             </button>
@@ -130,7 +130,7 @@ export function PostEditor({
             data-testid="post-editor-submit"
             onClick={() => void handleSubmit()}
             disabled={!canSubmit}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
             {submitting ? 'Creation...' : submitLabel ?? (scheduledAt ? 'Planifier' : 'Enregistrer en brouillon')}
@@ -140,3 +140,4 @@ export function PostEditor({
     </div>
   );
 }
+

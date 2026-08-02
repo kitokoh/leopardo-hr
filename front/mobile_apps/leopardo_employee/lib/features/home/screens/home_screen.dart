@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -261,7 +262,7 @@ class _QuickActionsGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           children:
               actions
-                  .map((action) => _QuickActionCard(action: action))
+                  .map((action) => _QuickActionGlassCard(action: action))
                   .toList(),
         );
       },
@@ -270,7 +271,7 @@ class _QuickActionsGrid extends StatelessWidget {
 }
 
 class _QuickActionCard extends StatelessWidget {
-  const _QuickActionCard({required this.action});
+  const _QuickActionGlassCard({required this.action});
 
   final MobileQuickAction action;
 
@@ -304,7 +305,7 @@ class _ModulesScroller extends StatelessWidget {
       child: Row(
         children: [
           for (final module in modules) ...[
-            _ModuleCard(module: module),
+            _ModuleGlassCard(module: module),
             const SizedBox(width: 10),
           ],
         ],
@@ -314,7 +315,7 @@ class _ModulesScroller extends StatelessWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({required this.module});
+  const _ModuleGlassCard({required this.module});
 
   final MobileModule module;
 
@@ -334,3 +335,4 @@ class _ModuleCard extends StatelessWidget {
     );
   }
 }
+

@@ -1,18 +1,18 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { CalendarDays, ListChecks } from 'lucide-react';
 
 /**
- * Module Marketing — Phase 4 (PA2-MKT-011).
+ * Module Marketing â€” Phase 4 (PA2-MKT-011).
  *
  * Dedicated layout for the Marketing surfaces nested under the
  * authenticated dashboard shell (`(dashboard)/layout.tsx` still handles
- * auth guard, sidebar and the feature-locked panel — this layout only
+ * auth guard, sidebar and the feature-locked panel â€” this layout only
  * adds the Marketing-specific sub-navigation shared by:
- *  - `/social` — the new calendar view (this issue's main deliverable).
- *  - `/social-marketing` — the existing account-connect + list view.
+ *  - `/social` â€” the new calendar view (this issue's main deliverable).
+ *  - `/social-marketing` â€” the existing account-connect + list view.
  *
  * Both routes share the same underlying API (`/marketing/social-*`), so
  * this tab bar lets a marketer switch between "plan visually" (calendar)
@@ -37,7 +37,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
               key={tab.href}
               href={tab.href}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${
-                active ? 'bg-brand-50 text-brand-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-500 hover:bg-transparent hover:text-slate-900'
               }`}
             >
               <tab.icon className="h-4 w-4" aria-hidden="true" />
@@ -50,3 +50,4 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+

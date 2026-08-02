@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <div class="space-y-6 h-full flex flex-col">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Pipeline Commercial</h1>
         <p class="mt-1 text-sm text-gray-500">
-          Suivi des leads de l'entrée jusqu'à la conversion payante.
+          Suivi des leads de l'entrÃ©e jusqu'Ã  la conversion payante.
         </p>
       </div>
       <button class="btn-secondary" :disabled="isLoading" @click="loadPipeline">
@@ -38,7 +38,7 @@
       
       <!-- Colonne: Leads -->
       <div class="flex-shrink-0 w-80 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex flex-col border border-slate-200 dark:border-slate-800">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 rounded-t-xl">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center glass-card dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
             Leads Entrants
@@ -48,9 +48,9 @@
           </span>
         </div>
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
-          <div v-for="item in pipeline.leads" :key="item.id" class="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-colors cursor-pointer" @click="openRequest(item.id)">
+          <div v-for="item in pipeline.leads" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-colors cursor-pointer" @click="openRequest(item.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
-            <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non précisé' }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non prÃ©cisÃ©' }}</p>
             <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
@@ -67,7 +67,7 @@
 
       <!-- Colonne: Trials -->
       <div class="flex-shrink-0 w-80 bg-emerald-50/30 dark:bg-emerald-900/10 rounded-xl flex flex-col border border-emerald-100 dark:border-emerald-900/30">
-        <div class="p-4 border-b border-emerald-100 dark:border-emerald-900/30 flex justify-between items-center bg-white dark:bg-slate-900 rounded-t-xl">
+        <div class="p-4 border-b border-emerald-100 dark:border-emerald-900/30 flex justify-between items-center glass-card dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
             En Essai (Trial)
@@ -77,7 +77,7 @@
           </span>
         </div>
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
-          <div v-for="item in pipeline.trials" :key="item.id" class="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-emerald-100 dark:border-emerald-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
+          <div v-for="item in pipeline.trials" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-emerald-100 dark:border-emerald-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <p class="text-xs text-slate-500 mt-1">{{ item.email }}</p>
             <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
@@ -96,7 +96,7 @@
 
       <!-- Colonne: Active (Payant) -->
       <div class="flex-shrink-0 w-80 bg-blue-50/30 dark:bg-blue-900/10 rounded-xl flex flex-col border border-blue-100 dark:border-blue-900/30">
-        <div class="p-4 border-b border-blue-100 dark:border-blue-900/30 flex justify-between items-center bg-white dark:bg-slate-900 rounded-t-xl">
+        <div class="p-4 border-b border-blue-100 dark:border-blue-900/30 flex justify-between items-center glass-card dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-500"></span>
             Clients Actifs
@@ -106,7 +106,7 @@
           </span>
         </div>
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
-          <div v-for="item in pipeline.active" :key="item.id" class="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-blue-100 dark:border-blue-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
+          <div v-for="item in pipeline.active" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-blue-100 dark:border-blue-900/50 hover:border-brand-500 transition-colors cursor-pointer" @click="openCompany(item.company.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
@@ -127,7 +127,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-transparent rounded-t-xl">
           <h2 class="font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-slate-400"></span>
-            Rejetés / Expirés
+            RejetÃ©s / ExpirÃ©s
           </h2>
           <span class="text-xs font-semibold px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded-full text-slate-600 dark:text-slate-400">
             {{ pipeline.rejected?.length || 0 }}
@@ -178,7 +178,7 @@ const meta = ref({
 
 const SOURCE_LABELS = {
   signup_form: 'Inscription',
-  demo_form: 'Demande de démo',
+  demo_form: 'Demande de dÃ©mo',
   contact_form: 'Contact',
   newsletter_form: 'Newsletter',
   self_service_trial: 'Essai self-service',
@@ -235,3 +235,4 @@ function formatDate(value) {
 
 onMounted(loadPipeline)
 </script>
+

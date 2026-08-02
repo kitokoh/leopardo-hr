@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { ApiError, apiFetch } from '@/lib/api-client';
@@ -103,3 +103,4 @@ export default function AbsencesPage() {
     </ModulePageShell>
   );
 }
+

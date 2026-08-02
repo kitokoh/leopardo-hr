@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -43,7 +43,7 @@ function toDatetimeLocalValue(date: Date): string {
 }
 
 /**
- * Module Marketing — Phase 4 (PA2-MKT-011).
+ * Module Marketing â€” Phase 4 (PA2-MKT-011).
  *
  * `/social` calendar page: month grid of scheduled/published/draft posts,
  * click a day to compose a new post pre-filled for that date via
@@ -223,13 +223,13 @@ export default function SocialCalendarPage() {
             <button
               type="button"
               onClick={() => setMonthStart(startOfMonth(new Date()))}
-              className="rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+              className="rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-transparent"
             >
               Aujourd&apos;hui
             </button>
             <Link
               href="/social-marketing"
-              className="inline-flex items-center gap-2 rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-app-border px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-transparent"
             >
               <ListChecks className="h-3.5 w-3.5" /> Vue liste
             </Link>
@@ -269,8 +269,8 @@ export default function SocialCalendarPage() {
                   data-testid={`calendar-day-${key}`}
                   onClick={() => setComposerDay(day)}
                   disabled={accountConnected === false}
-                  className={`min-h-24 border-b border-r border-app-border p-2 text-left transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:hover:bg-transparent ${
-                    inMonth ? 'bg-white' : 'bg-slate-50/60'
+                  className={`min-h-24 border-b border-r border-app-border p-2 text-left transition hover:bg-transparent disabled:cursor-not-allowed disabled:hover:bg-transparent ${
+                    inMonth ? 'bg-white' : 'bg-transparent/60'
                   }`}
                 >
                   <span
@@ -312,7 +312,7 @@ export default function SocialCalendarPage() {
         <section className="rounded-3xl border border-app-border bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-              Nouvelle publication — {composerDay.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              Nouvelle publication â€” {composerDay.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
             </h2>
             <button
               type="button"
@@ -386,7 +386,7 @@ export default function SocialCalendarPage() {
                   type="button"
                   onClick={() => void handleDeletePost(selectedPost)}
                   disabled={postActionPending}
-                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
                 >
                   Supprimer
                 </button>
@@ -398,3 +398,4 @@ export default function SocialCalendarPage() {
     </ModulePageShell>
   );
 }
+
