@@ -6,9 +6,23 @@ import { useLocaleStore } from '@/stores/locale.js'
 const PLATFORM_AUTH_BASE = '/platform/auth'
 const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
 
+// Security fix (#1299): migrated from localStorage to sessionStorage.
+// sessionStorage is scoped to the browser tab — the token is cleared when
+// the tab closes, reducing the persistence window for a stolen token.
+// A full httpOnly cookie migration for this SPA requires a server-side
+// BFF or a backend /platform/auth/login endpoint that sets the cookie;
+// that is tracked as the next step in issue #1299.
+// See also: docs/security/AUDIT_API_2026-07-19.md
+const ADMIN_TOKEN_STORAGE_KEY = 'admin_token';
+const storage = {
+  getToken: (): string | null => sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY),
+  setToken: (token: string): void => { sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token); },
+  removeToken: (): void => { sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY); },
+};
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
-  const token = ref(localStorage.getItem('admin_token'))
+  const token = ref(storage.getToken())
   const isLoading = ref(false)
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
@@ -46,7 +60,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       token.value = authToken
       user.value = userData
-      localStorage.setItem('admin_token', authToken)
+      storage.setToken(authToken)
       api.defaults.headers.common.Authorization = `Bearer ${authToken}`
 
       // Synchronise la locale avec la préférence de l'utilisateur
@@ -76,7 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
     } finally {
       token.value = null
       user.value = null
-      localStorage.removeItem('admin_token')
+      storage.removeToken()
       delete api.defaults.headers.common.Authorization
     }
   }

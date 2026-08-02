@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 
 const DEFAULT_BACKEND_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+const SESSION_COOKIE_NAME = 'leopardo_token';
 
 const HOP_BY_HOP_HEADERS = new Set([
   'connection',
@@ -31,7 +33,7 @@ function toBackendUrl(request: NextRequest, path: string[]): string {
   return backendUrl.toString();
 }
 
-function proxyHeaders(request: NextRequest): Headers {
+function proxyHeaders(request: NextRequest, sessionToken?: string): Headers {
   const headers = new Headers(request.headers);
 
   for (const header of Array.from(headers.keys())) {
@@ -41,6 +43,17 @@ function proxyHeaders(request: NextRequest): Headers {
   }
 
   headers.set('Accept', headers.get('Accept') || 'application/json');
+
+  // Security fix (#1299): inject the httpOnly session cookie as a Bearer
+  // Authorization header so the token never flows through client-side JS.
+  // The browser cannot read `leopardo_token` (httpOnly), but the Next.js
+  // server-side proxy reads it here and adds the Authorization header.
+  // If the request already carries an explicit Authorization header
+  // (e.g. from mobile or server-side fetch), it is preserved unchanged.
+  if (sessionToken && !headers.has('authorization')) {
+    headers.set('Authorization', `Bearer ${sessionToken}`);
+  }
+
   return headers;
 }
 
@@ -49,9 +62,13 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const method = request.method.toUpperCase();
   const body = method === 'GET' || method === 'HEAD' ? undefined : await request.arrayBuffer();
 
+  // Read the httpOnly session cookie — only accessible server-side
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
   const response = await fetch(toBackendUrl(request, path), {
     method,
-    headers: proxyHeaders(request),
+    headers: proxyHeaders(request, sessionToken),
     body,
     redirect: 'manual',
     cache: 'no-store',
