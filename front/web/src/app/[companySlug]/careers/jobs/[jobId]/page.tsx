@@ -7,6 +7,7 @@ import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import {
+  getPublicCareersCompany,
   getPublicJobPosting,
   CONTRACT_TYPE_LABELS,
   REMOTE_POLICY_LABELS,
@@ -25,11 +26,14 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
     return { title: 'Offre introuvable' };
   }
 
+  const company = await getPublicCareersCompany(companySlug);
+
   return generateSEOMetadata({
-    title: job.title,
+    title: `${job.title}${company ? ` chez ${company.display_name}` : ''}`,
     description: job.description?.slice(0, 155) || `Postulez a l'offre "${job.title}".`,
     canonical: `https://leopardo.com/${companySlug}/careers/jobs/${job.id}`,
     ogType: 'article',
+    ogImage: company?.logo_url ?? undefined,
   });
 }
 
@@ -50,13 +54,18 @@ function schemaEmploymentType(contractType: string): string {
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const { companySlug, jobId } = await params;
-  const job = await getPublicJobPosting(companySlug, jobId);
+  const [job, company] = await Promise.all([
+    getPublicJobPosting(companySlug, jobId),
+    getPublicCareersCompany(companySlug),
+  ]);
 
   if (!job) {
     notFound();
   }
 
   const hasSalary = job.salary_range_min || job.salary_range_max;
+  const brandColor = company?.primary_color ?? '#10B981';
+  const organizationName = company?.display_name ?? companySlug;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
@@ -73,7 +82,8 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           employmentType: schemaEmploymentType(job.contract_type),
           hiringOrganization: {
             '@type': 'Organization',
-            name: companySlug,
+            name: organizationName,
+            logo: company?.logo_url ?? undefined,
           },
           jobLocation: job.location
             ? {
@@ -102,9 +112,10 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         <Link
           href={`/${companySlug}/careers`}
           className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 mb-8"
+          style={{ color: brandColor }}
         >
           <ArrowLeft className="w-4 h-4" />
-          Retour aux offres
+          Retour aux offres chez {organizationName}
         </Link>
 
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">{job.title}</h1>
