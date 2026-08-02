@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
  * created_at (timestampTz('created_at')->useCurrent()) dans leurs migrations
  * d'origine, sans updated_at. Les modeles Eloquent correspondants
  * (App\Modules\Planning\Domain\Models\AbsenceType,
- * App\Modules\Expense\Domain\Models\ExpenseItem) utilisent les timestamps
+ * App\Modules\Planning\Domain\Models\ExpenseItem) utilisent les timestamps
  * par defaut (created_at + updated_at), ce qui fait echouer tout
  * INSERT/UPDATE via Eloquent (colonne "updated_at" inexistante).
  *
