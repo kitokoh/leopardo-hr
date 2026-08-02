@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Planning\Domain\Exceptions;
 
 use App\Exceptions\DomainException;

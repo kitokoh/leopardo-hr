@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Modules\Billing\Providers;
 
 use Illuminate\Support\ServiceProvider;
