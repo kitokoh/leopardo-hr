@@ -11,9 +11,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('company_requests', function (Blueprint $table) {
-            $table->string('verification_token', 64)->nullable()->after('email');
-            $table->timestamp('verification_expires_at')->nullable()->after('verification_token');
-            $table->jsonb('signup_payload')->nullable()->after('admin_notes');
+            if (! Schema::hasColumn('company_requests', 'verification_token')) {
+                $table->string('verification_token', 64)->nullable()->after('email');
+            }
+            if (! Schema::hasColumn('company_requests', 'verification_expires_at')) {
+                $table->timestamp('verification_expires_at')->nullable()->after('verification_token');
+            }
+            if (! Schema::hasColumn('company_requests', 'signup_payload')) {
+                $table->jsonb('signup_payload')->nullable()->after('admin_notes');
+            }
         });
     }
 
