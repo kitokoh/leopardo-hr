@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
@@ -43,7 +43,7 @@ export default function CareersPage() {
       />
 
       {/* Values */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section className="py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">Nos Valeurs</h2>
@@ -85,7 +85,7 @@ export default function CareersPage() {
               'Conges supplementaires apres 2 ans',
               'Stock options pour les postes senior',
             ].map((benefit, i) => (
-              <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-transparent dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
                 <span className="text-slate-700 dark:text-slate-300">{benefit}</span>
               </div>
@@ -95,7 +95,7 @@ export default function CareersPage() {
       </section>
 
       {/* Openings */}
-      <section id="openings" className="py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section id="openings" className="py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">Postes Ouverts</h2>
@@ -140,3 +140,4 @@ export default function CareersPage() {
     </div>
   );
 }
+

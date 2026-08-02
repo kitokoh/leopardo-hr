@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
       <MetricCard title="Effectif total" :value="metrics.headcount" />
@@ -15,7 +15,7 @@
         type="button"
         :class="[
           'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50'
+          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 hover:glass-bg'
         ]"
         @click="loadReport(tab.key)"
       >
@@ -23,13 +23,13 @@
       </button>
     </div>
 
-    <div v-if="loading" class="rounded-lg bg-white p-8 text-center text-sm text-gray-500 shadow">
+    <div v-if="loading" class="rounded-lg glass-card p-8 text-center text-sm text-gray-500 shadow">
       Chargement du rapport...
     </div>
-    <div v-else-if="error" class="rounded-lg bg-white p-8 text-center text-sm text-red-600 shadow">
+    <div v-else-if="error" class="rounded-lg glass-card p-8 text-center text-sm text-red-600 shadow">
       {{ error }}
     </div>
-    <div v-else-if="reportData" class="rounded-lg bg-white p-6 shadow">
+    <div v-else-if="reportData" class="rounded-lg glass-card p-6 shadow">
       <h2 class="mb-4 text-lg font-semibold text-gray-900">
         {{ currentTabLabel }}
       </h2>
@@ -82,7 +82,7 @@
       </div>
 
       <div v-else class="text-sm text-gray-600">
-        <pre class="overflow-x-auto rounded bg-gray-50 p-4">{{ JSON.stringify(reportData, null, 2) }}</pre>
+        <pre class="overflow-x-auto rounded glass-bg p-4">{{ JSON.stringify(reportData, null, 2) }}</pre>
       </div>
     </div>
   </div>
@@ -160,3 +160,4 @@ onMounted(() => {
   loadReport('headcount')
 })
 </script>
+

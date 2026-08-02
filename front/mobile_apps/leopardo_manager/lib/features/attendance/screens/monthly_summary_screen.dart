@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +7,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 
-/// Ecran "Mon mois" — l'employe voit :
+/// Ecran "Mon mois" â€” l'employe voit :
 ///  - ses heures travaillees du mois
 ///  - ses heures supplementaires
 ///  - son gain brut et son du net estimes
@@ -63,7 +64,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                 child: Padding(
                   padding: EdgeInsets.all(24),
                   child: CircularProgressIndicator(
-                    semanticsLabel: 'Chargement du résumé mensuel...',
+                    semanticsLabel: 'Chargement du rÃ©sumÃ© mensuel...',
                   ),
                 ),
               ),
@@ -135,7 +136,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.schedule,
           label: 'Heures travaillees',
@@ -144,7 +145,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               '${summary.daysPresent} jours presents / ${summary.workingDays} ouvres',
         ),
         const SizedBox(height: 12),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.timelapse,
           label: 'Heures supplementaires',
@@ -153,7 +154,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           accent: AppColors.warning,
         ),
         const SizedBox(height: 12),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.account_balance_wallet,
           label: 'Gain brut estime',
@@ -161,7 +162,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           sub: 'Avant deductions legales',
         ),
         const SizedBox(height: 12),
-        _metricCard(
+        _metricGlassCard(
           context,
           icon: Icons.paid,
           label: 'Du net estime',
@@ -213,7 +214,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
     );
   }
 
-  Widget _metricCard(
+  Widget _metricGlassCard(
     BuildContext context, {
     required IconData icon,
     required String label,
@@ -288,3 +289,4 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
     );
   }
 }
+

@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' show PlatformDispatcher;
@@ -52,7 +53,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _edgeBaseUrlController = TextEditingController();
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
-    'ar': 'العربية',
+    'ar': 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
     'tr': 'Turkce',
     'en': 'English',
   };
@@ -203,7 +204,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _buildIdentityCard(context),
+          _buildIdentityGlassCard(context),
           const SizedBox(height: 20),
           _buildAccountOverviewSection(),
           const SizedBox(height: 20),
@@ -232,7 +233,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildIdentityCard(BuildContext context) {
+  Widget _buildIdentityGlassCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: MobileSurface.cardDecoration(),
@@ -416,7 +417,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 14),
           ...items.map(
-            (item) => MobileListCard(
+            (item) => MobileListGlassCard(
               icon: item.icon,
               iconColor: item.color,
               title: item.title,
@@ -546,7 +547,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  LeopardoQrCard(
+                  LeopardoQrGlassCard(
                     data: qr.token,
                     title: 'Mon QR employe',
                     subtitle:
@@ -1661,3 +1662,4 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 }
+

@@ -571,7 +571,7 @@ function FaqAccordionItem({ item, isOpen, onToggle }: {
     <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between gap-4 p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+        className="w-full flex items-center justify-between gap-4 p-6 text-left hover:bg-transparent dark:hover:bg-slate-900/50 transition-colors"
         aria-expanded={isOpen}
       >
         <span className="font-semibold text-slate-900 dark:text-white text-base">
@@ -999,7 +999,7 @@ export default function PricingPage() {
           <div className="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50">
             <table className="w-full min-w-[720px]">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-900">
+                <tr className="bg-transparent dark:bg-slate-900">
                   <th className="text-left py-5 px-6 font-bold text-slate-900 dark:text-white text-sm w-[32%]">
                     {copy.comparison.featureColumn}
                   </th>
@@ -1038,7 +1038,7 @@ export default function PricingPage() {
                 {copy.comparison.categories.map((cat, catIdx) => (
                   <Fragment key={cat.category}>
                     {/* Category row */}
-                    <tr className={catIdx % 2 === 0 ? 'bg-slate-50/70 dark:bg-slate-900/30' : 'bg-emerald-50/30 dark:bg-emerald-950/10'}>
+                    <tr className={catIdx % 2 === 0 ? 'bg-transparent/70 dark:bg-slate-900/30' : 'bg-emerald-50/30 dark:bg-emerald-950/10'}>
                       <td colSpan={plans.length + 1} className="py-3 px-6">
                         <span className="text-xs font-black uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
                           {cat.category}
@@ -1053,7 +1053,7 @@ export default function PricingPage() {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: '-40px' }}
                         transition={{ duration: 0.3, delay: fIdx * 0.05 }}
-                        className="border-t border-slate-100 dark:border-slate-800/50 hover:bg-slate-50/80 dark:hover:bg-slate-900/30 transition-colors"
+                        className="border-t border-slate-100 dark:border-slate-800/50 hover:bg-transparent/80 dark:hover:bg-slate-900/30 transition-colors"
                       >
                         <td className="py-4 px-6 text-sm text-slate-700 dark:text-slate-300 font-medium">
                           {feature.name}
@@ -1074,7 +1074,7 @@ export default function PricingPage() {
                   </Fragment>
                 ))}
                 {/* CTA row */}
-                <tr className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
+                <tr className="border-t border-slate-200 dark:border-slate-800 bg-transparent dark:bg-slate-900">
                   <td className="py-6 px-6" />
                   {plans.map((plan) => {
                     const isFree = plan.price === '0';
@@ -1171,7 +1171,7 @@ export default function PricingPage() {
           </div>
 
           {/* Still have questions */}
-          <div className="mt-10 text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <div className="mt-10 text-center p-6 rounded-2xl bg-transparent dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <p className="text-slate-700 dark:text-slate-300 font-semibold mb-3">
               {locale === 'fr' ? 'Une autre question ?' : locale === 'tr' ? 'BaÅŸka sorunuz var mÄ±?' : locale === 'ar' ? 'Ø³Ø¤Ø§Ù„ Ø¢Ø®Ø±ØŸ' : 'Another question?'}
             </p>
@@ -1257,4 +1257,5 @@ export default function PricingPage() {
     </div>
   );
 }
+
 

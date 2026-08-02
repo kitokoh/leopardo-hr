@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,7 +64,7 @@ class ScheduleListScreen extends ConsumerWidget {
               itemCount: schedules.length,
               itemBuilder: (context, index) {
                 final schedule = schedules[index];
-                return MobileListCard(
+                return MobileListGlassCard(
                   icon: Icons.schedule_rounded,
                   iconColor: schedule.isDefault ? AppColors.rh : AppColors.info,
                   title: schedule.name,
@@ -924,3 +925,4 @@ class _TimeButton extends StatelessWidget {
     );
   }
 }
+

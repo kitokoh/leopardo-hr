@@ -1,5 +1,5 @@
-// ============================================================
-// Edge Nodes Dashboard Page — Priority 3.2
+﻿// ============================================================
+// Edge Nodes Dashboard Page â€” Priority 3.2
 // Manages Leopardo Edge nodes for the company
 // ============================================================
 
@@ -127,7 +127,7 @@ export default function EdgeNodesPage() {
         <div className="flex justify-end">
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700"
           >
             <Plus className="h-4 w-4" /> {labels.newNode}
           </button>
@@ -196,7 +196,7 @@ export default function EdgeNodesPage() {
                         ) : null}
                       </div>
                       <p className="mt-1 text-xs text-slate-500">
-                        {node.site_address ?? labels.addressMissing} · v{node.edge_version}
+                        {node.site_address ?? labels.addressMissing} Â· v{node.edge_version}
                       </p>
                       <p className="mt-1 text-xs text-slate-400">
                         {labels.lastSyncLabel}{node.last_sync_at ? new Date(node.last_sync_at).toLocaleString(intlLocale) : labels.lastSyncNever}
@@ -210,7 +210,7 @@ export default function EdgeNodesPage() {
                     <button
                       onClick={() => triggerSync(node.id)}
                       disabled={syncing === node.id || !node.is_online}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-app-border bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-app-border bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
                     >
                       <RefreshCw className={`h-3.5 w-3.5 ${syncing === node.id ? 'animate-spin' : ''}`} />
                       {syncing === node.id ? labels.syncing : labels.sync}
@@ -228,7 +228,7 @@ export default function EdgeNodesPage() {
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-lg font-black text-slate-950">
-                <Cpu className="h-5 w-5 text-brand-600" /> {labels.modalTitle}
+                <Cpu className="h-5 w-5 text-emerald-600" /> {labels.modalTitle}
               </h2>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="h-5 w-5" />
@@ -242,7 +242,7 @@ export default function EdgeNodesPage() {
                   placeholder={labels.siteNamePlaceholder}
                   value={newNode.name}
                   onChange={(e) => setNewNode({ ...newNode, name: e.target.value })}
-                  className="w-full rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <div>
@@ -252,7 +252,7 @@ export default function EdgeNodesPage() {
                   placeholder={labels.siteAddressPlaceholder}
                   value={newNode.site_address}
                   onChange={(e) => setNewNode({ ...newNode, site_address: e.target.value })}
-                  className="w-full rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <div>
@@ -271,14 +271,14 @@ export default function EdgeNodesPage() {
             <div className="mt-5 flex gap-3">
               <button
                 onClick={() => setShowAddModal(false)}
-                className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent"
               >
                 {labels.cancel}
               </button>
               <button
                 onClick={addNode}
                 disabled={!newNode.name}
-                className="flex-1 rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50"
               >
                 {labels.createNode}
               </button>
@@ -289,3 +289,4 @@ export default function EdgeNodesPage() {
     </>
   );
 }
+

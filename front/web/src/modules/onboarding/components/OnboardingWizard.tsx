@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,9 +12,9 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
   const [loading, setLoading] = useState(false);
 
   const steps = [
-    { id: 1, title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.', icon: Building },
-    { id: 2, title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.', icon: Users },
-    { id: 3, title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.', icon: ShieldCheck },
+    { id: 1, title: 'Bienvenue sur Leopardo', desc: 'DÃ©couvrez votre nouvel espace RH en quelques Ã©tapes.', icon: Building },
+    { id: 2, title: 'Ajoutez vos Ã©quipes', desc: 'Invitez vos employÃ©s pour commencer Ã  pointer.', icon: Users },
+    { id: 3, title: 'Finalisez la configuration', desc: 'Vos plannings et rÃ¨gles d\'entreprise sont prÃªts.', icon: ShieldCheck },
   ];
 
   const handleNext = async () => {
@@ -73,7 +73,7 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 text-white">
             <div className="mb-4 flex items-center justify-between">
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                Étape {step} sur {steps.length}
+                Ã‰tape {step} sur {steps.length}
               </span>
             </div>
             <h2 className="text-2xl font-black">{steps[step - 1].title}</h2>
@@ -115,3 +115,4 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
     </AnimatePresence>
   );
 }
+

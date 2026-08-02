@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { Key, Webhook, FileText, Plus, Trash2, Copy, Check, X, Loader2 } from 'lucide-react';
@@ -212,7 +212,7 @@ export default function DeveloperSettingsPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 border-b border-app-border pb-4">
-              <div className="rounded-xl bg-brand-50 p-2 text-brand-600">
+              <div className="rounded-xl bg-emerald-50 p-2 text-emerald-600">
                 <Key className="h-5 w-5" />
               </div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{labels.apiKeysTitle}</h2>
@@ -225,7 +225,7 @@ export default function DeveloperSettingsPage() {
                 <p className="text-sm text-slate-400">{labels.noTokens}</p>
               ) : (
                 tokens.map((token) => (
-                  <div key={token.id} className="flex items-center justify-between rounded-xl border border-app-border bg-slate-50 p-4">
+                  <div key={token.id} className="flex items-center justify-between rounded-xl border border-app-border bg-transparent p-4">
                     <div>
                       <p className="font-bold text-slate-950">{token.name}</p>
                       <p className="text-xs text-slate-500">
@@ -256,7 +256,7 @@ export default function DeveloperSettingsPage() {
                 value={newTokenName}
                 onChange={(e) => setNewTokenName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') void handleCreateToken(); }}
-                className="flex-1 rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="flex-1 rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
               <button
                 onClick={handleCreateToken}
@@ -283,12 +283,12 @@ export default function DeveloperSettingsPage() {
                 <p className="text-sm text-slate-400">{labels.noWebhooks}</p>
               ) : (
                 webhooks.map((webhook) => (
-                  <div key={webhook.id} className="rounded-xl border border-app-border bg-slate-50 p-4">
+                  <div key={webhook.id} className="rounded-xl border border-app-border bg-transparent p-4">
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-bold text-slate-950">{webhook.url}</p>
                         <p className="mt-0.5 text-xs text-slate-500">
-                          {labels.eventsCount.replace('{count}', String(webhook.events.length))} · {webhook.failure_count ? labels.failuresCount.replace('{count}', String(webhook.failure_count)) : labels.noFailures}
+                          {labels.eventsCount.replace('{count}', String(webhook.events.length))} Â· {webhook.failure_count ? labels.failuresCount.replace('{count}', String(webhook.failure_count)) : labels.noFailures}
                         </p>
                       </div>
                       <button
@@ -327,7 +327,7 @@ export default function DeveloperSettingsPage() {
 
             <button
               onClick={() => setShowWebhookModal(true)}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-app-border py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-app-border py-3 text-sm font-bold text-slate-600 hover:bg-transparent hover:text-slate-900"
             >
               <Plus className="h-4 w-4" /> {labels.addEndpoint}
             </button>
@@ -380,14 +380,14 @@ export default function DeveloperSettingsPage() {
                     placeholder="https://erp.client.com/webhook"
                     value={newWebhook.url}
                     onChange={(e) => setNewWebhook({ ...newWebhook, url: e.target.value })}
-                    className="w-full rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full rounded-xl border border-app-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">{labels.eventsToListenLabel}</label>
                   <div className="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-app-border p-2">
                     {availableEvents.map((event) => (
-                      <label key={event} className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm hover:bg-slate-50">
+                      <label key={event} className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm hover:bg-transparent">
                         <input
                           type="checkbox"
                           checked={newWebhook.events.includes(event)}
@@ -400,11 +400,11 @@ export default function DeveloperSettingsPage() {
                 </div>
               </div>
               <div className="mt-5 flex gap-3">
-                <button onClick={() => setShowWebhookModal(false)} className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50">{labels.cancel}</button>
+                <button onClick={() => setShowWebhookModal(false)} className="flex-1 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent">{labels.cancel}</button>
                 <button
                   onClick={handleCreateWebhook}
                   disabled={!newWebhook.url.trim() || newWebhook.events.length === 0 || creatingWebhook}
-                  className="flex-1 rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-50"
                 >
                   {creatingWebhook ? labels.creating : labels.create}
                 </button>
@@ -416,3 +416,4 @@ export default function DeveloperSettingsPage() {
     </>
   );
 }
+

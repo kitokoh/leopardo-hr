@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -50,7 +51,7 @@ class UserHomeScreen extends ConsumerWidget {
                 _buildSection('Mes entreprises', muted),
                 const SizedBox(height: 8),
                 ...user.employeeLinks.map(
-                  (link) => _EmployeeLinkCard(
+                  (link) => _EmployeeLinkGlassCard(
                     companyName: link.companyName ?? 'Entreprise',
                     onTap: () {
                       HapticFeedback.lightImpact();
@@ -63,7 +64,7 @@ class UserHomeScreen extends ConsumerWidget {
                 _buildSection('Demandes en cours', muted),
                 const SizedBox(height: 8),
                 ...user.companyRequests.map(
-                  (req) => _CompanyRequestCard(
+                  (req) => _CompanyRequestGlassCard(
                     companyName: req.companyName,
                     status: req.status,
                   ),
@@ -153,7 +154,7 @@ class UserHomeScreen extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: _QuickActionCard(
+              child: _QuickActionGlassCard(
                 icon: Icons.door_sliding_outlined,
                 label: 'Placard',
                 color: AppColors.cabinet,
@@ -165,7 +166,7 @@ class UserHomeScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _QuickActionCard(
+              child: _QuickActionGlassCard(
                 icon: Icons.business_outlined,
                 label: 'Creer entreprise',
                 color: AppColors.ia,
@@ -192,7 +193,7 @@ class _QuickActionCard extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _QuickActionCard({
+  const _QuickActionGlassCard({
     required this.icon,
     required this.label,
     required this.color,
@@ -245,11 +246,11 @@ class _EmployeeLinkCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
-  const _EmployeeLinkCard({required this.companyName, required this.onTap});
+  const _EmployeeLinkGlassCard({required this.companyName, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Container(
@@ -279,7 +280,7 @@ class _CompanyRequestCard extends StatelessWidget {
   final String companyName;
   final String status;
 
-  const _CompanyRequestCard({required this.companyName, required this.status});
+  const _CompanyRequestGlassCard({required this.companyName, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +295,7 @@ class _CompanyRequestCard extends StatelessWidget {
       _ => 'En attente',
     };
 
-    return Card(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Container(
@@ -315,3 +316,4 @@ class _CompanyRequestCard extends StatelessWidget {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
@@ -166,32 +166,32 @@ const navByLocale: Record<string, NavEntry[]> = {
     },
   ],
   ar: [
-    { href: '/pricing', label: 'الأسعار' },
+    { href: '/pricing', label: 'Ø§Ù„Ø£Ø³Ø¹Ø§Ø±' },
     {
-      label: 'الموارد',
+      label: 'Ø§Ù„Ù…ÙˆØ§Ø±Ø¯',
       items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'الأدلة', description: 'ممارسات عملية للموارد البشرية والفرق الميدانية' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'رؤى التشغيل', description: 'تحليلات وأفكار نمو للشركات الصغيرة والمتوسطة' },
-        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'توثيق API', description: 'أدلة تقنية للتكاملات والشركاء' },
-        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'سجل التغييرات', description: 'آخر تحديثات المنتج' },
+        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Ø§Ù„Ø£Ø¯Ù„Ø©', description: 'Ù…Ù…Ø§Ø±Ø³Ø§Øª Ø¹Ù…Ù„ÙŠØ© Ù„Ù„Ù…ÙˆØ§Ø±Ø¯ Ø§Ù„Ø¨Ø´Ø±ÙŠØ© ÙˆØ§Ù„ÙØ±Ù‚ Ø§Ù„Ù…ÙŠØ¯Ø§Ù†ÙŠØ©' },
+        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'Ø±Ø¤Ù‰ Ø§Ù„ØªØ´ØºÙŠÙ„', description: 'ØªØ­Ù„ÙŠÙ„Ø§Øª ÙˆØ£ÙÙƒØ§Ø± Ù†Ù…Ùˆ Ù„Ù„Ø´Ø±ÙƒØ§Øª Ø§Ù„ØµØºÙŠØ±Ø© ÙˆØ§Ù„Ù…ØªÙˆØ³Ø·Ø©' },
+        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'ØªÙˆØ«ÙŠÙ‚ API', description: 'Ø£Ø¯Ù„Ø© ØªÙ‚Ù†ÙŠØ© Ù„Ù„ØªÙƒØ§Ù…Ù„Ø§Øª ÙˆØ§Ù„Ø´Ø±ÙƒØ§Ø¡' },
+        { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Ø³Ø¬Ù„ Ø§Ù„ØªØºÙŠÙŠØ±Ø§Øª', description: 'Ø¢Ø®Ø± ØªØ­Ø¯ÙŠØ«Ø§Øª Ø§Ù„Ù…Ù†ØªØ¬' },
       ],
     },
-    { href: '/contact', label: 'اتصل بنا' },
+    { href: '/contact', label: 'Ø§ØªØµÙ„ Ø¨Ù†Ø§' },
     {
-      label: 'تثبيت Leopardo',
+      label: 'ØªØ«Ø¨ÙŠØª Leopardo',
       items: [
-        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'عميل سطح المكتب للمزامنة وأجهزة ZKTeco' },
-        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'مساحة عمل للفرق الميدانية' },
-        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'الحضور والخدمة الذاتية على الجوال' },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'تطبيق iOS للموظفين والمديرين' },
+        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'Ø¹Ù…ÙŠÙ„ Ø³Ø·Ø­ Ø§Ù„Ù…ÙƒØªØ¨ Ù„Ù„Ù…Ø²Ø§Ù…Ù†Ø© ÙˆØ£Ø¬Ù‡Ø²Ø© ZKTeco' },
+        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Ù…Ø³Ø§Ø­Ø© Ø¹Ù…Ù„ Ù„Ù„ÙØ±Ù‚ Ø§Ù„Ù…ÙŠØ¯Ø§Ù†ÙŠØ©' },
+        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Ø§Ù„Ø­Ø¶ÙˆØ± ÙˆØ§Ù„Ø®Ø¯Ù…Ø© Ø§Ù„Ø°Ø§ØªÙŠØ© Ø¹Ù„Ù‰ Ø§Ù„Ø¬ÙˆØ§Ù„' },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'ØªØ·Ø¨ÙŠÙ‚ iOS Ù„Ù„Ù…ÙˆØ¸ÙÙŠÙ† ÙˆØ§Ù„Ù…Ø¯ÙŠØ±ÙŠÙ†' },
       ],
     },
     {
-      label: 'المجتمع',
+      label: 'Ø§Ù„Ù…Ø¬ØªÙ…Ø¹',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المنتدى', description: 'تواصل مع المجتمع' },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'الأسئلة الشائعة', description: 'إجابات سريعة قبل الإطلاق' },
-        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'الدعم', description: 'تواصل مع فريقنا' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Ø§Ù„Ù…Ù†ØªØ¯Ù‰', description: 'ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ù…Ø¬ØªÙ…Ø¹' },
+        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'Ø§Ù„Ø£Ø³Ø¦Ù„Ø© Ø§Ù„Ø´Ø§Ø¦Ø¹Ø©', description: 'Ø¥Ø¬Ø§Ø¨Ø§Øª Ø³Ø±ÙŠØ¹Ø© Ù‚Ø¨Ù„ Ø§Ù„Ø¥Ø·Ù„Ø§Ù‚' },
+        { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Ø§Ù„Ø¯Ø¹Ù…', description: 'ØªÙˆØ§ØµÙ„ Ù…Ø¹ ÙØ±ÙŠÙ‚Ù†Ø§' },
       ],
     },
   ],
@@ -212,7 +212,7 @@ function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => v
             key={item.href}
             href={item.href}
             onClick={onClose}
-            className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors group"
+            className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-transparent dark:hover:bg-slate-800/80 transition-colors group"
           >
             <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
               {item.icon}
@@ -480,3 +480,4 @@ export function Navbar({ isDark, onToggleDark }: Props) {
     </motion.header>
   )
 }
+

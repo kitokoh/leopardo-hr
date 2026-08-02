@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -93,7 +94,7 @@ class ModulesHubScreen extends ConsumerWidget {
               itemCount: activeModules.length,
               itemBuilder: (context, index) {
                 final module = activeModules[index];
-                return _ModuleCard(
+                return _ModuleGlassCard(
                   module: module,
                   onTap: module.isActive
                       ? () => context.push(module.route!)
@@ -128,7 +129,7 @@ class ModulesHubScreen extends ConsumerWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({required this.module, required this.onTap});
+  const _ModuleGlassCard({required this.module, required this.onTap});
 
   final MobileModule module;
   final VoidCallback? onTap;
@@ -252,3 +253,4 @@ class _UpcomingRow extends StatelessWidget {
     );
   }
 }
+

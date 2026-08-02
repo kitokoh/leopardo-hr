@@ -1,5 +1,5 @@
-<template>
-  <div class="flex h-[calc(100vh-200px)] rounded-lg bg-white shadow">
+﻿<template>
+  <div class="flex h-[calc(100vh-200px)] rounded-lg glass-card shadow">
     <div class="flex w-64 flex-col border-r border-gray-200">
       <div class="border-b border-gray-200 p-4">
         <button
@@ -14,7 +14,7 @@
           v-for="conv in conversations"
           :key="conv.id"
           :class="[
-            'cursor-pointer border-b border-gray-100 px-4 py-3 transition hover:bg-gray-50',
+            'cursor-pointer border-b border-gray-100 px-4 py-3 transition hover:glass-bg',
             activeConversation?.id === conv.id ? 'bg-indigo-50' : ''
           ]"
           @click="selectConversation(conv)"
@@ -192,3 +192,4 @@ async function sendMessage() {
 
 onMounted(fetchConversations)
 </script>
+

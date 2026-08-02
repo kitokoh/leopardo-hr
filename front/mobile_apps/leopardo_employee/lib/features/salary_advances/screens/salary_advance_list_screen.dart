@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -87,7 +88,7 @@ class _SalaryAdvanceListScreenState
                       'Avance de $amount, motif : $reason, statut ${_getStatusLabel(advance)}.',
                   container: true,
                   child: ExcludeSemantics(
-                    child: MobileListCard(
+                    child: MobileListGlassCard(
                       icon: Icons.payments_outlined,
                       iconColor: color,
                       title: amount,
@@ -536,3 +537,4 @@ class _SalaryAdvanceRequestSheetState
     return double.tryParse(value.trim().replaceAll(',', '.'));
   }
 }
+

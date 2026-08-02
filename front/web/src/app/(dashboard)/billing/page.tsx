@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
@@ -235,7 +235,7 @@ export default function BillingPage() {
                   key={plan}
                   onClick={() => handleUpgrade(plan)}
                   disabled={subscription?.plan === plan || actionLoading === `upgrade-${plan}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent disabled:opacity-40"
                 >
                   {actionLoading === `upgrade-${plan}` ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                   {subscription?.plan === plan ? `${PLAN_LABELS[plan]} (actuel)` : `Passer a ${PLAN_LABELS[plan]}`}
@@ -268,13 +268,13 @@ export default function BillingPage() {
                   disabled={actionLoading === `checkout-${plan}`}
                   className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-40"
                 >
-                  <CreditCard className="h-4 w-4" /> Payer en ligne — {PLAN_LABELS[plan]}
+                  <CreditCard className="h-4 w-4" /> Payer en ligne â€” {PLAN_LABELS[plan]}
                 </button>
               ))}
               <button
                 onClick={handlePortal}
                 disabled={actionLoading === 'portal'}
-                className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent disabled:opacity-40"
               >
                 <ExternalLink className="h-4 w-4" /> Portail de paiement
               </button>
@@ -288,7 +288,7 @@ export default function BillingPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-app-border bg-slate-50/50">
+                  <tr className="border-b border-app-border bg-transparent/50">
                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Numero</th>
                     <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Montant</th>
                     <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
@@ -300,7 +300,7 @@ export default function BillingPage() {
                   {invoices.length === 0 ? (
                     <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">Aucune facture pour le moment.</td></tr>
                   ) : invoices.map((invoice) => (
-                    <tr key={invoice.id} className="transition-colors hover:bg-slate-50/60">
+                    <tr key={invoice.id} className="transition-colors hover:bg-transparent/60">
                       <td className="px-6 py-4 font-bold text-slate-950">
                         <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-slate-400" />{invoice.number ?? `#${invoice.id}`}</span>
                       </td>
@@ -311,10 +311,10 @@ export default function BillingPage() {
                         </span>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString(toIntlLocale(locale)) : '—'}
+                        {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString(toIntlLocale(locale)) : 'â€”'}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-brand-600" title="Telecharger PDF">
+                        <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title="Telecharger PDF">
                           <Download className="h-4 w-4" />
                         </button>
                       </td>
@@ -329,3 +329,4 @@ export default function BillingPage() {
     </ModulePageShell>
   );
 }
+

@@ -1,15 +1,15 @@
-<template>
-  <div class="min-h-screen bg-white px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
+﻿<template>
+  <div class="min-h-screen glass-card px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
     <div class="mx-auto max-w-max">
       <main class="sm:flex">
         <p class="text-4xl font-bold tracking-tight text-indigo-600 sm:text-5xl">404</p>
         <div class="sm:ml-6">
           <div class="sm:border-l sm:border-gray-200 sm:pl-6">
             <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Page non trouvée
+              Page non trouvÃ©e
             </h1>
             <p class="mt-1 text-base text-gray-500">
-              Désolé, nous n'avons pas pu trouver la page que vous recherchez.
+              DÃ©solÃ©, nous n'avons pas pu trouver la page que vous recherchez.
             </p>
           </div>
           <div class="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
@@ -22,9 +22,9 @@
             </router-link>
             <button
               @click="goBack"
-              class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              class="inline-flex items-center rounded-md glass-card px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:glass-bg"
             >
-              Page précédente
+              Page prÃ©cÃ©dente
             </button>
           </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <router-link
             to="/users"
-            class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
@@ -44,7 +44,7 @@
                 <UsersIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
                   <p class="text-sm font-medium text-gray-900">Utilisateurs</p>
-                  <p class="text-sm text-gray-500">Gérer les comptes utilisateurs</p>
+                  <p class="text-sm text-gray-500">GÃ©rer les comptes utilisateurs</p>
                 </div>
               </div>
             </div>
@@ -52,7 +52,7 @@
 
           <router-link
             to="/companies"
-            class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
@@ -60,7 +60,7 @@
                 <BuildingOfficeIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
                   <p class="text-sm font-medium text-gray-900">Entreprises</p>
-                  <p class="text-sm text-gray-500">Gérer les entreprises</p>
+                  <p class="text-sm text-gray-500">GÃ©rer les entreprises</p>
                 </div>
               </div>
             </div>
@@ -68,7 +68,7 @@
 
           <router-link
             to="/support"
-            class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
@@ -84,15 +84,15 @@
 
           <router-link
             to="/system"
-            class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
               <div class="flex items-center">
                 <CogIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">Système</p>
-                  <p class="text-sm text-gray-500">Configuration système</p>
+                  <p class="text-sm font-medium text-gray-900">SystÃ¨me</p>
+                  <p class="text-sm text-gray-500">Configuration systÃ¨me</p>
                 </div>
               </div>
             </div>

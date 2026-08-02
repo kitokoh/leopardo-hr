@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
@@ -7,56 +7,56 @@ import { Play, Clock, Tag, MonitorPlay } from 'lucide-react';
 
 const videos = [
   {
-    title: 'Présentation complète de Leopardo RH',
-    description: 'Tour d\'horizon de toutes les fonctionnalités de la plateforme en 8 minutes.',
-    category: 'Présentation',
+    title: 'PrÃ©sentation complÃ¨te de Leopardo RH',
+    description: 'Tour d\'horizon de toutes les fonctionnalitÃ©s de la plateforme en 8 minutes.',
+    category: 'PrÃ©sentation',
     duration: '8:24',
     thumbnail: '/images/video-thumb-overview.jpg',
     youtubeId: 'demo-overview',
   },
   {
     title: 'Configuration du pointage ZKTeco',
-    description: 'Comment connecter et configurer vos bornes biométriques ZKTeco avec Leopardo RH.',
+    description: 'Comment connecter et configurer vos bornes biomÃ©triques ZKTeco avec Leopardo RH.',
     category: 'Tutoriel',
     duration: '5:12',
     thumbnail: '/images/video-thumb-zkteco.jpg',
     youtubeId: 'demo-zkteco',
   },
   {
-    title: 'Paie multi-pays : Algérie, Maroc, France',
-    description: 'Générer des bulletins de paie conformes pour 3 pays depuis une seule interface.',
+    title: 'Paie multi-pays : AlgÃ©rie, Maroc, France',
+    description: 'GÃ©nÃ©rer des bulletins de paie conformes pour 3 pays depuis une seule interface.',
     category: 'Tutoriel',
     duration: '6:45',
     thumbnail: '/images/video-thumb-payroll.jpg',
     youtubeId: 'demo-payroll',
   },
   {
-    title: 'Application mobile pour les employés',
-    description: 'Pointage, demandes de congés et consultation des bulletins depuis le smartphone.',
+    title: 'Application mobile pour les employÃ©s',
+    description: 'Pointage, demandes de congÃ©s et consultation des bulletins depuis le smartphone.',
     category: 'Tutoriel',
     duration: '4:30',
     thumbnail: '/images/video-thumb-mobile.jpg',
     youtubeId: 'demo-mobile',
   },
   {
-    title: 'Intégration API et webhooks',
-    description: 'Connecter Leopardo RH à vos outils existants via l\'API REST et les webhooks.',
-    category: 'Intégration',
+    title: 'IntÃ©gration API et webhooks',
+    description: 'Connecter Leopardo RH Ã  vos outils existants via l\'API REST et les webhooks.',
+    category: 'IntÃ©gration',
     duration: '7:15',
     thumbnail: '/images/video-thumb-api.jpg',
     youtubeId: 'demo-api',
   },
   {
-    title: 'Témoignage client : Atlas Industries',
-    description: 'Comment Atlas Industries gère 350 employés sur 3 pays avec Leopardo RH.',
-    category: 'Témoignage',
+    title: 'TÃ©moignage client : Atlas Industries',
+    description: 'Comment Atlas Industries gÃ¨re 350 employÃ©s sur 3 pays avec Leopardo RH.',
+    category: 'TÃ©moignage',
     duration: '3:50',
     thumbnail: '/images/video-thumb-case-study.jpg',
     youtubeId: 'case-atlas',
   },
 ];
 
-const categories = ['Tous', 'Présentation', 'Tutoriel', 'Intégration', 'Témoignage'];
+const categories = ['Tous', 'PrÃ©sentation', 'Tutoriel', 'IntÃ©gration', 'TÃ©moignage'];
 
 export default function VideosPage() {
   const [isDark, setIsDark] = useState(false);
@@ -71,15 +71,15 @@ export default function VideosPage() {
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
       <HeroSection
-        headline="Vidéos & Démos"
-        subheadline="Découvrez Leopardo RH en action à travers nos tutoriels et démonstrations"
-        ctaPrimary={{ text: 'Demander une démo live', href: '/demo' }}
+        headline="VidÃ©os & DÃ©mos"
+        subheadline="DÃ©couvrez Leopardo RH en action Ã  travers nos tutoriels et dÃ©monstrations"
+        ctaPrimary={{ text: 'Demander une dÃ©mo live', href: '/demo' }}
         ctaSecondary={{ text: 'Essai gratuit', href: '/signup' }}
-        badge={{ text: 'Vidéos', icon: <MonitorPlay className="w-3 h-3" /> }}
+        badge={{ text: 'VidÃ©os', icon: <MonitorPlay className="w-3 h-3" /> }}
       />
 
       {/* Category filter */}
-      <section className="py-8 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <section className="py-8 bg-transparent dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap gap-3 justify-center">
           {categories.map(cat => (
             <button
@@ -114,7 +114,7 @@ export default function VideosPage() {
                 <div className="relative aspect-video bg-slate-900 flex items-center justify-center">
                   {playingVideo === video.youtubeId ? (
                     <div className="w-full h-full flex items-center justify-center bg-slate-900 text-slate-400 text-sm">
-                      <p>Vidéo en cours de chargement...</p>
+                      <p>VidÃ©o en cours de chargement...</p>
                     </div>
                   ) : (
                     <button
@@ -151,9 +151,9 @@ export default function VideosPage() {
       </section>
 
       <CTASection
-        title="Prêt à voir Leopardo RH en action ?"
-        description="Réservez une démo personnalisée avec notre équipe"
-        primaryCta={{ text: 'Réserver ma démo', href: '/demo' }}
+        title="PrÃªt Ã  voir Leopardo RH en action ?"
+        description="RÃ©servez une dÃ©mo personnalisÃ©e avec notre Ã©quipe"
+        primaryCta={{ text: 'RÃ©server ma dÃ©mo', href: '/demo' }}
         secondaryCta={{ text: 'Voir les tarifs', href: '/pricing' }}
       />
 
@@ -161,3 +161,4 @@ export default function VideosPage() {
     </div>
   );
 }
+
