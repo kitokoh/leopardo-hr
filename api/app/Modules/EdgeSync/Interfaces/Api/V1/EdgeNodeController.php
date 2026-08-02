@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Modules\EdgeSync\Application\Actions\PushEdgeRecords;
+use App\Modules\EdgeSync\Application\Actions\RegisterEdgeNode;
 use App\Modules\EdgeSync\Application\Services\CloudDeltaBuilder;
 use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 /**
  * Cloud-side API consumed by:
@@ -25,6 +27,8 @@ class EdgeNodeController extends Controller
         protected SyncEngineService $syncEngine,
         protected EdgeLicenseService $licenseService,
         protected CloudDeltaBuilder $deltaBuilder,
+        protected RegisterEdgeNode $registerEdgeNode,
+        protected PushEdgeRecords $pushEdgeRecords,
     ) {}
 
     // ── Admin Dashboard Routes ────────────────────────────
@@ -39,7 +43,7 @@ class EdgeNodeController extends Controller
             ->with(['syncLogs' => fn ($q) => $q->latest()->limit(1)])
             ->get()
             ->map(fn ($node) => array_merge($node->toArray(), [
-                'is_online'     => $node->isOnline(),
+                'is_online' => $node->isOnline(),
                 'license_valid' => $node->isLicenseValid(),
             ]));
 
@@ -53,45 +57,23 @@ class EdgeNodeController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name'         => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'site_address' => 'nullable|string|max:500',
-            'mode'         => 'in:cloud,offline,hybrid',
+            'mode' => 'in:cloud,offline,hybrid',
             'capabilities' => 'array',
         ]);
 
-        $edgeToken = Str::random(64);
-
-        $node = EdgeNode::create([
-            'company_id'         => $request->user()->company_id,
-            'name'               => $validated['name'],
-            'slug'               => Str::slug($validated['name'] . '-' . Str::random(6)),
-            'site_address'       => $validated['site_address'] ?? null,
-            'status'             => 'active',
-            'mode'               => $validated['mode'] ?? 'hybrid',
-            'edge_version'       => '1.0.0',
-            'capabilities'       => $validated['capabilities'] ?? [],
-            'license_expires_at' => now()->addDays(config('edge.license_validity_days', 30)),
-            // The plaintext token is never persisted: only its SHA-256 digest is
-            // stored, matching the hashed-secret pattern already used by the
-            // ZKTeco kiosk (AttendanceKiosk.sync_token_hash). The plaintext value
-            // is returned once below, in the registration response only.
-            'metadata'           => ['edge_token' => hash('sha256', $edgeToken)],
-        ]);
-
-        $license = $this->licenseService->issueLicense(
-            $node,
-            config('edge.license_validity_days', 30)
-        );
+        $result = $this->registerEdgeNode->execute((int) $request->user()->company_id, $validated);
 
         return response()->json([
-            'data'       => $node,
-            'license'    => $license,
-            'edge_token' => $edgeToken, // shown only once at registration
+            'data' => $result['node'],
+            'license' => $result['license'],
+            'edge_token' => $result['edge_token'], // shown only once at registration
             'install_command' => sprintf(
                 'sudo bash <(curl -fsSL %s/edge/install.sh) --node-id %s --token %s',
                 config('app.url'),
-                $node->id,
-                $edgeToken
+                $result['node']->id,
+                $result['edge_token']
             ),
         ], 201);
     }
@@ -132,7 +114,7 @@ class EdgeNodeController extends Controller
         $node = EdgeNode::where('company_id', $request->user()->company_id)
             ->findOrFail($nodeId);
 
-        $days    = (int) $request->input('valid_days', config('edge.license_validity_days', 30));
+        $days = (int) $request->input('valid_days', config('edge.license_validity_days', 30));
         $license = $this->licenseService->issueLicense($node, $days);
 
         return response()->json(['data' => $license]);
@@ -151,31 +133,16 @@ class EdgeNodeController extends Controller
         $this->authorizeEdgeToken($request, $node);
 
         $validated = $request->validate([
-            'records'               => 'required|array|max:500',
+            'records' => 'required|array|max:500',
             'records.*.entity_type' => 'required|string|max:100',
-            'records.*.entity_id'   => 'required|string|max:36',
-            'records.*.operation'   => 'required|in:create,update,delete',
-            'records.*.payload'     => 'required|array',
+            'records.*.entity_id' => 'required|string|max:36',
+            'records.*.operation' => 'required|in:create,update,delete',
+            'records.*.payload' => 'required|array',
         ]);
 
-        foreach ($validated['records'] as $record) {
-            SyncQueue::create([
-                'edge_node_id'  => $node->id,
-                'entity_type'   => $record['entity_type'],
-                'entity_id'     => $record['entity_id'],
-                'operation'     => $record['operation'],
-                'payload'       => $record['payload'],
-                'status'        => 'pending',
-                'attempt_count' => 0,
-            ]);
-        }
+        $queued = $this->pushEdgeRecords->execute($node, $validated['records']);
 
-        // Dispatch async processing
-        \App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob::dispatch($node->id);
-
-        $node->update(['last_seen_at' => now()]);
-
-        return response()->json(['queued' => count($validated['records'])]);
+        return response()->json(['queued' => $queued]);
     }
 
     /**
@@ -205,17 +172,17 @@ class EdgeNodeController extends Controller
 
         $node->update([
             'last_seen_at' => now(),
-            'local_ip'     => $request->input('local_ip') ?? $node->local_ip,
-            'public_ip'    => $request->ip(),
+            'local_ip' => $request->input('local_ip') ?? $node->local_ip,
+            'public_ip' => $request->ip(),
         ]);
 
-        $license = \App\Modules\EdgeSync\Domain\Models\EdgeLicense::where('edge_node_id', $node->id)->first();
+        $license = EdgeLicense::where('edge_node_id', $node->id)->first();
 
         return response()->json([
-            'status'          => 'ok',
-            'server_time'     => now()->toIso8601String(),
-            'license_valid'   => $license?->isValid() ?? false,
-            'needs_renewal'   => $node->needsLicenseRenewal(),
+            'status' => 'ok',
+            'server_time' => now()->toIso8601String(),
+            'license_valid' => $license?->isValid() ?? false,
+            'needs_renewal' => $node->needsLicenseRenewal(),
             'pending_records' => SyncQueue::where('edge_node_id', $node->id)
                 ->where('status', 'pending')
                 ->count(),
@@ -229,7 +196,7 @@ class EdgeNodeController extends Controller
     public function validateLicense(Request $request): JsonResponse
     {
         $payload = $request->input('signed_payload', '');
-        $result  = $this->licenseService->validateLicense((string) $payload);
+        $result = $this->licenseService->validateLicense((string) $payload);
 
         return response()->json($result, $result['valid'] ? 200 : 422);
     }
@@ -254,9 +221,9 @@ class EdgeNodeController extends Controller
             ->orderByDesc('last_seen_at')
             ->get()
             ->map(fn (EdgeNode $node) => array_merge($node->toArray(), [
-                'is_online'     => $node->isOnline(),
+                'is_online' => $node->isOnline(),
                 'license_valid' => $node->isLicenseValid(),
-                'company_name'  => $node->company?->name,
+                'company_name' => $node->company?->name,
             ]));
 
         return response()->json(['data' => $nodes]);
@@ -269,7 +236,7 @@ class EdgeNodeController extends Controller
     public function forceSync(string $nodeId): JsonResponse
     {
         $node = EdgeNode::findOrFail($nodeId);
-        $log  = $this->syncEngine->sync($node);
+        $log = $this->syncEngine->sync($node);
 
         return response()->json(['data' => $log]);
     }
@@ -293,7 +260,7 @@ class EdgeNodeController extends Controller
     private function authorizeEdgeToken(Request $request, EdgeNode $node): void
     {
         $expectedTokenHash = $node->metadata['edge_token'] ?? null;
-        $providedToken     = $request->bearerToken() ?? '';
+        $providedToken = $request->bearerToken() ?? '';
 
         abort_unless(
             $expectedTokenHash !== null

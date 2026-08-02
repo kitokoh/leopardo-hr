@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Modules\Cameras\Application\Actions\CreateCamera;
+use App\Modules\Cameras\Application\Actions\DeleteCamera;
+use App\Modules\Cameras\Application\Actions\UpdateCamera;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraPermission;
 use App\Modules\Cameras\Infrastructure\Services\CameraService;
@@ -21,7 +24,12 @@ use Illuminate\Http\Request;
  */
 class CameraController extends Controller
 {
-    public function __construct(private readonly CameraService $cameras) {}
+    public function __construct(
+        private readonly CameraService $cameras,
+        private readonly CreateCamera $createCamera,
+        private readonly UpdateCamera $updateCamera,
+        private readonly DeleteCamera $deleteCamera,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -69,7 +77,7 @@ class CameraController extends Controller
         /** @var Company $company */
         $company = currentCompany();
 
-        $camera = $this->cameras->create($company, $actor, $request->validated());
+        $camera = $this->createCamera->execute($company, $actor, $request->validated());
 
         return new JsonResponse([
             'data' => $this->cameras->buildStreamPayload($camera, $actor),
@@ -99,7 +107,7 @@ class CameraController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $camera = $this->cameras->update($camera, $actor, $request->validated());
+        $camera = $this->updateCamera->execute($camera, $actor, $request->validated());
 
         return new JsonResponse([
             'data' => $this->cameras->buildStreamPayload($camera, $actor),
@@ -115,7 +123,7 @@ class CameraController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $this->cameras->softDelete($camera, $actor);
+        $this->deleteCamera->execute($camera, $actor);
 
         return new JsonResponse([
             'data' => ['id' => (int) $camera->id, 'is_active' => false],
@@ -174,4 +182,3 @@ class CameraController extends Controller
         ]);
     }
 }
-
