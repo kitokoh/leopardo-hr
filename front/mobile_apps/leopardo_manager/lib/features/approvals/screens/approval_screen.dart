@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
+import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/approvals/providers/approval_provider.dart';
 
@@ -29,9 +31,12 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
       ref.invalidate(pendingApprovalsProvider);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erreur : $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur : $e'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
       }
     }
   }
@@ -41,34 +46,53 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.cardDark,
+        backgroundColor: MobileSurface.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Motif du refus',
-          style: TextStyle(color: AppColors.textDark),
+          style: AppTypography.subtitle.copyWith(
+            color: MobileSurface.text,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         content: TextField(
           controller: _commentController,
-          style: const TextStyle(color: AppColors.textDark),
+          style: AppTypography.body.copyWith(color: MobileSurface.text),
           maxLines: 3,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Expliquez la raison...',
-            hintStyle: TextStyle(color: AppColors.textMutedDark),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppColors.borderDark),
+            hintStyle: AppTypography.body.copyWith(color: MobileSurface.muted),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: MobileSurface.border),
+              borderRadius: BorderRadius.circular(12),
             ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: AppColors.rh),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            filled: true,
+            fillColor: MobileSurface.surface,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Refuser',
-              style: TextStyle(color: AppColors.danger),
+            child: Text(
+              'Annuler',
+              style: AppTypography.body.copyWith(color: MobileSurface.text),
             ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.danger,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 0,
+            ),
+            child: const Text('Refuser'),
           ),
         ],
       ),
@@ -81,9 +105,12 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
         ref.invalidate(pendingApprovalsProvider);
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Erreur : $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erreur : $e'),
+              backgroundColor: AppColors.danger,
+            ),
+          );
         }
       }
     }
@@ -93,142 +120,166 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
   Widget build(BuildContext context) {
     final approvalsAsync = ref.watch(pendingApprovalsProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.bgDark,
-      appBar: AppBar(
-        backgroundColor: AppColors.bgDark,
-        elevation: 0,
-        title: Text(
-          'Approbations',
-          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          tooltip: 'Retour',
-          onPressed: () => context.pop(),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async =>
-            await ref.refresh(pendingApprovalsProvider.future),
-        child: approvalsAsync.when(
-          data: (approvals) => approvals.isEmpty
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 80),
-                    EmptyState(
-                      icon: Icons.check_circle_outline,
-                      title: 'Tout est a jour',
-                      description: 'Aucune approbation en attente.',
-                    ),
-                  ],
-                )
-              : ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(20),
-                  itemCount: approvals.length,
-                  itemBuilder: (context, index) {
-                    final a = approvals[index];
-                    return Card(
-                      color: AppColors.cardDark,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.info.withValues(
-                                      alpha: 0.15,
-                                    ),
-                                    borderRadius: BorderRadius.circular(
-                                      8,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    a.type,
-                                    style: const TextStyle(
-                                      color: AppColors.info,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  a.createdAt,
-                                  style: AppTypography.bodySmall.copyWith(
-                                    color: AppColors.textMutedDark,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              a.requesterName,
-                              style: AppTypography.subtitle.copyWith(
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              a.summary,
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textMutedDark,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                OutlinedButton(
-                                  onPressed: () => _reject(a.id),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.danger,
-                                    side: const BorderSide(
-                                      color: AppColors.danger,
-                                    ),
-                                  ),
-                                  child: const Text('Refuser'),
-                                ),
-                                const SizedBox(width: 8),
-                                ElevatedButton(
-                                  onPressed: () => _approve(a.id),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.success,
-                                  ),
-                                  child: const Text('Approuver'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+    return MobilePage(
+      title: 'Approbations',
+      showBackButton: true,
+      onBack: () => context.pop(),
+      children: [
+        RefreshIndicator(
+          color: AppColors.rh,
+          backgroundColor: MobileSurface.card,
+          onRefresh: () async =>
+              await ref.refresh(pendingApprovalsProvider.future),
+          child: approvalsAsync.when(
+            data: (approvals) => approvals.isEmpty
+                ? ListView(
+                    shrinkWrap: true,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: const [
+                      SizedBox(height: 80),
+                      EmptyState(
+                        icon: Icons.check_circle_outline,
+                        title: 'Tout est à jour',
+                        description: 'Aucune approbation en attente.',
                       ),
-                    );
-                  },
-                ),
-          loading: () => const SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: SizedBox(
+                    ],
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    itemCount: approvals.length,
+                    itemBuilder: (context, index) {
+                      final a = approvals[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: GlassCard(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.info.withValues(
+                                        alpha: 0.15,
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      a.type,
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.info,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    a.createdAt,
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: MobileSurface.muted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: MobileSurface.border.withValues(alpha: 0.5),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: MobileSurface.muted,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          a.requesterName,
+                                          style: AppTypography.subtitle.copyWith(
+                                            color: MobileSurface.text,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          a.summary,
+                                          style: AppTypography.bodySmall.copyWith(
+                                            color: MobileSurface.muted,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () => _reject(a.id),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: AppColors.danger,
+                                        side: BorderSide(
+                                          color: AppColors.danger.withValues(alpha: 0.5),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                      ),
+                                      child: const Text('Refuser'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () => _approve(a.id),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.rh,
+                                        foregroundColor: Colors.white,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                      ),
+                                      child: const Text('Approuver'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+            loading: () => const SizedBox(
               height: 400,
               child: Center(
                 child: CircularProgressIndicator(
+                  color: AppColors.rh,
                   semanticsLabel: 'Chargement des approbations...',
                 ),
               ),
             ),
-          ),
-          error: (e, _) => SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: SizedBox(
+            error: (e, _) => SizedBox(
               height: 400,
               child: Center(
                 child: Text(
@@ -239,7 +290,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

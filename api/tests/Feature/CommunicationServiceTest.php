@@ -260,6 +260,7 @@ class CommunicationServiceTest extends TestCase
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'app_enabled' => true,
+            'sms_enabled' => true,
             'whatsapp_enabled' => true,
             'categories' => ['hr' => true],
         ]);
