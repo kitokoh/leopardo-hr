@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+﻿@import 'tailwindcss';
 @config '../tailwind.config.js';
 @import 'leaflet/dist/leaflet.css';
 
@@ -13,26 +13,26 @@
   }
 }
 
-/* Composants personnalisés */
+/* Composants personnalisÃ©s */
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all duration-200;
+    @apply inline-flex items-center px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200;
   }
 
   .card {
-    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
+    @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
   }
 
   .glass-card {
-    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/20 dark:border-slate-800/50 shadow-glass rounded-3xl;
+    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/10 dark:border-white/10 shadow-glass rounded-3xl;
   }
 
   .glass-effect {
-    @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/20 dark:border-slate-800/50;
+    @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/10 dark:border-white/10;
   }
 
   .glass-light {
@@ -56,7 +56,7 @@
   }
 
   .stat-card {
-    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
+    @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
   }
 
   .sidebar-nav-item {
@@ -71,7 +71,7 @@
     @apply text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200;
   }
 
-  /* W7 — Improved contrast for borders and icons (WCAG 1.4.11 non-text contrast 3:1) */
+  /* W7 â€” Improved contrast for borders and icons (WCAG 1.4.11 non-text contrast 3:1) */
   .border-accessible {
     @apply border-gray-300 dark:border-gray-600;
   }
@@ -80,13 +80,13 @@
     @apply text-gray-500 dark:text-gray-400;
   }
 
-  /* W2 — Focus visible ring for all interactive elements (WCAG 2.4.7) */
+  /* W2 â€” Focus visible ring for all interactive elements (WCAG 2.4.7) */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
   }
 }
 
-/* Animations personnalisées */
+/* Animations personnalisÃ©es */
 @layer utilities {
   .animate-pulse-dot {
     animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -147,7 +147,7 @@
   position: relative;
 }
 
-/* Styles pour les notifications temps réel */
+/* Styles pour les notifications temps rÃ©el */
 .notification-badge {
   @apply absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center;
 }
@@ -162,3 +162,4 @@
     height: 400px;
   }
 }
+
