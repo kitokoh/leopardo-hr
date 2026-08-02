@@ -1278,3 +1278,24 @@ Le tenant est resolu depuis le `companySlug` de l'URL (jamais depuis Sanctum, pu
 
 **Endpoints non affectés**
 - Les endpoints authentifies existants du module Recruitment (`/recruitment/jobs*`, `/recruitment/applicants*`) restent inchanges.
+
+## PA2-ARCH-011 — Nettoyage doublons de routes /absences et /notifications (issue #1414)
+
+Audit KiloClaw de `api/app/Modules/` : `routes/modules/rh.php` declarait deux fois les memes routes deja definies ailleurs, meme controller/action a chaque fois. Aucun changement de contrat API observable — les deux copies pointaient vers la meme reponse.
+
+- `GET /absences`, `POST /absences`, `GET /absences/{absence}`, `PUT /absences/{absence}/approve`, `PUT /absences/{absence}/reject`, `DELETE /absences/{absence}` : retire le doublon dans `routes/modules/rh.php` (bloc "Module 1 — Absences"). Source unique desormais `routes/modules/absence.php` (deja plus complet : inclut aussi `GET /absences/{absence}/proof`).
+  - Scenario a valider : suite `AbsenceControllerTest` existante — comportement identique avant/apres (meme `AbsenceController`, aucune methode modifiee).
+- `GET /notifications` : retire le doublon dans `routes/modules/rh.php` (bloc "Module 5 — Notifications"). Source unique desormais `routes/modules/dashboard.php` (`NotificationController::index`, deja utilise par `/notifications/unread`, `/notifications/mark-all-read`, etc.).
+  - Scenario a valider : suite `NotificationControllerTest`/`NotificationTest` existante — comportement identique avant/apres (meme controller/action).
+
+**Endpoints non affectés**
+- Toutes les autres routes `/notifications/*` (`read-all`, `{notification}/read`, `stream`, `sse-token`) restent dans `routes/modules/rh.php`, inchangees.
+- Aucune route publique/authentifiee n'est ajoutee, retiree ou renommee ; seule la definition dupliquee est retiree.
+
+## PA2-ARCH-011 — Modules/Expense devient une facade HTTP pure vers Planning (issue #1414)
+
+Meme audit : `Modules/Expense/{Domain,Application,Infrastructure}` (ExpenseClaim, ExpenseItem, ExpenseService, CreateExpenseClaim, SubmitExpenseClaim, ExpenseRepositoryInterface) etait du code mort jamais reference hors du module — le controller reellement route (`Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseClaimController`, `routes/modules/expense.php`) consommait deja `Planning\Domain\Models\{ExpenseClaim,ExpenseItem}` directement. Supprime, sans changement de contrat API : les endpoints `expense-claims/*` existants (inchanges) continuent de repondre exactement pareil.
+
+Bug corrige au passage (pas un changement de contrat, une correction de bug latent) : `AuthServiceProvider` enregistrait `Gate::policy()` sur le modele mort au lieu du vrai modele `Planning\...\ExpenseClaim` consomme par le controller — corrige.
+
+- Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
