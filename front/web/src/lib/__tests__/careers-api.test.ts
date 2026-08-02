@@ -5,6 +5,7 @@
 import {
   getPublicJobPostings,
   getPublicJobPosting,
+  getPublicCareersCompany,
   submitPublicApplication,
 } from '../careers-api';
 
@@ -45,6 +46,55 @@ describe('careers-api', () => {
       global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 } as Response);
 
       await expect(getPublicJobPostings('acme')).rejects.toThrow('HTTP 500');
+    });
+  });
+
+  describe('getPublicCareersCompany', () => {
+    it('returns null when the company slug is unknown (404)', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 404 } as Response);
+
+      const result = await getPublicCareersCompany('unknown-company');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns the tenant branding from meta.company on success', async () => {
+      const company = {
+        id: 1,
+        name: 'Acme Corp',
+        slug: 'acme',
+        display_name: 'Acme Careers',
+        logo_url: 'https://cdn.example.com/acme-logo.png',
+        primary_color: '#FF0000',
+        accent_color: '#00FF00',
+      };
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ data: [], meta: { company } }),
+      } as unknown as Response);
+
+      const result = await getPublicCareersCompany('acme');
+
+      expect(result).toEqual(company);
+    });
+
+    it('returns null when the response has no meta.company', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ data: [] }),
+      } as unknown as Response);
+
+      const result = await getPublicCareersCompany('acme');
+
+      expect(result).toBeNull();
+    });
+
+    it('throws on unexpected server errors', async () => {
+      global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 } as Response);
+
+      await expect(getPublicCareersCompany('acme')).rejects.toThrow('HTTP 500');
     });
   });
 
