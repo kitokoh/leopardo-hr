@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
  */
 class ApplicantPipelineReader implements ApplicantPipelineReaderInterface
 {
-    public function countByStatus(int $companyId): Collection
+    public function countByStatus(string $companyId): Collection
     {
         return Applicant::where('company_id', $companyId)
             ->selectRaw('status, COUNT(*) as count')
