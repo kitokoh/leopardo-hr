@@ -63,7 +63,7 @@ class EdgeNodeController extends Controller
             'capabilities' => 'array',
         ]);
 
-        $result = $this->registerEdgeNode->execute((int) $request->user()->company_id, $validated);
+        $result = $this->registerEdgeNode->execute($request->user()->company_id, $validated);
 
         return response()->json([
             'data' => $result['node'],

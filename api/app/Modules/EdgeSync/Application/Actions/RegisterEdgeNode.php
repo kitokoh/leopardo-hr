@@ -22,7 +22,7 @@ class RegisterEdgeNode
      * @param  array<string, mixed>  $data
      * @return array{node: EdgeNode, license: EdgeLicense, edge_token: string}
      */
-    public function execute(int $companyId, array $data): array
+    public function execute(string $companyId, array $data): array
     {
         $edgeToken = Str::random(64);
 

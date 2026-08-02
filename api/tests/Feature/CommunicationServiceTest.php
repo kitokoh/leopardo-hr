@@ -262,6 +262,8 @@ class CommunicationServiceTest extends TestCase
             'app_enabled' => true,
             'sms_enabled' => true,
             'whatsapp_enabled' => true,
+            'whatsapp_consent_given' => true,
+            'whatsapp_consent_at' => now(),
             'categories' => ['hr' => true],
         ]);
         CommunicationEvent::query()->create([
