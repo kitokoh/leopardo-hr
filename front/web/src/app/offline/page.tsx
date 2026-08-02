@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 // ============================================================
-// Offline Page — Shown by service worker when offline
+// Offline Page â€” Shown by service worker when offline
 // ============================================================
 import { useSyncExternalStore } from 'react';
 import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
@@ -12,9 +12,9 @@ export default function OfflinePage() {
   const labels = getCopy(locale).offlinePage;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-transparent p-6">
       <div className="text-center max-w-md">
-        <div className="text-6xl mb-4">📡</div>
+        <div className="text-6xl mb-4">ðŸ“¡</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           {labels.title}
         </h1>
@@ -22,7 +22,7 @@ export default function OfflinePage() {
           {labels.body}
         </p>
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left text-sm mb-6">
-          <p className="font-medium text-orange-800 mb-2">💡 {labels.edgeModeTitle}</p>
+          <p className="font-medium text-orange-800 mb-2">ðŸ’¡ {labels.edgeModeTitle}</p>
           <p className="text-orange-700">
             {labels.edgeModeBody}{' '}
             <a href="http://leopardo.local" className="underline font-mono">
@@ -40,3 +40,4 @@ export default function OfflinePage() {
     </div>
   );
 }
+

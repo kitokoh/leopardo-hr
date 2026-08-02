@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ const docCategories = [
     icon: Zap,
     color: 'emerald',
     items: [
-      { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
+      { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH â€” Mobile-First Company OS", href: '/docs#intro' },
       { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#onboarding' },
       { title: 'Inviter votre equipe', desc: 'Ajouter des managers et des employes', href: '/docs#team' },
       { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
@@ -58,7 +58,7 @@ const docCategories = [
     ],
   },
   {
-    title: 'API REST — Reference',
+    title: 'API REST â€” Reference',
     icon: Code2,
     color: 'amber',
     items: [
@@ -84,7 +84,7 @@ const docCategories = [
     icon: Package,
     color: 'orange',
     items: [
-      { title: 'leopardo_core (Flutter)', desc: 'Package partagé — ApiClient, SecureStorage, modeles', href: '/docs#sdk-core' },
+      { title: 'leopardo_core (Flutter)', desc: 'Package partagÃ© â€” ApiClient, SecureStorage, modeles', href: '/docs#sdk-core' },
       { title: 'Auth & Google Sign-In', desc: 'GoogleSignIn v7+ initialize(), idToken, backend JWT', href: '/docs#sdk-auth' },
       { title: 'Notifications (FCM)', desc: 'FirebaseMessaging, foreground/background, deep links', href: '/docs#sdk-fcm' },
       { title: 'Publication & CI', desc: 'GitHub Actions flutter-ci.yml, build, tests', href: '/docs#sdk-ci' },
@@ -204,7 +204,7 @@ export default function DocsPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
             <BookOpen className="w-3.5 h-3.5" />
-            Documentation — Developer Ecosystem
+            Documentation â€” Developer Ecosystem
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-6">
             Tout savoir sur{' '}
@@ -244,8 +244,8 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* API Quick Start — code samples */}
-      <section id="api-quickstart" className="py-12 px-4 bg-slate-50 dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+      {/* API Quick Start â€” code samples */}
+      <section id="api-quickstart" className="py-12 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
@@ -266,7 +266,7 @@ export default function DocsPage() {
                     className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors"
                   >
                     <Copy className="w-3 h-3" />
-                    {copiedIdx === idx ? 'Copié!' : 'Copier'}
+                    {copiedIdx === idx ? 'CopiÃ©!' : 'Copier'}
                   </button>
                 </div>
                 <pre className="p-4 text-xs text-emerald-300 dark:text-emerald-300 overflow-x-auto whitespace-pre-wrap leading-relaxed">
@@ -307,7 +307,7 @@ export default function DocsPage() {
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             Chaque payload est signe avec <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">X-Leopardo-Signature</code> (HMAC-SHA256).{' '}
-            <Link href="/docs#webhooks-security" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc →</Link>
+            <Link href="/docs#webhooks-security" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc â†’</Link>
           </p>
         </div>
       </section>
@@ -321,7 +321,7 @@ export default function DocsPage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">SDK Mobiles Flutter</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">leopardo_core — le package partage entre les 3 apps</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">leopardo_core â€” le package partage entre les 3 apps</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -388,7 +388,7 @@ export default function DocsPage() {
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             Code source complet du bridge et de l&apos;UI kiosque : <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">front/zkteco-kiosk/</code>.{' '}
-            <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la page telechargement →</Link>
+            <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la page telechargement â†’</Link>
           </p>
         </div>
       </section>
@@ -399,7 +399,7 @@ export default function DocsPage() {
           {filtered.length === 0 && (
             <div className="text-center py-16 text-slate-400">
               <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p className="text-lg">Aucun resultat pour « {search} »</p>
+              <p className="text-lg">Aucun resultat pour Â« {search} Â»</p>
               <button onClick={() => setSearch('')} className="mt-3 text-sm text-emerald-600 hover:underline">
                 Effacer la recherche
               </button>
@@ -442,7 +442,7 @@ export default function DocsPage() {
       </section>
 
       {/* Quick links */}
-      <section className="py-16 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+      <section className="py-16 bg-transparent dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">Liens rapides</h2>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -469,3 +469,4 @@ export default function DocsPage() {
     </div>
   );
 }
+

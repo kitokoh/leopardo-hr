@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import { GeoSessionStatusBadge } from '../_components/GeoSessionStatusBadge';
 
 const emptySubscribe = () => () => {};
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type GeoSession = {
   id: number | string;
@@ -41,10 +41,10 @@ type Filters = {
   date_to: string;
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function formatDateTime(iso: string | null | undefined, intlLocale: string): string {
-  if (!iso) return '—';
+  if (!iso) return 'â€”';
   const d = new Date(iso);
   return d.toLocaleString(intlLocale, {
     day: '2-digit',
@@ -55,7 +55,7 @@ function formatDateTime(iso: string | null | undefined, intlLocale: string): str
 }
 
 function formatDuration(minutes?: number | null): string {
-  if (minutes == null) return '—';
+  if (minutes == null) return 'â€”';
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   if (h === 0) return `${m}min`;
@@ -96,7 +96,7 @@ function sessionsToCSV(
   return [header, ...rows].map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function SmartAttendanceSessionsPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
@@ -193,7 +193,7 @@ export default function SmartAttendanceSessionsPage() {
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterStatus}</label>
             <select
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
+              className="w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.status}
               onChange={(e) => setPendingFilters((f) => ({ ...f, status: e.target.value }))}
             >
@@ -210,7 +210,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterEmployee}</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
+              className="w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               placeholder={labels.filterEmployeePlaceholder}
               value={pendingFilters.employee_id}
               onChange={(e) => setPendingFilters((f) => ({ ...f, employee_id: e.target.value }))}
@@ -221,7 +221,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterDateFrom}</label>
             <input
               type="date"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
+              className="w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.date_from}
               onChange={(e) => setPendingFilters((f) => ({ ...f, date_from: e.target.value }))}
             />
@@ -231,7 +231,7 @@ export default function SmartAttendanceSessionsPage() {
             <label className="mb-1 block text-xs font-bold text-slate-600">{labels.filterDateTo}</label>
             <input
               type="date"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
+              className="w-full rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 focus:border-security focus:outline-none focus:ring-2 focus:ring-security-light"
               value={pendingFilters.date_to}
               onChange={(e) => setPendingFilters((f) => ({ ...f, date_to: e.target.value }))}
             />
@@ -249,7 +249,7 @@ export default function SmartAttendanceSessionsPage() {
           <button
             type="button"
             onClick={resetFilters}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent"
           >
             {labels.reset}
           </button>
@@ -257,7 +257,7 @@ export default function SmartAttendanceSessionsPage() {
             type="button"
             onClick={exportCSV}
             disabled={sessions.length === 0}
-            className="ml-auto rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            className="ml-auto rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
           >
             {labels.exportCsv}
           </button>
@@ -295,7 +295,7 @@ export default function SmartAttendanceSessionsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-app-border bg-slate-50/50">
+                <tr className="border-b border-app-border bg-transparent/50">
                   <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployee}</th>
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckIn}</th>
                   <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCheckOut}</th>
@@ -306,7 +306,7 @@ export default function SmartAttendanceSessionsPage() {
               </thead>
               <tbody className="divide-y divide-app-border">
                 {sessions.map((session) => (
-                  <tr key={session.id} className="transition-colors hover:bg-slate-50/60">
+                  <tr key={session.id} className="transition-colors hover:bg-transparent/60">
                     <td className="px-6 py-4">
                       <p className="font-bold text-slate-900">
                         {session.employee_name ?? `${labels.employeeFallback} #${session.employee_id}`}
@@ -347,7 +347,7 @@ export default function SmartAttendanceSessionsPage() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-40"
               >
                 {labels.previous}
               </button>
@@ -355,7 +355,7 @@ export default function SmartAttendanceSessionsPage() {
                 type="button"
                 onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
                 disabled={page >= meta.last_page}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-40"
               >
                 {labels.next}
               </button>
@@ -366,3 +366,4 @@ export default function SmartAttendanceSessionsPage() {
     </ModulePageShell>
   );
 }
+

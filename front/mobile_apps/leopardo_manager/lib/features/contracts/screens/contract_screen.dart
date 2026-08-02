@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -50,7 +51,7 @@ class ContractScreen extends ConsumerWidget {
                   itemCount: contracts.length,
                   itemBuilder: (context, index) {
                     final contract = contracts[index];
-                    return Card(
+                    return GlassCard(
                       color: AppColors.cardDark,
                       margin: const EdgeInsets.only(bottom: 12),
                       child: Padding(
@@ -180,3 +181,4 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
+

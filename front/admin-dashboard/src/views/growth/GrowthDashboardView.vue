@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="p-6">
     <div class="mb-8 flex justify-between items-center">
       <div>
@@ -14,7 +14,7 @@
         @click="currentTab = tab.id"
         :class="[
           'px-4 py-2 rounded-xl font-bold transition-all text-sm uppercase tracking-tight',
-          currentTab === tab.id ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/20' : 'bg-white text-slate-500 hover:bg-slate-50 shadow-sm border border-slate-200'
+          currentTab === tab.id ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/20' : 'glass-card text-slate-500 hover:bg-slate-50 shadow-sm border border-slate-200'
         ]"
       >
         {{ tab.label }}
@@ -22,7 +22,7 @@
     </div>
 
     <div v-if="loading" class="p-12 text-center text-slate-500 font-bold uppercase tracking-widest animate-pulse">
-      Synchronisation des données...
+      Synchronisation des donnÃ©es...
     </div>
 
     <div v-else>
@@ -33,12 +33,12 @@
               <tr>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Partenaire</th>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Taux HT (%)</th>
-                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Référés</th>
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">RÃ©fÃ©rÃ©s</th>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Statut Candidature</th>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200 bg-white">
+            <tbody class="divide-y divide-slate-200 glass-card">
               <tr v-for="partner in partners" :key="partner.id" class="hover:bg-slate-50 transition-colors">
                 <td class="px-6 py-4">
                   <div class="font-bold text-slate-900">{{ partner.user.first_name }} {{ partner.user.last_name }}</div>
@@ -63,11 +63,11 @@
                   >
                     Approuver
                   </button>
-                  <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">Gérer</button>
+                  <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">GÃ©rer</button>
                 </td>
               </tr>
               <tr v-if="partners.length === 0">
-                <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">Aucun partenaire trouvé.</td>
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">Aucun partenaire trouvÃ©.</td>
               </tr>
             </tbody>
           </table>
@@ -86,7 +86,7 @@
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200 bg-white">
+            <tbody class="divide-y divide-slate-200 glass-card">
               <tr v-for="payout in payouts" :key="payout.id">
                 <td class="px-6 py-4 font-bold text-slate-900">{{ payout.partner?.user?.first_name }}</td>
                 <td class="px-6 py-4 font-black text-slate-900">{{ (payout.amount / 100).toFixed(2) }} {{ payout.currency }}</td>
@@ -97,7 +97,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4">
-                  <button v-if="payout.status === 'pending'" @click="updatePayout(payout, 'paid')" class="text-teal-600 font-bold text-xs uppercase underline">Marquer Payé</button>
+                  <button v-if="payout.status === 'pending'" @click="updatePayout(payout, 'paid')" class="text-teal-600 font-bold text-xs uppercase underline">Marquer PayÃ©</button>
                 </td>
               </tr>
                <tr v-if="payouts.length === 0">
@@ -116,7 +116,7 @@
             <span class="ml-2">Admin #{{ log.admin_id }} modified {{ log.auditable_type }} #{{ log.auditable_id }}</span>
             <div class="text-slate-400 ml-4">Reason: {{ log.reason }}</div>
           </div>
-          <div v-if="auditLogs.length === 0" class="text-center py-8 opacity-50">Zéro log d'audit Growth pour le moment.</div>
+          <div v-if="auditLogs.length === 0" class="text-center py-8 opacity-50">ZÃ©ro log d'audit Growth pour le moment.</div>
         </div>
       </div>
     </div>
@@ -188,3 +188,4 @@ const getStatusClass = (status) => {
   }
 };
 </script>
+

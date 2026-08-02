@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useReducer, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
@@ -94,7 +94,7 @@ export function SignupForm({
     }
   };
 
-  // ── Step 1: Submit signup form ──
+  // â”€â”€ Step 1: Submit signup form â”€â”€
   const onSubmit = async (data: SignupFormData) => {
     dispatch({ type: 'SUBMIT_START' });
 
@@ -144,7 +144,7 @@ export function SignupForm({
     }
   };
 
-  // ── OTP input handlers ──
+  // â”€â”€ OTP input handlers â”€â”€
   const handleOtpChange = useCallback((index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
 
@@ -178,7 +178,7 @@ export function SignupForm({
     otpRefs.current[focusIdx]?.focus();
   }, [otpValues]);
 
-  // ── Step 2: Verify OTP ──
+  // â”€â”€ Step 2: Verify OTP â”€â”€
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
@@ -207,13 +207,13 @@ export function SignupForm({
     }
   };
 
-  // ── Render ──
+  // â”€â”€ Render â”€â”€
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
       <AnimatePresence mode="wait">
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {/* STEP 1: Signup Form                     */}
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {currentStep === 'form' && (
           <motion.div
             key="step-form"
@@ -371,7 +371,7 @@ export function SignupForm({
                 {formState.isSubmitting ? 'Envoi du code...' : 'Recevoir mon code de verification'}
               </Button>
 
-              <p className="rounded-xl bg-slate-50 px-4 py-3 text-center text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
+              <p className="rounded-xl bg-transparent px-4 py-3 text-center text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
                 Un code a 6 chiffres sera envoye a votre email pour confirmer votre identite.
               </p>
 
@@ -385,9 +385,9 @@ export function SignupForm({
           </motion.div>
         )}
 
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {/* STEP 2: OTP Verification                */}
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {currentStep === 'otp' && (
           <motion.div
             key="step-otp"
@@ -475,9 +475,9 @@ export function SignupForm({
           </motion.div>
         )}
 
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {/* STEP 2b: Pending (cold-start fallback)   */}
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {currentStep === 'pending' && (
           <motion.div
             key="step-pending"
@@ -501,7 +501,7 @@ export function SignupForm({
               {pendingEmail}
             </p>
 
-            <div className="rounded-xl bg-slate-50 px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
+            <div className="rounded-xl bg-transparent px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
               Notre systeme de creation d&apos;espace instantane est momentanement
               indisponible (redemarrage serveur). Votre demande est bien
               enregistree : une personne de l&apos;equipe Leopardo vous contactera
@@ -518,9 +518,9 @@ export function SignupForm({
           </motion.div>
         )}
 
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {/* STEP 3: Success                         */}
-        {/* ═══════════════════════════════════════ */}
+        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
         {currentStep === 'success' && (
           <motion.div
             key="step-success"
@@ -541,7 +541,7 @@ export function SignupForm({
                   <div className="flex items-center gap-2 text-center justify-center mb-3">
                     <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Votre adresse email a bien été vérifiée.
+                      Votre adresse email a bien Ã©tÃ© vÃ©rifiÃ©e.
                     </p>
                   </div>
                   {provisionedData?.manager ? (
@@ -593,7 +593,7 @@ export function SignupForm({
                     <span className="font-bold text-emerald-600">
                       {provisionedData.trial.days} jours
                     </span>{' '}
-                    — aucune carte bancaire requise.
+                    â€” aucune carte bancaire requise.
                   </p>
                 )}
 
@@ -607,7 +607,7 @@ export function SignupForm({
                   </Link>
                   <Link
                     href="/download"
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-transparent dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     <Download className="h-4 w-4" />
                     Telecharger l&apos;app
@@ -625,3 +625,4 @@ export function SignupForm({
     </Card>
   );
 }
+

@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,7 @@ import 'package:leopardo_manager/features/team/data/employee_repository.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 
-/// Ecran "Equipe" — reserve aux managers (principal / RH).
+/// Ecran "Equipe" â€” reserve aux managers (principal / RH).
 /// Permet de lister, creer, archiver un employe et de gerer les invitations.
 class TeamScreen extends ConsumerStatefulWidget {
   const TeamScreen({super.key});
@@ -261,7 +262,7 @@ class _EmployeesTab extends ConsumerWidget {
                 if (_employmentLine(e) != null) _employmentLine(e)!,
               ].join(' - ');
 
-              return MobileListCard(
+              return MobileListGlassCard(
                 icon: Icons.person_outline_rounded,
                 iconColor: _workStateColor(e.workState),
                 title: '${_initials(e)}  ${e.fullName}',
@@ -311,7 +312,7 @@ class _EmployeesTab extends ConsumerWidget {
     if (e.scheduleName?.trim().isNotEmpty == true) {
       parts.add('Horaire ${e.scheduleName}');
     }
-    return parts.isEmpty ? null : parts.join(' · ');
+    return parts.isEmpty ? null : parts.join(' Â· ');
   }
 
   Color _workStateColor(String state) => switch (state) {
@@ -710,7 +711,7 @@ class _InvitationsTab extends ConsumerWidget {
             itemBuilder: (_, index) {
               final inv = invitations[index];
               final color = _invitationColor(inv.status);
-              return MobileListCard(
+              return MobileListGlassCard(
                 icon: Icons.mail_outline_rounded,
                 iconColor: color,
                 title: inv.email,
@@ -948,7 +949,7 @@ class _CompanyQrSheet extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              LeopardoQrCard(
+              LeopardoQrGlassCard(
                 data: payload.token,
                 title: 'QR entreprise scannable',
                 subtitle:
@@ -1147,7 +1148,7 @@ class _ScheduleSelector extends StatelessWidget {
           (schedule) => DropdownMenuItem<int?>(
             value: schedule.id,
             child: Text(
-              '${schedule.name} · ${schedule.startTime}-${schedule.endTime}',
+              '${schedule.name} Â· ${schedule.startTime}-${schedule.endTime}',
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -1850,3 +1851,4 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
     return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }
+

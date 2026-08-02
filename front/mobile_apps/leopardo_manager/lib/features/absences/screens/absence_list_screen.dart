@@ -1,3 +1,4 @@
+﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -81,7 +82,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                     ? absence.employeeName!
                     : 'Employe #${absence.employeeId}';
 
-                return MobileListCard(
+                return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
                   title: requester,
@@ -705,3 +706,4 @@ class _AbsenceTypeOption {
     );
   }
 }
+

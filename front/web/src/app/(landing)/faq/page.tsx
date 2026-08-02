@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Navbar, Footer, HeroSection, useScrollReveal } from '@/modules/vitrine';
@@ -136,7 +136,7 @@ export default function FaqPage() {
               >
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                  className="w-full flex items-center justify-between p-5 text-left hover:bg-transparent dark:hover:bg-slate-800/50 transition-colors"
                 >
                   <span className="font-semibold text-slate-900 dark:text-white pr-4">{item.question}</span>
                   <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`} />
@@ -176,3 +176,4 @@ export default function FaqPage() {
     </div>
   );
 }
+

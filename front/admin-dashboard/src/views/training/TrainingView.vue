@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <StatsCard title="Formations actives" :value="stats.active_courses" icon="ChartBarIcon" color="blue" />
@@ -13,7 +13,7 @@
         :key="tab.key"
         :class="[
           'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50'
+          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 hover:glass-bg'
         ]"
         @click="activeTab = tab.key"
       >
@@ -27,7 +27,7 @@
       <div
         v-for="course in courses"
         :key="course.id"
-        class="cursor-pointer rounded-lg bg-white p-5 shadow ring-1 ring-gray-200 transition hover:shadow-md hover:ring-indigo-300"
+        class="cursor-pointer rounded-lg glass-card p-5 shadow ring-1 ring-gray-200 transition hover:shadow-md hover:ring-indigo-300"
         @click="viewCourse(course)"
       >
         <div class="flex items-start justify-between">
@@ -90,10 +90,10 @@
 
     <!-- Course Detail Panel -->
     <div v-if="selectedCourse" class="fixed inset-0 z-50 overflow-hidden" @click.self="closeDetail">
-      <div class="absolute inset-0 bg-gray-500/50 transition-opacity" @click="closeDetail" />
+      <div class="absolute inset-0 glass-bg0/50 transition-opacity" @click="closeDetail" />
       <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
         <div class="w-screen max-w-lg">
-          <div class="flex h-full flex-col overflow-y-auto bg-white shadow-xl">
+          <div class="flex h-full flex-col overflow-y-auto glass-card shadow-xl">
             <div class="border-b border-gray-200 px-6 py-4">
               <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-gray-900">{{ selectedCourse.title }}</h2>
@@ -267,3 +267,4 @@ async function fetchData() {
 
 onMounted(fetchData)
 </script>
+

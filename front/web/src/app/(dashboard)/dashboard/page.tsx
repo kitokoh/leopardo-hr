@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -305,10 +305,10 @@ export default function DashboardPage() {
             <input
               type="text"
               placeholder="Rechercher..."
-              className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
-          <button className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-slate-50">
+          <button className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-transparent">
             <Bell className="h-5 w-5 text-slate-600" />
             <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
           </button>
@@ -338,7 +338,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-200">Actions prioritaires</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">Actions prioritaires</p>
           <div className="mt-4 grid gap-3 text-sm">
             <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
             <PriorityAction label="Verifier les presences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
@@ -366,7 +366,7 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {(readiness.go_live_ready ? readiness.next_actions : readiness.required_blockers)?.slice(0, 2).map((item) => (
-              <div key={item.key} className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+              <div key={item.key} className="rounded-xl border border-slate-100 bg-transparent px-4 py-3 text-sm text-slate-700">
                 {item.label}
               </div>
             ))}
@@ -448,7 +448,7 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
-                  className="group flex cursor-pointer items-center gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50"
+                  className="group flex cursor-pointer items-center gap-4 rounded-xl p-4 transition-colors hover:bg-transparent"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-sm font-bold text-emerald-700">
                     {activity.avatar}
@@ -456,7 +456,7 @@ export default function DashboardPage() {
                   <div className="flex-1">
                     <p className="font-bold text-slate-950">{activity.name}</p>
                     <p className="text-sm text-slate-500">
-                      {activity.action} • {activity.time}
+                      {activity.action} â€¢ {activity.time}
                     </p>
                   </div>
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
@@ -466,7 +466,7 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <button className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-slate-50">
+            <button className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent">
               Voir toute l&apos;activite
             </button>
           </div>
@@ -495,7 +495,7 @@ export default function DashboardPage() {
                 <button className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30">
                   Oui, envoyer
                 </button>
-                <button className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50">
+                <button className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent">
                   Plus tard
                 </button>
               </div>
@@ -514,7 +514,7 @@ export default function DashboardPage() {
                 ].map((action) => (
                   <button
                     key={action.label}
-                    className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-slate-50"
+                    className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-transparent"
                   >
                     <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.color} transition-transform group-hover:scale-110`}>
                       <action.icon className="h-5 w-5 text-white" />
@@ -559,7 +559,7 @@ function PriorityAction({ label, value, href }: { label: string; value: number; 
   return (
     <Link href={href} className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3 transition hover:bg-white/15">
       <span>{label}</span>
-      <span className="inline-flex items-center gap-2 font-bold text-brand-100">
+      <span className="inline-flex items-center gap-2 font-bold text-emerald-100">
         {value}
         <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </span>
@@ -636,3 +636,4 @@ function SuperAdminBridge({ user }: { user: StoredAuthUser | null }) {
     </div>
   );
 }
+
