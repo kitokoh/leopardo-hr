@@ -68,21 +68,28 @@ return new class extends Migration
         if (DB::getDriverName() === 'pgsql') {
             // PostgreSQL does not support "ADD CONSTRAINT IF NOT EXISTS" for CHECK
             // constraints — only for unique/fk. We guard with a catalog lookup instead.
-            $constraints = DB::table('information_schema.table_constraints')
-                ->where('table_schema', DB::connection()->getConfig('search_path') ?: 'public')
-                ->where('table_name', 'platform_support_tickets')
-                ->where('constraint_type', 'CHECK')
-                ->pluck('constraint_name')
+            $constraints = collect(DB::select(
+                <<<'SQL'
+                    SELECT con.conname AS constraint_name
+                    FROM pg_constraint con
+                    JOIN pg_class rel ON rel.oid = con.conrelid
+                    JOIN pg_namespace nsp ON nsp.oid = rel.relnamespace
+                    WHERE nsp.nspname = 'public'
+                      AND rel.relname = 'platform_support_tickets'
+                      AND con.contype = 'c'
+                SQL
+            ))
+                ->map(fn (object $row): string => (string) $row->constraint_name)
                 ->all();
 
             if (! in_array('platform_support_tickets_category_check', $constraints, true)) {
-                DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_category_check CHECK (category IN ('general', 'billing', 'technical', 'onboarding', 'other'))");
+                DB::statement("ALTER TABLE public.platform_support_tickets ADD CONSTRAINT platform_support_tickets_category_check CHECK (category IN ('general', 'billing', 'technical', 'onboarding', 'other'))");
             }
             if (! in_array('platform_support_tickets_priority_check', $constraints, true)) {
-                DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_priority_check CHECK (priority IN ('low', 'normal', 'high', 'urgent'))");
+                DB::statement("ALTER TABLE public.platform_support_tickets ADD CONSTRAINT platform_support_tickets_priority_check CHECK (priority IN ('low', 'normal', 'high', 'urgent'))");
             }
             if (! in_array('platform_support_tickets_status_check', $constraints, true)) {
-                DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_status_check CHECK (status IN ('open', 'pending', 'resolved', 'closed'))");
+                DB::statement("ALTER TABLE public.platform_support_tickets ADD CONSTRAINT platform_support_tickets_status_check CHECK (status IN ('open', 'pending', 'resolved', 'closed'))");
             }
         }
     }
