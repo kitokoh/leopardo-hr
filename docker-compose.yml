@@ -21,6 +21,7 @@ services:
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
       DB_PASSWORD: secret
+      DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
@@ -88,6 +89,7 @@ services:
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
       DB_PASSWORD: secret
+      DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
@@ -118,6 +120,7 @@ services:
       DB_DATABASE: leopardo
       DB_USERNAME: leopardo
       DB_PASSWORD: secret
+      DB_SEARCH_PATH: "shared_tenants,public"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis

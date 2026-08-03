@@ -208,6 +208,8 @@ class SalaryAdvanceSecurityTest extends TestCase
         $manager = $this->createEmployee($company, 'manager', 'principal');
         $employee = $this->createEmployee($company, 'employee');
 
+        $testStartedAt = now()->subSecond(); // capture before any API calls
+
         $advance = SalaryAdvance::query()->forceCreate([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
@@ -251,14 +253,17 @@ class SalaryAdvanceSecurityTest extends TestCase
             'employee_id' => $employee->id,
             'type' => 'payroll',
         ]);
+        // Count only notifications that carry a salary_advance_id in their data
+        // column — this excludes any payment-document notifications (processing /
+        // ready / failed) that the GeneratePaymentDocumentJob emits synchronously
+        // in the test queue and which also land with type=payroll for the employee.
         $employeeNotifications = Notification::query()
             ->where('employee_id', $employee->id)
             ->where('company_id', $company->id)
             ->where('type', 'payroll')
-            ->whereNotNull('data')
+            ->where('created_at', '>=', $testStartedAt)
+            ->whereRaw("data->>'salary_advance_id' = ?", [(string) $advance->id])
             ->get()
-            ->filter(fn ($n) => ($n->data['salary_advance_id'] ?? null) == $advance->id)
-            ->values()
             ->all();
         $this->assertCount(2, $employeeNotifications); // manager_approved + payment_declared
 

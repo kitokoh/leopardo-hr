@@ -18,6 +18,7 @@ services:
       DB_DATABASE: leopardo
       DB_USERNAME: sail
       DB_PASSWORD: password
+      DB_SEARCH_PATH: "shared_tenants,public"
     depends_on:
       pgsql:
         condition: service_healthy
