@@ -6297,7 +6297,7 @@ parameters:
 		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
 			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 1
+			count: 3
 			path: tests/Feature/EdgeSync/EdgeSyncDaemonIntegrationTest.php
 
 		-
@@ -7623,13 +7623,13 @@ parameters:
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
-			count: 2
+			count: 4
 			path: tests/Feature/PlatformCrmPipelineApiTest.php
 
 		-
 			message: '#^Unable to resolve the template type TValue in call to function collect$#'
 			identifier: argument.templateType
-			count: 2
+			count: 4
 			path: tests/Feature/PlatformCrmPipelineApiTest.php
 
 		-

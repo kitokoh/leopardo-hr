@@ -66,9 +66,24 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_category_check CHECK (category IN ('general', 'billing', 'technical', 'onboarding', 'other'))");
-            DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_priority_check CHECK (priority IN ('low', 'normal', 'high', 'urgent'))");
-            DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_status_check CHECK (status IN ('open', 'pending', 'resolved', 'closed'))");
+            // PostgreSQL does not support "ADD CONSTRAINT IF NOT EXISTS" for CHECK
+            // constraints — only for unique/fk. We guard with a catalog lookup instead.
+            $constraints = DB::table('information_schema.table_constraints')
+                ->where('table_schema', DB::connection()->getConfig('search_path') ?: 'public')
+                ->where('table_name', 'platform_support_tickets')
+                ->where('constraint_type', 'CHECK')
+                ->pluck('constraint_name')
+                ->all();
+
+            if (! in_array('platform_support_tickets_category_check', $constraints, true)) {
+                DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_category_check CHECK (category IN ('general', 'billing', 'technical', 'onboarding', 'other'))");
+            }
+            if (! in_array('platform_support_tickets_priority_check', $constraints, true)) {
+                DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_priority_check CHECK (priority IN ('low', 'normal', 'high', 'urgent'))");
+            }
+            if (! in_array('platform_support_tickets_status_check', $constraints, true)) {
+                DB::statement("ALTER TABLE platform_support_tickets ADD CONSTRAINT platform_support_tickets_status_check CHECK (status IN ('open', 'pending', 'resolved', 'closed'))");
+            }
         }
     }
 

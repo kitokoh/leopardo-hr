@@ -58,9 +58,10 @@ class EdgeSyncDaemonIntegrationTest extends TestCase
         ]);
 
         $edgeToken = 'integration-edge-token-' . Str::random(16);
+        /** @var \App\Modules\EdgeSync\Domain\Models\EdgeNode $node */
         $node = EdgeNode::forceCreate([
             'id' => (string) Str::uuid(),
-            'company_id' => $company->id,
+            'company_id' => (string) $company->id,
             'name' => 'Edge Daemon Integration Node',
             'slug' => 'edge-daemon-integration-node',
             'status' => 'active',
@@ -71,6 +72,7 @@ class EdgeSyncDaemonIntegrationTest extends TestCase
             'metadata' => ['edge_token' => hash('sha256', $edgeToken)],
         ]);
 
+        /** @var \App\Modules\EdgeSync\Domain\Models\SyncQueue $queueItem */
         $queueItem = SyncQueue::create([
             'edge_node_id' => $node->id,
             'entity_type' => 'attendance_logs',
