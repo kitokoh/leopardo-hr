@@ -81,6 +81,7 @@ class VerifyTrialSignup
         $tempPassword = $this->generateReadablePassword();
 
         try {
+            /** @var object{id: mixed} $trialPlan */
             $result = $this->provisionTrialCompany([
                 'name' => $companyName,
                 'slug' => Str::slug($companyName),
