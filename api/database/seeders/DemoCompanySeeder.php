@@ -1231,10 +1231,12 @@ SQL);
                     'company_id' => $companyId,
                     'location' => 'Salle de conference A',
                     'instructor_name' => 'Formateur Demo',
+                    'start_date' => now()->addDays(7 + $index * 7)->toDateString(),
+                    'end_date' => now()->addDays(7 + $index * 7)->toDateString(),
                     'starts_at' => now()->addDays(7 + $index * 7)->setHour(9)->toIso8601String(),
                     'ends_at' => now()->addDays(7 + $index * 7)->setHour(17)->toIso8601String(),
                     'max_participants' => 15,
-                    'status' => 'scheduled',
+                    'status' => 'planned',
                     'created_at' => now()->toIso8601String(),
                     'updated_at' => now()->toIso8601String(),
                 ]);
