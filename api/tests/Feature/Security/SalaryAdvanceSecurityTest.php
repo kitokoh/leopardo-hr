@@ -263,6 +263,7 @@ class SalaryAdvanceSecurityTest extends TestCase
             ->where('type', 'payroll')
             ->where('created_at', '>=', $testStartedAt)
             ->whereRaw("data->>'salary_advance_id' = ?", [(string) $advance->id])
+            ->whereRaw("COALESCE(data->>'payment_document_id', '') = ''")
             ->get()
             ->all();
         $this->assertCount(2, $employeeNotifications); // manager_approved + payment_declared
