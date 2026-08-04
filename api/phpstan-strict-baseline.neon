@@ -6957,6 +6957,30 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
+			count: 7
+			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
+
+		-
+			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\Marketing\\Domain\\Models\\SocialPost\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
+
+		-
+			message: '#^Cannot access property \$provider_post_ref on App\\Modules\\Marketing\\Domain\\Models\\SocialPost\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 5
 			path: tests/Feature/Marketing/PublishScheduledSocialPostsCommandTest.php
 
