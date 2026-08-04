@@ -1295,7 +1295,7 @@ SQL);
                         'last_name' => $parts[1],
                         'email' => strtolower($parts[0]).'.'.strtolower($parts[1]).'@demo.test',
                         'phone' => '+213 6'.rand(10, 99).' '.rand(10, 99).' '.rand(10, 99).' '.rand(10, 99),
-                        'status' => $i === 0 ? 'shortlisted' : 'new',
+                        'status' => $i === 0 ? 'screening' : 'new',
                         'created_at' => now()->subDays(rand(1, 10))->toIso8601String(),
                         'updated_at' => now()->toIso8601String(),
                     ]]);
