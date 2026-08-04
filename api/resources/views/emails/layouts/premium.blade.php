@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
     <meta name="supported-color-schemes" content="light dark">
-    <title>{{ $title ?? 'Leopardo RH' }}</title>
+    <title>{{ $title ?? config('app.name') }}</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -141,7 +141,7 @@
                         <!-- Header -->
                         <div class="header">
                             <h1 style="font-size:32px; margin-bottom:10px;">🐆</h1>
-                            <h1>@yield('header', 'Leopardo RH')</h1>
+                            <h1>@yield('header', config('app.name'))</h1>
                         </div>
                         
                         <!-- Body -->
@@ -151,9 +151,8 @@
                         
                         <!-- Footer -->
                         <div class="footer">
-                            <p>&copy; {{ date('Y') }} Leopardo RH. Tous droits réservés.</p>
-                            <p>Vous recevez cet email car vous êtes inscrit sur notre plateforme.<br>
-                            Pour toute question, contactez le <a href="mailto:support@leopardo-rh.com">support</a>.</p>
+                            <p>&copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('emails.premium_layout_rights_reserved') }}</p>
+                            <p>{!! __('emails.premium_layout_footer_note', ['supportEmail' => config('mail.from.address', 'support@leopardo-rh.com')]) !!}</p>
                         </div>
                     </div>
                 </td>

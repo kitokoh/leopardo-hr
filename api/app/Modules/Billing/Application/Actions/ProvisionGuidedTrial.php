@@ -19,6 +19,7 @@ class ProvisionGuidedTrial
         private readonly TenantManager $tenantManager,
     ) {}
 
+    /** @return array<string, mixed> */
     public function execute(string $email, string $companyName): array
     {
         $slug = Str::slug($companyName);

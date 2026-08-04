@@ -65,7 +65,7 @@ class SelfServiceTrialController extends Controller
             
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Demande d\'essai reçue. Un lien d\'accès vous sera envoyé par email.',
+                'message' => __('billing.trial_signup_received'),
                 'data' => [
                     'email' => $email,
                     'status' => 'provisioning_sandbox',
