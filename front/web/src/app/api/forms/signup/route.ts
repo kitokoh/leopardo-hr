@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
           phone,
           plan: validatedData.plan,
           source: validatedData.source || 'signup_form',
+          requestedWorkflow: 'guided_trial',
         }),
         signal: AbortSignal.timeout(15000),
       });
