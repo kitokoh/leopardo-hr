@@ -99,4 +99,8 @@ return [
 
     // Communication (PA2-COMM-007 email transactionnel generique)
     'communication_unsubscribe_link' => 'Gerer mes preferences de notification',
+
+    // Layout premium (emails/layouts/premium.blade.php)
+    'premium_layout_rights_reserved' => 'Tous droits réservés.',
+    'premium_layout_footer_note' => 'Vous recevez cet email car vous êtes inscrit sur notre plateforme.<br>Pour toute question, contactez le <a href="mailto::supportEmail">support</a>.',
 ];

@@ -99,4 +99,8 @@ return [
 
     // Communication (PA2-COMM-007)
     'communication_unsubscribe_link' => 'Bildirim tercihlerimi yonet',
+
+    // Premium layout (emails/layouts/premium.blade.php)
+    'premium_layout_rights_reserved' => 'Tüm hakları saklıdır.',
+    'premium_layout_footer_note' => 'Bu e-postayı platformumuza kayıtlı olduğunuz için alıyorsunuz.<br>Herhangi bir sorunuz için <a href="mailto::supportEmail">destek</a> ile iletişime geçin.',
 ];

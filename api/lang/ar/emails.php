@@ -99,4 +99,8 @@ return [
 
     // Communication (PA2-COMM-007)
     'communication_unsubscribe_link' => 'إدارة تفضيلات الإشعارات',
+
+    // Premium layout (emails/layouts/premium.blade.php)
+    'premium_layout_rights_reserved' => 'جميع الحقوق محفوظة.',
+    'premium_layout_footer_note' => 'تتلقى هذا البريد الإلكتروني لأنك مسجل في منصتنا.<br>لأي سوال، يرجى الاتصال بالدعم عبر <a href="mailto::supportEmail">الدعم</a>.',
 ];

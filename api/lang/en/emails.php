@@ -99,4 +99,8 @@ return [
 
     // Communication (PA2-COMM-007 generic transactional notification email)
     'communication_unsubscribe_link' => 'Manage your notification preferences',
+
+    // Premium layout (emails/layouts/premium.blade.php)
+    'premium_layout_rights_reserved' => 'All rights reserved.',
+    'premium_layout_footer_note' => 'You are receiving this email because you are registered on our platform.<br>For any question, contact <a href="mailto::supportEmail">support</a>.',
 ];

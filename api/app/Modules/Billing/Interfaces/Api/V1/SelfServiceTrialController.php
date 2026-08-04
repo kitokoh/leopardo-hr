@@ -43,6 +43,7 @@ class SelfServiceTrialController extends Controller
             'plan' => ['nullable', 'string', 'max:80'],
             'source' => ['nullable', 'string', 'max:120'],
             'referral_code' => ['nullable', 'string', 'max:50'],
+            'requestedWorkflow' => ['nullable', 'string', 'in:guided_trial,self_service'],
         ]);
 
         $email = strtolower(trim($validated['email']));
@@ -57,6 +58,19 @@ class SelfServiceTrialController extends Controller
                     'login_url' => '/auth/login',
                 ],
             ], 409);
+        }
+
+        if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
+            \App\Jobs\ProvisionDemoTenantJob::dispatch($email, $validated['company']);
+            
+            return new JsonResponse([
+                'success' => true,
+                'message' => __('billing.trial_signup_received'),
+                'data' => [
+                    'email' => $email,
+                    'status' => 'provisioning_sandbox',
+                ],
+            ], 200);
         }
 
         $this->requestTrialSignup->execute($validated);
