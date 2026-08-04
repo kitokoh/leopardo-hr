@@ -1251,6 +1251,18 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 **Endpoints non affectés**
 - Aucune route sous `api/routes/` n'est ajoutée ou modifiée par cette phase (seul le contrôleur pré-existant `dashboard/marketing` reste inchangé). Les prochaines phases exposeront les endpoints REST `SocialAccount`/`SocialPost` consommant ces policies.
 
+## Phase Marketing — Suivi de publication par plateforme (`post_publications`, issue #1432)
+
+**Aucune nouvelle route API publique — nouvelle table tenant + modèle Eloquent consommés en interne par `SocialPublishingService::publishNow()`.**
+
+- Migration `2026_08_03_000001_create_post_publications_table` (tenant) : une ligne par plateforme ciblée par un `social_post`, alignée sur `docs/specifications/MODULE_MARKETING.md` §3.1 (`post_id`, `social_account_id`, `external_post_id`, `status`). Contrainte unique `(social_post_id, platform)` — un appel Ayrshare peut réussir globalement tout en échouant sur une plateforme précise (ex: contenu trop long pour X/Twitter mais accepté sur LinkedIn) ; cette table porte ce détail que les colonnes globales de `social_posts` (`status`, `provider_post_ref`) n'exposaient pas.
+- `App\Modules\Marketing\Domain\Models\PostPublication` : modèle scopé tenant (`BelongsToCompany`), `belongsTo` `SocialPost`/`SocialAccount`.
+- `SocialPublishingService::publishNow()` étendu : parse `postIds[]` (succès) et `errors[]` (échecs partiels) de la réponse Ayrshare pour upserter un `PostPublication` par plateforme ciblée ; en cas d'échec total de l'appel (exception avant tout retour exploitable), marque chaque plateforme ciblée comme `failed`. Idempotent entre deux appels (upsert sur la contrainte unique), donc rejouable sans dupliquer les lignes en cas de retry du job planifié.
+  - Scénario à valider : `PostPublicationTest` — succès complet (une ligne `success` par plateforme + `external_post_id`), succès partiel (une plateforme `success`, une autre `failed` avec `error_message`), échec total (toutes les plateformes ciblées `failed`), idempotence sur double appel (toujours une ligne par plateforme, pas de doublon).
+
+**Endpoints non affectés**
+- Aucune route sous `api/routes/` n'est ajoutée ou modifiée par cette phase. `SocialPostControllerTest`/`SocialPublishingServiceTest` existants (contrat `social_posts` inchangé) vérifiés non régressés : 83/83 tests du module Marketing passants (79 pré-existants + 4 nouveaux).
+
 ## Platform Super-Admin — Self-service profil, mot de passe, 2FA
 
 **Nouvelles routes** sous `Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')` dans `api/routes/api.php` (`App\Core\Auth\Interfaces\Api\V1\PlatformAuthController`) :
