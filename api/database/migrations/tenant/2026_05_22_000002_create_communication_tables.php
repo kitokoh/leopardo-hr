@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::create('notification_preferences', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
-                $table->unsignedInteger('employee_id')->unique();
+                $table->unsignedInteger('employee_id');
                 $table->boolean('app_enabled')->default(true);
                 $table->boolean('email_enabled')->default(true);
                 $table->boolean('push_enabled')->default(true);
@@ -27,7 +27,7 @@ return new class extends Migration
                 $table->json('quiet_hours')->nullable();
                 $table->timestamps();
 
-                $table->index(['company_id', 'employee_id']);
+                $table->unique(['company_id', 'employee_id'], 'notification_preferences_company_employee_unique');
             });
         }
 

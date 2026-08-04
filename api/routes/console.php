@@ -29,10 +29,14 @@ Artisan::command(
         }
 
         if (DB::getDriverName() === 'pgsql') {
+            DB::statement('CREATE SCHEMA IF NOT EXISTS public');
+            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
             // La table migrations doit vivre dans public (pas shared_tenants).
-            DB::statement('SET search_path TO public');
-            DB::purge();
             config(['database.connections.pgsql.search_path' => 'public']);
+            DB::purge('pgsql');
+            DB::reconnect('pgsql');
+            DB::statement('SET search_path TO public');
         }
 
         $this->info('Migrations schema public...');
@@ -48,9 +52,13 @@ Artisan::command(
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::purge();
-            config(['database.connections.pgsql.search_path' => 'shared_tenants,public']);
-            DB::statement('SET search_path TO shared_tenants,public');
+            // Keep tenant migrations on the tenant schema only: some public
+            // tables have tenant-like names and can make Schema::hasTable()
+            // skip creating the real shared_tenants table.
+            config(['database.connections.pgsql.search_path' => 'shared_tenants']);
+            DB::purge('pgsql');
+            DB::reconnect('pgsql');
+            DB::statement('SET search_path TO shared_tenants');
         }
 
         $this->info('Migrations schema shared_tenants...');
@@ -67,6 +75,13 @@ Artisan::command(
 
         if ($seed) {
             $this->info('Seeders de base...');
+            if (DB::getDriverName() === 'pgsql') {
+                config(['database.connections.pgsql.search_path' => 'shared_tenants,public']);
+                DB::purge('pgsql');
+                DB::reconnect('pgsql');
+                DB::statement('SET search_path TO shared_tenants,public');
+            }
+
             $seedCode = $this->call('db:seed', [
                 '--class' => 'Database\\Seeders\\DatabaseSeeder',
                 '--force' => true,
@@ -79,6 +94,13 @@ Artisan::command(
 
         if ($demo) {
             $this->info('Seed des donnees de demo...');
+            if (DB::getDriverName() === 'pgsql') {
+                config(['database.connections.pgsql.search_path' => 'shared_tenants,public']);
+                DB::purge('pgsql');
+                DB::reconnect('pgsql');
+                DB::statement('SET search_path TO shared_tenants,public');
+            }
+
             $this->call('db:seed', [
                 '--class' => 'Database\\Seeders\\DemoCompanySeeder',
                 '--force' => true,

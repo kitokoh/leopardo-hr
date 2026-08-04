@@ -81,6 +81,8 @@ Note 2026-06-07 : `GET /api/v1/kiosks/{deviceCode}/announcements` doit aussi tol
 
 Note 2026-06-07 : si `kiosk_announcements` existe sans colonne `company_id`, l'endpoint kiosque doit retourner `data=[]`. Une annonce non scoppable ne doit jamais etre renvoyee par defaut, car cela risquerait une fuite inter-tenant.
 
+Note 2026-08-03 : le workflow Onboarding Smoke Test doit verifier php artisan leopardo:migrate --seed --demo dans Docker Compose avec PostgreSQL shared. La commande doit creer public et shared_tenants de facon idempotente, puis purger et reconnecter pgsql apres chaque changement runtime de search_path avant de lancer les migrations public, tenant puis demo. Les migrations tenant doivent utiliser un search_path strict shared_tenants pour que Schema::hasTable() ne voie pas une table homonyme dans public; les seeders repassent ensuite en shared_tenants,public pour lire les catalogues publics. Le seed demo doit aussi verifier que notification_preferences accepte l'upsert (company_id, employee_id) utilise par les preferences mobiles.
+
 Note 2026-06-07 : les annonces kiosque sont une fonctionnalite non critique. Si une table tenant historique reste non queryable malgre les gardes de colonnes, l'endpoint doit journaliser l'erreur et retourner `data=[]` afin que le kiosque puisse continuer roster/pointage sans page bloquee.
 
 Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
