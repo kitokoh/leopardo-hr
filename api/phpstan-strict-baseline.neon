@@ -6981,6 +6981,42 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
+			count: 4
+			path: tests/Feature/Marketing/PostPublicationTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\Marketing\\Domain\\Models\\PostPublication\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: tests/Feature/Marketing/PostPublicationTest.php
+
+		-
+			message: '#^Cannot access property \$external_post_id on App\\Modules\\Marketing\\Domain\\Models\\PostPublication\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: tests/Feature/Marketing/PostPublicationTest.php
+
+		-
+			message: '#^Cannot access property \$published_at on App\\Modules\\Marketing\\Domain\\Models\\PostPublication\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Marketing/PostPublicationTest.php
+
+		-
+			message: '#^Cannot access property \$error_message on App\\Modules\\Marketing\\Domain\\Models\\PostPublication\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Marketing/PostPublicationTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Marketing\\PostPublicationTest\:\:makeAccountAndPost\(\) has parameter \$platforms with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Marketing/PostPublicationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 5
 			path: tests/Feature/Marketing/PublishScheduledSocialPostsCommandTest.php
 

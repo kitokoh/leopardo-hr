@@ -7,6 +7,7 @@ namespace App\Modules\Marketing\Infrastructure\Services;
 use App\Modules\Marketing\Domain\Contracts\SocialAccountRepositoryInterface;
 use App\Modules\Marketing\Domain\Exceptions\SocialAccountInactiveException;
 use App\Modules\Marketing\Domain\Exceptions\SocialAccountNotFoundException;
+use App\Modules\Marketing\Domain\Models\PostPublication;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
 use App\Modules\Marketing\Infrastructure\Services\Publishers\SocialPublisherResolver;
@@ -49,10 +50,14 @@ class SocialPublishingService
             $post->published_at = Carbon::now();
             $post->provider_post_ref = $result['id'];
             $post->error_message = null;
+
+            $this->syncPostPublications($post, $account, $result['raw']);
         } catch (Throwable $e) {
             $post->status = SocialPost::STATUS_FAILED;
             $post->error_message = $e->getMessage();
             $post->attempts++;
+
+            $this->markAllPlatformsFailed($post, $account, $e->getMessage());
 
             Log::warning('Marketing: social post publish failed', [
                 'social_post_id' => $post->id,
@@ -97,6 +102,87 @@ class SocialPublishingService
         }
 
         return $result;
+    }
+
+    /**
+     * Persiste le resultat par plateforme renvoye par Ayrshare
+     * (`postIds[]` pour les succes, `errors[]` pour les echecs partiels —
+     * un appel Ayrshare peut reussir globalement tout en echouant sur une
+     * plateforme precise, ex: contenu trop long pour X/Twitter mais
+     * accepte sur LinkedIn). Voir `docs/specifications/MODULE_MARKETING.md`
+     * §3.1 (table `post_publications`).
+     *
+     * @param  array<string, mixed>  $raw
+     */
+    private function syncPostPublications(SocialPost $post, SocialAccount $account, array $raw): void
+    {
+        $postIds = $raw['postIds'] ?? [];
+        $errors = $raw['errors'] ?? [];
+
+        $succeededPlatforms = [];
+
+        foreach ($postIds as $entry) {
+            $platform = (string) ($entry['platform'] ?? '');
+            if ($platform === '') {
+                continue;
+            }
+
+            $succeededPlatforms[] = $platform;
+            $isSuccess = ($entry['status'] ?? 'success') === 'success';
+
+            $this->upsertPublication($post, $account, $platform, [
+                'status' => $isSuccess ? PostPublication::STATUS_SUCCESS : PostPublication::STATUS_FAILED,
+                'external_post_id' => isset($entry['id']) ? (string) $entry['id'] : null,
+                'error_message' => $isSuccess ? null : (string) ($entry['message'] ?? 'Erreur inconnue'),
+                'published_at' => $isSuccess ? Carbon::now() : null,
+            ]);
+        }
+
+        foreach ($errors as $error) {
+            $platform = (string) ($error['platform'] ?? '');
+            if ($platform === '' || in_array($platform, $succeededPlatforms, true)) {
+                continue;
+            }
+
+            $this->upsertPublication($post, $account, $platform, [
+                'status' => PostPublication::STATUS_FAILED,
+                'external_post_id' => null,
+                'error_message' => (string) ($error['message'] ?? 'Erreur inconnue'),
+                'published_at' => null,
+            ]);
+        }
+    }
+
+    /**
+     * En cas d'echec total de l'appel Ayrshare (exception levee avant
+     * tout retour exploitable), marque chaque plateforme ciblee comme
+     * echouee pour garder `post_publications` coherent avec `social_posts`.
+     */
+    private function markAllPlatformsFailed(SocialPost $post, SocialAccount $account, string $errorMessage): void
+    {
+        foreach ($post->target_platforms as $platform) {
+            $this->upsertPublication($post, $account, (string) $platform, [
+                'status' => PostPublication::STATUS_FAILED,
+                'external_post_id' => null,
+                'error_message' => $errorMessage,
+                'published_at' => null,
+            ]);
+        }
+    }
+
+    /** @param array<string, mixed> $attributes */
+    private function upsertPublication(SocialPost $post, SocialAccount $account, string $platform, array $attributes): void
+    {
+        PostPublication::withoutGlobalScopes()->updateOrCreate(
+            [
+                'social_post_id' => $post->id,
+                'platform' => $platform,
+            ],
+            array_merge($attributes, [
+                'company_id' => $post->company_id,
+                'social_account_id' => $account->id,
+            ]),
+        );
     }
 
     /**
