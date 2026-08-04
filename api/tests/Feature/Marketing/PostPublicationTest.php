@@ -44,19 +44,23 @@ class PostPublicationTest extends TestCase
 
     public function test_publish_now_creates_one_publication_per_platform_on_full_success(): void
     {
+        // 'linkedin' est gere par LinkedInPublisher et 'facebook_page' par
+        // MetaPublisher (voir SocialPublisherInterface::supportedPlatforms) —
+        // 'facebook' seul n'est pas une cle de plateforme valide, resolve()
+        // leverait une RuntimeException et ferait echouer tout le post.
         Http::fake([
             'api.ayrshare.com/api/post' => Http::response([
                 'status' => 'success',
                 'id' => 'post_ayr_123',
                 'postIds' => [
                     ['status' => 'success', 'id' => 'li_456', 'platform' => 'linkedin'],
-                    ['status' => 'success', 'id' => 'fb_789', 'platform' => 'facebook'],
+                    ['status' => 'success', 'id' => 'fb_789', 'platform' => 'facebook_page'],
                 ],
             ], 200),
         ]);
 
         $company = Company::factory()->create();
-        $post = $this->makeAccountAndPost($company->id, ['linkedin', 'facebook']);
+        $post = $this->makeAccountAndPost($company->id, ['linkedin', 'facebook_page']);
 
         app(SocialPublishingService::class)->publishNow($post);
 
@@ -67,7 +71,7 @@ class PostPublicationTest extends TestCase
 
         $this->assertCount(2, $publications);
 
-        $facebook = $publications->firstWhere('platform', 'facebook');
+        $facebook = $publications->firstWhere('platform', 'facebook_page');
         $this->assertSame(PostPublication::STATUS_SUCCESS, $facebook->status);
         $this->assertSame('fb_789', $facebook->external_post_id);
         $this->assertNotNull($facebook->published_at);
@@ -132,7 +136,7 @@ class PostPublicationTest extends TestCase
         ]);
 
         $company = Company::factory()->create();
-        $post = $this->makeAccountAndPost($company->id, ['linkedin', 'facebook']);
+        $post = $this->makeAccountAndPost($company->id, ['linkedin', 'facebook_page']);
 
         app(SocialPublishingService::class)->publishNow($post);
 
@@ -147,30 +151,36 @@ class PostPublicationTest extends TestCase
 
     public function test_publish_now_is_idempotent_across_retries_for_the_same_platform(): void
     {
+        // 'facebook_page' et 'facebook_group' sont toutes les deux gerees
+        // par le meme MetaPublisher (contrairement a 'linkedin'+'twitter',
+        // qui appartiennent a 2 publishers distincts et declencheraient 2
+        // appels HTTP par publishNow() — epuisant Http::sequence() en un
+        // seul appel a publishNow() au lieu d'un par appel comme ce test
+        // idempotent l'exige).
         Http::fake([
             'api.ayrshare.com/api/post' => Http::sequence()
                 ->push([
                     'status' => 'success',
                     'id' => 'post_ayr_125',
                     'postIds' => [
-                        ['status' => 'success', 'id' => 'li_1', 'platform' => 'linkedin'],
+                        ['status' => 'success', 'id' => 'fbp_1', 'platform' => 'facebook_page'],
                     ],
                     'errors' => [
-                        ['platform' => 'twitter', 'message' => 'Temporary error'],
+                        ['platform' => 'facebook_group', 'message' => 'Temporary error'],
                     ],
                 ], 200)
                 ->push([
                     'status' => 'success',
                     'id' => 'post_ayr_125',
                     'postIds' => [
-                        ['status' => 'success', 'id' => 'li_1', 'platform' => 'linkedin'],
-                        ['status' => 'success', 'id' => 'tw_2', 'platform' => 'twitter'],
+                        ['status' => 'success', 'id' => 'fbp_1', 'platform' => 'facebook_page'],
+                        ['status' => 'success', 'id' => 'fbg_2', 'platform' => 'facebook_group'],
                     ],
                 ], 200),
         ]);
 
         $company = Company::factory()->create();
-        $post = $this->makeAccountAndPost($company->id, ['linkedin', 'twitter']);
+        $post = $this->makeAccountAndPost($company->id, ['facebook_page', 'facebook_group']);
 
         $service = app(SocialPublishingService::class);
         $service->publishNow($post);
@@ -184,8 +194,8 @@ class PostPublicationTest extends TestCase
         // (contrainte unique social_post_id+platform, upsert).
         $this->assertCount(2, $publications);
 
-        $twitter = $publications->firstWhere('platform', 'twitter');
-        $this->assertSame(PostPublication::STATUS_SUCCESS, $twitter->status);
-        $this->assertSame('tw_2', $twitter->external_post_id);
+        $facebookGroup = $publications->firstWhere('platform', 'facebook_group');
+        $this->assertSame(PostPublication::STATUS_SUCCESS, $facebookGroup->status);
+        $this->assertSame('fbg_2', $facebookGroup->external_post_id);
     }
 }
