@@ -165,7 +165,8 @@ import {
   LifebuoyIcon,
   ServerIcon,
   ArrowTrendingUpIcon,
-  ChartBarSquareIcon
+  ChartBarSquareIcon,
+  MegaphoneIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -282,6 +283,12 @@ const navigation = computed(() => [
     title: 'Webhooks',
     path: '/webhooks',
     icon: LinkIcon
+  },
+  {
+    name: 'marketing-oauth',
+    title: 'Marketing — OAuth',
+    path: '/marketing/oauth',
+    icon: MegaphoneIcon
   },
   {
     name: 'exports',
