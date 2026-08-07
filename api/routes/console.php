@@ -159,6 +159,12 @@ Schedule::command('announcements:publish-scheduled')
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 
+// RGPD / Loi 18-07 — rétention des audit logs (24 mois par défaut, voir
+// docs/security/POLITIQUE_RETENTION_DOCUMENTS.md, issue #1474).
+Schedule::command('audit:purge --older-than=24')
+    ->weekly()
+    ->onOneServer();
+
 Artisan::command('super-admin:reset-password {email} {password}', function (string $email, string $password) {
     DB::statement('SET search_path TO public');
 
