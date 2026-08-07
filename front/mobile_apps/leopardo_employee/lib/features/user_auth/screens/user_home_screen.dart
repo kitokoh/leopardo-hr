@@ -154,7 +154,7 @@ class UserHomeScreen extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: _QuickActionGlassCard(
+              child: _QuickActionCard(
                 icon: Icons.door_sliding_outlined,
                 label: 'Placard',
                 color: AppColors.cabinet,
@@ -166,7 +166,7 @@ class UserHomeScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _QuickActionGlassCard(
+              child: _QuickActionCard(
                 icon: Icons.business_outlined,
                 label: 'Creer entreprise',
                 color: AppColors.ia,
@@ -193,7 +193,7 @@ class _QuickActionCard extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _QuickActionGlassCard({
+  const _QuickActionCard({
     required this.icon,
     required this.label,
     required this.color,

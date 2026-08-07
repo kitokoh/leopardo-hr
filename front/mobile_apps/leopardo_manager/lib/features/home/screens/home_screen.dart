@@ -105,7 +105,7 @@ class HomeScreen extends ConsumerWidget {
                     _ModulesScroller(modules: activeModules),
                     if (canManageTeam) ...[
                       const SizedBox(height: 20),
-                      const _ManagerDigestGlassCard(),
+                      const _ManagerDigestCard(),
                     ],
                   ],
                 ),
@@ -272,7 +272,7 @@ class _QuickActionsGrid extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: actions
-              .map((action) => _QuickActionGlassCard(action: action))
+              .map((action) => _QuickActionCard(action: action))
               .toList(),
         );
       },
@@ -281,7 +281,7 @@ class _QuickActionsGrid extends StatelessWidget {
 }
 
 class _QuickActionCard extends StatelessWidget {
-  const _QuickActionGlassCard({required this.action});
+  const _QuickActionCard({required this.action});
 
   final MobileQuickAction action;
 
@@ -357,7 +357,7 @@ class _ModulesScroller extends StatelessWidget {
       child: Row(
         children: [
           for (final module in modules) ...[
-            _ModuleGlassCard(module: module),
+            _ModuleCard(module: module),
             const SizedBox(width: 10),
           ],
         ],
@@ -367,7 +367,7 @@ class _ModulesScroller extends StatelessWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleGlassCard({required this.module});
+  const _ModuleCard({required this.module});
 
   final MobileModule module;
 
@@ -478,7 +478,7 @@ class ManagerDigest {
 }
 
 class _ManagerDigestCard extends ConsumerWidget {
-  const _ManagerDigestGlassCard();
+  const _ManagerDigestCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

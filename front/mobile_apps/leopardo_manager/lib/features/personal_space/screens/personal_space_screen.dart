@@ -44,7 +44,7 @@ class PersonalSpaceScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 32),
-            _ActionGlassCard(
+            _ActionCard(
               title: 'CrÃ©er mon entreprise',
               description:
                   'Envoyez une demande pour enregistrer votre entreprise sur Leopardo RH.',
@@ -53,7 +53,7 @@ class PersonalSpaceScreen extends ConsumerWidget {
               onTap: () => context.push('/company-request'),
             ),
             const SizedBox(height: 16),
-            _ActionGlassCard(
+            _ActionCard(
               title: 'Rejoindre une Ã©quipe',
               description:
                   'Attendez que votre employeur vous invite via votre email : ${employee?.email}',
@@ -83,7 +83,7 @@ class _ActionCard extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _ActionGlassCard({
+  const _ActionCard({
     required this.title,
     required this.description,
     required this.icon,

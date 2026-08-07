@@ -62,7 +62,7 @@ class TaskListScreen extends ConsumerWidget {
             return ListView.builder(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
               itemCount: tasks.length,
-              itemBuilder: (_, index) => _TaskGlassCard(task: tasks[index]),
+              itemBuilder: (_, index) => _TaskCard(task: tasks[index]),
             );
           },
         ),
@@ -84,7 +84,7 @@ class TaskListScreen extends ConsumerWidget {
 }
 
 class _TaskCard extends StatelessWidget {
-  const _TaskGlassCard({required this.task});
+  const _TaskCard({required this.task});
 
   final Task task;
 

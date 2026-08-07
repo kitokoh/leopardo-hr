@@ -148,7 +148,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _SummaryGlassCard(summaryAsync: summaryAsync),
+              _SummaryCard(summaryAsync: summaryAsync),
               const SizedBox(height: 16),
               Text(
                 'Bulletins recents',
@@ -247,7 +247,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _SummaryGlassCard(summaryAsync: summaryAsync),
+              _SummaryCard(summaryAsync: summaryAsync),
               const SizedBox(height: 120),
               const Center(
                 child: CircularProgressIndicator(
@@ -260,7 +260,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _SummaryGlassCard(summaryAsync: summaryAsync),
+              _SummaryCard(summaryAsync: summaryAsync),
               const SizedBox(height: 120),
               Text(
                 e.toString(),
@@ -440,7 +440,7 @@ class _PaymentDocumentTile extends StatelessWidget {
 }
 
 class _SummaryCard extends StatelessWidget {
-  const _SummaryGlassCard({required this.summaryAsync});
+  const _SummaryCard({required this.summaryAsync});
 
   final AsyncValue<PayrollMobileSummary> summaryAsync;
 
