@@ -1313,3 +1313,11 @@ Meme audit : `Modules/Expense/{Domain,Application,Infrastructure}` (ExpenseClaim
 Bug corrige au passage (pas un changement de contrat, une correction de bug latent) : `AuthServiceProvider` enregistrait `Gate::policy()` sur le modele mort au lieu du vrai modele `Planning\...\ExpenseClaim` consomme par le controller — corrige.
 
 - Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
+
+## Issues #1466/#1468/#1469 — Durcissement API (metrics protégé, CORS, security headers)
+
+- `GET /api/v1/metrics` passe de public à **authentifié `super_admin_api`** (401 sinon) — les endpoints `/health*` restent publics (deploy hooks Render).
+- `config/cors.php` : ajout des origines `https://gestionemployer-backend.vercel.app` (vitrine réelle) et `https://admin.leopardo-rh.com`.
+- Nouveau middleware global `SecurityHeaders` : `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` (HTTPS uniquement) sur toutes les réponses.
+
+- Scenario a valider : `tests/Feature/Security/MetricsAccessTest.php` (401 anonyme / 200 super_admin / health public), `tests/Feature/Security/SecurityHeadersTest.php` (headers présents, HSTS seulement en HTTPS), `CorsAndTrustedProxyTest` (origines explicites, pas de `*`).
