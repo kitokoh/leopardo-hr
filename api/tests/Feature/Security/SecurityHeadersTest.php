@@ -27,6 +27,13 @@ class SecurityHeadersTest extends TestCase
     /** @test */
     public function hsts_is_sent_only_over_https(): void
     {
+        // Plain HTTP (local dev) must not advertise HSTS. Note: run this
+        // request first — withHeaders()/withServerVariables() below would
+        // otherwise leak X-Forwarded-Proto onto every subsequent request.
+        $plain = $this->getJson('/api/v1/health/live');
+        $plain->assertOk();
+        $plain->assertHeaderMissing('Strict-Transport-Security');
+
         // Over HTTPS the request is considered secure through the trusted
         // Render proxy (X-Forwarded-Proto https).
         $response = $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.99'])
@@ -35,10 +42,5 @@ class SecurityHeadersTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-
-        // Plain HTTP (local dev) must not advertise HSTS.
-        $plain = $this->getJson('/api/v1/health/live');
-        $plain->assertOk();
-        $plain->assertHeaderMissing('Strict-Transport-Security');
     }
 }
