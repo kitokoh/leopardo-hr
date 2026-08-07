@@ -27,7 +27,7 @@ class GlassTile extends StatelessWidget {
     // Stitch design uses a translucent background with a very subtle border
     final bgColor =
         isDark
-            ? const Color(0xFF31394D).withValues(alpha: 0.4)
+            ? AppColors.mobileDarkCardBg.withValues(alpha: 0.4)
             : Colors.white.withValues(alpha: 0.7);
     final borderColor =
         isDark
