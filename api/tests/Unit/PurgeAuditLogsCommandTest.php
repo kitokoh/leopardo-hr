@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -21,7 +22,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         // The Unit suite runs on a fresh in-memory DB with no tenant schema —
         // create the minimal audit_logs table if it does not exist.
         if (! Schema::hasTable('audit_logs')) {
-            Schema::create('audit_logs', function ($table) {
+            Schema::create('audit_logs', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('company_id')->nullable()->index();
                 $table->string('action');
