@@ -82,6 +82,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\PartnerLinkMiddleware::class,
         ]);
 
+        // Defence-in-depth security headers on every response (issue #1469).
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
             'manager' => EnsureManagerMiddleware::class,
