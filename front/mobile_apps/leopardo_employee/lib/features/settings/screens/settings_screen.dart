@@ -1,4 +1,3 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' show PlatformDispatcher;
@@ -17,7 +16,6 @@ import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
-import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
