@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in">
     <!-- Header with filters -->
     <div class="card p-8 relative overflow-hidden">
@@ -126,7 +126,7 @@
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-xl font-bold text-slate-900 dark:text-white">PrÃ©diction de Churn</h3>
           <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800 dark:text-red-300">
-            {{ analytics.churnPrediction.riskUsers }} Ã  risque
+            {{ analytics.churnPrediction.riskUsers }} Ã  risque
           </span>
         </div>
         <ChurnPredictionWidget :data="analytics.churnPrediction" />
@@ -376,7 +376,7 @@ async function loadInsights() {
 
 async function updateAnalytics() {
   await loadAnalytics()
-  toast.success('Analytics mis Ã  jour')
+  toast.success('Analytics mis Ã  jour')
 }
 
 async function refreshSegmentation() {

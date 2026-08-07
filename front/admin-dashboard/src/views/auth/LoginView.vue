@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="min-h-screen flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans text-slate-200">
     <!-- Animated Background -->
     <div class="absolute inset-0 z-0">

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex h-[calc(100vh-200px)] rounded-lg glass-card shadow">
     <div class="flex w-64 flex-col border-r border-gray-200">
       <div class="border-b border-gray-200 p-4">

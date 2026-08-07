@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in">
     <!-- Header with actions -->
     <div class="card p-8 relative overflow-hidden">
@@ -551,7 +551,7 @@ function handleUserCreated() {
 }
 
 function handleUserUpdated() {
-  toast.success(t('users.toast.updated', 'Utilisateur mis Ã  jour'))
+  toast.success(t('users.toast.updated', 'Utilisateur mis Ã  jour'))
   showEditModal.value = false
   loadUsers()
 }
