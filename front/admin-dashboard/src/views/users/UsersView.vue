@@ -19,7 +19,7 @@
               'inline-flex items-center px-4 py-2.5 border text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-glass-sm',
               selectedUsers.length > 0
                 ? 'border-brand-300 text-brand-700 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800'
-                : 'border-slate-200 text-slate-700 bg-white/50 dark:bg-slate-900/50 hover:glass-card dark:border-slate-800 dark:text-slate-300 dark:bg-slate-900/50'
+                : 'border-slate-200 text-slate-700 glass-card/50 hover:glass-card dark:border-slate-800 dark:text-slate-300 dark:bg-slate-900/50'
             ]"
           >
             <CheckCircleIcon class="h-4 w-4 mr-2" />

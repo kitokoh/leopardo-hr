@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <div v-if="isLoading && !health" class="flex h-64 items-center justify-center rounded-3xl border border-slate-200 bg-white/50 dark:bg-slate-900/50 dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-xl">
+    <div v-if="isLoading && !health" class="flex h-64 items-center justify-center rounded-3xl border border-slate-200 glass-card/50 dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-xl">
       <div class="flex flex-col items-center gap-4">
         <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
         <p class="text-sm font-bold text-slate-500">Analyse des donnÃ©es client...</p>
@@ -314,7 +314,7 @@
                 </div>
               </dl>
 
-              <button class="mt-8 w-full inline-flex items-center justify-center rounded-xl bg-white/5 dark:bg-slate-900/5 py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 dark:hover:bg-slate-900/10 transition-colors border border-white/10">
+              <button class="mt-8 w-full inline-flex items-center justify-center rounded-xl glass-card/5 py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:glass-card/10 transition-colors border border-white/10">
                 <CommandLineIcon class="mr-2 h-4 w-4" />
                 AccÃ¨s Super-Console
               </button>
@@ -614,7 +614,7 @@ onMounted(loadCompany)
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 bg-white/50 dark:bg-slate-900/50 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm;
+  @apply block w-full rounded-2xl border border-slate-200 glass-card/50 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm;
 }
 </style>
 
