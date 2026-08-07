@@ -130,7 +130,7 @@ class _EvaluationsTab extends ConsumerWidget {
               }
 
               final item = items[isManager ? index - 1 : index];
-              return _EvaluationGlassCard(
+              return _EvaluationCard(
                 item: item,
                 isManager: isManager,
                 onAction: () => _showEvaluationActions(context, ref, item),
@@ -243,7 +243,7 @@ class _EvaluationsTab extends ConsumerWidget {
 }
 
 class _EvaluationCard extends StatelessWidget {
-  const _EvaluationGlassCard({
+  const _EvaluationCard({
     required this.item,
     required this.isManager,
     required this.onAction,
@@ -780,7 +780,7 @@ class _NotificationsTab extends ConsumerWidget {
               }
 
               final item = items[index - 1];
-              return _NotificationGlassCard(
+              return _NotificationCard(
                 item: item,
                 onTap: () => _showNotificationActions(context, ref, item),
               );
@@ -852,7 +852,7 @@ class _NotificationsTab extends ConsumerWidget {
 }
 
 class _NotificationCard extends StatelessWidget {
-  const _NotificationGlassCard({required this.item, required this.onTap});
+  const _NotificationCard({required this.item, required this.onTap});
 
   final AppNotification item;
   final VoidCallback onTap;

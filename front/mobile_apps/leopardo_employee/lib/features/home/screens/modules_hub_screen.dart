@@ -94,7 +94,7 @@ class ModulesHubScreen extends ConsumerWidget {
               itemCount: activeModules.length,
               itemBuilder: (context, index) {
                 final module = activeModules[index];
-                return _ModuleGlassCard(
+                return _ModuleCard(
                   module: module,
                   onTap: module.isActive
                       ? () => context.push(module.route!)
@@ -129,7 +129,7 @@ class ModulesHubScreen extends ConsumerWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleGlassCard({required this.module, required this.onTap});
+  const _ModuleCard({required this.module, required this.onTap});
 
   final MobileModule module;
   final VoidCallback? onTap;
