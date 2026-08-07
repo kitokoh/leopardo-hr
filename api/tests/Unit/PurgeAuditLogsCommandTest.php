@@ -46,7 +46,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         ]);
     }
 
-    public function test_purges_only_logs_older_than_retention_window(): void
+    public function test_purges_old_logs(): void
     {
         $this->createAuditLog(30);   // 30 mois → à purger
         $this->createAuditLog(25);   // 25 mois → à purger
@@ -60,7 +60,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         $this->assertSame(2, DB::table('audit_logs')->count());
     }
 
-    public function test_older_than_option_overrides_default(): void
+    public function test_older_than_option(): void
     {
         $this->createAuditLog(13);   // 13 mois → à purger avec --older-than=12
         $this->createAuditLog(6);    // 6 mois → conservé
