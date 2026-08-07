@@ -53,9 +53,10 @@ class PurgeAuditLogsCommandTest extends TestCase
         $this->createAuditLog(10);   // 10 mois → conservé
         $this->createAuditLog(2);    // 2 mois → conservé
 
-        $this->artisan('audit:purge')
-            ->expectsOutputToContain('2')
-            ->assertSuccessful();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('audit:purge');
+        $cmd->expectsOutputToContain('2');
+        $cmd->assertSuccessful();
 
         $this->assertSame(2, DB::table('audit_logs')->count());
     }
@@ -65,9 +66,10 @@ class PurgeAuditLogsCommandTest extends TestCase
         $this->createAuditLog(13);   // 13 mois → à purger avec --older-than=12
         $this->createAuditLog(6);    // 6 mois → conservé
 
-        $this->artisan('audit:purge', ['--older-than' => 12])
-            ->expectsOutputToContain('1')
-            ->assertSuccessful();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('audit:purge', ['--older-than' => 12]);
+        $cmd->expectsOutputToContain('1');
+        $cmd->assertSuccessful();
 
         $this->assertSame(1, DB::table('audit_logs')->count());
     }
@@ -76,9 +78,10 @@ class PurgeAuditLogsCommandTest extends TestCase
     {
         $this->createAuditLog(1);
 
-        $this->artisan('audit:purge')
-            ->expectsOutputToContain('0')
-            ->assertSuccessful();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('audit:purge');
+        $cmd->expectsOutputToContain('0');
+        $cmd->assertSuccessful();
 
         $this->assertSame(1, DB::table('audit_logs')->count());
     }
