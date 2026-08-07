@@ -1313,3 +1313,9 @@ Meme audit : `Modules/Expense/{Domain,Application,Infrastructure}` (ExpenseClaim
 Bug corrige au passage (pas un changement de contrat, une correction de bug latent) : `AuthServiceProvider` enregistrait `Gate::policy()` sur le modele mort au lieu du vrai modele `Planning\...\ExpenseClaim` consomme par le controller — corrige.
 
 - Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
+
+## Issue #1474 — Commande `audit:purge` (rétention RGPD des audit logs)
+
+La matrice RGPD référençait `audit:purge --older-than=24months` sans que la commande existe. Nouvelle commande console `audit:purge` (défaut 24 mois, minimum 1 mois) qui supprime les lignes `audit_logs` dont `created_at` est antérieur au cutoff, planifiée hebdomadairement (`routes/console.php`, `onOneServer`). Aucun endpoint HTTP ajouté/modifié.
+
+- Scenario a valider : `tests/Unit/PurgeAuditLogsCommandTest` (purge des logs > N mois, respect de l'option `--older-than`, no-op si rien d'expiré) + la matrice de conformité RGPD passe le point « limitation de conservation » de PARTIEL a CONFORME (politique documentée dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`).
