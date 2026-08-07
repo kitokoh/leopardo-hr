@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Recrutement (ATS)</h1>
         <p class="mt-1 text-lg font-medium text-slate-500 dark:text-slate-400">
-          Pipeline de candidatures, offres publiÃ©es et suivi des entretiens.
+          Pipeline de candidatures, offres publiées et suivi des entretiens.
         </p>
       </div>
       <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="loading" @click="fetchData">
@@ -21,7 +21,7 @@
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Postes ouverts" :value="stats.open_jobs" icon="ChartBarIcon" color="blue" />
       <StatsCard title="Candidatures" :value="stats.total_applicants" icon="UsersIcon" color="green" />
-      <StatsCard title="Entretiens planifiÃ©s" :value="stats.interviews" icon="ChartBarIcon" color="purple" />
+      <StatsCard title="Entretiens planifiés" :value="stats.interviews" icon="ChartBarIcon" color="purple" />
       <StatsCard title="Embauches ce mois" :value="stats.hired" icon="ChartBarIcon" color="green" />
     </div>
 
@@ -47,7 +47,7 @@
       <div class="card-header">
         <h2 class="text-lg font-bold text-slate-900 dark:text-white">Nouveau poste</h2>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Le poste est crÃ©Ã© en brouillon ; publiez-le pour le rendre visible sur le portail carriÃ¨res public.
+          Le poste est créé en brouillon ; publiez-le pour le rendre visible sur le portail carrières public.
         </p>
       </div>
       <form class="card-body grid gap-4 md:grid-cols-4" @submit.prevent="createJob">
@@ -56,7 +56,7 @@
           type="text"
           required
           class="form-input md:col-span-2"
-          placeholder="IntitulÃ© du poste"
+          placeholder="Intitulé du poste"
         />
         <input
           v-model="jobForm.location"
@@ -74,7 +74,7 @@
           v-model="jobForm.description"
           rows="2"
           class="form-input md:col-span-4"
-          placeholder="Description du poste (visible publiquement une fois publiÃ©)"
+          placeholder="Description du poste (visible publiquement une fois publié)"
         />
         <div class="md:col-span-4 flex justify-end">
           <button
@@ -83,7 +83,7 @@
             class="btn-primary"
           >
             <PlusIcon class="mr-2 h-4 w-4" />
-            {{ savingJob ? 'CrÃ©ation...' : 'CrÃ©er le poste' }}
+            {{ savingJob ? 'Création...' : 'Créer le poste' }}
           </button>
         </div>
       </form>
@@ -132,7 +132,7 @@
     <div v-else-if="activeTab === 'pipeline'" class="card animate-slide-up" style="animation-delay: 0.1s">
       <div class="card-header flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-lg font-bold text-slate-900 dark:text-white">
-          Pipeline{{ selectedJob ? ' â€” ' + selectedJob.title : '' }}
+          Pipeline{{ selectedJob ? ' — ' + selectedJob.title : '' }}
         </h2>
         <select v-if="jobs.length > 0" v-model="selectedJobId" class="form-select">
           <option value="">Tous les postes</option>
@@ -151,7 +151,7 @@
           <template #card="{ item }">
             <p class="text-sm font-bold text-slate-900 dark:text-white">{{ item.first_name }} {{ item.last_name }}</p>
             <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{{ item.email }}</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">{{ item.job_title || 'Non assignÃ©' }}</p>
+            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">{{ item.job_title || 'Non assigné' }}</p>
             <div class="mt-3 flex gap-2">
               <button
                 v-if="previousStage(item.status)"
@@ -159,7 +159,7 @@
                 type="button"
                 @click.stop="updateApplicantStatus(item, previousStage(item.status))"
               >
-                â† Retour
+                ← Retour
               </button>
               <button
                 v-if="nextStage(item.status)"
@@ -167,13 +167,13 @@
                 type="button"
                 @click.stop="updateApplicantStatus(item, nextStage(item.status))"
               >
-                Avancer â†’
+                Avancer ←’
               </button>
             </div>
           </template>
         </KanbanBoard>
         <p class="mt-4 text-xs font-semibold text-slate-400 dark:text-slate-500">
-          Glissez une carte vers une autre colonne pour changer l'Ã©tape, ou utilisez les boutons Retour/Avancer.
+          Glissez une carte vers une autre colonne pour changer l'étape, ou utilisez les boutons Retour/Avancer.
         </p>
       </div>
     </div>
@@ -194,7 +194,7 @@
         </template>
         <template #row-actions="{ row }">
           <button class="text-sm font-bold text-brand-600 hover:text-brand-800 dark:text-brand-400" @click="viewApplicant(row)">
-            DÃ©tail
+            Détail
           </button>
         </template>
       </DataTable>
@@ -248,49 +248,49 @@ const tabs = [
 
 const pipelineStages = [
   { key: 'new', label: 'Candidature' },
-  { key: 'screening', label: 'PrÃ©-sÃ©lection' },
+  { key: 'screening', label: 'Pré-sélection' },
   { key: 'interview', label: 'Entretien' },
   { key: 'offer', label: 'Offre' },
   { key: 'hired', label: 'Embauche' },
-  { key: 'rejected', label: 'RefusÃ©' },
+  { key: 'rejected', label: 'Refusé' },
 ]
 
 const stageKeys = pipelineStages.map(stage => stage.key)
 
 const jobColumns = [
   { key: 'title', label: 'Poste', sortable: true },
-  { key: 'department', label: 'DÃ©partement', sortable: true },
+  { key: 'department', label: 'Département', sortable: true },
   { key: 'location', label: 'Lieu', sortable: true },
   { key: 'applicants_count', label: 'Candidats', sortable: true },
   { key: 'status', label: 'Statut', sortable: true },
-  { key: 'created_at', label: 'CrÃ©Ã© le', sortable: true },
+  { key: 'created_at', label: 'Créé le', sortable: true },
 ]
 
 const applicantColumns = [
-  { key: 'first_name', label: 'PrÃ©nom', sortable: true },
+  { key: 'first_name', label: 'Prénom', sortable: true },
   { key: 'last_name', label: 'Nom', sortable: true },
   { key: 'email', label: 'Email', sortable: true },
   { key: 'job_title', label: 'Poste', sortable: true },
-  { key: 'status', label: 'Ã‰tape', sortable: true },
+  { key: 'status', label: 'Étape', sortable: true },
   { key: 'applied_at', label: 'Date', sortable: true },
 ]
 
 const jobStatusMap = {
   open: { label: 'Ouvert', color: 'green' },
-  published: { label: 'PubliÃ©', color: 'green' },
-  closed: { label: 'FermÃ©', color: 'gray' },
-  archived: { label: 'ArchivÃ©', color: 'gray' },
+  published: { label: 'Publié', color: 'green' },
+  closed: { label: 'Fermé', color: 'gray' },
+  archived: { label: 'Archivé', color: 'gray' },
   draft: { label: 'Brouillon', color: 'yellow' },
   filled: { label: 'Pourvu', color: 'blue' },
 }
 
 const stageStatusMap = {
   new: { label: 'Candidature', color: 'blue' },
-  screening: { label: 'PrÃ©-sÃ©lection', color: 'yellow' },
+  screening: { label: 'Pré-sélection', color: 'yellow' },
   interview: { label: 'Entretien', color: 'purple' },
   offer: { label: 'Offre', color: 'indigo' },
   hired: { label: 'Embauche', color: 'green' },
-  rejected: { label: 'RefusÃ©', color: 'red' },
+  rejected: { label: 'Refusé', color: 'red' },
 }
 
 const selectedJob = computed(() => jobs.value.find(j => String(j.id) === String(selectedJobId.value)))
@@ -337,11 +337,11 @@ async function createJob() {
       description: jobForm.value.description || jobForm.value.title,
       remote_policy: 'onsite',
     })
-    toast.success('Poste crÃ©Ã© en brouillon.')
+    toast.success('Poste créé en brouillon.')
     jobForm.value = { title: '', location: '', contract_type: 'cdi', description: '' }
     await fetchData()
   } catch {
-    toast.error('Impossible de crÃ©er le poste.')
+    toast.error('Impossible de créer le poste.')
   } finally {
     savingJob.value = false
   }
@@ -351,7 +351,7 @@ async function publishJob(job) {
   jobActionInFlight.value = job.id
   try {
     await api.post(`/v1/recruitment/jobs/${job.id}/publish`)
-    toast.success(`Â« ${job.title} Â» est maintenant publiÃ©.`)
+    toast.success(`Â« ${job.title} Â» est maintenant publié.`)
     await fetchData()
   } catch {
     toast.error('Impossible de publier ce poste.')
@@ -364,7 +364,7 @@ async function closeJob(job) {
   jobActionInFlight.value = job.id
   try {
     await api.post(`/v1/recruitment/jobs/${job.id}/close`)
-    toast.success(`Â« ${job.title} Â» est maintenant fermÃ©.`)
+    toast.success(`Â« ${job.title} Â» est maintenant fermé.`)
     await fetchData()
   } catch {
     toast.error('Impossible de fermer ce poste.')
@@ -385,7 +385,7 @@ async function updateApplicantStatus(applicant, status) {
     await api.patch(`/v1/recruitment/applicants/${applicant.id}/status`, { status })
   } catch {
     applicant.status = previousStatus
-    toast.error('Impossible de mettre Ã  jour le candidat.')
+    toast.error('Impossible de mettre à jour le candidat.')
   }
 }
 
@@ -419,7 +419,7 @@ async function fetchData() {
       hired: applicants.value.filter(a => a.status === 'hired').length,
     }
   } catch {
-    error.value = 'Impossible de charger les donnÃ©es de recrutement.'
+    error.value = 'Impossible de charger les données de recrutement.'
   } finally {
     loading.value = false
   }

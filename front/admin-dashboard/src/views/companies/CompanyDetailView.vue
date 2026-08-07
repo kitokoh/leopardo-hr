@@ -165,7 +165,7 @@
                 >
                   <CloudArrowUpIcon v-if="!isSavingFeatures" class="mr-2 h-4 w-4" />
                   <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                  {{ isSavingFeatures ? 'Mise Ã  jour...' : 'Sauvegarder la configuration' }}
+                  {{ isSavingFeatures ? 'Mise Ã  jour...' : 'Sauvegarder la configuration' }}
                 </button>
               </div>
             </div>
@@ -222,7 +222,7 @@
               <!-- Activer client -->
               <button class="btn-primary w-full justify-center shadow-premium py-3" :disabled="isSavingSubscription">
                 <span v-if="isSavingSubscription" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                {{ isSavingSubscription ? 'Enregistrement...' : 'Mettre Ã  jour l\'abonnement' }}
+                {{ isSavingSubscription ? 'Enregistrement...' : 'Mettre Ã  jour l\'abonnement' }}
               </button>
               <button
                 v-if="health?.company?.status === 'trial'"
@@ -455,7 +455,7 @@ async function saveSubscription() {
 
   try {
     await api.patch(`/platform/companies/${route.params.id}/subscription`, subscriptionForm.value)
-    toast.success('Abonnement mis Ã  jour avec succÃ¨s.')
+    toast.success('Abonnement mis Ã  jour avec succÃ¨s.')
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
