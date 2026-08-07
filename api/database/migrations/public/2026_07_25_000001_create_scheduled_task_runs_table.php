@@ -30,30 +30,45 @@ return new class extends Migration
 
     public function up(): void
     {
+        // Issue #1490 : ne jamais laisser fuir `SET search_path TO public` dans
+        // la session — la phase de migrations tenant de la même session doit
+        // garder son search_path (`shared_tenants` en CI) intact, sinon les
+        // résolutions `relation "companies" does not exist` intermittentes
+        // apparaissent (gate de coverage, runs 2026-07-25).
+        $previousPath = DB::selectOne('SHOW search_path')->search_path;
         DB::statement('SET search_path TO public');
 
-        if (Schema::hasTable('scheduled_task_runs')) {
-            return;
+        try {
+            if (Schema::hasTable('scheduled_task_runs')) {
+                return;
+            }
+
+            Schema::create('scheduled_task_runs', function (Blueprint $table): void {
+                $table->id();
+                $table->string('name', 190)->unique();
+                $table->timestampTz('started_at')->nullable();
+                $table->timestampTz('finished_at')->nullable();
+                $table->integer('runtime_ms')->nullable();
+                $table->string('status', 20)->default('unknown');
+                $table->integer('exit_code')->nullable();
+                $table->text('output')->nullable();
+                $table->timestamps();
+
+                $table->index('status');
+            });
+        } finally {
+            DB::statement('SET search_path TO '.$previousPath);
         }
-
-        Schema::create('scheduled_task_runs', function (Blueprint $table): void {
-            $table->id();
-            $table->string('name', 190)->unique();
-            $table->timestampTz('started_at')->nullable();
-            $table->timestampTz('finished_at')->nullable();
-            $table->integer('runtime_ms')->nullable();
-            $table->string('status', 20)->default('unknown');
-            $table->integer('exit_code')->nullable();
-            $table->text('output')->nullable();
-            $table->timestamps();
-
-            $table->index('status');
-        });
     }
 
     public function down(): void
     {
+        $previousPath = DB::selectOne('SHOW search_path')->search_path;
         DB::statement('SET search_path TO public');
-        Schema::dropIfExists('scheduled_task_runs');
+        try {
+            Schema::dropIfExists('scheduled_task_runs');
+        } finally {
+            DB::statement('SET search_path TO '.$previousPath);
+        }
     }
 };
