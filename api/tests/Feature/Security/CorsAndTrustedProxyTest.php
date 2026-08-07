@@ -12,7 +12,7 @@ use Tests\TestCase;
  */
 class CorsAndTrustedProxyTest extends TestCase
 {
-    public function test_cors_allowed_headers_are_an_explicit_list_not_wildcard(): void
+    public function test_cors_headers_explicit(): void
     {
         $allowedHeaders = config('cors.allowed_headers');
 
@@ -22,7 +22,7 @@ class CorsAndTrustedProxyTest extends TestCase
         $this->assertContains('Content-Type', $allowedHeaders);
     }
 
-    public function test_cors_allowed_origins_never_contain_wildcard_while_credentials_are_supported(): void
+    public function test_cors_origins_never_wildcard(): void
     {
         $this->assertTrue((bool) config('cors.supports_credentials'));
 
@@ -31,7 +31,7 @@ class CorsAndTrustedProxyTest extends TestCase
         }
     }
 
-    public function test_request_trusts_x_forwarded_for_from_the_render_edge_proxy(): void
+    public function test_trusts_x_forwarded_for(): void
     {
         // Render is the single edge proxy in front of this app; the request's
         // resolved client IP must come from X-Forwarded-For (not the proxy's
