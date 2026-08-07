@@ -33,6 +33,7 @@ class MetricsAccessTest extends TestCase
             });
         }
     }
+
     /** @test */
     public function metrics_requires_authentication(): void
     {
