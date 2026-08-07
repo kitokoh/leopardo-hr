@@ -122,20 +122,24 @@ test.describe('Marketing funnel preview', () => {
     await expect(page.locator('body')).toContainText(/Demande envoyee|Request sent|Talep gonderildi/i);
   });
 
-  test('captures newsletter signup from localized blog content', async ({ page }) => {
+  test('captures newsletter signup from the footer on the homepage', async ({ page }) => {
     const timestamp = Date.now();
     const email = `newsletter.lead.${timestamp}@example.com`;
 
-    // domcontentloaded is faster than networkidle and sufficient for a SSR/CSR blog page.
-    await page.goto('/blog?lang=en&utm_source=e2e#newsletter', { waitUntil: 'domcontentloaded' });
+    // The blog route 404s unless NEXT_PUBLIC_ENABLE_BLOG=true (see
+    // blog/layout.tsx, issue #1305), so the original /blog#newsletter target
+    // made this test time out in CI. The footer NewsletterForm renders on
+    // every landing page including the homepage — always available, no
+    // feature flag involved (issue #1463).
+    await page.goto('/?utm_source=e2e', { waitUntil: 'domcontentloaded' });
 
-    const newsletterSection = page.locator('#newsletter');
-    const newsletterInput = newsletterSection.locator('input[type="email"]');
-    const newsletterButton = newsletterSection.locator('button[type="submit"]');
+    const footer = page.locator('footer');
+    const newsletterInput = footer.locator('input[type="email"]');
+    const newsletterButton = footer.locator('button[type="submit"]');
 
-    // Scroll the section into view so the framer-motion whileInView animation
+    // Scroll the form into view so the framer-motion whileInView animation
     // fires and the input transitions from opacity:0 to opacity:1 (actionable).
-    await newsletterSection.scrollIntoViewIfNeeded();
+    await newsletterInput.scrollIntoViewIfNeeded();
     await newsletterInput.waitFor({ state: 'visible' });
 
     await newsletterInput.fill(email);
@@ -145,7 +149,7 @@ test.describe('Marketing funnel preview', () => {
     ]);
 
     expect(newsletterResponse.status()).toBe(201);
-    await expect(newsletterSection).toContainText(/newsletter|success|reussie/i);
+    await expect(footer).toContainText(/newsletter|inscription|success|reussie/i);
   });
 
   test('keeps guide trial CTAs on the public guided signup flow', async ({ page }) => {
