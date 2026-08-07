@@ -78,9 +78,22 @@ jobs:
 
       - name: Health check must report DB ok
         run: |
-          response=$(curl --fail --silent "http://localhost:8000/api/v1/health")
+          # `key:generate` rewrites .env and `php artisan serve` auto-restarts
+          # on env change — retry the health probe so the check is not racing
+          # the server restart window (observed as a flaky curl exit 22).
+          for i in $(seq 1 15); do
+            response=$(curl --fail --silent "http://localhost:8000/api/v1/health" 2>/dev/null || true)
+            if echo "$response" | grep -q '"status":"ok"'; then
+              echo "$response"
+              echo "Health check OK (attempt $i)."
+              exit 0
+            fi
+            echo "Health check not ready yet (attempt $i/15)..."
+            sleep 2
+          done
           echo "$response"
-          echo "$response" | grep -q '"status":"ok"'
+          echo "Health check never reported status ok."
+          exit 1
 
       - name: Login as demo manager and fetch employees (real tenant route)
         # Regression guard: before SPEC-001's fix, this step failed with
