@@ -126,11 +126,17 @@ test.describe('Marketing funnel preview', () => {
     const timestamp = Date.now();
     const email = `newsletter.lead.${timestamp}@example.com`;
 
-    await page.goto('/blog?lang=en&utm_source=e2e#newsletter', { waitUntil: 'networkidle' });
+    // domcontentloaded is faster than networkidle and sufficient for a SSR/CSR blog page.
+    await page.goto('/blog?lang=en&utm_source=e2e#newsletter', { waitUntil: 'domcontentloaded' });
 
     const newsletterSection = page.locator('#newsletter');
     const newsletterInput = newsletterSection.locator('input[type="email"]');
     const newsletterButton = newsletterSection.locator('button[type="submit"]');
+
+    // Scroll the section into view so the framer-motion whileInView animation
+    // fires and the input transitions from opacity:0 to opacity:1 (actionable).
+    await newsletterSection.scrollIntoViewIfNeeded();
+    await newsletterInput.waitFor({ state: 'visible' });
 
     await newsletterInput.fill(email);
     const [newsletterResponse] = await Promise.all([
