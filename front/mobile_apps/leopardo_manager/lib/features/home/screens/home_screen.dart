@@ -182,7 +182,7 @@ class _HeroHeader extends StatelessWidget {
       'fr_FR',
     ).add_d().add_MMMM().format(DateTime.now());
 
-    return GlassGlassCard(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,7 +294,7 @@ class _QuickActionCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () => context.push(action.route),
-      child: GlassGlassCard(
+      child: GlassCard(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,7 +380,7 @@ class _ModuleCard extends StatelessWidget {
     return InkWell(
       onTap: module.isActive ? () => context.push(module.route!) : null,
       borderRadius: BorderRadius.circular(24),
-      child: GlassGlassCard(
+      child: GlassCard(
         width: 206,
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -487,7 +487,7 @@ class _ManagerDigestCard extends ConsumerWidget {
     final digest = ref.watch(managerDigestProvider);
     final resolvedDigest = digest.asData?.value;
 
-    return GlassGlassCard(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

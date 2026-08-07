@@ -13,6 +13,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_employee/features/absences/providers/absence_provider.dart';
 import 'package:leopardo_core/models/absence.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class AbsenceListScreen extends ConsumerStatefulWidget {
   const AbsenceListScreen({super.key});

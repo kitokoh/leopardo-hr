@@ -20,6 +20,7 @@ import 'package:leopardo_employee/features/settings/data/settings_repository.dar
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -547,7 +548,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  LeopardoQrGlassCard(
+                  LeopardoQrCard(
                     data: qr.token,
                     title: 'Mon QR employe',
                     subtitle:

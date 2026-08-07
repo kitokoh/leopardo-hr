@@ -14,6 +14,7 @@ import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/salary_advances/providers/salary_advance_provider.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
