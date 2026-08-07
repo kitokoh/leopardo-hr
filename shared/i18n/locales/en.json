@@ -245,5 +245,15 @@
     "confirm": {
       "delete": "Are you sure you want to delete :name?"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "company": "Company",
+    "active_employees": "Active",
+    "upgrade": "Upgrade",
+    "priority_actions": "Priority actions",
+    "launch_readiness": "Launch readiness",
+    "recent_activity": "Recent activity",
+    "recent_activity_hint": "Latest actions from your team"
   }
 }

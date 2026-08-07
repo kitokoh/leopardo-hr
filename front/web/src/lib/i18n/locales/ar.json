@@ -245,5 +245,15 @@
     "confirm": {
       "delete": "هل انت متأكد من رغبتك في حذف :name؟"
     }
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "company": "الشركة",
+    "active_employees": "نشطون",
+    "upgrade": "ترقية",
+    "priority_actions": "إجراءات ذات أولوية",
+    "launch_readiness": "جاهزية الإطلاق",
+    "recent_activity": "النشاط الأخير",
+    "recent_activity_hint": "آخر إجراءات فريقك"
   }
 }

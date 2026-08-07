@@ -245,5 +245,15 @@
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
     }
+  },
+  "dashboard": {
+    "title": "Kontrol Paneli",
+    "company": "Şirket",
+    "active_employees": "Aktif",
+    "upgrade": "Yükselt",
+    "priority_actions": "Öncelikli Eylemler",
+    "launch_readiness": "Lansman Hazırlığı",
+    "recent_activity": "Son Etkinlik",
+    "recent_activity_hint": "Ekibinizin son eylemleri"
   }
 }

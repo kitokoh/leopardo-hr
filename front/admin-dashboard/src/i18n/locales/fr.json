@@ -245,5 +245,15 @@
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
     }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "company": "Entreprise",
+    "active_employees": "Actifs",
+    "upgrade": "Upgrade",
+    "priority_actions": "Actions prioritaires",
+    "launch_readiness": "Readiness lancement",
+    "recent_activity": "Activite recente",
+    "recent_activity_hint": "Dernieres actions de votre equipe"
   }
 }
