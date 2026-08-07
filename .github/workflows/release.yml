@@ -54,11 +54,17 @@ jobs:
           fi
 
           # Extract section for this version from CHANGELOG.md
-          # Looks for ## [version] or ## version headers
+          # Anchored match on `## [version]` (or `## version`) headers so that
+          # e.g. ver=4.17.0 cannot match inside `## [4.17.02]` (issue #1502).
           BODY=$(awk -v ver="${VERSION}" '
             /^## / {
               if (found) exit
-              if (index($0, ver) > 0) found=1
+              line=$0
+              sub(/^##[[:space:]]+/, "", line)
+              sub(/^\[/, "", line)
+              sub(/\].*/, "", line)
+              sub(/[[:space:]].*/, "", line)
+              if (line == ver) found=1
               next
             }
             found { print }

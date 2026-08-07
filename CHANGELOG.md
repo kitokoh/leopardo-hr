@@ -1,7 +1,6 @@
-#  CHANGELOG - LEOPARDO RH 
-# Format : Keep a Changelog (keepachangelog.com) 
-# Versioning : Semantic Versioning (semver.org) 
-
+#  CHANGELOG - LEOPARDO RH
+# Format : Keep a Changelog (keepachangelog.com)
+# Versioning : Semantic Versioning (semver.org)
 
 ## [Unreleased]
 
@@ -281,6 +280,7 @@
 
 ### Docs
 - **Nouveau document `docs/security/OPENAPI_COVERAGE_GAP_2026-07-19.md`** : ecart quantifie entre les routes API declarees (~532, prefixes reconstruits statiquement) et les operations documentees dans `openapi.yaml` (~345) GÇö environ 210 routes candidates non documentees, listees par module avec leur fichier source, plus les faux positifs probables du parseur statique a revoir avec `php artisan route:list`. Pas de generation de specs OpenAPI dans cette revue (risque de documenter des schemas inexacts sans runtime PHP pour les verifier) ; document fourni comme backlog actionnable module par module.
+
 ## [4.23.5] - 2026-07-19
 
 ### Added
@@ -396,7 +396,6 @@
   - Migration `add_verification_fields_to_company_requests_table` : colonnes `verification_token`, `verification_expires_at`, `signup_payload` (jsonb).
   - Frontend vitrine : `SignupForm.tsx` refactored en 3 etapes (formulaire GåÆ saisie OTP GåÆ credentials), nouvelle route Next.js `/api/forms/verify`, nouveau helper `submitVerifyForm`.
   - Tests mis a jour : `SelfServiceTrialTest` et `GrowthModuleTest` couvrent le flow 2 etapes.
-## [4.22.6] - 2026-07-05
 
 ### Fixed
 - **Gate CI "PHPStan GÇö Modules Architecture" casse sur `main`** : `AbsenceService::request()` et `LeavePolicyController::balances()` (module Absence) accedaient a `LeaveBalance::$allocated` et `LeaveBalance::$carried_over`, deux colonnes qui n'existent pas sur la table `leave_balances` (qui n'a que `balance`/`used`/`pending`, cf. migration `2026_05_10_000003_create_leave_management_tables.php`). PHPStan bloquait donc systematiquement le merge avec `Access to an undefined property`. Le calcul de disponibilite passe desormais par `balance - used`, et l'endpoint `balances()` expose les colonnes reellement presentes (`balance`, `used`, `pending`, `remaining`).
@@ -435,7 +434,6 @@
 
 ### Fixed
 - **Cycle de dependance reel detecte dans `03_GITHUB_PROJECT_IMPORT.csv`** : `PA2-MKT-007` (Funnel CRM marketing) et `PA2-ADM-004` (Pipeline CRM platform) se referencaient mutuellement. Le pipeline admin affiche les leads produits par le funnel marketing GÇö la dependance correcte est unidirectionnelle (`PA2-ADM-004 -> PA2-MKT-007`) ; la dependance inverse sur `PA2-MKT-007` a ete retiree.
-## [4.22.4] - 2026-07-04
 
 ### Fixed
 - **Suite du fix CI v4.22.3 : 136 echecs restants sur 899 tests (Backend)** :
@@ -504,7 +502,20 @@
   - Migration `2026_06_29_000202_create_employee_attendance_preferences_table.php` : apostrophes +¬chapp+¬es en style PHP (`\'`) dans un commentaire SQL PostgreSQL au lieu du style SQL (`''`) GÇö `SQLSTATE[42601]` sur chaque ex+¬cution des migrations tenant (Backend, Backend Coverage, Jobs & Queues Contracts).
   - `.github/workflows/tests.yml` et `.github/workflows/phpstan-baseline.yml` : `vendor/larastan/larastan/extension.neon` inclus deux fois (d+¬j+á inclus via `phpstan.neon`) GÇö PHPStan refusait de d+¬marrer ("This file is included multiple times").
   - Migration `2026_06_30_000001_create_edge_nodes_table.php` (legacy, `App\Http\Controllers\Api\V1\EdgeController`, non reli+¬ +á aucune route active) recr+¬ait la table `edge_nodes` d+¬j+á cr+¬+¬e par `2026_06_29_000001_create_edge_sync_tables.php` (module EdgeSync DDD actif) GÇö `SQLSTATE[42P07]` Duplicate table. Migration legacy neutralis+¬e via garde `Schema::hasTable()`.
+
 ## [4.22.0] - 2026-07-01
+
+### Changed
+- **Nettoyage architectural Phase 2 GÇö mod+¿les, services, FormRequests**
+  - **17 mod+¿les orphelins** plac+¬s dans `Core/Tenant/Domain/Models/`, `Core/Auth/Domain/Models/`,
+    `Shared/Models/`, `Modules/*/Domain/Models/`, `AI/Models/` GÇö aliases shims backward-compat dans `app/Models/`.
+  - `app/Models/` est d+¬sormais 100% compos+¬ d'alias shims (92 fichiers) GÇö z+¬ro breaking change.
+  - **13 services** dans `app/Services/` (non-doublons) migr+¬s vers `Core/Feature/`, `Core/Auth/`,
+    `Modules/Platform/`, `Modules/HR/`, `Modules/Onboarding/`, `Modules/Notification/` GÇö shims en place.
+  - **64 FormRequests** copi+¬s dans leurs modules (`Modules/*/Interfaces/Api/V1/Requests/`) GÇö
+    22 consommateurs mis +á jour, shims backward-compat dans `app/Http/Requests/`.
+  - `api/ARCHITECTURE.md` mis +á jour avec bilan complet et TODOs restants.
+
 
 ### Changed
 - **Nettoyage architectural Phase 2 GÇö mod+¿les, services, FormRequests**
@@ -528,6 +539,15 @@
   - `FormRequests` Webhook redirig+¬s vers `App\Modules\Billing\Interfaces\Api\V1\WebhookController`.
   - `ARCHITECTURE.md` mis +á jour avec l'+¬tat d'avancement complet et les TODOs prioris+¬s.
 
+
+### Added
+- **Phase 4-5 Routes + Modules DDD** : Migration de 0 routes legacy vers namespaces DDD.
+  - `architecture-check.yml` : extension de la v+¬rification +á 17 modules (HR, Billing, Cameras, Absence, Expense, Growth, Platform, Onboarding, Training, Notification, ...).
+  - Modules Billing, Growth, HR, Notification, Onboarding, Platform : controllers migr+¬s vers `Interfaces/Api/V1/Controllers/`.
+  - Routes `dashboard`, `growth`, `hr_app`, `integrations`, `planning`, `sso`, `tracking`, `user` : migration legacy routes.
+  - `openapi.yaml` : endpoints Growth et Onboarding ajout+¬s.
+  - `api/bootstrap/providers.php` : GrowthServiceProvider + OnboardingServiceProvider enregistr+¬s.
+
 ## [4.19.0] - 2026-06-30
 
 ### Added
@@ -538,6 +558,7 @@
   - `tests/Feature/Edge/EdgeLicenseExpiryTest.php` : 8 tests GÇö licence expir+¬eGåÆinvalid, licence valide, renouvellement automatique, n+ôud r+¬voqu+¬ non-relicenciable, exclusion r+¬voqu+¬s des alertes, endpoint public-key 503/200, d+¬tection expiration proche.
   - `tests/Feature/Edge/EdgeMultiTenantIsolationTest.php` : 7 tests GÇö isolation attendance_logs, edge_nodes, employ+¬s, sync_requests; 3 tenants partitionnement strict; N nodes m+¬me tenant; alertes silence scop+¬es tenant.
   - `tests/Feature/Edge/EdgeSilentNodeDetectionTest.php` : 8 tests GÇö commande sans n+ôud silencieux, --dry-run, n+ôud r+¬cent non d+¬tect+¬, n+ôud silencieux d+¬tect+¬, muted non alert+¬, notification construite correctement, null lastSeenAt, seuil custom.
+
 ## [4.18.1] - 2026-06-30
 
 ### Fixed
@@ -546,6 +567,17 @@
   - **Vague 2** : Annotations `@param/@return array<string, mixed>` dans `CameraService` (GêÆ100 erreurs).
   - **Vague 3** : Types explicites dans `EvaluationController`, `TaskController`, `AbsenceService`, `PayrollCalculator` (GêÆ288 erreurs).
   - **Vague 4** : `FeatureRegistry` GÇö `cache->remember()` typ+¬, `getStatistics()` Builder<Feature> via `newQuery()`, `synchronize()` cast explicites. `PlatformCompanyRequestController` GÇö `DB::table()->value()` cast `int`, `$result['company']` typ+¬. `HrReportController` GÇö closure `groupBy->map()` typ+¬e. Tests Absences GÇö `str_pad((string))`, `firstOrFail()`.
+
+### Fixed
+- **PHPStan vagues 1GåÆ4** : R+¬duction de ~1000 erreurs mixed-types sur les modules Cameras, HR, Payroll, Platform, Services.
+  - `api/phpstan.neon` : Extension Larastan activ+¬e + niveaux progressifs.
+  - `CameraService` : Annotations `@var`, `@param`, `@return` sur les m+¬thodes de traitement vid+¬o.
+  - `AbsenceService`, `AttendanceService`, `AttendanceAnomalyService`, `AttendanceMonthlyReportService` : Types explicites sur collections et retours.
+  - `FeatureRegistry` : Suppression des `mixed` sur `registry[]`.
+  - `PayrollCalculator` : Types sur +¬l+¬ments de calcul.
+  - `PlatformCompanyHealthService` : Annotations m+¬triques.
+  - `EvaluationController`, `HrReportController`, `PlatformCompanyRequestController`, `TaskController` : Types de retour explicites.
+
 ## [4.20.0] - 2026-06-30
 
 ### Added
@@ -560,39 +592,6 @@
   - `EdgeNode`, `EdgeLicense`, `SyncLog`, `SyncQueue` : Mod+¿les Eloquent du module.
   - Migration `create_edge_sync_tables` : Tables `edge_nodes`, `edge_licenses`, `sync_logs`, `sync_queue`.
   - ZKTeco kiosk : Support routing `edge_first/cloud_first/edge_only` dans `app.js`.
-## [4.22.0] - 2026-07-01
-
-### Changed
-- **Nettoyage architectural Phase 2 GÇö mod+¿les, services, FormRequests**
-  - **17 mod+¿les orphelins** plac+¬s dans `Core/Tenant/Domain/Models/`, `Core/Auth/Domain/Models/`,
-    `Shared/Models/`, `Modules/*/Domain/Models/`, `AI/Models/` GÇö aliases shims backward-compat dans `app/Models/`.
-  - `app/Models/` est d+¬sormais 100% compos+¬ d'alias shims (92 fichiers) GÇö z+¬ro breaking change.
-  - **13 services** dans `app/Services/` (non-doublons) migr+¬s vers `Core/Feature/`, `Core/Auth/`,
-    `Modules/Platform/`, `Modules/HR/`, `Modules/Onboarding/`, `Modules/Notification/` GÇö shims en place.
-  - **64 FormRequests** copi+¬s dans leurs modules (`Modules/*/Interfaces/Api/V1/Requests/`) GÇö
-    22 consommateurs mis +á jour, shims backward-compat dans `app/Http/Requests/`.
-  - `api/ARCHITECTURE.md` mis +á jour avec bilan complet et TODOs restants.
-
-## [4.21.0] - 2026-06-30
-
-### Added
-- **Phase 4-5 Routes + Modules DDD** : Migration de 0 routes legacy vers namespaces DDD.
-  - `architecture-check.yml` : extension de la v+¬rification +á 17 modules (HR, Billing, Cameras, Absence, Expense, Growth, Platform, Onboarding, Training, Notification, ...).
-  - Modules Billing, Growth, HR, Notification, Onboarding, Platform : controllers migr+¬s vers `Interfaces/Api/V1/Controllers/`.
-  - Routes `dashboard`, `growth`, `hr_app`, `integrations`, `planning`, `sso`, `tracking`, `user` : migration legacy routes.
-  - `openapi.yaml` : endpoints Growth et Onboarding ajout+¬s.
-  - `api/bootstrap/providers.php` : GrowthServiceProvider + OnboardingServiceProvider enregistr+¬s.
-## [4.18.1] - 2026-06-30
-
-### Fixed
-- **PHPStan vagues 1GåÆ4** : R+¬duction de ~1000 erreurs mixed-types sur les modules Cameras, HR, Payroll, Platform, Services.
-  - `api/phpstan.neon` : Extension Larastan activ+¬e + niveaux progressifs.
-  - `CameraService` : Annotations `@var`, `@param`, `@return` sur les m+¬thodes de traitement vid+¬o.
-  - `AbsenceService`, `AttendanceService`, `AttendanceAnomalyService`, `AttendanceMonthlyReportService` : Types explicites sur collections et retours.
-  - `FeatureRegistry` : Suppression des `mixed` sur `registry[]`.
-  - `PayrollCalculator` : Types sur +¬l+¬ments de calcul.
-  - `PlatformCompanyHealthService` : Annotations m+¬triques.
-  - `EvaluationController`, `HrReportController`, `PlatformCompanyRequestController`, `TaskController` : Types de retour explicites.
 
 ## [4.18.0] - 2026-06-30
 
@@ -616,10 +615,23 @@
 
 ### Database
 - Migration `2026_06_30_000001_create_edge_nodes_table` : table `edge_nodes` (node_id, company_id, status, last_seen_at, pending_count, license_valid, license_expires_at, alert_muted, revoked_at).
+
+### Added
+- **Edge Sync GÇö Offline-First Architecture (Phase 4)** : PR #813 GÇö Finalisation compl+¿te du module Edge Sync.
+  - `edge_database.g.dart` : code g+¬n+¬r+¬ Drift v2.14 pour les 5 tables (`LocalAttendanceLogs`, `LocalAbsences`, `LocalEmployees`, `LocalSyncQueue`, `LocalDepartments`). Livr+¬ dans le d+¬p+¦t pour garantir la reproductibilit+¬ CI sans SDK Dart install+¬.
+  - `sync_service.dart` : adaptation API `connectivity_plus ^6` GÇö callback `onConnectivityChanged` re+ºoit d+¬sormais `List<ConnectivityResult>` au lieu de `ConnectivityResult`.
+  - `EdgeSyncServiceProvider` : correction du chemin `mergeConfigFrom` (5 niveaux `../../../../../` au lieu de 6) pour pointer correctement vers `api/config/edge.php`.
+  - `api/.env.example` : ajout des variables `EDGE_NODE_ID`, `EDGE_TOKEN`, `EDGE_LICENSE_PRIVATE_KEY`, `EDGE_LICENSE_PUBLIC_KEY`, `CLOUD_API_URL`.
+  - PWA offline `front/web-offline/` : interface Next.js statique avec service worker pour l'acc+¿s +á `http://leopardo.local` sans mobile.
+  - Dashboard UI Edge nodes : page admin Next.js pour la liste, le statut online/offline, le sync manuel et les licences.
+  - Kiosque ZKTeco : `config.example.json` mis +á jour pour pointer vers `http://leopardo.local` quand Edge est actif.
+  - Monitoring Laravel : commande `edge:detect-silent-nodes` + cron toutes les 30 min GÇö d+¬tecte les nodes silencieux depuis >30 min et notifie le manager.
+
 ## [4.17.9-fix] - 2026-06-30
 
 ### Fixed
 - **DepartmentController** : Suppression du `select(['...', 'manager_id'])` explicite GÇö `manager_id` est charg+¬ via la relation `with('manager')`, +¬vitant `column "manager_id" does not exist` sur les environnements o+¦ la migration alt+¬r+¬e n'a pas encore +¬t+¬ appliqu+¬e dans le schema de test.
+
 ## [4.17.9-fix2] - 2026-06-30
 
 ### Fixed
@@ -635,18 +647,6 @@
 - **Architecture CI** : 9 violations de structure corrig+¬es (Infrastructure/ manquants pour Growth/Platform/Onboarding/Training, Cameras/Providers cr+¬+¬). PHPStan modules ignores ajout+¬s pour modules Phase 3-4.
 - **OpenAPI CI** : Cl+¬ dupliqu+¬e `/me/qr-profile` supprim+¬e de `openapi.yaml` (ligne 7985).
 
-## [4.18.0] - 2026-06-30
-
-### Added
-- **Edge Sync GÇö Offline-First Architecture (Phase 4)** : PR #813 GÇö Finalisation compl+¿te du module Edge Sync.
-  - `edge_database.g.dart` : code g+¬n+¬r+¬ Drift v2.14 pour les 5 tables (`LocalAttendanceLogs`, `LocalAbsences`, `LocalEmployees`, `LocalSyncQueue`, `LocalDepartments`). Livr+¬ dans le d+¬p+¦t pour garantir la reproductibilit+¬ CI sans SDK Dart install+¬.
-  - `sync_service.dart` : adaptation API `connectivity_plus ^6` GÇö callback `onConnectivityChanged` re+ºoit d+¬sormais `List<ConnectivityResult>` au lieu de `ConnectivityResult`.
-  - `EdgeSyncServiceProvider` : correction du chemin `mergeConfigFrom` (5 niveaux `../../../../../` au lieu de 6) pour pointer correctement vers `api/config/edge.php`.
-  - `api/.env.example` : ajout des variables `EDGE_NODE_ID`, `EDGE_TOKEN`, `EDGE_LICENSE_PRIVATE_KEY`, `EDGE_LICENSE_PUBLIC_KEY`, `CLOUD_API_URL`.
-  - PWA offline `front/web-offline/` : interface Next.js statique avec service worker pour l'acc+¿s +á `http://leopardo.local` sans mobile.
-  - Dashboard UI Edge nodes : page admin Next.js pour la liste, le statut online/offline, le sync manuel et les licences.
-  - Kiosque ZKTeco : `config.example.json` mis +á jour pour pointer vers `http://leopardo.local` quand Edge est actif.
-  - Monitoring Laravel : commande `edge:detect-silent-nodes` + cron toutes les 30 min GÇö d+¬tecte les nodes silencieux depuis >30 min et notifie le manager.
 ## [4.17.9] - 2026-06-29
 
 ### Added
@@ -655,6 +655,7 @@
 
 ### Changed
 - **Absence GÇö Migration controller vers module DDD** : `App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController` remplace `App\Modules\Planning\Interfaces\Api\V1\AbsenceController` (fichier orphelin supprim+¬). Le controller dispose maintenant de : RBAC complet (employee vs manager), `AbsenceResource`, filtres month/year/status, pagination configurable, m+¬thode `destroy`. Correction du double-prefix `v1/v1` dans `absence.php` (les routes +¬taient mortes) : les routes sont maintenant correctement mont+¬es sous `/api/v1/absences`.
+
 ## [4.17.5-fix3] - 2026-06-30
 
 ### Fixed
@@ -665,10 +666,12 @@
 
 ### Fixed
 - **Expense Routes GÇö Middleware s+¬curis+¬** : Toutes les routes expense-claims sont maintenant prot+¬g+¬es par `['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan']`. Suppression de la route `POST /approve` dupliqu+¬e (conservation uniquement de `PUT /approve`). Nettoyage des commentaires TODO dans `hr_extended.php`.
+
 ## [4.17.6] - 2026-06-29
 
 ### Added
 - **Tests Expense GÇö Couverture compl+¿te** : 8 nouveaux tests Feature pour `ExpenseClaimController` couvrant : rejet avec raison, validation du champ `reason` obligatoire, interdiction non-manager d'approuver/rejeter, isolation cross-tenant (404) pour approve/reject, re-soumission impossible (422), acc+¿s cross-tenant +á `show` (404).
+
 ## [4.17.8] - 2026-06-29
 
 ### Added
@@ -679,6 +682,7 @@
 
 ### Fixed
 - **Expense Routes GÇö Route reject** : Ajout de `PUT /expense-claims/{expenseClaim}/reject` en compl+¬ment de `POST` pour coh+¬rence avec les conventions REST et les tests.
+
 ## [4.17.7] - 2026-06-29
 
 ### Added
@@ -693,7 +697,6 @@
 - **Modules\HR\UserInvitationService GÇö import TenantManager** : Ajout du `use App\Services\TenantManager` manquant qui causait un `BindingResolutionException` +á l'injection de d+¬pendance.
 - **Recruitment\RecruitmentService GÇö PHPStan CarbonInterface** : `published_at` est maintenant assign+¬ via `Carbon::instance(now())` pour satisfaire le type `Carbon|null` d+¬clar+¬ sur `JobPosting::$published_at`.
 
-## [4.17.4] - 2026-07-04
 
 ### Changed
 
@@ -729,7 +732,6 @@
 - **Architecture DDD GÇö Migration compl+¿te des routes vers les modules** : Correction des namespaces de 17 contr+¦leurs HR (`ContractController`, `DepartmentController`, `EmployeeController`, `SelfServiceController`, `OrgChartController`, `TrainingController`, etc.) vers `App\Modules\HR\Interfaces\Api\V1\Controllers`. Mise +á jour des docs de gouvernance CI.
 - **PHPStan modules** : Configuration `phpstan-modules.neon` consolid+¬e avec `excludePaths` pour les mod+¿les DDD non stabilis+¬s, level 3, sans BOM.
 
-## [4.17.2] - 2026-06-28
 
 ### Added
 
@@ -775,28 +777,6 @@
   - `AbsenceService` (Planning/Infrastructure) : Signature de `logBalanceChange()` accepte d+¬sormais `int|string|null` pour `$companyId` au lieu de `string` uniquement.
 
 ## [4.16.255] - 2026-06-21   
-## [4.17.0] - 2026-06-23  
-## [4.16.255] - 2026-06-21
-## [4.17.0] - 2026-06-23
-
-### Added 
-
-- **Architecture multi-app** : Nouvelle architecture RBAC multi-application. L'API supporte d+¬sormais plusieurs apps mobiles distinctes selon le `manager_role` de l'employ+¬.
-- **App Mobile RH** : Routes d+¬di+¬es `/api/v1/hr/**` accessibles uniquement aux `manager_role: rh` (et `principal` par h+¬ritage).
-  - `GET /hr/me` GÇö profil RH avec contexte app
-  - `GET /hr/dashboard` GÇö stats RH (employ+¬s actifs, invitations en attente, nouveaux du mois)
-  - `GET /hr/team-overview` GÇö vue compacte de l'+¬quipe
-  - `GET /hr/employees` GÇö liste pagin+¬e et filtrable
-  - `POST /hr/employees` GÇö ajouter un employ+¬ (role=employee forc+¬, sans assignation de manager_role)
-  - `GET /hr/employees/{id}` GÇö d+¬tail employ+¬
-  - `PATCH /hr/employees/{id}` GÇö modifier employ+¬ (sans toucher aux r+¦les)
-- **HrController** : Nouveau contr+¦leur d+¬di+¬ +á l'app RH avec logique d'isolation stricte (le RH ne peut pas cr+¬er de managers).
-- **EnsureAppContextMiddleware** : Middleware optionnel `app.context` GÇö valide la coh+¬rence entre le header `X-App-Context` et le r+¦le de l'utilisateur. Utilis+¬ pour l'audit et la s+¬curit+¬ cross-app.
-- **MobileExperienceService am+¬lior+¬** : Modules et quick_actions diff+¬renci+¬s par r+¦le GÇö le `principal` voit la gestion des r+¦les, le `rh` voit les outils RH, l'employ+¬ voit le self-service. Nouveau champ `app` dans la r+¬ponse indique quelle app mobile l'employ+¬ devrait utiliser.
-- **Documentation** : `docs/architecture/MULTI_APP_ARCHITECTURE.md` GÇö cartographie compl+¿te des apps, r+¦les, r+¿gles d'assignation et routes par app.
-- **Tests** : `HrAppRoutesTest` GÇö couverture des routes HR app (acc+¿s RH, refus employ+¬ standard, refus marketing manager, isolation ajout employ+¬ sans escalade de r+¦le).
-
-## [4.16.255] - 2026-06-21
 
 ### Added
 
@@ -821,6 +801,25 @@
 - Growth Module Auth : Le middleware des routes `/partner/*` utilise d+¬sormais `auth:sanctum` (token Employee) au lieu de `auth:user_api`. Le contr+¦leur `PartnerDashboardController` r+¬sout l'utilisateur global (`public.users`) via `resolveGlobalUser()` GÇö compatible avec les tokens Sanctum Employee +¬mis par l'app web et mobile.
 - Growth Module Frontend : La page `partner/page.tsx` affiche maintenant l'+¬tat `not_applied` en cas d'erreur r+¬seau au lieu de rester bloqu+¬e sur "Chargement de votre espace".
 - CommissionService : Suppression des exceptions de debug temporaires (`throw new RuntimeException('Failed X')`) remplac+¬es par des retours `null` propres conformes +á la logique production.
+
+## [4.17.0] - 2026-06-23  
+
+### Added 
+
+- **Architecture multi-app** : Nouvelle architecture RBAC multi-application. L'API supporte d+¬sormais plusieurs apps mobiles distinctes selon le `manager_role` de l'employ+¬.
+- **App Mobile RH** : Routes d+¬di+¬es `/api/v1/hr/**` accessibles uniquement aux `manager_role: rh` (et `principal` par h+¬ritage).
+  - `GET /hr/me` GÇö profil RH avec contexte app
+  - `GET /hr/dashboard` GÇö stats RH (employ+¬s actifs, invitations en attente, nouveaux du mois)
+  - `GET /hr/team-overview` GÇö vue compacte de l'+¬quipe
+  - `GET /hr/employees` GÇö liste pagin+¬e et filtrable
+  - `POST /hr/employees` GÇö ajouter un employ+¬ (role=employee forc+¬, sans assignation de manager_role)
+  - `GET /hr/employees/{id}` GÇö d+¬tail employ+¬
+  - `PATCH /hr/employees/{id}` GÇö modifier employ+¬ (sans toucher aux r+¦les)
+- **HrController** : Nouveau contr+¦leur d+¬di+¬ +á l'app RH avec logique d'isolation stricte (le RH ne peut pas cr+¬er de managers).
+- **EnsureAppContextMiddleware** : Middleware optionnel `app.context` GÇö valide la coh+¬rence entre le header `X-App-Context` et le r+¦le de l'utilisateur. Utilis+¬ pour l'audit et la s+¬curit+¬ cross-app.
+- **MobileExperienceService am+¬lior+¬** : Modules et quick_actions diff+¬renci+¬s par r+¦le GÇö le `principal` voit la gestion des r+¦les, le `rh` voit les outils RH, l'employ+¬ voit le self-service. Nouveau champ `app` dans la r+¬ponse indique quelle app mobile l'employ+¬ devrait utiliser.
+- **Documentation** : `docs/architecture/MULTI_APP_ARCHITECTURE.md` GÇö cartographie compl+¿te des apps, r+¦les, r+¿gles d'assignation et routes par app.
+- **Tests** : `HrAppRoutesTest` GÇö couverture des routes HR app (acc+¿s RH, refus employ+¬ standard, refus marketing manager, isolation ajout employ+¬ sans escalade de r+¦le).
 
 ## [4.16.254] - 2026-06-21
 
@@ -1419,22 +1418,6 @@
 - Mobile employee/manager/platform admin : suppression du splash obligatoire au router et demarrage direct sur welcome/login afin qu'un `checkAuth`, Hive, Firebase ou Google Sign-In lent ne puisse plus figer l'app sur le logo. Le `StartupGate` lance les initialisations en arriere-plan et affiche immediatement l'application.
 - Mobile core : `SecureStorage`, `AppPreferences` et `TranslationCatalogCache` tolerent une box Hive `offlineCache` pas encore ouverte via fallback memoire, ce qui evite les crashs/ANR pendant les premiers frames.
 
-## [Unreleased]
-- fix(ci): skip mobile hr firebase upload if secrets are missing
-
-### Added
-- Plan 60: Double validation des avances salaire (migration, contr+â-¦leur, routes)
-- Plan 61: Service cycles de paie et solde employ+â-¬ (PayrollCycleService, PayrollCycleController)
-- Plan 62: G+â-¬n+â-¬ration PDF bulletins de paie async (GeneratePaySlipPdfJob, queue `pdf`)
-- Plan 63: Architecture Redis Upstash +óGé¼GÇ¥ queues nomm+â-¬es (pdf, notifications, payroll, webhooks), QueueHealthCheck
-- Plan 64: Cl+â-¦ture automatique pr+â-¬sences (AutoCloseAttendanceCommand, scheduler horaire)
-- Plan 65: Paiement en masse (ProcessBulkPaymentJob, BulkPaymentController avec progression Redis)
-- Redis Upstash TLS configur+â-¬ dans database.php et queue.php
-- README: section architecture compl+â-¿te (Render, Vercel, Cloudflare, Upstash, Firebase)
-
-### Changed
-- SalaryAdvance: nouveaux champs double validation (manager_approved_at, payment_declared_at, employee_confirmed_at, validation_status)
-- TenantCacheService: helpers TTL Upstash-compatibles (rememberEmployees, rememberAttendanceReport)
 ## [4.16.194] - 2026-05-31
 
 ### Fixed
@@ -1724,6 +1707,19 @@
 - Tests : couverture de l'isolation company et du scope manager direct pour eviter les fuites de donnees entre managers.
 - Documentation : ajout du Plan 34, de la matrice frontend/API et du contrat OpenAPI du digest manager.
 
+
+### Fixed
+
+- Mobile (Employee, Manager) : resolution de la race condition entre GoRouter et AuthNotifier
+  qui causait un ecran noir au demarrage. `AuthState` initialise maintenant avec `isLoading: true`
+  et `checkAuth()` est appele via `Future.microtask` pour laisser le router se construire.
+- Mobile (Employee, Manager) : timeout `/auth/me` reduit a 10 secondes pour eviter le blocage
+  sur l'ecran splash en cas de cold-start Render ou de reseau lent.
+- Mobile (Platform Admin) : `timeoutOverride: 10s`, `maxRetriesOverride: 1` sur le bootstrap
+  pour aligner le comportement avec les apps Employee/Manager.
+- CI : `predis/predis ^2.3` restaure dans `api/composer.json` (perdu lors du merge #638).
+  `composer.lock` regenere automatiquement via workflow `fix-composer-lock.yml`.
+
 ## [4.16.160] - 2026-05-27
 
 ### Added
@@ -1750,6 +1746,16 @@
 - Tests : garde Feature sur mise a jour profil durable, parcours professionnel et stats du placard numerique.
 - Documentation : ajout du Plan 32 et mise a jour de la matrice frontend/API et de la spec OpenAPI.
 
+
+### Added
+
+- OpenAPI : documentation complete de ~250 routes manquantes (Plan 33, iterations 1-4) portant la couverture de 41% a quasi-complete.
+- OpenAPI : 40+ nouveaux schemas (Employee, Absence, Payroll, Task, Notification, Cabinet, etc.).
+
+### Fixed
+
+- OpenAPI : suppression de 3 schemas en double (`PaginationMeta`, `Task`, `NotificationPreference`) qui causaient une erreur de parsing YAML.
+
 ## [4.16.158] - 2026-05-27
 
 ### Added
@@ -1764,35 +1770,10 @@
 
 - Mobile employee : `Mon mois complet` utilise le client API avec timeout/retry controle pour eviter le spinner infini.
 - API attendance : la vue manager du pointage du jour filtre explicitement les employes par `company_id` pour renforcer l'isolation tenant.
-## [4.16.158] - 2026-05-31
 
 ### Changed
 
 - Dependencies : bump `vite` de 8.0.13 a 8.0.14 dans `api/` (correctif securite/maintenance patch).
-
-## [4.16.161] - 2026-05-31
-
-### Fixed
-
-- Mobile (Employee, Manager) : resolution de la race condition entre GoRouter et AuthNotifier
-  qui causait un ecran noir au demarrage. `AuthState` initialise maintenant avec `isLoading: true`
-  et `checkAuth()` est appele via `Future.microtask` pour laisser le router se construire.
-- Mobile (Employee, Manager) : timeout `/auth/me` reduit a 10 secondes pour eviter le blocage
-  sur l'ecran splash en cas de cold-start Render ou de reseau lent.
-- Mobile (Platform Admin) : `timeoutOverride: 10s`, `maxRetriesOverride: 1` sur le bootstrap
-  pour aligner le comportement avec les apps Employee/Manager.
-- CI : `predis/predis ^2.3` restaure dans `api/composer.json` (perdu lors du merge #638).
-  `composer.lock` regenere automatiquement via workflow `fix-composer-lock.yml`.
-## [4.16.159] - 2026-05-31
-
-### Added
-
-- OpenAPI : documentation complete de ~250 routes manquantes (Plan 33, iterations 1-4) portant la couverture de 41% a quasi-complete.
-- OpenAPI : 40+ nouveaux schemas (Employee, Absence, Payroll, Task, Notification, Cabinet, etc.).
-
-### Fixed
-
-- OpenAPI : suppression de 3 schemas en double (`PaginationMeta`, `Task`, `NotificationPreference`) qui causaient une erreur de parsing YAML.
 
 ## [4.16.157] - 2026-05-26
 
@@ -2079,6 +2060,7 @@
 - Policies : 11 nouvelles classes Policy (AbsencePolicy, ContractPolicy, DepartmentPolicy, PositionPolicy, SchedulePolicy, SitePolicy, ApprovalRequestPolicy, LoanPolicy, ExpenseClaimPolicy, WebhookEndpointPolicy, InvoicePolicy) avec RBAC granulaire par role.
 - AuthServiceProvider : les 11 nouvelles policies sont enregistrees via Gate::policy() pour tous les modeles metier.
 - RBAC Route Matrix : section +é-½ Model Policies +é-+ ajoutee avec matrice complete viewAny/view/create/update/delete/approve par role.
+
 ## [4.16.130] - 2026-05-24
 
 ### Added
@@ -2094,6 +2076,7 @@
 - Controllers refactorises : AbsenceController, DepartmentController, PositionController, ScheduleController, SiteController, NotificationController, WebhookController, ApprovalController, ContractController utilisent desormais les API Resources au lieu de serialisations manuelles.
 - DB::transaction ajoutees : ContractController::renew, ApprovalController::approve/reject, NotificationController::markRead/markAllRead protegent les ecritures multi-tables.
 - FormRequests injectees dans les signatures store/update des controllers Department, Position, Schedule, Site, Webhook +óGé¼GÇ¥ la validation et l'autorisation quittent le corps du controller.
+
 ## [4.16.129] - 2026-05-24
 
 ### Added
@@ -2539,6 +2522,7 @@
 
 **Verification idempotence :**
 - Verifie : migrations `2026_05_18` (device_tokens, calendar_sync, zkteco_devices) toutes protegees par `hasTable()` +óGé¼GÇ¥ safe pour Render/PostgreSQL
+
 ## [4.16.92] - 2026-05-19
 
 ### Feat +óGé¼GÇ¥ Plan 16 Lot 16.3 : Design vendeur et conversion vitrine
@@ -2554,6 +2538,7 @@
 **Integration landing page :**
 - Ajout des 4 composants dans la page d'accueil vitrine entre hero/features/pricing/testimonials
 - Tous les textes disponibles en FR/EN/TR/AR via le systeme de locale existant
+
 ## [4.16.93] - 2026-05-19
 
 ### Feat +óGé¼GÇ¥ Plan 16 Lot 16.5 : GTM operationnel
@@ -2679,6 +2664,7 @@
 
 - Vitrine : compatibilite `CTASection` avec les contrats `title`/`description`/`primaryCta` utilises par les nouvelles pages GTM.
 - Gouvernance : ajout d'une trace changelog pour les nouvelles surfaces GTM avant merge.
+
 ## [4.16.77] - 2026-05-17
 
 ### Feat +óGé¼GÇ¥ PR #488: API Integrations (G8, L6, L5, H1-H4)
@@ -2740,6 +2726,7 @@
 - WCAG : `role="alert"` sur notifications toast, `aria-sort` sur DataTable triable, `type="search"` + `aria-label` sur champ recherche, `caption` sr-only optionnel.
 - Plan 15 : E1, E2, E10, E11, C14, F1-F6 passes en DONE.
 - Sidebar admin : ajout liens rapports RH et journal d'audit.
+
 ## [4.16.75] - 2026-05-17
 
 ### Docs +óGé¼GÇ¥ Iteration FINALE : mise a jour documentation globale Plan 15
@@ -2764,6 +2751,7 @@
 - Tests : `PredictionControllerTest` +óGé¼GÇ¥ 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
 - Plan 15 : C11, C12, C13, C15, E6, E7, G2-G7, G9 passes en DONE.
 - REGISTRE scenarios test API mis a jour.
+
 ## [4.16.74] - 2026-05-17
 
 ### Feat +óGé¼GÇ¥ Iteration 11 : SSO SAML/OIDC stub + audit WCAG 2.1 AA
