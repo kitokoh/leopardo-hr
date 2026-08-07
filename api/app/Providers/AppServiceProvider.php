@@ -8,7 +8,6 @@ use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
 use App\Policies\ExportPolicy;
-use App\Services\TenantManager as LegacyTenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -29,9 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
-
-        // Backward-compat : App\Services\TenantManager résout le même singleton
-        $this->app->bind(LegacyTenantManager::class, fn () => $this->app->make(TenantManager::class));
 
         $this->app->bind(LLMClient::class, function (): LLMClient {
             $provider = (string) config('ai.provider', 'openai');

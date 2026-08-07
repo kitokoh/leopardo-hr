@@ -9,7 +9,7 @@ Socle transversal multi-tenant (`App\Core\Tenant`). Migration terminée — voir
   le tenant courant, manipule le `search_path` PostgreSQL pour l'isolation des
   données, expose `withinTenant()` pour les jobs/commands à contexte ponctuel.
   Enregistré en singleton dans `AppServiceProvider::register()`.
-  `App\Services\TenantManager` reste un alias de backward-compat (`@deprecated`,
+  Les shims legacy `App\Services\TenantManager` ont été supprimés (issue #1494).
   voir ce fichier) ; tout nouveau code doit référencer `App\Core\Tenant\TenantManager`
   directement.
 - **`Domain/Models/`** — Modèles du domaine tenant : `Company`, `CompanyRequest`,
