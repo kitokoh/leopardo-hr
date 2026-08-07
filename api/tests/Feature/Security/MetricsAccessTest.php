@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Security;
 
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -21,13 +21,17 @@ class MetricsAccessTest extends TestCase
     {
         parent::setUp();
 
-        // super_admins lives in the public schema (platform-wide) — migrate
-        // only the public path, like QueueObservabilityApiTest does.
-        $this->artisan('migrate:fresh', [
-            '--path' => 'database/migrations/public',
-        ]);
-
-        $this->app[Kernel::class]->setArtisan(null);
+        // Ensure the platform-wide super_admins table exists without running
+        // migrate:fresh (which would wipe the shared test database mid-suite).
+        if (! Schema::hasTable('super_admins')) {
+            Schema::create('super_admins', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->string('password_hash');
+                $table->timestamps();
+            });
+        }
     }
     /** @test */
     public function metrics_requires_authentication(): void
