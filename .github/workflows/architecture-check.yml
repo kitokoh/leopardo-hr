@@ -133,6 +133,9 @@ jobs:
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
+      - name: Check env() parity config/ ↔ .env.example (issue #1487)
+        run: dev-hub/tools/check-env-example-parity.sh api
+
       - name: Check newly added files declare strict_types (PA2-ARCH-009)
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
