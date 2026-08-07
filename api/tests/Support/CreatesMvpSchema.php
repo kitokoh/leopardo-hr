@@ -22,10 +22,6 @@ trait CreatesMvpSchema
         $this->preparePostgresSchemas();
         $this->dropMvpTables();
 
-        if (DB::getDriverName() === 'pgsql') {
-            $this->setPostgresSearchPath('public');
-        }
-
         Schema::create('plans', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name', 50);
