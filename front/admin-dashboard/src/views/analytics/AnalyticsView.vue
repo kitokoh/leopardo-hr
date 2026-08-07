@@ -33,7 +33,7 @@
           <select
             v-model="selectedMetric"
             @change="updateAnalytics"
-            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 glass-card/50 dark:bg-slate-800/50 text-sm font-bold focus:ring-brand-500 transition-all duration-200 px-4 py-2.5"
+            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 dark:bg-slate-800/50 text-sm font-bold focus:ring-brand-500 transition-all duration-200 px-4 py-2.5"
           >
             <option value="users">Utilisateurs</option>
             <option value="revenue">Revenus</option>

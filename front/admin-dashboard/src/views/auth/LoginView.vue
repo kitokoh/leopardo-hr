@@ -12,7 +12,7 @@
 
     <div class="max-w-md w-full space-y-10 relative z-10">
       <div class="text-center">
-        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl glass-card/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
+        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <span class="text-4xl font-black text-white tracking-tighter relative z-10">LRH</span>
         </div>
@@ -45,7 +45,7 @@
                     autocomplete="email"
                     required
                     autofocus
-                    class="block w-full rounded-2xl border-0 glass-card/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
+                    class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="admin@leopardo-rh.com"
                   />
                 </div>
@@ -64,7 +64,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     autocomplete="current-password"
                     required
-                    class="block w-full rounded-2xl border-0 glass-card/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
+                    class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   />
                   <button
@@ -88,7 +88,7 @@
                   type="text"
                   inputmode="numeric"
                   required
-                  class="block w-full rounded-2xl border-0 glass-card/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
+                  class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
                   placeholder="000000"
                 />
               </div>
@@ -101,7 +101,7 @@
                   v-model="form.remember"
                   name="remember-me"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-white/10 glass-card/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
+                  class="h-4 w-4 rounded border-white/10 bg-white/5 dark:bg-slate-900/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
                 />
                 <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Se souvenir de moi

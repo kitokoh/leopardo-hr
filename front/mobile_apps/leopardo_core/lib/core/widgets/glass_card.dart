@@ -31,7 +31,7 @@ class GlassCard extends StatelessWidget {
 
     final bgColor = color ??
         (isDark
-            ? const Color(0xFF31394D).withValues(alpha: 0.4)
+            ? AppColors.mobileDarkGlass.withValues(alpha: 0.4)
             : Colors.white.withValues(alpha: 0.7));
 
     final defaultBorderColor = isDark

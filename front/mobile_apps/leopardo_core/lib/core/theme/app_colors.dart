@@ -88,6 +88,13 @@ class AppColors {
   static const Color mobileDarkSecondary = Color(0xFFB8C7DA);
   static const Color mobileDarkDisabled = Color(0xFF6F86A5);
 
+  // Tonalites glass / startup gate (issues #1476, valeurs historiques
+  // conservees a l'identique pour ne pas changer le rendu visuel).
+  static const Color mobileDarkGlass = Color(0xFF31394D);
+  static const Color mobileDarkSurfaceLow = Color(0xFF131B2E);
+  static const Color mobileMint = Color(0xFF4EDEA3);
+  static const Color mobileLavender = Color(0xFFDAE2FD);
+
   // Accents statut ecrans pointage (valeurs historiques distinctes des
   // couleurs semantiques generiques success/warning/danger/info ci-dessus ;
   // conservees a l'identique pour ne pas changer le rendu visuel existant).
