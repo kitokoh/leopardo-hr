@@ -1,97 +1,77 @@
-﻿@import 'tailwindcss';
-@config '../tailwind.config.js';
+@import 'tailwindcss';
 @import 'leaflet/dist/leaflet.css';
+@config '../tailwind.config.js';
 
 /* Styles globaux */
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }
-
   body {
     @apply antialiased;
   }
 }
-
 /* Composants personnalisÃ©s */
 @layer components {
   .btn-primary {
     @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
-
   .btn-secondary {
     @apply inline-flex items-center px-4 py-2 border border-slate-200 dark:border-slate-700 text-sm font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200;
   }
-
   .card {
     @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass rounded-2xl overflow-hidden transition-all duration-300;
   }
-
   .glass-card {
     @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/10 dark:border-white/10 shadow-glass rounded-3xl;
   }
-
   .glass-effect {
     @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/10 dark:border-white/10;
   }
-
   .glass-light {
     @apply bg-white/40 backdrop-blur-xl border border-white/30 shadow-glass-inner;
   }
-
   .glass-dark {
     @apply bg-slate-900/40 backdrop-blur-xl border border-slate-800/40 shadow-glass-inner;
   }
-
   .premium-text {
     @apply tracking-tight font-semibold text-slate-900 dark:text-white;
   }
-
   .card-header {
     @apply px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700;
   }
-
   .card-body {
     @apply px-4 py-5 sm:p-6;
   }
-
   .stat-card {
     @apply bg-surface-bright/40 dark:bg-surface-bright/40 backdrop-blur-xl border border-white/10 dark:border-white/10 shadow-glass-sm rounded-2xl p-5 hover:shadow-glass transition-all duration-300 hover:translate-y-[-2px];
   }
-
   .sidebar-nav-item {
     @apply flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-150;
   }
-
   .sidebar-nav-item.active {
     @apply bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-200;
   }
-
   .sidebar-nav-item:not(.active) {
     @apply text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200;
   }
-
   /* W7 â€” Improved contrast for borders and icons (WCAG 1.4.11 non-text contrast 3:1) */
   .border-accessible {
     @apply border-gray-300 dark:border-gray-600;
   }
-
   .icon-accessible {
     @apply text-gray-500 dark:text-gray-400;
   }
-
   /* W2 â€” Focus visible ring for all interactive elements (WCAG 2.4.7) */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
   }
 }
-
 /* Animations personnalisÃ©es */
 @layer utilities {
   .animate-pulse-dot {
     animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-
   @keyframes pulse-dot {
     0%, 100% {
       opacity: 1;
@@ -102,64 +82,52 @@
       transform: scale(1.1);
     }
   }
-
   .gradient-bg {
     background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);
   }
-
   /* Vue transitions */
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
-
   .fade-enter-from {
     opacity: 0;
     transform: translateY(10px);
   }
-
   .fade-leave-to {
     opacity: 0;
     transform: translateY(-10px);
   }
-
   .scale-enter-active,
   .scale-leave-active {
     transition: all 0.2s ease-out;
   }
-
   .scale-enter-from,
   .scale-leave-to {
     opacity: 0;
     transform: scale(0.95);
   }
 }
-
 /* Styles pour les graphiques */
 .echarts-container {
   width: 100%;
   height: 400px;
 }
-
 .globe-container {
   width: 100%;
   height: 600px;
   position: relative;
 }
-
 /* Styles pour les notifications temps rÃ©el */
 .notification-badge {
   @apply absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center;
 }
-
 /* Responsive */
 @media (max-width: 768px) {
   .echarts-container {
     height: 300px;
   }
-
   .globe-container {
     height: 400px;
   }
 }
-
