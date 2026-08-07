@@ -273,8 +273,8 @@ class _PlatformIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (IconData icon, Color color) = switch (name) {
-      'LinkedIn' => (Icons.work_outline_rounded, const Color(0xFF0A66C2)),
-      'Facebook' => (Icons.facebook_rounded, const Color(0xFF1877F2)),
+      'LinkedIn' => (Icons.work_outline_rounded, AppColors.socialLinkedIn),
+      'Facebook' => (Icons.facebook_rounded, AppColors.socialFacebook),
       _ => (Icons.alternate_email_rounded, AppColors.mobileDarkText),
     };
 

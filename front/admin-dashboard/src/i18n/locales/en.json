@@ -246,4 +246,27 @@
       "delete": "Are you sure you want to delete :name?"
     }
   }
+,
+  "marketing": {
+    "oauth": {
+      "title": "Marketing — OAuth Social Networks",
+      "subtitle": "Configure OAuth credentials (Client ID / Client Secret) used by the Marketing module to publish on LinkedIn, Facebook/Meta and X (Twitter).",
+      "ayrshare_info": "Publications are routed through the Ayrshare aggregator. The credentials below are stored securely and used to initialise the OAuth connection for each social network in Ayrshare.",
+      "save": "Save",
+      "providers": {
+        "linkedin": { "label": "LinkedIn", "description": "Connect to LinkedIn company pages and profiles via the Marketing v2 API." },
+        "facebook": { "label": "Facebook / Meta", "description": "Connect to Facebook pages and Instagram Business accounts via the Graph API." },
+        "twitter":  { "label": "X (Twitter)", "description": "Connect via the Twitter v2 API / OAuth 2.0 PKCE." }
+      },
+      "fields": {
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "redirect_uri": "Redirect URI",
+        "secret_hint": "(not shown)",
+        "placeholder_id": "Leave empty to keep current value",
+        "placeholder_secret": "Leave empty to keep unchanged",
+        "placeholder_uri": "https://your-domain.com/oauth/callback"
+      }
+    }
+  }
 }
