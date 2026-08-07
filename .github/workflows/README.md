@@ -37,7 +37,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
 | `deploy-main.yml` | Push → main | Déploiement production (Render) |
-| `deploy-staging.yml` | Push → staging | Déploiement staging |
+| `deploy-staging.yml` | `workflow_run` (Tests sur main) + dispatch | Déploiement staging — **fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents** (plus aucun fallback prod, issue #1485) |
 | `e2e-staging.yml` | Après deploy-staging | Tests E2E post-déploiement |
 | `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
 | `release.yml` | Tags v*.*.* | Création de release GitHub |
