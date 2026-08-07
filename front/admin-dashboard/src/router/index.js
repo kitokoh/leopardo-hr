@@ -142,15 +142,7 @@ const routes = [
           icon: 'CogIcon'
         }
       },
-      {
-        path: '/logs',
-        name: 'logs',
-        component: () => import('@/views/system/LogsView.vue'),
-        meta: {
-          title: 'Logs',
-          icon: 'DocumentTextIcon'
-        }
-      },
+
       {
         path: '/payroll',
         name: 'payroll',
