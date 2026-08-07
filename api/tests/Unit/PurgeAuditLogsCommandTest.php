@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Core\Auth\Domain\Models\AuditLog;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 /**
@@ -16,6 +14,22 @@ use Tests\TestCase;
  */
 class PurgeAuditLogsCommandTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // The Unit suite runs on a fresh in-memory DB with no tenant schema —
+        // create the minimal audit_logs table if it does not exist.
+        if (! Schema::hasTable('audit_logs')) {
+            Schema::create('audit_logs', function ($table) {
+                $table->id();
+                $table->unsignedBigInteger('company_id')->nullable()->index();
+                $table->string('action');
+                $table->timestamps();
+            });
+        }
+    }
+
     protected function tearDown(): void
     {
         DB::table('audit_logs')->delete();
