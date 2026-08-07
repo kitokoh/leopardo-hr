@@ -32,6 +32,7 @@ class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
+        /** @var Response $response */
         $response = $next($request);
 
         $response->headers->set('X-Content-Type-Options', 'nosniff');
