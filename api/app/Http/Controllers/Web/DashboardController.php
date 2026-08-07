@@ -19,11 +19,11 @@ class DashboardController extends Controller
         $company = currentCompany();
         $today = now('UTC')->setTimezone($company->timezone)->toDateString();
 
-        // 1. Statistiques globales (sur tous les employés actifs)
-        $allEmployees = Employee::query()
-            ->select(['id', 'salary_type', 'salary_base', 'hourly_rate'])
+        // 1. Statistiques globales (agrégats SQL — plus de chargement complet
+        // en mémoire de tous les employés actifs ; issue #1471, audit T18).
+        $employeesTotal = (int) Employee::query()
             ->where('status', 'active')
-            ->get();
+            ->count();
 
         $logsByEmployeeAll = AttendanceLog::query()
             ->select(['id', 'employee_id', 'date', 'session_number', 'status', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'work_type', 'late_minutes'])
@@ -31,24 +31,26 @@ class DashboardController extends Controller
             ->get()
             ->groupBy('employee_id');
 
-        $present = 0;
-        $late = 0;
+        // Seuls les employés actifs ayant pointé aujourd'hui sont chargés :
+        // l'estimation des absents est nulle par construction, et le nombre de
+        // lignes est ainsi borné par l'activité du jour, pas par la taille du
+        // tenant.
+        $presentEmployees = Employee::query()
+            ->select(['id', 'matricule', 'first_name', 'last_name', 'salary_type', 'salary_base', 'hourly_rate'])
+            ->where('status', 'active')
+            ->whereIn('id', $logsByEmployeeAll->keys())
+            ->get()
+            ->keyBy('id');
+
+        $present = $presentEmployees->count();
+        $late = $presentEmployees
+            ->filter(fn (Employee $employee) => ($logsByEmployeeAll->get($employee->id) ?? collect())
+                ->contains(fn (AttendanceLog $log) => $log->status === 'late'))
+            ->count();
         $totalEstimated = 0.0;
 
-        foreach ($allEmployees as $employee) {
+        foreach ($presentEmployees as $employee) {
             $logs = $logsByEmployeeAll->get($employee->id, collect());
-            $log = $logs
-                ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
-                ->first();
-            $attendanceStatus = $log?->status ?? 'absent';
-
-            if ($logs->isNotEmpty()) {
-                $present++;
-            }
-            if ($logs->contains(fn (AttendanceLog $log) => $log->status === 'late')) {
-                $late++;
-            }
-
             $summary = $this->estimationService->dailySummaryFromLogs($employee, $logs, $today);
             $totalEstimated += (float) $summary['total_estimated'];
         }
@@ -85,7 +87,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'company' => $company,
             'today' => $today,
-            'employeesTotal' => $allEmployees->count(),
+            'employeesTotal' => $employeesTotal,
             'presentCount' => $present,
             'lateCount' => $late,
             'totalEstimated' => round($totalEstimated, 2),
