@@ -1313,3 +1313,15 @@ Meme audit : `Modules/Expense/{Domain,Application,Infrastructure}` (ExpenseClaim
 Bug corrige au passage (pas un changement de contrat, une correction de bug latent) : `AuthServiceProvider` enregistrait `Gate::policy()` sur le modele mort au lieu du vrai modele `Planning\...\ExpenseClaim` consomme par le controller — corrige.
 
 - Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
+
+## Issue #1471 — Dashboard web : statistiques agrégées SQL (T18 audit post-MVP)
+
+`Web\DashboardController::index()` chargeait **tous les employés actifs** et **tous les logs du jour** en mémoire (`->get()`) puis bouclait sur l'ensemble — non borné sur les gros tenants. Les statistiques d'en-tête utilisent désormais :
+
+- `employeesTotal` : `COUNT(*)` SQL sur les employés actifs.
+- `present` / `late` : calculés sur les seuls employés actifs ayant des logs aujourd'hui (`whereIn` borné par l'activité du jour, `distinct` par employé).
+- `total_estimated` : la boucle `EstimationService::dailySummaryFromLogs()` ne parcourt plus que les employés présents (les résumés des absents sont nuls par construction) — mémoire/CPU proportionnels à l'activité du jour, plus à la taille du tenant.
+
+**Contrat API web rendu inchangé** : mêmes variables de vue (`employeesTotal`, `presentCount`, `lateCount`, `totalEstimated`, `rows`, `paginator`), mêmes calculs métier (le total estimé est identique : les absents contribuent 0).
+
+- Scenario a valider : suite `DashboardControllerTest` existante + vérification manuelle du rendu (`/dashboard`) avec des employés présents/absents/retard le même jour — valeurs d'en-tête identiques avant/apres.
