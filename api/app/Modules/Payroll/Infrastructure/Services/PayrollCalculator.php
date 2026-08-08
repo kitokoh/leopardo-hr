@@ -25,6 +25,12 @@ use Illuminate\Support\Facades\DB;
 
 class PayrollCalculator
 {
+    /** Jours ouvrés standards mensuels (DZ) — docs/payroll/DZ_COMPLIANCE.md §5. */
+    public const STANDARD_WORKING_DAYS = 22;
+
+    /** Heures mensuelles de référence (base / 173,33 h). */
+    public const MONTHLY_HOURS = 173.33;
+
     /** @var array<string, CountryRulesInterface> */
     private array $rulesMap;
 
@@ -167,18 +173,34 @@ class PayrollCalculator
         CountryRulesInterface $rules
     ): PaySlip {
         $baseSalary = $structure->base_salary;
-        $grossEarnings = $baseSalary;
+        $worked = $this->computeWorkedDays($run, $employee);
+        $basePaid = $this->computeProratedBase($baseSalary, $worked['working_days'], $worked['actual_days_worked']);
+        $overtimePay = $this->computeOvertimePay($baseSalary, $worked['overtime_hours']);
+
+        $grossEarnings = $basePaid;
         $lines = [];
         $order = 0;
 
         $lines[] = [
             'name' => 'Salaire de base',
             'type' => 'earning',
-            'base_amount' => $baseSalary,
+            'base_amount' => $basePaid,
             'rate' => null,
-            'amount' => $baseSalary,
+            'amount' => $basePaid,
             'order' => $order++,
         ];
+
+        if ($overtimePay > 0.0) {
+            $lines[] = [
+                'name' => 'Heures supplémentaires',
+                'type' => 'earning',
+                'base_amount' => (float) $worked['overtime_hours'],
+                'rate' => null,
+                'amount' => $overtimePay,
+                'order' => $order++,
+            ];
+            $grossEarnings += $overtimePay;
+        }
 
         /** @var Collection<int, SalaryComponent> $components */
         $components = $structure->components->where('active', true)->sortBy('order');
@@ -272,9 +294,9 @@ class PayrollCalculator
             'net_salary' => $netSalary,
             'employer_contributions' => round($social['employer'], 2),
             'total_cost' => $totalCost,
-            'working_days' => 22,
-            'actual_days_worked' => 22,
-            'overtime_hours' => 0,
+            'working_days' => $worked['working_days'],
+            'actual_days_worked' => $worked['actual_days_worked'],
+            'overtime_hours' => $worked['overtime_hours'],
             'status' => 'calculated',
         ]);
 
@@ -283,6 +305,87 @@ class PayrollCalculator
         }
 
         return $slip;
+    }
+
+    /**
+     * Programme FOCUS (F-05) — prorata du salaire de base.
+     *
+     * Règle : base × (jours effectivement travaillés / jours ouvrés standards).
+     * Entrée/sortie en cours de mois, absences et congés sans solde passent
+     * tous par ce mécanisme (actual_days_worked < working_days).
+     */
+    public function computeProratedBase(float $baseSalary, float $workingDays, float $actualDays): float
+    {
+        if ($workingDays <= 0.0 || $actualDays >= $workingDays) {
+            return round($baseSalary, 2);
+        }
+
+        if ($actualDays <= 0.0) {
+            return 0.0;
+        }
+
+        return round($baseSalary * ($actualDays / $workingDays), 2);
+    }
+
+    /**
+     * Programme FOCUS (F-05) — paiement des heures supplémentaires.
+     *
+     * Taux horaire = base / 173,33 h (mensuel légal de référence).
+     * Majorations : 25 % jusqu'à $standardRateHours h/mois, 50 % au-delà
+     * (seuil conventionnel paramétrable — à confirmer par la convention
+     * collective applicable, voir docs/payroll/DZ_COMPLIANCE.md §5).
+     */
+    public function computeOvertimePay(float $baseSalary, float $overtimeHours, int $standardRateHours = 10): float
+    {
+        if ($overtimeHours <= 0.0 || $baseSalary <= 0.0) {
+            return 0.0;
+        }
+
+        $hourlyRate = round($baseSalary / self::MONTHLY_HOURS, 2);
+        $standard = min($overtimeHours, (float) $standardRateHours);
+        $premium = max(0.0, $overtimeHours - (float) $standardRateHours);
+
+        return round(($standard * $hourlyRate * 1.25) + ($premium * $hourlyRate * 1.50), 2);
+    }
+
+    /**
+     * Programme FOCUS (F-05) — jours travaillés sur la période du run.
+     *
+     * Recoupe le contrat de l'employé (contract_start / contract_end) avec la
+     * période du run : prorata d'entrée/sortie en cours de mois.
+     *
+     * overtime_hours : source future = pointage/attendance (F-20) ; 0 tant que
+     * le lien présence → paie n'est pas branché.
+     *
+     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float}
+     */
+    public function computeWorkedDays(PayrollRun $run, Employee $employee): array
+    {
+        $workingDays = (float) self::STANDARD_WORKING_DAYS;
+        $periodStart = $run->period_start->copy()->startOfDay();
+        $periodEnd = $run->period_end->copy()->startOfDay();
+
+        $overlapStart = $periodStart->copy();
+        if ($employee->contract_start !== null && $employee->contract_start->gt($periodStart)) {
+            $overlapStart = $employee->contract_start->copy()->startOfDay();
+        }
+
+        $overlapEnd = $periodEnd->copy();
+        if ($employee->contract_end !== null && $employee->contract_end->lt($periodEnd)) {
+            $overlapEnd = $employee->contract_end->copy()->startOfDay();
+        }
+
+        $periodDays = $periodStart->diffInDays($periodEnd) + 1;
+        $overlapDays = max(0, $overlapStart->diffInDays($overlapEnd) + 1);
+
+        $ratio = $periodDays > 0 ? min(1.0, $overlapDays / $periodDays) : 0.0;
+        $actualDays = round($workingDays * $ratio, 2);
+
+        return [
+            'working_days' => $workingDays,
+            'actual_days_worked' => $actualDays,
+            'overtime_hours' => 0.0,
+        ];
     }
 
     private function computeComponentAmount(SalaryComponent $component, float $baseSalary, float $grossSalary): float
