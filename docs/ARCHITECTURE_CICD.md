@@ -25,8 +25,8 @@ PR → merge sur main
 | `tests.yml` | PR + push main | Tests PHP + couverture |
 | `coverage-gate.yml` | PR main (api/) | Gate couverture min (voir "Gates de qualité") |
 | `mobile-apps-ci.yml` | PR + push (front/mobile_apps/) | Tests Flutter + analyze |
-| `web-ci.yml` | PR + push (front/web/) | Build Next.js + lint |
-| `openapi-ci.yml` | PR + push (api/openapi/) | Validation spec OpenAPI |
+| `web-ci.yml` | PR + push (front/admin-dashboard/) | Build + lint admin-dashboard (Vue/Vite) |
+| `openapi-ci.yml` | PR + push (api/openapi.yaml, dev-hub/openapi/) | Validation spec OpenAPI |
 | `architecture-check.yml` | PR | Vérification DDD boundaries + PHPStan modules/strict |
 | `deploy-staging.yml` | `workflow_run` sur "Tests - Leopardo RH" (branche main) | Deploy staging Render |
 | `deploy-main.yml` | `workflow_run` sur "Tests - Leopardo RH" / "Web CI - Leopardo Admin" | Deploy production Render |
