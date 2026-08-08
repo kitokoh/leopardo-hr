@@ -51,7 +51,10 @@ Route::prefix('v1')->group(function (): void {
     Route::get('/health', HealthController::class);
     Route::get('/health/live', [HealthController::class, 'live']);
     Route::get('/health/ready', [HealthController::class, 'ready']);
-    Route::get('/metrics', MetricsController::class);
+    // Platform-wide metrics (versions PHP/Laravel, drivers, tenant/employee
+    // counts) are business intelligence + version fingerprinting material:
+    // they must not be served anonymously. See issue #1466.
+    Route::get('/metrics', MetricsController::class)->middleware('auth:super_admin_api');
 
     // Auth (core, hors module)
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
