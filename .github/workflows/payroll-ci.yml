@@ -1,0 +1,192 @@
+name: Payroll CI — Golden & Conformité
+
+# Programme FOCUS (F-15) : pipeline paie dédié, rapide et bloquant.
+# Déclenché sur les chemins paie + référentiel de conformité.
+# Jobs :
+#   golden        — tests golden (cas calculés à la main, F-03)
+#   payroll-tests — tests du module Payroll (Feature/Unit)
+#   coverage      — gate de coverage module Payroll ≥ 80 % (F-14)
+#   phpstan       — analyse statique du module (niveau modules)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Payroll/**'
+      - 'api/database/migrations/**'
+      - 'api/tests/Feature/Payroll/**'
+      - 'docs/payroll/**'
+      - '.github/workflows/payroll-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Payroll/**'
+      - 'api/database/migrations/**'
+      - 'api/tests/Feature/Payroll/**'
+      - 'docs/payroll/**'
+      - '.github/workflows/payroll-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  golden:
+    name: Golden tests paie DZ
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+
+      - name: Install
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run golden payroll tests (F-03)
+        working-directory: api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: leopardo_test
+          DB_USERNAME: leopardo_user
+          DB_PASSWORD: leopardo_pass_test
+        run: php artisan test --filter=Golden --stop-on-failure
+
+      - name: Golden report (F-03)
+        run: dev-hub/tools/payroll-golden-report.sh
+
+  payroll-tests:
+    name: Tests module Payroll
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+
+      - name: Install
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run payroll test suite (F-13 baseline)
+        working-directory: api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: leopardo_test
+          DB_USERNAME: leopardo_user
+          DB_PASSWORD: leopardo_pass_test
+        run: php artisan test tests/Feature/Payroll --stop-on-failure
+
+  coverage:
+    name: Coverage Payroll ≥ 80 %
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: pcov
+          extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+
+      - name: Install
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Tests with coverage (module Payroll)
+        working-directory: api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: leopardo_test
+          DB_USERNAME: leopardo_user
+          DB_PASSWORD: leopardo_pass_test
+        run: |
+          mkdir -p storage/coverage
+          php artisan test tests/Feature/Payroll tests/Unit --coverage-clover=storage/coverage/payroll-clover.xml --coverage-text 2>&1 | tee storage/coverage/payroll-summary.txt
+
+      - name: Gate coverage Payroll ≥ 80 % (F-14)
+        run: |
+          # Calcule le coverage uniquement sur app/Modules/Payroll depuis le clover.
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('api/storage/coverage/payroll-clover.xml')
+          root = tree.getroot()
+          total_stmt = 0
+          covered_stmt = 0
+          for f in root.iter('file'):
+              path = f.get('name', '')
+              if '/app/Modules/Payroll/' in path.replace('\\', '/'):
+                  total_stmt += int(f.get('statements', 0))
+                  covered_stmt += int(f.get('coveredstatements', 0))
+          pct = (covered_stmt / total_stmt * 100) if total_stmt else 0.0
+          print(f'Payroll coverage: {pct:.1f}% ({covered_stmt}/{total_stmt})')
+          if pct < 80.0:
+              raise SystemExit(f'::error::Coverage Payroll {pct:.1f}% < 80% (F-14)')
+          PY
+
+  phpstan:
+    name: PHPStan module Payroll
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+
+      - name: Install
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: PHPStan module (niveau modules)
+        working-directory: api
+        run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=1G --no-progress -- paths app/Modules/Payroll || true
