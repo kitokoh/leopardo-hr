@@ -388,6 +388,36 @@ class PayrollCalculator
         ];
     }
 
+    /**
+     * Programme FOCUS (F-07) — indemnité de congés payés.
+     *
+     * Règle (docs/payroll/DZ_COMPLIANCE.md §4) : la PLUS FAVORABLE entre
+     *  - maintien de salaire : base mensuelle × jours de congé / jours ouvrés,
+     *  - règle du 1/10ᵉ : (salaires bruts des 12 mois de référence / 10)
+     *    × (jours pris / congés acquis sur la période).
+     *
+     * Intégration à venir : alimentée par les absences approuvées (F-20),
+     * versée dans le bulletin lors d'un départ en congé.
+     */
+    public function computeLeaveIndemnity(
+        float $monthlyBase,
+        float $leaveDays,
+        float $workingDays,
+        float $referenceGross12Months,
+        float $accruedDaysTotal = 30.0
+    ): float {
+        if ($leaveDays <= 0.0) {
+            return 0.0;
+        }
+
+        $maintien = $workingDays > 0.0 ? $monthlyBase * ($leaveDays / $workingDays) : 0.0;
+        $dixieme = $accruedDaysTotal > 0.0
+            ? ($referenceGross12Months / 10.0) * ($leaveDays / $accruedDaysTotal)
+            : 0.0;
+
+        return round(max($maintien, $dixieme), 2);
+    }
+
     private function computeComponentAmount(SalaryComponent $component, float $baseSalary, float $grossSalary): float
     {
         return match ($component->calculation_type) {
