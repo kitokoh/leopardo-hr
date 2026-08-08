@@ -149,7 +149,22 @@ jobs:
           DB_PASSWORD: leopardo_pass_test
         run: |
           mkdir -p storage/coverage
-          php artisan test tests/Feature/Payroll tests/Unit --coverage-clover=storage/coverage/payroll-clover.xml --coverage-text 2>&1 | tee storage/coverage/payroll-summary.txt
+          # Include ALL payroll-related tests (F-14) — not just tests/Feature/Payroll:
+          # tests/Feature/Payroll*  → integration & controller tests that exercise
+          #                           PayrollCalculator, PayrollCycleService, PayrollService
+          # tests/Unit/Payroll*     → pure country-rules & calculator unit tests
+          php artisan test \
+            tests/Feature/Payroll \
+            tests/Feature/PayrollCycleIntegrationTest.php \
+            tests/Feature/PayrollCyclePreviewTest.php \
+            tests/Feature/PayrollCycleSettingsTest.php \
+            tests/Feature/PayrollRunControllerTest.php \
+            tests/Feature/PayrollAccountingExportTest.php \
+            tests/Feature/PayrollCountryRulesTemporalVersioningTest.php \
+            tests/Unit/PayrollCountryRulesTest.php \
+            tests/Unit/PayrollCalculatorCountryRulesTest.php \
+            --coverage-clover=storage/coverage/payroll-clover.xml \
+            --coverage-text 2>&1 | tee storage/coverage/payroll-summary.txt
 
       - name: Gate coverage Payroll ≥ 80 % (F-14)
         run: |
