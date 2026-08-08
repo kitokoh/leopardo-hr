@@ -1,6 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-/// APV L.05 â€” Couleur = domaine. L.07 â€” Grille partagee.
+/// APV L.05 — Couleur = domaine. L.07 — Grille partagee.
 ///
 /// Source de verite cote mobile des couleurs Leopardo RH.
 /// Toute modification doit etre repercutee dans :
@@ -12,39 +12,39 @@
 class AppColors {
   AppColors._();
 
-  // â”€â”€â”€ Domaines (immuables une fois publies) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  /// RH â€” module de base, toujours actif.
+  // ─── Domaines (immuables une fois publies) ──────────────────────────────
+  /// RH — module de base, toujours actif.
   static const Color rh = Color(0xFF10B981); // emerald-500
   static const Color rhLight = Color(0xFFD1FAE5); // emerald-100
   static const Color rhDark = Color(0xFF047857); // emerald-700
 
-  /// Finance â€” Phase 2, activable par company.
+  /// Finance — Phase 2, activable par company.
   static const Color finance = Color(0xFFF59E0B); // amber-500
   static const Color financeLight = Color(0xFFFEF3C7); // amber-100
   static const Color financeDark = Color(0xFFB45309); // amber-700
 
-  /// Securite / Cameras â€” Phase 2.
+  /// Securite / Cameras — Phase 2.
   static const Color security = Color(0xFF3B82F6); // blue-500
   static const Color securityLight = Color(0xFFDBEAFE); // blue-100
   static const Color securityDark = Color(0xFF1D4ED8); // blue-700
 
-  /// Leo IA / Intelligence â€” Phase 2.
+  /// Leo IA / Intelligence — Phase 2.
   static const Color ia = Color(0xFF7C3AED); // violet-600
   static const Color iaLight = Color(0xFFEDE9FE); // violet-100
   static const Color iaDark = Color(0xFF5B21B6); // violet-800
 
-  /// Cabinet numerique â€” documents et dossiers.
+  /// Cabinet numerique — documents et dossiers.
   static const Color cabinet = Color(0xFF8B6914); // gold/amber
   static const Color cabinetLight = Color(0xFFFEF3C7); // amber-100
   static const Color cabinetDark = Color(0xFF6B4F10); // darker gold
 
-  // â”€â”€â”€ Semantique (alerte / succes / info) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Semantique (alerte / succes / info) ────────────────────────────────
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color danger = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
 
-  // â”€â”€â”€ Neutres â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Neutres ─────────────────────────────────────────────────────────────
   static const Color bgLight = Color(0xFFFFFFFF);
   static const Color cardLight = Color(0xFFF8FAFC); // slate-50
   static const Color borderLight = Color(0xFFE2E8F0); // slate-200
@@ -67,7 +67,7 @@ class AppColors {
   /// @Deprecated Utilisez [textDark]. Conserve pour compat avec [AppTheme.textPrimary].
   static const Color textOnDark = textDark;
 
-  // â”€â”€â”€ Palette mobile sombre "pointage" (PA2-MOB-011) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Palette mobile sombre "pointage" (PA2-MOB-011) ─────────────────────
   // Ecrans attendance/ + smart_attendance/ + widgets core partages sur les 3
   // apps mobiles (employee/manager/hr) redefinissaient chacun les memes
   // Color(0x...) litteraux au lieu de partager une seule source de verite.
@@ -76,6 +76,10 @@ class AppColors {
   // qui restent le theme sombre par defaut de l'app). Toute nouvelle valeur
   // hex sur un ecran de pointage doit etre ajoutee ici plutot que hardcodee.
   static const Color mobileDarkBg = Color(0xFF0B1326);
+  static const Color mobileDarkSurfaceLow = Color(0xFF131B2E); // gradient stop (startup gate)
+  static const Color mobileDarkCardBg = Color(0xFF31394D); // glass card / tile dark surface
+  static const Color mobileBrandEmerald = Color(0xFF4EDEA3); // bright emerald (logo letter highlight)
+  static const Color mobileDarkOnSurface = Color(0xFFDAE2FD); // on-surface text (startup gate)
   static const Color mobileDarkSurface = Color(0xFF171F33);
   static const Color mobileDarkSurfaceAlt = Color(0xFF2A3C5A);
   static const Color mobileDarkField = Color(0xFF0C1525);
@@ -134,7 +138,7 @@ class AppColors {
     return color.withValues(alpha: isDark(context) ? darkAlpha : lightAlpha);
   }
 
-  // â”€â”€â”€ Helpers domaine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Helpers domaine ────────────────────────────────────────────────────
   /// Retourne la couleur principale d'un domaine module.
   static Color forDomain(String domain) {
     switch (domain) {
