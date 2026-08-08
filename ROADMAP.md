@@ -1,31 +1,54 @@
 # Product Roadmap — Leopardo RH
 
-> ⚠️ **Source de vérité opérationnelle : [`docs/REFERENTIEL_PRODUIT/ROADMAP.md`](docs/REFERENTIEL_PRODUIT/ROADMAP.md)** (séquencement détaillé, horizons) et **[`PILOTAGE.md`](PILOTAGE.md)** (état opérationnel réel, priorités courantes). Ce document est un résumé de statut produit — en cas de divergence, **PILOTAGE.md prime** (issue #1505).
+> ⚠️ **Ce document decrit une trajectoire produit aspirationnelle/marketing.**
+> Pour l'etat operationnel reel, les priorites courantes et les ecarts avec cette roadmap,
+> se referer a [`PILOTAGE.md`](PILOTAGE.md), qui prime en cas de divergence entre les deux documents.
 
-## 📍 Statut actuel (2026-08)
+Leopardo RH follows a phased delivery approach, prioritizing stability for SMEs before expanding into advanced enterprise features.
 
-Le code sur `main` a dépassé le périmètre MVP initial. Plateforme livrée :
+## 🎯 Programme FOCUS (2026) — noyau dur en profondeur
 
-- **HR Core** : cycle de vie employé, départements, contrats, RBAC (principal/rh/dept/comptable/superviseur/employee), cabinet documentaire.
-- **Multi-tenant** : isolation **mode `schema`** activée (`search_path` PostgreSQL), onboarding invités, trial guidé.
-- **Paie** : moteur de paie automatisé multi-pays (DZ, MA, FR, TR), bulletins PDF, exports bancaires, avances, prêts, commissions.
-- **Présence & pointage** : mobile géolocalisé, kiosque ZKTeco biométrique, corrections, workflows d'approbation, anomalies.
-- **Mobile** : 6 apps Flutter (employee, manager, hr, marketing, platform_admin + core).
-- **IA** : Leo AI — orchestrateur d'agents, prédictions (absentéisme, turnover), commande vocale, préparation de paie.
-- **Modules Phase 2 livrés** : Billing/abonnements (Stripe, Chargily), Caméras RTSP, Absence avancée (politiques de congés), Fleet, Recrutement, Notifications, Marketing.
-- **Intégrations** : webhooks sortants (endpoints + dispatcher), SSO, ZKTeco, Traccar (GPS).
+Depuis 2026-08-07, le projet suit le **programme FOCUS** (plan complet : `docs/focus/PLAN.md`, issues `focus` F-01…F-30) : approfondissement du noyau (paie DZ, HR, présence, sécurité, qualité) **sans fermer les autres modules**, qui passent en maintenance assumée (bugs/sécurité prioritaires, features re-planifiées — ADR-0012).
 
-## 🚀 Prochaines priorités (extrait)
+- **Wedge** : conformité paie DZ (IRG, CNAS, golden tests, bulletins, exports, clôture 2 étapes).
+- **Métriques** : coverage Payroll ≥ 80 %, ≥ 40 golden tests, #1472 clos, 3 pilotes DZ.
+- **Périphérique** : label `peripheral`, aucune suppression.
 
-1. **Stabilisation** : fermer les issues P0/P1 du backlog GitHub (mobile, CI staging, infra de test).
-2. **Pilotes clients** : 3 pilotes avant ouverture de nouveaux modules Phase 2.
-3. **Enterprise** (12-24 mois) : moteurs de conformité fiscale additionnels, API publique v1 stabilisée, forecasting avancé.
-4. **Écosystème** (24+ mois) : marketplace de modules, SDK ouvert, couche d'identité globale mobile.
+## 📍 Current Status: Phase 0 (MVP)
+**Status: COMPLETED & STABLE**
+- Core HR management & employee lifecycle.
+- Multi-tenant shared isolation.
+- Native Mobile App (Flutter) for attendance tracking.
+- Basic Payroll Estimation logic.
+- ZKTeco Biometric Kiosk integration.
 
-## 📋 Comment suivre
+---
 
-- Backlog détaillé et issues : **GitHub Issues** (label `P1`/`P2`/`P3`).
-- Séquençage produit : `docs/REFERENTIEL_PRODUIT/ROADMAP.md`.
-- État opérationnel et écarts : `PILOTAGE.md`.
+## 🚀 Phase 1: Foundation Hardening (Q2 2026)
+**Status: IN PROGRESS**
+- [x] Professional Documentation & Open Source Positioning.
+- [ ] Domain-Driven Design (DDD) backend restructuring.
+- [ ] Enterprise-grade security audits and hardening.
+- [ ] Real-time Mobile Experience (RTMX) components.
 
-*Cette roadmap est sujette à évolution selon les retours clients et de la communauté.*
+## 🏗 Phase 2: Modular Expansion (Q3 2026)
+Activation of specialized modules based on customer demand:
+- **Finance & Billing:** Automated invoicing and payment tracking for SMEs.
+- **Security & Vision:** RTSP camera streaming and AI-assisted site monitoring.
+- **Advanced Absence:** Multi-step approval workflows and leave balance policies.
+- **Leo AI (Beta):** Conversation-driven HR assistant for managers.
+
+## 🏢 Phase 3: Enterprise & Scale (2027)
+- Physical database isolation (Schema Mode) for large corporations.
+- Public API for third-party integrations (Webhooks, SDKs).
+- Multi-country tax compliance engines (Turkey, France, Senegal).
+- Advanced workforce forecasting and performance analytics.
+
+## 🌍 Phase 4: Platform Ecosystem (2028+)
+- Developer Marketplace for community-built HR modules.
+- Open SDK for custom enterprise extensions.
+- Global identity layer for mobile workforce.
+
+---
+
+*This roadmap is subject to change based on community feedback and market needs.*
