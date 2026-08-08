@@ -110,15 +110,15 @@ class _StartupGateState extends State<StartupGate> {
             child: Directionality(
               textDirection: TextDirection.ltr,
               child: Material(
-                color: const Color(0xFF0B1326), // Stitch-bg
+                color: AppColors.mobileDarkBg, // Stitch-bg
                 child: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xFF0B1326),
-                        Color(0xFF131B2E), // surface_container_low
+                        AppColors.mobileDarkBg,
+                        AppColors.mobileDarkSurfaceLow, // surface_container_low
                       ],
                     ),
                   ),
@@ -158,7 +158,7 @@ class _StartupGateState extends State<StartupGate> {
                               child: const Text(
                                 'L',
                                 style: TextStyle(
-                                  color: Color(0xFF4EDEA3),
+                                  color: AppColors.mobileBrandEmerald,
                                   fontSize: 40,
                                   fontWeight: FontWeight.w900,
                                 ),
@@ -169,7 +169,7 @@ class _StartupGateState extends State<StartupGate> {
                               widget.appName,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                color: Color(0xFFDAE2FD), // on-surface
+                                color: AppColors.mobileDarkOnSurface, // on-surface
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -0.5,
@@ -183,7 +183,7 @@ class _StartupGateState extends State<StartupGate> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF10B981),
+                                    AppColors.rh,
                                   ),
                                 ),
                               ),
@@ -220,7 +220,7 @@ class _StartupGateState extends State<StartupGate> {
                                       _showStartupGuard = false;
                                     }),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFFDAE2FD),
+                                  foregroundColor: AppColors.mobileDarkOnSurface,
                                   side: BorderSide(
                                     color: const Color(
                                       0xFFDAE2FD,
