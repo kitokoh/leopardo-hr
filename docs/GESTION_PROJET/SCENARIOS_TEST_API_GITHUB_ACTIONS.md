@@ -1314,14 +1314,10 @@ Bug corrige au passage (pas un changement de contrat, une correction de bug late
 
 - Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
 
-## Issue #1471 — Dashboard web : statistiques agrégées SQL (T18 audit post-MVP)
+## Issues #1466/#1468/#1469 — Durcissement API (metrics protégé, CORS, security headers)
 
-`Web\DashboardController::index()` chargeait **tous les employés actifs** et **tous les logs du jour** en mémoire (`->get()`) puis bouclait sur l'ensemble — non borné sur les gros tenants. Les statistiques d'en-tête utilisent désormais :
+- `GET /api/v1/metrics` passe de public à **authentifié `super_admin_api`** (401 sinon) — les endpoints `/health*` restent publics (deploy hooks Render).
+- `config/cors.php` : ajout des origines `https://gestionemployer-backend.vercel.app` (vitrine réelle) et `https://admin.leopardo-rh.com`.
+- Nouveau middleware global `SecurityHeaders` : `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` (HTTPS uniquement) sur toutes les réponses.
 
-- `employeesTotal` : `COUNT(*)` SQL sur les employés actifs.
-- `present` / `late` : calculés sur les seuls employés actifs ayant des logs aujourd'hui (`whereIn` borné par l'activité du jour, `distinct` par employé).
-- `total_estimated` : la boucle `EstimationService::dailySummaryFromLogs()` ne parcourt plus que les employés présents (les résumés des absents sont nuls par construction) — mémoire/CPU proportionnels à l'activité du jour, plus à la taille du tenant.
-
-**Contrat API web rendu inchangé** : mêmes variables de vue (`employeesTotal`, `presentCount`, `lateCount`, `totalEstimated`, `rows`, `paginator`), mêmes calculs métier (le total estimé est identique : les absents contribuent 0).
-
-- Scenario a valider : suite `DashboardControllerTest` existante + vérification manuelle du rendu (`/dashboard`) avec des employés présents/absents/retard le même jour — valeurs d'en-tête identiques avant/apres.
+- Scenario a valider : `tests/Feature/Security/MetricsAccessTest.php` (401 anonyme / 200 super_admin / health public), `tests/Feature/Security/SecurityHeadersTest.php` (headers présents, HSTS seulement en HTTPS), `CorsAndTrustedProxyTest` (origines explicites, pas de `*`).
