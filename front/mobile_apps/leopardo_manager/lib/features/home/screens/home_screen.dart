@@ -381,7 +381,6 @@ class _ModuleCard extends StatelessWidget {
       onTap: module.isActive ? () => context.push(module.route!) : null,
       borderRadius: BorderRadius.circular(24),
       child: GlassCard(
-        width: 206,
         padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

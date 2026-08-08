@@ -10,6 +10,7 @@ import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/project_task.dart';
 import 'package:leopardo_manager/features/tasks/providers/task_provider.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class TaskListScreen extends ConsumerWidget {
   const TaskListScreen({super.key});
