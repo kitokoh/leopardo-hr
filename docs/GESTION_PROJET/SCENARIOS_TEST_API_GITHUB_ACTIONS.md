@@ -1314,14 +1314,8 @@ Bug corrige au passage (pas un changement de contrat, une correction de bug late
 
 - Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
 
-## Issue #1471 — Dashboard web : statistiques agrégées SQL (T18 audit post-MVP)
+## Issue #1474 — Commande `audit:purge` (rétention RGPD des audit logs)
 
-`Web\DashboardController::index()` chargeait **tous les employés actifs** et **tous les logs du jour** en mémoire (`->get()`) puis bouclait sur l'ensemble — non borné sur les gros tenants. Les statistiques d'en-tête utilisent désormais :
+La matrice RGPD référençait `audit:purge --older-than=24months` sans que la commande existe. Nouvelle commande console `audit:purge` (défaut 24 mois, minimum 1 mois) qui supprime les lignes `audit_logs` dont `created_at` est antérieur au cutoff, planifiée hebdomadairement (`routes/console.php`, `onOneServer`). Aucun endpoint HTTP ajouté/modifié.
 
-- `employeesTotal` : `COUNT(*)` SQL sur les employés actifs.
-- `present` / `late` : calculés sur les seuls employés actifs ayant des logs aujourd'hui (`whereIn` borné par l'activité du jour, `distinct` par employé).
-- `total_estimated` : la boucle `EstimationService::dailySummaryFromLogs()` ne parcourt plus que les employés présents (les résumés des absents sont nuls par construction) — mémoire/CPU proportionnels à l'activité du jour, plus à la taille du tenant.
-
-**Contrat API web rendu inchangé** : mêmes variables de vue (`employeesTotal`, `presentCount`, `lateCount`, `totalEstimated`, `rows`, `paginator`), mêmes calculs métier (le total estimé est identique : les absents contribuent 0).
-
-- Scenario a valider : suite `DashboardControllerTest` existante + vérification manuelle du rendu (`/dashboard`) avec des employés présents/absents/retard le même jour — valeurs d'en-tête identiques avant/apres.
+- Scenario a valider : `tests/Unit/PurgeAuditLogsCommandTest` (purge des logs > N mois, respect de l'option `--older-than`, no-op si rien d'expiré) + la matrice de conformité RGPD passe le point « limitation de conservation » de PARTIEL a CONFORME (politique documentée dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`).
