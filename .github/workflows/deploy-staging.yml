@@ -81,19 +81,31 @@ jobs:
     if: needs.gate.outputs.should_deploy == 'true'
     environment:
       name: staging
-      url: ${{ vars.STAGING_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+      url: ${{ vars.STAGING_API_URL }}
 
     steps:
+      - name: Verify staging environment is configured
+        shell: bash
+        env:
+          STAGING_API_URL: ${{ vars.STAGING_API_URL }}
+          RENDER_STAGING_DEPLOY_HOOK_URL: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${STAGING_API_URL}" ]]; then
+            echo "::error::STAGING_API_URL is not set. Refusing to deploy: without it, this workflow would target the production URL (issue #1485). Configure a real staging environment first."
+            exit 1
+          fi
+          if [[ -z "${RENDER_STAGING_DEPLOY_HOOK_URL}" ]]; then
+            echo "::error::RENDER_STAGING_DEPLOY_HOOK_URL is not set. The production deploy hook is NOT used as a fallback anymore (issue #1485)."
+            exit 1
+          fi
+
       - name: Trigger Render staging deploy
         shell: bash
         env:
-          RENDER_STAGING_HOOK_URL: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL || secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_STAGING_HOOK_URL: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL }}
         run: |
           set -euo pipefail
-          if [[ -z "${RENDER_STAGING_HOOK_URL}" ]]; then
-            echo "::warning::No staging deploy hook configured. Set RENDER_STAGING_DEPLOY_HOOK_URL or RENDER_DEPLOY_HOOK_URL secret."
-            exit 0
-          fi
           echo "Triggering Render staging deployment..."
           curl --fail --silent --show-error --request POST "${RENDER_STAGING_HOOK_URL}"
           echo "Deploy hook triggered successfully."
@@ -101,7 +113,7 @@ jobs:
       - name: Wait for staging health
         shell: bash
         env:
-          STAGING_URL: ${{ vars.STAGING_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+          STAGING_URL: ${{ vars.STAGING_API_URL }}
         run: |
           set -euo pipefail
           URL="${STAGING_URL}/api/v1/health"
