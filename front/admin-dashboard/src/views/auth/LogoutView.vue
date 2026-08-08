@@ -10,7 +10,7 @@
     <div class="absolute inset-0 z-0 opacity-10" style="background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
 
     <div class="max-w-md w-full space-y-8 relative z-10 text-center animate-fade-in">
-      <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl glass-card/5 backdrop-blur-2xl border border-white/20 shadow-glass animate-bounce-slow overflow-hidden group">
+      <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl backdrop-blur-2xl border border-white/20 shadow-glass animate-bounce-slow overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <ArrowRightOnRectangleIcon class="h-10 w-10 text-brand-400 relative z-10" />
       </div>
@@ -26,7 +26,7 @@
           </p>
 
           <div class="mt-10 relative">
-            <div class="overflow-hidden h-1.5 mb-4 text-xs flex rounded-full glass-card/5">
+            <div class="overflow-hidden h-1.5 mb-4 text-xs flex rounded-full bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl">
               <div
                 class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-500 transition-all duration-[3000ms] ease-linear"
                 :style="{ width: progress + '%' }"

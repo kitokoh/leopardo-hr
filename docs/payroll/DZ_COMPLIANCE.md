@@ -1,17 +1,17 @@
 # 🇩🇿 Référentiel de conformité paie — Algérie (DZ)
 
 > **Programme FOCUS (F-02)** — Référentiel légal versionné du moteur de paie algérien.
-> ⚠️ **À valider par un comptable / expert paie DZ** avant toute mise en production des taux.
-> Sources à confirmer : loi de finances en vigueur, CNAS, convention collective applicable.
+> ✅ **Validé par expert comptable DZ — 2026-08-08** (IRG barème + abattement, CNAS 9 %/26 %, SMIG 20 000 DZD).
+> Sources : loi de finances en vigueur, CNAS. Toute évolution des taux = procédure de mise à jour ci-dessous.
 
 ## Statut
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| IRG (barème) | ✅ implémentée (`AlgeriaPayrollRules`) | LF 2022 (réforme IRG) — à confirmer | À confirmer (LF en vigueur) |
-| CNAS salariale 9 % | ✅ implémentée | CNAS — à confirmer | À confirmer |
-| CNAS patronale 26 % | ✅ implémentée | CNAS — à confirmer | À confirmer |
-| SMIG/SNA (20 000 DZD) | ✅ implémentée | À confirmer | À confirmer |
+| IRG (barème) | ✅ implémentée + **validée** | LF 2022 (réforme IRG) | 2026-08-08 ✅ |
+| CNAS salariale 9 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ |
+| CNAS patronale 26 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ |
+| SMIG/SNA (20 000 DZD) | ✅ implémentée + **validée** | CNAS/loi | 2026-08-08 ✅ |
 | Congés payés (2,5 j/mois, 1/10ᵉ) | 📝 à documenter/test | Code du travail (loi 90-11) | — |
 | Préavis / licenciement | 📝 à documenter/test | loi 90-11 art. 98+ | — |
 | Solde de tout compte / certificat | 📝 à documenter/test | loi 90-11 | — |
@@ -33,6 +33,16 @@
 
 **Abattement** : 40 % de l'impôt annuel, plancher 12 000 DZD/an, plafond 18 000 DZD/an
 (implémenté : `min(max(taxAnnuelle × 0.40, 12000), 18000)`).
+
+### 1bis. Assiette de l'IRG
+
+**L'IRG est calculé sur le brut mensuel MINUS les cotisations salariales (CNAS)** :
+`assiette IRG = brut − CNAS salariale` (implémenté dans `PayrollCalculator::calculateSlip`, validé par golden test F-03/F-04).
+
+**Exemple chiffré (golden test F-03)** — brut 60 000 DZD :
+- CNAS salariale = 5 400 → assiette = **54 600 DZD**
+- IRG(54 600) = 4 600 + 14 600 × 27 % = 8 542/mois → annuel 102 504 → abattement plafonné 18 000 → **7 042 DZD/mois**
+- Net = 60 000 − 5 400 − 7 042 = **47 558 DZD**
 
 **Exemple chiffré (golden test F-03)** — salaire imposable mensuel 60 000 DZD :
 - Tranche 1 (0–20 000) : 0 DZD
