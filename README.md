@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/kitokoh/leopardo-hr/actions"><img src="https://img.shields.io/github/actions/workflow/status/kitokoh/leopardo-hr/tests.yml?branch=main&style=for-the-badge&logo=github&label=CI/CD" alt="CI Status"></a>
-  <a href="https://codecov.io/gh/kitokoh/leopardo-hr"><img src="https://img.shields.io/codecov/c/github/kitokoh/leopardo-hr?style=for-the-badge&logo=codecov&label=Coverage" alt="Code Coverage"></a>
+  <img src="https://img.shields.io/badge/Coverage-Gate_in_CI-30a14e?style=for-the-badge&logo=php" alt="Coverage Gate">
   <a href="docs/security/SECURITY.md"><img src="https://img.shields.io/badge/Security-Enterprise--Grade-brightgreen?style=for-the-badge&logo=anchor" alt="Security Hardened"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/kitokoh/leopardo-hr?style=for-the-badge&label=License" alt="License"></a>
   <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php" alt="PHP 8.4">
