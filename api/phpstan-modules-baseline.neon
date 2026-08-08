@@ -193,12 +193,6 @@ parameters:
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
 
 		-
-			message: '#^Parameter \#1 \$companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\Controllers\\OnboardingStepController\:\:seedDefaultSteps\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/OnboardingStepController.php
-
-		-
 			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\AbsenteeismPredictor\:\:predict\(\) expects string, int\|null given\.$#'
 			identifier: argument.type
 			count: 1
