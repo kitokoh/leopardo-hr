@@ -94,7 +94,7 @@
                 </span>
               </div>
 
-              <div class="rounded-2xl glass-card/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-4 shadow-sm">
+              <div class="rounded-2xl glass-card dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 p-4 shadow-sm">
                 <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400 italic">
                   "{{ request.description || 'Aucune description fournie.' }}"
                 </p>
@@ -329,7 +329,7 @@ onMounted(loadRequests)
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 glass-card/50 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 glass-card px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
 }
 </style>
 
