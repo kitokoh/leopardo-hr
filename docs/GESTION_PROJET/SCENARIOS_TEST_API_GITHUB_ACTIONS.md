@@ -1314,10 +1314,8 @@ Bug corrige au passage (pas un changement de contrat, une correction de bug late
 
 - Scenario a valider : suite `ExpenseClaimControllerTest` existante (deja verte, teste le vrai controller/modele Planning) — comportement identique avant/apres.
 
-## Issues #1466/#1468/#1469 — Durcissement API (metrics protégé, CORS, security headers)
+## Issue #1474 — Commande `audit:purge` (rétention RGPD des audit logs)
 
-- `GET /api/v1/metrics` passe de public à **authentifié `super_admin_api`** (401 sinon) — les endpoints `/health*` restent publics (deploy hooks Render).
-- `config/cors.php` : ajout des origines `https://gestionemployer-backend.vercel.app` (vitrine réelle) et `https://admin.leopardo-rh.com`.
-- Nouveau middleware global `SecurityHeaders` : `X-Content-Type-Options`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` (HTTPS uniquement) sur toutes les réponses.
+La matrice RGPD référençait `audit:purge --older-than=24months` sans que la commande existe. Nouvelle commande console `audit:purge` (défaut 24 mois, minimum 1 mois) qui supprime les lignes `audit_logs` dont `created_at` est antérieur au cutoff, planifiée hebdomadairement (`routes/console.php`, `onOneServer`). Aucun endpoint HTTP ajouté/modifié.
 
-- Scenario a valider : `tests/Feature/Security/MetricsAccessTest.php` (401 anonyme / 200 super_admin / health public), `tests/Feature/Security/SecurityHeadersTest.php` (headers présents, HSTS seulement en HTTPS), `CorsAndTrustedProxyTest` (origines explicites, pas de `*`).
+- Scenario a valider : `tests/Unit/PurgeAuditLogsCommandTest` (purge des logs > N mois, respect de l'option `--older-than`, no-op si rien d'expiré) + la matrice de conformité RGPD passe le point « limitation de conservation » de PARTIEL a CONFORME (politique documentée dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`).
