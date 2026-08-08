@@ -1,11 +1,11 @@
 name: Fix — Regenerate composer.lock
 
+# Généralisé depuis un hack one-off (branche aléatoire
+# feat/growth-module-6687823184469251636, issue #1500) vers un outil manuel
+# documenté : utilisé pour régénérer composer.lock lors d'advisories de
+# sécurité (ex. guzzle/phpseclib, #1463). À lancer via workflow_dispatch.
 on:
   workflow_dispatch:
-  push:
-    branches: [ feat/growth-module-6687823184469251636 ]
-    paths:
-      - 'api/composer.json'
 
 permissions:
   contents: write
