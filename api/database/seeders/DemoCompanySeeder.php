@@ -312,6 +312,7 @@ SQL);
                 'projects',
                 'salary_advances',
                 'leave_balance_logs',
+                'leave_balances',
                 'absences',
                 'absence_types',
                 'attendance_logs',
@@ -323,6 +324,13 @@ SQL);
             ];
 
             foreach ($tables as $table) {
+                // Child tables (expense_items, loan_repayments, task_comments...)
+                // have no company_id column — they are removed by the parent's
+                // ON DELETE CASCADE below. Skip them here.
+                if (! $this->sharedColumnExists($table, 'company_id')) {
+                    continue;
+                }
+
                 DB::table($this->sharedTable($table))->where('company_id', $companyId)->delete();
             }
         });
@@ -1317,10 +1325,10 @@ SQL);
                 'amount' => 50000,
                 'currency' => $currency,
                 'reason' => 'Achat voiture',
-                'monthly_deduction' => 5000,
-                'total_installments' => 10,
-                'remaining_installments' => 7,
-                'status' => 'active',
+                'installments' => 10,
+                'installment_amount' => 5000,
+                'start_date' => now()->subMonths(4)->toDateString(),
+                'status' => 'repaying',
                 'approved_by' => $managerIds['principal'],
                 'approved_at' => now()->subMonths(3)->toIso8601String(),
                 'disbursed_at' => now()->subMonths(3)->toIso8601String(),
@@ -1332,11 +1340,11 @@ SQL);
                 'employee_id' => $employeeIds[1] ?? $employeeIds[0],
                 'amount' => 20000,
                 'currency' => $currency,
-                'reason' => 'RentrÃ©e scolaire',
-                'monthly_deduction' => 4000,
-                'total_installments' => 5,
-                'remaining_installments' => 5,
-                'status' => 'pending',
+                'reason' => 'Rentree scolaire',
+                'installments' => 5,
+                'installment_amount' => 4000,
+                'start_date' => now()->subDays(3)->toDateString(),
+                'status' => 'pending_approval',
                 'approved_by' => null,
                 'approved_at' => null,
                 'disbursed_at' => null,
@@ -1372,7 +1380,7 @@ SQL);
                     'description' => 'Billet train Alger-Oran AR',
                     'amount' => 4500,
                     'category' => 'transport',
-                    'receipt_date' => now()->subDays(6)->toDateString(),
+                    'date' => now()->subDays(6)->toDateString(),
                     'created_at' => now()->subDays(7)->toIso8601String(),
                     'updated_at' => now()->toIso8601String(),
                 ],
@@ -1381,7 +1389,7 @@ SQL);
                     'description' => 'Hotel 2 nuits',
                     'amount' => 8000,
                     'category' => 'accommodation',
-                    'receipt_date' => now()->subDays(6)->toDateString(),
+                    'date' => now()->subDays(6)->toDateString(),
                     'created_at' => now()->subDays(7)->toIso8601String(),
                     'updated_at' => now()->toIso8601String(),
                 ],
@@ -1390,7 +1398,7 @@ SQL);
                     'description' => 'Repas client',
                     'amount' => 2500,
                     'category' => 'meals',
-                    'receipt_date' => now()->subDays(5)->toDateString(),
+                    'date' => now()->subDays(5)->toDateString(),
                     'created_at' => now()->subDays(7)->toIso8601String(),
                     'updated_at' => now()->toIso8601String(),
                 ],
