@@ -18,8 +18,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Enregistrement :
  *   AppServiceProvider::register() → $this->app->singleton(TenantManager::class)
- *   Le singleton App\Services\TenantManager est conservé comme alias
- *   de backward compat (voir App\Services\TenantManager).
+ *   Les anciens shims App\Services\* ont été supprimés (issue #1494).
  *
  * Utilisation normale :
  *   $manager = app(\App\Core\Tenant\TenantManager::class);
