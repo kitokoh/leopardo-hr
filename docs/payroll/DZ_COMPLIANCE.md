@@ -1,0 +1,74 @@
+# 🇩🇿 Référentiel de conformité paie — Algérie (DZ)
+
+> **Programme FOCUS (F-02)** — Référentiel légal versionné du moteur de paie algérien.
+> ⚠️ **À valider par un comptable / expert paie DZ** avant toute mise en production des taux.
+> Sources à confirmer : loi de finances en vigueur, CNAS, convention collective applicable.
+
+## Statut
+
+| Règle | État | Référence | Validité |
+|---|---|---|---|
+| IRG (barème) | ✅ implémentée (`AlgeriaPayrollRules`) | LF 2022 (réforme IRG) — à confirmer | À confirmer (LF en vigueur) |
+| CNAS salariale 9 % | ✅ implémentée | CNAS — à confirmer | À confirmer |
+| CNAS patronale 26 % | ✅ implémentée | CNAS — à confirmer | À confirmer |
+| SMIG/SNA (20 000 DZD) | ✅ implémentée | À confirmer | À confirmer |
+| Congés payés (2,5 j/mois, 1/10ᵉ) | 📝 à documenter/test | Code du travail (loi 90-11) | — |
+| Préavis / licenciement | 📝 à documenter/test | loi 90-11 art. 98+ | — |
+| Solde de tout compte / certificat | 📝 à documenter/test | loi 90-11 | — |
+| Assurance chômage | 📝 à documenter/test | À identifier | — |
+| Heures sup (25 %/50 %) | 📝 à documenter/test | loi 90-11 art. 18-19 | — |
+
+## 1. IRG — Impôt sur le revenu global (salaires)
+
+**Barème mensuel** (implémenté dans `AlgeriaPayrollRules::defaultTaxSlabs()`) :
+
+| Tranche mensuelle (DZD) | Taux |
+|---|---|
+| 0 – 20 000 | 0 % |
+| 20 001 – 40 000 | 23 % |
+| 40 001 – 80 000 | 27 % |
+| 80 001 – 160 000 | 30 % |
+| 160 001 – 320 000 | 33 % |
+| > 320 000 | 35 % |
+
+**Abattement** : 40 % de l'impôt annuel, plancher 12 000 DZD/an, plafond 18 000 DZD/an
+(implémenté : `min(max(taxAnnuelle × 0.40, 12000), 18000)`).
+
+**Exemple chiffré (golden test F-03)** — salaire imposable mensuel 60 000 DZD :
+- Tranche 1 (0–20 000) : 0 DZD
+- Tranche 2 (20 001–40 000) : 20 000 × 23 % = 4 600 DZD
+- Tranche 3 (40 001–60 000) : 20 000 × 27 % = 5 400 DZD
+- Impôt mensuel brut : 10 000 DZD → annuel : 120 000 DZD
+- Abattement : min(max(120 000 × 0,40 ; 12 000) ; 18 000) = 18 000 DZD
+- **IRG mensuel net : (120 000 − 18 000) / 12 = 8 500 DZD**
+
+## 2. CNAS — Cotisations sécurité sociale
+
+| Cotisation | Taux | Assiette | Cap |
+|---|---|---|---|
+| CNAS salariale | 9 % | salaire brut | aucun (implémenté) — à confirmer |
+| CNAS patronale | 26 % | salaire brut | aucun (implémenté) — à confirmer |
+
+**Exemple chiffré (golden test F-03)** — brut 60 000 DZD : salariale 5 400 DZD, patronale 15 600 DZD.
+
+## 3. SMIG / minima
+
+- Salaire minimum mensuel implémenté : **20 000 DZD** (`minimumWage()`).
+
+## 4. À compléter (prochaine itération — besoin expert paie DZ)
+
+1. Congés payés : acquisition 2,5 j/mois, plafond, indemnité (1/10ᵉ vs maintien).
+2. Préavis : durées légales, indemnité compensatrice.
+3. Indemnité de licenciement (formule légale).
+4. Solde de tout compte + certificat de travail : mentions.
+5. Heures supplémentaires : majorations 25 %/50 %, contingent.
+6. Assurance chômage et autres cotisations éventuelles.
+7. Rétroactifs et régularisations : règles.
+
+## Procédure de mise à jour
+
+Toute modification de taux/barème = PR dédiée qui met à jour **simultanément** :
+1. ce référentiel (avec référence légale + période de validité),
+2. `AlgeriaPayrollRules` (ou le référentiel versionné qui le remplace),
+3. les golden tests correspondants (F-03/F-04),
+4. la mention dans le CHANGELOG.
