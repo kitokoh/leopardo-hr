@@ -21,13 +21,11 @@ permissions:
 env:
   BACKUP_DIR: /tmp/leopardo-backups
   AWS_REGION: ${{ secrets.AWS_REGION || 'eu-west-3' }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
   group: database-backup-${{ github.event_name }}-${{ github.event.schedule || github.run_id }}
   cancel-in-progress: false
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   daily-backup:

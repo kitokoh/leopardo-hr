@@ -28,7 +28,11 @@ class AlertExpiringContracts extends Command
                 ->get();
 
             foreach ($contracts as $contract) {
-                Log::info("Contract {$contract->reference} for {$contract->employee->first_name} {$contract->employee->last_name} expires in {$days} days.");
+                $employee     = $contract->employee;
+                $employeeName = $employee !== null
+                    ? "{$employee->first_name} {$employee->last_name}"
+                    : '(employee not found)';
+                Log::info("Contract {$contract->reference} for {$employeeName} expires in {$days} days.");
                 $total++;
             }
         }
