@@ -15,9 +15,9 @@ const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
 // See also: docs/security/AUDIT_API_2026-07-19.md
 const ADMIN_TOKEN_STORAGE_KEY = 'admin_token';
 const storage = {
-  getToken: (): string | null => sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY),
-  setToken: (token: string): void => { sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token); },
-  removeToken: (): void => { sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY); },
+  getToken: () => sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY),
+  setToken: (token) => { sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token); },
+  removeToken: () => { sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY); },
 };
 
 export const useAuthStore = defineStore('auth', () => {

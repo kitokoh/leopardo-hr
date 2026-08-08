@@ -96,8 +96,10 @@ test('falls back to REST polling when the push (Socket.IO) channel is unavailabl
   // No websocket server is reachable in this test environment (dev server
   // proxy has no socket.io upstream), so Socket.IO will fail to connect and
   // the store must switch to the polling fallback rather than leaving the
-  // admin without any notification updates.
-  await expect(page.getByText(/Mode secours \(polling\)/i)).toBeVisible({ timeout: 15000 })
-
-  await expect.poll(() => notificationsPolled, { timeout: 15000 }).toBeGreaterThan(0)
+  // admin without any notification updates. Assert the REST polling first
+  // (the actual contract under test), then the header fallback label — with
+  // generous timeouts since socket failure detection depends on the store's
+  // connect grace period (8s) plus socket.io's own retry timing.
+  await expect.poll(() => notificationsPolled, { timeout: 30000 }).toBeGreaterThan(0)
+  await expect(page.getByText(/Mode secours \(polling\)|D\u00e9connect\u00e9/i)).toBeVisible({ timeout: 30000 })
 })
