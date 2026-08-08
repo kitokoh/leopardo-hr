@@ -26,6 +26,9 @@ concurrency:
   group: database-backup-${{ github.event_name }}-${{ github.event.schedule || github.run_id }}
   cancel-in-progress: false
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   daily-backup:
     name: Daily PostgreSQL backup

@@ -23,6 +23,9 @@ concurrency:
 env:
   PLAYWRIGHT_HTML_REPORT: playwright-report
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   web-lint:
     name: Web Lint
