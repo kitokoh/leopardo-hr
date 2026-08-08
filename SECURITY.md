@@ -1,21 +1,29 @@
-# Security Policy
+# Security Policy — Leopardo RH
 
-## Supported Versions
+Leopardo RH prend la sécurité au sérieux : données RH sensibles (paie, biométrie, identifiants nationaux), multi-tenant, repo public.
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+> ⚠️ **Document détaillé : [`docs/security/SECURITY.md`](docs/security/SECURITY.md)** — architecture de sécurité, gestion des secrets, conformité, runbooks d'incident (12 documents).
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Versions supportées
 
-## Reporting a Vulnerability
+Le projet suit un modèle de release continu (trunk-based, tags `v*`). Seule la dernière release `main` et le dernier tag stable sont supportés pour les correctifs de sécurité.
 
-Use this section to tell people how to report a vulnerability.
+## 🔒 Signaler une vulnérabilité
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+**Ne publiez jamais une vulnérabilité dans une issue publique.**
+
+1. **Signalez-la en privé** : [security@leopardo-rh.com](mailto:security@leopardo-rh.com) — ou utilisez l'onglet **Security → Private vulnerability reporting** du repo GitHub.
+2. N'exploitez pas la vulnérabilité et ne la divulguez pas avant correction.
+3. Réponse attendue sous **72 h** (accusé de réception), correctif ciblé selon la sévérité (SLA : Critique < 7 j, Élevée < 30 j).
+
+## 📋 Attentes pour les chercheurs
+
+- Inclure : version concernée, chemin/endpoint, reproduction minimale, impact estimé.
+- Vérifier sur un environnement de test, pas sur une instance réelle.
+- Les récompenses ne sont pas monétaires ; le crédit (cheers, mention dans le CHANGELOG) est accordé si demandé.
+
+## 🛡 Garde-fous en place
+
+- Secrets gérés via GitHub Secrets / variables d'environnement ; `.env.example` documenté.
+- CI : CodeQL, TruffleHog (secret-scan), OWASP ZAP, `composer audit` + dependabot.
+- Multi-tenant : isolation par `search_path` Postgres + tests d'isolation dédiés.

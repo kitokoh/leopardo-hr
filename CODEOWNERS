@@ -24,8 +24,9 @@
 # CI/CD workflows — require explicit approval
 /.github/workflows/         @kitokoh
 
-# OpenAPI spec
-/openapi/                   @kitokoh
+# OpenAPI spec (root spec + generated mirror)
+/api/openapi.yaml            @kitokoh
+/dev-hub/openapi/            @kitokoh
 
 # Security-sensitive paths
 /api/app/Http/Middleware/   @kitokoh
