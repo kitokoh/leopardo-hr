@@ -131,11 +131,11 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: _BalanceGlassCard(balanceAsync: balanceAsync),
+                      child: _BalanceCard(balanceAsync: balanceAsync),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: _PaymentDocumentsGlassCard(
+                      child: _PaymentDocumentsCard(
                         documentsAsync: documentsAsync,
                         downloadingId: _downloadingDocumentId,
                         onDownload: _downloadPaymentDocument,
@@ -226,9 +226,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _BalanceGlassCard(balanceAsync: balanceAsync),
+              _BalanceCard(balanceAsync: balanceAsync),
               const SizedBox(height: 16),
-              _PaymentDocumentsGlassCard(
+              _PaymentDocumentsCard(
                 documentsAsync: documentsAsync,
                 downloadingId: _downloadingDocumentId,
                 onDownload: _downloadPaymentDocument,
@@ -245,9 +245,9 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
             children: [
-              _BalanceGlassCard(balanceAsync: balanceAsync),
+              _BalanceCard(balanceAsync: balanceAsync),
               const SizedBox(height: 16),
-              _PaymentDocumentsGlassCard(
+              _PaymentDocumentsCard(
                 documentsAsync: documentsAsync,
                 downloadingId: _downloadingDocumentId,
                 onDownload: _downloadPaymentDocument,
@@ -266,7 +266,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
 }
 
 class _PaymentDocumentsCard extends StatelessWidget {
-  const _PaymentDocumentsGlassCard({
+  const _PaymentDocumentsCard({
     required this.documentsAsync,
     required this.downloadingId,
     required this.onDownload,
@@ -409,7 +409,7 @@ class _PaymentDocumentTile extends StatelessWidget {
 }
 
 class _BalanceCard extends StatelessWidget {
-  const _BalanceGlassCard({required this.balanceAsync});
+  const _BalanceCard({required this.balanceAsync});
 
   final AsyncValue<PayrollBalance> balanceAsync;
 

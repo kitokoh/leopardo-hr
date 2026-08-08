@@ -262,7 +262,7 @@ class _QuickActionsGrid extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           children:
               actions
-                  .map((action) => _QuickActionGlassCard(action: action))
+                  .map((action) => _QuickActionCard(action: action))
                   .toList(),
         );
       },
@@ -271,7 +271,7 @@ class _QuickActionsGrid extends StatelessWidget {
 }
 
 class _QuickActionCard extends StatelessWidget {
-  const _QuickActionGlassCard({required this.action});
+  const _QuickActionCard({required this.action});
 
   final MobileQuickAction action;
 
@@ -305,7 +305,7 @@ class _ModulesScroller extends StatelessWidget {
       child: Row(
         children: [
           for (final module in modules) ...[
-            _ModuleGlassCard(module: module),
+            _ModuleCard(module: module),
             const SizedBox(width: 10),
           ],
         ],
@@ -315,7 +315,7 @@ class _ModulesScroller extends StatelessWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleGlassCard({required this.module});
+  const _ModuleCard({required this.module});
 
   final MobileModule module;
 
