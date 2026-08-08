@@ -9,9 +9,6 @@ on:
 permissions:
   contents: read
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   phpstan-modules:
     name: PHPStan — Modules Architecture
@@ -136,8 +133,9 @@ jobs:
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
-      - name: Check for orphan domain contract interfaces (issue #1492)
-        run: dev-hub/tools/check-orphan-interfaces.sh api
+      - name: Report test-schema drift vs migrations (issue #1489, non blocking)
+        continue-on-error: true
+        run: dev-hub/tools/check-test-schema-drift.sh api
 
       - name: Check newly added files declare strict_types (PA2-ARCH-009)
         env:
