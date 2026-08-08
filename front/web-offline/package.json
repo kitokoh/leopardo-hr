@@ -7,7 +7,7 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "next": "^16.2.12",
@@ -15,15 +15,18 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "typescript": "^7.0.2",
     "eslint": "^10.8.0",
-    "eslint-config-next": "^16.2.12"
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.66.0"
   },
   "overrides": {
-    "postcss": "^8.5.23",
+    "postcss": "^8.5.10",
     "sharp": "^0.35.3"
   }
 }
