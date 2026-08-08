@@ -6,6 +6,14 @@
 
 Leopardo RH follows a phased delivery approach, prioritizing stability for SMEs before expanding into advanced enterprise features.
 
+## 🎯 Programme FOCUS (2026) — noyau dur en profondeur
+
+Depuis 2026-08-07, le projet suit le **programme FOCUS** (plan complet : `docs/focus/PLAN.md`, issues `focus` F-01…F-30) : approfondissement du noyau (paie DZ, HR, présence, sécurité, qualité) **sans fermer les autres modules**, qui passent en maintenance assumée (bugs/sécurité prioritaires, features re-planifiées — ADR-0012).
+
+- **Wedge** : conformité paie DZ (IRG, CNAS, golden tests, bulletins, exports, clôture 2 étapes).
+- **Métriques** : coverage Payroll ≥ 80 %, ≥ 40 golden tests, #1472 clos, 3 pilotes DZ.
+- **Périphérique** : label `peripheral`, aucune suppression.
+
 ## 📍 Current Status: Phase 0 (MVP)
 **Status: COMPLETED & STABLE**
 - Core HR management & employee lifecycle.
