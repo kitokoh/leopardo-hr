@@ -246,37 +246,14 @@
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
     }
   },
-  "marketing": {
-    "oauth": {
-      "title": "Pazarlama  OAuth Sosyal Aglar",
-      "subtitle": "Marketing modulunun LinkedIn, Facebook/Meta ve X (Twitter) uzerinde yayin yapabilmesi icin OAuth kimlik bilgilerini (Client ID / Client Secret) yapilandirin.",
-      "ayrshare_info": "Yayinlar Ayrshare toplayicisi uzerinden yonlendirilir. Asagidaki kimlik bilgileri guvenli sekilde saklanir ve her sosyal agda OAuth baglantilarini baslatmak icin kullanilir.",
-      "nav_title": "Pazarlama OAuth",
-      "saved_ok": ":provider yapılandırması kaydedildi.",
-      "save": "Kaydet",
-      "providers": {
-        "linkedin": {
-          "label": "LinkedIn",
-          "description": "Marketing v2 API araciligiyla LinkedIn sirket sayfalarina ve profillerine baglanin."
-        },
-        "facebook": {
-          "label": "Facebook / Meta",
-          "description": "Graph API araciligiyla Facebook sayfalarina ve Instagram Business hesaplarina baglanin."
-        },
-        "twitter": {
-          "label": "X (Twitter)",
-          "description": "Twitter v2 API / OAuth 2.0 PKCE araciligiyla baglanin."
-        }
-      },
-      "fields": {
-        "client_id": "Client ID",
-        "client_secret": "Client Secret",
-        "redirect_uri": "Redirect URI",
-        "secret_hint": "(gosterilmiyor)",
-        "placeholder_id": "Mevcut degeri korumak icin bos birakin",
-        "placeholder_secret": "Degistirmemek icin bos birakin",
-        "placeholder_uri": "https://domain-adiniz.com/oauth/callback"
-      }
-    }
+  "dashboard": {
+    "title": "Kontrol Paneli",
+    "company": "Şirket",
+    "active_employees": "Aktif",
+    "upgrade": "Yükselt",
+    "priority_actions": "Öncelikli Eylemler",
+    "launch_readiness": "Lansman Hazırlığı",
+    "recent_activity": "Son Etkinlik",
+    "recent_activity_hint": "Ekibinizin son eylemleri"
   }
 }
