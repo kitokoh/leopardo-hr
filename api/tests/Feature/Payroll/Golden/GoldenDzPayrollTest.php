@@ -3,7 +3,6 @@
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -20,19 +19,9 @@ use Tests\TestCase;
  */
 class GoldenDzPayrollTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    // Volontairement SANS base de données (F-13) : les règles retombent sur
+    // les barèmes par défaut quand tax_slabs est vide — les tests golden de
+    // règles pures ne dépendent d'aucun schéma de test.
 
     private function rules(): AlgeriaPayrollRules
     {
