@@ -25,7 +25,7 @@
       provider="linkedin"
       :label="$t('marketing.oauth.providers.linkedin.label')"
       :description="$t('marketing.oauth.providers.linkedin.description')"
-      :icon-classes="'text-[#0A66C2]'"
+      icon-classes="text-blue-700"
       :loading="saving.linkedin"
       :form="forms.linkedin"
       :label-client-id="$t('marketing.oauth.fields.client_id')"
@@ -44,7 +44,7 @@
       provider="facebook"
       :label="$t('marketing.oauth.providers.facebook.label')"
       :description="$t('marketing.oauth.providers.facebook.description')"
-      :icon-classes="'text-[#1877F2]'"
+      icon-classes="text-blue-600"
       :loading="saving.facebook"
       :form="forms.facebook"
       :label-client-id="$t('marketing.oauth.fields.client_id')"
@@ -63,7 +63,7 @@
       provider="twitter"
       :label="$t('marketing.oauth.providers.twitter.label')"
       :description="$t('marketing.oauth.providers.twitter.description')"
-      :icon-classes="'text-slate-900 dark:text-white'"
+      icon-classes="text-slate-900 dark:text-white"
       :loading="saving.twitter"
       :form="forms.twitter"
       :label-client-id="$t('marketing.oauth.fields.client_id')"
@@ -81,10 +81,12 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 
+const { t } = useI18n()
 const toast = useToast()
 
 const forms = reactive({
@@ -104,17 +106,13 @@ async function saveProvider(provider) {
       payload.client_secret = form.clientSecret
     }
     await api.put('/v1/platform/marketing/oauth-config', payload)
-    toast.success(`${providerLabel(provider)} ok`)
+    toast.success(t('marketing.oauth.saved_ok', { provider }))
     forms[provider].clientSecret = ''
   } catch {
     // errors handled by global api.js interceptor
   } finally {
     saving[provider] = false
   }
-}
-
-function providerLabel(provider) {
-  return { linkedin: 'LinkedIn', facebook: 'Facebook/Meta', twitter: 'X (Twitter)' }[provider] ?? provider
 }
 </script>
 
@@ -128,16 +126,19 @@ export const OAuthProviderCard = {
     iconClasses:        { type: String, default: '' },
     loading:            { type: Boolean, default: false },
     form:               { type: Object, required: true },
-    labelClientId:      { type: String, default: 'Client ID' },
-    labelClientSecret:  { type: String, default: 'Client Secret' },
-    labelRedirectUri:   { type: String, default: 'Redirect URI' },
+    labelClientId:      { type: String, default: '' },
+    labelClientSecret:  { type: String, default: '' },
+    labelRedirectUri:   { type: String, default: '' },
     labelSecretHint:    { type: String, default: '' },
     placeholderId:      { type: String, default: '' },
     placeholderSecret:  { type: String, default: '' },
     placeholderUri:     { type: String, default: '' },
-    labelSave:          { type: String, default: 'Save' },
+    labelSave:          { type: String, default: '' },
   },
   emits: ['save'],
+  methods: {
+    fieldId(provider, field) { return provider + '-' + field },
+  },
   template: `
     <div class="card animate-slide-up">
       <div class="card-header flex items-center gap-3">
@@ -149,26 +150,23 @@ export const OAuthProviderCard = {
       </div>
       <form class="card-body space-y-5" @submit.prevent="$emit('save')">
         <div>
-          <label :for="provider + '-client-id'" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ labelClientId }}</label>
-          <input :id="provider + '-client-id'" v-model="form.clientId" type="text" class="form-input" autocomplete="off" :placeholder="placeholderId" />
+          <label :for="fieldId(provider, 'client-id')" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ labelClientId }}</label>
+          <input :id="fieldId(provider, 'client-id')" v-model="form.clientId" type="text" class="form-input" autocomplete="off" :placeholder="placeholderId" />
         </div>
         <div>
-          <label :for="provider + '-client-secret'" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label :for="fieldId(provider, 'client-secret')" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
             {{ labelClientSecret }}
             <span class="ml-1 text-xs font-normal text-slate-400">{{ labelSecretHint }}</span>
           </label>
-          <input :id="provider + '-client-secret'" v-model="form.clientSecret" type="password" class="form-input" autocomplete="new-password" :placeholder="placeholderSecret" />
+          <input :id="fieldId(provider, 'client-secret')" v-model="form.clientSecret" type="password" class="form-input" autocomplete="new-password" :placeholder="placeholderSecret" />
         </div>
         <div>
-          <label :for="provider + '-redirect-uri'" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ labelRedirectUri }}</label>
-          <input :id="provider + '-redirect-uri'" v-model="form.redirectUri" type="url" class="form-input" :placeholder="placeholderUri" />
+          <label :for="fieldId(provider, 'redirect-uri')" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ labelRedirectUri }}</label>
+          <input :id="fieldId(provider, 'redirect-uri')" v-model="form.redirectUri" type="url" class="form-input" :placeholder="placeholderUri" />
         </div>
         <div class="flex justify-end">
           <button type="submit" class="btn-primary" :disabled="loading">
-            <svg v-if="loading" class="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
+            <span v-if="loading" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent inline-block"></span>
             {{ labelSave }}
           </button>
         </div>
