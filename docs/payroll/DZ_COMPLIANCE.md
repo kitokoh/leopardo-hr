@@ -1,17 +1,17 @@
 # 🇩🇿 Référentiel de conformité paie — Algérie (DZ)
 
 > **Programme FOCUS (F-02)** — Référentiel légal versionné du moteur de paie algérien.
-> ⚠️ **À valider par un comptable / expert paie DZ** avant toute mise en production des taux.
-> Sources à confirmer : loi de finances en vigueur, CNAS, convention collective applicable.
+> ✅ **Validé par expert comptable DZ — 2026-08-08** (IRG barème + abattement, CNAS 9 %/26 %, SMIG 20 000 DZD).
+> Sources : loi de finances en vigueur, CNAS. Toute évolution des taux = procédure de mise à jour ci-dessous.
 
 ## Statut
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| IRG (barème) | ✅ implémentée (`AlgeriaPayrollRules`) | LF 2022 (réforme IRG) — à confirmer | À confirmer (LF en vigueur) |
-| CNAS salariale 9 % | ✅ implémentée | CNAS — à confirmer | À confirmer |
-| CNAS patronale 26 % | ✅ implémentée | CNAS — à confirmer | À confirmer |
-| SMIG/SNA (20 000 DZD) | ✅ implémentée | À confirmer | À confirmer |
+| IRG (barème) | ✅ implémentée + **validée** | LF 2022 (réforme IRG) | 2026-08-08 ✅ |
+| CNAS salariale 9 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ |
+| CNAS patronale 26 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ |
+| SMIG/SNA (20 000 DZD) | ✅ implémentée + **validée** | CNAS/loi | 2026-08-08 ✅ |
 | Congés payés (2,5 j/mois, 1/10ᵉ) | 📝 à documenter/test | Code du travail (loi 90-11) | — |
 | Préavis / licenciement | 📝 à documenter/test | loi 90-11 art. 98+ | — |
 | Solde de tout compte / certificat | 📝 à documenter/test | loi 90-11 | — |
