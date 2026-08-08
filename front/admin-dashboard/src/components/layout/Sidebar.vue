@@ -138,6 +138,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   HomeIcon,
@@ -165,7 +166,8 @@ import {
   LifebuoyIcon,
   ServerIcon,
   ArrowTrendingUpIcon,
-  ChartBarSquareIcon
+  ChartBarSquareIcon,
+  MegaphoneIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -181,6 +183,7 @@ defineProps({
 defineEmits(['close'])
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
@@ -282,6 +285,12 @@ const navigation = computed(() => [
     title: 'Webhooks',
     path: '/webhooks',
     icon: LinkIcon
+  },
+  {
+    name: 'marketing-oauth',
+    title: t('marketing.oauth.nav_title'),
+    path: '/marketing/oauth',
+    icon: MegaphoneIcon
   },
   {
     name: 'exports',
