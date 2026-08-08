@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -40,7 +40,7 @@
           <article
             v-for="plan in plans"
             :key="plan.id"
-            class="group relative flex flex-col rounded-3xl border border-slate-200/60 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-6 shadow-sm transition-all hover:shadow-glass-lg hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-900/40 overflow-hidden"
+            class="group relative flex flex-col rounded-3xl border border-slate-200/60 glass-card/50 backdrop-blur-md p-6 shadow-sm transition-all hover:shadow-glass-lg hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-900/40 overflow-hidden"
           >
             <div class="flex items-start justify-between gap-3 relative z-10">
               <div>

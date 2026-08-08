@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="flex h-[calc(100vh-200px)] rounded-lg glass-card shadow">
     <div class="flex w-64 flex-col border-r border-gray-200">
       <div class="border-b border-gray-200 p-4">
@@ -31,7 +31,7 @@
     <div class="flex flex-1 flex-col">
       <div class="border-b border-gray-200 px-6 py-3">
         <h2 class="text-sm font-semibold text-gray-900">
-          {{ activeConversation?.title || $t('ai_chat.title', 'Assistant IA Leopardo') }}
+          {{ activeConversation?.title || 'Assistant IA Leopardo' }}
         </h2>
         <p class="text-xs text-gray-500">Posez vos questions RH, paie, recrutement...</p>
       </div>
@@ -40,7 +40,7 @@
         <div v-if="messages.length === 0" class="flex h-full items-center justify-center">
           <div class="text-center">
             <ChatBubbleLeftRightIcon class="mx-auto h-12 w-12 text-gray-300" />
-            <p class="mt-2 text-sm text-gray-500">{{ $t('ai_chat.empty_state_title', "Commencez une conversation avec l'assistant IA.") }}</p>
+            <p class="mt-2 text-sm text-gray-500">Commencez une conversation avec l'assistant IA.</p>
           </div>
         </div>
         <div
@@ -82,7 +82,9 @@
             type="submit"
             class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
             :disabled="!inputMessage.trim() || streaming"
-          >{{ $t('ai_chat.send_tooltip', 'Envoyer') }}</button>
+          >
+            Envoyer
+          </button>
         </form>
       </div>
     </div>
