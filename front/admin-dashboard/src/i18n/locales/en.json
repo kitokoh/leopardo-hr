@@ -251,6 +251,8 @@
       "title": "Marketing � OAuth Social Networks",
       "subtitle": "Configure OAuth credentials (Client ID / Client Secret) used by the Marketing module to publish on LinkedIn, Facebook/Meta and X (Twitter).",
       "ayrshare_info": "Publications are routed through the Ayrshare aggregator. The credentials below are stored securely and used to initialise the OAuth connection for each social network in Ayrshare.",
+      "nav_title": "Marketing OAuth",
+      "saved_ok": "Provider :provider configuration saved.",
       "save": "Save",
       "providers": {
         "linkedin": {
