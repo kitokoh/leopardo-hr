@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-6">
     <div class="glass-card p-6">
       <h1 class="text-2xl font-bold text-gray-900">Globe Temps Reel</h1>
