@@ -31,6 +31,10 @@
     @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/10 dark:border-white/10 shadow-glass rounded-3xl;
   }
 
+  .glass-bg {
+    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/10 dark:border-white/10;
+  }
+
   .glass-effect {
     @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/10 dark:border-white/10;
   }
