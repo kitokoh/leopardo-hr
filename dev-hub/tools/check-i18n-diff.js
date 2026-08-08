@@ -98,7 +98,6 @@ function isTechnicalToken(value) {
   if (/^#[a-zA-Z][\w-]*$/.test(trimmed)) return true;
   if (trimmed === 'use client' || trimmed === 'use server' || trimmed === 'use strict') return true;
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) return true;
-  if (/^@\/[a-zA-Z0-9_./@-]+$/.test(trimmed)) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 
@@ -174,6 +173,7 @@ function main() {
 
   let currentFile = null;
   let currentNewLine = 0;
+  let removedLinesThisHunk = [];
 
   for (const rawLine of fullDiff.split('\n')) {
     const fileHeaderMatch = rawLine.match(diffFileHeaderPattern);
@@ -193,6 +193,11 @@ function main() {
     const hunkMatch = rawLine.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
     if (hunkMatch) {
       currentNewLine = parseInt(hunkMatch[1], 10);
+      removedLinesThisHunk = [];
+      continue;
+    }
+    if (rawLine.startsWith('-') && !rawLine.startsWith('---')) {
+      removedLinesThisHunk.push(rawLine.slice(1));
       continue;
     }
     if (!rawLine.startsWith('+') || rawLine.startsWith('+++')) {
@@ -201,6 +206,20 @@ function main() {
     const content = rawLine.slice(1);
     const lineNo = currentNewLine;
     currentNewLine += 1;
+
+    // Whitespace-only and encoding-repair edits (NBSP->space, mojibake->UTF-8,
+    // corrupted emoji->real emoji) are not "new" strings: compare the ASCII
+    // skeleton of the added line against the removed lines of the same hunk.
+    const normalizeWs = (v) => v.replace(/[\u00a0\u2000-\u200b\u202f\u205f\u3000\u0085]+/g, ' ').trimEnd();
+    const repairMojibakeAscii = (v) => v
+      .replace(/â€™|â€˜/g, "'")
+      .replace(/â€œ|â€\x9d/g, '"');
+    const asciiSkeleton = (v) => v.replace(/[^\x00-\x7f]/g, '').replace(/\s+/g, '');
+    if (removedLinesThisHunk.some((removed) =>
+        asciiSkeleton(normalizeWs(repairMojibakeAscii(removed))) === asciiSkeleton(normalizeWs(repairMojibakeAscii(content))))) {
+      currentNewLine += 1;
+      continue;
+    }
 
     const trimmed = content.trim();
     if (/^(\/\/|#|\*|<!--)/.test(trimmed)) continue;

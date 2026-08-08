@@ -33,7 +33,7 @@
           <select
             v-model="selectedMetric"
             @change="updateAnalytics"
-            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 glass-card/50 dark:bg-slate-800/50 text-sm font-bold focus:ring-brand-500 transition-all duration-200 px-4 py-2.5"
+            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 dark:bg-slate-800/50 text-sm font-bold focus:ring-brand-500 transition-all duration-200 px-4 py-2.5"
           >
             <option value="users">Utilisateurs</option>
             <option value="revenue">Revenus</option>
@@ -126,7 +126,7 @@
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-xl font-bold text-slate-900 dark:text-white">PrÃ©diction de Churn</h3>
           <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800 dark:text-red-300">
-            {{ analytics.churnPrediction.riskUsers }} Ã  risque
+            {{ analytics.churnPrediction.riskUsers }} Ã  risque
           </span>
         </div>
         <ChurnPredictionWidget :data="analytics.churnPrediction" />
@@ -376,7 +376,7 @@ async function loadInsights() {
 
 async function updateAnalytics() {
   await loadAnalytics()
-  toast.success('Analytics mis Ã  jour')
+  toast.success('Analytics mis Ã  jour')
 }
 
 async function refreshSegmentation() {

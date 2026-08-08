@@ -137,10 +137,11 @@ test.describe('Marketing funnel preview', () => {
     const newsletterInput = footer.locator('input[type="email"]');
     const newsletterButton = footer.locator('button[type="submit"]');
 
-    // Scroll the form into view so the framer-motion whileInView animation
-    // fires and the input transitions from opacity:0 to opacity:1 (actionable).
+    // Wait for the input to be attached+visible first (auto-retries through
+    // hydration re-renders), then scroll — scrollIntoViewIfNeeded on a
+    // detached element throws "Element is not attached to the DOM".
+    await newsletterInput.waitFor({ state: 'visible', timeout: 15_000 });
     await newsletterInput.scrollIntoViewIfNeeded();
-    await newsletterInput.waitFor({ state: 'visible' });
 
     await newsletterInput.fill(email);
     const [newsletterResponse] = await Promise.all([

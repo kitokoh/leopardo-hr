@@ -19,7 +19,7 @@
             <button
               @click="runHealthCheck"
               :disabled="isRunningHealthCheck"
-              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white glass-card/10 hover:glass-card/20 transition-all border border-white/10"
+              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-white/10 dark:bg-slate-900/10 hover:bg-white/20 dark:hover:bg-slate-900/20 transition-all border border-white/10"
             >
               <HeartIcon class="h-4 w-4 mr-2" :class="{ 'animate-pulse text-red-400': isRunningHealthCheck }" />
               {{ isRunningHealthCheck ? 'Analyse...' : 'Health Check' }}

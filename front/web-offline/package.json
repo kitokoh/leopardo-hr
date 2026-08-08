@@ -16,14 +16,14 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "typescript": "^7.0.2",
     "eslint": "^10.8.0",
     "eslint-config-next": "^16.2.12"
   },
   "overrides": {
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.23",
     "sharp": "^0.35.3"
   }
 }

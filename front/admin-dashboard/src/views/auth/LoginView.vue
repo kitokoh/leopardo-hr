@@ -12,7 +12,7 @@
 
     <div class="max-w-md w-full space-y-10 relative z-10">
       <div class="text-center">
-        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl glass-card/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
+        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <span class="text-4xl font-black text-white tracking-tighter relative z-10">LRH</span>
         </div>
@@ -32,7 +32,7 @@
           <form class="space-y-6" @submit.prevent="handleLogin">
             <div class="space-y-5">
               <div>
-                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">{{ $t('platform_login.email_label', 'Adresse email') }}</label>
+                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Adresse email</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <EnvelopeIcon class="h-5 w-5 text-slate-500" />
@@ -45,14 +45,14 @@
                     autocomplete="email"
                     required
                     autofocus
-                    class="block w-full rounded-2xl border-0 glass-card/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
+                    class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="admin@leopardo-rh.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">{{ $t('auth.password_label', "Cl\u00e9 d'Acc\u00e8s") }}</label>
+                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">ClÃ© d'AccÃ¨s</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <LockClosedIcon class="h-5 w-5 text-slate-500" />
@@ -64,7 +64,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     autocomplete="current-password"
                     required
-                    class="block w-full rounded-2xl border-0 glass-card/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
+                    class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   />
                   <button
@@ -80,7 +80,7 @@
               </div>
 
               <div v-if="requiresTwoFactor">
-                <label for="two-factor-code" class="block text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 ml-1">{{ $t('platform_login.2fa_label', 'Code 2FA') }}</label>
+                <label for="two-factor-code" class="block text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 ml-1">Code 2FA</label>
                 <input
                   id="two-factor-code"
                   v-model="form.twoFactorCode"
@@ -88,7 +88,7 @@
                   type="text"
                   inputmode="numeric"
                   required
-                  class="block w-full rounded-2xl border-0 glass-card/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
+                  class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
                   placeholder="000000"
                 />
               </div>
@@ -101,7 +101,7 @@
                   v-model="form.remember"
                   name="remember-me"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-white/10 glass-card/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
+                  class="h-4 w-4 rounded border-white/10 bg-white/5 dark:bg-slate-900/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
                 />
                 <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
                   Se souvenir de moi
@@ -119,7 +119,7 @@
               <div class="flex items-center gap-3">
                 <ExclamationTriangleIcon class="h-5 w-5 text-red-400 shrink-0" />
                 <div class="space-y-1">
-                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">{{ $t('platform_login.submitting', 'Erreur de connexion') }}</h3>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">Erreur de connexion</h3>
                   <p class="text-[10px] font-bold text-red-300/80 leading-tight">{{ error }}</p>
                 </div>
               </div>
@@ -145,7 +145,7 @@
                   <div class="w-full border-t border-white/5"></div>
                 </div>
                 <div class="relative flex justify-center text-xs font-black uppercase tracking-widest">
-                  <span class="bg-slate-900/40 px-4 text-slate-600">{{ $t('platform_login.use_demo_account', 'Ou tester') }}</span>
+                  <span class="bg-slate-900/40 px-4 text-slate-600">Ou tester</span>
                 </div>
               </div>
 
