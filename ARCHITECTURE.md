@@ -30,7 +30,7 @@ leopardo-hr/
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — voir docs/architecture/ARCHITECTURE.md)
-└── .github/workflows/      # 25 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
+└── .github/workflows/      # 31 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
