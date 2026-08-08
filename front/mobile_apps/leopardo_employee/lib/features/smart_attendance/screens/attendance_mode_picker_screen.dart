@@ -146,7 +146,7 @@ class _AttendanceModePickerScreenState
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final mode = _modes[index];
-                  return _ModeGlassCard(
+                  return _ModeCard(
                     modeId: mode['id'] as String,
                     label: mode['label'] as String,
                     icon: mode['icon'] as IconData,
@@ -242,7 +242,7 @@ class _ModeCard extends StatelessWidget {
   static const Color _muted = AppColors.mobileDarkMuted;
   static const Color _border = AppColors.mobileDarkBorder;
 
-  const _ModeGlassCard({
+  const _ModeCard({
     required this.modeId,
     required this.label,
     required this.icon,

@@ -108,7 +108,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       children: [
         // Section mode effectif
-        _ModeStatusGlassCard(
+        _ModeStatusCard(
           effectiveMode: effectiveMode,
           config: config,
           canChangeMode: canChangeMode,
@@ -119,7 +119,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
 
         // Section statut zone GPS (visible uniquement en mode GPS auto)
         if (effectiveMode == 'gps_auto') ...[
-          _GpsZoneStatusGlassCard(
+          _GpsZoneStatusCard(
             config: config,
             sessionState: sessionState,
             onStartMonitoring: () async {
@@ -170,7 +170,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
           ...sessionState.recentSessions.take(10).map(
                 (session) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: _SessionGlassCard(session: session),
+                  child: _SessionCard(session: session),
                 ),
               ),
 
@@ -211,7 +211,7 @@ class _ModeStatusCard extends StatelessWidget {
   static const Color _border = AppColors.mobileDarkBorder;
   static const Color _accent = AppColors.mobileAccentBlue;
 
-  const _ModeStatusGlassCard({
+  const _ModeStatusCard({
     required this.effectiveMode,
     required this.config,
     required this.canChangeMode,
@@ -362,7 +362,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
   static const Color _red = AppColors.mobileAccentRedLight;
   static const Color _accent = AppColors.mobileAccentBlue;
 
-  const _GpsZoneStatusGlassCard({
+  const _GpsZoneStatusCard({
     required this.config,
     required this.sessionState,
     required this.onStartMonitoring,
@@ -543,7 +543,7 @@ class _SessionCard extends StatelessWidget {
   static const Color _muted = AppColors.mobileDarkMuted;
   static const Color _border = AppColors.mobileDarkBorder;
 
-  const _SessionGlassCard({required this.session});
+  const _SessionCard({required this.session});
 
   Color get _statusColor {
     switch (session.status) {

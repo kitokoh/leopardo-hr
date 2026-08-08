@@ -48,9 +48,9 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 _ProfileHeader(employee: employee),
                 const SizedBox(height: 20),
-                _ProfileDetailsGlassCard(employee: employee),
+                _ProfileDetailsCard(employee: employee),
                 const SizedBox(height: 20),
-                _ProfileLanguageGlassCard(
+                _ProfileLanguageCard(
                   employee: employee,
                   languageLabels: _languageLabels,
                 ),
@@ -136,7 +136,7 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileDetailsCard extends StatelessWidget {
-  const _ProfileDetailsGlassCard({required this.employee});
+  const _ProfileDetailsCard({required this.employee});
 
   final Employee employee;
 
@@ -229,7 +229,7 @@ class _ProfileInfoRow extends StatelessWidget {
 }
 
 class _ProfileLanguageCard extends ConsumerStatefulWidget {
-  const _ProfileLanguageGlassCard({
+  const _ProfileLanguageCard({
     required this.employee,
     required this.languageLabels,
   });
