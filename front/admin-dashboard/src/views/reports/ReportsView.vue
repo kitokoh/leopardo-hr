@@ -91,7 +91,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
-import MetricCard from '@/components/common/MetricCard.vue'
+import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const loading = ref(false)
 const error = ref('')

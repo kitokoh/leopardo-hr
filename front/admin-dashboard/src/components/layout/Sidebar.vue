@@ -341,12 +341,6 @@ const navigation = computed(() => [
     path: '/system',
     icon: CogIcon
   },
-  {
-    name: 'logs',
-    title: 'Logs',
-    path: '/logs',
-    icon: DocumentTextIcon
-  }
 ])
 
 // Computed properties
