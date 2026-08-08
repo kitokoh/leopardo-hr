@@ -3,7 +3,6 @@
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -20,19 +19,9 @@ use Tests\TestCase;
  */
 class GoldenDzPayrollTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    // Volontairement SANS base de données (F-13) : les règles retombent sur
+    // les barèmes par défaut quand tax_slabs est vide — les tests golden de
+    // règles pures ne dépendent d'aucun schéma de test.
 
     private function rules(): AlgeriaPayrollRules
     {
@@ -82,13 +71,23 @@ class GoldenDzPayrollTest extends TestCase
         $this->assertSame(5200.0, $charges['employer']);
     }
 
-    public function test_golden_dz_net_pay_at_60000(): void
+    public function test_golden_dz_full_slip_flow_at_60000(): void
     {
-        // Net = brut − CNAS salariale − IRG = 60 000 − 5 400 − 8 500 = 46 100.
+        // Reproduit fidèlement PayrollCalculator::calculateSlip() :
+        //   1. brut 60 000 → CNAS salariale 5 400 (9 %)
+        //   2. assiette IRG = brut − CNAS salariale = 54 600 (DZ_COMPLIANCE §1bis)
+        //   3. IRG(54 600) = 4 600 + 14 600×27 % = 8 542/mois → annuel 102 504
+        //      → abattement 40 % plafonné 18 000 → (102 504 − 18 000)/12 = 7 042
+        //   4. net = 60 000 − 5 400 − 7 042 = 47 558
         $rules = $this->rules();
         $charges = $rules->calculateSocialCharges(60000.0);
-        $net = 60000.0 - $charges['employee'] - $rules->calculateIncomeTax(60000.0);
+        $taxable = 60000.0 - $charges['employee'];
+        $irg = $rules->calculateIncomeTax($taxable);
+        $net = 60000.0 - $charges['employee'] - $irg;
 
-        $this->assertSame(46100.0, $net);
+        $this->assertSame(5400.0, $charges['employee']);
+        $this->assertSame(54600.0, $taxable);
+        $this->assertSame(7042.0, $irg);
+        $this->assertSame(47558.0, $net);
     }
 }
