@@ -19,14 +19,16 @@ class PurgeAuditLogsCommandTest extends TestCase
     {
         parent::setUp();
 
-        // The Unit suite runs on a fresh in-memory DB with no tenant schema —
-        // create the minimal audit_logs table if it does not exist.
+        // The Unit suite may run on a fresh DB without tenant migrations.
+        // Mirror the canonical schema: immutable audit logs only have created_at
+        // (no updated_at — AuditLog::$timestamps = false, see the migration
+        // 2026_05_10_000001_create_audit_logs_table.php).
         if (! Schema::hasTable('audit_logs')) {
             Schema::create('audit_logs', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('company_id')->nullable()->index();
                 $table->string('action');
-                $table->timestamps();
+                $table->timestamp('created_at')->useCurrent();
             });
         }
     }
@@ -39,11 +41,13 @@ class PurgeAuditLogsCommandTest extends TestCase
 
     private function createAuditLog(int $monthsAgo, ?int $companyId = null): void
     {
+        // The audit_logs table is immutable (AuditLog::$timestamps = false) and
+        // only has `created_at` — no `updated_at` column. Inserting updated_at
+        // causes SQLSTATE[42703] on the real tenant schema.
         DB::table('audit_logs')->insert([
             'company_id' => $companyId,
             'action' => 'test.purge',
             'created_at' => now()->subMonths($monthsAgo)->toDateTimeString(),
-            'updated_at' => now()->toDateTimeString(),
         ]);
     }
 

@@ -13,6 +13,7 @@ class VoiceTranscribeRequest extends FormRequest
         return (bool) $this->user();
     }
 
+    /** @return array<string, string> */
     public function rules(): array
     {
         return [
