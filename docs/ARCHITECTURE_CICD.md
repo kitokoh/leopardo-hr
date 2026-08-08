@@ -45,6 +45,7 @@ PR → merge sur main
 
 ### Staging
 - Même architecture, variables `APP_ENV=staging`
+- **Depuis #1485** : `deploy-staging.yml` échoue (fail-fast) si `STAGING_API_URL` ou `RENDER_STAGING_DEPLOY_HOOK_URL` ne sont pas configurés — les fallbacks vers les valeurs/secret de production ont été retirés. Tant qu'aucune app Render staging réelle n'existe, ce workflow restera rouge sur main (signal volontaire, pas un déploiement masqué de la prod).
 
 ## Variables d'environnement requises
 
