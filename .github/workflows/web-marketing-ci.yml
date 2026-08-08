@@ -20,6 +20,9 @@ concurrency:
   group: web-marketing-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   web-marketing-lint:
     name: Web Marketing Lint
