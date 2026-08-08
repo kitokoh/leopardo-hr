@@ -78,7 +78,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5 bg-transparent dark:divide-white/5 dark:bg-transparent">
-              <tr v-for="item in priorityCompanies" :key="item.id" class="hover:glass-card/5 dark:hover:glass-card/5 transition-colors">
+              <tr v-for="item in priorityCompanies" :key="item.id" class="hover:bg-white/5 dark:hover:bg-slate-900/5 dark:hover:bg-white/5 dark:hover:bg-slate-900/5 transition-colors">
                 <td class="whitespace-nowrap px-6 py-4">
                   <div class="flex items-center">
                     <div class="h-9 w-9 flex-shrink-0 rounded-xl bg-surface-variant/30 p-1.5 dark:bg-surface-variant/30 border border-slate-200/50 dark:border-slate-700/50">
@@ -127,7 +127,7 @@
           <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Inscriptions en attente</h2>
         </div>
         <div class="divide-y divide-white/5 dark:divide-white/5">
-          <div v-for="request in pendingCompanyRequests" :key="request.id" class="p-6 transition-colors hover:glass-card/5 dark:hover:glass-card/5">
+          <div v-for="request in pendingCompanyRequests" :key="request.id" class="p-6 transition-colors hover:bg-white/5 dark:hover:bg-slate-900/5 dark:hover:bg-white/5 dark:hover:bg-slate-900/5">
             <div class="flex items-start justify-between">
               <div class="space-y-1">
                 <h3 class="text-sm font-bold text-slate-950 dark:text-white uppercase tracking-tight">{{ request.name }}</h3>
@@ -167,7 +167,7 @@
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.active_employees }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients Ã  risque</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients Ã  risque</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ summary.risk.high + summary.risk.medium }}</dd>
           </div>
         </dl>
@@ -302,11 +302,11 @@ const workflowCards = computed(() => [
     description: 'Suivre les demandes dâ€™essai, prioriser les leads et Ã©viter les prospects bloquÃ©s.',
     action: 'Voir les demandes clients',
     to: '/support',
-    badge: `${pendingRequests.value} Ã  traiter`,
+    badge: `${pendingRequests.value} Ã  traiter`,
     badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
   },
   {
-    title: 'Surveiller les clients Ã  risque',
+    title: 'Surveiller les clients Ã  risque',
     description: 'Identifier les comptes faibles en adoption, pointage ou santÃ© opÃ©rationnelle.',
     action: 'Analyser les prioritÃ©s',
     to: '/analytics',
