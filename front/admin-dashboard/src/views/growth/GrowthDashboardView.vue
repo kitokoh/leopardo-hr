@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="p-6">
     <div class="mb-8 flex justify-between items-center">
       <div>

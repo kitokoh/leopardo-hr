@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in">
     <!-- Header -->
     <div class="card overflow-hidden">
@@ -19,7 +19,7 @@
             <button
               @click="runHealthCheck"
               :disabled="isRunningHealthCheck"
-              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-white/10 dark:bg-slate-900/10 hover:bg-white/20 dark:hover:bg-slate-900/20 transition-all border border-white/10"
+              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white glass-card/10 hover:glass-card/20 transition-all border border-white/10"
             >
               <HeartIcon class="h-4 w-4 mr-2" :class="{ 'animate-pulse text-red-400': isRunningHealthCheck }" />
               {{ isRunningHealthCheck ? 'Analyse...' : 'Health Check' }}
@@ -428,7 +428,7 @@ async function loadAutomatedTasks() {
     },
     {
       id: 3,
-      name: 'Mise Ã  jour des certificats',
+      name: 'Mise Ã  jour des certificats',
       description: 'Renouvellement automatique des certificats SSL',
       schedule: '0 4 1 * *',
       enabled: true,
@@ -745,7 +745,7 @@ function dismissSecurityAlert(alertId) {
 // Configuration
 function updateConfig(section, config) {
   systemConfig.value[section] = { ...systemConfig.value[section], ...config }
-  toast.success('Configuration mise Ã  jour')
+  toast.success('Configuration mise Ã  jour')
 }
 
 function resetConfig(section) {
@@ -795,7 +795,7 @@ function handleApiTestCreated(test) {
 // Scaling
 function updateScalingConfig(config) {
   Object.assign(scalingConfig, config)
-  toast.success('Configuration d\'auto-scaling mise Ã  jour')
+  toast.success('Configuration d\'auto-scaling mise Ã  jour')
 }
 
 function manualScale(action) {
