@@ -162,7 +162,7 @@
   "usersToastExporterror": "فشل التصدير",
   "usersToastSelectionexportdone": "تم تصدير التحديد",
   "usersConfirmDelete": "هل انت متأكد من رغبتك في حذف :name؟",
-    "marketingOauthTitle": "تسويق — إعداد OAuth لشبكات التواصل الاجتماعي",
+  "marketingOauthTitle": "تسويق — إعداد OAuth لشبكات التواصل الاجتماعي",
   "marketingOauthSubtitle": "قم بتهيئة بيانات اعتماد OAuth (Client ID / Client Secret) التي يستخدمها وحدة التسويق للنشر على LinkedIn وFacebook/Meta وX (Twitter).",
   "marketingOauthAyrshareInfo": "يتم توجيه المنشورات عبر منصة Ayrshare. يتم تخزين بيانات الاعتماد أدناه بشكل آمن واستخدامها لتهيئة اتصال OAuth لكل شبكة اجتماعية في Ayrshare.",
   "marketingOauthNavTitle": "تسويق OAuth",
