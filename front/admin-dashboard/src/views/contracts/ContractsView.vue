@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <StatsCard title="Contrats actifs" :value="stats.active" icon="UsersIcon" color="green" />

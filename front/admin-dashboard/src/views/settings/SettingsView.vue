@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in max-w-3xl">
     <div>
       <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Mon compte</h1>
@@ -95,7 +95,7 @@
         <div class="flex justify-end">
           <button type="submit" class="btn-primary" :disabled="isSavingPassword">
             <ArrowPathIcon v-if="isSavingPassword" class="mr-2 h-4 w-4 animate-spin" />
-            Mettre Ã  jour le mot de passe
+            Mettre Ã  jour le mot de passe
           </button>
         </div>
       </form>
@@ -105,9 +105,9 @@
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
       <div class="card-header flex items-center justify-between">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Authentification Ã  deux facteurs (2FA)</h2>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Authentification Ã  deux facteurs (2FA)</h2>
           <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-            Ajoutez une couche de sÃ©curitÃ© supplÃ©mentaire Ã  votre compte de super-administrateur.
+            Ajoutez une couche de sÃ©curitÃ© supplÃ©mentaire Ã  votre compte de super-administrateur.
           </p>
         </div>
         <span
@@ -167,7 +167,7 @@
             </div>
             <form class="flex flex-col gap-4 sm:flex-row sm:items-end" @submit.prevent="submitEnable2fa">
               <div class="flex-1">
-                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="enable-2fa-code">2. Entrez le code Ã  6 chiffres gÃ©nÃ©rÃ©</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="enable-2fa-code">2. Entrez le code Ã  6 chiffres gÃ©nÃ©rÃ©</label>
                 <input
                   id="enable-2fa-code"
                   v-model="enableForm.code"
@@ -232,7 +232,7 @@ async function submitProfile() {
     })
 
     if (result.success) {
-      toast.success('Profil mis Ã  jour avec succÃ¨s.')
+      toast.success('Profil mis Ã  jour avec succÃ¨s.')
     } else {
       toast.error(result.message)
     }
@@ -252,7 +252,7 @@ async function submitPassword() {
     const result = await authStore.changePassword({ ...passwordForm })
 
     if (result.success) {
-      toast.success('Mot de passe mis Ã  jour avec succÃ¨s.')
+      toast.success('Mot de passe mis Ã  jour avec succÃ¨s.')
       passwordForm.current_password = ''
       passwordForm.new_password = ''
       passwordForm.new_password_confirmation = ''

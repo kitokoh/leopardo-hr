@@ -1,1 +1,51 @@
-{"name":"leopardo-admin-dashboard","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"vite","build":"vite build","preview":"vite preview","lint":"eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts","lint:fix":"eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix","format":"prettier --write src/","test:e2e":"playwright test"},"dependencies":{"@headlessui/vue":"^1.7.16","@heroicons/vue":"^2.0.18","@tailwindcss/forms":"^0.5.7","axios":"^1.19.0","chart.js":"^4.4.1","date-fns":"^4.4.0","echarts":"^6.1.0","globe.gl":"^2.31.0","leaflet":"^1.9.4","nprogress":"^0.2.0","pinia":"^4.0.2","socket.io-client":"^4.7.4","three":"^0.185.1","vue":"^3.4.0","vue-chartjs":"^5.3.0","vue-router":"^5.2.0","vue-toastification":"^2.0.0-rc.5","vue3-leaflet":"^1.0.0"},"devDependencies":{"@eslint/js":"^10.0.1","@babel/eslint-parser":"^8.0.1","@playwright/test":"^1.62.1","@types/leaflet":"^1.9.22","@types/nprogress":"^0.2.3","@vitejs/plugin-vue":"^6.0.8","autoprefixer":"^10.4.16","eslint":"^10.8.0","eslint-plugin-vue":"^10.10.0","postcss":"^8.5.25","prettier":"^3.9.6","tailwindcss":"^4.3.3","@tailwindcss/postcss":"^4.3.3","vite":"^8.2.0"}}
+{
+  "name": "leopardo-admin-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write src/",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.16",
+    "@heroicons/vue": "^2.0.18",
+    "@tailwindcss/forms": "^0.5.7",
+    "axios": "^1.6.2",
+    "chart.js": "^4.4.1",
+    "date-fns": "^4.4.0",
+    "echarts": "^6.1.0",
+    "globe.gl": "^2.31.0",
+    "leaflet": "^1.9.4",
+    "nprogress": "^0.2.0",
+    "pinia": "^4.0.2",
+    "socket.io-client": "^4.7.4",
+    "three": "^0.185.1",
+    "vue": "^3.4.0",
+    "vue-chartjs": "^5.3.0",
+    "vue-router": "^5.2.0",
+    "vue-toastification": "^2.0.0-rc.5",
+    "vue3-leaflet": "^1.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@babel/eslint-parser": "^8.0.1",
+    "@playwright/test": "^1.62.0",
+    "@types/leaflet": "^1.9.8",
+    "@types/nprogress": "^0.2.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^10.8.0",
+    "eslint-plugin-vue": "^10.10.0",
+    "postcss": "^8.5.24",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
+    "@tailwindcss/postcss": "^4.3.3",
+    "vite": "^8.1.5"
+  }
+}

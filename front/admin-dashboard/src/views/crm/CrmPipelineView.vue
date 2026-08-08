@@ -1,10 +1,10 @@
-﻿<template>
+<template>
   <div class="space-y-6 h-full flex flex-col">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Pipeline Commercial</h1>
         <p class="mt-1 text-sm text-gray-500">
-          Suivi des leads de l'entrÃ©e jusqu'Ã  la conversion payante.
+          Suivi des leads de l'entrÃ©e jusqu'Ã  la conversion payante.
         </p>
       </div>
       <button class="btn-secondary" :disabled="isLoading" @click="loadPipeline">

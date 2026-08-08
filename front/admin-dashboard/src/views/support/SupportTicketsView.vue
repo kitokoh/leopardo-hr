@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -328,11 +328,11 @@ async function applyTriage() {
       status: triageStatus.value,
       priority: triagePriority.value,
     })
-    toast.success('Ticket mis Ã  jour.')
+    toast.success('Ticket mis Ã  jour.')
     await loadTickets()
   } catch (error) {
     console.error('Failed to triage ticket:', error)
-    toast.error('Mise Ã  jour du ticket impossible.')
+    toast.error('Mise Ã  jour du ticket impossible.')
   } finally {
     isTriaging.value = false
   }

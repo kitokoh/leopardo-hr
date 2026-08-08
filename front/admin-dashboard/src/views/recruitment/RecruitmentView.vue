@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -159,7 +159,7 @@
                 type="button"
                 @click.stop="updateApplicantStatus(item, previousStage(item.status))"
               >
-                â† Retour
+                â† ← Retour
               </button>
               <button
                 v-if="nextStage(item.status)"
@@ -385,7 +385,7 @@ async function updateApplicantStatus(applicant, status) {
     await api.patch(`/v1/recruitment/applicants/${applicant.id}/status`, { status })
   } catch {
     applicant.status = previousStatus
-    toast.error('Impossible de mettre Ã  jour le candidat.')
+    toast.error('Impossible de mettre Ã  jour le candidat.')
   }
 }
 

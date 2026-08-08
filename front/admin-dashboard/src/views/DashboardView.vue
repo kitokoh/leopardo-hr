@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8">
     <div v-if="isLoading" class="flex h-64 items-center justify-center">
       <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
@@ -167,7 +167,7 @@
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.active_employees }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients Ã  risque</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients Ã  risque</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ summary.risk.high + summary.risk.medium }}</dd>
           </div>
         </dl>
@@ -302,11 +302,11 @@ const workflowCards = computed(() => [
     description: 'Suivre les demandes dâ€™essai, prioriser les leads et Ã©viter les prospects bloquÃ©s.',
     action: 'Voir les demandes clients',
     to: '/support',
-    badge: `${pendingRequests.value} Ã  traiter`,
+    badge: `${pendingRequests.value} Ã  traiter`,
     badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
   },
   {
-    title: 'Surveiller les clients Ã  risque',
+    title: 'Surveiller les clients Ã  risque',
     description: 'Identifier les comptes faibles en adoption, pointage ou santÃ© opÃ©rationnelle.',
     action: 'Analyser les prioritÃ©s',
     to: '/analytics',

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="p-6 max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
@@ -20,10 +20,10 @@
 
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <EdgeStatCard label="Nodes total" :value="stats.total" icon="ðŸ–¥ï¸" color="indigo" />
-      <EdgeStatCard label="En ligne" :value="stats.online" icon="âœ…" color="green" />
-      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="â­•" color="gray" />
-      <EdgeStatCard label="Licences expirÃ©es" :value="stats.licenseExpired" icon="âš ï¸" color="red" />
+      <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
+      <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
+      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
+      <EdgeStatCard label="Licences expirÃ©es" :value="stats.licenseExpired" icon="⚠️" color="red" />
     </div>
 
     <!-- Nodes table -->
@@ -34,7 +34,7 @@
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
-        <div class="text-4xl mb-3 opacity-30">ðŸ–¥ï¸</div>
+        <div class="text-4xl mb-3 opacity-30">🖥️</div>
         <p class="font-medium">Aucun node Edge enregistrÃ©</p>
         <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrÃ©s via l'API Edge.</p>
       </div>
@@ -200,7 +200,7 @@ function formatDate(iso) {
 function formatRelative(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "Ã  l'instant";
+  if (mins < 1) return "Ã  l'instant";
   if (mins < 60) return `il y a ${mins} min`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `il y a ${hrs} h`;
