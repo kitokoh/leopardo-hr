@@ -249,9 +249,11 @@
 ,
   "marketing": {
     "oauth": {
-      "title": "Pazarlama � OAuth Sosyal Aglar",
+      "title": "Pazarlama  OAuth Sosyal Aglar",
       "subtitle": "Marketing modulunun LinkedIn, Facebook/Meta ve X (Twitter) uzerinde yayin yapabilmesi icin OAuth kimlik bilgilerini (Client ID / Client Secret) yapilandirin.",
       "ayrshare_info": "Yayinlar Ayrshare toplayicisi uzerinden yonlendirilir. Asagidaki kimlik bilgileri guvenli sekilde saklanir ve her sosyal agda OAuth baglantilarini baslatmak icin kullanilir.",
+      "nav_title": "Pazarlama OAuth",
+      "saved_ok": ":provider yapılandırması kaydedildi.",
       "save": "Kaydet",
       "providers": {
         "linkedin": { "label": "LinkedIn", "description": "Marketing v2 API araciligiyla LinkedIn sirket sayfalarina ve profillerine baglanin." },
