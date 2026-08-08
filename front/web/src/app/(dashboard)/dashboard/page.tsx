@@ -26,6 +26,7 @@ import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 const emptySubscribe = () => () => {};
 
@@ -288,7 +289,7 @@ export default function DashboardPage() {
         className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center"
       >
         <div>
-          <h1 className="text-3xl font-black text-slate-950">Tableau de bord</h1>
+          <h1 className="text-3xl font-black text-slate-950">{i18nT(locale, 'dashboard.title', 'Tableau de bord')}</h1>
           <p className="mt-1 text-slate-500">
             {loading ? 'Chargement des donnees tenant...' : 'Bienvenue ! Voici ce qui se passe aujourd hui.'}
           </p>
@@ -319,7 +320,7 @@ export default function DashboardPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Entreprise</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">{i18nT(locale, 'dashboard.company', 'Entreprise')}</p>
               <h2 className="mt-2 text-2xl font-black text-slate-950">{companyName}</h2>
               <p className="mt-1 text-sm text-slate-500">
                 {activeModules} modules actifs, {lockedModules} a activer selon votre plan.
@@ -328,17 +329,17 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-2 text-center">
               <div className="rounded-xl bg-emerald-50 px-4 py-3">
                 <p className="text-2xl font-black text-emerald-700">{activeModules}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-900">Actifs</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-900">{i18nT(locale, 'dashboard.active_employees', 'Actifs')}</p>
               </div>
               <div className="rounded-xl bg-amber-50 px-4 py-3">
                 <p className="text-2xl font-black text-amber-700">{lockedModules}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900">Upgrade</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900">{i18nT(locale, 'dashboard.upgrade', 'Upgrade')}</p>
               </div>
             </div>
           </div>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">Actions prioritaires</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{i18nT(locale, 'dashboard.priority_actions', 'Actions prioritaires')}</p>
           <div className="mt-4 grid gap-3 text-sm">
             <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
             <PriorityAction label="Verifier les presences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
@@ -350,7 +351,7 @@ export default function DashboardPage() {
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Readiness lancement</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">{i18nT(locale, 'dashboard.launch_readiness', 'Readiness lancement')}</p>
               <h2 className="mt-2 text-2xl font-black text-slate-950">
                 {readiness.go_live_ready ? 'Votre espace est pret pour le go-live' : 'Actions requises avant le go-live'}
               </h2>
@@ -409,8 +410,8 @@ export default function DashboardPage() {
                   <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-950">Activite recente</h3>
-                  <p className="text-sm text-slate-500">Dernieres actions de votre equipe</p>
+                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity', 'Activite recente')}</h3>
+                  <p className="text-sm text-slate-500">{i18nT(locale, 'dashboard.recent_activity_hint', 'Dernieres actions de votre equipe')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
