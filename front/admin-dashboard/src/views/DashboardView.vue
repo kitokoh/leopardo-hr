@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8">
     <div v-if="isLoading" class="flex h-64 items-center justify-center">
       <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
@@ -78,7 +78,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5 bg-transparent dark:divide-white/5 dark:bg-transparent">
-              <tr v-for="item in priorityCompanies" :key="item.id" class="hover:bg-white/5 dark:hover:bg-slate-900/5 dark:hover:bg-white/5 dark:hover:bg-slate-900/5 transition-colors">
+              <tr v-for="item in priorityCompanies" :key="item.id" class="hover:glass-card/5 dark:hover:glass-card/5 transition-colors">
                 <td class="whitespace-nowrap px-6 py-4">
                   <div class="flex items-center">
                     <div class="h-9 w-9 flex-shrink-0 rounded-xl bg-surface-variant/30 p-1.5 dark:bg-surface-variant/30 border border-slate-200/50 dark:border-slate-700/50">
@@ -127,7 +127,7 @@
           <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Inscriptions en attente</h2>
         </div>
         <div class="divide-y divide-white/5 dark:divide-white/5">
-          <div v-for="request in pendingCompanyRequests" :key="request.id" class="p-6 transition-colors hover:bg-white/5 dark:hover:bg-slate-900/5 dark:hover:bg-white/5 dark:hover:bg-slate-900/5">
+          <div v-for="request in pendingCompanyRequests" :key="request.id" class="p-6 transition-colors hover:glass-card/5 dark:hover:glass-card/5">
             <div class="flex items-start justify-between">
               <div class="space-y-1">
                 <h3 class="text-sm font-bold text-slate-950 dark:text-white uppercase tracking-tight">{{ request.name }}</h3>

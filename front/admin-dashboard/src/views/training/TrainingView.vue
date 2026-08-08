@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <StatsCard title="Formations actives" :value="stats.active_courses" icon="ChartBarIcon" color="blue" />

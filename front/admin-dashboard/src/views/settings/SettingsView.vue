@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-8 animate-fade-in max-w-3xl">
     <div>
       <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Mon compte</h1>
@@ -316,7 +316,7 @@ async function submitDisable2fa() {
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 bg-white/50 dark:bg-slate-900/50 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 glass-card/50 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
 }
 </style>
 

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-6 h-full flex flex-col">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
       <div>
