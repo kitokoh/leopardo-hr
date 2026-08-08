@@ -24,10 +24,15 @@ return [
         env('APP_URL', 'http://localhost'),
         // Production origins
         'https://gestionemployerbackend.onrender.com',
+        // Real vitrine origin (leopardo-hr.vercel.app returns 404 — the live
+        // deployment is gestionemployer-backend.vercel.app, see
+        // front/web/.env.local.example). See issue #1468.
+        'https://gestionemployer-backend.vercel.app',
         'https://leopardo-hr.vercel.app',
         'https://leopardo-rh.com',
         'https://www.leopardo-rh.com',
         'https://app.leopardo-rh.com',
+        'https://admin.leopardo-rh.com',
         env('ADMIN_DASHBOARD_URL'),
         env('CORS_EXTRA_ORIGIN'),
     ]),
