@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// A premium glassmorphism card component.
@@ -31,7 +32,7 @@ class GlassCard extends StatelessWidget {
 
     final bgColor = color ??
         (isDark
-            ? const Color(0xFF31394D).withValues(alpha: 0.4)
+            ? AppColors.mobileDarkCardBg.withValues(alpha: 0.4)
             : Colors.white.withValues(alpha: 0.7));
 
     final defaultBorderColor = isDark
