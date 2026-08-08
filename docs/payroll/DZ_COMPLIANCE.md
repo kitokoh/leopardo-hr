@@ -65,6 +65,23 @@
 
 - Salaire minimum mensuel implémenté : **20 000 DZD** (`minimumWage()`).
 
+## 5. Prorata, heures supplémentaires, absences (F-05 — implémenté 2026-08-08)
+
+**Méthode de prorata** : jours travaillés (actual_days_worked / 22 jours ouvrés standards),
+recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculator::computeWorkedDays).
+
+| Cas | Calcul | Résultat |
+|---|---|---|
+| Entrée 15/07 (17 j calendaires sur 31) | 22 × 17/31 = 12,06 j → 60 000 × 12,06/22 | **32 890,91** |
+| Sortie 10/07 (10 j sur 31) | 22 × 10/31 = 7,10 j → 60 000 × 7,10/22 | **19 363,64** |
+| Absence 1 jour (21/22) | 60 000 × 21/22 | 57 272,73 (retenue **2 727,27**) |
+| Congés sans solde 5 j (17/22) | 60 000 × 17/22 | 46 363,64 (retenue **13 636,36**) |
+| Heures sup 10 h @25 % + 5 h @50 % | taux horaire 346,16 (60 000/173,33) → 10×346,16×1,25 + 5×346,16×1,50 | **6 923,20** |
+
+⚠️ Majorations HS (25 % jusqu'à 10 h/mois, 50 % au-delà) : seuil conventionnel **à confirmer** par la convention collective applicable.
+
+**Source des heures sup** : non branchée (0) — le lien pointage → paie (F-20) alimentera `overtime_hours`.
+
 ## 4. À compléter (prochaine itération — besoin expert paie DZ)
 
 1. Congés payés : acquisition 2,5 j/mois, plafond, indemnité (1/10ᵉ vs maintien).
