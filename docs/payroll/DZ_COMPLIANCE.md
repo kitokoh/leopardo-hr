@@ -34,6 +34,16 @@
 **Abattement** : 40 % de l'impôt annuel, plancher 12 000 DZD/an, plafond 18 000 DZD/an
 (implémenté : `min(max(taxAnnuelle × 0.40, 12000), 18000)`).
 
+### 1bis. Assiette de l'IRG
+
+**L'IRG est calculé sur le brut mensuel MINUS les cotisations salariales (CNAS)** :
+`assiette IRG = brut − CNAS salariale` (implémenté dans `PayrollCalculator::calculateSlip`, validé par golden test F-03/F-04).
+
+**Exemple chiffré (golden test F-03)** — brut 60 000 DZD :
+- CNAS salariale = 5 400 → assiette = **54 600 DZD**
+- IRG(54 600) = 4 600 + 14 600 × 27 % = 8 542/mois → annuel 102 504 → abattement plafonné 18 000 → **7 042 DZD/mois**
+- Net = 60 000 − 5 400 − 7 042 = **47 558 DZD**
+
 **Exemple chiffré (golden test F-03)** — salaire imposable mensuel 60 000 DZD :
 - Tranche 1 (0–20 000) : 0 DZD
 - Tranche 2 (20 001–40 000) : 20 000 × 23 % = 4 600 DZD
