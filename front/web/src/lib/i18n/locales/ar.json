@@ -256,15 +256,15 @@
       "save": "حفظ",
       "providers": {
         "linkedin": {
-          "label": "LinkedIn",
+          "label": "لينكد إن",
           "description": "الاتصال بصفحات الشركات وملفات LinkedIn عبر واجهة API Marketing v2."
         },
         "facebook": {
-          "label": "Facebook / Meta",
+          "label": "فيسبوك / ميتا",
           "description": "الاتصال بصفحات Facebook وحسابات Instagram Business عبر Graph API."
         },
         "twitter": {
-          "label": "X (Twitter)",
+          "label": "إكس (تويتر)",
           "description": "الاتصال عبر Twitter v2 API / OAuth 2.0 PKCE."
         }
       },
