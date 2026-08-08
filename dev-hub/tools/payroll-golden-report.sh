@@ -19,8 +19,10 @@ fi
 files=$(find "${GOLDEN_DIR}" -name "*Test.php" | sort)
 count=0
 for f in ${files}; do
+  # cas = méthodes test_ + entrées de data providers (chaque ligne 'nom' => [..])
   n=$(grep -cE "public function test_" "${f}")
-  count=$((count + n))
+  p=$(grep -cE "^[[:space:]]*'[^']+'" "${f}" || true)
+  count=$((count + n + p))
 done
 
 echo "::notice::GOLDEN_PAYROLL_CASES=${count} (cible FOCUS : ≥ 40, M+3)"
