@@ -30,32 +30,47 @@ return new class extends Migration
 
     public function up(): void
     {
+        // Issue #1490 : ne JAMAIS laisser fuir `SET search_path TO public` dans
+        // la session — les migrations tenant exécutées ensuite dans la même
+        // session créeraient leurs tables dans `public` au lieu du schéma
+        // tenant (shared_tenants), d'où les `relation "companies" does not
+        // exist` intermittents sur la gate de coverage (runs 2026-07-25).
+        $previousPath = DB::selectOne('SHOW search_path')->search_path;
         DB::statement('SET search_path TO public');
 
-        if (Schema::hasTable('failed_jobs')) {
-            return;
-        }
-
         try {
-            Schema::create('failed_jobs', function (Blueprint $table) {
-                $table->id();
-                $table->string('uuid')->unique();
-                $table->text('connection');
-                $table->text('queue');
-                $table->longText('payload');
-                $table->longText('exception');
-                $table->timestampTz('failed_at')->useCurrent();
-            });
-        } catch (QueryException $exception) {
-            if ($exception->getCode() !== '42P07') {
-                throw $exception;
+            if (Schema::hasTable('failed_jobs')) {
+                return;
             }
+
+            try {
+                Schema::create('failed_jobs', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('uuid')->unique();
+                    $table->text('connection');
+                    $table->text('queue');
+                    $table->longText('payload');
+                    $table->longText('exception');
+                    $table->timestampTz('failed_at')->useCurrent();
+                });
+            } catch (QueryException $exception) {
+                if ($exception->getCode() !== '42P07') {
+                    throw $exception;
+                }
+            }
+        } finally {
+            DB::statement('SET search_path TO '.$previousPath);
         }
     }
 
     public function down(): void
     {
+        $previousPath = DB::selectOne('SHOW search_path')->search_path;
         DB::statement('SET search_path TO public');
-        Schema::dropIfExists('failed_jobs');
+        try {
+            Schema::dropIfExists('failed_jobs');
+        } finally {
+            DB::statement('SET search_path TO '.$previousPath);
+        }
     }
 };
