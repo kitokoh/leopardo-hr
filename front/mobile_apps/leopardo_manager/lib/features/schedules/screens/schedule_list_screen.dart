@@ -11,6 +11,7 @@ import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_manager/features/schedules/providers/schedule_provider.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class ScheduleListScreen extends ConsumerWidget {
   const ScheduleListScreen({super.key});
