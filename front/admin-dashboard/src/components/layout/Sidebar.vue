@@ -138,6 +138,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   HomeIcon,
@@ -182,6 +183,7 @@ defineProps({
 defineEmits(['close'])
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
@@ -286,7 +288,7 @@ const navigation = computed(() => [
   },
   {
     name: 'marketing-oauth',
-    title: 'Marketing — OAuth',
+    title: t('marketing.oauth.nav_title'),
     path: '/marketing/oauth',
     icon: MegaphoneIcon
   },
