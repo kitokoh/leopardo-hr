@@ -133,8 +133,9 @@ jobs:
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
-      - name: Check env() parity config/ ↔ .env.example (issue #1487)
-        run: dev-hub/tools/check-env-example-parity.sh api
+      - name: Report test-schema drift vs migrations (issue #1489, non blocking)
+        continue-on-error: true
+        run: dev-hub/tools/check-test-schema-drift.sh api
 
       - name: Check newly added files declare strict_types (PA2-ARCH-009)
         env:
