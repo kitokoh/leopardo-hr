@@ -282,7 +282,7 @@ const routes = [
         name: 'marketing-oauth',
         component: () => import('@/views/marketing/MarketingOAuthView.vue'),
         meta: {
-          title: 'Marketing — OAuth Réseaux Sociaux',
+          title: 'marketing.oauth.nav_title',
           icon: 'MegaphoneIcon'
         }
       },
