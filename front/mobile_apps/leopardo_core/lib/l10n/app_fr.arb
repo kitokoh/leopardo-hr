@@ -165,6 +165,8 @@
   "marketingOauthTitle": "Marketing � OAuth Reseaux Sociaux",
   "marketingOauthSubtitle": "Configurez les credentials OAuth (Client ID / Client Secret) utilises par le module Marketing pour publier sur LinkedIn, Facebook/Meta et X (Twitter).",
   "marketingOauthAyrshareInfo": "Les publications sont routees via l agregateur Ayrshare. Les credentials ci-dessous sont stockes de facon securisee et utilises pour initialiser la connexion OAuth de chaque reseau social dans Ayrshare.",
+    "marketingOauthNavTitle": "Marketing OAuth",
+  "marketingOauthSavedOk": "Configuration de :provider enregistree.",
   "marketingOauthSave": "Enregistrer",
   "marketingOauthProvidersLinkedinLabel": "LinkedIn",
   "marketingOauthProvidersLinkedinDescription": "Connexion aux pages entreprises et profils LinkedIn via l API Marketing v2.",
