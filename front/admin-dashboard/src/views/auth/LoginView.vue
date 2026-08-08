@@ -32,7 +32,7 @@
           <form class="space-y-6" @submit.prevent="handleLogin">
             <div class="space-y-5">
               <div>
-                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Adresse email</label>
+                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">{{ $t('platform_login.email_label', 'Adresse email') }}</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <EnvelopeIcon class="h-5 w-5 text-slate-500" />
@@ -52,7 +52,7 @@
               </div>
 
               <div>
-                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">ClÃ© d'AccÃ¨s</label>
+                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">{{ $t('auth.password_label', "Cl\u00e9 d'Acc\u00e8s") }}</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <LockClosedIcon class="h-5 w-5 text-slate-500" />
@@ -80,7 +80,7 @@
               </div>
 
               <div v-if="requiresTwoFactor">
-                <label for="two-factor-code" class="block text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 ml-1">Code 2FA</label>
+                <label for="two-factor-code" class="block text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 ml-1">{{ $t('platform_login.2fa_label', 'Code 2FA') }}</label>
                 <input
                   id="two-factor-code"
                   v-model="form.twoFactorCode"
@@ -119,7 +119,7 @@
               <div class="flex items-center gap-3">
                 <ExclamationTriangleIcon class="h-5 w-5 text-red-400 shrink-0" />
                 <div class="space-y-1">
-                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">Erreur de connexion</h3>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">{{ $t('platform_login.submitting', 'Erreur de connexion') }}</h3>
                   <p class="text-[10px] font-bold text-red-300/80 leading-tight">{{ error }}</p>
                 </div>
               </div>
@@ -145,7 +145,7 @@
                   <div class="w-full border-t border-white/5"></div>
                 </div>
                 <div class="relative flex justify-center text-xs font-black uppercase tracking-widest">
-                  <span class="bg-slate-900/40 px-4 text-slate-600">Ou tester</span>
+                  <span class="bg-slate-900/40 px-4 text-slate-600">{{ $t('platform_login.use_demo_account', 'Ou tester') }}</span>
                 </div>
               </div>
 
