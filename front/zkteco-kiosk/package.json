@@ -1,0 +1,14 @@
+{
+  "name": "zkteco-kiosk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Leopardo RH — ZKTeco biometric kiosk (vanilla JS, dependency-free)",
+  "type": "module",
+  "scripts": {
+    "lint": "node --check app.js && node --check admin.js && node --check i18n.js",
+    "test": "node tests/i18n.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

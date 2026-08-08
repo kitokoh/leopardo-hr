@@ -1,0 +1,41 @@
+name: Kiosk CI — ZKTeco Kiosk
+
+# Issue #1501 : le kiosque était hors écosystème (aucun package.json,
+# aucun lint/test/CI). Ce workflow couvre front/zkteco-kiosk/**.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'front/zkteco-kiosk/**'
+  push:
+    branches: [main]
+    paths:
+      - 'front/zkteco-kiosk/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  kiosk-ci:
+    name: Lint + i18n tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+
+      - name: Lint (node --check)
+        working-directory: front/zkteco-kiosk
+        run: npm run lint
+
+      - name: i18n parity & usage tests
+        working-directory: front/zkteco-kiosk
+        run: npm test
