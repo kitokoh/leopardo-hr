@@ -158,7 +158,7 @@ class _StartupGateState extends State<StartupGate> {
                               child: const Text(
                                 'L',
                                 style: TextStyle(
-                                  color: AppColors.mobileBrandEmerald,
+                                  color: AppColors.mobileMint,
                                   fontSize: 40,
                                   fontWeight: FontWeight.w900,
                                 ),
@@ -169,7 +169,7 @@ class _StartupGateState extends State<StartupGate> {
                               widget.appName,
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                color: AppColors.mobileDarkOnSurface, // on-surface
+                                color: AppColors.mobileLavender, // on-surface
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -0.5,
@@ -220,7 +220,7 @@ class _StartupGateState extends State<StartupGate> {
                                       _showStartupGuard = false;
                                     }),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.mobileDarkOnSurface,
+                                  foregroundColor: const AppColors.mobileLavender,
                                   side: BorderSide(
                                     color: const Color(
                                       0xFFDAE2FD,

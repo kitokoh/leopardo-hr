@@ -66,7 +66,11 @@ class ApiClient {
       ),
     );
 
-    if (const String.fromEnvironment('API_BASE_URL') == 'mock') {
+    // Never activate the mock interceptor in release builds: a release APK
+    // compiled with --dart-define=API_BASE_URL=mock (misconfigured CI, demo
+    // build distributed by mistake) must not silently serve fake data in
+    // production. See issue #1470 / audit T14 (2026-04-22).
+    if (!kReleaseMode && const String.fromEnvironment('API_BASE_URL') == 'mock') {
       importMockInterceptor();
     }
   }

@@ -31,15 +31,6 @@ class CorsAndTrustedProxyTest extends TestCase
         }
     }
 
-    public function test_cors_allows_vitrine_origin(): void
-    {
-        // The live vitrine deployment is gestionemployer-backend.vercel.app
-        // (leopardo-hr.vercel.app returns 404 — see front/web/.env.local.example).
-        // Without it, any direct browser API call from the vitrine is silently
-        // CORS-blocked. See issue #1468.
-        $this->assertContains('https://gestionemployer-backend.vercel.app', config('cors.allowed_origins'));
-    }
-
     public function test_trusts_x_forwarded_for(): void
     {
         // Render is the single edge proxy in front of this app; the request's

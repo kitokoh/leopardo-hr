@@ -15,6 +15,7 @@ import 'package:leopardo_manager/features/schedules/providers/schedule_provider.
 import 'package:leopardo_manager/features/team/data/employee_repository.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 /// Ecran "Equipe" â€” reserve aux managers (principal / RH).
 /// Permet de lister, creer, archiver un employe et de gerer les invitations.
@@ -949,7 +950,7 @@ class _CompanyQrSheet extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              LeopardoQrGlassCard(
+              LeopardoQrCard(
                 data: payload.token,
                 title: 'QR entreprise scannable',
                 subtitle:
