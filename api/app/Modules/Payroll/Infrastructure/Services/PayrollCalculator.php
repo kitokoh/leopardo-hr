@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -20,6 +22,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -174,8 +177,24 @@ class PayrollCalculator
     ): PaySlip {
         $baseSalary = $structure->base_salary;
         $worked = $this->computeWorkedDays($run, $employee);
+        $inputs = $this->collectWorkInputs($run, $employee);
+
+        // Jours d'absence (payés ou non) retirés des jours travaillés ;
+        // les congés payés sont compensés par l'indemnité (F-07).
+        $leaveDays = $inputs['paid_leave_days'] + $inputs['unpaid_leave_days'];
+        $worked['actual_days_worked'] = max(0.0, $worked['actual_days_worked'] - $leaveDays);
+        $worked['overtime_hours'] = $inputs['overtime_hours'];
+
         $basePaid = $this->computeProratedBase($baseSalary, $worked['working_days'], $worked['actual_days_worked']);
         $overtimePay = $this->computeOvertimePay($baseSalary, $worked['overtime_hours']);
+        $leaveIndemnity = $inputs['paid_leave_days'] > 0.0
+            ? $this->computeLeaveIndemnity(
+                $baseSalary,
+                $inputs['paid_leave_days'],
+                $worked['working_days'],
+                $baseSalary * 12.0 // référence 12 mois (approximation documentée F-07)
+            )
+            : 0.0;
 
         $grossEarnings = $basePaid;
         $lines = [];
@@ -200,6 +219,18 @@ class PayrollCalculator
                 'order' => $order++,
             ];
             $grossEarnings += $overtimePay;
+        }
+
+        if ($leaveIndemnity > 0.0) {
+            $lines[] = [
+                'name' => 'Indemnité de congés payés',
+                'type' => 'earning',
+                'base_amount' => $inputs['paid_leave_days'],
+                'rate' => null,
+                'amount' => $leaveIndemnity,
+                'order' => $order++,
+            ];
+            $grossEarnings += $leaveIndemnity;
         }
 
         /** @var Collection<int, SalaryComponent> $components */
@@ -416,6 +447,51 @@ class PayrollCalculator
             : 0.0;
 
         return round(max($maintien, $dixieme), 2);
+    }
+
+    /**
+     * Programme FOCUS (F-20) — entrées de travail réelles d'un employé sur la
+     * période du run : heures sup (pointage) + jours de congés approuvés.
+     *
+     * Sources :
+     *  - AttendanceLog.overtime_hours (somme des logs non annulés/rejetés) ;
+     *  - Absence approuvées (status=approved), ventilées payées (is_paid) /
+     *    non payées via AbsenceType.
+     *
+     * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
+     */
+    public function collectWorkInputs(PayrollRun $run, Employee $employee): array
+    {
+        $overtimeHours = AttendanceLog::query()
+            ->where('company_id', $run->company_id)
+            ->where('employee_id', $employee->id)
+            ->whereBetween('date', [$run->period_start, $run->period_end])
+            ->where('overtime_hours', '>', 0)
+            ->whereNotIn('status', ['cancelled', 'rejected'])
+            ->sum('overtime_hours');
+
+        $paidLeave = $this->sumApprovedLeaveDays($run, $employee, true);
+        $unpaidLeave = $this->sumApprovedLeaveDays($run, $employee, false);
+
+        return [
+            'overtime_hours' => (float) $overtimeHours,
+            'paid_leave_days' => $paidLeave,
+            'unpaid_leave_days' => $unpaidLeave,
+        ];
+    }
+
+    private function sumApprovedLeaveDays(PayrollRun $run, Employee $employee, bool $paid): float
+    {
+        return (float) Absence::query()
+            ->where('company_id', $run->company_id)
+            ->where('employee_id', $employee->id)
+            ->where('status', 'approved')
+            ->whereDate('start_date', '<=', $run->period_end)
+            ->whereDate('end_date', '>=', $run->period_start)
+            ->whereHas('absenceType', function (Builder $q) use ($paid): void {
+                $q->where('is_paid', $paid);
+            })
+            ->sum('days_count');
     }
 
     private function computeComponentAmount(SalaryComponent $component, float $baseSalary, float $grossSalary): float
