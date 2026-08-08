@@ -1,0 +1,282 @@
+{
+  "_version": "1.0.0",
+  "_updated_at": "2026-05-07T20:45:00Z",
+  "_locale": "tr",
+  "app": {
+    "title": "Leopardo IK"
+  },
+  "welcome": {
+    "brand": {
+      "subtitle": "Sohbet odakli, mobil oncelikli, moduler."
+    },
+    "hero": {
+      "title": "Is gununuz burada baslar, arka ofiste degil.",
+      "description": "Puantaj, kisisel takip ve aktif IK modulleri once telefonda acilir; deneyim sade ve okunabilir kalir."
+    },
+    "story": {
+      "clarity": {
+        "title": "Bogmadan once konusan bir ana ekran",
+        "body": "Leopardo IK birkac net eylemle baslar: giris yapmak, ayi takip etmek ve onemli bilgilere ulasmak."
+      },
+      "field": {
+        "title": "Saha ekipleri icin mobil oncelikli",
+        "body": "Telefon calisanin ana yuzeyidir. Puantajiniz, izinleriniz ve belgeleriniz burada yasar."
+      },
+      "modules": {
+        "title": "Aktif moduller, gorunur yol haritasi",
+        "body": "Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Giris yap"
+    },
+    "employee": {
+      "invitation": {
+        "access": "Calisan erisimi (davet)"
+      }
+    },
+    "personal_account": {
+      "create": "Kisisel hesap olustur",
+      "explanation": "Kisisel hesap: belgelerinizi duzenleyin, sonra alaninizdan bir sirket olusturun veya katilin."
+    },
+    "back_tooltip": "Geri",
+    "employee_login_subtitle": "Calisan girisi",
+    "manager_login_subtitle": "Yonetici / IK girisi",
+    "email_professional_label": "Is e-postasi",
+    "email_label": "E-posta",
+    "email_required": "E-posta zorunlu",
+    "email_invalid": "Gecersiz e-posta",
+    "password_label": "Sifre",
+    "password_required": "Sifre zorunlu",
+    "password_too_short": "Sifre cok kisa",
+    "continue_with_google": "Google ile devam et",
+    "activate_invitation": "Davetimi etkinlestir",
+    "personal_account_link": "Kisisel hesap",
+    "activate_manager_access": "Yonetici erisimimi etkinlestir",
+    "try_demo_account": "Demo hesabini dene"
+  },
+  "common": {
+    "language": {
+      "label": "Dil",
+      "variants": {
+        "fr-FR": "Fransizca (Fransa)",
+        "fr-BE": "Fransizca (Belcika)",
+        "fr-CA": "Fransizca (Kanada)",
+        "ar-SA": "Arapca (Suudi Arabistan)",
+        "ar-MA": "Arapca (Fas)",
+        "tr-TR": "Turkce (Turkiye)",
+        "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
+        "en-GB": "Ingilizce (Birlesik Krallik)"
+      }
+    },
+    "or": "veya"
+  },
+  "modules": {
+    "attendance": "Puantaj",
+    "payroll": "Bordro",
+    "cabinet": "Belge kasasi",
+    "notifications": "Bildirimler",
+    "evaluations": "Degerlendirmeler"
+  },
+  "emails": {
+    "invitation": {
+      "subject": ":company sirketine Leopardo IK uzerinden katilmaniz icin davet edildiniz",
+      "greeting": "Merhaba :name,",
+      "body": ":company sirketine katilmaniz icin davet edildiniz. Hesabinizi etkinlestirmek icin asagidaki baglantiya tiklayin.",
+      "action": "Hesabimi etkinlestir",
+      "footer": "Bu islemi siz istemediyseniz bu e-postayi yok sayin."
+    },
+    "reset_password": {
+      "subject": "Sifrenizi sifirlayin",
+      "greeting": "Merhaba :name,",
+      "body": "Sifrenizi sifirlamak icin asagidaki baglantiya tiklayin.",
+      "action": "Sifreyi sifirla",
+      "footer": "Bu islemi siz istemediyseniz bu e-postayi yok sayin."
+    },
+    "payroll_ready": {
+      "subject": "Maas pusulaniz hazir",
+      "greeting": "Merhaba :name,",
+      "body": ":period donemi icin maas pusulaniz hazir. Leopardo IK icinde inceleyebilirsiniz.",
+      "action": "Maas pusulasini gor",
+      "footer": "Muhasebe aktarimindan once bilgilerinizi kontrol edin."
+    },
+    "absence_approved": {
+      "subject": "Izin talebiniz onaylandi",
+      "greeting": "Merhaba :name,",
+      "body": ":period donemi icin izin talebiniz onaylandi.",
+      "action": "Talebi gor",
+      "footer": "Takim plani guncellendi."
+    },
+    "absence_rejected": {
+      "subject": "Izin talebiniz reddedildi",
+      "greeting": "Merhaba :name,",
+      "body": ":period donemi icin izin talebiniz reddedildi.",
+      "action": "Talebi gor",
+      "footer": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun."
+    }
+  },
+  "profile": {
+    "title": "Profilim",
+    "subtitle": "Kisisel bilgiler ve dil",
+    "loading": "Profil yukleniyor...",
+    "back_tooltip": "Geri",
+    "job_title_unset": "Unvan belirtilmedi",
+    "details_title": "Bilgiler",
+    "email_label": "E-posta",
+    "department_label": "Departman",
+    "job_title_label": "Unvan",
+    "matricule_label": "Personel numarasi",
+    "value_unset": "Belirtilmedi",
+    "open_settings": "Hesap ayarlarini ac",
+    "language_updated": "Dil guncellendi.",
+    "language_saving": "Guncelleniyor...",
+    "language_save": "Dili guncelle"
+  },
+  "ai_chat": {
+    "title": "Yapay Zeka Asistani",
+    "back_tooltip": "Geri",
+    "send_tooltip": "Gonder",
+    "input_hint": "Mesajinizi yazin...",
+    "empty_state_title": "IK sorularinizi sorun",
+    "error_message": "Hata: asistana ulasilamadi."
+  },
+  "platform_login": {
+    "title": "Leopardo Platform",
+    "subtitle": "Platform yonetimine ayrilmis mobil kokpit.",
+    "2fa_notice": "Bu hesap platformu korur: kimlik dogrulama uygulamanizdaki 2FA kodunu girin.",
+    "email_label": "Super yonetici e-postasi",
+    "email_required": "E-posta zorunlu",
+    "password_required": "Sifre zorunlu",
+    "2fa_label": "Etkinse 2FA kodu",
+    "submitting": "Giris yapiliyor...",
+    "use_demo_account": "Demo hesabini kullan"
+  },
+  "users": {
+    "page": {
+      "title": "Kullanici Yonetimi",
+      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
+    },
+    "actions": {
+      "bulk": "Islemler (:count)",
+      "export": "Disa Aktar",
+      "new": "Yeni"
+    },
+    "filters": {
+      "search": {
+        "label": "Ara",
+        "placeholder": "Ad, e-posta, sirket..."
+      },
+      "status": {
+        "label": "Durum",
+        "all": "Tum durumlar",
+        "active": "Aktif",
+        "inactive": "Pasif",
+        "suspended": "Askiya alindi",
+        "pending": "Beklemede"
+      },
+      "role": {
+        "label": "Rol",
+        "all": "Tum roller",
+        "admin": "Yonetici",
+        "manager": "Mudur",
+        "employee": "Calisan",
+        "hr": "IK"
+      },
+      "company": {
+        "label": "Sirket",
+        "all": "Tum sirketler"
+      },
+      "registrationDate": {
+        "label": "Kayit tarihi",
+        "all": "Tum tarihler",
+        "today": "Bugun",
+        "week": "Bu hafta",
+        "month": "Bu ay",
+        "quarter": "Bu ceyrek"
+      },
+      "lastLogin": {
+        "label": "Son giris",
+        "all": "Tumu",
+        "today": "Bugun",
+        "week": "Bu hafta",
+        "month": "Bu ay",
+        "never": "Hic giris yapmadi"
+      },
+      "segment": {
+        "label": "Segment",
+        "all": "Tum segmentler",
+        "champions": "Sadikler",
+        "loyal": "Bagli",
+        "potential": "Potansiyel",
+        "new": "Yeni",
+        "atRisk": "Risk altinda"
+      },
+      "advanced": {
+        "show": "Gelismis filtreleri goster",
+        "hide": "Gelismis filtreleri gizle"
+      }
+    },
+    "bulkPanel": {
+      "selectedCount": ":count secildi",
+      "activate": "Etkinlestir",
+      "deactivate": "Devre disi birak",
+      "suspend": "Askiya al",
+      "export": "Disa Aktar",
+      "cancel": "Vazgec"
+    },
+    "toast": {
+      "loadError": "Kullanicilar yuklenirken hata olustu",
+      "bulkActivated": ":count kullanici etkinlestirildi",
+      "bulkDeactivated": ":count kullanici devre disi birakildi",
+      "bulkSuspended": ":count kullanici askiya alindi",
+      "bulkError": "Toplu islem basarisiz oldu",
+      "deleted": "Kullanici silindi",
+      "deleteError": "Kullanici silinirken hata olustu",
+      "impersonating": ":name olarak giris yapiliyor",
+      "created": "Kullanici basariyla olusturuldu",
+      "updated": "Kullanici guncellendi",
+      "exportInProgress": "Disa aktarim yapiliyor...",
+      "exportDone": "Disa aktarim tamamlandi",
+      "exportError": "Disa aktarim basarisiz oldu",
+      "selectionExportDone": "Secim disa aktarimi tamamlandi"
+    },
+    "confirm": {
+      "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
+    }
+  },
+  "marketing": {
+    "oauth": {
+      "title": "Pazarlama  OAuth Sosyal Aglar",
+      "subtitle": "Marketing modulunun LinkedIn, Facebook/Meta ve X (Twitter) uzerinde yayin yapabilmesi icin OAuth kimlik bilgilerini (Client ID / Client Secret) yapilandirin.",
+      "ayrshare_info": "Yayinlar Ayrshare toplayicisi uzerinden yonlendirilir. Asagidaki kimlik bilgileri guvenli sekilde saklanir ve her sosyal agda OAuth baglantilarini baslatmak icin kullanilir.",
+      "nav_title": "Pazarlama OAuth",
+      "saved_ok": ":provider yapılandırması kaydedildi.",
+      "save": "Kaydet",
+      "providers": {
+        "linkedin": {
+          "label": "LinkedIn",
+          "description": "Marketing v2 API araciligiyla LinkedIn sirket sayfalarina ve profillerine baglanin."
+        },
+        "facebook": {
+          "label": "Facebook / Meta",
+          "description": "Graph API araciligiyla Facebook sayfalarina ve Instagram Business hesaplarina baglanin."
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Twitter v2 API / OAuth 2.0 PKCE araciligiyla baglanin."
+        }
+      },
+      "fields": {
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "redirect_uri": "Redirect URI",
+        "secret_hint": "(gosterilmiyor)",
+        "placeholder_id": "Mevcut degeri korumak icin bos birakin",
+        "placeholder_secret": "Degistirmemek icin bos birakin",
+        "placeholder_uri": "https://domain-adiniz.com/oauth/callback"
+      }
+    }
+  }
+}
