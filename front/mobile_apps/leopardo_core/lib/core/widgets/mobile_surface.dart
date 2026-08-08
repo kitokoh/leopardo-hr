@@ -14,6 +14,7 @@ class MobileSurface {
   static const Color muted = AppColors.mobileDarkMutedAlt;
   static const Color secondary = AppColors.mobileDarkSecondary;
   static const Color disabled = AppColors.mobileDarkDisabled;
+  static const Color card = AppColors.mobileDarkSurfaceAlt;
 
   static BoxDecoration cardDecoration({
     Color color = surface,
@@ -35,18 +36,38 @@ class MobilePage extends StatelessWidget {
     this.padding = const EdgeInsets.fromLTRB(20, 16, 20, 28),
     this.appBar,
     this.bottom,
+    this.title,
+    this.showBackButton = false,
+    this.onBack,
   });
 
   final List<Widget> children;
   final EdgeInsetsGeometry padding;
   final PreferredSizeWidget? appBar;
   final Widget? bottom;
+  final String? title;
+  final bool showBackButton;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
+    final PreferredSizeWidget? resolvedAppBar = appBar ??
+        (title == null
+            ? null
+            : MobileTopBar(
+                title: title!,
+                leading: showBackButton
+                    ? IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                        color: MobileSurface.text,
+                        onPressed: onBack ?? () => Navigator.maybePop(context),
+                      )
+                    : null,
+              ));
+
     return Scaffold(
       backgroundColor: MobileSurface.background,
-      appBar: appBar,
+      appBar: resolvedAppBar,
       bottomNavigationBar: bottom,
       body: SafeArea(child: ListView(padding: padding, children: children)),
     );

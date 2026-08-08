@@ -1,4 +1,3 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -14,6 +13,7 @@ import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/salary_advances/providers/salary_advance_provider.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -200,11 +200,11 @@ class _SalaryAdvanceListScreenState
       final path = await ref
           .read(salaryAdvanceRepositoryProvider)
           .downloadProof(advanceId);
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       final uri = Uri.file(path);
       final canLaunch = await canLaunchUrl(uri);
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       if (canLaunch) {
         await launchUrl(uri);
@@ -214,7 +214,7 @@ class _SalaryAdvanceListScreenState
         );
       }
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -519,13 +519,13 @@ class _SalaryAdvanceRequestSheetState
           );
       ref.invalidate(salaryAdvancesProvider);
       await ref.refresh(salaryAdvancesProvider.future).then((_) {});
-      if (!mounted) return;
+      if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d avance transmise au RH.')),
       );
     } catch (e) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,
