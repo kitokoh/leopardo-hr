@@ -111,6 +111,11 @@ class AppColors {
   static const Color mobilePunchOutGradientStart = Color(0xFFB91C1C);
   static const Color mobilePunchOutGradientEnd = Color(0xFF7F1D1D);
 
+  // ─── Social / OAuth provider brand colors (PA2-MKT-016) ─────────────────
+  static const Color socialLinkedIn = Color(0xFF0A66C2);  // LinkedIn blue
+  static const Color socialFacebook = Color(0xFF1877F2);  // Facebook blue
+  static const Color socialX        = Color(0xFF000000);  // X (Twitter) black
+
   static bool isDark(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
 
