@@ -128,7 +128,7 @@
         aria-labelledby="create-client-title"
       >
         <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 glass-card shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-0">
-          <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 glass-card/90 px-6 py-5 dark:border-slate-800 dark:bg-slate-950/90 backdrop-blur-md">
+          <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 glass-card px-6 py-5 dark:border-slate-800 dark:bg-slate-950/90 backdrop-blur-md">
             <div>
               <p class="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">SystÃ¨me</p>
               <h2 id="create-client-title" class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
@@ -429,7 +429,7 @@ onMounted(() => {
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 glass-card/50 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400;
+  @apply block w-full rounded-2xl border border-slate-200 glass-card px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400;
 }
 </style>
 
