@@ -105,7 +105,7 @@ class HomeScreen extends ConsumerWidget {
                     _ModulesScroller(modules: activeModules),
                     if (canManageTeam) ...[
                       const SizedBox(height: 20),
-                      const _ManagerDigestGlassCard(),
+                      const _ManagerDigestCard(),
                     ],
                   ],
                 ),
@@ -182,7 +182,7 @@ class _HeroHeader extends StatelessWidget {
       'fr_FR',
     ).add_d().add_MMMM().format(DateTime.now());
 
-    return GlassGlassCard(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,7 +272,7 @@ class _QuickActionsGrid extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: actions
-              .map((action) => _QuickActionGlassCard(action: action))
+              .map((action) => _QuickActionCard(action: action))
               .toList(),
         );
       },
@@ -281,7 +281,7 @@ class _QuickActionsGrid extends StatelessWidget {
 }
 
 class _QuickActionCard extends StatelessWidget {
-  const _QuickActionGlassCard({required this.action});
+  const _QuickActionCard({required this.action});
 
   final MobileQuickAction action;
 
@@ -294,7 +294,7 @@ class _QuickActionCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () => context.push(action.route),
-      child: GlassGlassCard(
+      child: GlassCard(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,7 +357,7 @@ class _ModulesScroller extends StatelessWidget {
       child: Row(
         children: [
           for (final module in modules) ...[
-            _ModuleGlassCard(module: module),
+            _ModuleCard(module: module),
             const SizedBox(width: 10),
           ],
         ],
@@ -367,7 +367,7 @@ class _ModulesScroller extends StatelessWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleGlassCard({required this.module});
+  const _ModuleCard({required this.module});
 
   final MobileModule module;
 
@@ -380,7 +380,7 @@ class _ModuleCard extends StatelessWidget {
     return InkWell(
       onTap: module.isActive ? () => context.push(module.route!) : null,
       borderRadius: BorderRadius.circular(24),
-      child: GlassGlassCard(
+      child: GlassCard(
         width: 206,
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -478,7 +478,7 @@ class ManagerDigest {
 }
 
 class _ManagerDigestCard extends ConsumerWidget {
-  const _ManagerDigestGlassCard();
+  const _ManagerDigestCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -487,7 +487,7 @@ class _ManagerDigestCard extends ConsumerWidget {
     final digest = ref.watch(managerDigestProvider);
     final resolvedDigest = digest.asData?.value;
 
-    return GlassGlassCard(
+    return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

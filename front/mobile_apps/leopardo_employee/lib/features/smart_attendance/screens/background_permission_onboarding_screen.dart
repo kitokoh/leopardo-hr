@@ -133,17 +133,17 @@ class _BackgroundPermissionOnboardingScreenState
               const SizedBox(height: 24),
 
               // Steps
-              _StepGlassCard(
+              _StepCard(
                 step: '1',
                 text: 'Appuyez sur "Ouvrir les paramÃ¨tres" ci-dessous',
               ),
               const SizedBox(height: 10),
-              _StepGlassCard(
+              _StepCard(
                 step: '2',
                 text: 'Touchez "Autorisations" â†’ "Position"',
               ),
               const SizedBox(height: 10),
-              _StepGlassCard(
+              _StepCard(
                 step: '3',
                 text: 'SÃ©lectionnez "Toujours autoriser"',
               ),
@@ -196,7 +196,7 @@ class _BackgroundPermissionOnboardingScreenState
 }
 
 class _StepCard extends StatelessWidget {
-  const _StepGlassCard({required this.step, required this.text});
+  const _StepCard({required this.step, required this.text});
   final String step;
   final String text;
 
