@@ -255,12 +255,12 @@
       "nav_title": "تسويق OAuth",
       "saved_ok": "تم حفظ إعداد :provider.",
       "save": "حفظ",
-      "providers": {
-        "linkedin": { "label": "LinkedIn", "description": "الاتصال بصفحات الشركات وملفات LinkedIn عبر واجهة API Marketing v2." },
-        "facebook": { "label": "Facebook / Meta", "description": "الاتصال بصفحات Facebook وحسابات Instagram Business عبر Graph API." },
-        "twitter":  { "label": "X (Twitter)", "description": "الاتصال عبر Twitter v2 API / OAuth 2.0 PKCE." }
+            "providers": {
+        "linkedin": { "label": "لينكد إن", "description": "الاتصال بصفحات الشركات وملفات LinkedIn عبر واجهة API Marketing v2." },
+        "facebook": { "label": "فيسبوك / ميتا", "description": "الاتصال بصفحات Facebook وحسابات Instagram Business عبر Graph API." },
+        "twitter":  { "label": "إكس (تويتر)", "description": "الاتصال عبر Twitter v2 API / OAuth 2.0 PKCE." }
       },
-      "fields": {
+"fields": {
         "client_id": "معرف العميل",
         "client_secret": "سر العميل",
         "redirect_uri": "URI إعادة التوجيه",
