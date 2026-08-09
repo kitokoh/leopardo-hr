@@ -272,4 +272,70 @@ class PayrollReferenceControllersTest extends TestCase
         $this->getJson('/api/v1/tax-slabs')->assertOk()->assertJsonCount(0, 'data');
         $this->getJson('/api/v1/social-contributions')->assertOk()->assertJsonCount(0, 'data');
     }
+
+    // ── F-17 (#1595) : chiffrement au repos du metadata des documents de paie ─
+
+    public function test_payment_document_metadata_is_encrypted_at_rest(): void
+    {
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+
+        $doc = \App\Modules\Payroll\Domain\Models\PaymentDocument::create([
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'document_type' => 'pay_slip',
+            'status' => 'generated',
+            'metadata' => [
+                'net_salary' => 37500,
+                'period_start' => '2026-07-01',
+                'payment_reference' => 'VIR-2026-07-001',
+            ],
+        ]);
+
+        // Round-trip : la lecture via le cast renvoie le tableau déchiffré.
+        $fresh = $doc->fresh();
+        $this->assertSame(37500, $fresh->metadata['net_salary']);
+        $this->assertSame('VIR-2026-07-001', $fresh->metadata['payment_reference']);
+
+        // Au repos (DB), la valeur ne contient ni le montant ni la référence
+        // en clair — elle est chiffrée (payload non-JSON).
+        $raw = \Illuminate\Support\Facades\DB::table('payment_documents')
+            ->where('id', $doc->id)
+            ->value('metadata');
+
+        $this->assertIsString($raw);
+        $this->assertStringNotContainsString('VIR-2026-07-001', (string) $raw);
+        $this->assertStringNotContainsString('37500', (string) $raw);
+        // JSON en clair commencerait par `{` ; un payload chiffré non.
+        $this->assertStringStartsNotWith('{', (string) $raw);
+    }
+
+    public function test_payment_document_metadata_backfill_encrypts_plain_rows(): void
+    {
+        // Simule une ligne historique en clair (avant F-17) puis exécute le
+        // up() de la migration de backfill : la valeur doit passer en chiffré.
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+        $id = \Illuminate\Support\Facades\DB::table('payment_documents')->insertGetId([
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'document_type' => 'pay_slip',
+            'status' => 'generated',
+            'metadata' => '{"net_salary":37500,"payment_reference":"VIR-OLD-001"}',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $migration = require base_path('database/migrations/tenant/2026_08_09_000003_encrypt_payment_documents_metadata.php');
+        $migration->up();
+
+        $raw = \Illuminate\Support\Facades\DB::table('payment_documents')
+            ->where('id', $id)
+            ->value('metadata');
+
+        $this->assertStringStartsNotWith('{', (string) $raw);
+        $this->assertStringNotContainsString('VIR-OLD-001', (string) $raw);
+
+        // Idempotence : rejouer ne casse pas (la valeur est déjà chiffrée).
+        $migration->up();
+        $this->assertSame($raw, \Illuminate\Support\Facades\DB::table('payment_documents')->where('id', $id)->value('metadata'));
+    }
 }

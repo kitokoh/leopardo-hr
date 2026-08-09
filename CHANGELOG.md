@@ -6,6 +6,8 @@
 ## [Unreleased]
 
 ### Fixed
+- **feat(security): chiffrement au repos du metadata des documents de paie (F-17, #1547/#1595).** `payment_documents.metadata` (JSON : références de paiement, montants, périodes) passe du cast `array` au cast `encrypted:array` (AES-256, clé APP_KEY) + migration de backfill idempotente `2026_08_09_000003` qui chiffre les lignes historiques en clair (tentative de déchiffrement → skip si déjà chiffré). Tests : round-trip via le cast + vérification que la valeur en base n'est pas en clair + backfill idempotent. Les montants restent en clair (agrégations), conformément à la spec DATA_AT_REST.
+
 - **fix(mobile): générateur UUID local déterministe → aléatoire.** `_uuid()` dans `edge_database.dart` dérivait l'id uniquement du timestamp microseconde — deux enqueues dans la même microseconde (insert + checkOut) produisaient le même id → `SqliteException UNIQUE constraint failed: local_sync_queue.id` (test offline flaky + risque de collision en production). Utilise désormais un `Random()` par position (UUID v4).
 
 - **test(payroll): couverture des contrôleurs de référentiel paie (F-14).** Nouveau `PayrollReferenceControllersTest` : CRUD complet des structures salariales, composants, barèmes IRG (tax-slabs) et cotisations sociales + isolation tenant + RBAC manager + validation — 12 tests Feature qui exercent des contrôleurs sans couverture directe (contribue au seuil F-14 ≥ 80 %, gate advisory #1569).
