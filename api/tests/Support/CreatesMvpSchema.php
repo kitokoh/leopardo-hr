@@ -1324,6 +1324,8 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('validated_by')->nullable();
                 $table->timestampTz('validated_at')->nullable();
                 $table->timestampTz('paid_at')->nullable();
+                $table->unsignedInteger('locked_by')->nullable();
+                $table->timestampTz('locked_at')->nullable();
                 $table->text('notes')->nullable();
                 $table->timestamps();
             });

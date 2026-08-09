@@ -6,10 +6,10 @@
         <div class="sm:ml-6">
           <div class="sm:border-l sm:border-gray-200 sm:pl-6">
             <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Page non trouvÃ©e
+              Page non trouvée
             </h1>
             <p class="mt-1 text-base text-gray-500">
-              DÃ©solÃ©, nous n'avons pas pu trouver la page que vous recherchez.
+              Désolé, nous n'avons pas pu trouver la page que vous recherchez.
             </p>
           </div>
           <div class="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
@@ -24,7 +24,7 @@
               @click="goBack"
               class="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:glass-bg"
             >
-              Page prÃ©cÃ©dente
+              Page précédente
             </button>
           </div>
         </div>
@@ -44,7 +44,7 @@
                 <UsersIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
                   <p class="text-sm font-medium text-gray-900">Utilisateurs</p>
-                  <p class="text-sm text-gray-500">GÃ©rer les comptes utilisateurs</p>
+                  <p class="text-sm text-gray-500">Gérer les comptes utilisateurs</p>
                 </div>
               </div>
             </div>
@@ -60,7 +60,7 @@
                 <BuildingOfficeIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
                   <p class="text-sm font-medium text-gray-900">Entreprises</p>
-                  <p class="text-sm text-gray-500">GÃ©rer les entreprises</p>
+                  <p class="text-sm text-gray-500">Gérer les entreprises</p>
                 </div>
               </div>
             </div>
@@ -91,8 +91,8 @@
               <div class="flex items-center">
                 <CogIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">SystÃ¨me</p>
-                  <p class="text-sm text-gray-500">Configuration systÃ¨me</p>
+                  <p class="text-sm font-medium text-gray-900">Système</p>
+                  <p class="text-sm text-gray-500">Configuration système</p>
                 </div>
               </div>
             </div>

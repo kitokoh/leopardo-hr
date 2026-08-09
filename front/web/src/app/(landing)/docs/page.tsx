@@ -84,7 +84,7 @@ const docCategories = [
     icon: Package,
     color: 'orange',
     items: [
-      { title: 'leopardo_core (Flutter)', desc: 'Package partagÃ© â€” ApiClient, SecureStorage, modeles', href: '/docs#sdk-core' },
+      { title: 'leopardo_core (Flutter)', desc: 'Package partagé â€” ApiClient, SecureStorage, modeles', href: '/docs#sdk-core' },
       { title: 'Auth & Google Sign-In', desc: 'GoogleSignIn v7+ initialize(), idToken, backend JWT', href: '/docs#sdk-auth' },
       { title: 'Notifications (FCM)', desc: 'FirebaseMessaging, foreground/background, deep links', href: '/docs#sdk-fcm' },
       { title: 'Publication & CI', desc: 'GitHub Actions flutter-ci.yml, build, tests', href: '/docs#sdk-ci' },
@@ -266,7 +266,7 @@ export default function DocsPage() {
                     className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors"
                   >
                     <Copy className="w-3 h-3" />
-                    {copiedIdx === idx ? 'CopiÃ©!' : 'Copier'}
+                    {copiedIdx === idx ? 'Copié!' : 'Copier'}
                   </button>
                 </div>
                 <pre className="p-4 text-xs text-emerald-300 dark:text-emerald-300 overflow-x-auto whitespace-pre-wrap leading-relaxed">

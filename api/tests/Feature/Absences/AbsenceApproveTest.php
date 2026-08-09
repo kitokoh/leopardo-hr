@@ -530,7 +530,7 @@ class AbsenceApproveTest extends TestCase
 
         $absenceType = AbsenceType::query()->create([
             'company_id' => $company->id,
-            'name' => 'CongÃ© payÃ©',
+            'name' => 'Congé payé',
             'code' => 'CP',
             'is_paid' => true,
             'deducts_leave' => true,

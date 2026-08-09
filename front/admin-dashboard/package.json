@@ -33,9 +33,10 @@
     "vue3-leaflet": "^1.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@babel/eslint-parser": "^8.0.1",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/leaflet": "^1.9.8",
     "@types/nprogress": "^0.2.3",
     "@vitejs/plugin-vue": "^6.0.8",
@@ -45,7 +46,7 @@
     "postcss": "^8.5.24",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
-    "@tailwindcss/postcss": "^4.3.3",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "vue-eslint-parser": "^10.4.1"
   }
 }

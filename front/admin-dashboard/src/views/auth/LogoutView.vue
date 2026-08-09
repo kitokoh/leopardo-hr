@@ -18,11 +18,11 @@
       <div class="glass-card p-1 pb-1 overflow-hidden shadow-premium">
         <div class="bg-slate-900/40 backdrop-blur-3xl p-10 rounded-[1.4rem]">
           <h2 class="text-3xl font-black tracking-tight text-white uppercase italic">
-            DÃ©connexion <span class="text-brand-500 not-italic font-black">en cours</span>
+            Déconnexion <span class="text-brand-500 not-italic font-black">en cours</span>
           </h2>
           <p class="mt-4 text-slate-400 font-bold tracking-[0.1em] text-sm leading-relaxed">
             Merci de votre visite sur Leopardo RH.<br />
-            Nous sÃ©curisons votre session...
+            Nous sécurisons votre session...
           </p>
 
           <div class="mt-10 relative">
@@ -33,14 +33,14 @@
               ></div>
             </div>
             <div class="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              <span class="animate-pulse">Redirection vers le cockpit d'accÃ¨s</span>
+              <span class="animate-pulse">Redirection vers le cockpit d'accès</span>
             </div>
           </div>
         </div>
       </div>
 
       <p class="text-[10px] font-black uppercase tracking-widest text-slate-600">
-        Â© 2026 Leopardo Systems â€¢ SÃ©curitÃ© ApprouvÃ©e
+        Â© 2026 Leopardo Systems â€¢ Sécurité Approuvée
       </p>
     </div>
   </div>

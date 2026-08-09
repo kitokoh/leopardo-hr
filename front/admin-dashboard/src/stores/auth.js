@@ -13,11 +13,13 @@ const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
 // BFF or a backend /platform/auth/login endpoint that sets the cookie;
 // that is tracked as the next step in issue #1299.
 // See also: docs/security/AUDIT_API_2026-07-19.md
-const ADMIN_TOKEN_STORAGE_KEY = 'admin_token';
+// Stockage centralisé : src/services/token-storage.js (sessionStorage,
+// cf. PR #1299). Ne pas réintroduire localStorage ici (#1575).
+import { getAuthToken, setAuthToken, removeAuthToken } from '@/services/token-storage'
 const storage = {
-  getToken: () => sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY),
-  setToken: (token) => { sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token); },
-  removeToken: () => { sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY); },
+  getToken: getAuthToken,
+  setToken: setAuthToken,
+  removeToken: removeAuthToken,
 };
 
 export const useAuthStore = defineStore('auth', () => {

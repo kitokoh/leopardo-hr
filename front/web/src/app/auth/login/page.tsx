@@ -416,8 +416,8 @@ function LoginInner() {
                 <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   {registeredPlan === 'free'
-                    ? 'Compte crÃ©Ã© ! Connectez-vous pour accÃ©der Ã  votre espace gratuit.'
-                    : 'Inscription reÃ§ue ! Connectez-vous pour continuer.'}
+                    ? 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.'
+                    : 'Inscription reçue ! Connectez-vous pour continuer.'}
                 </div>
               )}
               {error ? (
