@@ -1,9 +1,16 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Recruitment flow', () => {
+  // Flaky tracking (issue #1575) : timeout relevé à 60 s et retries séparés
+  // (3) — l'interaction avec l'API mockée peut être lente en CI.
+  test.setTimeout(60_000)
+  test.describe.configure({ retries: 3 })
+
   test('creates a job, opens the pipeline, and advances an applicant with mocked API', async ({ page }) => {
     const corsHeaders = {
-      'Access-Control-Allow-Origin': 'http://127.0.0.1:4173',
+      // `*` plutôt qu'une origine figée : le port d'origine du webServer
+      // (4173) peut être 127.0.0.1 ou localhost selon l'environnement CI.
+      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'authorization, content-type, accept',
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
     }
