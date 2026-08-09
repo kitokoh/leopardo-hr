@@ -13,8 +13,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
-use Tests\Support\CreatesSmartAttendanceSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -26,8 +25,7 @@ use Tests\TestCase;
  */
 class PunchPhotoTest extends TestCase
 {
-    use CreatesMvpSchema;
-    use CreatesSmartAttendanceSchema;
+    use RefreshTenantDatabase;
 
     private Company $company;
     private Employee $employee;
@@ -35,8 +33,6 @@ class PunchPhotoTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-        $this->createSmartAttendanceTables();
 
         Storage::fake('local');
 
@@ -50,6 +46,11 @@ class PunchPhotoTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'UTC',
         ]);
 
@@ -65,6 +66,8 @@ class PunchPhotoTest extends TestCase
 
         $this->employee = Employee::query()->create([
             'company_id' => $this->company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@photo.test',
             'password_hash' => Hash::make('password123'),
@@ -73,12 +76,6 @@ class PunchPhotoTest extends TestCase
         ]);
     }
 
-    protected function tearDown(): void
-    {
-        $this->dropSmartAttendanceTables();
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
 
     public function test_check_in_without_photo_is_rejected_when_company_requires_photo(): void
     {
