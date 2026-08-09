@@ -27,3 +27,26 @@ Le projet suit un modèle de release continu (trunk-based, tags `v*`). Seule la 
 - Secrets gérés via GitHub Secrets / variables d'environnement ; `.env.example` documenté.
 - CI : CodeQL, TruffleHog (secret-scan), OWASP ZAP, `composer audit` + dependabot.
 - Multi-tenant : isolation par `search_path` Postgres + tests d'isolation dédiés.
+
+## 🚫 Règle absolue : ne jamais citer un secret réel (convention #1614)
+
+**Aucun secret réel ne doit apparaître dans ce dépôt — y compris dans les rapports
+d'audit, issues, commit messages, logs ou fichiers de documentation.** Le repo est
+**public** : tout secret committé (même « pour mémoire », même partiellement tronqué)
+est considéré compromis et impose une rotation + une purge d'historique.
+
+Règles concrètes :
+
+1. **Rapports d'audit** : un rapport qui décrit un incident secret doit utiliser un
+   placeholder (`<REDACTED>`, `<secret>`) et référencer l'issue de suivi. **Jamais** la
+   valeur réelle, même partiellement (ex. `npg_…`, `ghp_…`, `AKIA…`).
+2. **Commit messages** : ne pas coller un secret dans un message de commit.
+3. **Logs / issues / PR** : même règle — si une valeur sensible doit être évoquée,
+   tronquer à zéro caractère significatif (`<redacted>`).
+4. **`git grep` de contrôle** : l'arbre HEAD doit rester exempt de motifs connus
+   (`npg_`, `AKIA`, `ghp_`, `sk_live`, `postgresql://user:pass@…`) — garde CI
+   (`secret-scan.yml`) en HEAD + historique (TruffleHog).
+5. En cas de doute : **ne pas committer** — demander un secret de test/dummy.
+
+Une violation de cette règle = incident de sécurité à traiter selon le runbook
+[`docs/security/RUNBOOK_SECRET_ROTATION_PURGE.md`](docs/security/RUNBOOK_SECRET_ROTATION_PURGE.md).
