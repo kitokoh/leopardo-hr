@@ -20,14 +20,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('salary_advances');
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->string('proof_path', 255)->nullable()->after('reason');
         });
     }
 
     public function down(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('salary_advances');
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->dropColumn('proof_path');
         });
     }
