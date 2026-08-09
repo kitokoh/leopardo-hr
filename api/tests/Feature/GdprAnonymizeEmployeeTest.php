@@ -57,8 +57,9 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'status' => 'validated',
         ]);
 
-        $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id])
-            ->assertSuccessful();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id]);
+        $cmd->assertSuccessful();
 
         $employee->refresh();
 
@@ -88,7 +89,8 @@ class GdprAnonymizeEmployeeTest extends TestCase
 
     public function test_anonymize_unknown_employee_fails(): void
     {
-        $this->artisan('gdpr:anonymize-employee', ['employee' => 999999])
-            ->assertFailed();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => 999999]);
+        $cmd->assertFailed();
     }
 }
