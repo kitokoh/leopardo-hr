@@ -77,18 +77,21 @@ return new class extends Migration
             DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
             // Full status lifecycle including async states (processing/error from
             // ProcessPayrollBatchJob) and locked (F-11 closing workflow).
-            DB::statement("
-                ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check
-                CHECK ((status)::text = ANY ((ARRAY[
-                    'draft', 'calculating', 'processing', 'calculated', 'validated',
-                    'paid', 'locked', 'cancelled', 'error'
-                ]::text[])))
-            ");
+            $schema = resolveTableSchema('payroll_runs');
+            if ($schema !== null) {
+                DB::statement("
+                    ALTER TABLE \"{$schema}\".\"payroll_runs\" ADD CONSTRAINT payroll_runs_status_check
+                    CHECK ((status)::text = ANY ((ARRAY[
+                        'draft', 'calculating', 'processing', 'calculated', 'validated',
+                        'paid', 'locked', 'cancelled', 'error'
+                    ]::text[])))
+                ");
+            }
         }
 
         // 2) Colonnes de verrouillage.
-        if (! Schema::hasColumn('payroll_runs', 'locked_by')) {
-            Schema::table('payroll_runs', function (Blueprint $table): void {
+        if (schemaHasColumn('payroll_runs', 'locked_by')) {
+            Schema::table("{$schema}.payroll_runs", function (Blueprint $table): void {
                 $table->unsignedInteger('locked_by')->nullable()->after('paid_at');
                 $table->timestampTz('locked_at')->nullable()->after('locked_by');
 
@@ -99,8 +102,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasColumn('payroll_runs', 'locked_at')) {
-            Schema::table('payroll_runs', function (Blueprint $table): void {
+        $schema = resolveTableSchema('payroll_runs');
+        if ($schema !== null && schemaHasColumn('payroll_runs', 'locked_at')) {
+            Schema::table("{$schema}.payroll_runs", function (Blueprint $table): void {
                 $table->dropForeign(['locked_by']);
                 $table->dropColumn(['locked_by', 'locked_at']);
             });
