@@ -77,16 +77,17 @@ class GoldenDzLeaveIndemnityRealDataTest extends TestCase
 
         // Référence 12 mois réelle : 12 bulletins validés à 100 000 DZD
         // (2025-07 → 2026-06, soit les 12 mois précédant la période du run).
-        /** @var PayrollRun $historyRun */
-        $historyRun = PayrollRun::create([
-            'company_id' => $company->id,
-            'period_start' => '2025-07-01',
-            'period_end' => '2026-06-30',
-            'country_code' => 'DZ',
-            'status' => 'validated',
-        ]);
+        // NB : un run par mois — contrainte unique (payroll_run_id, employee_id).
         for ($m = 0; $m < 12; $m++) {
             $ref = \Carbon\Carbon::parse('2025-07-01')->addMonths($m);
+            /** @var PayrollRun $historyRun */
+            $historyRun = PayrollRun::create([
+                'company_id' => $company->id,
+                'period_start' => $ref->format('Y-m-01'),
+                'period_end' => $ref->endOfMonth()->toDateString(),
+                'country_code' => 'DZ',
+                'status' => 'validated',
+            ]);
             PaySlip::create([
                 'payroll_run_id' => $historyRun->id,
                 'company_id' => $company->id,
