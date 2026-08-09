@@ -183,7 +183,7 @@ class PayrollAttendanceAnomalyApiTest extends TestCase
 
         $run = $this->makeRun();
 
-        $anomalies = (new PayrollAnomalyService())->detectForRun($run->fresh(['paySlips']));
+        $anomalies = (new PayrollAnomalyService())->detectForRun($run);
         $attendance = collect($anomalies)->firstWhere('type', 'attendance_vs_payroll');
 
         $this->assertNotNull($attendance);
