@@ -27,7 +27,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('salary_advances');
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->text('dispute_reason')->nullable()->after('employee_confirmed_at');
             $table->timestamp('disputed_at')->nullable()->after('dispute_reason');
             $table->timestamp('dispute_resolved_at')->nullable()->after('disputed_at');
@@ -35,7 +38,7 @@ return new class extends Migration
             $table->text('dispute_resolution_note')->nullable()->after('dispute_resolved_by');
         });
 
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->foreign('dispute_resolved_by')
                 ->references('id')
                 ->on('employees')
@@ -51,9 +54,9 @@ return new class extends Migration
         // there and already accepts arbitrary string values in tests
         // (SQLite has no enum type at all).
         if (Schema::getConnection()->getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE salary_advances DROP CONSTRAINT IF EXISTS salary_advances_validation_status_check');
+            DB::statement("ALTER TABLE \"{$schema}\".\"salary_advances\" DROP CONSTRAINT IF EXISTS salary_advances_validation_status_check");
             DB::statement(
-                'ALTER TABLE salary_advances ADD CONSTRAINT salary_advances_validation_status_check '.
+                "ALTER TABLE \"{$schema}\".\"salary_advances\" ADD CONSTRAINT salary_advances_validation_status_check ".
                 "CHECK (validation_status IN ('pending', 'manager_approved', 'payment_declared', 'employee_confirmed', 'disputed', 'rejected'))"
             );
         }
@@ -61,15 +64,18 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('salary_advances');
+
         if (Schema::getConnection()->getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE salary_advances DROP CONSTRAINT IF EXISTS salary_advances_validation_status_check');
+            DB::statement("ALTER TABLE \"{$schema}\".\"salary_advances\" DROP CONSTRAINT IF EXISTS salary_advances_validation_status_check");
             DB::statement(
-                'ALTER TABLE salary_advances ADD CONSTRAINT salary_advances_validation_status_check '.
+                "ALTER TABLE \"{$schema}\".\"salary_advances\" ADD CONSTRAINT salary_advances_validation_status_check ".
                 "CHECK (validation_status IN ('pending', 'manager_approved', 'payment_declared', 'employee_confirmed', 'rejected'))"
             );
         }
 
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->dropForeign(['dispute_resolved_by']);
             $table->dropColumn([
                 'dispute_reason',
