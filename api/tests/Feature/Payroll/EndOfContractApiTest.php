@@ -7,6 +7,8 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Date;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -28,6 +30,10 @@ class EndOfContractApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Horloge figée : le test d'ancienneté (2023-07-01 → 36 mois = 3 ans)
+        // ne doit pas dépendre de la date d'exécution.
+        Date::setTestNow(Carbon::parse('2026-07-15T12:00:00+00:00'));
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
@@ -52,6 +58,12 @@ class EndOfContractApiTest extends TestCase
             'frequency' => 'monthly',
             'active' => true,
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        Date::setTestNow();
+        parent::tearDown();
     }
 
     public function test_settlement_returns_breakdown(): void
