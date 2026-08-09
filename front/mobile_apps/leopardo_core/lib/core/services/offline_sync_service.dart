@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 
 class OfflineSyncService {
   final ApiClient apiClient;
@@ -65,12 +66,19 @@ class OfflineSyncService {
           data: payload,
           maxRetriesOverride: 0,
         );
-        // Delete if successful
+        // Success : purge l'entrée (règle « 1er pointage gagne » — le serveur
+        // a accepté ce pointage, les doublons éventuels sont rejetés côté API).
         await _offlineBox.delete(key);
-      } catch (e) {
-        // If it's a cold start or timeout, we keep it in the box.
-        // If it's a 4xx error (e.g. already checked in), we probably should delete it.
-        // For simplicity, we just log and try again later unless it's a known non-retryable error.
+      } on ApiException catch (e) {
+        // 4xx = erreur métier définitive (ex. double check-in rejeté,
+        // identifiant inconnu) : inutile de re-tenter — on purge la file pour
+        // éviter une boucle de retry infinie (issue #1551, F-21).
+        if (e.statusCode != null && e.statusCode! >= 400 && e.statusCode! < 500) {
+          await _offlineBox.delete(key);
+        }
+      } catch (_) {
+        // Erreur réseau / timeout / cold start : on conserve l'entrée et on
+        // réessaiera au prochain changement de connectivité.
       }
     }
   }
