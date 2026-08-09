@@ -26,7 +26,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        $schema = resolveTableSchema('salary_advances');
+        if ($schema === null) {
+            return;
+        }
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->char('currency', 3)->nullable()->after('amount');
         });
 
@@ -43,7 +48,7 @@ return new class extends Migration
         // "UPDATE ... SET ... FROM ..." syntax directly and schema-qualify
         // the companies reference so it resolves regardless of search_path.
         DB::statement(
-            'update salary_advances '.
+            'update '.$schema.'.salary_advances '.
             'set currency = companies.currency '.
             'from public.companies '.
             'where companies.id = salary_advances.company_id'
@@ -52,7 +57,12 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        $schema = resolveTableSchema('salary_advances');
+        if ($schema === null) {
+            return;
+        }
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->dropColumn('currency');
         });
     }

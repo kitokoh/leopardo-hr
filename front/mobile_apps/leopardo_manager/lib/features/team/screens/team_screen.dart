@@ -827,7 +827,7 @@ class _EmployeeProfileSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 18),
-            MobilePanel(
+            GlassCard(
               child: Column(
                 children: [
                   _ProfileLine(
@@ -1109,7 +1109,7 @@ class _ScheduleSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (schedules.isEmpty) {
-      return MobilePanel(
+      return GlassCard(
         color: AppColors.warning.withValues(alpha: 0.08),
         child: Row(
           children: [
