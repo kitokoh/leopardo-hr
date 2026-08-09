@@ -75,6 +75,7 @@ class ContractWorkflowTest extends TestCase
 
     private function makeManagerAndCompany(): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Contract Co',
             'slug' => 'contract-co',
@@ -87,6 +88,7 @@ class ContractWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $manager */
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'MGR-C01',
@@ -99,6 +101,7 @@ class ContractWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-C01',
@@ -115,6 +118,7 @@ class ContractWorkflowTest extends TestCase
 
     private function makeOtherTenant(string $suffix = '02'): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => "Other Contract Co {$suffix}",
             'slug' => "other-contract-co-{$suffix}",
@@ -127,6 +131,7 @@ class ContractWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $manager */
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => "MGR-C{$suffix}",
@@ -139,6 +144,7 @@ class ContractWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => "EMP-C{$suffix}",
@@ -421,6 +427,7 @@ class ContractWorkflowTest extends TestCase
     public function test_self_service_my_active_contract_is_scoped_to_the_actor(): void
     {
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        /** @var Employee $coworker */
         $coworker = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-C04',
@@ -483,6 +490,7 @@ class ContractWorkflowTest extends TestCase
     public function test_employee_cannot_view_coworker_contract_pdf_or_amendments(): void
     {
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        /** @var Employee $coworker */
         $coworker = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-C03',

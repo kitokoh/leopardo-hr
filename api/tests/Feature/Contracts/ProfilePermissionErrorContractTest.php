@@ -176,6 +176,7 @@ class ProfilePermissionErrorContractTest extends TestCase
      */
     private function actors(string $suffix = 'A'): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => "Contract Co {$suffix}",
             'slug' => 'contract-co-'.Str::lower($suffix).'-'.Str::random(6),
@@ -188,6 +189,7 @@ class ProfilePermissionErrorContractTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $manager */
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'first_name' => 'Manager',
@@ -199,6 +201,7 @@ class ProfilePermissionErrorContractTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'first_name' => 'Employee',

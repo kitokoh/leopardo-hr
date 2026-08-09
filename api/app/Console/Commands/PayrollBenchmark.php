@@ -41,7 +41,7 @@ class PayrollBenchmark extends Command
         // ── Seed ───────────────────────────────────────────────────────────
         $this->info("Étape seed : {$employees} employés…");
         $seedStart = microtime(true);
-        (new PayrollBenchmarkSeeder())->run($employees);
+        (new PayrollBenchmarkSeeder)->run($employees);
         $this->line(sprintf('  seed: %.2fs', microtime(true) - $seedStart));
 
         /** @var Company $company */
@@ -74,7 +74,9 @@ class PayrollBenchmark extends Command
             // Le listener ne doit être actif que pendant calculate : le retirer
             // dès que calculateRun a fini pour que le compteur s'arrête (avant
             // l'impression des métriques et les étapes validate-rh / lock).
-            DB::connection()->getEventDispatcher()->removeListener('illuminate.query', $sqlListener);
+            // Laravel's Dispatcher has no removeListener() — forget() removes
+            // every listener for the event (fine here: benchmark-only command).
+            DB::connection()->getEventDispatcher()?->forget('illuminate.query');
 
             $this->table(['métrique', 'valeur'], [
                 ['employés', $run->employee_count],
