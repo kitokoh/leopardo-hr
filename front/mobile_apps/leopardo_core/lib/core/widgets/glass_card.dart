@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:leopardo_core/core/theme/app_colors.dart';
 
 /// A premium glassmorphism card component.
 /// This is the standard surface container for the new Leopardo RH design system.

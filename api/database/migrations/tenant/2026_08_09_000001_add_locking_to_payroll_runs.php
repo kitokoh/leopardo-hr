@@ -68,8 +68,8 @@ return new class extends Migration
                 continue; // déjà à jour (idempotent)
             }
             $newDef = preg_replace(
-                "/'paid'\\s*,?/",
-                "'paid', 'locked'",
+                "/'paid'::character varying/",
+                "'paid'::character varying, 'locked'::character varying",
                 $def,
                 1
             );
@@ -77,7 +77,7 @@ return new class extends Migration
                 continue;
             }
             DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT payroll_runs_status_check");
-            DB::statement("ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check CHECK ({$newDef})");
+            DB::statement("ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check CHECK {$newDef}");
         }
 
         // 2) Colonnes de verrouillage.

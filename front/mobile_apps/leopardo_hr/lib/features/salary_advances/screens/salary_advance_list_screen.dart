@@ -335,12 +335,12 @@ class _SalaryAdvanceListScreenState
     try {
       await ref.read(salaryAdvanceRepositoryProvider).cancelAdvance(advanceId);
       ref.invalidate(salaryAdvancesProvider);
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d avance annulee.')),
       );
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -381,12 +381,12 @@ class _SalaryAdvanceListScreenState
             repaymentMonths: advance.repaymentMonths,
           );
       ref.invalidate(salaryAdvancesProvider);
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Avance approuvee.')));
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -424,12 +424,12 @@ class _SalaryAdvanceListScreenState
           .read(salaryAdvanceRepositoryProvider)
           .markPaid(advanceId: advance.id);
       ref.invalidate(salaryAdvancesProvider);
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Paiement declare.')));
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));

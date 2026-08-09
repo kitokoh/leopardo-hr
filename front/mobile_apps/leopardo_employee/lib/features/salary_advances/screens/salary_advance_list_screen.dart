@@ -200,11 +200,11 @@ class _SalaryAdvanceListScreenState
       final path = await ref
           .read(salaryAdvanceRepositoryProvider)
           .downloadProof(advanceId);
-      if (!context.mounted) return;
+      if (!mounted) return;
 
       final uri = Uri.file(path);
       final canLaunch = await canLaunchUrl(uri);
-      if (!context.mounted) return;
+      if (!mounted) return;
 
       if (canLaunch) {
         await launchUrl(uri);
@@ -214,7 +214,7 @@ class _SalaryAdvanceListScreenState
         );
       }
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -263,12 +263,12 @@ class _SalaryAdvanceListScreenState
     try {
       await ref.read(salaryAdvanceRepositoryProvider).cancelAdvance(advanceId);
       ref.invalidate(salaryAdvancesProvider);
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d avance annulee.')),
       );
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -302,12 +302,12 @@ class _SalaryAdvanceListScreenState
           .read(salaryAdvanceRepositoryProvider)
           .confirmReceived(advanceId);
       ref.invalidate(salaryAdvancesProvider);
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Reception confirmee.')));
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -519,13 +519,13 @@ class _SalaryAdvanceRequestSheetState
           );
       ref.invalidate(salaryAdvancesProvider);
       await ref.refresh(salaryAdvancesProvider.future).then((_) {});
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d avance transmise au RH.')),
       );
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,
