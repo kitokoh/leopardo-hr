@@ -65,7 +65,7 @@
     </DataTable>
 
     <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
-      <div class="w-full max-w-lg rounded-lg glass-card p-6 shadow-xl">
+      <div class="w-full max-w-lg rounded-lg p-6 shadow-xl">
         <h3 class="text-lg font-semibold text-gray-900">{{ editingWebhook ? 'Modifier' : 'Nouveau' }} webhook</h3>
         <form class="mt-4 space-y-4" @submit.prevent="saveWebhook">
           <div>

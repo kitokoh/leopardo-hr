@@ -56,7 +56,7 @@
       <div class="absolute inset-0 glass-bg0/50 transition-opacity" @click="closeDetail" />
       <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
         <div class="w-screen max-w-lg">
-          <div class="flex h-full flex-col overflow-y-auto glass-card shadow-xl">
+          <div class="flex h-full flex-col overflow-y-auto shadow-xl">
             <div class="border-b border-gray-200 px-6 py-4">
               <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-gray-900">Detail contrat</h2>

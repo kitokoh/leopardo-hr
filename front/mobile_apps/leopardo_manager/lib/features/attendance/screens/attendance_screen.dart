@@ -1,4 +1,3 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';

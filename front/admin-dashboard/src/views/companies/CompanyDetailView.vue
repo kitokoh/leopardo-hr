@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <div v-if="isLoading && !health" class="flex h-64 items-center justify-center rounded-3xl border border-slate-200 glass-card dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-xl">
+    <div v-if="isLoading && !health" class="flex h-64 items-center justify-center rounded-3xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-xl">
       <div class="flex flex-col items-center gap-4">
         <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
         <p class="text-sm font-bold text-slate-500">Analyse des donnÃ©es client...</p>
@@ -92,7 +92,7 @@
                   <div
                     v-for="action in health.next_actions"
                     :key="action.key"
-                    class="flex items-start gap-4 rounded-2xl border border-slate-100 glass-card p-4 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50"
+                    class="flex items-start gap-4 rounded-2xl border border-slate-100 p-4 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50"
                   >
                     <span :class="['mt-0.5 rounded-lg px-2 py-0.5 text-[10px] font-black uppercase', priorityBadgeClass(action.priority)]">
                       {{ action.priority }}
@@ -150,7 +150,7 @@
                       aria-hidden="true"
                       :class="[
                         enabled ? 'translate-x-5' : 'translate-x-0',
-                        'pointer-events-none inline-block h-5 w-5 transform rounded-full glass-card shadow ring-0 transition duration-200 ease-in-out'
+                        'pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out'
                       ]"
                     />
                   </Switch>
@@ -614,7 +614,7 @@ onMounted(loadCompany)
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 glass-card px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm;
+  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm;
 }
 </style>
 
