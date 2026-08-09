@@ -89,16 +89,18 @@ jobs:
           # on env change — retry the health probe so the check is not racing
           # the server restart window (observed as a flaky curl exit 22).
           for i in $(seq 1 15); do
-            response=$(curl --fail --silent "http://localhost:8000/api/v1/health" 2>/dev/null || true)
-            if echo "$response" | grep -q '"status":"ok"'; then
-              echo "$response"
+            # Pas de --fail : on veut voir le code HTTP et le body réels.
+            code=$(curl -s -o /tmp/health_body.txt -w "%{http_code}" "http://localhost:8000/api/v1/health" || true)
+            if [ "$code" = "200" ] && grep -q '"status":"ok"' /tmp/health_body.txt; then
+              cat /tmp/health_body.txt
               echo "Health check OK (attempt $i)."
               exit 0
             fi
-            echo "Health check not ready yet (attempt $i/15)..."
+            echo "Health check not ready yet (attempt $i/15) — HTTP $code"
             sleep 2
           done
-          echo "$response"
+          echo "Last response body:"
+          cat /tmp/health_body.txt 2>/dev/null || echo "(vide)"
           echo "Health check never reported status ok."
           exit 1
 
