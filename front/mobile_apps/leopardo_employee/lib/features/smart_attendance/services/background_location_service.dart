@@ -143,6 +143,9 @@ class BackgroundLocationService {
       position.latitude,
       position.longitude,
       config,
+      // Fiabilité GPS (F-21, #1551) : la précision de la position est
+      // transmise au géofencing pour ignorer les mesures trop imprécises.
+      accuracyMeters: position.accuracy,
     );
 
     // Envoi de l'événement si un changement de zone est détecté
