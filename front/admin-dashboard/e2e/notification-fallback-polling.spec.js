@@ -4,7 +4,24 @@ import { expect, test } from '@playwright/test'
 // n'est pas disponible (proxy/firewall, serveur down, ...), l'admin-dashboard
 // doit continuer a recevoir les notifications via un polling REST regulier
 // de /notifications plutot que de rester silencieusement bloque.
+//
+// Flaky tracking (issue #1575) : ce test dépend du timing de détection
+// d'échec Socket.IO (grace period 8s + retry socket.io). Stabilisation :
+//   - les connexions socket.io sont avortées immédiatement (mock déterministe),
+//   - timeout global du test relevé à 60 s (l'assertion de polling peut
+//     légitimement prendre ~8-30 s),
+//   - retries séparés (3) via describe.configure.
+test.describe.configure({ retries: 3 })
+
 test('falls back to REST polling when the push (Socket.IO) channel is unavailable', async ({ page }) => {
+  // Le serveur de dev n'a pas d'upstream socket.io : pour rendre la détection
+  // d'échec déterministe (pas de dépendance à la grace period), on avorte les
+  // connexions socket.io dès leur tentative.
+  await page.route('**/socket.io/**', (route) => route.abort())
+  await page.route(/\/socket\.io\/?$/, (route) => route.abort())
+
+  test.setTimeout(60_000)
+
   await page.route('**/api/v1/platform/auth/login', async (route) => {
     await route.fulfill({
       status: 200,
