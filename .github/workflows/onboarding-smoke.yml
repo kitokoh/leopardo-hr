@@ -53,6 +53,11 @@ jobs:
       - name: Copy env (as documented in DEVELOPMENT.md)
         run: cp api/.env.example api/.env
 
+      # Garde anti-régression (#1605) : .env.example doit rester parsable par
+      # phpdotenv et sans placeholder cassant le boot (REDIS_URL/AUTH_MODEL…).
+      - name: Guard .env.example safety (#1605)
+        run: bash dev-hub/tools/check-env-example-safety.sh
+
       # Volontairement identique a la commande documentee dans README.md /
       # DEVELOPMENT.md — pas un raccourci CI. Si cette etape ou une des
       # suivantes echoue, c'est que la doc d'onboarding elle-meme est cassee.
