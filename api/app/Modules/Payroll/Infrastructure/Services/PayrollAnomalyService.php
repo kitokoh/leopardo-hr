@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -25,6 +26,9 @@ class PayrollAnomalyService
     /** Seuil de variance brute vs mois précédent (30 %). */
     public const GROSS_VARIANCE_THRESHOLD = 0.30;
 
+    /** Seuil (h) d'heures sup pointées non intégrées à la paie (F-20). */
+    public const ATTENDANCE_OVERTIME_TOLERANCE_HOURS = 2.0;
+
     /**
      * @return array<int, array{type: string, severity: string, employee_id?: int, message: string}>
      */
@@ -35,6 +39,7 @@ class PayrollAnomalyService
         $anomalies = array_merge($anomalies, $this->detectDuplicateSlips($run));
         $anomalies = array_merge($anomalies, $this->detectIncoherentSlips($run));
         $anomalies = array_merge($anomalies, $this->detectGrossVariance($run));
+        $anomalies = array_merge($anomalies, $this->detectAttendanceDiscrepancy($run));
 
         return $anomalies;
     }
@@ -149,6 +154,63 @@ class PayrollAnomalyService
                         $slip->gross_salary,
                         $previous->gross_salary,
                         $variance * 100
+                    ),
+                ];
+            }
+        }
+
+        return $anomalies;
+    }
+
+    /**
+     * Programme FOCUS — F-20 (#1550) : écarts pointage → paie signalés avant
+     * clôture. Compare les heures supplémentaires réellement pointées
+     * (AttendanceLog non annulés/rejetés sur la période du run) avec les
+     * heures intégrées au bulletin (`PaySlip.overtime_hours`).
+     *
+     * Lecture seule — aucune écriture automatique (WriteToolPolicy).
+     *
+     * @return array<int, array{type: string, severity: string, employee_id: int, message: string}>
+     */
+    public function detectAttendanceDiscrepancy(PayrollRun $run): array
+    {
+        $anomalies = [];
+
+        $attendanceHoursByEmployee = AttendanceLog::query()
+            ->where('company_id', $run->company_id)
+            ->whereBetween('date', [$run->period_start, $run->period_end])
+            ->where('overtime_hours', '>', 0)
+            ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+            ->select('employee_id')
+            ->selectRaw('SUM(overtime_hours) as total_hours')
+            ->groupBy('employee_id')
+            ->pluck('total_hours', 'employee_id');
+
+        if ($attendanceHoursByEmployee->isEmpty()) {
+            return $anomalies;
+        }
+
+        foreach ($run->paySlips as $slip) {
+            $pointed = (float) ($attendanceHoursByEmployee->get((int) $slip->employee_id) ?? 0.0);
+            $paid = (float) $slip->overtime_hours;
+
+            if ($pointed <= 0.0) {
+                continue;
+            }
+
+            $missing = round($pointed - $paid, 2);
+
+            if ($missing > self::ATTENDANCE_OVERTIME_TOLERANCE_HOURS) {
+                $anomalies[] = [
+                    'type'        => 'attendance_vs_payroll',
+                    'severity'    => $missing > self::ATTENDANCE_OVERTIME_TOLERANCE_HOURS * 2 ? 'high' : 'medium',
+                    'employee_id' => (int) $slip->employee_id,
+                    'message'     => sprintf(
+                        'Employé #%d : %.2f h sup pointées mais %.2f h intégrées à la paie (écart %.2f h) — vérifier avant clôture (F-20)',
+                        $slip->employee_id,
+                        $pointed,
+                        $paid,
+                        $missing
                     ),
                 ];
             }

@@ -191,6 +191,33 @@ class PayrollRunController extends Controller
         ]);
     }
 
+    /**
+     * F-20 (#1550) : rapport pré-clôture des anomalies (doublons, bulletins
+     * incohérents, variance de brut, écarts pointage → paie). Lecture seule —
+     * l'action humaine décide des corrections avant validation/verrouillage.
+     */
+    public function anomalies(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $anomalies = (new PayrollAnomalyService())->detectForRun($payrollRun->load('paySlips'));
+
+        return response()->json([
+            'data' => [
+                'run_id' => $payrollRun->id,
+                'total' => count($anomalies),
+                'anomalies' => $anomalies,
+            ],
+        ]);
+    }
+
     public function export(Request $request, PayrollRun $payrollRun, \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService $exportService): StreamedResponse
     {
         /** @var Employee $actor */
