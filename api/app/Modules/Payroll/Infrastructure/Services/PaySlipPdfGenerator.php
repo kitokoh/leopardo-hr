@@ -102,11 +102,7 @@ class PaySlipPdfGenerator
      */
     private function annualCumuls(PaySlip $paySlip): array
     {
-        $periodStart = $paySlip->period_start;
-        $year = $periodStart instanceof \Carbon\CarbonInterface ? $periodStart->format('Y') : null;
-        if ($year === null) {
-            return ['gross' => 0.0, 'deductions' => 0.0, 'net' => 0.0];
-        }
+        $year = $paySlip->period_start->format('Y');
 
         $aggregates = PaySlip::query()
             ->where('company_id', $paySlip->company_id)
@@ -119,10 +115,14 @@ class PaySlipPdfGenerator
             ->selectRaw('COALESCE(SUM(net_salary), 0) as net')
             ->first();
 
+        if ($aggregates === null) {
+            return ['gross' => 0.0, 'deductions' => 0.0, 'net' => 0.0];
+        }
+
         return [
-            'gross' => (float) ($aggregates?->gross ?? 0.0),
-            'deductions' => (float) ($aggregates?->deductions ?? 0.0),
-            'net' => (float) ($aggregates?->net ?? 0.0),
+            'gross' => (float) $aggregates->getAttribute('gross'),
+            'deductions' => (float) $aggregates->getAttribute('deductions'),
+            'net' => (float) $aggregates->getAttribute('net'),
         ];
     }
 
