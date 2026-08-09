@@ -10,7 +10,8 @@ class EditorialCalendarScreen extends StatefulWidget {
   const EditorialCalendarScreen({super.key});
 
   @override
-  State<EditorialCalendarScreen> createState() => _EditorialCalendarScreenState();
+  State<EditorialCalendarScreen> createState() =>
+      _EditorialCalendarScreenState();
 }
 
 class _EditorialCalendarScreenState extends State<EditorialCalendarScreen> {
@@ -19,13 +20,17 @@ class _EditorialCalendarScreenState extends State<EditorialCalendarScreen> {
 
   final Map<DateTime, List<String>> _events = {
     DateTime.now(): ['Post LinkedIn - Offre emploi', 'Post Twitter - Annonce'],
-    DateTime.now().add(const Duration(days: 2)): ['Post Meta - Culture d\'entreprise'],
+    DateTime.now().add(const Duration(days: 2)): [
+      'Post Meta - Culture d\'entreprise',
+    ],
   };
 
   List<String> _getEventsForDay(DateTime day) {
     // Basic date matching ignoring time
     for (var key in _events.keys) {
-      if (key.year == day.year && key.month == day.month && key.day == day.day) {
+      if (key.year == day.year &&
+          key.month == day.month &&
+          key.day == day.day) {
         return _events[key]!;
       }
     }
@@ -78,10 +83,7 @@ class _EditorialCalendarScreenState extends State<EditorialCalendarScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          'Posts du jour',
-          style: AppTypography.headlineMedium(context),
-        ),
+        Text('Posts du jour', style: AppTypography.headlineMedium(context)),
         const SizedBox(height: 8),
         ..._getEventsForDay(_selectedDay ?? _focusedDay).map(
           (event) => Padding(

@@ -33,9 +33,7 @@ void main() {
     });
 
     test('fromJson defaults missing fields', () {
-      final enrollment = TrainingEnrollment.fromJson({
-        'id': 3,
-      });
+      final enrollment = TrainingEnrollment.fromJson({'id': 3});
 
       expect(enrollment.courseTitle, '');
       expect(enrollment.sessionDate, isNull);

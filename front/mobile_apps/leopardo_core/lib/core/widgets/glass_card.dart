@@ -29,7 +29,8 @@ class GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bgColor = color ??
+    final bgColor =
+        color ??
         (isDark
             ? AppColors.mobileDarkGlass.withValues(alpha: 0.4)
             : Colors.white.withValues(alpha: 0.7));
@@ -71,17 +72,11 @@ class GlassCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      result = GestureDetector(
-        onTap: onTap,
-        child: result,
-      );
+      result = GestureDetector(onTap: onTap, child: result);
     }
 
     if (margin != null) {
-      result = Padding(
-        padding: margin!,
-        child: result,
-      );
+      result = Padding(padding: margin!, child: result);
     }
 
     return result;

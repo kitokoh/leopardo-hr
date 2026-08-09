@@ -7,10 +7,9 @@ part of 'form_schema.dart';
 // **************************************************************************
 
 FormSchema _$FormSchemaFromJson(Map<String, dynamic> json) => FormSchema(
-  fields:
-      (json['fields'] as List<dynamic>)
-          .map((e) => FormField.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  fields: (json['fields'] as List<dynamic>)
+      .map((e) => FormField.fromJson(e as Map<String, dynamic>))
+      .toList(),
   validation: json['validation'] as Map<String, dynamic>?,
   submitEndpoint: json['submit_endpoint'] as String?,
   submitMethod: json['submit_method'] as String?,
@@ -35,10 +34,9 @@ FormField _$FormFieldFromJson(Map<String, dynamic> json) => FormField(
   required: json['required'] as bool? ?? false,
   validation: json['validation'] as Map<String, dynamic>?,
   defaultValue: json['default_value'],
-  options:
-      (json['options'] as List<dynamic>?)
-          ?.map((e) => FormFieldOption.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  options: (json['options'] as List<dynamic>?)
+      ?.map((e) => FormFieldOption.fromJson(e as Map<String, dynamic>))
+      .toList(),
   placeholder: json['placeholder'] as String?,
   helpText: json['help_text'] as String?,
 );

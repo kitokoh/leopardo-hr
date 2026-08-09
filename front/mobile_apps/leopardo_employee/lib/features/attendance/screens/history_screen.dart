@@ -64,9 +64,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async => ref.refresh(
-          historyProvider(DateTime(now.year, now.month)).future,
-        ),
+        onRefresh: () async =>
+            ref.refresh(historyProvider(DateTime(now.year, now.month)).future),
         child: historyAsync.when(
           loading: () => ListView.separated(
             padding: const EdgeInsets.all(16),
@@ -74,11 +73,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) => Row(
               children: [
-                const ShimmerLoading(
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                ),
+                const ShimmerLoading(width: 40, height: 40, borderRadius: 20),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -86,10 +81,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     children: const [
                       ShimmerLoading(width: 100, height: 16),
                       SizedBox(height: 8),
-                      ShimmerLoading(
-                        width: double.infinity,
-                        height: 16,
-                      ),
+                      ShimmerLoading(width: double.infinity, height: 16),
                     ],
                   ),
                 ),
@@ -243,7 +235,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
                       final timeRange = log.checkIn != null
                           ? 'de ${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} à '
-                              '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "en cours"}'
+                                '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "en cours"}'
                           : 'pas de pointage';
 
                       final hours = log.workedHours ?? 0;
@@ -273,7 +265,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             subtitle: Text(
                               log.checkIn != null
                                   ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                        '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
                                   : 'Absence',
                             ),
                             trailing: Text(

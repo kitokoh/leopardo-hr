@@ -83,7 +83,9 @@ class PushNotificationService {
   }
 
   Future<void> _initLocalNotifications() async {
-    const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
+    const androidInit = AndroidInitializationSettings(
+      '@drawable/ic_notification',
+    );
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -139,8 +141,9 @@ class PushNotificationService {
     if (token == null || apiClient == null) return;
 
     try {
-      final platform =
-          Platform.isIOS ? 'ios' : (Platform.isAndroid ? 'android' : 'web');
+      final platform = Platform.isIOS
+          ? 'ios'
+          : (Platform.isAndroid ? 'android' : 'web');
       await apiClient.requestWithRetry(
         '/device-tokens',
         method: 'POST',

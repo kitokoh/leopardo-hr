@@ -215,7 +215,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     final selectedCountry = _selectedCountry(_countries());
     setState(() => _submitting = true);
     try {
-      final company = await ref.read(platformRepositoryProvider).createCompany(
+      final company = await ref
+          .read(platformRepositoryProvider)
+          .createCompany(
             name: _name.text.trim(),
             email: _email.text.trim(),
             country: selectedCountry.country,
@@ -327,7 +329,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   }
 
   List<PlatformCountryDefault> _countries() {
-    return ref.watch(platformCountryDefaultsProvider).maybeWhen(
+    return ref
+        .watch(platformCountryDefaultsProvider)
+        .maybeWhen(
           data: (items) => items.isNotEmpty ? items : _fallbackCountryDefaults,
           orElse: () => _fallbackCountryDefaults,
         );

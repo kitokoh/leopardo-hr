@@ -75,10 +75,7 @@ class ContractScreen extends ConsumerWidget {
                               label: 'Type',
                               value: contract.type.toUpperCase(),
                             ),
-                            _InfoRow(
-                              label: 'Debut',
-                              value: contract.startDate,
-                            ),
+                            _InfoRow(label: 'Debut', value: contract.startDate),
                             _InfoRow(
                               label: 'Fin',
                               value: contract.endDate ?? 'CDI',

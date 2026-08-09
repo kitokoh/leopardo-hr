@@ -1,4 +1,4 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,12 +36,15 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
     }
     setState(() => _submitting = true);
     try {
-      await ref.read(expenseRepositoryProvider).submitClaim(
+      await ref
+          .read(expenseRepositoryProvider)
+          .submitClaim(
             category: _categoryController.text,
             amount: amount,
             date: DateTime.now().toIso8601String().split('T').first,
-            description:
-                _descController.text.isNotEmpty ? _descController.text : null,
+            description: _descController.text.isNotEmpty
+                ? _descController.text
+                : null,
           );
       _categoryController.clear();
       _amountController.clear();
@@ -76,9 +79,7 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
           children: [
             Text(
               'Nouvelle note de frais',
-              style: AppTypography.subtitle.copyWith(
-                color: AppColors.textDark,
-              ),
+              style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -120,9 +121,7 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.rh,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.rh),
               child: _submitting
                   ? const SizedBox(
                       height: 18,
@@ -257,4 +256,3 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
     );
   }
 }
-

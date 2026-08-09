@@ -288,4 +288,3 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
     );
   }
 }
-

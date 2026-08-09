@@ -101,10 +101,9 @@ class Employee {
     }
 
     final hireDateRaw = json['hire_date'];
-    final extraData =
-        json['extra_data'] is Map
-            ? (json['extra_data'] as Map).cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final extraData = json['extra_data'] is Map
+        ? (json['extra_data'] as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
 
     return Employee(
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
@@ -118,20 +117,18 @@ class Employee {
       recoveryEmail: json['recovery_email']?.toString(),
       personalPhone: json['personal_phone']?.toString(),
       scheduleId: int.tryParse(json['schedule_id']?.toString() ?? ''),
-      scheduleName:
-          json['schedule'] is Map
-              ? (json['schedule'] as Map)['name']?.toString()
-              : null,
+      scheduleName: json['schedule'] is Map
+          ? (json['schedule'] as Map)['name']?.toString()
+          : null,
       role: json['role'] as String?,
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,
       workState: (json['work_state'] ?? 'offline') as String,
       workStateLabel: (json['work_state_label'] ?? 'Hors ligne') as String,
       photoUrl: json['photo_url']?.toString(),
-      hireDate:
-          hireDateRaw != null
-              ? DateTime.tryParse(hireDateRaw.toString())
-              : null,
+      hireDate: hireDateRaw != null
+          ? DateTime.tryParse(hireDateRaw.toString())
+          : null,
       biometricFaceEnabled: json['biometric_face_enabled'] == true,
       biometricFingerprintEnabled:
           json['biometric_fingerprint_enabled'] == true,

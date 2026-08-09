@@ -24,10 +24,11 @@ class OrgNode {
     final childrenJson = json['children'] as List? ?? [];
     return OrgNode(
       id: json['id'] as int,
-      name: (json['name'] ??
-              '${json['first_name'] ?? ''} ${json['last_name'] ?? ''}')
-          .toString()
-          .trim(),
+      name:
+          (json['name'] ??
+                  '${json['first_name'] ?? ''} ${json['last_name'] ?? ''}')
+              .toString()
+              .trim(),
       position: json['position']?.toString(),
       department: json['department']?.toString(),
       photoUrl: json['photo_url']?.toString(),

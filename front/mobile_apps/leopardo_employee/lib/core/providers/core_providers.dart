@@ -210,6 +210,6 @@ final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
 
 final smartAttendanceRepositoryCoreProvider =
     Provider<SmartAttendanceRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return SmartAttendanceRepository(apiClient);
-});
+      final apiClient = ref.watch(apiClientProvider);
+      return SmartAttendanceRepository(apiClient);
+    });

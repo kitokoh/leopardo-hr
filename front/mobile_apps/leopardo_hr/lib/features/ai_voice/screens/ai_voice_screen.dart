@@ -85,8 +85,8 @@ class _AiVoiceScreenState extends ConsumerState<AiVoiceScreen> {
                 _recording
                     ? 'Ecoute en cours...'
                     : _processing
-                        ? 'Traitement...'
-                        : 'Appuyez pour parler',
+                    ? 'Traitement...'
+                    : 'Appuyez pour parler',
                 style: AppTypography.subtitle.copyWith(
                   color: AppColors.textDark,
                 ),
@@ -113,9 +113,7 @@ class _AiVoiceScreenState extends ConsumerState<AiVoiceScreen> {
                   ),
                   child: Center(
                     child: _processing
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
+                        ? const CircularProgressIndicator(color: Colors.white)
                         : Icon(
                             _recording ? Icons.stop : Icons.mic,
                             color: Colors.white,

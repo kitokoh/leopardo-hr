@@ -40,7 +40,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     HapticFeedback.mediumImpact();
 
-    final ok = await ref.read(userAuthProvider.notifier).register(
+    final ok = await ref
+        .read(userAuthProvider.notifier)
+        .register(
           firstName: _firstNameCtrl.text.trim(),
           lastName: _lastNameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
@@ -61,7 +63,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
+      final ok = await ref
+          .read(userAuthProvider.notifier)
+          .googleSignIn(
             googleId: account.id,
             email: account.email,
             firstName: account.displayName?.split(' ').first ?? '',
@@ -151,20 +155,20 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     return Column(
       children: [
         Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [AppColors.ia, AppColors.rh],
-            ),
-          ),
-          child: const Icon(
-            Icons.person_add_outlined,
-            color: Colors.white,
-            size: 30,
-          ),
-        )
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [AppColors.ia, AppColors.rh],
+                ),
+              ),
+              child: const Icon(
+                Icons.person_add_outlined,
+                color: Colors.white,
+                size: 30,
+              ),
+            )
             .animate()
             .fadeIn(duration: 400.ms)
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),

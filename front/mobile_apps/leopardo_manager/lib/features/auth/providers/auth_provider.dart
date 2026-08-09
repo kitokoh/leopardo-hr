@@ -35,7 +35,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final ApiClient _apiClient;
 
   AuthNotifier(this._repository, this._pushNotifications, this._apiClient)
-      : super(AuthState(isLoading: true)) {
+    : super(AuthState(isLoading: true)) {
     Future.microtask(checkAuth);
   }
 

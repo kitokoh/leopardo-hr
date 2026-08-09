@@ -12,10 +12,7 @@ class AttendanceModePickerScreen extends ConsumerStatefulWidget {
   /// Mode actuellement actif (pour prÃ©-sÃ©lectionner)
   final String currentMode;
 
-  const AttendanceModePickerScreen({
-    super.key,
-    required this.currentMode,
-  });
+  const AttendanceModePickerScreen({super.key, required this.currentMode});
 
   @override
   ConsumerState<AttendanceModePickerScreen> createState() =>
@@ -43,37 +40,37 @@ class _AttendanceModePickerScreenState
 
   /// Liste des modes disponibles avec leur libellÃ©, icÃ´ne et description.
   List<Map<String, dynamic>> get _modes => [
-        {
-          'id': 'gps_auto',
-          'label': 'GPS Automatique',
-          'icon': Icons.location_on_rounded,
-          'color': AppColors.mobileAccentGreen,
-          'description':
-              'Votre prÃ©sence est dÃ©tectÃ©e automatiquement dÃ¨s que vous entrez '
-                  'dans la zone de l\'entreprise. Aucune action requise de votre part.',
-          'badge': 'RecommandÃ©',
-        },
-        {
-          'id': 'qr_code',
-          'label': 'QR Code',
-          'icon': Icons.qr_code_scanner_rounded,
-          'color': AppColors.mobileAccentPurple,
-          'description':
-              'Scannez le QR Code affichÃ© Ã  l\'entrÃ©e de l\'entreprise pour '
-                  'pointer votre arrivÃ©e et votre dÃ©part.',
-          'badge': null,
-        },
-        {
-          'id': 'manual',
-          'label': 'Manuel',
-          'icon': Icons.touch_app_rounded,
-          'color': _muted,
-          'description':
-              'Pointez manuellement en appuyant sur les boutons ArrivÃ©e et '
-                  'DÃ©part dans l\'Ã©cran de prÃ©sence.',
-          'badge': null,
-        },
-      ];
+    {
+      'id': 'gps_auto',
+      'label': 'GPS Automatique',
+      'icon': Icons.location_on_rounded,
+      'color': AppColors.mobileAccentGreen,
+      'description':
+          'Votre prÃ©sence est dÃ©tectÃ©e automatiquement dÃ¨s que vous entrez '
+          'dans la zone de l\'entreprise. Aucune action requise de votre part.',
+      'badge': 'RecommandÃ©',
+    },
+    {
+      'id': 'qr_code',
+      'label': 'QR Code',
+      'icon': Icons.qr_code_scanner_rounded,
+      'color': AppColors.mobileAccentPurple,
+      'description':
+          'Scannez le QR Code affichÃ© Ã  l\'entrÃ©e de l\'entreprise pour '
+          'pointer votre arrivÃ©e et votre dÃ©part.',
+      'badge': null,
+    },
+    {
+      'id': 'manual',
+      'label': 'Manuel',
+      'icon': Icons.touch_app_rounded,
+      'color': _muted,
+      'description':
+          'Pointez manuellement en appuyant sur les boutons ArrivÃ©e et '
+          'DÃ©part dans l\'Ã©cran de prÃ©sence.',
+      'badge': null,
+    },
+  ];
 
   Future<void> _confirmSelection() async {
     if (_isSaving) return;
@@ -129,11 +126,7 @@ class _AttendanceModePickerScreenState
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               child: Text(
                 'Choisissez comment vous souhaitez pointer votre prÃ©sence chaque jour.',
-                style: TextStyle(
-                  color: _muted,
-                  fontSize: 14,
-                  height: 1.5,
-                ),
+                style: TextStyle(color: _muted, fontSize: 14, height: 1.5),
               ),
             ),
 
@@ -171,12 +164,15 @@ class _AttendanceModePickerScreenState
                     color: AppColors.mobileAccentRed.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: AppColors.mobileAccentRed.withValues(alpha: 0.4)),
+                      color: AppColors.mobileAccentRed.withValues(alpha: 0.4),
+                    ),
                   ),
                   child: Text(
                     _error!,
-                    style:
-                        const TextStyle(color: AppColors.mobileAccentRedSoft, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.mobileAccentRedSoft,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),
@@ -300,7 +296,9 @@ class _ModeCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
@@ -345,4 +343,3 @@ class _ModeCard extends StatelessWidget {
     );
   }
 }
-

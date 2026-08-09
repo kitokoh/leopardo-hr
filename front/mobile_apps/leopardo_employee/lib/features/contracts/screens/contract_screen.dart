@@ -1,4 +1,4 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -76,10 +76,7 @@ class ContractScreen extends ConsumerWidget {
                               label: 'Type',
                               value: contract.type.toUpperCase(),
                             ),
-                            _InfoRow(
-                              label: 'Debut',
-                              value: contract.startDate,
-                            ),
+                            _InfoRow(label: 'Debut', value: contract.startDate),
                             _InfoRow(
                               label: 'Fin',
                               value: contract.endDate ?? 'CDI',
@@ -181,4 +178,3 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-

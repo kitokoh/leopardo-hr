@@ -65,10 +65,8 @@ final _router = GoRouter(
   routes: [
     // Shell persistant : bottom nav partagé entre les 3 onglets principaux.
     ShellRoute(
-      builder: (context, state, child) => _MarketingShell(
-        currentRoute: state.matchedLocation,
-        child: child,
-      ),
+      builder: (context, state, child) =>
+          _MarketingShell(currentRoute: state.matchedLocation, child: child),
       routes: [
         GoRoute(
           path: '/',
@@ -91,10 +89,7 @@ final _router = GoRouter(
 /// Shell layout avec la bottom nav. La route `/create-post` est hors shell
 /// pour prendre tout l'écran (full-screen modal-like).
 class _MarketingShell extends StatelessWidget {
-  const _MarketingShell({
-    required this.currentRoute,
-    required this.child,
-  });
+  const _MarketingShell({required this.currentRoute, required this.child});
 
   final String currentRoute;
   final Widget child;

@@ -714,4 +714,3 @@ class _SalaryAdvanceRequestSheetState
     return double.tryParse(value.trim().replaceAll(',', '.'));
   }
 }
-

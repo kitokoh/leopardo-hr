@@ -45,9 +45,8 @@ class AttendanceLogs extends Table {
   TextColumn get syncStatus =>
       text().named('sync_status').withDefault(const Constant('pending'))();
 
-  DateTimeColumn get createdAt => dateTime()
-      .named('created_at')
-      .withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt =>
+      dateTime().named('created_at').withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {localId};
@@ -104,12 +103,10 @@ class SyncQueue extends Table {
   TextColumn get lastError => text().named('last_error').nullable()();
 
   /// 'pending' | 'processing' | 'done' | 'failed'
-  TextColumn get status =>
-      text().withDefault(const Constant('pending'))();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
 
-  DateTimeColumn get createdAt => dateTime()
-      .named('created_at')
-      .withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt =>
+      dateTime().named('created_at').withDefault(currentDateAndTime)();
 
   DateTimeColumn get processedAt =>
       dateTime().named('processed_at').nullable()();
@@ -122,9 +119,8 @@ class SyncQueue extends Table {
 class EdgeConfig extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
-  DateTimeColumn get updatedAt => dateTime()
-      .named('updated_at')
-      .withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt =>
+      dateTime().named('updated_at').withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {key};
@@ -134,9 +130,7 @@ class EdgeConfig extends Table {
 // Database
 // ---------------------------------------------------------------------------
 
-@DriftDatabase(
-  tables: [AttendanceLogs, EmployeeCache, SyncQueue, EdgeConfig],
-)
+@DriftDatabase(tables: [AttendanceLogs, EmployeeCache, SyncQueue, EdgeConfig])
 class EdgeDatabase extends _$EdgeDatabase {
   EdgeDatabase() : super(_openConnection());
   EdgeDatabase.forTesting(super.e);
@@ -146,11 +140,11 @@ class EdgeDatabase extends _$EdgeDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          // Migrations futures ici
-        },
-      );
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      // Migrations futures ici
+    },
+  );
 
   // -------------------------------------------------------------------------
   // Helpers — AttendanceLogs
@@ -166,12 +160,15 @@ class EdgeDatabase extends _$EdgeDatabase {
       into(attendanceLogs).insertOnConflictUpdate(entry);
 
   Future<bool> markLogSynced(String localId, int remoteId) async {
-    final count = await (update(attendanceLogs)
-          ..where((t) => t.localId.equals(localId)))
-        .write(AttendanceLogsCompanion(
-          remoteId: Value(remoteId),
-          syncStatus: const Value('synced'),
-        ));
+    final count =
+        await (update(
+          attendanceLogs,
+        )..where((t) => t.localId.equals(localId))).write(
+          AttendanceLogsCompanion(
+            remoteId: Value(remoteId),
+            syncStatus: const Value('synced'),
+          ),
+        );
     return count > 0;
   }
 
@@ -180,13 +177,11 @@ class EdgeDatabase extends _$EdgeDatabase {
   // -------------------------------------------------------------------------
 
   Future<List<EmployeeCacheData>> allActiveEmployees() =>
-      (select(employeeCache)
-            ..where((t) => t.isActive.equals(true)))
-          .get();
+      (select(employeeCache)..where((t) => t.isActive.equals(true))).get();
 
-  Future<EmployeeCacheData?> employeeByBadge(String qr) =>
-      (select(employeeCache)..where((t) => t.badgeQr.equals(qr)))
-          .getSingleOrNull();
+  Future<EmployeeCacheData?> employeeByBadge(String qr) => (select(
+    employeeCache,
+  )..where((t) => t.badgeQr.equals(qr))).getSingleOrNull();
 
   Future<void> replaceEmployees(List<EmployeeCacheCompanion> employees) =>
       transaction(() async {
@@ -210,22 +205,27 @@ class EdgeDatabase extends _$EdgeDatabase {
 
   Future<bool> markQueueDone(int id) async {
     final count = await (update(syncQueue)..where((t) => t.id.equals(id)))
-        .write(SyncQueueCompanion(
-          status: const Value('done'),
-          processedAt: Value(DateTime.now()),
-        ));
+        .write(
+          SyncQueueCompanion(
+            status: const Value('done'),
+            processedAt: Value(DateTime.now()),
+          ),
+        );
     return count > 0;
   }
 
   Future<bool> markQueueFailed(int id, String error) async {
-    final existing =
-        await (select(syncQueue)..where((t) => t.id.equals(id))).getSingle();
+    final existing = await (select(
+      syncQueue,
+    )..where((t) => t.id.equals(id))).getSingle();
     final count = await (update(syncQueue)..where((t) => t.id.equals(id)))
-        .write(SyncQueueCompanion(
-          status: const Value('failed'),
-          retryCount: Value(existing.retryCount + 1),
-          lastError: Value(error),
-        ));
+        .write(
+          SyncQueueCompanion(
+            status: const Value('failed'),
+            retryCount: Value(existing.retryCount + 1),
+            lastError: Value(error),
+          ),
+        );
     return count > 0;
   }
 
@@ -234,9 +234,9 @@ class EdgeDatabase extends _$EdgeDatabase {
   // -------------------------------------------------------------------------
 
   Future<String?> getConfig(String key) async {
-    final row = await (select(edgeConfig)
-          ..where((t) => t.key.equals(key)))
-        .getSingleOrNull();
+    final row = await (select(
+      edgeConfig,
+    )..where((t) => t.key.equals(key))).getSingleOrNull();
     return row?.value;
   }
 

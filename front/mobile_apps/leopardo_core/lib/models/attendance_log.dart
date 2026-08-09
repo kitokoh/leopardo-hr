@@ -46,15 +46,12 @@ class AttendanceLog {
     final lateRaw = json['late_minutes'];
 
     final employeeJson = json['employee'];
-    final String? employeeName =
-        employeeJson is Map
-            ? employeeJson['name']?.toString()
-            : json['name']?.toString();
-    final String? employeePhotoUrl =
-        employeeJson is Map
-            ? (employeeJson['photo_url'] ?? employeeJson['photo_path'])
-                ?.toString()
-            : (json['photo_url'] ?? json['photo_path'])?.toString();
+    final String? employeeName = employeeJson is Map
+        ? employeeJson['name']?.toString()
+        : json['name']?.toString();
+    final String? employeePhotoUrl = employeeJson is Map
+        ? (employeeJson['photo_url'] ?? employeeJson['photo_path'])?.toString()
+        : (json['photo_url'] ?? json['photo_path'])?.toString();
 
     return AttendanceLog(
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
@@ -71,28 +68,30 @@ class AttendanceLog {
             (json['session_number'] ?? json['sessionNumber'])?.toString() ?? '',
           ) ??
           1,
-      checkIn:
-          json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
-      checkOut:
-          json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
+      checkIn: json['check_in'] != null
+          ? DateTime.parse(json['check_in'])
+          : null,
+      checkOut: json['check_out'] != null
+          ? DateTime.parse(json['check_out'])
+          : null,
       status: (json['status'] ?? 'incomplete') as String,
       workType: (json['work_type'] ?? json['workType'] ?? 'normal').toString(),
       punchNote: json['punch_note']?.toString(),
-      punchMeta:
-          json['punch_meta'] is Map
-              ? (json['punch_meta'] as Map).cast<String, dynamic>()
-              : null,
-      workedHours:
-          hoursRaw != null ? double.tryParse(hoursRaw.toString()) : null,
-      overtimeHours:
-          overtimeRaw != null ? double.tryParse(overtimeRaw.toString()) : null,
+      punchMeta: json['punch_meta'] is Map
+          ? (json['punch_meta'] as Map).cast<String, dynamic>()
+          : null,
+      workedHours: hoursRaw != null
+          ? double.tryParse(hoursRaw.toString())
+          : null,
+      overtimeHours: overtimeRaw != null
+          ? double.tryParse(overtimeRaw.toString())
+          : null,
       lateMinutes: lateRaw != null ? int.tryParse(lateRaw.toString()) : null,
       timezone: json['timezone']?.toString(),
       deviceTimezone: json['device_timezone']?.toString(),
-      geofence:
-          json['geofence'] is Map
-              ? (json['geofence'] as Map).cast<String, dynamic>()
-              : null,
+      geofence: json['geofence'] is Map
+          ? (json['geofence'] as Map).cast<String, dynamic>()
+          : null,
       employeeName: employeeName,
       employeePhotoUrl: employeePhotoUrl,
     );

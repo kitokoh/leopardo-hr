@@ -10,13 +10,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class OfflineTokenService {
   final FlutterSecureStorage _storage;
 
-  static const _accessKey  = 'leopardo_access_token';
+  static const _accessKey = 'leopardo_access_token';
   static const _refreshKey = 'leopardo_refresh_token';
   static const _profileKey = 'leopardo_user_profile';
   static const _edgeLicenseKey = 'leopardo_edge_license';
 
   OfflineTokenService({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   Future<void> saveTokens({
     required String accessToken,
@@ -71,8 +71,9 @@ class OfflineTokenService {
       final exp = map['exp'] as int?;
       if (exp == null) return false;
 
-      return DateTime.fromMillisecondsSinceEpoch(exp * 1000)
-          .isBefore(DateTime.now());
+      return DateTime.fromMillisecondsSinceEpoch(
+        exp * 1000,
+      ).isBefore(DateTime.now());
     } catch (_) {
       return true;
     }

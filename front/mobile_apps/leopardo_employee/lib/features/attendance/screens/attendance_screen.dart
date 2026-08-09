@@ -63,7 +63,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final methods = await auth.getAvailableBiometrics();
       if (!mounted) return;
       setState(() {
-        _fingerprintAvailable = supported &&
+        _fingerprintAvailable =
+            supported &&
             canCheck &&
             methods.any((type) => type == BiometricType.fingerprint);
       });
@@ -85,7 +86,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
     final week = _buildWeekSummaries(weekLogs);
     final employee = authState.employee;
-    final isCheckedIn = attState.todayLog?.checkIn != null &&
+    final isCheckedIn =
+        attState.todayLog?.checkIn != null &&
         attState.todayLog?.checkOut == null;
     const canDirectEdit = false;
 
@@ -173,11 +175,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
     final success = isCheckedIn
         ? await ref
-            .read(attendanceProvider.notifier)
-            .checkOut(workType: choice.workType)
+              .read(attendanceProvider.notifier)
+              .checkOut(workType: choice.workType)
         : await ref
-            .read(attendanceProvider.notifier)
-            .checkIn(workType: choice.workType);
+              .read(attendanceProvider.notifier)
+              .checkIn(workType: choice.workType);
     if (!mounted) return;
     messenger.clearSnackBars();
     messenger.showSnackBar(
@@ -186,7 +188,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           success
               ? choice.successLabel
               : ref.read(attendanceProvider).error ??
-                  '${choice.failureLabel}. Reessayez.',
+                    '${choice.failureLabel}. Reessayez.',
         ),
         backgroundColor: success ? AppColors.rh : AppColors.danger,
       ),
@@ -302,10 +304,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ...choices.map(
               (choice) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(
-                  choice.title,
-                  style: const TextStyle(color: _text),
-                ),
+                title: Text(choice.title, style: const TextStyle(color: _text)),
                 subtitle: Text(
                   choice.subtitle,
                   style: const TextStyle(color: _muted, fontSize: 12),
@@ -428,10 +427,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ),
             PopupMenuItem(
               value: 'preferences',
-              child: _MenuItem(
-                icon: Icons.tune_outlined,
-                label: 'Preferences',
-              ),
+              child: _MenuItem(icon: Icons.tune_outlined, label: 'Preferences'),
             ),
             PopupMenuItem(
               value: 'settings',
@@ -559,8 +555,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           isLoading
               ? 'Enregistrement en cours...'
               : isCheckedIn
-                  ? 'Appuyez pour enregistrer votre depart'
-                  : 'Appuyez pour enregistrer votre arrivee',
+              ? 'Appuyez pour enregistrer votre depart'
+              : 'Appuyez pour enregistrer votre arrivee',
           style: const TextStyle(color: _secondary, fontSize: 12),
           textAlign: TextAlign.center,
         ),
@@ -584,8 +580,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       : 'Activer l\'empreinte (optionnel)',
                   style: TextStyle(
                     fontSize: 11,
-                    color:
-                        _fingerprintEnabled ? _soft : AppColors.mobileDarkFieldAlt,
+                    color: _fingerprintEnabled
+                        ? _soft
+                        : AppColors.mobileDarkFieldAlt,
                   ),
                 ),
               ],
@@ -595,19 +592,19 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-
   Widget _buildTodayGlassCard(AttendanceState state) {
     final log = state.todayLog;
     final checkIn = _formatTime(log?.checkIn);
     final checkOut = _formatTime(log?.checkOut);
     final statusLabel = _statusLabel(log);
     final statusColor = _statusColor(log);
-    final gain = state.summary?.totalEstimated ??
+    final gain =
+        state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
     final currency = state.summary?.currency ?? 'DZD';
     final sessionsCount =
         int.tryParse(state.daySummary?['sessions_count']?.toString() ?? '') ??
-            state.todaySessions.length;
+        state.todaySessions.length;
     final breakMinutes =
         int.tryParse(state.daySummary?['break_minutes']?.toString() ?? '') ?? 0;
 
@@ -639,9 +636,13 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _TimeChip(label: 'Arrivee', value: checkIn)),
+              Expanded(
+                child: _TimeChip(label: 'Arrivee', value: checkIn),
+              ),
               const SizedBox(width: 10),
-              Expanded(child: _TimeChip(label: 'Depart', value: checkOut)),
+              Expanded(
+                child: _TimeChip(label: 'Depart', value: checkOut),
+              ),
             ],
           ),
           if (sessionsCount > 1 || breakMinutes > 0) ...[
@@ -752,8 +753,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final barColor = day.isAbsent
         ? _soft
         : day.lateMinutes > 0
-            ? AppColors.warning
-            : AppColors.rh;
+        ? AppColors.warning
+        : AppColors.rh;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -797,7 +798,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                           day.isAbsent
                               ? 'Absent'
                               : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
-                                  '${day.lateMinutes > 0 ? ' Â· +${day.lateMinutes} min' : ''}',
+                                    '${day.lateMinutes > 0 ? ' Â· +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
                       ],
@@ -811,7 +812,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           fontFeatures: const [FontFeature.tabularFigures()],
-                          color: day.isAbsent ? _soft : AppColors.mobileDarkTextSoft,
+                          color: day.isAbsent
+                              ? _soft
+                              : AppColors.mobileDarkTextSoft,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -1024,8 +1027,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         builder: (context, controller) => SafeArea(
           child: Consumer(
             builder: (context, ref, _) {
-              final anomaliesAsync =
-                  ref.watch(monthlyAnomaliesProvider(day.date));
+              final anomaliesAsync = ref.watch(
+                monthlyAnomaliesProvider(day.date),
+              );
               final dayAnomalies = anomaliesAsync.maybeWhen(
                 data: (report) => report.forDate(_dateKey(day.date)),
                 orElse: () => const <AttendanceAnomaly>[],
@@ -1130,8 +1134,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final labelPrefix = index == 0
           ? 'Aujourd hui'
           : index == 1
-              ? 'Hier'
-              : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
+          ? 'Hier'
+          : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
       final label =
           '$labelPrefix - ${DateFormat('d MMM', 'fr_FR').format(date)}';
       return AttendanceDaySummary.fromLogs(
@@ -1168,7 +1172,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     return value[0].toUpperCase() + value.substring(1);
   }
 }
-
 
 class _PunchChoice {
   final String workType;
@@ -1672,13 +1675,13 @@ class _TaskLine extends ConsumerWidget {
             done
                 ? Icons.task_alt
                 : priority == 'urgent' || priority == 'high'
-                    ? Icons.priority_high
-                    : Icons.task_alt,
+                ? Icons.priority_high
+                : Icons.task_alt,
             color: done
                 ? AppColors.rh
                 : priority == 'urgent' || priority == 'high'
-                    ? AppColors.warning
-                    : AppColors.rh,
+                ? AppColors.warning
+                : AppColors.rh,
             size: 18,
           ),
           const SizedBox(width: 10),
@@ -1838,7 +1841,9 @@ class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(attendanceRepositoryProvider).completeTask(
+      await ref
+          .read(attendanceRepositoryProvider)
+          .completeTask(
             taskId: widget.taskId,
             completedMinutes: int.parse(_minutesCtrl.text.trim()),
             note: _noteCtrl.text,
@@ -1891,7 +1896,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
 
   bool _isTimeFuture(TimeOfDay time) {
     final now = DateTime.now();
-    final isToday = widget.targetDate.day == now.day &&
+    final isToday =
+        widget.targetDate.day == now.day &&
         widget.targetDate.month == now.month &&
         widget.targetDate.year == now.year;
     if (!isToday) return false;
@@ -1909,8 +1915,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
-      helpText:
-          isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
+      helpText: isCheckIn
+          ? 'Heure d\'arrivee reelle'
+          : 'Heure de depart reelle',
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
         child: child!,
@@ -1956,7 +1963,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = true);
     var success = true;
     if (widget.canDirectEdit) {
-      success = await ref.read(attendanceProvider.notifier).updateCorrection(
+      success = await ref
+          .read(attendanceProvider.notifier)
+          .updateCorrection(
             logId: widget.logId!,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
             checkOut: _checkOut == null
@@ -1965,7 +1974,9 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             notes: _reasonCtrl.text.trim(),
           );
     } else {
-      success = await ref.read(attendanceProvider.notifier).requestCorrection(
+      success = await ref
+          .read(attendanceProvider.notifier)
+          .requestCorrection(
             logId: widget.logId,
             date: widget.targetDate,
             checkIn: _asDateTime(widget.targetDate, _checkIn!),
@@ -1979,7 +1990,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (!success) {
-      final message = ref.read(attendanceProvider).error ??
+      final message =
+          ref.read(attendanceProvider).error ??
           'Impossible d envoyer la modification pour le moment.';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
@@ -2043,7 +2055,10 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               widget.canDirectEdit
                   ? 'La correction sera appliquee au dossier de pointage.'
                   : 'La demande sera transmise au RH pour validation.',
-              style: const TextStyle(fontSize: 12, color: AppColors.mobileDarkMuted),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.mobileDarkMuted,
+              ),
             ),
             const SizedBox(height: 18),
             Row(
@@ -2070,7 +2085,10 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               controller: _reasonCtrl,
               maxLines: 2,
               maxLength: 200,
-              style: const TextStyle(fontSize: 13, color: AppColors.mobileDarkText),
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.mobileDarkText,
+              ),
               decoration: InputDecoration(
                 hintText: 'Motif (ex: oubli de pointage a 8h)',
                 hintStyle: const TextStyle(
@@ -2081,11 +2099,15 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 fillColor: AppColors.mobileDarkField,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide: const BorderSide(
+                    color: AppColors.mobileDarkBorder,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide: const BorderSide(
+                    color: AppColors.mobileDarkBorder,
+                  ),
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
@@ -2156,7 +2178,10 @@ class _TimeTile extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
+              style: const TextStyle(
+                fontSize: 10,
+                color: AppColors.mobileDarkMuted,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -2166,7 +2191,9 @@ class _TimeTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: value != null ? AppColors.rh : AppColors.mobileDarkDisabled,
+                color: value != null
+                    ? AppColors.rh
+                    : AppColors.mobileDarkDisabled,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -2197,7 +2224,10 @@ class _TimeChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppColors.mobileDarkMuted,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -2290,7 +2320,10 @@ class _WeekStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkDisabled),
+          style: const TextStyle(
+            fontSize: 10,
+            color: AppColors.mobileDarkDisabled,
+          ),
         ),
       ],
     );
@@ -2394,4 +2427,3 @@ class AttendanceDaySummary {
     return total;
   }
 }
-

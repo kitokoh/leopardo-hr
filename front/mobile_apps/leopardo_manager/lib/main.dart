@@ -20,8 +20,10 @@ Future<void> main() async {
 
   await SentryFlutter.init(
     (options) {
-      options.dsn =
-          const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+      options.dsn = const String.fromEnvironment(
+        'SENTRY_DSN',
+        defaultValue: '',
+      );
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(
@@ -113,7 +115,10 @@ class _StartupRuntimeError extends StatelessWidget {
           child: Text(
             'Erreur d affichage Leopardo Manager\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.mobileDarkText,
+              fontSize: 13,
+            ),
           ),
         ),
       ),

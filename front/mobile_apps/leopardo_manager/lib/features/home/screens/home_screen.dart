@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -37,7 +37,8 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience = employee?.mobileExperience ??
+    final experience =
+        employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],
@@ -435,15 +436,15 @@ class ManagerDigest {
   });
 
   const ManagerDigest.empty()
-      : teamScope = 'company',
-        teamSize = 0,
-        present = 0,
-        late = 0,
-        openSessions = 0,
-        pendingActions = 0,
-        pendingAbsences = 0,
-        pendingSalaryAdvances = 0,
-        pendingCorrections = 0;
+    : teamScope = 'company',
+      teamSize = 0,
+      present = 0,
+      late = 0,
+      openSessions = 0,
+      pendingActions = 0,
+      pendingAbsences = 0,
+      pendingSalaryAdvances = 0,
+      pendingCorrections = 0;
 
   final String teamScope;
   final int teamSize;
@@ -819,4 +820,3 @@ class _DigestTile extends StatelessWidget {
     );
   }
 }
-

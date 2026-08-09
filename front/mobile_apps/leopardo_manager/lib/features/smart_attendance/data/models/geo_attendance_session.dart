@@ -41,7 +41,8 @@ class GeoAttendanceSession {
       id: json['id'] as int,
       employeeId:
           (employeeMap?['id'] as int?) ?? (json['employee_id'] as int? ?? 0),
-      employeeName: (employeeMap?['name'] as String?) ??
+      employeeName:
+          (employeeMap?['name'] as String?) ??
           (json['employee_name'] as String?) ??
           '',
       companyId: (json['company_id'] as String?) ?? '',

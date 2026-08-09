@@ -85,7 +85,10 @@ class _BackgroundPermissionOnboardingScreenState
         title: const Text(
           'Autoriser la localisation',
           style: TextStyle(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
@@ -98,10 +101,7 @@ class _BackgroundPermissionOnboardingScreenState
               // Illustration
               Container(
                 padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: _card,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: _card, shape: BoxShape.circle),
                 child: const Icon(
                   Icons.my_location_rounded,
                   size: 72,
@@ -126,8 +126,11 @@ class _BackgroundPermissionOnboardingScreenState
                 'Leopardo a besoin d\'accÃ©der Ã  votre position mÃªme quand l\'application '
                 'est fermÃ©e.',
                 textAlign: TextAlign.center,
-                style:
-                    TextStyle(color: Colors.white70, fontSize: 15, height: 1.5),
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -142,10 +145,7 @@ class _BackgroundPermissionOnboardingScreenState
                 text: 'Touchez "Autorisations" â†’ "Position"',
               ),
               const SizedBox(height: 10),
-              _StepCard(
-                step: '3',
-                text: 'SÃ©lectionnez "Toujours autoriser"',
-              ),
+              _StepCard(step: '3', text: 'SÃ©lectionnez "Toujours autoriser"'),
 
               const Spacer(),
 
@@ -157,7 +157,9 @@ class _BackgroundPermissionOnboardingScreenState
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(Icons.settings_rounded),
                 label: const Text('Ouvrir les paramÃ¨tres'),
@@ -227,11 +229,13 @@ class _StepCard extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-                color: Colors.white70, fontSize: 14, height: 1.4),
+              color: Colors.white70,
+              fontSize: 14,
+              height: 1.4,
+            ),
           ),
         ),
       ],
     );
   }
 }
-

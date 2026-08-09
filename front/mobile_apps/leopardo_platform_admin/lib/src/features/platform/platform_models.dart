@@ -65,7 +65,8 @@ class PlatformCompany {
 
     return PlatformCompany(
       id: company['id']?.toString() ?? '',
-      name: company['name']?.toString() ??
+      name:
+          company['name']?.toString() ??
           company['company_name']?.toString() ??
           '-',
       status: company['status']?.toString() ?? 'unknown',
@@ -74,8 +75,8 @@ class PlatformCompany {
       plan: planValue is Map
           ? planValue['name']?.toString() ?? 'Plan'
           : company['plan_name']?.toString() ??
-              company['plan']?.toString() ??
-              'Plan',
+                company['plan']?.toString() ??
+                'Plan',
       createdAt: company['created_at']?.toString() ?? '',
     );
   }
@@ -169,10 +170,10 @@ class PlatformCompanyHealth {
           (onboarding['progress_percent'] as num?)?.toInt() ?? 0,
       nextActions: actions is List
           ? actions
-              .whereType<Map>()
-              .map((item) => item['label']?.toString() ?? '')
-              .where((label) => label.isNotEmpty)
-              .toList()
+                .whereType<Map>()
+                .map((item) => item['label']?.toString() ?? '')
+                .where((label) => label.isNotEmpty)
+                .toList()
           : const [],
     );
   }

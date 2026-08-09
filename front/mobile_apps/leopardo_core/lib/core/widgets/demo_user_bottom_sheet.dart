@@ -107,22 +107,20 @@ Future<DemoUser?> showDemoUserBottomSheet(
   BuildContext context, {
   Set<String>? allowedRoles,
 }) {
-  final companies =
-      allowedRoles == null
-          ? demoCompanies
-          : demoCompanies
-              .map(
-                (company) => DemoCompany(
-                  name: company.name,
-                  country: company.country,
-                  users:
-                      company.users
-                          .where((user) => allowedRoles.contains(user.role))
-                          .toList(),
-                ),
-              )
-              .where((company) => company.users.isNotEmpty)
-              .toList();
+  final companies = allowedRoles == null
+      ? demoCompanies
+      : demoCompanies
+            .map(
+              (company) => DemoCompany(
+                name: company.name,
+                country: company.country,
+                users: company.users
+                    .where((user) => allowedRoles.contains(user.role))
+                    .toList(),
+              ),
+            )
+            .where((company) => company.users.isNotEmpty)
+            .toList();
 
   return showModalBottomSheet<DemoUser>(
     context: context,
@@ -131,132 +129,122 @@ Future<DemoUser?> showDemoUserBottomSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder:
-        (context) => DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          maxChildSize: 0.9,
-          minChildSize: 0.4,
-          expand: false,
-          builder:
-              (context, scrollController) => Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 12, bottom: 8),
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.borderFor(context),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+    builder: (context) => DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      maxChildSize: 0.9,
+      minChildSize: 0.4,
+      expand: false,
+      builder: (context, scrollController) => Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.borderFor(context),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Choisir un compte demo',
+                  style: AppTypography.title.copyWith(
+                    color: AppColors.textPrimaryFor(context),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
+                ),
+                IconButton(
+                  tooltip: 'Fermer',
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.builder(
+              controller: scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: companies.length,
+              itemBuilder: (context, companyIndex) {
+                final company = companies[companyIndex];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (companyIndex > 0) const SizedBox(height: 16),
+                    Text(
+                      '${company.name} (${company.country})',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondaryFor(context),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Choisir un compte demo',
-                          style: AppTypography.title.copyWith(
-                            color: AppColors.textPrimaryFor(context),
-                          ),
-                        ),
-                        IconButton(
-                          tooltip: 'Fermer',
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      padding: const EdgeInsets.all(16),
-                      itemCount: companies.length,
-                      itemBuilder: (context, companyIndex) {
-                        final company = companies[companyIndex];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (companyIndex > 0) const SizedBox(height: 16),
-                            Text(
-                              '${company.name} (${company.country})',
-                              style: AppTypography.caption.copyWith(
-                                color: AppColors.textSecondaryFor(context),
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
+                    const SizedBox(height: 8),
+                    ...company.users.map(
+                      (user) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: () => Navigator.pop(context, user),
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: AppColors.borderFor(context),
+                                ),
+                                borderRadius: BorderRadius.circular(14),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            ...company.users.map(
-                              (user) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(14),
-                                    onTap: () => Navigator.pop(context, user),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(14),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: AppColors.borderFor(context),
-                                        ),
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  user.name,
-                                                  style: AppTypography.body
-                                                      .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            AppColors.textPrimaryFor(
-                                                              context,
-                                                            ),
-                                                      ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  user.email,
-                                                  style: AppTypography.caption
-                                                      .copyWith(
-                                                        color:
-                                                            AppColors.textSecondaryFor(
-                                                              context,
-                                                            ),
-                                                      ),
-                                                ),
-                                              ],
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          user.name,
+                                          style: AppTypography.body.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.textPrimaryFor(
+                                              context,
                                             ),
                                           ),
-                                          _RoleBadge(user: user),
-                                        ],
-                                      ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          user.email,
+                                          style: AppTypography.caption.copyWith(
+                                            color: AppColors.textSecondaryFor(
+                                              context,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
+                                  _RoleBadge(user: user),
+                                ],
                               ),
                             ),
-                          ],
-                        );
-                      },
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-        ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }
 

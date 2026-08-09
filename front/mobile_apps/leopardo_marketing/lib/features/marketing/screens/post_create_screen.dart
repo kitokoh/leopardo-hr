@@ -78,17 +78,26 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Plateformes',
-                style: AppTypography.labelMedium(context),
-              ),
+              Text('Plateformes', style: AppTypography.labelMedium(context)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildPlatformToggle('LinkedIn', _postLinkedIn, (val) => setState(() => _postLinkedIn = val)),
-                  _buildPlatformToggle('Meta', _postFacebook, (val) => setState(() => _postFacebook = val)),
-                  _buildPlatformToggle('X', _postX, (val) => setState(() => _postX = val)),
+                  _buildPlatformToggle(
+                    'LinkedIn',
+                    _postLinkedIn,
+                    (val) => setState(() => _postLinkedIn = val),
+                  ),
+                  _buildPlatformToggle(
+                    'Meta',
+                    _postFacebook,
+                    (val) => setState(() => _postFacebook = val),
+                  ),
+                  _buildPlatformToggle(
+                    'X',
+                    _postX,
+                    (val) => setState(() => _postX = val),
+                  ),
                 ],
               ),
             ],
@@ -116,7 +125,10 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
                     onPressed: _pickMedia,
                     color: AppColors.primary,
                   ),
-                  Text('${_mediaFiles.length}/4 Médias', style: AppTypography.labelSmall(context)),
+                  Text(
+                    '${_mediaFiles.length}/4 Médias',
+                    style: AppTypography.labelSmall(context),
+                  ),
                 ],
               ),
             ],
@@ -153,7 +165,11 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
     );
   }
 
-  Widget _buildPlatformToggle(String label, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildPlatformToggle(
+    String label,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     return FilterChip(
       label: Text(label),
       selected: value,

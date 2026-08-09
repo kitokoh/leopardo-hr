@@ -91,7 +91,8 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel = (stats['today'] as String?) ??
+    final dateLabel =
+        (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {
@@ -172,7 +173,10 @@ class _StatCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$value', style: AppTypography.title.copyWith(color: color, fontSize: 28)),
+              Text(
+                '$value',
+                style: AppTypography.title.copyWith(color: color, fontSize: 28),
+              ),
               Icon(icon, color: color.withValues(alpha: 0.8), size: 24),
             ],
           ),

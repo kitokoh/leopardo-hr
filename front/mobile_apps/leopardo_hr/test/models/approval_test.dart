@@ -36,9 +36,7 @@ void main() {
     });
 
     test('fromJson defaults missing optional fields', () {
-      final approval = Approval.fromJson({
-        'id': 3,
-      });
+      final approval = Approval.fromJson({'id': 3});
 
       expect(approval.type, '');
       expect(approval.requesterName, '');

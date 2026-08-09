@@ -465,10 +465,11 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       text: (schedule?.overtimeThresholdWeekly ?? 40).toStringAsFixed(0),
     );
     _leaveDaysCtrl = TextEditingController(
-      text: (schedule?.leaveRules.isNotEmpty == true
-              ? schedule!.leaveRules.first.daysPerYear ?? 21
-              : 21)
-          .toStringAsFixed(0),
+      text:
+          (schedule?.leaveRules.isNotEmpty == true
+                  ? schedule!.leaveRules.first.daysPerYear ?? 21
+                  : 21)
+              .toStringAsFixed(0),
     );
     _notesCtrl = TextEditingController(text: schedule?.assignmentNotes ?? '');
     _startTime = _parseTime(schedule?.startTime ?? '08:00');
@@ -925,4 +926,3 @@ class _TimeButton extends StatelessWidget {
     );
   }
 }
-

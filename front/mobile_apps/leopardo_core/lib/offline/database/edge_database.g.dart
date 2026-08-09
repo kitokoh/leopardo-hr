@@ -88,10 +88,12 @@ class LocalAttendanceLog extends DataClass
           : Value(checkOut),
       method: Value(method),
       workType: Value(workType),
-      gpsLat:
-          gpsLat == null && nullToAbsent ? const Value.absent() : Value(gpsLat),
-      gpsLng:
-          gpsLng == null && nullToAbsent ? const Value.absent() : Value(gpsLng),
+      gpsLat: gpsLat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsLat),
+      gpsLng: gpsLng == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsLng),
       status: Value(status),
       syncStatus: Value(syncStatus),
       externalEventId: externalEventId == null && nullToAbsent
@@ -102,8 +104,10 @@ class LocalAttendanceLog extends DataClass
     );
   }
 
-  factory LocalAttendanceLog.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory LocalAttendanceLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalAttendanceLog(
       id: serializer.fromJson<String>(json['id']),
@@ -159,25 +163,24 @@ class LocalAttendanceLog extends DataClass
     Value<String?> externalEventId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) =>
-      LocalAttendanceLog(
-        id: id ?? this.id,
-        employeeId: employeeId ?? this.employeeId,
-        companyId: companyId ?? this.companyId,
-        checkIn: checkIn ?? this.checkIn,
-        checkOut: checkOut.present ? checkOut.value : this.checkOut,
-        method: method ?? this.method,
-        workType: workType ?? this.workType,
-        gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
-        gpsLng: gpsLng.present ? gpsLng.value : this.gpsLng,
-        status: status ?? this.status,
-        syncStatus: syncStatus ?? this.syncStatus,
-        externalEventId: externalEventId.present
-            ? externalEventId.value
-            : this.externalEventId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => LocalAttendanceLog(
+    id: id ?? this.id,
+    employeeId: employeeId ?? this.employeeId,
+    companyId: companyId ?? this.companyId,
+    checkIn: checkIn ?? this.checkIn,
+    checkOut: checkOut.present ? checkOut.value : this.checkOut,
+    method: method ?? this.method,
+    workType: workType ?? this.workType,
+    gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
+    gpsLng: gpsLng.present ? gpsLng.value : this.gpsLng,
+    status: status ?? this.status,
+    syncStatus: syncStatus ?? this.syncStatus,
+    externalEventId: externalEventId.present
+        ? externalEventId.value
+        : this.externalEventId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   @override
   String toString() {
@@ -201,9 +204,22 @@ class LocalAttendanceLog extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, employeeId, companyId, checkIn, checkOut,
-      method, workType, gpsLat, gpsLng, status, syncStatus, externalEventId,
-      createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    employeeId,
+    companyId,
+    checkIn,
+    checkOut,
+    method,
+    workType,
+    gpsLat,
+    gpsLng,
+    status,
+    syncStatus,
+    externalEventId,
+    createdAt,
+    updatedAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -225,8 +241,7 @@ class LocalAttendanceLog extends DataClass
           other.updatedAt == this.updatedAt);
 }
 
-class LocalAttendanceLogsCompanion
-    extends UpdateCompanion<LocalAttendanceLog> {
+class LocalAttendanceLogsCompanion extends UpdateCompanion<LocalAttendanceLog> {
   final Value<String> id;
   final Value<String> employeeId;
   final Value<String> companyId;
@@ -274,20 +289,20 @@ class LocalAttendanceLogsCompanion
     Value<String?> externalEventId = const Value.absent(),
     Value<DateTime> createdAt = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  })  : id = id,
-        employeeId = Value(employeeId),
-        companyId = Value(companyId),
-        checkIn = Value(checkIn),
-        checkOut = checkOut,
-        method = method,
-        workType = workType,
-        gpsLat = gpsLat,
-        gpsLng = gpsLng,
-        status = status,
-        syncStatus = syncStatus,
-        externalEventId = externalEventId,
-        createdAt = createdAt,
-        updatedAt = updatedAt;
+  }) : id = id,
+       employeeId = Value(employeeId),
+       companyId = Value(companyId),
+       checkIn = Value(checkIn),
+       checkOut = checkOut,
+       method = method,
+       workType = workType,
+       gpsLat = gpsLat,
+       gpsLng = gpsLng,
+       status = status,
+       syncStatus = syncStatus,
+       externalEventId = externalEventId,
+       createdAt = createdAt,
+       updatedAt = updatedAt;
 
   static Insertable<LocalAttendanceLog> custom({
     Expression<String>? id,
@@ -361,8 +376,10 @@ class LocalAttendanceLogsCompanion
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<String>(id.value);
-    if (employeeId.present) map['employee_id'] = Variable<String>(employeeId.value);
-    if (companyId.present) map['company_id'] = Variable<String>(companyId.value);
+    if (employeeId.present)
+      map['employee_id'] = Variable<String>(employeeId.value);
+    if (companyId.present)
+      map['company_id'] = Variable<String>(companyId.value);
     if (checkIn.present) map['check_in'] = Variable<DateTime>(checkIn.value);
     if (checkOut.present) map['check_out'] = Variable<DateTime>(checkOut.value);
     if (method.present) map['method'] = Variable<String>(method.value);
@@ -370,12 +387,15 @@ class LocalAttendanceLogsCompanion
     if (gpsLat.present) map['gps_lat'] = Variable<double>(gpsLat.value);
     if (gpsLng.present) map['gps_lng'] = Variable<double>(gpsLng.value);
     if (status.present) map['status'] = Variable<String>(status.value);
-    if (syncStatus.present) map['sync_status'] = Variable<String>(syncStatus.value);
+    if (syncStatus.present)
+      map['sync_status'] = Variable<String>(syncStatus.value);
     if (externalEventId.present) {
       map['external_event_id'] = Variable<String>(externalEventId.value);
     }
-    if (createdAt.present) map['created_at'] = Variable<DateTime>(createdAt.value);
-    if (updatedAt.present) map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (createdAt.present)
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (updatedAt.present)
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     return map;
   }
 
@@ -431,115 +451,185 @@ class $LocalAttendanceLogsTable extends LocalAttendanceLogs
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      clientDefault: () => _uuid());
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => _uuid(),
+  );
 
-  static const VerificationMeta _employeeIdMeta =
-      const VerificationMeta('employeeId');
+  static const VerificationMeta _employeeIdMeta = const VerificationMeta(
+    'employeeId',
+  );
   @override
   late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
-      'employee_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'employee_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
-  static const VerificationMeta _companyIdMeta =
-      const VerificationMeta('companyId');
+  static const VerificationMeta _companyIdMeta = const VerificationMeta(
+    'companyId',
+  );
   @override
   late final GeneratedColumn<String> companyId = GeneratedColumn<String>(
-      'company_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'company_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
-  static const VerificationMeta _checkInMeta =
-      const VerificationMeta('checkIn');
+  static const VerificationMeta _checkInMeta = const VerificationMeta(
+    'checkIn',
+  );
   @override
   late final GeneratedColumn<DateTime> checkIn = GeneratedColumn<DateTime>(
-      'check_in', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'check_in',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
 
-  static const VerificationMeta _checkOutMeta =
-      const VerificationMeta('checkOut');
+  static const VerificationMeta _checkOutMeta = const VerificationMeta(
+    'checkOut',
+  );
   @override
   late final GeneratedColumn<DateTime> checkOut = GeneratedColumn<DateTime>(
-      'check_out', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'check_out',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
 
   static const VerificationMeta _methodMeta = const VerificationMeta('method');
   @override
   late final GeneratedColumn<String> method = GeneratedColumn<String>(
-      'method', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('manual'));
+    'method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('manual'),
+  );
 
-  static const VerificationMeta _workTypeMeta =
-      const VerificationMeta('workType');
+  static const VerificationMeta _workTypeMeta = const VerificationMeta(
+    'workType',
+  );
   @override
   late final GeneratedColumn<String> workType = GeneratedColumn<String>(
-      'work_type', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('onsite'));
+    'work_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('onsite'),
+  );
 
   static const VerificationMeta _gpsLatMeta = const VerificationMeta('gpsLat');
   @override
   late final GeneratedColumn<double> gpsLat = GeneratedColumn<double>(
-      'gps_lat', aliasedName, true,
-      type: DriftSqlType.double, requiredDuringInsert: false);
+    'gps_lat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
 
   static const VerificationMeta _gpsLngMeta = const VerificationMeta('gpsLng');
   @override
   late final GeneratedColumn<double> gpsLng = GeneratedColumn<double>(
-      'gps_lng', aliasedName, true,
-      type: DriftSqlType.double, requiredDuringInsert: false);
+    'gps_lng',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
 
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
-      'status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('present'));
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('present'),
+  );
 
-  static const VerificationMeta _syncStatusMeta =
-      const VerificationMeta('syncStatus');
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
   @override
   late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-      'sync_status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('pending'));
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
 
-  static const VerificationMeta _externalEventIdMeta =
-      const VerificationMeta('externalEventId');
+  static const VerificationMeta _externalEventIdMeta = const VerificationMeta(
+    'externalEventId',
+  );
   @override
   late final GeneratedColumn<String> externalEventId = GeneratedColumn<String>(
-      'external_event_id', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'external_event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
   @override
   List<GeneratedColumn> get $columns => [
-        id, employeeId, companyId, checkIn, checkOut, method, workType,
-        gpsLat, gpsLng, status, syncStatus, externalEventId, createdAt, updatedAt,
-      ];
+    id,
+    employeeId,
+    companyId,
+    checkIn,
+    checkOut,
+    method,
+    workType,
+    gpsLat,
+    gpsLng,
+    status,
+    syncStatus,
+    externalEventId,
+    createdAt,
+    updatedAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -551,72 +641,100 @@ class $LocalAttendanceLogsTable extends LocalAttendanceLogs
 
   @override
   VerificationContext validateIntegrity(
-      Insertable<LocalAttendanceLog> instance,
-      {bool isInserting = false}) {
+    Insertable<LocalAttendanceLog> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('employee_id')) {
-      context.handle(_employeeIdMeta,
-          employeeId.isAcceptableOrUnknown(data['employee_id']!, _employeeIdMeta));
+      context.handle(
+        _employeeIdMeta,
+        employeeId.isAcceptableOrUnknown(data['employee_id']!, _employeeIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_employeeIdMeta);
     }
     if (data.containsKey('company_id')) {
-      context.handle(_companyIdMeta,
-          companyId.isAcceptableOrUnknown(data['company_id']!, _companyIdMeta));
+      context.handle(
+        _companyIdMeta,
+        companyId.isAcceptableOrUnknown(data['company_id']!, _companyIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_companyIdMeta);
     }
     if (data.containsKey('check_in')) {
-      context.handle(_checkInMeta,
-          checkIn.isAcceptableOrUnknown(data['check_in']!, _checkInMeta));
+      context.handle(
+        _checkInMeta,
+        checkIn.isAcceptableOrUnknown(data['check_in']!, _checkInMeta),
+      );
     } else if (isInserting) {
       context.missing(_checkInMeta);
     }
     if (data.containsKey('check_out')) {
-      context.handle(_checkOutMeta,
-          checkOut.isAcceptableOrUnknown(data['check_out']!, _checkOutMeta));
+      context.handle(
+        _checkOutMeta,
+        checkOut.isAcceptableOrUnknown(data['check_out']!, _checkOutMeta),
+      );
     }
     if (data.containsKey('method')) {
       context.handle(
-          _methodMeta, method.isAcceptableOrUnknown(data['method']!, _methodMeta));
+        _methodMeta,
+        method.isAcceptableOrUnknown(data['method']!, _methodMeta),
+      );
     }
     if (data.containsKey('work_type')) {
-      context.handle(_workTypeMeta,
-          workType.isAcceptableOrUnknown(data['work_type']!, _workTypeMeta));
+      context.handle(
+        _workTypeMeta,
+        workType.isAcceptableOrUnknown(data['work_type']!, _workTypeMeta),
+      );
     }
     if (data.containsKey('gps_lat')) {
       context.handle(
-          _gpsLatMeta, gpsLat.isAcceptableOrUnknown(data['gps_lat']!, _gpsLatMeta));
+        _gpsLatMeta,
+        gpsLat.isAcceptableOrUnknown(data['gps_lat']!, _gpsLatMeta),
+      );
     }
     if (data.containsKey('gps_lng')) {
       context.handle(
-          _gpsLngMeta, gpsLng.isAcceptableOrUnknown(data['gps_lng']!, _gpsLngMeta));
+        _gpsLngMeta,
+        gpsLng.isAcceptableOrUnknown(data['gps_lng']!, _gpsLngMeta),
+      );
     }
     if (data.containsKey('status')) {
       context.handle(
-          _statusMeta, status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
     }
     if (data.containsKey('sync_status')) {
-      context.handle(_syncStatusMeta,
-          syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta));
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
     }
     if (data.containsKey('external_event_id')) {
       context.handle(
+        _externalEventIdMeta,
+        externalEventId.isAcceptableOrUnknown(
+          data['external_event_id']!,
           _externalEventIdMeta,
-          externalEventId.isAcceptableOrUnknown(
-              data['external_event_id']!, _externalEventIdMeta));
+        ),
+      );
     }
     if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
     }
     if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
     }
     return context;
   }
@@ -628,34 +746,62 @@ class $LocalAttendanceLogsTable extends LocalAttendanceLogs
   LocalAttendanceLog map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LocalAttendanceLog(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      employeeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}employee_id'])!,
-      companyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}company_id'])!,
-      checkIn: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}check_in'])!,
-      checkOut: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}check_out']),
-      method: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}method'])!,
-      workType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}work_type'])!,
-      gpsLat: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}gps_lat']),
-      gpsLng: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}gps_lng']),
-      status: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      syncStatus: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sync_status'])!,
-      externalEventId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}external_event_id']),
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      employeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}employee_id'],
+      )!,
+      companyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_id'],
+      )!,
+      checkIn: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}check_in'],
+      )!,
+      checkOut: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}check_out'],
+      ),
+      method: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method'],
+      )!,
+      workType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}work_type'],
+      )!,
+      gpsLat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_lat'],
+      ),
+      gpsLng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_lng'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      externalEventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}external_event_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -721,8 +867,9 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
       absenceTypeId: Value(absenceTypeId),
       startDate: Value(startDate),
       endDate: Value(endDate),
-      reason:
-          reason == null && nullToAbsent ? const Value.absent() : Value(reason),
+      reason: reason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reason),
       status: Value(status),
       syncStatus: Value(syncStatus),
       createdAt: Value(createdAt),
@@ -730,8 +877,10 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
     );
   }
 
-  factory LocalAbsence.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory LocalAbsence.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalAbsence(
       id: serializer.fromJson<String>(json['id']),
@@ -778,20 +927,19 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
     String? syncStatus,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) =>
-      LocalAbsence(
-        id: id ?? this.id,
-        employeeId: employeeId ?? this.employeeId,
-        companyId: companyId ?? this.companyId,
-        absenceTypeId: absenceTypeId ?? this.absenceTypeId,
-        startDate: startDate ?? this.startDate,
-        endDate: endDate ?? this.endDate,
-        reason: reason.present ? reason.value : this.reason,
-        status: status ?? this.status,
-        syncStatus: syncStatus ?? this.syncStatus,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => LocalAbsence(
+    id: id ?? this.id,
+    employeeId: employeeId ?? this.employeeId,
+    companyId: companyId ?? this.companyId,
+    absenceTypeId: absenceTypeId ?? this.absenceTypeId,
+    startDate: startDate ?? this.startDate,
+    endDate: endDate ?? this.endDate,
+    reason: reason.present ? reason.value : this.reason,
+    status: status ?? this.status,
+    syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   @override
   String toString() {
@@ -812,8 +960,19 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
   }
 
   @override
-  int get hashCode => Object.hash(id, employeeId, companyId, absenceTypeId,
-      startDate, endDate, reason, status, syncStatus, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    employeeId,
+    companyId,
+    absenceTypeId,
+    startDate,
+    endDate,
+    reason,
+    status,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -871,32 +1030,39 @@ class LocalAbsencesCompanion extends UpdateCompanion<LocalAbsence> {
     Value<String> syncStatus = const Value.absent(),
     Value<DateTime> createdAt = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  })  : id = id,
-        employeeId = Value(employeeId),
-        companyId = Value(companyId),
-        absenceTypeId = Value(absenceTypeId),
-        startDate = Value(startDate),
-        endDate = Value(endDate),
-        reason = reason,
-        status = status,
-        syncStatus = syncStatus,
-        createdAt = createdAt,
-        updatedAt = updatedAt;
+  }) : id = id,
+       employeeId = Value(employeeId),
+       companyId = Value(companyId),
+       absenceTypeId = Value(absenceTypeId),
+       startDate = Value(startDate),
+       endDate = Value(endDate),
+       reason = reason,
+       status = status,
+       syncStatus = syncStatus,
+       createdAt = createdAt,
+       updatedAt = updatedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<String>(id.value);
-    if (employeeId.present) map['employee_id'] = Variable<String>(employeeId.value);
-    if (companyId.present) map['company_id'] = Variable<String>(companyId.value);
-    if (absenceTypeId.present) map['absence_type_id'] = Variable<String>(absenceTypeId.value);
-    if (startDate.present) map['start_date'] = Variable<DateTime>(startDate.value);
+    if (employeeId.present)
+      map['employee_id'] = Variable<String>(employeeId.value);
+    if (companyId.present)
+      map['company_id'] = Variable<String>(companyId.value);
+    if (absenceTypeId.present)
+      map['absence_type_id'] = Variable<String>(absenceTypeId.value);
+    if (startDate.present)
+      map['start_date'] = Variable<DateTime>(startDate.value);
     if (endDate.present) map['end_date'] = Variable<DateTime>(endDate.value);
     if (reason.present) map['reason'] = Variable<String>(reason.value);
     if (status.present) map['status'] = Variable<String>(status.value);
-    if (syncStatus.present) map['sync_status'] = Variable<String>(syncStatus.value);
-    if (createdAt.present) map['created_at'] = Variable<DateTime>(createdAt.value);
-    if (updatedAt.present) map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (syncStatus.present)
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    if (createdAt.present)
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (updatedAt.present)
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     return map;
   }
 
@@ -929,74 +1095,122 @@ class $LocalAbsencesTable extends LocalAbsences
 
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      clientDefault: () => _uuid());
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => _uuid(),
+  );
 
   @override
   late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
-      'employee_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'employee_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> companyId = GeneratedColumn<String>(
-      'company_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'company_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> absenceTypeId = GeneratedColumn<String>(
-      'absence_type_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'absence_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
-      'start_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<DateTime> endDate = GeneratedColumn<DateTime>(
-      'end_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'end_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> reason = GeneratedColumn<String>(
-      'reason', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
-      'status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('pending'));
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
 
   @override
   late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-      'sync_status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('pending'));
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
 
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
   @override
   List<GeneratedColumn> get $columns => [
-        id, employeeId, companyId, absenceTypeId, startDate, endDate,
-        reason, status, syncStatus, createdAt, updatedAt,
-      ];
+    id,
+    employeeId,
+    companyId,
+    absenceTypeId,
+    startDate,
+    endDate,
+    reason,
+    status,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1007,41 +1221,70 @@ class $LocalAbsencesTable extends LocalAbsences
   static const String $name = 'local_absences';
 
   @override
-  VerificationContext validateIntegrity(Insertable<LocalAbsence> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<LocalAbsence> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(
-          const VerificationMeta('id'), id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')));
+        const VerificationMeta('id'),
+        id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')),
+      );
     }
     if (data.containsKey('employee_id')) {
-      context.handle(const VerificationMeta('employeeId'),
-          employeeId.isAcceptableOrUnknown(data['employee_id']!, const VerificationMeta('employeeId')));
+      context.handle(
+        const VerificationMeta('employeeId'),
+        employeeId.isAcceptableOrUnknown(
+          data['employee_id']!,
+          const VerificationMeta('employeeId'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('employeeId'));
     }
     if (data.containsKey('company_id')) {
-      context.handle(const VerificationMeta('companyId'),
-          companyId.isAcceptableOrUnknown(data['company_id']!, const VerificationMeta('companyId')));
+      context.handle(
+        const VerificationMeta('companyId'),
+        companyId.isAcceptableOrUnknown(
+          data['company_id']!,
+          const VerificationMeta('companyId'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('companyId'));
     }
     if (data.containsKey('absence_type_id')) {
-      context.handle(const VerificationMeta('absenceTypeId'),
-          absenceTypeId.isAcceptableOrUnknown(data['absence_type_id']!, const VerificationMeta('absenceTypeId')));
+      context.handle(
+        const VerificationMeta('absenceTypeId'),
+        absenceTypeId.isAcceptableOrUnknown(
+          data['absence_type_id']!,
+          const VerificationMeta('absenceTypeId'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('absenceTypeId'));
     }
     if (data.containsKey('start_date')) {
-      context.handle(const VerificationMeta('startDate'),
-          startDate.isAcceptableOrUnknown(data['start_date']!, const VerificationMeta('startDate')));
+      context.handle(
+        const VerificationMeta('startDate'),
+        startDate.isAcceptableOrUnknown(
+          data['start_date']!,
+          const VerificationMeta('startDate'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('startDate'));
     }
     if (data.containsKey('end_date')) {
-      context.handle(const VerificationMeta('endDate'),
-          endDate.isAcceptableOrUnknown(data['end_date']!, const VerificationMeta('endDate')));
+      context.handle(
+        const VerificationMeta('endDate'),
+        endDate.isAcceptableOrUnknown(
+          data['end_date']!,
+          const VerificationMeta('endDate'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('endDate'));
     }
@@ -1055,28 +1298,50 @@ class $LocalAbsencesTable extends LocalAbsences
   LocalAbsence map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LocalAbsence(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      employeeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}employee_id'])!,
-      companyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}company_id'])!,
-      absenceTypeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}absence_type_id'])!,
-      startDate: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}start_date'])!,
-      endDate: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}end_date'])!,
-      reason: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}reason']),
-      status: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      syncStatus: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sync_status'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      employeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}employee_id'],
+      )!,
+      companyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_id'],
+      )!,
+      absenceTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}absence_type_id'],
+      )!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_date'],
+      )!,
+      endDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end_date'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -1128,12 +1393,16 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
     map['last_name'] = Variable<String>(lastName);
     map['email'] = Variable<String>(email);
     if (!nullToAbsent || phone != null) map['phone'] = Variable<String>(phone);
-    if (!nullToAbsent || departmentId != null) map['department_id'] = Variable<String>(departmentId);
-    if (!nullToAbsent || positionId != null) map['position_id'] = Variable<String>(positionId);
+    if (!nullToAbsent || departmentId != null)
+      map['department_id'] = Variable<String>(departmentId);
+    if (!nullToAbsent || positionId != null)
+      map['position_id'] = Variable<String>(positionId);
     map['role'] = Variable<String>(role);
     map['status'] = Variable<String>(status);
-    if (!nullToAbsent || faceEncoding != null) map['face_encoding'] = Variable<String>(faceEncoding);
-    if (!nullToAbsent || biometricId != null) map['biometric_id'] = Variable<String>(biometricId);
+    if (!nullToAbsent || faceEncoding != null)
+      map['face_encoding'] = Variable<String>(faceEncoding);
+    if (!nullToAbsent || biometricId != null)
+      map['biometric_id'] = Variable<String>(biometricId);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -1145,19 +1414,31 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
       firstName: Value(firstName),
       lastName: Value(lastName),
       email: Value(email),
-      phone: phone == null && nullToAbsent ? const Value.absent() : Value(phone),
-      departmentId: departmentId == null && nullToAbsent ? const Value.absent() : Value(departmentId),
-      positionId: positionId == null && nullToAbsent ? const Value.absent() : Value(positionId),
+      phone: phone == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phone),
+      departmentId: departmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(departmentId),
+      positionId: positionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(positionId),
       role: Value(role),
       status: Value(status),
-      faceEncoding: faceEncoding == null && nullToAbsent ? const Value.absent() : Value(faceEncoding),
-      biometricId: biometricId == null && nullToAbsent ? const Value.absent() : Value(biometricId),
+      faceEncoding: faceEncoding == null && nullToAbsent
+          ? const Value.absent()
+          : Value(faceEncoding),
+      biometricId: biometricId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(biometricId),
       updatedAt: Value(updatedAt),
     );
   }
 
-  factory LocalEmployee.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory LocalEmployee.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalEmployee(
       id: serializer.fromJson<String>(json['id']),
@@ -1210,22 +1491,21 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
     Value<String?> faceEncoding = const Value.absent(),
     Value<String?> biometricId = const Value.absent(),
     DateTime? updatedAt,
-  }) =>
-      LocalEmployee(
-        id: id ?? this.id,
-        companyId: companyId ?? this.companyId,
-        firstName: firstName ?? this.firstName,
-        lastName: lastName ?? this.lastName,
-        email: email ?? this.email,
-        phone: phone.present ? phone.value : this.phone,
-        departmentId: departmentId.present ? departmentId.value : this.departmentId,
-        positionId: positionId.present ? positionId.value : this.positionId,
-        role: role ?? this.role,
-        status: status ?? this.status,
-        faceEncoding: faceEncoding.present ? faceEncoding.value : this.faceEncoding,
-        biometricId: biometricId.present ? biometricId.value : this.biometricId,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => LocalEmployee(
+    id: id ?? this.id,
+    companyId: companyId ?? this.companyId,
+    firstName: firstName ?? this.firstName,
+    lastName: lastName ?? this.lastName,
+    email: email ?? this.email,
+    phone: phone.present ? phone.value : this.phone,
+    departmentId: departmentId.present ? departmentId.value : this.departmentId,
+    positionId: positionId.present ? positionId.value : this.positionId,
+    role: role ?? this.role,
+    status: status ?? this.status,
+    faceEncoding: faceEncoding.present ? faceEncoding.value : this.faceEncoding,
+    biometricId: biometricId.present ? biometricId.value : this.biometricId,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   @override
   String toString() {
@@ -1248,9 +1528,21 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
   }
 
   @override
-  int get hashCode => Object.hash(id, companyId, firstName, lastName, email,
-      phone, departmentId, positionId, role, status, faceEncoding, biometricId,
-      updatedAt);
+  int get hashCode => Object.hash(
+    id,
+    companyId,
+    firstName,
+    lastName,
+    email,
+    phone,
+    departmentId,
+    positionId,
+    role,
+    status,
+    faceEncoding,
+    biometricId,
+    updatedAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -1316,36 +1608,43 @@ class LocalEmployeesCompanion extends UpdateCompanion<LocalEmployee> {
     Value<String?> faceEncoding = const Value.absent(),
     Value<String?> biometricId = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  })  : id = Value(id),
-        companyId = Value(companyId),
-        firstName = Value(firstName),
-        lastName = Value(lastName),
-        email = Value(email),
-        phone = phone,
-        departmentId = departmentId,
-        positionId = positionId,
-        role = role,
-        status = status,
-        faceEncoding = faceEncoding,
-        biometricId = biometricId,
-        updatedAt = updatedAt;
+  }) : id = Value(id),
+       companyId = Value(companyId),
+       firstName = Value(firstName),
+       lastName = Value(lastName),
+       email = Value(email),
+       phone = phone,
+       departmentId = departmentId,
+       positionId = positionId,
+       role = role,
+       status = status,
+       faceEncoding = faceEncoding,
+       biometricId = biometricId,
+       updatedAt = updatedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<String>(id.value);
-    if (companyId.present) map['company_id'] = Variable<String>(companyId.value);
-    if (firstName.present) map['first_name'] = Variable<String>(firstName.value);
+    if (companyId.present)
+      map['company_id'] = Variable<String>(companyId.value);
+    if (firstName.present)
+      map['first_name'] = Variable<String>(firstName.value);
     if (lastName.present) map['last_name'] = Variable<String>(lastName.value);
     if (email.present) map['email'] = Variable<String>(email.value);
     if (phone.present) map['phone'] = Variable<String>(phone.value);
-    if (departmentId.present) map['department_id'] = Variable<String>(departmentId.value);
-    if (positionId.present) map['position_id'] = Variable<String>(positionId.value);
+    if (departmentId.present)
+      map['department_id'] = Variable<String>(departmentId.value);
+    if (positionId.present)
+      map['position_id'] = Variable<String>(positionId.value);
     if (role.present) map['role'] = Variable<String>(role.value);
     if (status.present) map['status'] = Variable<String>(status.value);
-    if (faceEncoding.present) map['face_encoding'] = Variable<String>(faceEncoding.value);
-    if (biometricId.present) map['biometric_id'] = Variable<String>(biometricId.value);
-    if (updatedAt.present) map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (faceEncoding.present)
+      map['face_encoding'] = Variable<String>(faceEncoding.value);
+    if (biometricId.present)
+      map['biometric_id'] = Variable<String>(biometricId.value);
+    if (updatedAt.present)
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     return map;
   }
 
@@ -1380,80 +1679,140 @@ class $LocalEmployeesTable extends LocalEmployees
 
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> companyId = GeneratedColumn<String>(
-      'company_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'company_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
-      'first_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'first_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
-      'last_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'last_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
-      'email', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> phone = GeneratedColumn<String>(
-      'phone', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<String> departmentId = GeneratedColumn<String>(
-      'department_id', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'department_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<String> positionId = GeneratedColumn<String>(
-      'position_id', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'position_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<String> role = GeneratedColumn<String>(
-      'role', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('employee'));
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('employee'),
+  );
 
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
-      'status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('active'));
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
+  );
 
   @override
   late final GeneratedColumn<String> faceEncoding = GeneratedColumn<String>(
-      'face_encoding', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'face_encoding',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<String> biometricId = GeneratedColumn<String>(
-      'biometric_id', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'biometric_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
   @override
   List<GeneratedColumn> get $columns => [
-        id, companyId, firstName, lastName, email, phone, departmentId,
-        positionId, role, status, faceEncoding, biometricId, updatedAt,
-      ];
+    id,
+    companyId,
+    firstName,
+    lastName,
+    email,
+    phone,
+    departmentId,
+    positionId,
+    role,
+    status,
+    faceEncoding,
+    biometricId,
+    updatedAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1464,37 +1823,61 @@ class $LocalEmployeesTable extends LocalEmployees
   static const String $name = 'local_employees';
 
   @override
-  VerificationContext validateIntegrity(Insertable<LocalEmployee> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<LocalEmployee> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
-      context.handle(const VerificationMeta('id'),
-          id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')));
+      context.handle(
+        const VerificationMeta('id'),
+        id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('id'));
     }
     if (data.containsKey('company_id')) {
-      context.handle(const VerificationMeta('companyId'),
-          companyId.isAcceptableOrUnknown(data['company_id']!, const VerificationMeta('companyId')));
+      context.handle(
+        const VerificationMeta('companyId'),
+        companyId.isAcceptableOrUnknown(
+          data['company_id']!,
+          const VerificationMeta('companyId'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('companyId'));
     }
     if (data.containsKey('first_name')) {
-      context.handle(const VerificationMeta('firstName'),
-          firstName.isAcceptableOrUnknown(data['first_name']!, const VerificationMeta('firstName')));
+      context.handle(
+        const VerificationMeta('firstName'),
+        firstName.isAcceptableOrUnknown(
+          data['first_name']!,
+          const VerificationMeta('firstName'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('firstName'));
     }
     if (data.containsKey('last_name')) {
-      context.handle(const VerificationMeta('lastName'),
-          lastName.isAcceptableOrUnknown(data['last_name']!, const VerificationMeta('lastName')));
+      context.handle(
+        const VerificationMeta('lastName'),
+        lastName.isAcceptableOrUnknown(
+          data['last_name']!,
+          const VerificationMeta('lastName'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('lastName'));
     }
     if (data.containsKey('email')) {
-      context.handle(const VerificationMeta('email'),
-          email.isAcceptableOrUnknown(data['email']!, const VerificationMeta('email')));
+      context.handle(
+        const VerificationMeta('email'),
+        email.isAcceptableOrUnknown(
+          data['email']!,
+          const VerificationMeta('email'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('email'));
     }
@@ -1508,32 +1891,58 @@ class $LocalEmployeesTable extends LocalEmployees
   LocalEmployee map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LocalEmployee(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      companyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}company_id'])!,
-      firstName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}first_name'])!,
-      lastName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}last_name'])!,
-      email: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
-      phone: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}phone']),
-      departmentId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}department_id']),
-      positionId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}position_id']),
-      role: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
-      status: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      faceEncoding: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}face_encoding']),
-      biometricId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}biometric_id']),
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      companyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_id'],
+      )!,
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      )!,
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      ),
+      departmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}department_id'],
+      ),
+      positionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}position_id'],
+      ),
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      faceEncoding: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}face_encoding'],
+      ),
+      biometricId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}biometric_id'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -1602,8 +2011,10 @@ class LocalSyncQueueItem extends DataClass
     );
   }
 
-  factory LocalSyncQueueItem.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory LocalSyncQueueItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalSyncQueueItem(
       id: serializer.fromJson<String>(json['id']),
@@ -1644,18 +2055,17 @@ class LocalSyncQueueItem extends DataClass
     int? attemptCount,
     DateTime? createdAt,
     Value<DateTime?> syncedAt = const Value.absent(),
-  }) =>
-      LocalSyncQueueItem(
-        id: id ?? this.id,
-        entityType: entityType ?? this.entityType,
-        entityId: entityId ?? this.entityId,
-        operation: operation ?? this.operation,
-        payload: payload ?? this.payload,
-        status: status ?? this.status,
-        attemptCount: attemptCount ?? this.attemptCount,
-        createdAt: createdAt ?? this.createdAt,
-        syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
-      );
+  }) => LocalSyncQueueItem(
+    id: id ?? this.id,
+    entityType: entityType ?? this.entityType,
+    entityId: entityId ?? this.entityId,
+    operation: operation ?? this.operation,
+    payload: payload ?? this.payload,
+    status: status ?? this.status,
+    attemptCount: attemptCount ?? this.attemptCount,
+    createdAt: createdAt ?? this.createdAt,
+    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
+  );
 
   @override
   String toString() {
@@ -1674,8 +2084,17 @@ class LocalSyncQueueItem extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, entityType, entityId, operation, payload,
-      status, attemptCount, createdAt, syncedAt);
+  int get hashCode => Object.hash(
+    id,
+    entityType,
+    entityId,
+    operation,
+    payload,
+    status,
+    attemptCount,
+    createdAt,
+    syncedAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -1725,27 +2144,30 @@ class LocalSyncQueueCompanion extends UpdateCompanion<LocalSyncQueueItem> {
     Value<int> attemptCount = const Value.absent(),
     Value<DateTime> createdAt = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
-  })  : id = id,
-        entityType = Value(entityType),
-        entityId = Value(entityId),
-        operation = Value(operation),
-        payload = Value(payload),
-        status = status,
-        attemptCount = attemptCount,
-        createdAt = createdAt,
-        syncedAt = syncedAt;
+  }) : id = id,
+       entityType = Value(entityType),
+       entityId = Value(entityId),
+       operation = Value(operation),
+       payload = Value(payload),
+       status = status,
+       attemptCount = attemptCount,
+       createdAt = createdAt,
+       syncedAt = syncedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<String>(id.value);
-    if (entityType.present) map['entity_type'] = Variable<String>(entityType.value);
+    if (entityType.present)
+      map['entity_type'] = Variable<String>(entityType.value);
     if (entityId.present) map['entity_id'] = Variable<String>(entityId.value);
     if (operation.present) map['operation'] = Variable<String>(operation.value);
     if (payload.present) map['payload'] = Variable<String>(payload.value);
     if (status.present) map['status'] = Variable<String>(status.value);
-    if (attemptCount.present) map['attempt_count'] = Variable<int>(attemptCount.value);
-    if (createdAt.present) map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (attemptCount.present)
+      map['attempt_count'] = Variable<int>(attemptCount.value);
+    if (createdAt.present)
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     if (syncedAt.present) map['synced_at'] = Variable<DateTime>(syncedAt.value);
     return map;
   }
@@ -1777,62 +2199,101 @@ class $LocalSyncQueueTable extends LocalSyncQueue
 
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      clientDefault: () => _uuid());
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => _uuid(),
+  );
 
   @override
   late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
-      'entity_type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
-      'entity_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> operation = GeneratedColumn<String>(
-      'operation', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'operation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> payload = GeneratedColumn<String>(
-      'payload', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
-      'status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('pending'));
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
 
   @override
   late final GeneratedColumn<int> attemptCount = GeneratedColumn<int>(
-      'attempt_count', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
+    'attempt_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
 
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
   @override
   late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
-      'synced_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
 
   @override
   List<GeneratedColumn> get $columns => [
-        id, entityType, entityId, operation, payload, status, attemptCount,
-        createdAt, syncedAt,
-      ];
+    id,
+    entityType,
+    entityId,
+    operation,
+    payload,
+    status,
+    attemptCount,
+    createdAt,
+    syncedAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1843,35 +2304,59 @@ class $LocalSyncQueueTable extends LocalSyncQueue
   static const String $name = 'local_sync_queue';
 
   @override
-  VerificationContext validateIntegrity(Insertable<LocalSyncQueueItem> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<LocalSyncQueueItem> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
-      context.handle(const VerificationMeta('id'),
-          id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')));
+      context.handle(
+        const VerificationMeta('id'),
+        id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')),
+      );
     }
     if (data.containsKey('entity_type')) {
-      context.handle(const VerificationMeta('entityType'),
-          entityType.isAcceptableOrUnknown(data['entity_type']!, const VerificationMeta('entityType')));
+      context.handle(
+        const VerificationMeta('entityType'),
+        entityType.isAcceptableOrUnknown(
+          data['entity_type']!,
+          const VerificationMeta('entityType'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('entityType'));
     }
     if (data.containsKey('entity_id')) {
-      context.handle(const VerificationMeta('entityId'),
-          entityId.isAcceptableOrUnknown(data['entity_id']!, const VerificationMeta('entityId')));
+      context.handle(
+        const VerificationMeta('entityId'),
+        entityId.isAcceptableOrUnknown(
+          data['entity_id']!,
+          const VerificationMeta('entityId'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('entityId'));
     }
     if (data.containsKey('operation')) {
-      context.handle(const VerificationMeta('operation'),
-          operation.isAcceptableOrUnknown(data['operation']!, const VerificationMeta('operation')));
+      context.handle(
+        const VerificationMeta('operation'),
+        operation.isAcceptableOrUnknown(
+          data['operation']!,
+          const VerificationMeta('operation'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('operation'));
     }
     if (data.containsKey('payload')) {
-      context.handle(const VerificationMeta('payload'),
-          payload.isAcceptableOrUnknown(data['payload']!, const VerificationMeta('payload')));
+      context.handle(
+        const VerificationMeta('payload'),
+        payload.isAcceptableOrUnknown(
+          data['payload']!,
+          const VerificationMeta('payload'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('payload'));
     }
@@ -1885,24 +2370,42 @@ class $LocalSyncQueueTable extends LocalSyncQueue
   LocalSyncQueueItem map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LocalSyncQueueItem(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      entityType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}entity_type'])!,
-      entityId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}entity_id'])!,
-      operation: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}operation'])!,
-      payload: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}payload'])!,
-      status: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      attemptCount: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}attempt_count'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      syncedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}synced_at']),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      )!,
+      operation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}operation'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      attemptCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempt_count'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}synced_at'],
+      ),
     );
   }
 
@@ -1950,8 +2453,10 @@ class LocalDepartment extends DataClass implements Insertable<LocalDepartment> {
     );
   }
 
-  factory LocalDepartment.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory LocalDepartment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalDepartment(
       id: serializer.fromJson<String>(json['id']),
@@ -1980,14 +2485,13 @@ class LocalDepartment extends DataClass implements Insertable<LocalDepartment> {
     String? name,
     Value<String?> code = const Value.absent(),
     DateTime? updatedAt,
-  }) =>
-      LocalDepartment(
-        id: id ?? this.id,
-        companyId: companyId ?? this.companyId,
-        name: name ?? this.name,
-        code: code.present ? code.value : this.code,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => LocalDepartment(
+    id: id ?? this.id,
+    companyId: companyId ?? this.companyId,
+    name: name ?? this.name,
+    code: code.present ? code.value : this.code,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   @override
   String toString() {
@@ -2036,20 +2540,22 @@ class LocalDepartmentsCompanion extends UpdateCompanion<LocalDepartment> {
     required String name,
     Value<String?> code = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  })  : id = Value(id),
-        companyId = Value(companyId),
-        name = Value(name),
-        code = code,
-        updatedAt = updatedAt;
+  }) : id = Value(id),
+       companyId = Value(companyId),
+       name = Value(name),
+       code = code,
+       updatedAt = updatedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<String>(id.value);
-    if (companyId.present) map['company_id'] = Variable<String>(companyId.value);
+    if (companyId.present)
+      map['company_id'] = Variable<String>(companyId.value);
     if (name.present) map['name'] = Variable<String>(name.value);
     if (code.present) map['code'] = Variable<String>(code.value);
-    if (updatedAt.present) map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (updatedAt.present)
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     return map;
   }
 
@@ -2076,30 +2582,49 @@ class $LocalDepartmentsTable extends LocalDepartments
 
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> companyId = GeneratedColumn<String>(
-      'company_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'company_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      clientDefault: () => DateTime.now());
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
 
   @override
   List<GeneratedColumn> get $columns => [id, companyId, name, code, updatedAt];
@@ -2113,25 +2638,39 @@ class $LocalDepartmentsTable extends LocalDepartments
   static const String $name = 'local_departments';
 
   @override
-  VerificationContext validateIntegrity(Insertable<LocalDepartment> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<LocalDepartment> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
-      context.handle(const VerificationMeta('id'),
-          id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')));
+      context.handle(
+        const VerificationMeta('id'),
+        id.isAcceptableOrUnknown(data['id']!, const VerificationMeta('id')),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('id'));
     }
     if (data.containsKey('company_id')) {
-      context.handle(const VerificationMeta('companyId'),
-          companyId.isAcceptableOrUnknown(data['company_id']!, const VerificationMeta('companyId')));
+      context.handle(
+        const VerificationMeta('companyId'),
+        companyId.isAcceptableOrUnknown(
+          data['company_id']!,
+          const VerificationMeta('companyId'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('companyId'));
     }
     if (data.containsKey('name')) {
-      context.handle(const VerificationMeta('name'),
-          name.isAcceptableOrUnknown(data['name']!, const VerificationMeta('name')));
+      context.handle(
+        const VerificationMeta('name'),
+        name.isAcceptableOrUnknown(
+          data['name']!,
+          const VerificationMeta('name'),
+        ),
+      );
     } else if (isInserting) {
       context.missing(const VerificationMeta('name'));
     }
@@ -2145,16 +2684,26 @@ class $LocalDepartmentsTable extends LocalDepartments
   LocalDepartment map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LocalDepartment(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      companyId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}company_id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      code: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code']),
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      companyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -2174,8 +2723,9 @@ abstract class _$EdgeDatabase extends GeneratedDatabase {
   late final $LocalAbsencesTable localAbsences = $LocalAbsencesTable(this);
   late final $LocalEmployeesTable localEmployees = $LocalEmployeesTable(this);
   late final $LocalSyncQueueTable localSyncQueue = $LocalSyncQueueTable(this);
-  late final $LocalDepartmentsTable localDepartments =
-      $LocalDepartmentsTable(this);
+  late final $LocalDepartmentsTable localDepartments = $LocalDepartmentsTable(
+    this,
+  );
 
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -2183,10 +2733,10 @@ abstract class _$EdgeDatabase extends GeneratedDatabase {
 
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-        localAttendanceLogs,
-        localAbsences,
-        localEmployees,
-        localSyncQueue,
-        localDepartments,
-      ];
+    localAttendanceLogs,
+    localAbsences,
+    localEmployees,
+    localSyncQueue,
+    localDepartments,
+  ];
 }

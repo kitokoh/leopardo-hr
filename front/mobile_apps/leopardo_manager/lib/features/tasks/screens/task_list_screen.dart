@@ -119,17 +119,17 @@ class _TaskCard extends StatelessWidget {
   }
 
   static Color _priorityColor(String priority) => switch (priority) {
-        'urgent' || 'high' => AppColors.warning,
-        'low' => MobileSurface.secondary,
-        _ => AppColors.info,
-      };
+    'urgent' || 'high' => AppColors.warning,
+    'low' => MobileSurface.secondary,
+    _ => AppColors.info,
+  };
 
   static String _priorityLabel(String priority) => switch (priority) {
-        'urgent' => 'Urgent',
-        'high' => 'Haute',
-        'low' => 'Basse',
-        _ => 'Normale',
-      };
+    'urgent' => 'Urgent',
+    'high' => 'Haute',
+    'low' => 'Basse',
+    _ => 'Normale',
+  };
 }
 
 class _CreateTaskSheet extends ConsumerStatefulWidget {
@@ -388,7 +388,9 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(taskRepositoryProvider).create(
+      await ref
+          .read(taskRepositoryProvider)
+          .create(
             title: _title.text,
             description: _description.text,
             employeeId: _employeeId!,
@@ -507,4 +509,3 @@ class _TaskTemplate {
   final String priority;
   final int estimatedMinutes;
 }
-

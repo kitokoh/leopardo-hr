@@ -14,25 +14,21 @@ Feature _$FeatureFromJson(Map<String, dynamic> json) => Feature(
   methods: (json['methods'] as List<dynamic>).map((e) => e as String).toList(),
   parameters: json['parameters'] as Map<String, dynamic>,
   responseSchema: json['response_schema'] as Map<String, dynamic>,
-  permissions:
-      (json['permissions'] as List<dynamic>).map((e) => e as String).toList(),
+  permissions: (json['permissions'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
   minimumMobileVersion: json['mobile_version_min'] as String,
   maximumMobileVersion: json['mobile_version_max'] as String?,
   type: $enumDecode(_$FeatureTypeEnumMap, json['ui_type']),
-  formSchema:
-      json['form_schema'] == null
-          ? null
-          : FormSchema.fromJson(json['form_schema'] as Map<String, dynamic>),
-  listSchema:
-      json['list_schema'] == null
-          ? null
-          : ListSchema.fromJson(json['list_schema'] as Map<String, dynamic>),
-  detailSchema:
-      json['detail_schema'] == null
-          ? null
-          : DetailSchema.fromJson(
-            json['detail_schema'] as Map<String, dynamic>,
-          ),
+  formSchema: json['form_schema'] == null
+      ? null
+      : FormSchema.fromJson(json['form_schema'] as Map<String, dynamic>),
+  listSchema: json['list_schema'] == null
+      ? null
+      : ListSchema.fromJson(json['list_schema'] as Map<String, dynamic>),
+  detailSchema: json['detail_schema'] == null
+      ? null
+      : DetailSchema.fromJson(json['detail_schema'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$FeatureToJson(Feature instance) => <String, dynamic>{

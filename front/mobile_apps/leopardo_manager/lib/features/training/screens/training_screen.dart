@@ -1,4 +1,4 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -80,15 +80,14 @@ class TrainingScreen extends ConsumerWidget {
                               children: [
                                 Expanded(
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      4,
-                                    ),
+                                    borderRadius: BorderRadius.circular(4),
                                     child: LinearProgressIndicator(
                                       value: enrollment.progress / 100,
                                       backgroundColor: AppColors.borderDark,
                                       valueColor:
                                           const AlwaysStoppedAnimation<Color>(
-                                              AppColors.success),
+                                            AppColors.success,
+                                          ),
                                       minHeight: 6,
                                     ),
                                   ),
@@ -175,4 +174,3 @@ class _StatusChip extends StatelessWidget {
     );
   }
 }
-

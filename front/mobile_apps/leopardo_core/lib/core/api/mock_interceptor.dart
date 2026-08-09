@@ -42,12 +42,12 @@ class MockInterceptor extends Interceptor {
             "data": {
               "id": int.tryParse(options.path.split('/').last) ?? 5432,
               "date": "2026-04-15",
-              "check_in":
-                  options.data is Map
-                      ? options.data["check_in"]
-                      : "2026-04-15T08:00:00Z",
-              "check_out":
-                  options.data is Map ? options.data["check_out"] : null,
+              "check_in": options.data is Map
+                  ? options.data["check_in"]
+                  : "2026-04-15T08:00:00Z",
+              "check_out": options.data is Map
+                  ? options.data["check_out"]
+                  : null,
               "hours_worked": 8,
               "late_minutes": 0,
               "status": "manual",

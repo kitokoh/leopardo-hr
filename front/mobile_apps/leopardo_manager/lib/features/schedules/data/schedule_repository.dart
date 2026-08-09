@@ -136,7 +136,8 @@ class WorkSchedule {
       startTime: _normalizeTime(json['start_time']),
       endTime: _normalizeTime(json['end_time']),
       breakMinutes: _asInt(json['break_minutes']),
-      breakRules: (json['break_rules'] as List?)
+      breakRules:
+          (json['break_rules'] as List?)
               ?.whereType<Map>()
               .map(
                 (entry) =>
@@ -144,17 +145,20 @@ class WorkSchedule {
               )
               .toList() ??
           const [],
-      workDays: (json['work_days'] as List?)
+      workDays:
+          (json['work_days'] as List?)
               ?.map((day) => _asInt(day))
               .where((day) => day >= 1 && day <= 7)
               .toList() ??
           const [1, 2, 3, 4, 5],
-      restDays: (json['rest_days'] as List?)
+      restDays:
+          (json['rest_days'] as List?)
               ?.map((day) => _asInt(day))
               .where((day) => day >= 1 && day <= 7)
               .toList() ??
           const [],
-      leaveRules: (json['leave_rules'] as List?)
+      leaveRules:
+          (json['leave_rules'] as List?)
               ?.whereType<Map>()
               .map(
                 (entry) =>

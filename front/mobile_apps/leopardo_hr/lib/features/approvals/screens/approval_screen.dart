@@ -150,9 +150,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                     color: AppColors.info.withValues(
                                       alpha: 0.15,
                                     ),
-                                    borderRadius: BorderRadius.circular(
-                                      8,
-                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     a.type,

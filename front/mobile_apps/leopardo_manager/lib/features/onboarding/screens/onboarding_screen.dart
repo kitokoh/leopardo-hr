@@ -115,19 +115,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 );
               }
 
-              final completed =
-                  steps.where((s) => s.completed || s.skipped).length;
+              final completed = steps
+                  .where((s) => s.completed || s.skipped)
+                  .length;
               final total = steps.length;
               final progress = total > 0 ? completed / total : 0.0;
-              final requiredDone =
-                  steps.where((s) => s.required && s.completed).length;
+              final requiredDone = steps
+                  .where((s) => s.required && s.completed)
+                  .length;
               final requiredTotal = steps.where((s) => s.required).length;
               final allRequiredDone = requiredDone >= requiredTotal;
 
               return ListView(
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 children: [
                   // ── Hero progress card ─────────────────────────────────
                   GlassCard(
@@ -177,9 +182,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                   child: LinearProgressIndicator(
                                     value: value,
                                     backgroundColor: MobileSurface.border,
-                                    valueColor: const AlwaysStoppedAnimation<Color>(
-                                      AppColors.rh,
-                                    ),
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          AppColors.rh,
+                                        ),
                                     minHeight: 8,
                                   ),
                                 ),
@@ -198,8 +204,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Icons.verified,
-                                  color: AppColors.success, size: 16),
+                              const Icon(
+                                Icons.verified,
+                                color: AppColors.success,
+                                size: 16,
+                              ),
                               const SizedBox(width: 6),
                               Text(
                                 'Étapes obligatoires complètes !',
@@ -236,10 +245,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         borderColor: step.completed
                             ? AppColors.success.withValues(alpha: 0.6)
                             : isSkipped
-                                ? MobileSurface.border.withValues(alpha: 0.3)
-                                : step.required
-                                    ? AppColors.rh.withValues(alpha: 0.4)
-                                    : MobileSurface.border,
+                            ? MobileSurface.border.withValues(alpha: 0.3)
+                            : step.required
+                            ? AppColors.rh.withValues(alpha: 0.4)
+                            : MobileSurface.border,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -251,21 +260,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                 color: step.completed
                                     ? AppColors.success.withValues(alpha: 0.15)
                                     : isSkipped
-                                        ? MobileSurface.muted.withValues(alpha: 0.1)
-                                        : AppColors.rh.withValues(alpha: 0.15),
+                                    ? MobileSurface.muted.withValues(alpha: 0.1)
+                                    : AppColors.rh.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
                                 step.completed
                                     ? Icons.check_circle
                                     : isSkipped
-                                        ? Icons.skip_next
-                                        : _iconFor(step.key),
+                                    ? Icons.skip_next
+                                    : _iconFor(step.key),
                                 color: step.completed
                                     ? AppColors.success
                                     : isSkipped
-                                        ? MobileSurface.muted
-                                        : AppColors.rh,
+                                    ? MobileSurface.muted
+                                    : AppColors.rh,
                                 size: 22,
                               ),
                             ),
@@ -282,34 +291,44 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                       Expanded(
                                         child: Text(
                                           step.title,
-                                          style: AppTypography.subtitle.copyWith(
-                                            color: isDone
-                                                ? MobileSurface.muted
-                                                : MobileSurface.text,
-                                            fontWeight: isDone ? FontWeight.normal : FontWeight.w600,
-                                            decoration: isSkipped
-                                                ? TextDecoration.lineThrough
-                                                : null,
-                                          ),
+                                          style: AppTypography.subtitle
+                                              .copyWith(
+                                                color: isDone
+                                                    ? MobileSurface.muted
+                                                    : MobileSurface.text,
+                                                fontWeight: isDone
+                                                    ? FontWeight.normal
+                                                    : FontWeight.w600,
+                                                decoration: isSkipped
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                              ),
                                         ),
                                       ),
                                       if (step.required && !isDone)
                                         Container(
-                                          margin: const EdgeInsets.only(left: 6),
+                                          margin: const EdgeInsets.only(
+                                            left: 6,
+                                          ),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 6,
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: AppColors.rh.withValues(alpha: 0.15),
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: AppColors.rh.withValues(
+                                              alpha: 0.15,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
                                             'Requis',
-                                            style: AppTypography.bodySmall.copyWith(
-                                              color: AppColors.rh,
-                                              fontSize: 10,
-                                            ),
+                                            style: AppTypography.bodySmall
+                                                .copyWith(
+                                                  color: AppColors.rh,
+                                                  fontSize: 10,
+                                                ),
                                           ),
                                         ),
                                     ],
@@ -332,7 +351,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                             label: 'Marquer complété',
                                             icon: Icons.check,
                                             color: AppColors.success,
-                                            onPressed: () => _complete(step.key),
+                                            onPressed: () =>
+                                                _complete(step.key),
                                           ),
                                         ),
                                         if (!step.required) ...[
@@ -373,13 +393,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline,
-                        color: AppColors.danger, size: 48),
+                    const Icon(
+                      Icons.error_outline,
+                      color: AppColors.danger,
+                      size: 48,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       e.toString(),
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.danger),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.danger,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -388,7 +412,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                           ref.invalidate(onboardingChecklistProvider),
                       child: Text(
                         'Réessayer',
-                        style: AppTypography.subtitle.copyWith(color: AppColors.rh),
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.rh,
+                        ),
                       ),
                     ),
                   ],

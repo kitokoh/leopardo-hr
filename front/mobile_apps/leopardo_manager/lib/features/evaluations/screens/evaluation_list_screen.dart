@@ -1,4 +1,4 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -91,4 +91,3 @@ class EvaluationListScreen extends ConsumerWidget {
     }
   }
 }
-

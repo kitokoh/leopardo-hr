@@ -79,15 +79,14 @@ class TrainingScreen extends ConsumerWidget {
                               children: [
                                 Expanded(
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      4,
-                                    ),
+                                    borderRadius: BorderRadius.circular(4),
                                     child: LinearProgressIndicator(
                                       value: enrollment.progress / 100,
                                       backgroundColor: AppColors.borderDark,
                                       valueColor:
                                           const AlwaysStoppedAnimation<Color>(
-                                              AppColors.success),
+                                            AppColors.success,
+                                          ),
                                       minHeight: 6,
                                     ),
                                   ),

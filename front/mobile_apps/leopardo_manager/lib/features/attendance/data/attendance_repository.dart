@@ -355,8 +355,9 @@ class AttendanceRepository {
 
     final data = payload.cast<String, dynamic>();
     final rawContext = data['context'] ?? responseData['context'];
-    final context =
-        rawContext is Map ? rawContext.cast<String, dynamic>() : null;
+    final context = rawContext is Map
+        ? rawContext.cast<String, dynamic>()
+        : null;
 
     if (data.containsKey('items')) {
       return {
@@ -400,8 +401,8 @@ class AttendanceRepository {
             ? int.tryParse(today['late_minutes'].toString())
             : null,
         employeeName: today['name']?.toString(),
-        employeePhotoUrl:
-            (today['photo_url'] ?? today['photo_path'])?.toString(),
+        employeePhotoUrl: (today['photo_url'] ?? today['photo_path'])
+            ?.toString(),
       ),
       'context': context,
     };

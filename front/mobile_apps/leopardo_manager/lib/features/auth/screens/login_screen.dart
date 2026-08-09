@@ -250,22 +250,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: Divider(
-                              color: AppColors.borderFor(context),
-                            ),
+                            child: Divider(color: AppColors.borderFor(context)),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               l10n.commonOr,
-                              style:
-                                  AppTypography.caption.copyWith(color: muted),
+                              style: AppTypography.caption.copyWith(
+                                color: muted,
+                              ),
                             ),
                           ),
                           Expanded(
-                            child: Divider(
-                              color: AppColors.borderFor(context),
-                            ),
+                            child: Divider(color: AppColors.borderFor(context)),
                           ),
                         ],
                       ),

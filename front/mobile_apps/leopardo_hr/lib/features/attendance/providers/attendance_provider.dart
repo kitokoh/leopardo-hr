@@ -201,7 +201,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         notes: notes,
       );
       final now = DateTime.now();
-      final isToday = log.date.year == now.year &&
+      final isToday =
+          log.date.year == now.year &&
           log.date.month == now.month &&
           log.date.day == now.day;
       state = state.copyWith(
@@ -303,8 +304,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-});
+      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+    });
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
   ref,
@@ -324,31 +325,28 @@ final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((
 
 final managerAttendanceTodayProvider =
     FutureProvider.autoDispose<List<AttendanceLog>>((ref) async {
-  final repo = ref.watch(attendanceRepositoryProvider);
-  return repo.getManagerAttendanceToday();
-});
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getManagerAttendanceToday();
+    });
 
 /// PA2-ATT-005: manager day-detail drill-down for a single employee.
 /// `autoDispose` so the cached detail is not kept around after the sheet is
 /// closed (avoids showing a stale detail if the manager reopens the same
 /// employee later in the session).
-final employeeDayDetailProvider =
-    FutureProvider.autoDispose.family<EmployeeDayDetail, int>((
-  ref,
-  employeeId,
-) async {
-  final repo = ref.watch(attendanceRepositoryProvider);
-  return repo.getEmployeeDayDetail(employeeId);
-});
+final employeeDayDetailProvider = FutureProvider.autoDispose
+    .family<EmployeeDayDetail, int>((ref, employeeId) async {
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getEmployeeDayDetail(employeeId);
+    });
 
 final managerAnomaliesProvider =
     FutureProvider.autoDispose<ManagerAnomalyReport>((ref) async {
-  final repo = ref.watch(attendanceRepositoryProvider);
-  return repo.getManagerAnomalies();
-});
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getManagerAnomalies();
+    });
 
 final managerCorrectionsProvider =
     FutureProvider.autoDispose<List<AttendanceCorrection>>((ref) async {
-  final repo = ref.watch(attendanceRepositoryProvider);
-  return repo.getPendingCorrections();
-});
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getPendingCorrections();
+    });

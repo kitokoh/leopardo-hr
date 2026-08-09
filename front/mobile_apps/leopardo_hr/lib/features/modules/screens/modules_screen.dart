@@ -297,11 +297,11 @@ class _EvaluationCard extends StatelessWidget {
   }
 
   String _label(String status) => switch (status) {
-        'draft' => 'Brouillon',
-        'submitted' => 'Soumise',
-        'acknowledged' => 'Lue',
-        _ => status,
-      };
+    'draft' => 'Brouillon',
+    'submitted' => 'Soumise',
+    'acknowledged' => 'Lue',
+    _ => status,
+  };
 }
 
 class _SalaryAdvancesTab extends ConsumerWidget {
@@ -527,12 +527,12 @@ class _SalaryAdvancesTab extends ConsumerWidget {
   }
 
   String _advanceLabel(String status) => switch (status) {
-        'pending' => 'En attente',
-        'approved' => 'Approuvee',
-        'rejected' => 'Rejetee',
-        'cancelled' => 'Annulee',
-        _ => status,
-      };
+    'pending' => 'En attente',
+    'approved' => 'Approuvee',
+    'rejected' => 'Rejetee',
+    'cancelled' => 'Annulee',
+    _ => status,
+  };
 }
 
 class _PayrollsTab extends ConsumerWidget {
@@ -689,9 +689,9 @@ class _PayrollsTab extends ConsumerWidget {
                     }
                   } catch (error) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Echec : $error')),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
                     }
                   }
                 },
@@ -709,11 +709,11 @@ class _PayrollsTab extends ConsumerWidget {
   }
 
   String _payrollLabel(String status) => switch (status) {
-        'draft' => 'Brouillon',
-        'validated' => 'Valide',
-        'paid' => 'Paye',
-        _ => status,
-      };
+    'draft' => 'Brouillon',
+    'validated' => 'Valide',
+    'paid' => 'Paye',
+    _ => status,
+  };
 }
 
 class _NotificationsTab extends ConsumerWidget {
@@ -835,9 +835,9 @@ class _NotificationsTab extends ConsumerWidget {
                     ref.invalidate(notificationsProvider);
                   } catch (error) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Echec : $error')),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
                     }
                   }
                 },
@@ -944,9 +944,7 @@ class _CreateEvaluationSheetState
                 error: (error, _) => Text('Equipe indisponible : $error'),
                 data: (employees) => DropdownButtonFormField<int>(
                   initialValue: _employeeId,
-                  decoration: const InputDecoration(
-                    labelText: 'Collaborateur',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Collaborateur'),
                   items: employees
                       .map(
                         (employee) => DropdownMenuItem<int>(
@@ -1015,7 +1013,9 @@ class _CreateEvaluationSheetState
 
     setState(() => _submitting = true);
     try {
-      await ref.read(modulesRepositoryProvider).createEvaluation(
+      await ref
+          .read(modulesRepositoryProvider)
+          .createEvaluation(
             employeeId: _employeeId!,
             period: _periodController.text,
             score: double.tryParse(_scoreController.text.replaceAll(',', '.')),
@@ -1088,9 +1088,9 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
                 decoration: const InputDecoration(labelText: 'Montant'),
                 validator: (value) =>
                     (double.tryParse((value ?? '').replaceAll(',', '.')) ==
-                            null)
-                        ? 'Montant invalide'
-                        : null,
+                        null)
+                    ? 'Montant invalide'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -1129,7 +1129,9 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(modulesRepositoryProvider).createSalaryAdvance(
+      await ref
+          .read(modulesRepositoryProvider)
+          .createSalaryAdvance(
             amount: double.parse(_amountController.text.replaceAll(',', '.')),
             reason: _reasonController.text,
             repaymentMonths: int.parse(_monthsController.text),
@@ -1213,9 +1215,7 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
                 error: (error, _) => Text('Equipe indisponible : $error'),
                 data: (employees) => DropdownButtonFormField<int>(
                   initialValue: _employeeId,
-                  decoration: const InputDecoration(
-                    labelText: 'Collaborateur',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Collaborateur'),
                   items: employees
                       .map(
                         (employee) => DropdownMenuItem<int>(
@@ -1321,7 +1321,9 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(modulesRepositoryProvider).createPayroll(
+      await ref
+          .read(modulesRepositoryProvider)
+          .createPayroll(
             employeeId: _employeeId!,
             periodMonth: _month,
             periodYear: _year,

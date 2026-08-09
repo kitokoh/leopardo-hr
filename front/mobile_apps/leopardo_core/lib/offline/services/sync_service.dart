@@ -16,10 +16,10 @@ enum SyncMode { cloud, edge, offline }
 class SyncService {
   final EdgeDatabase _db;
   final Dio _dio;
-  final String _edgeBaseUrl;   // e.g. http://leopardo.local:7878
-  final String _cloudBaseUrl;  // e.g. https://api.leopardo.app
-  final String _edgeNodeId;    // Cloud-issued UUID for this Edge node
-  final String _edgeToken;     // Bearer secret, distinct from _edgeNodeId
+  final String _edgeBaseUrl; // e.g. http://leopardo.local:7878
+  final String _cloudBaseUrl; // e.g. https://api.leopardo.app
+  final String _edgeNodeId; // Cloud-issued UUID for this Edge node
+  final String _edgeToken; // Bearer secret, distinct from _edgeNodeId
 
   SyncMode _currentMode = SyncMode.offline;
   Timer? _syncTimer;
@@ -41,20 +41,17 @@ class SyncService {
     required String cloudBaseUrl,
     required String edgeNodeId,
     required String edgeToken,
-  })  : _db = db,
-        _dio = dio,
-        _edgeBaseUrl = edgeBaseUrl,
-        _cloudBaseUrl = cloudBaseUrl,
-        _edgeNodeId = edgeNodeId,
-        _edgeToken = edgeToken;
+  }) : _db = db,
+       _dio = dio,
+       _edgeBaseUrl = edgeBaseUrl,
+       _cloudBaseUrl = cloudBaseUrl,
+       _edgeNodeId = edgeNodeId,
+       _edgeToken = edgeToken;
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {
     Connectivity().onConnectivityChanged.listen(_onConnectivityChangedList);
-    _syncTimer = Timer.periodic(
-      const Duration(minutes: 5),
-      (_) => syncNow(),
-    );
+    _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) => syncNow());
     _detectMode();
   }
 
@@ -112,8 +109,8 @@ class SyncService {
   /// Returns the correct base URL for API calls — transparent to callers.
   String get apiBaseUrl {
     return switch (_currentMode) {
-      SyncMode.edge    => '$_edgeBaseUrl/api',
-      SyncMode.cloud   => '$_cloudBaseUrl/api',
+      SyncMode.edge => '$_edgeBaseUrl/api',
+      SyncMode.cloud => '$_cloudBaseUrl/api',
       SyncMode.offline => '$_edgeBaseUrl/api',
     };
   }
@@ -133,19 +130,22 @@ class SyncService {
       // Batch into groups of 50
       final batches = <List<LocalSyncQueueItem>>[];
       for (var i = 0; i < pending.length; i += 50) {
-        batches.add(pending.sublist(
-          i,
-          i + 50 > pending.length ? pending.length : i + 50,
-        ));
+        batches.add(
+          pending.sublist(i, i + 50 > pending.length ? pending.length : i + 50),
+        );
       }
 
       for (final batch in batches) {
-        final records = batch.map((item) => {
-          'entity_type': item.entityType,
-          'entity_id': item.entityId,
-          'operation': item.operation,
-          'payload': jsonDecode(item.payload),
-        }).toList();
+        final records = batch
+            .map(
+              (item) => {
+                'entity_type': item.entityType,
+                'entity_id': item.entityId,
+                'operation': item.operation,
+                'payload': jsonDecode(item.payload),
+              },
+            )
+            .toList();
 
         try {
           // Both the Cloud API and the local Edge node instance expose the
@@ -153,14 +153,13 @@ class SyncService {
           // app image), so the path is identical — only the base URL and
           // the real edgeNodeId (a Cloud-issued UUID, distinct from the
           // bearer edgeToken) differ.
-          final target = '${_activeBaseUrl()}/api/v1/edge-node/$_edgeNodeId/push';
+          final target =
+              '${_activeBaseUrl()}/api/v1/edge-node/$_edgeNodeId/push';
 
           await _dio.post(
             target,
             data: {'records': records},
-            options: Options(
-              headers: {'Authorization': 'Bearer $_edgeToken'},
-            ),
+            options: Options(headers: {'Authorization': 'Bearer $_edgeToken'}),
           );
 
           for (final item in batch) {
@@ -194,9 +193,7 @@ class SyncService {
 
       final response = await _dio.get(
         url,
-        options: Options(
-          headers: {'Authorization': 'Bearer $_edgeToken'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $_edgeToken'}),
       );
 
       final delta = response.data as Map<String, dynamic>?;

@@ -119,9 +119,9 @@ class _PendingGeoSessionsScreenState
             .rejectSession(session.id, note: _noteController.text.trim());
         ref.invalidate(pendingGeoSessionsProvider);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session rejetée')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Session rejetée')));
         }
       } catch (e) {
         if (mounted) {
@@ -177,7 +177,10 @@ class _PendingGeoSessionsScreenState
               child: ListView.separated(
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 itemCount: sessions.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {

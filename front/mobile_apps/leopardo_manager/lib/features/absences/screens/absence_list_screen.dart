@@ -706,4 +706,3 @@ class _AbsenceTypeOption {
     );
   }
 }
-

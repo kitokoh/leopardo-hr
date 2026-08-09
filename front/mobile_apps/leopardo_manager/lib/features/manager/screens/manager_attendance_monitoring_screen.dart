@@ -58,16 +58,12 @@ class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
 /// PA2-ATT-005: opens the manager day-detail drill-down for [employeeId].
 /// The bottom sheet owns its own Riverpod scope via [Consumer] so the parent
 /// screen does not need to know about [employeeDayDetailProvider].
-Future<void> showEmployeeDayDetailSheet(
-  BuildContext context,
-  int employeeId,
-) {
+Future<void> showEmployeeDayDetailSheet(BuildContext context, int employeeId) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (sheetContext) =>
-        _EmployeeDayDetailSheet(employeeId: employeeId),
+    builder: (sheetContext) => _EmployeeDayDetailSheet(employeeId: employeeId),
   );
 }
 
@@ -220,9 +216,7 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: 18),
-                  MobileSectionLabel(
-                    'Pointages (${day.sessionsCount})',
-                  ),
+                  MobileSectionLabel('Pointages (${day.sessionsCount})'),
                   const SizedBox(height: 6),
                   if (day.sessions.isEmpty)
                     const _EmptyState(
@@ -448,8 +442,9 @@ class _AnomalyBody extends StatelessWidget {
                 child: _Metric(
                   label: 'Retard',
                   value: '${report.lateMinutes}m',
-                  color:
-                      report.lateMinutes > 0 ? AppColors.warning : AppColors.rh,
+                  color: report.lateMinutes > 0
+                      ? AppColors.warning
+                      : AppColors.rh,
                 ),
               ),
             ],

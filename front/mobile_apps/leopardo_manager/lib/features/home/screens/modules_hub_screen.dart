@@ -252,4 +252,3 @@ class _UpcomingRow extends StatelessWidget {
     );
   }
 }
-

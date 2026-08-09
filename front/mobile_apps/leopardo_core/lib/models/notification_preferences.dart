@@ -28,10 +28,9 @@ class NotificationPreferences {
   factory NotificationPreferences.fromJson(Map<String, dynamic> json) {
     final rawCategories = json['categories'];
     final rawQuietHours = json['quiet_hours'];
-    final quietHours =
-        rawQuietHours is Map
-            ? rawQuietHours.cast<String, dynamic>()
-            : const <String, dynamic>{};
+    final quietHours = rawQuietHours is Map
+        ? rawQuietHours.cast<String, dynamic>()
+        : const <String, dynamic>{};
 
     return NotificationPreferences(
       appEnabled: json['app_enabled'] != false,
@@ -41,12 +40,11 @@ class NotificationPreferences {
       whatsappEnabled: json['whatsapp_enabled'] == true,
       locale: json['locale']?.toString(),
       timezone: json['timezone']?.toString(),
-      categories:
-          rawCategories is Map
-              ? rawCategories.map(
-                (key, value) => MapEntry(key.toString(), value == true),
-              )
-              : const <String, bool>{},
+      categories: rawCategories is Map
+          ? rawCategories.map(
+              (key, value) => MapEntry(key.toString(), value == true),
+            )
+          : const <String, bool>{},
       quietHoursEnabled: quietHours['enabled'] == true,
       quietHoursStart: quietHours['start']?.toString(),
       quietHoursEnd: quietHours['end']?.toString(),

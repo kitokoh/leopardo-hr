@@ -18,69 +18,101 @@ class $AttendanceLogsTable extends AttendanceLogs
 
   @override
   late final GeneratedColumn<String> localId = GeneratedColumn<String>(
-      'local_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'local_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<int> remoteId = GeneratedColumn<int>(
-      'remote_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+    'remote_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<int> employeeId = GeneratedColumn<int>(
-      'employee_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'employee_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumnWithTypeConverter<AttendanceType, String> type =
-      GeneratedColumn<String>('type', aliasedName, false,
-              type: DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<AttendanceType>(
-              $AttendanceLogsTable.$convertertype);
+      GeneratedColumn<String>(
+        'type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<AttendanceType>($AttendanceLogsTable.$convertertype);
 
   @override
   late final GeneratedColumn<DateTime> checkedAt = GeneratedColumn<DateTime>(
-      'checked_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'checked_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
 
   @override
   late final GeneratedColumn<String> source = GeneratedColumn<String>(
-      'source', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('edge'));
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('edge'),
+  );
 
   @override
   late final GeneratedColumn<String> locationJson = GeneratedColumn<String>(
-      'location_json', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'location_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
 
   @override
   late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
-      'sync_status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('pending'));
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
 
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
 
   @override
   List<GeneratedColumn> get $columns => [
-        localId,
-        remoteId,
-        employeeId,
-        type,
-        checkedAt,
-        source,
-        locationJson,
-        syncStatus,
-        createdAt,
-      ];
+    localId,
+    remoteId,
+    employeeId,
+    type,
+    checkedAt,
+    source,
+    locationJson,
+    syncStatus,
+    createdAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -95,25 +127,44 @@ class $AttendanceLogsTable extends AttendanceLogs
   AttendanceLog map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AttendanceLog(
-      localId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}local_id'])!,
-      remoteId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}remote_id']),
-      employeeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}employee_id'])!,
-      type: $AttendanceLogsTable.$convertertype.fromSql(attachedDatabase
-          .typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])!),
-      checkedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}checked_at'])!,
-      source: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}source'])!,
-      locationJson: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}location_json']),
-      syncStatus: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sync_status'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      localId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_id'],
+      )!,
+      remoteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}remote_id'],
+      ),
+      employeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}employee_id'],
+      )!,
+      type: $AttendanceLogsTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
+      checkedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}checked_at'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      locationJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_json'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
     );
   }
 
@@ -126,8 +177,7 @@ class $AttendanceLogsTable extends AttendanceLogs
       const EnumNameConverter<AttendanceType>(AttendanceType.values);
 }
 
-class AttendanceLog extends DataClass
-    implements Insertable<AttendanceLog> {
+class AttendanceLog extends DataClass implements Insertable<AttendanceLog> {
   final String localId;
   final int? remoteId;
   final int employeeId;
@@ -159,7 +209,8 @@ class AttendanceLog extends DataClass
     }
     map['employee_id'] = Variable<int>(employeeId);
     map['type'] = Variable<String>(
-        $AttendanceLogsTable.$convertertype.toSql(type));
+      $AttendanceLogsTable.$convertertype.toSql(type),
+    );
     map['checked_at'] = Variable<DateTime>(checkedAt);
     map['source'] = Variable<String>(source);
     if (!nullToAbsent || locationJson != null) {
@@ -188,15 +239,18 @@ class AttendanceLog extends DataClass
     );
   }
 
-  factory AttendanceLog.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory AttendanceLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AttendanceLog(
       localId: serializer.fromJson<String>(json['local_id']),
       remoteId: serializer.fromJson<int?>(json['remote_id']),
       employeeId: serializer.fromJson<int>(json['employee_id']),
-      type: $AttendanceLogsTable.$convertertype
-          .fromSql(serializer.fromJson<String>(json['type'])),
+      type: $AttendanceLogsTable.$convertertype.fromSql(
+        serializer.fromJson<String>(json['type']),
+      ),
       checkedAt: serializer.fromJson<DateTime>(json['checked_at']),
       source: serializer.fromJson<String>(json['source']),
       locationJson: serializer.fromJson<String?>(json['location_json']),
@@ -213,7 +267,8 @@ class AttendanceLog extends DataClass
       'remote_id': serializer.toJson<int?>(remoteId),
       'employee_id': serializer.toJson<int>(employeeId),
       'type': serializer.toJson<String>(
-          $AttendanceLogsTable.$convertertype.toSql(type)),
+        $AttendanceLogsTable.$convertertype.toSql(type),
+      ),
       'checked_at': serializer.toJson<DateTime>(checkedAt),
       'source': serializer.toJson<String>(source),
       'location_json': serializer.toJson<String?>(locationJson),
@@ -232,19 +287,17 @@ class AttendanceLog extends DataClass
     Value<String?> locationJson = const Value.absent(),
     String? syncStatus,
     DateTime? createdAt,
-  }) =>
-      AttendanceLog(
-        localId: localId ?? this.localId,
-        remoteId: remoteId.present ? remoteId.value : this.remoteId,
-        employeeId: employeeId ?? this.employeeId,
-        type: type ?? this.type,
-        checkedAt: checkedAt ?? this.checkedAt,
-        source: source ?? this.source,
-        locationJson:
-            locationJson.present ? locationJson.value : this.locationJson,
-        syncStatus: syncStatus ?? this.syncStatus,
-        createdAt: createdAt ?? this.createdAt,
-      );
+  }) => AttendanceLog(
+    localId: localId ?? this.localId,
+    remoteId: remoteId.present ? remoteId.value : this.remoteId,
+    employeeId: employeeId ?? this.employeeId,
+    type: type ?? this.type,
+    checkedAt: checkedAt ?? this.checkedAt,
+    source: source ?? this.source,
+    locationJson: locationJson.present ? locationJson.value : this.locationJson,
+    syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+  );
 
   @override
   String toString() {
@@ -263,8 +316,17 @@ class AttendanceLog extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(localId, remoteId, employeeId, type,
-      checkedAt, source, locationJson, syncStatus, createdAt);
+  int get hashCode => Object.hash(
+    localId,
+    remoteId,
+    employeeId,
+    type,
+    checkedAt,
+    source,
+    locationJson,
+    syncStatus,
+    createdAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -314,10 +376,10 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
     this.locationJson = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.createdAt = const Value.absent(),
-  })  : localId = Value(localId),
-        employeeId = Value(employeeId),
-        type = Value(type),
-        checkedAt = Value(checkedAt);
+  }) : localId = Value(localId),
+       employeeId = Value(employeeId),
+       type = Value(type),
+       checkedAt = Value(checkedAt);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -329,7 +391,8 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
     }
     if (type.present) {
       map['type'] = Variable<String>(
-          $AttendanceLogsTable.$convertertype.toSql(type.value));
+        $AttendanceLogsTable.$convertertype.toSql(type.value),
+      );
     }
     if (checkedAt.present) {
       map['checked_at'] = Variable<DateTime>(checkedAt.value);
@@ -348,7 +411,8 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
   }
 
   @override
-  String toString() => 'AttendanceLogsCompanion(localId: $localId, '
+  String toString() =>
+      'AttendanceLogsCompanion(localId: $localId, '
       'remoteId: $remoteId, employeeId: $employeeId, type: $type, '
       'checkedAt: $checkedAt, source: $source, locationJson: $locationJson, '
       'syncStatus: $syncStatus, createdAt: $createdAt)';
@@ -367,46 +431,90 @@ class $EmployeeCacheTable extends EmployeeCache
 
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
-      'first_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'first_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
-      'last_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'last_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
-      'email', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> badgeQr = GeneratedColumn<String>(
-      'badge_qr', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'badge_qr',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   late final GeneratedColumn<String> department = GeneratedColumn<String>(
-      'department', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'department',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   late final GeneratedColumn<String> jobTitle = GeneratedColumn<String>(
-      'job_title', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'job_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-      'is_active', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(true));
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(true),
+  );
   @override
   late final GeneratedColumn<int> syncedAt = GeneratedColumn<int>(
-      'synced_at', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+    'synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
 
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, firstName, lastName, email, badgeQr, department, jobTitle, isActive, syncedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    firstName,
+    lastName,
+    email,
+    badgeQr,
+    department,
+    jobTitle,
+    isActive,
+    syncedAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -421,24 +529,42 @@ class $EmployeeCacheTable extends EmployeeCache
   EmployeeCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return EmployeeCacheData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      firstName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}first_name'])!,
-      lastName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}last_name'])!,
-      email: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
-      badgeQr: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}badge_qr']),
-      department: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}department']),
-      jobTitle: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}job_title']),
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
-      syncedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}synced_at']),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      )!,
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      badgeQr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}badge_qr'],
+      ),
+      department: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}department'],
+      ),
+      jobTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_title'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}synced_at'],
+      ),
     );
   }
 
@@ -501,8 +627,9 @@ class EmployeeCacheData extends DataClass
       firstName: Value(firstName),
       lastName: Value(lastName),
       email: Value(email),
-      badgeQr:
-          badgeQr == null && nullToAbsent ? const Value.absent() : Value(badgeQr),
+      badgeQr: badgeQr == null && nullToAbsent
+          ? const Value.absent()
+          : Value(badgeQr),
       department: department == null && nullToAbsent
           ? const Value.absent()
           : Value(department),
@@ -516,8 +643,10 @@ class EmployeeCacheData extends DataClass
     );
   }
 
-  factory EmployeeCacheData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory EmployeeCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return EmployeeCacheData(
       id: serializer.fromJson<int>(json['id']),
@@ -558,28 +687,37 @@ class EmployeeCacheData extends DataClass
     Value<String?> jobTitle = const Value.absent(),
     bool? isActive,
     Value<int?> syncedAt = const Value.absent(),
-  }) =>
-      EmployeeCacheData(
-        id: id ?? this.id,
-        firstName: firstName ?? this.firstName,
-        lastName: lastName ?? this.lastName,
-        email: email ?? this.email,
-        badgeQr: badgeQr.present ? badgeQr.value : this.badgeQr,
-        department: department.present ? department.value : this.department,
-        jobTitle: jobTitle.present ? jobTitle.value : this.jobTitle,
-        isActive: isActive ?? this.isActive,
-        syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
-      );
+  }) => EmployeeCacheData(
+    id: id ?? this.id,
+    firstName: firstName ?? this.firstName,
+    lastName: lastName ?? this.lastName,
+    email: email ?? this.email,
+    badgeQr: badgeQr.present ? badgeQr.value : this.badgeQr,
+    department: department.present ? department.value : this.department,
+    jobTitle: jobTitle.present ? jobTitle.value : this.jobTitle,
+    isActive: isActive ?? this.isActive,
+    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
+  );
 
   @override
-  String toString() => 'EmployeeCacheData(id: $id, firstName: $firstName, '
+  String toString() =>
+      'EmployeeCacheData(id: $id, firstName: $firstName, '
       'lastName: $lastName, email: $email, badgeQr: $badgeQr, '
       'department: $department, jobTitle: $jobTitle, isActive: $isActive, '
       'syncedAt: $syncedAt)';
 
   @override
   int get hashCode => Object.hash(
-      id, firstName, lastName, email, badgeQr, department, jobTitle, isActive, syncedAt);
+    id,
+    firstName,
+    lastName,
+    email,
+    badgeQr,
+    department,
+    jobTitle,
+    isActive,
+    syncedAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -629,20 +767,22 @@ class EmployeeCacheCompanion extends UpdateCompanion<EmployeeCacheData> {
     this.jobTitle = const Value.absent(),
     this.isActive = const Value.absent(),
     this.syncedAt = const Value.absent(),
-  })  : id = Value(id),
-        firstName = Value(firstName),
-        lastName = Value(lastName),
-        email = Value(email);
+  }) : id = Value(id),
+       firstName = Value(firstName),
+       lastName = Value(lastName),
+       email = Value(email);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<int>(id.value);
-    if (firstName.present) map['first_name'] = Variable<String>(firstName.value);
+    if (firstName.present)
+      map['first_name'] = Variable<String>(firstName.value);
     if (lastName.present) map['last_name'] = Variable<String>(lastName.value);
     if (email.present) map['email'] = Variable<String>(email.value);
     if (badgeQr.present) map['badge_qr'] = Variable<String>(badgeQr.value);
-    if (department.present) map['department'] = Variable<String>(department.value);
+    if (department.present)
+      map['department'] = Variable<String>(department.value);
     if (jobTitle.present) map['job_title'] = Variable<String>(jobTitle.value);
     if (isActive.present) map['is_active'] = Variable<bool>(isActive.value);
     if (syncedAt.present) map['synced_at'] = Variable<int>(syncedAt.value);
@@ -650,7 +790,8 @@ class EmployeeCacheCompanion extends UpdateCompanion<EmployeeCacheData> {
   }
 
   @override
-  String toString() => 'EmployeeCacheCompanion(id: $id, firstName: $firstName, '
+  String toString() =>
+      'EmployeeCacheCompanion(id: $id, firstName: $firstName, '
       'lastName: $lastName, email: $email, badgeQr: $badgeQr, '
       'department: $department, jobTitle: $jobTitle, isActive: $isActive, '
       'syncedAt: $syncedAt)';
@@ -669,60 +810,105 @@ class $SyncQueueTable extends SyncQueue
 
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   @override
   late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
-      'entity_type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> entityLocalId = GeneratedColumn<String>(
-      'entity_local_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'entity_local_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> operation = GeneratedColumn<String>(
-      'operation', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'operation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
-      'payload_json', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
-      'retry_count', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
-      'last_error', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
-      'status', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('pending'));
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   late final GeneratedColumn<DateTime> processedAt = GeneratedColumn<DateTime>(
-      'processed_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+    'processed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
 
   @override
   List<GeneratedColumn> get $columns => [
-        id, entityType, entityLocalId, operation, payloadJson,
-        retryCount, lastError, status, createdAt, processedAt,
-      ];
+    id,
+    entityType,
+    entityLocalId,
+    operation,
+    payloadJson,
+    retryCount,
+    lastError,
+    status,
+    createdAt,
+    processedAt,
+  ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -737,26 +923,46 @@ class $SyncQueueTable extends SyncQueue
   SyncQueueData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return SyncQueueData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      entityType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}entity_type'])!,
-      entityLocalId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}entity_local_id'])!,
-      operation: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}operation'])!,
-      payloadJson: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}payload_json'])!,
-      retryCount: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}retry_count'])!,
-      lastError: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}last_error']),
-      status: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      processedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}processed_at']),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityLocalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_local_id'],
+      )!,
+      operation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}operation'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      retryCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_count'],
+      )!,
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      processedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}processed_at'],
+      ),
     );
   }
 
@@ -830,8 +1036,10 @@ class SyncQueueData extends DataClass implements Insertable<SyncQueueData> {
     );
   }
 
-  factory SyncQueueData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory SyncQueueData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SyncQueueData(
       id: serializer.fromJson<int>(json['id']),
@@ -875,30 +1083,40 @@ class SyncQueueData extends DataClass implements Insertable<SyncQueueData> {
     String? status,
     DateTime? createdAt,
     Value<DateTime?> processedAt = const Value.absent(),
-  }) =>
-      SyncQueueData(
-        id: id ?? this.id,
-        entityType: entityType ?? this.entityType,
-        entityLocalId: entityLocalId ?? this.entityLocalId,
-        operation: operation ?? this.operation,
-        payloadJson: payloadJson ?? this.payloadJson,
-        retryCount: retryCount ?? this.retryCount,
-        lastError: lastError.present ? lastError.value : this.lastError,
-        status: status ?? this.status,
-        createdAt: createdAt ?? this.createdAt,
-        processedAt: processedAt.present ? processedAt.value : this.processedAt,
-      );
+  }) => SyncQueueData(
+    id: id ?? this.id,
+    entityType: entityType ?? this.entityType,
+    entityLocalId: entityLocalId ?? this.entityLocalId,
+    operation: operation ?? this.operation,
+    payloadJson: payloadJson ?? this.payloadJson,
+    retryCount: retryCount ?? this.retryCount,
+    lastError: lastError.present ? lastError.value : this.lastError,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+    processedAt: processedAt.present ? processedAt.value : this.processedAt,
+  );
 
   @override
-  String toString() => 'SyncQueueData(id: $id, entityType: $entityType, '
+  String toString() =>
+      'SyncQueueData(id: $id, entityType: $entityType, '
       'entityLocalId: $entityLocalId, operation: $operation, '
       'payloadJson: $payloadJson, retryCount: $retryCount, '
       'lastError: $lastError, status: $status, createdAt: $createdAt, '
       'processedAt: $processedAt)';
 
   @override
-  int get hashCode => Object.hash(id, entityType, entityLocalId, operation,
-      payloadJson, retryCount, lastError, status, createdAt, processedAt);
+  int get hashCode => Object.hash(
+    id,
+    entityType,
+    entityLocalId,
+    operation,
+    payloadJson,
+    retryCount,
+    lastError,
+    status,
+    createdAt,
+    processedAt,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -952,24 +1170,31 @@ class SyncQueueCompanion extends UpdateCompanion<SyncQueueData> {
     this.status = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.processedAt = const Value.absent(),
-  })  : entityType = Value(entityType),
-        entityLocalId = Value(entityLocalId),
-        operation = Value(operation),
-        payloadJson = Value(payloadJson);
+  }) : entityType = Value(entityType),
+       entityLocalId = Value(entityLocalId),
+       operation = Value(operation),
+       payloadJson = Value(payloadJson);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) map['id'] = Variable<int>(id.value);
-    if (entityType.present) map['entity_type'] = Variable<String>(entityType.value);
-    if (entityLocalId.present) map['entity_local_id'] = Variable<String>(entityLocalId.value);
+    if (entityType.present)
+      map['entity_type'] = Variable<String>(entityType.value);
+    if (entityLocalId.present)
+      map['entity_local_id'] = Variable<String>(entityLocalId.value);
     if (operation.present) map['operation'] = Variable<String>(operation.value);
-    if (payloadJson.present) map['payload_json'] = Variable<String>(payloadJson.value);
-    if (retryCount.present) map['retry_count'] = Variable<int>(retryCount.value);
-    if (lastError.present) map['last_error'] = Variable<String>(lastError.value);
+    if (payloadJson.present)
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    if (retryCount.present)
+      map['retry_count'] = Variable<int>(retryCount.value);
+    if (lastError.present)
+      map['last_error'] = Variable<String>(lastError.value);
     if (status.present) map['status'] = Variable<String>(status.value);
-    if (createdAt.present) map['created_at'] = Variable<DateTime>(createdAt.value);
-    if (processedAt.present) map['processed_at'] = Variable<DateTime>(processedAt.value);
+    if (createdAt.present)
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    if (processedAt.present)
+      map['processed_at'] = Variable<DateTime>(processedAt.value);
     return map;
   }
 
@@ -990,18 +1215,29 @@ class $EdgeConfigTable extends EdgeConfig
 
   @override
   late final GeneratedColumn<String> key = GeneratedColumn<String>(
-      'key', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<String> value = GeneratedColumn<String>(
-      'value', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
 
   @override
   List<GeneratedColumn> get $columns => [key, value, updatedAt];
@@ -1019,12 +1255,18 @@ class $EdgeConfigTable extends EdgeConfig
   EdgeConfigData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return EdgeConfigData(
-      key: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
-      value: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -1062,8 +1304,10 @@ class EdgeConfigData extends DataClass implements Insertable<EdgeConfigData> {
     );
   }
 
-  factory EdgeConfigData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory EdgeConfigData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return EdgeConfigData(
       key: serializer.fromJson<String>(json['key']),
@@ -1120,15 +1364,16 @@ class EdgeConfigCompanion extends UpdateCompanion<EdgeConfigData> {
     required String key,
     required String value,
     this.updatedAt = const Value.absent(),
-  })  : key = Value(key),
-        value = Value(value);
+  }) : key = Value(key),
+       value = Value(value);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (key.present) map['key'] = Variable<String>(key.value);
     if (value.present) map['value'] = Variable<String>(value.value);
-    if (updatedAt.present) map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    if (updatedAt.present)
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     return map;
   }
 
@@ -1154,6 +1399,10 @@ abstract class _$EdgeDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
 
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [attendanceLogs, employeeCache, syncQueue, edgeConfig];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    attendanceLogs,
+    employeeCache,
+    syncQueue,
+    edgeConfig,
+  ];
 }

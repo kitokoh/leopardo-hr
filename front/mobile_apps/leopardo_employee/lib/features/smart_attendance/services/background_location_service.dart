@@ -54,8 +54,8 @@ class BackgroundLocationService {
   BackgroundLocationService({
     required SmartAttendanceRepository repository,
     required GeofenceService geofenceService,
-  })  : _repository = repository,
-        _geofenceService = geofenceService;
+  }) : _repository = repository,
+       _geofenceService = geofenceService;
 
   /// Démarre la surveillance de position.
   ///
@@ -147,10 +147,7 @@ class BackgroundLocationService {
 
     // Envoi de l'événement si un changement de zone est détecté
     if (event == ZoneEvent.enter || event == ZoneEvent.exit) {
-      await _sendGeoEvent(
-        event: event,
-        position: position,
-      );
+      await _sendGeoEvent(event: event, position: position);
     }
   }
 

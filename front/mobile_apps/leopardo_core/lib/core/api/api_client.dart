@@ -46,11 +46,9 @@ class ApiClient {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          options.headers['Accept-Language'] =
-              preferredLanguage.isNotEmpty
-                  ? preferredLanguage
-                  : PlatformDispatcher.instance.locale.languageCode
-                      .toLowerCase();
+          options.headers['Accept-Language'] = preferredLanguage.isNotEmpty
+              ? preferredLanguage
+              : PlatformDispatcher.instance.locale.languageCode.toLowerCase();
 
           return handler.next(options);
         },
@@ -70,7 +68,8 @@ class ApiClient {
     // compiled with --dart-define=API_BASE_URL=mock (misconfigured CI, demo
     // build distributed by mistake) must not silently serve fake data in
     // production. See issue #1470 / audit T14 (2026-04-22).
-    if (!kReleaseMode && const String.fromEnvironment('API_BASE_URL') == 'mock') {
+    if (!kReleaseMode &&
+        const String.fromEnvironment('API_BASE_URL') == 'mock') {
       importMockInterceptor();
     }
   }
@@ -212,9 +211,8 @@ class ApiClient {
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
         final data = (e.response?.data as Map).cast<dynamic, dynamic>();
-        message =
-            (data['localized_message'] ?? data['message'] ?? message)
-                .toString();
+        message = (data['localized_message'] ?? data['message'] ?? message)
+            .toString();
         code = data['error']?.toString();
       }
     } else if (e.type == DioExceptionType.connectionTimeout) {

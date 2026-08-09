@@ -55,10 +55,9 @@ class Feature {
   bool isCompatibleWith(String mobileVersion) {
     final current = Version.parse(mobileVersion);
     final min = Version.parse(minimumMobileVersion);
-    final max =
-        maximumMobileVersion != null
-            ? Version.parse(maximumMobileVersion!)
-            : null;
+    final max = maximumMobileVersion != null
+        ? Version.parse(maximumMobileVersion!)
+        : null;
 
     return current >= min && (max == null || current <= max);
   }

@@ -11,8 +11,8 @@ import '../platform/platform_models.dart';
 
 final platformCompanyRequestsProvider =
     FutureProvider<List<PlatformCompanyRequest>>((ref) {
-  return ref.watch(platformRepositoryProvider).companyRequests();
-});
+      return ref.watch(platformRepositoryProvider).companyRequests();
+    });
 
 class CompanyRequestsScreen extends ConsumerWidget {
   const CompanyRequestsScreen({super.key});
@@ -42,9 +42,7 @@ class CompanyRequestsScreen extends ConsumerWidget {
                 )
               : Column(
                   children: items
-                      .map(
-                        (request) => _CompanyRequestCard(request: request),
-                      )
+                      .map((request) => _CompanyRequestCard(request: request))
                       .toList(),
                 ),
           loading: () => const _CompanyRequestsLoading(),
@@ -101,7 +99,9 @@ class _CompanyRequestCard extends ConsumerWidget {
     WidgetRef ref,
     bool approved,
   ) async {
-    await ref.read(platformRepositoryProvider).reviewCompanyRequest(
+    await ref
+        .read(platformRepositoryProvider)
+        .reviewCompanyRequest(
           id: request.id,
           approved: approved,
           adminNotes: approved
@@ -124,10 +124,7 @@ class _CompanyRequestCard extends ConsumerWidget {
       iconColor: AppColors.warning,
       title: request.companyName,
       subtitle: '${request.city}, ${request.country} - ${request.email}',
-      trailing: LeopardoBadge(
-        label: request.status,
-        color: AppColors.warning,
-      ),
+      trailing: LeopardoBadge(label: request.status, color: AppColors.warning),
       footer: Row(
         children: [
           Expanded(

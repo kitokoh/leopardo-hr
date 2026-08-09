@@ -25,7 +25,9 @@ class OfflineSyncService {
         : await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
 
     // Listen to network changes
-    _connectivitySub = connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+    _connectivitySub = connectivity.onConnectivityChanged.listen((
+      List<ConnectivityResult> results,
+    ) {
       if (results.any((result) => result != ConnectivityResult.none)) {
         _syncPendingPunches();
       }
@@ -38,7 +40,10 @@ class OfflineSyncService {
     }
   }
 
-  Future<void> saveOfflinePunch(Map<String, dynamic> payload, bool isCheckIn) async {
+  Future<void> saveOfflinePunch(
+    Map<String, dynamic> payload,
+    bool isCheckIn,
+  ) async {
     await _offlineBox.add({
       'type': isCheckIn ? 'check-in' : 'check-out',
       'payload': payload,
@@ -58,7 +63,9 @@ class OfflineSyncService {
       final payload = Map<String, dynamic>.from(item['payload'] as Map);
 
       try {
-        final path = type == 'check-in' ? '/attendance/check-in' : '/attendance/check-out';
+        final path = type == 'check-in'
+            ? '/attendance/check-in'
+            : '/attendance/check-out';
         await apiClient.requestWithRetry(
           path,
           method: 'POST',

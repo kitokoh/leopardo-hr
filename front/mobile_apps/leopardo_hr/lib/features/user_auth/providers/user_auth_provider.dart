@@ -60,8 +60,9 @@ class UserAuthNotifier extends StateNotifier<UserAuthState> {
       state = state.copyWith(isLoading: false, user: data['user'] as AppUser);
       return true;
     } catch (e) {
-      final msg =
-          e is ApiException ? e.message : 'Erreur lors de l\'inscription';
+      final msg = e is ApiException
+          ? e.message
+          : 'Erreur lors de l\'inscription';
       state = state.copyWith(isLoading: false, error: msg);
       return false;
     }

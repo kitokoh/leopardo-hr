@@ -12,8 +12,9 @@ import 'package:leopardo_employee/features/smart_attendance/services/geofence_se
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Repository d'accès aux APIs Smart Attendance.
-final smartAttendanceRepositoryProvider =
-    Provider<SmartAttendanceRepository>((ref) {
+final smartAttendanceRepositoryProvider = Provider<SmartAttendanceRepository>((
+  ref,
+) {
   final apiClient = ref.watch(apiClientProvider);
   return SmartAttendanceRepository(apiClient);
 });
@@ -24,8 +25,9 @@ final geofenceServiceProvider = Provider<GeofenceService>((ref) {
 });
 
 /// Service de surveillance GPS en background.
-final backgroundLocationServiceProvider =
-    Provider<BackgroundLocationService>((ref) {
+final backgroundLocationServiceProvider = Provider<BackgroundLocationService>((
+  ref,
+) {
   final repository = ref.watch(smartAttendanceRepositoryProvider);
   final geofenceService = ref.watch(geofenceServiceProvider);
 
@@ -46,8 +48,9 @@ final backgroundLocationServiceProvider =
 
 /// Charge la configuration Smart Attendance de l'entreprise.
 /// Ex: GPS activé, mode forcé, coordonnées du centre, rayon.
-final smartAttendanceConfigProvider =
-    FutureProvider<SmartAttendanceConfig>((ref) async {
+final smartAttendanceConfigProvider = FutureProvider<SmartAttendanceConfig>((
+  ref,
+) async {
   final repository = ref.watch(smartAttendanceRepositoryProvider);
   return repository.getConfig();
 });
@@ -142,7 +145,7 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
   final BackgroundLocationService _backgroundService;
 
   ActiveGeoSessionNotifier(this._repository, this._backgroundService)
-      : super(const ActiveGeoSessionState()) {
+    : super(const ActiveGeoSessionState()) {
     loadSessions();
   }
 
@@ -196,12 +199,13 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
 
 /// Provider de la session GPS active — StateNotifierProvider.
 final activeGeoSessionProvider =
-    StateNotifierProvider<ActiveGeoSessionNotifier, ActiveGeoSessionState>(
-        (ref) {
-  final repository = ref.watch(smartAttendanceRepositoryProvider);
-  final backgroundService = ref.watch(backgroundLocationServiceProvider);
-  return ActiveGeoSessionNotifier(repository, backgroundService);
-});
+    StateNotifierProvider<ActiveGeoSessionNotifier, ActiveGeoSessionState>((
+      ref,
+    ) {
+      final repository = ref.watch(smartAttendanceRepositoryProvider);
+      final backgroundService = ref.watch(backgroundLocationServiceProvider);
+      return ActiveGeoSessionNotifier(repository, backgroundService);
+    });
 
 /// Provider des sessions récentes uniquement (dérivé de activeGeoSessionProvider)
 final recentGeoSessionsProvider = Provider<List<GeoAttendanceSession>>((ref) {

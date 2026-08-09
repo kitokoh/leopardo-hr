@@ -54,12 +54,13 @@ class AttendanceRepository {
       if (e is ApiException &&
           (e.message.toLowerCase().contains('connexion') ||
               e.message.toLowerCase().contains('internet'))) {
-        final box =
-            await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+        final box = await Hive.openBox<Map<dynamic, dynamic>>(
+          'offline_punches',
+        );
         await box.add({
           'type': 'check-in',
           'payload': payload,
-          'timestamp': DateTime.now().toIso8601String()
+          'timestamp': DateTime.now().toIso8601String(),
         });
         return AttendanceLog(
           id: 0,
@@ -106,12 +107,13 @@ class AttendanceRepository {
       if (e is ApiException &&
           (e.message.toLowerCase().contains('connexion') ||
               e.message.toLowerCase().contains('internet'))) {
-        final box =
-            await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+        final box = await Hive.openBox<Map<dynamic, dynamic>>(
+          'offline_punches',
+        );
         await box.add({
           'type': 'check-out',
           'payload': payload,
-          'timestamp': DateTime.now().toIso8601String()
+          'timestamp': DateTime.now().toIso8601String(),
         });
         return AttendanceLog(
           id: 0,
@@ -334,8 +336,9 @@ class AttendanceRepository {
 
     final data = payload.cast<String, dynamic>();
     final rawContext = data['context'] ?? responseData['context'];
-    final context =
-        rawContext is Map ? rawContext.cast<String, dynamic>() : null;
+    final context = rawContext is Map
+        ? rawContext.cast<String, dynamic>()
+        : null;
 
     if (data.containsKey('items')) {
       return {
@@ -368,11 +371,12 @@ class AttendanceRepository {
     final rawSessions = data['sessions'];
     final sessions = rawSessions is List
         ? rawSessions
-            .whereType<Map>()
-            .map(
-              (entry) => AttendanceLog.fromJson(entry.cast<String, dynamic>()),
-            )
-            .toList()
+              .whereType<Map>()
+              .map(
+                (entry) =>
+                    AttendanceLog.fromJson(entry.cast<String, dynamic>()),
+              )
+              .toList()
         : const <AttendanceLog>[];
 
     return {
@@ -393,8 +397,8 @@ class AttendanceRepository {
             ? int.tryParse(today['late_minutes'].toString())
             : null,
         employeeName: today['name']?.toString(),
-        employeePhotoUrl:
-            (today['photo_url'] ?? today['photo_path'])?.toString(),
+        employeePhotoUrl: (today['photo_url'] ?? today['photo_path'])
+            ?.toString(),
         sessionNumber:
             int.tryParse(today['session_number']?.toString() ?? '') ?? 1,
         workType: (today['work_type'] ?? 'normal').toString(),

@@ -7,26 +7,21 @@ part of 'list_schema.dart';
 // **************************************************************************
 
 ListSchema _$ListSchemaFromJson(Map<String, dynamic> json) => ListSchema(
-  columns:
-      (json['columns'] as List<dynamic>)
-          .map((e) => ListColumn.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  pagination:
-      json['pagination'] == null
-          ? null
-          : ListPagination.fromJson(json['pagination'] as Map<String, dynamic>),
-  sorting:
-      json['sorting'] == null
-          ? null
-          : ListSorting.fromJson(json['sorting'] as Map<String, dynamic>),
-  filtering:
-      json['filtering'] == null
-          ? null
-          : ListFiltering.fromJson(json['filtering'] as Map<String, dynamic>),
-  actions:
-      (json['actions'] as List<dynamic>?)
-          ?.map((e) => ListAction.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  columns: (json['columns'] as List<dynamic>)
+      .map((e) => ListColumn.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  pagination: json['pagination'] == null
+      ? null
+      : ListPagination.fromJson(json['pagination'] as Map<String, dynamic>),
+  sorting: json['sorting'] == null
+      ? null
+      : ListSorting.fromJson(json['sorting'] as Map<String, dynamic>),
+  filtering: json['filtering'] == null
+      ? null
+      : ListFiltering.fromJson(json['filtering'] as Map<String, dynamic>),
+  actions: (json['actions'] as List<dynamic>?)
+      ?.map((e) => ListAction.fromJson(e as Map<String, dynamic>))
+      .toList(),
   searchPlaceholder: json['search_placeholder'] as String?,
   enableSearch: json['enable_search'] as bool? ?? true,
   enableRefresh: json['enable_refresh'] as bool? ?? true,
@@ -130,10 +125,9 @@ const _$ListSortDirectionEnumMap = {
 
 ListFiltering _$ListFilteringFromJson(Map<String, dynamic> json) =>
     ListFiltering(
-      filters:
-          (json['filters'] as List<dynamic>)
-              .map((e) => ListFilter.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      filters: (json['filters'] as List<dynamic>)
+          .map((e) => ListFilter.fromJson(e as Map<String, dynamic>))
+          .toList(),
       quickFilters: json['quick_filters'] as bool? ?? true,
     );
 
@@ -147,8 +141,9 @@ ListFilter _$ListFilterFromJson(Map<String, dynamic> json) => ListFilter(
   name: json['name'] as String,
   label: json['label'] as String,
   type: $enumDecode(_$ListFilterTypeEnumMap, json['type']),
-  options:
-      (json['options'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  options: (json['options'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   placeholder: json['placeholder'] as String?,
 );
 

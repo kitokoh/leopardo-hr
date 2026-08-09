@@ -214,9 +214,7 @@ class _ProfileInfoRow extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: AppTypography.body.copyWith(
-                    color: MobileSurface.text,
-                  ),
+                  style: AppTypography.body.copyWith(color: MobileSurface.text),
                 ),
               ],
             ),
@@ -248,9 +246,8 @@ class _ProfileLanguageCardState extends ConsumerState<_ProfileLanguageCard> {
   @override
   void initState() {
     super.initState();
-    _selectedLanguage = widget.languageLabels.containsKey(
-      widget.employee.language,
-    )
+    _selectedLanguage =
+        widget.languageLabels.containsKey(widget.employee.language)
         ? widget.employee.language
         : 'fr';
   }
@@ -267,9 +264,9 @@ class _ProfileLanguageCardState extends ConsumerState<_ProfileLanguageCard> {
     if (!context.mounted) return;
     final l10n = context.l10n;
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profileLanguageUpdated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.profileLanguageUpdated)));
     }
   }
 
@@ -310,9 +307,7 @@ class _ProfileLanguageCardState extends ConsumerState<_ProfileLanguageCard> {
           FilledButton(
             onPressed: _saving ? null : _saveLanguage,
             child: Text(
-              _saving
-                  ? l10n.profileLanguageSaving
-                  : l10n.profileLanguageSave,
+              _saving ? l10n.profileLanguageSaving : l10n.profileLanguageSave,
             ),
           ),
         ],
@@ -320,4 +315,3 @@ class _ProfileLanguageCardState extends ConsumerState<_ProfileLanguageCard> {
     );
   }
 }
-

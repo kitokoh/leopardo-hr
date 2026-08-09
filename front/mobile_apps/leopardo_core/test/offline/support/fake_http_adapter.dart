@@ -51,7 +51,9 @@ class FakeHttpAdapter implements HttpClientAdapter {
     responses.add(FakeHttpResponse(statusCode: statusCode, data: data));
   }
 
-  void queueFailure({DioExceptionType type = DioExceptionType.connectionError}) {
+  void queueFailure({
+    DioExceptionType type = DioExceptionType.connectionError,
+  }) {
     responses.add(FakeHttpResponse(throwError: true, errorType: type));
   }
 
@@ -62,7 +64,12 @@ class FakeHttpAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     requests.add(
-      RecordedRequest(options.method, options.path, options.data, options.headers),
+      RecordedRequest(
+        options.method,
+        options.path,
+        options.data,
+        options.headers,
+      ),
     );
 
     final next = responses.isNotEmpty
@@ -73,7 +80,8 @@ class FakeHttpAdapter implements HttpClientAdapter {
       throw DioException(
         requestOptions: options,
         type: next.errorType,
-        error: 'FakeHttpAdapter: no response queued or explicit failure requested',
+        error:
+            'FakeHttpAdapter: no response queued or explicit failure requested',
       );
     }
 

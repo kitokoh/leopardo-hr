@@ -37,7 +37,11 @@ void main() {
       edgeNodeId: 'node-1',
       edgeToken: 'token-1',
     );
-    service = AttendanceOfflineService(db: db, syncService: syncService, dio: dio);
+    service = AttendanceOfflineService(
+      db: db,
+      syncService: syncService,
+      dio: dio,
+    );
   });
 
   tearDown(() async {
@@ -71,37 +75,54 @@ void main() {
       expect(pending.single.operation, 'create');
     });
 
-    test('online mode with a successful API call does not touch local DB', () async {
-      syncServiceSetMode(syncService, SyncMode.cloud);
-      adapter.queueSuccess(data: {
-        'data': {'id': 'remote-log-1'},
-      });
+    test(
+      'online mode with a successful API call does not touch local DB',
+      () async {
+        syncServiceSetMode(syncService, SyncMode.cloud);
+        adapter.queueSuccess(
+          data: {
+            'data': {'id': 'remote-log-1'},
+          },
+        );
 
-      final result = await service.checkIn(employeeId: 'emp-2', companyId: 'co-1');
+        final result = await service.checkIn(
+          employeeId: 'emp-2',
+          companyId: 'co-1',
+        );
 
-      expect(result.id, 'remote-log-1');
-      expect(result.savedLocally, isFalse);
-      expect(result.synced, isTrue);
-      expect(adapter.requests, hasLength(1));
-      expect(adapter.requests.single.path, contains('/v1/attendance/check-in'));
+        expect(result.id, 'remote-log-1');
+        expect(result.savedLocally, isFalse);
+        expect(result.synced, isTrue);
+        expect(adapter.requests, hasLength(1));
+        expect(
+          adapter.requests.single.path,
+          contains('/v1/attendance/check-in'),
+        );
 
-      final logs = await db.getAttendanceLogs('emp-2');
-      expect(logs, isEmpty);
-    });
+        final logs = await db.getAttendanceLogs('emp-2');
+        expect(logs, isEmpty);
+      },
+    );
 
-    test('online mode with a failing API call falls back to local storage', () async {
-      syncServiceSetMode(syncService, SyncMode.cloud);
-      adapter.queueFailure();
+    test(
+      'online mode with a failing API call falls back to local storage',
+      () async {
+        syncServiceSetMode(syncService, SyncMode.cloud);
+        adapter.queueFailure();
 
-      final result = await service.checkIn(employeeId: 'emp-3', companyId: 'co-1');
+        final result = await service.checkIn(
+          employeeId: 'emp-3',
+          companyId: 'co-1',
+        );
 
-      expect(result.savedLocally, isTrue);
-      expect(result.synced, isFalse);
-      expect(result.fallback, isTrue);
+        expect(result.savedLocally, isTrue);
+        expect(result.synced, isFalse);
+        expect(result.fallback, isTrue);
 
-      final logs = await db.getAttendanceLogs('emp-3');
-      expect(logs, hasLength(1));
-    });
+        final logs = await db.getAttendanceLogs('emp-3');
+        expect(logs, hasLength(1));
+      },
+    );
   });
 
   group('checkOut', () {
@@ -138,23 +159,26 @@ void main() {
       expect(adapter.requests, isEmpty);
     });
 
-    test('online mode with a failing API call falls back to local checkout', () async {
-      syncServiceSetMode(syncService, SyncMode.cloud);
-      final id = await db.insertAttendanceLog(
-        LocalAttendanceLogsCompanion.insert(
-          employeeId: 'emp-6',
-          companyId: 'co-1',
-          checkIn: DateTime.now(),
-        ),
-      );
-      adapter.queueFailure();
+    test(
+      'online mode with a failing API call falls back to local checkout',
+      () async {
+        syncServiceSetMode(syncService, SyncMode.cloud);
+        final id = await db.insertAttendanceLog(
+          LocalAttendanceLogsCompanion.insert(
+            employeeId: 'emp-6',
+            companyId: 'co-1',
+            checkIn: DateTime.now(),
+          ),
+        );
+        adapter.queueFailure();
 
-      await service.checkOut(logId: id);
+        await service.checkOut(logId: id);
 
-      expect(adapter.requests, hasLength(1));
-      final logs = await db.getAttendanceLogs('emp-6');
-      expect(logs.single.checkOut, isNotNull);
-    });
+        expect(adapter.requests, hasLength(1));
+        final logs = await db.getAttendanceLogs('emp-6');
+        expect(logs.single.checkOut, isNotNull);
+      },
+    );
   });
 }
 

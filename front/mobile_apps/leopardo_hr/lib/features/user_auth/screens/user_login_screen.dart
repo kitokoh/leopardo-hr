@@ -52,7 +52,9 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
       final googleSignIn = GoogleSignIn.instance;
       final account = await googleSignIn.authenticate();
 
-      final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
+      final ok = await ref
+          .read(userAuthProvider.notifier)
+          .googleSignIn(
             googleId: account.id,
             email: account.email,
             firstName: account.displayName?.split(' ').first ?? '',
@@ -142,16 +144,16 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     return Column(
       children: [
         Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [AppColors.rh, AppColors.rhDark],
-            ),
-          ),
-          child: const Icon(Icons.login, color: Colors.white, size: 30),
-        )
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [AppColors.rh, AppColors.rhDark],
+                ),
+              ),
+              child: const Icon(Icons.login, color: Colors.white, size: 30),
+            )
             .animate()
             .fadeIn(duration: 400.ms)
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),

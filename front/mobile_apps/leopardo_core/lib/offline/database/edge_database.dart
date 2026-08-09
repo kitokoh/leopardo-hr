@@ -25,8 +25,9 @@ class LocalAttendanceLogs extends Table {
   RealColumn get gpsLat => real().nullable()();
   RealColumn get gpsLng => real().nullable()();
   TextColumn get status => text().withDefault(const Constant('present'))();
-  TextColumn get syncStatus =>
-      text().withDefault(const Constant('pending'))(); // pending|synced|conflict|failed
+  TextColumn get syncStatus => text().withDefault(
+    const Constant('pending'),
+  )(); // pending|synced|conflict|failed
   TextColumn get externalEventId => text().nullable()();
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now())();
@@ -46,10 +47,10 @@ class LocalAbsences extends Table {
   DateTimeColumn get startDate => dateTime()();
   DateTimeColumn get endDate => dateTime()();
   TextColumn get reason => text().nullable()();
-  TextColumn get status =>
-      text().withDefault(const Constant('pending'))(); // pending|approved|rejected
-  TextColumn get syncStatus =>
-      text().withDefault(const Constant('pending'))();
+  TextColumn get status => text().withDefault(
+    const Constant('pending'),
+  )(); // pending|approved|rejected
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now())();
   DateTimeColumn get updatedAt =>
@@ -71,7 +72,8 @@ class LocalEmployees extends Table {
   TextColumn get positionId => text().nullable()();
   TextColumn get role => text().withDefault(const Constant('employee'))();
   TextColumn get status => text().withDefault(const Constant('active'))();
-  TextColumn get faceEncoding => text().nullable()(); // base64 for local biometric
+  TextColumn get faceEncoding =>
+      text().nullable()(); // base64 for local biometric
   TextColumn get biometricId => text().nullable()();
   DateTimeColumn get updatedAt =>
       dateTime().clientDefault(() => DateTime.now())();
@@ -162,15 +164,16 @@ class EdgeDatabase extends _$EdgeDatabase {
   }
 
   Future<void> checkOut(String logId) async {
-    await (update(localAttendanceLogs)..where((t) => t.id.equals(logId)))
-        .write(LocalAttendanceLogsCompanion(
-      checkOut: Value(DateTime.now()),
-      updatedAt: Value(DateTime.now()),
-      syncStatus: const Value('pending'),
-    ));
-    final log = await (select(localAttendanceLogs)
-          ..where((t) => t.id.equals(logId)))
-        .getSingle();
+    await (update(localAttendanceLogs)..where((t) => t.id.equals(logId))).write(
+      LocalAttendanceLogsCompanion(
+        checkOut: Value(DateTime.now()),
+        updatedAt: Value(DateTime.now()),
+        syncStatus: const Value('pending'),
+      ),
+    );
+    final log = await (select(
+      localAttendanceLogs,
+    )..where((t) => t.id.equals(logId))).getSingle();
     await _enqueue('attendance_logs', logId, 'update', _logToJson(log));
   }
 
@@ -191,13 +194,12 @@ class EdgeDatabase extends _$EdgeDatabase {
       (select(localEmployees)..where((t) => t.id.equals(id))).getSingleOrNull();
 
   Future<List<LocalEmployee>> searchEmployees(String query) =>
-      (select(localEmployees)
-            ..where(
-              (t) =>
-                  t.firstName.contains(query) |
-                  t.lastName.contains(query) |
-                  t.email.contains(query),
-            ))
+      (select(localEmployees)..where(
+            (t) =>
+                t.firstName.contains(query) |
+                t.lastName.contains(query) |
+                t.email.contains(query),
+          ))
           .get();
 
   // ── Sync Queue ───────────────────────────────────────
@@ -218,9 +220,7 @@ class EdgeDatabase extends _$EdgeDatabase {
 
   Future<void> markFailed(String itemId) =>
       (update(localSyncQueue)..where((t) => t.id.equals(itemId))).write(
-        const LocalSyncQueueCompanion(
-          status: Value('failed'),
-        ),
+        const LocalSyncQueueCompanion(status: Value('failed')),
       );
 
   Future<void> _enqueue(
@@ -241,31 +241,31 @@ class EdgeDatabase extends _$EdgeDatabase {
 
   // Helper serializers
   Map<String, dynamic> _logToJson(LocalAttendanceLog l) => {
-        'id': l.id,
-        'employee_id': l.employeeId,
-        'company_id': l.companyId,
-        'check_in': l.checkIn.toIso8601String(),
-        'check_out': l.checkOut?.toIso8601String(),
-        'method': l.method,
-        'work_type': l.workType,
-        'gps_lat': l.gpsLat,
-        'gps_lng': l.gpsLng,
-        'status': l.status,
-        'external_event_id': l.externalEventId,
-        'updated_at': l.updatedAt.toIso8601String(),
-      };
+    'id': l.id,
+    'employee_id': l.employeeId,
+    'company_id': l.companyId,
+    'check_in': l.checkIn.toIso8601String(),
+    'check_out': l.checkOut?.toIso8601String(),
+    'method': l.method,
+    'work_type': l.workType,
+    'gps_lat': l.gpsLat,
+    'gps_lng': l.gpsLng,
+    'status': l.status,
+    'external_event_id': l.externalEventId,
+    'updated_at': l.updatedAt.toIso8601String(),
+  };
 
   Map<String, dynamic> _absenceToJson(LocalAbsence a) => {
-        'id': a.id,
-        'employee_id': a.employeeId,
-        'company_id': a.companyId,
-        'absence_type_id': a.absenceTypeId,
-        'start_date': a.startDate.toIso8601String(),
-        'end_date': a.endDate.toIso8601String(),
-        'reason': a.reason,
-        'status': a.status,
-        'updated_at': a.updatedAt.toIso8601String(),
-      };
+    'id': a.id,
+    'employee_id': a.employeeId,
+    'company_id': a.companyId,
+    'absence_type_id': a.absenceTypeId,
+    'start_date': a.startDate.toIso8601String(),
+    'end_date': a.endDate.toIso8601String(),
+    'reason': a.reason,
+    'status': a.status,
+    'updated_at': a.updatedAt.toIso8601String(),
+  };
 
   String _jsonEncode(Map<String, dynamic> map) {
     // simple JSON encode — use dart:convert in real code

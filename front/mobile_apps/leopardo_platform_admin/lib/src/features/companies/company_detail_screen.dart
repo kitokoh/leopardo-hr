@@ -14,19 +14,19 @@ import 'company_screen.dart';
 
 final platformCompanyDetailProvider =
     FutureProvider.family<_CompanyDetailData, String>((ref, companyId) async {
-  final repository = ref.watch(platformRepositoryProvider);
-  final results = await Future.wait([
-    repository.companyHealth(companyId),
-    repository.companySubscription(companyId),
-    repository.companyFeatures(companyId),
-  ]);
+      final repository = ref.watch(platformRepositoryProvider);
+      final results = await Future.wait([
+        repository.companyHealth(companyId),
+        repository.companySubscription(companyId),
+        repository.companyFeatures(companyId),
+      ]);
 
-  return _CompanyDetailData(
-    health: results[0] as PlatformCompanyHealth,
-    subscription: results[1] as PlatformCompanySubscription,
-    features: results[2] as PlatformCompanyFeatures,
-  );
-});
+      return _CompanyDetailData(
+        health: results[0] as PlatformCompanyHealth,
+        subscription: results[1] as PlatformCompanySubscription,
+        features: results[2] as PlatformCompanyFeatures,
+      );
+    });
 
 final platformPlansProvider = FutureProvider<List<PlatformPlan>>((ref) {
   return ref.watch(platformRepositoryProvider).plans();
@@ -58,9 +58,8 @@ class CompanyDetailScreen extends ConsumerWidget {
           loading: () => const _CompanyDetailLoading(),
           error: (error, _) => MobileErrorPanel(
             message: error.toString(),
-            onRetry: () => ref.invalidate(
-              platformCompanyDetailProvider(companyId),
-            ),
+            onRetry: () =>
+                ref.invalidate(platformCompanyDetailProvider(companyId)),
           ),
         ),
       ],
@@ -103,11 +102,7 @@ class _CompanyDetailLoading extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 18),
-        ShimmerLoading(
-          width: double.infinity,
-          height: 220,
-          borderRadius: 16,
-        ),
+        ShimmerLoading(width: double.infinity, height: 220, borderRadius: 16),
       ],
     );
   }
@@ -367,7 +362,9 @@ class _CompanyDetailContent extends ConsumerWidget {
     }
 
     try {
-      await ref.read(platformRepositoryProvider).updateCompanySubscription(
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanySubscription(
             companyId: companyId,
             planId: subscription.planId,
             status: 'active',
@@ -434,7 +431,9 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(platformRepositoryProvider).updateCompanySubscription(
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanySubscription(
             companyId: widget.companyId,
             planId: _planId!,
             status: _status,
@@ -512,9 +511,7 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
                     .map(
                       (plan) => DropdownMenuItem<int>(
                         value: plan.id,
-                        child: Text(
-                          '${plan.name} - ${plan.monthlyPrice}/mois',
-                        ),
+                        child: Text('${plan.name} - ${plan.monthlyPrice}/mois'),
                       ),
                     )
                     .toList(),
@@ -587,7 +584,9 @@ class _FeaturesSheetState extends ConsumerState<_FeaturesSheet> {
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      await ref.read(platformRepositoryProvider).updateCompanyFeatures(
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanyFeatures(
             companyId: widget.companyId,
             features: _features,
           );

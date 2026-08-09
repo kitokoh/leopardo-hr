@@ -44,23 +44,21 @@ class TenantBrandMark extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
-            child:
-                logo == null
-                    ? Icon(
+            child: logo == null
+                ? Icon(
+                    Icons.business_rounded,
+                    size: compact ? 12 : 14,
+                    color: primary,
+                  )
+                : Image.network(
+                    logo,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Icon(
                       Icons.business_rounded,
                       size: compact ? 12 : 14,
                       color: primary,
-                    )
-                    : Image.network(
-                      logo,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (_, __, ___) => Icon(
-                            Icons.business_rounded,
-                            size: compact ? 12 : 14,
-                            color: primary,
-                          ),
                     ),
+                  ),
           ),
           const SizedBox(width: 8),
           Flexible(

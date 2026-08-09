@@ -7,14 +7,12 @@ part of 'detail_schema.dart';
 // **************************************************************************
 
 DetailSchema _$DetailSchemaFromJson(Map<String, dynamic> json) => DetailSchema(
-  sections:
-      (json['sections'] as List<dynamic>)
-          .map((e) => DetailSection.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  actions:
-      (json['actions'] as List<dynamic>?)
-          ?.map((e) => DetailAction.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  sections: (json['sections'] as List<dynamic>)
+      .map((e) => DetailSection.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  actions: (json['actions'] as List<dynamic>?)
+      ?.map((e) => DetailAction.fromJson(e as Map<String, dynamic>))
+      .toList(),
   title: json['title'] as String?,
   subtitle: json['subtitle'] as String?,
   layout:
@@ -43,10 +41,9 @@ DetailSection _$DetailSectionFromJson(Map<String, dynamic> json) =>
     DetailSection(
       name: json['name'] as String,
       title: json['title'] as String,
-      fields:
-          (json['fields'] as List<dynamic>)
-              .map((e) => DetailField.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      fields: (json['fields'] as List<dynamic>)
+          .map((e) => DetailField.fromJson(e as Map<String, dynamic>))
+          .toList(),
       visible: json['visible'] as bool? ?? true,
       collapsible: json['collapsible'] as bool? ?? false,
       collapsed: json['collapsed'] as bool? ?? false,

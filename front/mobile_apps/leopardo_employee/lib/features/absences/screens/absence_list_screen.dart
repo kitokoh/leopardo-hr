@@ -568,4 +568,3 @@ class _AbsenceTypeOption {
     );
   }
 }
-

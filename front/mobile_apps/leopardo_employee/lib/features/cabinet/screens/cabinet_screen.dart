@@ -260,10 +260,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               if (name.isEmpty) return;
               Navigator.pop(ctx);
               final repo = ref.read(cabinetRepositoryProvider);
-              await repo.createFolder(
-                name: name,
-                parentId: widget.folderId,
-              );
+              await repo.createFolder(name: name, parentId: widget.folderId);
               ref.invalidate(cabinetFoldersProvider(widget.folderId));
             },
             child: const Text('Creer'),
@@ -331,9 +328,9 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 );
                 if (!mounted) return;
                 final url = result['share_url'] ?? '';
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Lien copie : $url')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Lien copie : $url')));
               },
             ),
             const Divider(),
@@ -391,9 +388,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
             child: const Text('Annuler'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.danger,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () async {
               Navigator.pop(ctx);
               final repo = ref.read(cabinetRepositoryProvider);
@@ -429,10 +424,8 @@ class _FolderTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => context.push(
-            '/cabinet/folder/${folder.id}',
-            extra: folder.name,
-          ),
+          onTap: () =>
+              context.push('/cabinet/folder/${folder.id}', extra: folder.name),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(

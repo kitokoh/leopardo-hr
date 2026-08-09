@@ -429,8 +429,9 @@ class _PaymentDocumentTile extends StatelessWidget {
               color: document.isAvailable
                   ? AppColors.info
                   : MobileSurface.secondary,
-              onPressed:
-                  document.isAvailable ? () => onDownload(document) : null,
+              onPressed: document.isAvailable
+                  ? () => onDownload(document)
+                  : null,
             ),
         ],
       ),
@@ -517,7 +518,9 @@ class _SummaryCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            ...summary.items.take(5).map(
+            ...summary.items
+                .take(5)
+                .map(
                   (item) => Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Row(
@@ -608,4 +611,3 @@ class _MoneyLine extends StatelessWidget {
     );
   }
 }
-

@@ -105,7 +105,10 @@ class _StartupRuntimeError extends StatelessWidget {
           child: Text(
             'Erreur d affichage Leopardo Manager\n${details.exceptionAsString()}',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.mobileDarkText, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.mobileDarkText,
+              fontSize: 13,
+            ),
           ),
         ),
       ),

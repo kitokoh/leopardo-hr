@@ -87,9 +87,7 @@ class WelcomeScreen extends StatelessWidget {
                     onPressed: () => context.go('/user-register'),
                     icon: const Icon(Icons.person_add_outlined, size: 16),
                     label: Text(l10n.createPersonalAccount),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.ia,
-                    ),
+                    style: TextButton.styleFrom(foregroundColor: AppColors.ia),
                   ),
                 ),
               ],
@@ -225,12 +223,14 @@ class _ModuleTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color:
-            AppColors.tint(context, color, lightAlpha: 0.12, darkAlpha: 0.20),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.20),
+        color: AppColors.tint(
+          context,
+          color,
+          lightAlpha: 0.12,
+          darkAlpha: 0.20,
         ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -232,13 +232,13 @@ class EmployeeCareer {
       currentCompanyName: json['current_company_name']?.toString(),
       timeline: rawTimeline is List
           ? rawTimeline
-              .whereType<Map>()
-              .map(
-                (entry) => EmployeeCareerEntry.fromJson(
-                  entry.cast<String, dynamic>(),
-                ),
-              )
-              .toList()
+                .whereType<Map>()
+                .map(
+                  (entry) => EmployeeCareerEntry.fromJson(
+                    entry.cast<String, dynamic>(),
+                  ),
+                )
+                .toList()
           : const <EmployeeCareerEntry>[],
     );
   }

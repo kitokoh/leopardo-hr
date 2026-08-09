@@ -42,13 +42,13 @@ class GeoAttendanceSession {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'status': status,
-        'started_at': startedAt.toIso8601String(),
-        'ended_at': endedAt?.toIso8601String(),
-        'duration_seconds': durationSeconds,
-        'duration_formatted': durationFormatted,
-      };
+    'id': id,
+    'status': status,
+    'started_at': startedAt.toIso8601String(),
+    'ended_at': endedAt?.toIso8601String(),
+    'duration_seconds': durationSeconds,
+    'duration_formatted': durationFormatted,
+  };
 
   /// Indique si la session est toujours active (pas encore terminée)
   bool get isActive => endedAt == null;

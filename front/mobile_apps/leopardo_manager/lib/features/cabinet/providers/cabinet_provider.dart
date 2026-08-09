@@ -12,9 +12,9 @@ final cabinetFoldersProvider = FutureProvider.family<List<CabinetFolder>, int?>(
 
 final cabinetDocumentsProvider =
     FutureProvider.family<List<CabinetDocument>, int?>((ref, folderId) async {
-  final repo = ref.watch(cabinetRepositoryProvider);
-  return await repo.getDocuments(folderId: folderId);
-});
+      final repo = ref.watch(cabinetRepositoryProvider);
+      return await repo.getDocuments(folderId: folderId);
+    });
 
 final cabinetStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   final repo = ref.watch(cabinetRepositoryProvider);

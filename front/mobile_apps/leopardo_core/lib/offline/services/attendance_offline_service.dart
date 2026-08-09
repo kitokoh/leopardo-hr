@@ -17,9 +17,9 @@ class AttendanceOfflineService {
     required EdgeDatabase db,
     required SyncService syncService,
     required Dio dio,
-  })  : _db = db,
-        _syncService = syncService,
-        _dio = dio;
+  }) : _db = db,
+       _syncService = syncService,
+       _dio = dio;
 
   /// Check-in — works online and offline
   Future<CheckInResult> checkIn({
@@ -42,11 +42,7 @@ class AttendanceOfflineService {
           syncStatus: const Value('pending'),
         ),
       );
-      return CheckInResult(
-        id: id,
-        savedLocally: true,
-        synced: false,
-      );
+      return CheckInResult(id: id, savedLocally: true, synced: false);
     }
 
     // Online — call API
@@ -89,10 +85,7 @@ class AttendanceOfflineService {
   }
 
   /// Check-out — works online and offline
-  Future<void> checkOut({
-    required String logId,
-    bool isLocalId = false,
-  }) async {
+  Future<void> checkOut({required String logId, bool isLocalId = false}) async {
     if (_syncService.currentMode == SyncMode.offline || isLocalId) {
       await _db.checkOut(logId);
       return;

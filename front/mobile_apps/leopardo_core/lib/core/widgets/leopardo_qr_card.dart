@@ -78,29 +78,28 @@ class LeopardoQrCard extends StatelessWidget {
                   ),
                 ],
               ),
-              child:
-                  hasData
-                      ? QrImageView(
-                        data: data,
-                        version: QrVersions.auto,
-                        size: 196,
-                        gapless: false,
-                        backgroundColor: Colors.white,
-                        eyeStyle: const QrEyeStyle(
-                          eyeShape: QrEyeShape.circle,
-                          color: AppColors.mobileDarkBg,
-                        ),
-                        dataModuleStyle: const QrDataModuleStyle(
-                          dataModuleShape: QrDataModuleShape.circle,
-                          color: AppColors.mobileDarkBg,
-                        ),
-                        errorCorrectionLevel: QrErrorCorrectLevel.M,
-                      )
-                      : const SizedBox(
-                        width: 196,
-                        height: 196,
-                        child: Center(child: Icon(Icons.qr_code_2_rounded)),
+              child: hasData
+                  ? QrImageView(
+                      data: data,
+                      version: QrVersions.auto,
+                      size: 196,
+                      gapless: false,
+                      backgroundColor: Colors.white,
+                      eyeStyle: const QrEyeStyle(
+                        eyeShape: QrEyeShape.circle,
+                        color: AppColors.mobileDarkBg,
                       ),
+                      dataModuleStyle: const QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.circle,
+                        color: AppColors.mobileDarkBg,
+                      ),
+                      errorCorrectionLevel: QrErrorCorrectLevel.M,
+                    )
+                  : const SizedBox(
+                      width: 196,
+                      height: 196,
+                      child: Center(child: Icon(Icons.qr_code_2_rounded)),
+                    ),
             ),
           ),
           if (expiresAt != null && expiresAt!.trim().isNotEmpty) ...[
@@ -115,17 +114,16 @@ class LeopardoQrCard extends StatelessWidget {
           ],
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            onPressed:
-                hasData
-                    ? () async {
-                      await Clipboard.setData(ClipboardData(text: data));
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Code QR copie.')),
-                        );
-                      }
+            onPressed: hasData
+                ? () async {
+                    await Clipboard.setData(ClipboardData(text: data));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Code QR copie.')),
+                      );
                     }
-                    : null,
+                  }
+                : null,
             icon: const Icon(Icons.copy_rounded),
             label: Text(copyLabel),
           ),
