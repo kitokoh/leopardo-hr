@@ -8,6 +8,7 @@ import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/company_branding/data/company_branding_repository.dart';
 import 'package:leopardo_manager/features/company_branding/providers/company_branding_provider.dart';
 import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 
 class CompanyBrandingScreen extends ConsumerWidget {
   const CompanyBrandingScreen({super.key});
@@ -70,7 +71,7 @@ class _BrandPreview extends StatelessWidget {
     final primary = _hexColor(branding.primaryColor, AppColors.rh);
     final accent = _hexColor(branding.accentColor, AppColors.info);
 
-    return MobilePanel(
+    return GlassCard(
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,7 +205,7 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
 
   @override
   Widget build(BuildContext context) {
-    return MobilePanel(
+    return GlassCard(
       padding: const EdgeInsets.all(18),
       child: Form(
         key: _formKey,
