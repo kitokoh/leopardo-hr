@@ -40,6 +40,7 @@ return [
     'payslip_column_amount' => 'Amount',
     'payslip_gross_salary' => 'Gross salary',
     'payslip_total_deductions' => 'Total deductions',
+    'payslip_annual_cumuls' => 'Annual cumulatives',
     'payslip_net_to_pay' => 'NET PAY',
     'payslip_generated_on' => 'Document generated on :date',
     'payslip_official_notice' => 'This payslip is an official document. Keep it indefinitely.',
