@@ -97,7 +97,10 @@ return new class extends Migration
         }
 
         // Contrainte check dates (PostgreSQL spécifique)
-        DB::statement("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_absence_dates') THEN ALTER TABLE absences ADD CONSTRAINT chk_absence_dates CHECK (end_date >= start_date); END IF; END $$");
+        $schemaAbsences = resolveTableSchema('absences');
+        if ($schemaAbsences !== null) {
+            DB::statement("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_absence_dates') THEN ALTER TABLE \"{$schemaAbsences}\".\"absences\" ADD CONSTRAINT chk_absence_dates CHECK (end_date >= start_date); END IF; END $$");
+        }
 
         // ── leave_balance_logs ────────────────────────────────────────────────
         if (! Schema::hasTable('leave_balance_logs')) {

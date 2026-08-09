@@ -14,7 +14,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('salary_advances');
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             // Manager approval
             $table->timestamp('manager_approved_at')->nullable()->after('approved_by');
             $table->unsignedBigInteger('manager_approved_by')->nullable()->after('manager_approved_at');
@@ -39,7 +42,7 @@ return new class extends Migration
         });
 
         // Add foreign key constraints
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->foreign('manager_approved_by')
                 ->references('id')
                 ->on('employees')
@@ -54,7 +57,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('salary_advances', function (Blueprint $table): void {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('salary_advances');
+
+        Schema::table("{$schema}.salary_advances", function (Blueprint $table): void {
             $table->dropForeign(['manager_approved_by']);
             $table->dropForeign(['payment_declared_by']);
             $table->dropColumn([

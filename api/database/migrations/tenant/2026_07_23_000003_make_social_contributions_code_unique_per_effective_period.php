@@ -33,11 +33,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('social_contributions')) {
+        $schema = resolveTableSchema('social_contributions');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('social_contributions', function (Blueprint $table): void {
+        Schema::table("{$schema}.social_contributions", function (Blueprint $table): void {
             $table->dropUnique('social_contributions_code_unique');
             $table->unique(['company_id', 'code', 'effective_from'], 'social_contributions_company_code_effective_unique');
         });
@@ -45,11 +46,12 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('social_contributions')) {
+        $schema = resolveTableSchema('social_contributions');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('social_contributions', function (Blueprint $table): void {
+        Schema::table("{$schema}.social_contributions", function (Blueprint $table): void {
             $table->dropUnique('social_contributions_company_code_effective_unique');
             $table->unique('code', 'social_contributions_code_unique');
         });

@@ -80,6 +80,70 @@ tags:
     description: "Administration super-admin : gestion tenants, plans, metriques globales."
 
 paths:
+  /employees/{employee}/certificate-of-employment:
+    get:
+      tags: ["Payroll"]
+      summary: "Certificat de travail PDF (fin de contrat, F-08)"
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "PDF (Content-Disposition: attachment)"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Employe introuvable (isolation tenant)"
+
+  /employees/{employee}/end-of-contract:
+    get:
+      tags: ["Payroll"]
+      summary: "Solde de tout compte (fin de contrat, F-08)"
+      description: "Calcul du solde de tout compte : prorata du dernier mois, indemnite de conges payes non pris, preavis, indemnite d'anciennete (1 mois/an, regime DZ documente). Reserve aux managers, isole par tenant."
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail du solde de tout compte"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      employee_id: { type: integer }
+                      end_date: { type: string }
+                      years_of_service: { type: number }
+                      monthly_base: { type: number }
+                      breakdown:
+                        type: object
+                        properties:
+                          prorated_pay: { type: number }
+                          leave_indemnity: { type: number }
+                          notice_pay: { type: number }
+                          severance: { type: number }
+                          total: { type: number }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Employe introuvable (isolation tenant)"
+
   /health:
     get:
       tags: ["Health"]
@@ -255,6 +319,133 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+
+  /payroll-runs/{payrollRun}/anomalies:
+    get:
+      tags: ["Payroll"]
+      summary: "Rapport d'anomalies pre-cloture (F-20)"
+      description: "Lecture seule : doublons, bulletins incoherents, variance de brut > 30 %, ecarts pointage -> paie (heures supplementaires pointees non integrees). Action humaine requise avant clouture."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste d'anomalies (type, severite, message)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      run_id: { type: integer }
+                      total: { type: integer }
+                      anomalies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type: { type: string }
+                            severity: { type: string }
+                            employee_id: { type: integer }
+                            message: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+
+  /payroll-runs/{payrollRun}/journal:
+    get:
+      tags: ["Payroll"]
+      summary: "Journal de paie mensuel CSV (F-10)"
+      description: "Une ligne par bulletin valide (matricule, nom, brut, cotisations, IRG, autres deductions, net, cout employeur) + ligne de totaux. Reserve aux managers principal/comptable."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV (Content-Disposition: attachment)"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+
+  /payroll-runs/{payrollRun}/lock:
+    post:
+      tags: ["Payroll"]
+      summary: "Verrouiller la session de paie (cloture comptable, F-11)"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Session verrouillee (locked_by/locked_at renseignes)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+        "422":
+          description: "Le run doit etre valide (etape RH) avant verrouillage"
+
+  /payroll-runs/{payrollRun}/unlock:
+    post:
+      tags: ["Payroll"]
+      summary: "Deverrouiller une session cloturee (raison obligatoire, F-11)"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  maxLength: 1000
+                  description: "Raison du deverrouillage (audit trail)"
+      responses:
+        "200":
+          description: "Session deverrouillee (retour a validated)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Raison manquante ou run non verrouille"
 
   /schedules:
     get:
@@ -6236,11 +6427,11 @@ paths:
           description: "Only calculated runs can be validated"
 
 
-  /payroll-runs/{payrollRun}/anomalies:
+  /payroll-runs/{payrollRun}/journal:
     get:
       tags: ["Payroll"]
-      summary: "Rapport d'anomalies pre-cloture (F-20)"
-      description: "Lecture seule : doublons, bulletins incoherents, variance de brut > 30 %, ecarts pointage -> paie (heures supplementaires pointees non integrees). Action humaine requise avant clouture."
+      summary: "Journal de paie mensuel CSV (F-10)"
+      description: "Une ligne par bulletin valide (matricule, nom, brut, cotisations, IRG, autres deductions, net, cout employeur) + ligne de totaux. Reserve aux managers principal/comptable."
       parameters:
         - name: payrollRun
           in: path
@@ -6248,26 +6439,11 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "Liste d'anomalies (type, severite, message)"
+          description: "Fichier CSV (Content-Disposition: attachment)"
           content:
-            application/json:
+            text/csv:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      run_id: { type: integer }
-                      total: { type: integer }
-                      anomalies:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            type: { type: string }
-                            severity: { type: string }
-                            employee_id: { type: integer }
-                            message: { type: string }
+                type: string
         "401":
           $ref: "#/components/responses/Error401"
         "403":
