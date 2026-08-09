@@ -8,7 +8,6 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -17,19 +16,7 @@ use Tests\TestCase;
  */
 class PayrollAnomalyServiceTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use \Tests\RefreshTenantDatabase;
 
     private function makeRun(Company $company, string $status = 'calculated', string $period = '2026-07'): PayrollRun
     {
@@ -82,6 +69,15 @@ class PayrollAnomalyServiceTest extends TestCase
 
         $run = $this->makeRun($company);
         $this->makeSlip($run, $employee, 60000.0, 13900.0, 46100.0);
+
+        // Le schéma réel interdit les doublons (UNIQUE payroll_run_id,
+        // employee_id) — le détecteur couvre les données héritées d'avant la
+        // contrainte. La contrainte est désactivée temporairement pour simuler
+        // cet état historique. PostgreSQL honore les DDL dans une transaction ;
+        // le rollback de fin de test restaure automatiquement la contrainte
+        // sans qu'un `finally` doive la recréer manuellement (ce qui échouerait
+        // sur des données dupliquées encore présentes dans la transaction).
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE pay_slips DROP CONSTRAINT pay_slips_payroll_run_id_employee_id_unique');
         $this->makeSlip($run, $employee, 60000.0, 13900.0, 46100.0);
 
         $anomalies = (new PayrollAnomalyService())->detectForRun($run->fresh(['paySlips']));

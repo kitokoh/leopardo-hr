@@ -24,7 +24,7 @@ test.describe('Payroll page structure', () => {
   test('payroll view loads with expected sections', async ({ page }) => {
     // Set auth token if available
     await page.addInitScript((token) => {
-      localStorage.setItem('admin_token', token)
+      sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/payroll')

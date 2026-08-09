@@ -12,9 +12,9 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
   const [loading, setLoading] = useState(false);
 
   const steps = [
-    { id: 1, title: 'Bienvenue sur Leopardo', desc: 'DÃ©couvrez votre nouvel espace RH en quelques Ã©tapes.', icon: Building },
-    { id: 2, title: 'Ajoutez vos Ã©quipes', desc: 'Invitez vos employÃ©s pour commencer Ã  pointer.', icon: Users },
-    { id: 3, title: 'Finalisez la configuration', desc: 'Vos plannings et rÃ¨gles d\'entreprise sont prÃªts.', icon: ShieldCheck },
+    { id: 1, title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.', icon: Building },
+    { id: 2, title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.', icon: Users },
+    { id: 3, title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.', icon: ShieldCheck },
   ];
 
   const handleNext = async () => {

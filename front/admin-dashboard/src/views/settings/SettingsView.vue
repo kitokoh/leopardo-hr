@@ -3,7 +3,7 @@
     <div>
       <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Mon compte</h1>
       <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-        GÃ©rez vos informations, votre mot de passe et la sÃ©curitÃ© de votre compte super-administrateur.
+        Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.
       </p>
     </div>
 
@@ -11,7 +11,7 @@
     <div class="card animate-slide-up">
       <div class="card-header">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white">Informations du profil</h2>
-        <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Nom et adresse email utilisÃ©s pour vous connecter.</p>
+        <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Nom et adresse email utilisés pour vous connecter.</p>
       </div>
       <form class="card-body space-y-5" @submit.prevent="submitProfile">
         <div>
@@ -50,7 +50,7 @@
       <div class="card-header">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white">Mot de passe</h2>
         <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-          Changer votre mot de passe dÃ©connectera automatiquement toutes vos autres sessions actives.
+          Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.
         </p>
       </div>
       <form class="card-body space-y-5" @submit.prevent="submitPassword">
@@ -91,7 +91,7 @@
             >
           </div>
         </div>
-        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Minimum 8 caractÃ¨res.</p>
+        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Minimum 8 caractères.</p>
         <div class="flex justify-end">
           <button type="submit" class="btn-primary" :disabled="isSavingPassword">
             <ArrowPathIcon v-if="isSavingPassword" class="mr-2 h-4 w-4 animate-spin" />
@@ -107,7 +107,7 @@
         <div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">Authentification Ã  deux facteurs (2FA)</h2>
           <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-            Ajoutez une couche de sÃ©curitÃ© supplÃ©mentaire Ã  votre compte de super-administrateur.
+            Ajoutez une couche de sécurité supplémentaire Ã  votre compte de super-administrateur.
           </p>
         </div>
         <span
@@ -118,7 +118,7 @@
               : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
           ]"
         >
-          {{ authStore.user?.two_fa_enabled ? 'ActivÃ©' : 'DÃ©sactivÃ©' }}
+          {{ authStore.user?.two_fa_enabled ? 'Activé' : 'Désactivé' }}
         </span>
       </div>
 
@@ -126,7 +126,7 @@
         <!-- Disable flow -->
         <div v-if="authStore.user?.two_fa_enabled" class="space-y-4">
           <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
-            Le 2FA est actif. Pour le dÃ©sactiver, confirmez votre mot de passe.
+            Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.
           </p>
           <form class="flex flex-col gap-4 sm:flex-row sm:items-end" @submit.prevent="submitDisable2fa">
             <div class="flex-1">
@@ -142,7 +142,7 @@
             </div>
             <button type="submit" class="btn-secondary text-red-600 dark:text-red-400" :disabled="isDisabling2fa">
               <ArrowPathIcon v-if="isDisabling2fa" class="mr-2 h-4 w-4 animate-spin" />
-              DÃ©sactiver le 2FA
+              Désactiver le 2FA
             </button>
           </form>
         </div>
@@ -151,11 +151,11 @@
         <div v-else class="space-y-5">
           <div v-if="!pendingSecret">
             <p class="text-sm font-medium text-slate-600 dark:text-slate-300 mb-4">
-              GÃ©nÃ©rez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).
+              Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).
             </p>
             <button class="btn-primary" :disabled="isGeneratingSecret" @click="generateSecret">
               <ArrowPathIcon v-if="isGeneratingSecret" class="mr-2 h-4 w-4 animate-spin" />
-              GÃ©nÃ©rer un secret 2FA
+              Générer un secret 2FA
             </button>
           </div>
 
@@ -167,7 +167,7 @@
             </div>
             <form class="flex flex-col gap-4 sm:flex-row sm:items-end" @submit.prevent="submitEnable2fa">
               <div class="flex-1">
-                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="enable-2fa-code">2. Entrez le code Ã  6 chiffres gÃ©nÃ©rÃ©</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="enable-2fa-code">2. Entrez le code Ã  6 chiffres généré</label>
                 <input
                   id="enable-2fa-code"
                   v-model="enableForm.code"
@@ -232,7 +232,7 @@ async function submitProfile() {
     })
 
     if (result.success) {
-      toast.success('Profil mis Ã  jour avec succÃ¨s.')
+      toast.success('Profil mis Ã  jour avec succès.')
     } else {
       toast.error(result.message)
     }
@@ -252,7 +252,7 @@ async function submitPassword() {
     const result = await authStore.changePassword({ ...passwordForm })
 
     if (result.success) {
-      toast.success('Mot de passe mis Ã  jour avec succÃ¨s.')
+      toast.success('Mot de passe mis Ã  jour avec succès.')
       passwordForm.current_password = ''
       passwordForm.new_password = ''
       passwordForm.new_password_confirmation = ''
@@ -285,7 +285,7 @@ async function submitEnable2fa() {
     const result = await authStore.enable2fa(enableForm.code)
 
     if (result.success) {
-      toast.success('2FA activÃ© avec succÃ¨s.')
+      toast.success('2FA activé avec succès.')
       pendingSecret.value = null
       enableForm.code = ''
     } else {
@@ -302,7 +302,7 @@ async function submitDisable2fa() {
     const result = await authStore.disable2fa(disableForm.password)
 
     if (result.success) {
-      toast.success('2FA dÃ©sactivÃ©.')
+      toast.success('2FA désactivé.')
       disableForm.password = ''
     } else {
       toast.error(result.message)

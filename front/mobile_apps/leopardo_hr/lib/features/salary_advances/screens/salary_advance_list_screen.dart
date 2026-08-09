@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -232,11 +233,11 @@ class _SalaryAdvanceListScreenState
       final path = await ref
           .read(salaryAdvanceRepositoryProvider)
           .downloadProof(advanceId);
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       final uri = Uri.file(path);
       final canLaunch = await canLaunchUrl(uri);
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       if (canLaunch) {
         await launchUrl(uri);
@@ -246,7 +247,7 @@ class _SalaryAdvanceListScreenState
         );
       }
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -695,13 +696,13 @@ class _SalaryAdvanceRequestSheetState
           );
       ref.invalidate(salaryAdvancesProvider);
       await ref.refresh(salaryAdvancesProvider.future).then((_) {});
-      if (!mounted) return;
+      if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d avance transmise au RH.')),
       );
     } catch (e) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,

@@ -215,8 +215,18 @@ function main() {
       .replace(/â€™|â€˜/g, "'")
       .replace(/â€œ|â€\x9d/g, '"');
     const asciiSkeleton = (v) => v.replace(/[^\x00-\x7f]/g, '').replace(/\s+/g, '');
-    if (removedLinesThisHunk.some((removed) =>
-        asciiSkeleton(normalizeWs(repairMojibakeAscii(removed))) === asciiSkeleton(normalizeWs(repairMojibakeAscii(content))))) {
+    const addedSkeleton = asciiSkeleton(normalizeWs(repairMojibakeAscii(content)));
+    // Reformatage pur (dart format ré-enroule les chaînes) : la ligne ajoutée
+    // est un sous-ensemble ASCII d'une ligne retirée du même hunk — pas une
+    // nouvelle chaîne utilisateur.
+    const removedSkeletons = removedLinesThisHunk
+      .map((removed) => asciiSkeleton(normalizeWs(repairMojibakeAscii(removed))))
+      .filter((sk) => sk.length > 0);
+    const isReflow = removedSkeletons.some((removedSkeleton) =>
+        removedSkeleton === addedSkeleton
+        || (addedSkeleton.length >= 6 && removedSkeleton.includes(addedSkeleton)))
+      || (addedSkeleton.length >= 6 && removedSkeletons.join('').includes(addedSkeleton));
+    if (isReflow) {
       currentNewLine += 1;
       continue;
     }
@@ -232,6 +242,14 @@ function main() {
     while ((match = stringLiteralPattern.exec(content)) !== null) {
       const flagged = classifyLiteral(match[2]);
       if (!flagged) continue;
+      // Faux positif de reformatage : le littéral (ou son squelette ASCII)
+      // existait déjà dans une ligne retirée du même hunk.
+      const flaggedAscii = asciiSkeleton(flagged);
+      const literalExisted = removedLinesThisHunk.some((removed) => {
+        const removedAscii = asciiSkeleton(removed);
+        return removed.includes(flagged) || removedAscii.includes(flaggedAscii);
+      });
+      if (literalExisted) continue;
       violationCount += 1;
       violations.push({ file: currentFile, line: lineNo, text: flagged });
     }

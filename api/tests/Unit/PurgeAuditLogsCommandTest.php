@@ -62,6 +62,10 @@ class PurgeAuditLogsCommandTest extends TestCase
         $cmd = $this->artisan('audit:purge');
         $cmd->expectsOutputToContain('2');
         $cmd->assertSuccessful();
+        // PendingCommand exécute la commande paresseusement (__destruct) :
+        // sans run() explicite, les assertions DB ci-dessous tournent AVANT
+        // la commande et le test échoue à tort (CI rouge 2026-08-09).
+        $cmd->run();
 
         $this->assertSame(2, DB::table('audit_logs')->count());
     }
@@ -75,6 +79,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         $cmd = $this->artisan('audit:purge', ['--older-than' => 12]);
         $cmd->expectsOutputToContain('1');
         $cmd->assertSuccessful();
+        $cmd->run(); // exécution explicite (cf. test_purges_old_logs)
 
         $this->assertSame(1, DB::table('audit_logs')->count());
     }

@@ -3,6 +3,7 @@
 // ============================================================
 
 import 'dart:io';
+import 'dart:math';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
@@ -112,12 +113,15 @@ class LocalDepartments extends Table {
 }
 
 String _uuid() {
-  // Simple UUID v4 generator without external dep
-  final now = DateTime.now().microsecondsSinceEpoch;
+  // UUID v4 généré avec un vrai aléatoire. L'ancienne version dérivait
+  // uniquement du timestamp (`now + m.start * 16`) : deux inserts dans la
+  // même microseconde produisaient le même id → UNIQUE constraint failed
+  // sur local_sync_queue (test flaky + risque de collision en production).
+  final rng = Random();
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replaceAllMapped(
     RegExp(r'[xy]'),
     (m) {
-      final r = (now + m.start * 16) % 16;
+      final r = rng.nextInt(16);
       return (m.group(0) == 'x' ? r : (r & 0x3 | 0x8)).toRadixString(16);
     },
   );

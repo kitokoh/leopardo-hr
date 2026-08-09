@@ -9,7 +9,6 @@ use App\Jobs\ProcessPayrollBatchJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Mockery;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -30,17 +29,10 @@ use Tests\TestCase;
  */
 class ProcessPayrollBatchJobTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
+    use \Tests\RefreshTenantDatabase;
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
         Mockery::close();
     }

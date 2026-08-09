@@ -44,10 +44,8 @@ jobs:
         working-directory: front/admin-dashboard
         run: npm ci
 
-      - name: Install ESLint parsers
-        working-directory: front/admin-dashboard
-        run: npm install --no-save vue-eslint-parser @babel/eslint-parser
-
+      # ESLint parsers (vue-eslint-parser, @babel/eslint-parser) désormais
+      # verrouillés dans devDependencies (#1567) — couverts par npm ci.
       - name: Run ESLint
         working-directory: front/admin-dashboard
         run: npm run lint
@@ -102,10 +100,7 @@ jobs:
         working-directory: front/admin-dashboard
         run: npm ci
 
-      - name: Install Playwright test runner
-        working-directory: front/admin-dashboard
-        run: npm install --no-save @playwright/test
-
+      # @playwright/test est verrouillé dans devDependencies — couvert par npm ci.
       - name: Install Chromium
         working-directory: front/admin-dashboard
         run: npx playwright install --with-deps chromium

@@ -35,13 +35,17 @@ use Illuminate\Support\Carbon;
  */
 class PayrollRun extends Model
 {
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_CALCULATED = 'calculated';
+    public const STATUS_VALIDATED = 'validated';
+    public const STATUS_LOCKED = 'locked';
     use BelongsToCompany;
 
     protected $fillable = [
         'company_id', 'period_start', 'period_end', 'country_code', 'status',
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',
         'employee_count', 'calculated_at', 'validated_by', 'validated_at',
-        'paid_at', 'notes',
+        'paid_at', 'locked_by', 'locked_at', 'notes',
     ];
 
     protected $casts = [
@@ -55,6 +59,7 @@ class PayrollRun extends Model
         'calculated_at' => 'datetime',
         'validated_at' => 'datetime',
         'paid_at' => 'datetime',
+        'locked_at' => 'datetime',
     ];
 
     /** @return HasMany<PaySlip, $this> */

@@ -16,7 +16,7 @@
     <!-- Stats -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Runs ce mois" :value="stats.runs_this_month" icon="ChartBarIcon" color="blue" />
-      <StatsCard title="Bulletins gÃ©nÃ©rÃ©s" :value="stats.slips_generated" icon="UsersIcon" color="green" />
+      <StatsCard title="Bulletins générés" :value="stats.slips_generated" icon="UsersIcon" color="green" />
       <StatsCard title="Masse salariale" :value="formattedMasse" icon="CurrencyEuroIcon" color="purple" />
       <StatsCard title="Attente validation" :value="stats.pending_validation" icon="ChartBarIcon" color="yellow" />
     </div>
@@ -27,7 +27,7 @@
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">
-              RÃ©sumÃ© du run {{ runSummary.run?.id }}
+              Résumé du run {{ runSummary.run?.id }}
             </h3>
             <p class="mt-1 text-sm text-gray-600">
               {{ formatPeriod(runSummary.run?.period_start, runSummary.run?.period_end) }}
@@ -145,13 +145,13 @@
             <option value="">Tous les mois</option>
             <option v-for="(label, idx) in monthLabels" :key="idx" :value="idx">{{ label }}</option>
           </select>
-          <label for="payroll-run-year" class="sr-only">AnnÃ©e</label>
+          <label for="payroll-run-year" class="sr-only">Année</label>
           <select
             id="payroll-run-year"
             v-model="runFilterYear"
             class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 py-2 pl-3 pr-8 text-sm text-slate-900 dark:text-white focus:border-brand-500 focus:ring-brand-500"
           >
-            <option value="">Toutes les annÃ©es</option>
+            <option value="">Toutes les années</option>
             <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
           </select>
           <button
@@ -160,7 +160,7 @@
             class="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             @click="runFilterMonth = ''; runFilterYear = ''"
           >
-            RÃ©initialiser
+            Réinitialiser
           </button>
         </div>
       </template>
@@ -232,8 +232,8 @@ const stats = ref({ runs_this_month: 0, slips_generated: 0, total_net: 0, pendin
 const structures = ref([])
 
 const monthLabels = [
-  'Janvier', 'FÃ©vrier', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'AoÃ»t', 'Septembre', 'Octobre', 'Novembre', 'DÃ©cembre',
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ]
 
 const initialDate = new Date()
