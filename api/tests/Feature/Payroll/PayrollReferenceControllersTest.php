@@ -32,8 +32,12 @@ class PayrollReferenceControllersTest extends TestCase
     {
         parent::setUp();
 
-        $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->company = $company;
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
     }
 
     private function actingAsManager(): void

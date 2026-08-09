@@ -27,9 +27,9 @@ class SocialContributionResource extends JsonResource
             'type' => $this->type,
             'rate' => $this->rate,
             'cap' => $this->cap,
-            'effective_from' => $this->effective_from?->toDateString(),
+            'effective_from' => $this->effective_from->toDateString(),
             'effective_to' => $this->effective_to?->toDateString(),
-            'created_at' => $this->created_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
         ];
     }
 }
