@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Certificat de travail</title>
+    <title>{{ __('pdf.cert_title') }}</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 13px; color: #1a1a1a; margin: 40px; }
         h1 { font-size: 18px; text-align: center; text-transform: uppercase; margin-bottom: 6px; }
@@ -21,43 +21,43 @@
 </head>
 <body>
     <div class="company">{{ $company?->name ?? '' }}</div>
-    <h1>Certificat de travail</h1>
+    <h1>{{ __('pdf.cert_title') }}</h1>
     <div class="sub">{{ $company?->address ?? '' }} — {{ $company?->city ?? '' }} {{ $company?->country ?? '' }}</div>
 
     <div class="meta">
-        <div><strong>Employé :</strong> {{ $employee->first_name }} {{ $employee->last_name }}</div>
-        <div><strong>Matricule :</strong> {{ $employee->matricule ?? $employee->id }}</div>
-        <div><strong>Fonction :</strong> {{ $employee->position ?? 'Employé' }}</div>
-        <div><strong>Date d'embauche :</strong> {{ $employee->contract_start?->format('d/m/Y') ?? '—' }}</div>
-        <div><strong>Ancienneté :</strong> {{ $months_of_service }} mois</div>
+        <div><strong>{{ __('pdf.cert_employee_label') }}</strong> {{ $employee->first_name }} {{ $employee->last_name }}</div>
+        <div><strong>{{ __('pdf.cert_matricule_label') }}</strong> {{ $employee->matricule ?? $employee->id }}</div>
+        <div><strong>{{ __('pdf.cert_position_label') }}</strong> {{ $employee->position ?? __('pdf.cert_position_fallback') }}</div>
+        <div><strong>{{ __('pdf.cert_hire_date_label') }}</strong> {{ $employee->contract_start?->format('d/m/Y') ?? '—' }}</div>
+        <div><strong>{{ __('pdf.cert_seniority_label') }}</strong> {{ $months_of_service }} {{ __('pdf.cert_months_suffix') }}</div>
     </div>
 
     <div class="content">
         <p>
-            Nous soussignés, {{ $company?->name ?? 'la société' }}, certifions que
+            {{ __('pdf.cert_we_hereby') }} {{ $company?->name ?? __('pdf.cert_company_fallback') }}{{ __('pdf.cert_certify_that') }}
             <strong>{{ $employee->first_name }} {{ $employee->last_name }}</strong>,
             matricule {{ $employee->matricule ?? $employee->id }},
-            a été employé(e) au sein de notre entreprise du
+            {{ __('pdf.cert_was_employed') }}
             {{ $employee->contract_start?->format('d/m/Y') ?? '—' }}
-            au {{ $settlement['end_date'] ?? '—' }} en qualité de
-            {{ $employee->position ?? 'employé(e)' }}.
+            {{ __('pdf.cert_to') }} {{ $settlement['end_date'] ?? '—' }} {{ __('pdf.cert_as') }}
+            {{ $employee->position ?? __('pdf.cert_employee_fallback') }}.
         </p>
         <p>
-            Ce certificat est délivré à l'intéressé(e) pour faire valoir ce que de droit.
+            {{ __('pdf.cert_issued_for') }}
         </p>
     </div>
 
     <table>
-        <tr><th>Élément du solde de tout compte</th><th>Montant ({{ $company?->currency ?? 'DZD' }})</th></tr>
-        <tr><td>Prorata du salaire du dernier mois</td><td>{{ number_format($settlement['breakdown']['prorated_pay'], 2) }}</td></tr>
-        <tr><td>Indemnité de congés payés non pris</td><td>{{ number_format($settlement['breakdown']['leave_indemnity'], 2) }}</td></tr>
-        <tr><td>Indemnité de préavis</td><td>{{ number_format($settlement['breakdown']['notice_pay'], 2) }}</td></tr>
-        <tr><td>Indemnité d'ancienneté</td><td>{{ number_format($settlement['breakdown']['severance'], 2) }}</td></tr>
-        <tr><td><strong>Total</strong></td><td><strong>{{ number_format($settlement['breakdown']['total'], 2) }}</strong></td></tr>
+        <tr><th>{{ __('pdf.cert_settlement_title') }}</th><th>{{ __('pdf.cert_amount_prefix') }}{{ $company?->currency ?? 'DZD' }})</th></tr>
+        <tr><td>{{ __('pdf.cert_prorated_pay') }}</td><td>{{ number_format($settlement['breakdown']['prorated_pay'], 2) }}</td></tr>
+        <tr><td>{{ __('pdf.cert_leave_indemnity') }}</td><td>{{ number_format($settlement['breakdown']['leave_indemnity'], 2) }}</td></tr>
+        <tr><td>{{ __('pdf.cert_notice_pay') }}</td><td>{{ number_format($settlement['breakdown']['notice_pay'], 2) }}</td></tr>
+        <tr><td>{{ __('pdf.cert_severance') }}</td><td>{{ number_format($settlement['breakdown']['severance'], 2) }}</td></tr>
+        <tr><td><strong>{{ __('pdf.cert_total') }}</strong></td><td><strong>{{ number_format($settlement['breakdown']['total'], 2) }}</strong></td></tr>
     </table>
 
     <div class="signature">
-        <div>Fait à {{ $company?->city ?? '—' }}, le {{ now()->format('d/m/Y') }}.</div>
+        <div>{{ __('pdf.cert_made_in') }} {{ $company?->city ?? '—' }}{{ __('pdf.cert_on_date') }} {{ now()->format('d/m/Y') }}.</div>
         <div style="margin-top: 40px;">Signature et cachet de l'employeur :</div>
     </div>
 
