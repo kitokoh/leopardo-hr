@@ -50,11 +50,79 @@ class PaySlipPdfGenerator
             // already supports, e.g. CEMAC/CEDEAO members, GB, US, CA).
             'currency' => CountryDefaults::for($countryCode)['currency'],
             'legalMentions' => self::COUNTRY_LEGAL[$countryCode] ?? '',
+            // F-09 (#1539) : mentions légales DZ (NIF, RC, n° CNAS employeur,
+            // ID.Nat) portées par company.metadata — affichées si présentes.
+            'companyLegal' => $this->companyLegalIdentifiers($company),
+            // F-09 (#1539) : cumuls annuels (brut, retenues, net) des
+            // bulletins validés de l'employé jusqu'à la période du bulletin.
+            'annualCumuls' => $this->annualCumuls($paySlip),
         ]);
 
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->output();
+    }
+
+    /**
+     * F-09 (#1539) — identifiants légaux de l'employeur (DZ) portés par
+     * `company.metadata` : legal_nif, legal_rc, legal_cnas_employer,
+     * legal_idnat. Retourne uniquement les clés présentes.
+     *
+     * @return array<string, string>
+     */
+    private function companyLegalIdentifiers(?Company $company): array
+    {
+        if ($company === null || ! is_array($company->metadata)) {
+            return [];
+        }
+
+        $keys = [
+            'legal_nif' => 'NIF',
+            'legal_rc' => 'RC',
+            'legal_cnas_employer' => 'N° CNAS employeur',
+            'legal_idnat' => 'ID.Nat',
+        ];
+
+        $out = [];
+        foreach ($keys as $key => $label) {
+            $value = $company->metadata[$key] ?? null;
+            if (is_string($value) && trim($value) !== '') {
+                $out[$label] = $value;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * F-09 (#1539) — cumuls annuels de l'employé (brut, retenues, net) sur
+     * les bulletins validés de l'année de la période du bulletin courant.
+     *
+     * @return array{gross: float, deductions: float, net: float}
+     */
+    private function annualCumuls(PaySlip $paySlip): array
+    {
+        $year = $paySlip->period_start?->format('Y');
+        if ($year === null) {
+            return ['gross' => 0.0, 'deductions' => 0.0, 'net' => 0.0];
+        }
+
+        $aggregates = PaySlip::query()
+            ->where('company_id', $paySlip->company_id)
+            ->where('employee_id', $paySlip->employee_id)
+            ->where('status', 'validated')
+            ->whereYear('period_start', $year)
+            ->where('period_end', '<=', $paySlip->period_end)
+            ->selectRaw('COALESCE(SUM(gross_salary), 0) as gross')
+            ->selectRaw('COALESCE(SUM(total_deductions), 0) as deductions')
+            ->selectRaw('COALESCE(SUM(net_salary), 0) as net')
+            ->first();
+
+        return [
+            'gross' => (float) ($aggregates?->gross ?? 0.0),
+            'deductions' => (float) ($aggregates?->deductions ?? 0.0),
+            'net' => (float) ($aggregates?->net ?? 0.0),
+        ];
     }
 
     public function generateForRun(int $payrollRunId): array
