@@ -168,7 +168,7 @@ class PayrollTenantIsolationTest extends TestCase
         $export = BankExport::create([
             'company_id' => $this->companyA->id,
             'payroll_run_id' => $dataA['run']->id,
-            'status' => 'completed',
+            'status' => 'generated', // 'completed' removed from constraint (2026_07_25 async migration)
             'file_path' => 'exports/bank-a.csv',
             'format' => 'csv_generic',
         ]);
@@ -186,7 +186,7 @@ class PayrollTenantIsolationTest extends TestCase
         Sanctum::actingAs($this->managerB);
 
         // /me/pay-slips doit être limité aux bulletins du tenant courant.
-        $response = $this->getJson('/me/pay-slips')->assertOk();
+        $response = $this->getJson('/api/v1/me/pay-slips')->assertOk();
         $ids = collect(data_get($response->json('data'), '*.id'));
         $this->assertTrue($ids->contains($dataA['slip']->id) === false);
     }

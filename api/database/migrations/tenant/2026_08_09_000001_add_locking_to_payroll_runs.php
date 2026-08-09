@@ -67,12 +67,14 @@ return new class extends Migration
         ");
         if ($hasLocked === null) {
             DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
+            // Full status lifecycle including async states (processing/error from
+            // ProcessPayrollBatchJob) and locked (F-11 closing workflow).
             DB::statement("
                 ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check
-                CHECK ((status)::text = ANY ((ARRAY[
-                    'draft', 'calculating', 'calculated', 'validated',
-                    'paid', 'locked', 'cancelled'
-                ]::text[])))
+                CHECK (status IN (
+                    'draft', 'calculating', 'processing', 'calculated', 'validated',
+                    'paid', 'locked', 'cancelled', 'error'
+                ))
             ");
         }
 
