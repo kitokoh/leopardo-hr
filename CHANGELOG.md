@@ -6,6 +6,14 @@
 ## [Unreleased]
 
 ### Added
+- **docs: convergence mobile F-27 + état des lieux chiffrement au repos (F-17).** `docs/mobile/CONVERGENCE_F27.md` (#1557) : stratégie de convergence progressive des apps non-employee vers le socle `leopardo_core` (socle unique, parallélisme contrôlé, traqueur de duplication, gardes CI), avec inventaire 2026-08-09 des apps. `docs/security/DATA_AT_REST.md` (#1547/#1595) : metadata des documents de paie chiffré (F-17, PR #1611), exception documentée pour les colonnes de salaire (agrégations/benchmark), rétention biométrie.
+
+### Added
+- **feat(payroll): fin de contrat via l'API — solde de tout compte + certificat de travail (F-08, #1538).** `EndOfContractService` (calcul délégué à `computeFinalSettlement`, golden F-08) + `EndOfContractController` : `GET /employees/{employee}/end-of-contract` (JSON : prorata, congés non pris, préavis, indemnité d'ancienneté 1 mois/an — régime DZ documenté) et `GET /employees/{employee}/certificate-of-employment` (PDF via dompdf, vue `pdf/certificate_of_employment`). Réservé managers, isolation tenant. Tests : `EndOfContractApiTest`. RBAC_ROUTE_MATRIX + OpenAPI à jour.
+
+### Added
+- **feat(payroll): mentions légales DZ + cumuls annuels sur le bulletin PDF (F-09, #1539).** La vue `pdf.payslip` affiche désormais les identifiants légaux de l'employeur (NIF, RC, n° CNAS employeur, ID.Nat — `company.metadata.legal_*`) quand ils sont renseignés, et un bloc « Cumuls annuels » (brut, retenues, net des bulletins validés de l'année). Référentiel `BULLETIN_DZ_MENTIONS.md` mis à jour. Tests : `PaySlipDzMentionsTest` (extraction du texte PDF).
+- **fix(ci): garde CHANGELOG mojibake renforcée (#1612).** `check-governance.ps1` détecte désormais les patrons de ré-encodage NON standard observés dans l'historique (GÇö, GåÆ, Gùï, +¬/+¦/+¿/+º/+á, â-¬/â-¦/â-¿/â-á, ó——) en plus des patrons classiques (Ã©, â€, U+FFFD) — un commit réintroduisant un de ces patrons fait échouer la CI (Governance Gates). Auto-test dédié `check-governance-mojibake-test.ps1` branché sur le job Governance : liste noire détectée + caractères légitimes (é è ê à ç ô ù ï — – … ✓ ✗ → § • « ») admis + CHANGELOG courant propre.
 - **feat(payroll): journal de paie mensuel exposé via l'API (F-10, #1540).** Nouveau `GET /payroll-runs/{run}/journal` → CSV (une ligne par bulletin validé : matricule, nom, brut, cotisations, IRG, autres déductions, net, coût employeur + ligne de totaux), réservé principal/comptable, isolation tenant. Le générateur `PayrollJournalGenerator` (existant, testé en unitaire) était jusqu'ici sans route API. Tests : `PayrollJournalApiTest`. Matrice RBAC_ROUTE_MATRIX mise à jour.
 
 ### Added
