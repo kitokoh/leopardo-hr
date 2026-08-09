@@ -22,7 +22,7 @@ jobs:
           set -euo pipefail
           for app in leopardo_core leopardo_employee leopardo_hr leopardo_manager leopardo_platform_admin leopardo_marketing; do
             if [[ -d "front/mobile_apps/$app" ]]; then
-              (cd "front/mobile_apps/$app" && dart format . 2>&1 | tail -1)
+              (cd "front/mobile_apps/$app" && dart format . 2>&1 | tail -1 || true)
             fi
           done
 
