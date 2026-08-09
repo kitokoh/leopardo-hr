@@ -129,7 +129,7 @@ class PayrollRunClosingApiTest extends TestCase
         $this->assertNotNull($unlockLog->old_values['locked_by'] ?? null);
         $this->assertNotNull($unlockLog->old_values['locked_at'] ?? null);
         $this->assertSame(PayrollRun::STATUS_LOCKED, $unlockLog->old_values['status'] ?? null);
-        $this->assertNull($unlockLog->new_values['locked_by'] ?? 'sentinel');
+        $this->assertNull($unlockLog->new_values['locked_by'] ?? null);
         $this->assertSame(PayrollRun::STATUS_VALIDATED, $unlockLog->new_values['status'] ?? null);
 
         // Re-verrouillage possible après déverrouillage.
