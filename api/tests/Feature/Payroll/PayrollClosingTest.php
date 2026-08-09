@@ -119,6 +119,6 @@ class PayrollClosingTest extends TestCase
 
         $unlockLog = AuditLog::where('action', 'payroll_run_unlocked')->first();
         $this->assertNotNull($unlockLog);
-        $this->assertStringContainsString('Correction IRG', (string) $unlockLog->metadata);
+        $this->assertSame('Correction IRG demandée par le comptable', $unlockLog->metadata['reason']);
     }
 }
