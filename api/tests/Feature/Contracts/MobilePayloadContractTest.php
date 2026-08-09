@@ -22,7 +22,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_auth_me_payload_matches_mobile_contract(): void
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -118,7 +118,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_me_daily_summary_payload_matches_mobile_contract(): void
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -189,7 +189,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_attendance_today_collection_payload_matches_mobile_contract(): void
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -274,7 +274,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_employees_index_payload_matches_mobile_contract(): void
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -358,7 +358,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_attendance_history_payload_matches_mobile_contract(): void
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',

@@ -10,6 +10,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\KioskAnnouncement;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
@@ -227,10 +228,21 @@ class FrontendJsonContractTest extends TestCase
         [$company, , $employee] = $this->kioskActor();
         [$kiosk, $plainToken] = $this->kiosk($company);
 
+        // Le vrai schéma (migrations tenant) applique la FK leave_balances →
+        // absence_types : créer le type d'absence avant l'insertion.
+        $absenceTypeId = DB::table('absence_types')->insertGetId([
+            'company_id' => $company->id,
+            'name' => 'Congé payé',
+            'code' => 'CONGE_PAYE_'.Str::random(4),
+            'is_paid' => true,
+            'deducts_leave' => true,
+            'requires_proof' => false,
+        ]);
+
         DB::table('leave_balances')->insert([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
-            'absence_type_id' => 1,
+            'absence_type_id' => $absenceTypeId,
             'balance' => 18,
             'used' => 4,
             'pending' => 2,
