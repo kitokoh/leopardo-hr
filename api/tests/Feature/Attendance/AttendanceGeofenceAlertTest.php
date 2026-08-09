@@ -10,7 +10,7 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -22,19 +22,7 @@ use Tests\TestCase;
  */
 class AttendanceGeofenceAlertTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     private function makeCompanyWithGeofence(): Company
     {
@@ -48,6 +36,11 @@ class AttendanceGeofenceAlertTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'UTC',
             'metadata' => [
                 'attendance_geofence' => [
@@ -79,6 +72,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -88,6 +83,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
@@ -125,6 +122,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -134,6 +133,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
@@ -161,6 +162,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -170,6 +173,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
@@ -201,6 +206,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $principal = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'principal@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -210,6 +217,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $rh = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'rh@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -220,6 +229,8 @@ class AttendanceGeofenceAlertTest extends TestCase
         // A non-eligible manager role (comptable) that must not receive this alert.
         Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'comptable@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -229,6 +240,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             // No manager_id assigned.
             'email' => 'employee@a.test',
@@ -257,6 +270,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -266,6 +281,8 @@ class AttendanceGeofenceAlertTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
