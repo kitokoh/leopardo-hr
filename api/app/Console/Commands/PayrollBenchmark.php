@@ -56,6 +56,14 @@ class PayrollBenchmark extends Command
 
         // ── calculate ──────────────────────────────────────────────────────
         if (in_array($step, ['calculate', 'all'], true)) {
+            // Barrière N+1 (#1594) : compteur de requêtes SQL pendant le calcul.
+            // Une requête par employé par entité chargée = signature N+1 ;
+            // l'ordre de grandeur attendu est < 20 requêtes/employé.
+            $queryCount = 0;
+            DB::listen(static function () use (&$queryCount): void {
+                $queryCount++;
+            });
+
             $start = microtime(true);
             $peakBefore = memory_get_peak_usage(true);
             DB::statement('SET search_path TO public,shared_tenants');
@@ -65,6 +73,8 @@ class PayrollBenchmark extends Command
                 ['employés', $run->employee_count],
                 ['durée calculate', sprintf('%.2fs', $duration)],
                 ['temps/employé', sprintf('%.1fms', $duration * 1000 / max(1, $run->employee_count))],
+                ['requêtes SQL', (string) $queryCount],
+                ['requêtes/employé', sprintf('%.1f', $queryCount / max(1, $run->employee_count))],
                 ['pic mémoire', sprintf('%.1f Mo', (memory_get_peak_usage(true) - $peakBefore) / 1048576)],
                 ['total_gross', number_format((float) $run->total_gross, 2)],
                 ['total_net', number_format((float) $run->total_net, 2)],
