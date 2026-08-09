@@ -14,7 +14,6 @@
 
 - **docs(audit): Audit Neo 2026-08-09 passe 4 — 17 correctifs livrés, 5 nouvelles observations.** Rapport complet dans `docs/audits/AUDIT_NEO_2026-08-09_passe4.md` : résolution TruffleHog/Dart/PHPStan/tests paie/cross-tenant, dette D-01 à D-04, actions humaines #1472/#1467/#1601.
 
-### Fixed
 - **feat(security): chiffrement au repos du metadata des documents de paie (F-17, #1547/#1595).** `payment_documents.metadata` (JSON : références de paiement, montants, périodes) passe du cast `array` au cast `encrypted:array` (AES-256, clé APP_KEY) + migration de backfill idempotente `2026_08_09_000003` qui chiffre les lignes historiques en clair (tentative de déchiffrement → skip si déjà chiffré). Tests : round-trip via le cast + vérification que la valeur en base n'est pas en clair + backfill idempotent. Les montants restent en clair (agrégations), conformément à la spec DATA_AT_REST.
 
 - **fix(mobile): générateur UUID local déterministe → aléatoire.** `_uuid()` dans `edge_database.dart` dérivait l'id uniquement du timestamp microseconde — deux enqueues dans la même microseconde (insert + checkOut) produisaient le même id → `SqliteException UNIQUE constraint failed: local_sync_queue.id` (test offline flaky + risque de collision en production). Utilise désormais un `Random()` par position (UUID v4).
