@@ -40,7 +40,8 @@ php artisan payroll:benchmark --employees=10000 --step=lock
 
 - **Cible : clôture 10 000 employés < 30 min** (1800 s).
 - **Alerte régression** : dégradation > 20 % vs le run précédent consigné
-  ci-dessous → ouvrir une issue de perf.
+  ci-dessous → le script `payroll-benchmark.sh` échoue (exit 1) et il faut
+  ouvrir une issue de perf.
 
 ## Historique des runs
 
