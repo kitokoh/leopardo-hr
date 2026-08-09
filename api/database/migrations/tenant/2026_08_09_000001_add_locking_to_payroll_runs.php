@@ -63,7 +63,7 @@ return new class extends Migration
             WHERE conrelid = 'payroll_runs'::regclass
               AND contype = 'c'
               AND conname = 'payroll_runs_status_check'
-              AND pg_get_constraintdef(oid) LIKE '%'locked'%'
+              AND pg_get_constraintdef(oid) LIKE '%locked%'
         ");
         if ($hasLocked === null) {
             DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
