@@ -17,8 +17,8 @@
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Total Demandes" :value="totalRequests" icon="ChatBubbleBottomCenterTextIcon" color="blue" />
       <StatsCard title="Ã€ Traiter" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
-      <StatsCard title="ApprouvÃ©es" :value="statusCounts.approved" icon="CheckCircleIcon" color="green" />
-      <StatsCard title="RejetÃ©es" :value="statusCounts.rejected" icon="XCircleIcon" color="red" />
+      <StatsCard title="Approuvées" :value="statusCounts.approved" icon="CheckCircleIcon" color="green" />
+      <StatsCard title="Rejetées" :value="statusCounts.rejected" icon="XCircleIcon" color="red" />
     </div>
 
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
@@ -26,7 +26,7 @@
       <div class="flex flex-col gap-6 border-b border-slate-200/50 px-6 py-6 dark:border-slate-800/50 lg:flex-row lg:items-center lg:justify-between bg-slate-50/30 dark:bg-slate-900/20">
         <div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">File de qualification</h2>
-          <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400 italic">Priorisez les leads pour accÃ©lÃ©rer le dÃ©ploiement.</p>
+          <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400 italic">Priorisez les leads pour accélérer le déploiement.</p>
         </div>
         <div class="flex flex-wrap gap-2 p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-2xl w-fit">
           <button
@@ -56,14 +56,14 @@
           <ExclamationTriangleIcon class="h-8 w-8" />
         </div>
         <p class="mt-4 text-lg font-bold text-slate-900 dark:text-white">{{ errorMessage }}</p>
-        <button class="btn-primary mt-6" @click="loadRequests">RÃ©essayer</button>
+        <button class="btn-primary mt-6" @click="loadRequests">Réessayer</button>
       </div>
 
       <div v-else-if="requests.length === 0" class="p-20 text-center">
         <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400">
           <InboxIcon class="h-8 w-8" />
         </div>
-        <p class="mt-4 text-lg font-bold text-slate-400 uppercase tracking-widest">Aucune demande trouvÃ©e</p>
+        <p class="mt-4 text-lg font-bold text-slate-400 uppercase tracking-widest">Aucune demande trouvée</p>
       </div>
 
       <div v-else class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
@@ -82,7 +82,7 @@
               <div class="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm">
                 <span class="flex items-center font-bold text-slate-700 dark:text-slate-300">
                   <TagIcon class="mr-2 h-4 w-4 text-brand-500" />
-                  {{ request.sector || 'Secteur non prÃ©cisÃ©' }}
+                  {{ request.sector || 'Secteur non précisé' }}
                 </span>
                 <span class="flex items-center font-bold text-slate-700 dark:text-slate-300">
                   <MapPinIcon class="mr-2 h-4 w-4 text-brand-500" />
@@ -115,8 +115,8 @@
                     <PhoneIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">TÃ©lÃ©phone</p>
-                    <p class="text-sm font-bold text-slate-900 dark:text-white">{{ request.phone || 'Non renseignÃ©' }}</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Téléphone</p>
+                    <p class="text-sm font-bold text-slate-900 dark:text-white">{{ request.phone || 'Non renseigné' }}</p>
                   </div>
                 </div>
                 <div v-if="request.status !== 'pending'" class="flex items-center gap-3">
@@ -124,8 +124,8 @@
                     <UserIcon class="h-5 w-5" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">TraitÃ© par</p>
-                    <p class="text-sm font-bold text-slate-900 dark:text-white">Admin SystÃ¨me</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Traité par</p>
+                    <p class="text-sm font-bold text-slate-900 dark:text-white">Admin Système</p>
                   </div>
                 </div>
               </div>
@@ -141,7 +141,7 @@
                   :disabled="request.status !== 'pending' || savingId === request.id"
                   rows="4"
                   class="form-input text-sm leading-relaxed"
-                  placeholder="Ã‰valuez la lÃ©gitimitÃ© du lead, taille de l'entreprise..."
+                  placeholder="Ã‰valuez la légitimité du lead, taille de l'entreprise..."
                 ></textarea>
               </div>
 
@@ -166,7 +166,7 @@
               <div v-else class="flex items-center justify-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
                 <CheckBadgeIcon class="h-5 w-5 text-emerald-500" />
                 <p class="text-xs font-black uppercase tracking-widest text-slate-500">
-                  DÃ©cision finale : {{ formatDate(request.reviewed_at) }}
+                  Décision finale : {{ formatDate(request.reviewed_at) }}
                 </p>
               </div>
             </div>
@@ -227,8 +227,8 @@ const statusCounts = ref({ pending: 0, approved: 0, rejected: 0 })
 const filters = [
   { value: 'all', label: 'Toutes' },
   { value: 'pending', label: 'Ã€ traiter' },
-  { value: 'approved', label: 'ApprouvÃ©es' },
-  { value: 'rejected', label: 'RejetÃ©es' },
+  { value: 'approved', label: 'Approuvées' },
+  { value: 'rejected', label: 'Rejetées' },
 ]
 
 const sortedRequests = computed(() => {
@@ -282,7 +282,7 @@ async function reviewRequest(request, status) {
       admin_notes: notesByRequest[request.id] || null,
     })
 
-    toast.success(status === 'approved' ? 'Demande approuvÃ©e. Provisionnement lancÃ©.' : 'Demande rejetÃ©e.')
+    toast.success(status === 'approved' ? 'Demande approuvée. Provisionnement lancé.' : 'Demande rejetée.')
     await loadRequests()
   } catch (error) {
     console.error('Failed to review company request:', error)
@@ -308,14 +308,14 @@ function statusClass(status) {
 function statusLabel(status) {
   const labels = {
     pending: 'Attente',
-    approved: 'ValidÃ©',
-    rejected: 'RefusÃ©',
+    approved: 'Validé',
+    rejected: 'Refusé',
   }
   return labels[status] || status
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseignÃ©'
+  if (!value) return 'Non renseigné'
 
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'medium',

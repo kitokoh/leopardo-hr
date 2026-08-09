@@ -97,7 +97,7 @@ test.describe('Recruitment flow', () => {
     })
 
     await page.addInitScript(() => {
-      localStorage.setItem('admin_token', 'playwright-admin-token')
+      sessionStorage.setItem('admin_token', 'playwright-admin-token')
     })
 
     await page.goto('/recruitment')

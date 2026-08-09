@@ -38,15 +38,15 @@ const PLAN_CONFIG = {
     priceAnnual: 0,
     savings: 0,
     features: [
-      'Pointage web (5 employÃ©s max)',
-      'Absences & congÃ©s basiques',
-      'Dossiers employÃ©s',
+      'Pointage web (5 employés max)',
+      'Absences & congés basiques',
+      'Dossiers employés',
       'App mobile Employee',
       'Dashboard manager (lecture)',
-      'Support communautÃ©',
+      'Support communauté',
     ],
     trialDays: 0,
-    employeeLimit: '1-5 employÃ©s',
+    employeeLimit: '1-5 employés',
     isFree: true,
   },
   pilot: {
@@ -59,14 +59,14 @@ const PLAN_CONFIG = {
     savings: 60,
     features: [
       'Pointage web & mobile',
-      'Absences & congÃ©s',
-      'Dossiers employÃ©s',
+      'Absences & congés',
+      'Dossiers employés',
       'Dashboard manager',
       'Apps Employee & Manager',
       'Support email 48h',
     ],
     trialDays: 30,
-    employeeLimit: '1-30 employÃ©s',
+    employeeLimit: '1-30 employés',
     isFree: false,
   },
   starter: {
@@ -79,14 +79,14 @@ const PLAN_CONFIG = {
     savings: 60,
     features: [
       'Pointage web & mobile',
-      'Absences & congÃ©s',
-      'Dossiers employÃ©s',
+      'Absences & congés',
+      'Dossiers employés',
       'Dashboard manager',
       'Apps Employee & Manager',
       'Support email 48h',
     ],
     trialDays: 30,
-    employeeLimit: '1-30 employÃ©s',
+    employeeLimit: '1-30 employés',
     isFree: false,
   },
   business: {
@@ -99,14 +99,14 @@ const PLAN_CONFIG = {
     savings: 240,
     features: [
       'Tout Pilot inclus',
-      'Paie automatisÃ©e',
-      'BiomÃ©trie ZKTeco',
+      'Paie automatisée',
+      'Biométrie ZKTeco',
       'API & Webhooks',
       'Exports comptables',
       'Support prioritaire 24h',
     ],
     trialDays: 30,
-    employeeLimit: '15-250 employÃ©s',
+    employeeLimit: '15-250 employés',
     isFree: false,
   },
   operations: {
@@ -119,14 +119,14 @@ const PLAN_CONFIG = {
     savings: 240,
     features: [
       'Tout Pilot inclus',
-      'Paie automatisÃ©e',
-      'BiomÃ©trie ZKTeco',
+      'Paie automatisée',
+      'Biométrie ZKTeco',
       'API & Webhooks',
       'Exports comptables',
       'Support prioritaire 24h',
     ],
     trialDays: 30,
-    employeeLimit: '15-250 employÃ©s',
+    employeeLimit: '15-250 employés',
     isFree: false,
   },
   enterprise: {
@@ -142,11 +142,11 @@ const PLAN_CONFIG = {
       'Multi-pays & multi-devises',
       'SSO SAML/OIDC',
       'Audit trail immuable',
-      'Schema PostgreSQL isolÃ©',
-      'Account manager dÃ©diÃ©',
+      'Schema PostgreSQL isolé',
+      'Account manager dédié',
     ],
     trialDays: 30,
-    employeeLimit: '250+ employÃ©s',
+    employeeLimit: '250+ employés',
     isFree: false,
   },
   scale: {
@@ -162,11 +162,11 @@ const PLAN_CONFIG = {
       'Multi-pays & multi-devises',
       'SSO SAML/OIDC',
       'Audit trail immuable',
-      'Schema PostgreSQL isolÃ©',
-      'Account manager dÃ©diÃ©',
+      'Schema PostgreSQL isolé',
+      'Account manager dédié',
     ],
     trialDays: 30,
-    employeeLimit: '250+ employÃ©s',
+    employeeLimit: '250+ employés',
     isFree: false,
   },
 } as const;
@@ -285,7 +285,7 @@ function PlanSummaryCard({
             </div>
             {billing === 'annual' && (
               <p className="text-white/70 text-xs mt-1">
-                FacturÃ© annuellement â€” Ã©conomisez EUR {cfg.savings}/an
+                Facturé annuellement â€” économisez EUR {cfg.savings}/an
               </p>
             )}
           </div>
@@ -337,14 +337,14 @@ function PlanSummaryCard({
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-transparent dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700/50">
             <ShieldCheck className="w-4 h-4 text-slate-600 dark:text-slate-400 flex-shrink-0" />
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-300">
-              Aucune carte bancaire requise Â· AccÃ¨s immÃ©diat
+              Aucune carte bancaire requise Â· Accès immédiat
             </p>
           </div>
         ) : (
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
             <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-              {cfg.trialDays} jours gratuits inclus Â· Aucune CB dÃ©bitÃ©e avant la fin de l&apos;essai
+              {cfg.trialDays} jours gratuits inclus Â· Aucune CB débitée avant la fin de l&apos;essai
             </p>
           </div>
         )}
@@ -360,9 +360,9 @@ function TrustBadges() {
   return (
     <div className="mt-6 space-y-2">
       {[
-        { icon: Lock, text: 'Paiement sÃ©curisÃ© TLS 1.3 + AES-256' },
-        { icon: ShieldCheck, text: 'DonnÃ©es hÃ©bergÃ©es en Europe â€” conforme RGPD' },
-        { icon: Shield, text: 'Sans engagement Â· RÃ©siliation en 2 clics' },
+        { icon: Lock, text: 'Paiement sécurisé TLS 1.3 + AES-256' },
+        { icon: ShieldCheck, text: 'Données hébergées en Europe â€” conforme RGPD' },
+        { icon: Shield, text: 'Sans engagement Â· Résiliation en 2 clics' },
       ].map(({ icon: Icon, text }) => (
         <div key={text} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <Icon className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
@@ -430,21 +430,21 @@ function StepRecap({
       transition={{ duration: 0.3 }}
     >
       <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-        Votre plan sÃ©lectionnÃ©
+        Votre plan sélectionné
       </h2>
       <p className="text-slate-500 dark:text-slate-400 mb-8">
-        VÃ©rifiez les dÃ©tails avant de crÃ©er votre compte.
+        Vérifiez les détails avant de créer votre compte.
       </p>
 
       <PlanSummaryCard plan={plan} billing={billing} onChangeBilling={onChangeBilling} />
 
       {cfg.isFree ? (
         <div className="mt-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-sm text-emerald-800 dark:text-emerald-300">
-          <strong>Plan 100% gratuit.</strong> Aucune carte bancaire requise. Commencez immÃ©diatement, jusqu&apos;Ã  5 employÃ©s.
+          <strong>Plan 100% gratuit.</strong> Aucune carte bancaire requise. Commencez immédiatement, jusqu&apos;à 5 employés.
         </div>
       ) : (
         <div className="mt-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 text-sm text-blue-800 dark:text-blue-300">
-          <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera dÃ©bitÃ©e qu&apos;aprÃ¨s la pÃ©riode d&apos;essai. Annulez Ã  tout moment depuis votre tableau de bord.
+          <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera débitée qu&apos;après la période d&apos;essai. Annulez à tout moment depuis votre tableau de bord.
         </div>
       )}
 
@@ -460,7 +460,7 @@ function StepRecap({
         className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
         {cfg.isFree ? (
-          <>CrÃ©er mon compte gratuit <ArrowRight className="w-5 h-5" /></>
+          <>Créer mon compte gratuit <ArrowRight className="w-5 h-5" /></>
         ) : (
           <>Continuer â€” EUR {price}/mois <ArrowRight className="w-5 h-5" /></>
         )}
@@ -499,12 +499,12 @@ function StepAccount({
 
   function validate(): boolean {
     const e: Partial<AccountData> = {};
-    if (!data.firstName.trim()) e.firstName = 'PrÃ©nom requis';
+    if (!data.firstName.trim()) e.firstName = 'Prénom requis';
     if (!data.lastName.trim()) e.lastName = 'Nom requis';
     if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
       e.email = 'Email professionnel valide requis';
     if (!data.company.trim() || data.company.length < 2)
-      e.company = 'Nom de sociÃ©tÃ© requis';
+      e.company = 'Nom de société requis';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -533,10 +533,10 @@ function StepAccount({
       </button>
 
       <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-        CrÃ©ez votre compte
+        Créez votre compte
       </h2>
       <p className="text-slate-500 dark:text-slate-400 mb-6">
-        Votre espace Leopardo sera prÃªt en quelques secondes.
+        Votre espace Leopardo sera prêt en quelques secondes.
       </p>
 
       {/* Google OAuth button */}
@@ -555,7 +555,7 @@ function StepAccount({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              PrÃ©nom <span className="text-red-500">*</span>
+              Prénom <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -605,7 +605,7 @@ function StepAccount({
         {/* Company */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            SociÃ©tÃ© <span className="text-red-500">*</span>
+            Société <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -624,7 +624,7 @@ function StepAccount({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              TÃ©lÃ©phone
+              Téléphone
             </label>
             <div className="relative">
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -688,12 +688,12 @@ function StepFreeAccount({
 
   function validate(): boolean {
     const e: Partial<AccountData> = {};
-    if (!data.firstName.trim()) e.firstName = 'PrÃ©nom requis';
+    if (!data.firstName.trim()) e.firstName = 'Prénom requis';
     if (!data.lastName.trim()) e.lastName = 'Nom requis';
     if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
       e.email = 'Email professionnel valide requis';
     if (!data.company.trim() || data.company.length < 2)
-      e.company = 'Nom de sociÃ©tÃ© requis';
+      e.company = 'Nom de société requis';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -746,10 +746,10 @@ function StepFreeAccount({
       </button>
 
       <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-        CrÃ©ez votre espace gratuit
+        Créez votre espace gratuit
       </h2>
       <p className="text-slate-500 dark:text-slate-400 mb-6">
-        Aucune carte bancaire requise. AccÃ¨s immÃ©diat.
+        Aucune carte bancaire requise. Accès immédiat.
       </p>
 
       {/* Google OAuth â€” prominent */}
@@ -773,7 +773,7 @@ function StepFreeAccount({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              PrÃ©nom <span className="text-red-500">*</span>
+              Prénom <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -821,7 +821,7 @@ function StepFreeAccount({
 
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            SociÃ©tÃ© <span className="text-red-500">*</span>
+            Société <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -850,7 +850,7 @@ function StepFreeAccount({
           ) : (
             <>
               <Gift className="w-4 h-4" />
-              CrÃ©er mon espace gratuit â€” EUR 0
+              Créer mon espace gratuit â€” EUR 0
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -858,7 +858,7 @@ function StepFreeAccount({
 
         <p className="text-center text-xs text-slate-400 flex items-center justify-center gap-1">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          Sans carte bancaire Â· AccÃ¨s immÃ©diat Â· RÃ©siliable Ã  tout moment
+          Sans carte bancaire Â· Accès immédiat Â· Résiliable à tout moment
         </p>
       </form>
     </motion.div>
@@ -956,7 +956,7 @@ function StepPayment({
         setError(data.message || 'Erreur lors du traitement du paiement.');
       }
     } catch {
-      setError('Impossible de contacter le serveur. VÃ©rifiez votre connexion.');
+      setError('Impossible de contacter le serveur. Vérifiez votre connexion.');
     } finally {
       setLoading(false);
     }
@@ -991,10 +991,10 @@ function StepPayment({
           </div>
           <div>
             <p className="text-sm font-bold text-amber-900 dark:text-amber-200 mb-1">
-              Mode test activÃ© â€” Aucune carte rÃ©elle dÃ©bitÃ©e
+              Mode test activé â€” Aucune carte réelle débitée
             </p>
             <p className="text-xs text-amber-700 dark:text-amber-400 mb-2">
-              Les Stripe Price IDs ne sont pas encore configurÃ©s. Utilisez la carte de test ci-dessous.
+              Les Stripe Price IDs ne sont pas encore configurés. Utilisez la carte de test ci-dessous.
             </p>
             <button
               type="button"
@@ -1018,7 +1018,7 @@ function StepPayment({
         {/* Card number */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            NumÃ©ro de carte
+            Numéro de carte
           </label>
           <div className="relative">
             <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -1107,7 +1107,7 @@ function StepPayment({
             <span className="font-bold text-emerald-600">{cfg.trialDays} jours</span>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-3 pt-3 flex items-center justify-between">
-            <span className="font-bold text-slate-900 dark:text-white">DÃ» aujourd&apos;hui</span>
+            <span className="font-bold text-slate-900 dark:text-white">Dû aujourd&apos;hui</span>
             <span className="font-black text-lg text-emerald-600">EUR 0,00</span>
           </div>
         </div>
@@ -1130,7 +1130,7 @@ function StepPayment({
           ) : (
             <>
               <Lock className="w-4 h-4" />
-              DÃ©marrer l&apos;essai gratuit â€” EUR 0,00 dÃ» maintenant
+              Démarrer l&apos;essai gratuit â€” EUR 0,00 dû maintenant
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -1143,7 +1143,7 @@ function StepPayment({
           </Link>{' '}
           et notre{' '}
           <Link href="/privacy" className="underline underline-offset-2 hover:text-slate-600">
-            politique de confidentialitÃ©
+            politique de confidentialité
           </Link>
           .
         </p>
@@ -1166,8 +1166,8 @@ function CheckoutInner() {
   const isFree = cfg.isFree;
   const totalSteps = isFree ? 2 : 3;
   const stepLabels = isFree
-    ? ['RÃ©capitulatif', 'CrÃ©er mon compte']
-    : ['RÃ©capitulatif', 'Compte', 'Paiement'];
+    ? ['Récapitulatif', 'Créer mon compte']
+    : ['Récapitulatif', 'Compte', 'Paiement'];
 
   const [isDark, setIsDark] = useState(false);
   const [step, setStep] = useState(0);

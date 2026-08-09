@@ -7,17 +7,17 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 const subjects = [
-  'Information gÃ©nÃ©rale',
-  'Demande de dÃ©mo',
+  'Information générale',
+  'Demande de démo',
   'Support technique',
   'Partenariat',
-  'Presse & MÃ©dias',
-  'Mot de passe oubliÃ©',
-  'Mise Ã  niveau (upgrade)',
-  'TÃ©lÃ©chargement - Kiosque',
-  'TÃ©lÃ©chargement - Windows',
-  'TÃ©lÃ©chargement - macOS',
-  'CommunautÃ©',
+  'Presse & Médias',
+  'Mot de passe oublié',
+  'Mise à niveau (upgrade)',
+  'Téléchargement - Kiosque',
+  'Téléchargement - Windows',
+  'Téléchargement - macOS',
+  'Communauté',
   'Autre',
 ];
 
@@ -26,14 +26,14 @@ const subjects = [
 // See issue #1304: without this mapping the "Sujet" select always fell
 // back to its default value regardless of which link was clicked.
 const TOPIC_TO_SUBJECT: Record<string, string> = {
-  password: 'Mot de passe oubliÃ©',
-  upgrade: 'Mise Ã  niveau (upgrade)',
+  password: 'Mot de passe oublié',
+  upgrade: 'Mise à niveau (upgrade)',
   support: 'Support technique',
-  community: 'CommunautÃ©',
-  'download-kiosk': 'TÃ©lÃ©chargement - Kiosque',
-  'download-windows': 'TÃ©lÃ©chargement - Windows',
-  'download-macos': 'TÃ©lÃ©chargement - macOS',
-  download: 'Information gÃ©nÃ©rale',
+  community: 'Communauté',
+  'download-kiosk': 'Téléchargement - Kiosque',
+  'download-windows': 'Téléchargement - Windows',
+  'download-macos': 'Téléchargement - macOS',
+  download: 'Information générale',
 };
 
 function ContactPageInner() {
@@ -82,7 +82,7 @@ function ContactPageInner() {
       if (!res.ok) throw new Error('Erreur lors de l\'envoi');
       setIsSubmitted(true);
     } catch {
-      setError('Une erreur est survenue. Veuillez rÃ©essayer.');
+      setError('Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setIsSubmitting(false);
     }
@@ -94,9 +94,9 @@ function ContactPageInner() {
 
       <HeroSection
         headline="Contactez-nous"
-        subheadline="Notre Ã©quipe est lÃ  pour rÃ©pondre Ã  toutes vos questions"
+        subheadline="Notre équipe est là pour répondre à toutes vos questions"
         ctaPrimary={{ text: 'Envoyer un message', href: '#contact-form' }}
-        ctaSecondary={{ text: 'Demander une dÃ©mo', href: '/demo' }}
+        ctaSecondary={{ text: 'Demander une démo', href: '/demo' }}
         badge={{ text: 'Contact', icon: <Mail className="w-3 h-3" /> }}
       />
 
@@ -110,8 +110,8 @@ function ContactPageInner() {
                 <div className="space-y-6">
                   {[
                     { icon: Mail, label: 'Email', value: 'contact@leopardo.com' },
-                    { icon: Phone, label: 'TÃ©lÃ©phone', value: '+213 (0) 555 123 456' },
-                    { icon: MapPin, label: 'Adresse', value: 'Alger, AlgÃ©rie' },
+                    { icon: Phone, label: 'Téléphone', value: '+213 (0) 555 123 456' },
+                    { icon: MapPin, label: 'Adresse', value: 'Alger, Algérie' },
                     { icon: Clock, label: 'Horaires', value: 'Lun-Ven 9h-18h (GMT+1)' },
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-4">
@@ -128,7 +128,7 @@ function ContactPageInner() {
 
                 <div className="mt-8 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
                   <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
-                    Temps de rÃ©ponse moyen : moins de 24h
+                    Temps de réponse moyen : moins de 24h
                   </p>
                 </div>
               </motion.div>
@@ -145,8 +145,8 @@ function ContactPageInner() {
                 {isSubmitted ? (
                   <div className="text-center py-12">
                     <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Message envoyÃ© !</h3>
-                    <p className="text-slate-500 dark:text-slate-400">Notre Ã©quipe vous rÃ©pondra sous 24h.</p>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Message envoyé !</h3>
+                    <p className="text-slate-500 dark:text-slate-400">Notre équipe vous répondra sous 24h.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">

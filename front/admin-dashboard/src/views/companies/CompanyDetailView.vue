@@ -13,7 +13,7 @@
           </span>
         </h1>
         <p class="text-slate-500 dark:text-slate-400 font-medium">
-          SantÃ© opÃ©rationnelle, abonnement et configuration des modules.
+          Santé opérationnelle, abonnement et configuration des modules.
         </p>
       </div>
       <div class="flex gap-3">
@@ -27,20 +27,20 @@
     <div v-if="isLoading && !health" class="flex h-64 items-center justify-center rounded-3xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-xl">
       <div class="flex flex-col items-center gap-4">
         <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
-        <p class="text-sm font-bold text-slate-500">Analyse des donnÃ©es client...</p>
+        <p class="text-sm font-bold text-slate-500">Analyse des données client...</p>
       </div>
     </div>
 
     <div v-else-if="errorMessage" class="rounded-3xl border border-red-200 bg-red-50 p-8 text-center dark:border-red-900/30 dark:bg-red-950/20">
       <ExclamationCircleIcon class="mx-auto h-12 w-12 text-red-500" />
       <h3 class="mt-4 text-lg font-bold text-red-800 dark:text-red-400">{{ errorMessage }}</h3>
-      <button class="btn-primary mt-6" @click="loadCompany">RÃ©essayer</button>
+      <button class="btn-primary mt-6" @click="loadCompany">Réessayer</button>
     </div>
 
     <template v-else-if="health">
       <!-- Top Stats -->
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-        <StatsCard title="Score SantÃ©" :value="health.adoption.health_score" unit="/100" icon="HeartIcon" :color="scoreColor" />
+        <StatsCard title="Score Santé" :value="health.adoption.health_score" unit="/100" icon="HeartIcon" :color="scoreColor" />
         <StatsCard title="Ã‰quipe Active" :value="health.adoption.employees.active" icon="UsersIcon" color="green" />
         <StatsCard title="Pointages (30j)" :value="health.adoption.attendance.logs_30d" icon="FingerPrintIcon" color="blue" />
         <StatsCard title="Revenu (MRR)" :value="formatCurrency(health.subscription.mrr, health.subscription.currency)" icon="BanknotesIcon" color="purple" />
@@ -71,7 +71,7 @@
                   <dd class="mt-2 text-2xl font-black text-red-600 dark:text-red-400">{{ health.adoption.anomalies.critical_30d }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
-                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Paie PrÃªte</dt>
+                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Paie Prête</dt>
                   <dd class="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ health.adoption.employees.payroll_ready }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
@@ -105,7 +105,7 @@
                 </div>
                 <div v-else class="mt-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 py-8 dark:border-slate-800">
                   <CheckBadgeIcon class="h-10 w-10 text-emerald-500/50" />
-                  <p class="mt-2 text-sm font-medium text-slate-500">Aucun blocage prioritaire dÃ©tectÃ©.</p>
+                  <p class="mt-2 text-sm font-medium text-slate-500">Aucun blocage prioritaire détecté.</p>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@
           <section class="card overflow-hidden">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
               <h2 class="text-xl font-bold text-slate-900 dark:text-white">Configuration des Modules</h2>
-              <p class="mt-1 text-sm font-medium text-slate-500">Activez ou dÃ©sactivez les fonctionnalitÃ©s spÃ©cifiques pour ce client.</p>
+              <p class="mt-1 text-sm font-medium text-slate-500">Activez ou désactivez les fonctionnalités spécifiques pour ce client.</p>
             </div>
 
             <div class="p-6">
@@ -134,7 +134,7 @@
                     </div>
                     <div>
                       <p class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wide">{{ formatFeatureName(key) }}</p>
-                      <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? 'Module Actif' : 'Module DÃ©sactivÃ©' }}</p>
+                      <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? 'Module Actif' : 'Module Désactivé' }}</p>
                     </div>
                   </div>
                   <Switch
@@ -199,13 +199,13 @@
                   <option value="trial">Essai (Trial)</option>
                   <option value="active">Actif</option>
                   <option value="suspended">Suspendu</option>
-                  <option value="expired">ExpirÃ©</option>
+                  <option value="expired">Expiré</option>
                 </select>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="subscription_start">DÃ©but</label>
+                  <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="subscription_start">Début</label>
                   <input id="subscription_start" v-model="subscriptionForm.subscription_start" type="date" class="form-input" />
                 </div>
                 <div class="space-y-1.5">
@@ -216,7 +216,7 @@
 
               <div class="space-y-1.5">
                 <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="notes">Notes Internes</label>
-                <textarea id="notes" v-model="subscriptionForm.notes" rows="3" class="form-input" placeholder="DÃ©tails sur la nÃ©gociation, remises, etc."></textarea>
+                <textarea id="notes" v-model="subscriptionForm.notes" rows="3" class="form-input" placeholder="Détails sur la négociation, remises, etc."></textarea>
               </div>
 
               <!-- Activer client -->
@@ -290,7 +290,7 @@
           <section class="card bg-slate-900 text-white border-none shadow-premium overflow-hidden relative">
             <div class="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
             <div class="p-6 relative z-10">
-              <h2 class="text-lg font-bold">IdentitÃ© Technique</h2>
+              <h2 class="text-lg font-bold">Identité Technique</h2>
               <dl class="mt-6 space-y-4">
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
                   <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">ID Plateforme</dt>
@@ -309,14 +309,14 @@
                   <dd class="text-xs font-bold">{{ formatDate(health.company.created_at) }}</dd>
                 </div>
                 <div class="flex justify-between items-center">
-                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">DerniÃ¨re ActivitÃ©</dt>
+                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Dernière Activité</dt>
                   <dd class="text-xs font-bold text-brand-400">{{ formatDateTime(health.adoption.attendance.last_punch_at) }}</dd>
                 </div>
               </dl>
 
               <button class="mt-8 w-full inline-flex items-center justify-center rounded-xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 transition-colors border border-white/10">
                 <CommandLineIcon class="mr-2 h-4 w-4" />
-                AccÃ¨s Super-Console
+                Accès Super-Console
               </button>
             </div>
           </section>
@@ -455,7 +455,7 @@ async function saveSubscription() {
 
   try {
     await api.patch(`/platform/companies/${route.params.id}/subscription`, subscriptionForm.value)
-    toast.success('Abonnement mis Ã  jour avec succÃ¨s.')
+    toast.success('Abonnement mis Ã  jour avec succès.')
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
@@ -472,7 +472,7 @@ async function saveFeatures() {
     await api.patch(`/platform/companies/${route.params.id}/features`, {
       features: featuresForm.value
     })
-    toast.success('Configuration des modules enregistrÃ©e.')
+    toast.success('Configuration des modules enregistrée.')
     originalFeatures.value = { ...featuresForm.value }
   } catch (error) {
     console.error('Failed to save features:', error)
@@ -523,7 +523,7 @@ function formatCurrency(value, currency = 'EUR') {
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseignÃ©'
+  if (!value) return 'Non renseigné'
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), { dateStyle: 'medium' }).format(new Date(value))
 }
 
@@ -565,11 +565,11 @@ function formatFeatureName(key) {
     rh: 'Ressources Humaines',
     finance: 'Finance & Gestion',
     ai: 'Intelligence Artificielle',
-    cameras: 'Surveillance VidÃ©o',
+    cameras: 'Surveillance Vidéo',
     tracking: 'Suivi de Flotte',
     planning: 'Planning & Equipe',
     training: 'Centre de Formation',
-    cabinet: 'Placard NumÃ©rique',
+    cabinet: 'Placard Numérique',
   }
   return names[key] || key.toUpperCase()
 }

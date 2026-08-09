@@ -4,10 +4,10 @@
       <div>
         <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Centre support client</h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-          Conversations ouvertes par les entreprises clientes, triÃ©es par prioritÃ©.
+          Conversations ouvertes par les entreprises clientes, triées par priorité.
         </p>
         <div v-if="companyFilter.id" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-brand-700 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-300">
-          Filtre : {{ companyFilter.name || 'Entreprise sÃ©lectionnÃ©e' }}
+          Filtre : {{ companyFilter.name || 'Entreprise sélectionnée' }}
           <button type="button" class="rounded-full p-0.5 hover:bg-brand-100 dark:hover:bg-brand-900/50" @click="clearCompanyFilter">
             <XMarkIcon class="h-3.5 w-3.5" />
           </button>
@@ -23,8 +23,8 @@
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Ouverts" :value="statusCounts.open" icon="ChatBubbleBottomCenterTextIcon" color="blue" />
       <StatsCard title="En attente client" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
-      <StatsCard title="RÃ©solus" :value="statusCounts.resolved" icon="CheckCircleIcon" color="green" />
-      <StatsCard title="FermÃ©s" :value="statusCounts.closed" icon="XCircleIcon" color="red" />
+      <StatsCard title="Résolus" :value="statusCounts.resolved" icon="CheckCircleIcon" color="green" />
+      <StatsCard title="Fermés" :value="statusCounts.closed" icon="XCircleIcon" color="red" />
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -108,7 +108,7 @@
           <div>
             <ChatBubbleBottomCenterTextIcon class="mx-auto h-10 w-10 text-slate-300" />
             <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">
-              SÃ©lectionnez un ticket pour voir la conversation
+              Sélectionnez un ticket pour voir la conversation
             </p>
           </div>
         </div>
@@ -175,7 +175,7 @@
                 v-model="replyBody"
                 rows="2"
                 class="form-input flex-1 text-sm"
-                placeholder="RÃ©pondre au client..."
+                placeholder="Répondre au client..."
                 :disabled="isReplying"
               ></textarea>
               <button
@@ -241,12 +241,12 @@ const statusFilters = [
   { value: 'all', label: 'Tous' },
   { value: 'open', label: 'Ouverts' },
   { value: 'pending', label: 'En attente' },
-  { value: 'resolved', label: 'RÃ©solus' },
-  { value: 'closed', label: 'FermÃ©s' },
+  { value: 'resolved', label: 'Résolus' },
+  { value: 'closed', label: 'Fermés' },
 ]
 
 const priorityFilters = [
-  { value: 'all', label: 'Toutes prioritÃ©s' },
+  { value: 'all', label: 'Toutes priorités' },
   { value: 'urgent', label: 'Urgent' },
   { value: 'high', label: 'Haute' },
   { value: 'normal', label: 'Normale' },
@@ -313,7 +313,7 @@ async function sendReply() {
     }
   } catch (error) {
     console.error('Failed to reply to ticket:', error)
-    toast.error('Envoi de la rÃ©ponse impossible.')
+    toast.error('Envoi de la réponse impossible.')
   } finally {
     isReplying.value = false
   }
@@ -365,7 +365,7 @@ function statusClass(status) {
 }
 
 function statusLabel(status) {
-  const labels = { open: 'Ouvert', pending: 'En attente', resolved: 'RÃ©solu', closed: 'FermÃ©' }
+  const labels = { open: 'Ouvert', pending: 'En attente', resolved: 'Résolu', closed: 'Fermé' }
   return labels[status] || status
 }
 
@@ -385,7 +385,7 @@ function priorityLabel(priority) {
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseignÃ©'
+  if (!value) return 'Non renseigné'
 
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'short',

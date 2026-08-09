@@ -81,7 +81,12 @@ class PaymentDocument extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
+        // F-17 (#1547/#1595) : le metadata JSON peut contenir des données
+        // personnelles de paie (payment_reference, montants, périodes) →
+        // chiffré au repos (AES-256, clé APP_KEY). Laravel gère le préfixe
+        // `encrypted:` : les lignes historiques en clair restent lisibles
+        // (décryptage best-effort) et le backfill de la migration les chiffre.
+        'metadata' => 'encrypted:array',
         'generated_at' => 'datetime',
         'size_bytes' => 'integer',
     ];

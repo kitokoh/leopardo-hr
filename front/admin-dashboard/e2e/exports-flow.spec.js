@@ -35,7 +35,7 @@ test.describe('Recruitment page structure', () => {
 
   test('recruitment view exposes jobs and pipeline controls', async ({ page }) => {
     await page.addInitScript((token) => {
-      localStorage.setItem('admin_token', token)
+      sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/recruitment')
@@ -57,7 +57,7 @@ test.describe('Exports page structure', () => {
 
   test('exports view loads with expected heading', async ({ page }) => {
     await page.addInitScript((token) => {
-      localStorage.setItem('admin_token', token)
+      sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/exports')

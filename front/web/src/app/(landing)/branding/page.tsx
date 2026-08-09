@@ -26,11 +26,11 @@ type FeatureCopy = { title: string; desc: string; color: string };
 const featuresByLocale: Record<Lang, FeatureCopy[]> = {
   fr: [
     { title: 'Logo entreprise', desc: "Uploadez votre logo (PNG, SVG). Il s'affiche dans l'app mobile, les emails et les bulletins PDF.", color: 'emerald' },
-    { title: "Nom d'affichage", desc: 'Personnalisez le nom affichÃ© dans l\'interface : "Acme Corp" plutÃ´t que votre identifiant technique.', color: 'blue' },
-    { title: 'Couleurs primaires', desc: "DÃ©finissez votre couleur principale et votre couleur d'accent. AperÃ§u en temps rÃ©el dans le dashboard.", color: 'violet' },
-    { title: 'Mobile branding', desc: "Le thÃ¨me se propage dans l'app manager et l'app employee. Headers, boutons et badges adoptent vos couleurs.", color: 'pink' },
-    { title: 'Dashboard admin', desc: "L'espace web du manager reflÃ¨te votre identitÃ© visuelle dÃ¨s la connexion.", color: 'amber' },
-    { title: 'Isolation tenant', desc: 'Chaque entreprise a son propre branding. Aucun risque de mÃ©lange entre tenants.', color: 'red' },
+    { title: "Nom d'affichage", desc: 'Personnalisez le nom affiché dans l\'interface : "Acme Corp" plutôt que votre identifiant technique.', color: 'blue' },
+    { title: 'Couleurs primaires', desc: "Définissez votre couleur principale et votre couleur d'accent. Aperçu en temps réel dans le dashboard.", color: 'violet' },
+    { title: 'Mobile branding', desc: "Le thème se propage dans l'app manager et l'app employee. Headers, boutons et badges adoptent vos couleurs.", color: 'pink' },
+    { title: 'Dashboard admin', desc: "L'espace web du manager reflète votre identité visuelle dès la connexion.", color: 'amber' },
+    { title: 'Isolation tenant', desc: 'Chaque entreprise a son propre branding. Aucun risque de mélange entre tenants.', color: 'red' },
   ],
   en: [
     { title: 'Company logo', desc: 'Upload your logo (PNG, SVG). It appears in the mobile app, emails and PDF payslips.', color: 'emerald' },
@@ -41,11 +41,11 @@ const featuresByLocale: Record<Lang, FeatureCopy[]> = {
     { title: 'Tenant isolation', desc: 'Each company has its own branding. No risk of mixing tenants.', color: 'red' },
   ],
   tr: [
-    { title: 'Åžirket logosu', desc: "Logonuzu yÃ¼kleyin (PNG, SVG). Mobil uygulamada, e-postalarda ve PDF bordrolarda gÃ¶rÃ¼nÃ¼r.", color: 'emerald' },
-    { title: 'GÃ¶rÃ¼nen ad', desc: 'ArayÃ¼zde gÃ¶rÃ¼nen adÄ± Ã¶zelleÅŸtirin: teknik kimliÄŸiniz yerine "Acme Corp".', color: 'blue' },
-    { title: 'Birincil renkler', desc: 'Ana rengi ve vurgu rengini belirleyin. Panelde gerÃ§ek zamanlÄ± Ã¶nizleme.', color: 'violet' },
-    { title: 'Mobil marka', desc: 'Tema yÃ¶netici ve Ã§alÄ±ÅŸan uygulamalarÄ±na yayÄ±lÄ±r. BaÅŸlÄ±klar, dÃ¼ÄŸmeler ve rozetler renklerinizi alÄ±r.', color: 'pink' },
-    { title: 'YÃ¶netici paneli', desc: "YÃ¶neticinin web alanÄ± giriÅŸ yaptÄ±ÄŸÄ± anda gÃ¶rsel kimliÄŸinizi yansÄ±tÄ±r.", color: 'amber' },
+    { title: 'Åžirket logosu', desc: "Logonuzu yükleyin (PNG, SVG). Mobil uygulamada, e-postalarda ve PDF bordrolarda görünür.", color: 'emerald' },
+    { title: 'Görünen ad', desc: 'Arayüzde görünen adÄ± özelleÅŸtirin: teknik kimliÄŸiniz yerine "Acme Corp".', color: 'blue' },
+    { title: 'Birincil renkler', desc: 'Ana rengi ve vurgu rengini belirleyin. Panelde gerçek zamanlÄ± önizleme.', color: 'violet' },
+    { title: 'Mobil marka', desc: 'Tema yönetici ve çalÄ±ÅŸan uygulamalarÄ±na yayÄ±lÄ±r. BaÅŸlÄ±klar, düÄŸmeler ve rozetler renklerinizi alÄ±r.', color: 'pink' },
+    { title: 'Yönetici paneli', desc: "Yöneticinin web alanÄ± giriÅŸ yaptÄ±ÄŸÄ± anda görsel kimliÄŸinizi yansÄ±tÄ±r.", color: 'amber' },
     { title: 'KiracÄ± yalÄ±tÄ±mÄ±', desc: 'Her ÅŸirketin kendi markasÄ± vardÄ±r. KiracÄ±lar arasÄ±nda karÄ±ÅŸma riski yoktur.', color: 'red' },
   ],
   ar: [
@@ -104,8 +104,8 @@ type PlanCopy = { name: string; price: string; features: string[]; highlight: bo
 const plansByLocale: Record<Lang, PlanCopy[]> = {
   fr: [
     { name: 'Starter', price: 'Inclus', features: ['Logo entreprise', "Nom d'affichage"], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisÃ©es', 'Branding mobile'], highlight: true },
-    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisÃ©', 'Splash screen mobile custom'], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisées', 'Branding mobile'], highlight: true },
+    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisé', 'Splash screen mobile custom'], highlight: false },
   ],
   en: [
     { name: 'Starter', price: 'Included', features: ['Company logo', 'Display name'], highlight: false },
@@ -113,9 +113,9 @@ const plansByLocale: Record<Lang, PlanCopy[]> = {
     { name: 'Enterprise', price: 'Custom quote', features: ['Everything in Pro', 'Full white-label', 'Custom domain', 'Custom mobile splash screen'], highlight: false },
   ],
   tr: [
-    { name: 'Starter', price: 'Dahil', features: ['Åžirket logosu', 'GÃ¶rÃ¼nen ad'], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Åžirket logosu', 'GÃ¶rÃ¼nen ad', 'Ã–zel renkler', 'Mobil marka'], highlight: true },
-    { name: 'Enterprise', price: 'Teklif alÄ±n', features: ["Pro'daki her ÅŸey", 'Tam whitelabel', 'Ã–zel alan adÄ±', 'Ã–zel mobil aÃ§Ä±lÄ±ÅŸ ekranÄ±'], highlight: false },
+    { name: 'Starter', price: 'Dahil', features: ['Åžirket logosu', 'Görünen ad'], highlight: false },
+    { name: 'Pro', price: 'Premium', features: ['Åžirket logosu', 'Görünen ad', 'Ã–zel renkler', 'Mobil marka'], highlight: true },
+    { name: 'Enterprise', price: 'Teklif alÄ±n', features: ["Pro'daki her ÅŸey", 'Tam whitelabel', 'Ã–zel alan adÄ±', 'Ã–zel mobil açÄ±lÄ±ÅŸ ekranÄ±'], highlight: false },
   ],
   ar: [
     { name: 'Starter', price: 'Ù…Ø´Ù…ÙˆÙ„', features: ['Ø´Ø¹Ø§Ø± Ø§Ù„Ø´Ø±ÙƒØ©', 'Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶'], highlight: false },
@@ -140,15 +140,15 @@ type BrandingPageCopy = {
 const copy: Record<Lang, BrandingPageCopy> = {
   fr: {
     hero: 'Personnalisation entreprise',
-    heroSub: 'Faites de Leopardo RH votre propre outil. Logo, couleurs, nom â€” tout reflÃ¨te votre identitÃ©.',
+    heroSub: 'Faites de Leopardo RH votre propre outil. Logo, couleurs, nom â€” tout reflète votre identité.',
     badge: 'Tenant Branding Premium',
     featuresTitle: 'Ce que vous pouvez personnaliser',
     apiSectionTitle: 'API Branding',
     plansTitle: 'Branding selon votre plan',
-    recommendedBadge: 'RecommandÃ©',
-    ctaTitle: 'PrÃªt Ã  personnaliser votre espace ?',
-    ctaSub: 'Demandez une dÃ©mo pour voir le branding premium en action.',
-    ctaBtn: 'DÃ©marrer la personnalisation',
+    recommendedBadge: 'Recommandé',
+    ctaTitle: 'Prêt à personnaliser votre espace ?',
+    ctaSub: 'Demandez une démo pour voir le branding premium en action.',
+    ctaBtn: 'Démarrer la personnalisation',
   },
   en: {
     hero: 'Enterprise Branding',
@@ -166,12 +166,12 @@ const copy: Record<Lang, BrandingPageCopy> = {
     hero: 'Kurumsal Marka',
     heroSub: 'Leopardo RH\'yi kendinize ait yapÄ±n. Logo, renkler, isim â€” her ÅŸey kimliÄŸinizi yansÄ±tÄ±r.',
     badge: 'KiracÄ± Marka Premium',
-    featuresTitle: 'Neler Ã¶zelleÅŸtirilebilir',
+    featuresTitle: 'Neler özelleÅŸtirilebilir',
     apiSectionTitle: 'Marka API',
-    plansTitle: 'Plana gÃ¶re marka Ã¶zelleÅŸtirme',
+    plansTitle: 'Plana göre marka özelleÅŸtirme',
     recommendedBadge: 'Ã–nerilen',
-    ctaTitle: 'Ã‡alÄ±ÅŸma alanÄ±nÄ±zÄ± Ã¶zelleÅŸtirmeye hazÄ±r mÄ±sÄ±nÄ±z?',
-    ctaSub: 'Premium markayÄ± aksiyonda gÃ¶rmek iÃ§in demo talep edin.',
+    ctaTitle: 'Ã‡alÄ±ÅŸma alanÄ±nÄ±zÄ± özelleÅŸtirmeye hazÄ±r mÄ±sÄ±nÄ±z?',
+    ctaSub: 'Premium markayÄ± aksiyonda görmek için demo talep edin.',
     ctaBtn: 'Ã–zelleÅŸtirmeye baÅŸla',
   },
   ar: {

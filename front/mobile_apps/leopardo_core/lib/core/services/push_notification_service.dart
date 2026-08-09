@@ -95,7 +95,7 @@ class PushNotificationService {
     );
 
     await _localNotifications.initialize(
-      settings: initSettings,
+      initSettings,
       onDidReceiveNotificationResponse: (response) {
         debugPrint('Local notification tapped: ${response.payload}');
       },
@@ -211,10 +211,10 @@ class PushNotificationService {
     );
 
     await _localNotifications.show(
-      id: notification.hashCode,
-      title: notification.title ?? 'Leopardo HR',
-      body: notification.body ?? '',
-      notificationDetails: details,
+      notification.hashCode,
+      notification.title ?? 'Leopardo HR',
+      notification.body ?? '',
+      details,
       payload: message.data.toString(),
     );
   }

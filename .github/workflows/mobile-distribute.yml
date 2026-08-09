@@ -172,9 +172,15 @@ jobs:
           ANDROID_PACKAGE: ${{ matrix.app.android_package }}
           FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           set -euo pipefail
           CONFIG_FILE="${PROJECT_PATH}/android/app/google-services.json"
+          if [[ -n "${GOOGLE_SERVICES_JSON}" ]]; then
+            mkdir -p "$(dirname "${CONFIG_FILE}")"
+            printf '%s' "${GOOGLE_SERVICES_JSON}" > "${CONFIG_FILE}"
+            echo "Firebase config restaurée depuis le secret (issue #1467)."
+          fi
           if [[ ! -f "${CONFIG_FILE}" ]]; then
             echo "Missing Firebase config: ${CONFIG_FILE}"
             echo "Run dev-hub/tools/install-mobile-firebase-configs.ps1 with matching Firebase app IDs."

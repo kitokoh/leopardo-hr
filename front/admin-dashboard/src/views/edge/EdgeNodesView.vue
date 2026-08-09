@@ -23,7 +23,7 @@
       <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
       <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
       <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
-      <EdgeStatCard label="Licences expirÃ©es" :value="stats.licenseExpired" icon="⚠️" color="red" />
+      <EdgeStatCard label="Licences expirées" :value="stats.licenseExpired" icon="⚠️" color="red" />
     </div>
 
     <!-- Nodes table -->
@@ -35,8 +35,8 @@
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 opacity-30">🖥️</div>
-        <p class="font-medium">Aucun node Edge enregistrÃ©</p>
-        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrÃ©s via l'API Edge.</p>
+        <p class="font-medium">Aucun node Edge enregistré</p>
+        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
       </div>
 
       <table v-else class="w-full text-sm">
@@ -45,7 +45,7 @@
             <th class="px-4 py-3 font-medium">Node</th>
             <th class="px-4 py-3 font-medium">Statut</th>
             <th class="px-4 py-3 font-medium">Licence</th>
-            <th class="px-4 py-3 font-medium">DerniÃ¨re sync</th>
+            <th class="px-4 py-3 font-medium">Dernière sync</th>
             <th class="px-4 py-3 font-medium">En attente</th>
             <th class="px-4 py-3 font-medium">Actions</th>
           </tr>
@@ -108,7 +108,7 @@
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
-                  DÃ©tails
+                  Détails
                 </button>
               </div>
             </td>
@@ -186,9 +186,9 @@ function licenseClass(status) {
 function licenseLabel(status) {
   const map = {
     active: 'Active',
-    expiring_soon: 'Expire bientÃ´t',
-    expired: 'ExpirÃ©e',
-    revoked: 'RÃ©voquÃ©e',
+    expiring_soon: 'Expire bientôt',
+    expired: 'Expirée',
+    revoked: 'Révoquée',
   };
   return map[status] ?? status;
 }

@@ -7,7 +7,6 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -16,19 +15,7 @@ use Tests\TestCase;
  */
 class PayrollCycleSettingsTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use \Tests\RefreshTenantDatabase;
 
     public function test_manager_can_read_default_cycle_settings(): void
     {

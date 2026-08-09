@@ -39,7 +39,10 @@
         <env name="DB_DATABASE" value="leopardo_test"/>
         <env name="DB_USERNAME" value="leopardo_user"/>
         <env name="DB_PASSWORD" value="leopardo_pass_test"/>
-        <env name="DB_SEARCH_PATH" value="shared_tenants,public"/>
+        <!-- Aligné sur la CI (tests.yml : DB_SEARCH_PATH=public,shared_tenants).
+             L'ordre public,shared_tenants garantit que `CREATE TABLE migrations` atterrit
+             dans public et que les migrations tenant sont correctement scoped (#1597). -->
+        <env name="DB_SEARCH_PATH" value="public,shared_tenants"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

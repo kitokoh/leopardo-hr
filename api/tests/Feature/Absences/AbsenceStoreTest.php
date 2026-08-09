@@ -10,24 +10,12 @@ use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class AbsenceStoreTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_can_create_absence(): void
     {
@@ -513,7 +501,7 @@ class AbsenceStoreTest extends TestCase
 
         $absenceType = AbsenceType::query()->create([
             'company_id' => $company->id,
-            'name' => 'CongÃ© payÃ©',
+            'name' => 'Congé payé',
             'code' => 'CP',
             'is_paid' => true,
             'deducts_leave' => true,
@@ -555,7 +543,7 @@ class AbsenceStoreTest extends TestCase
             'absence_type_id' => $absenceType->id,
             'start_date' => '2026-04-10',
             'end_date' => '2026-04-12',
-            'reason' => 'Nouvelle demande corrigÃ©e',
+            'reason' => 'Nouvelle demande corrigée',
         ]);
 
         $response->assertStatus(201);

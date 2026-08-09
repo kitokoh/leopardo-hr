@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Domain\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -18,7 +19,7 @@ use Illuminate\Support\Carbon;
  * @property float $rate
  * @property float $cap
  * @property Carbon $effective_from
- * @property Carbon $effective_to
+ * @property Carbon|null $effective_to
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -26,6 +27,8 @@ use Illuminate\Support\Carbon;
  */
 class SocialContribution extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = [
         'company_id', 'country_code', 'name', 'code', 'type',
         'rate', 'cap', 'effective_from', 'effective_to',

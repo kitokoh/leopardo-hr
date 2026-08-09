@@ -220,7 +220,7 @@ class _StartupGateState extends State<StartupGate> {
                                       _showStartupGuard = false;
                                     }),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: const AppColors.mobileLavender,
+                                  foregroundColor: AppColors.mobileLavender,
                                   side: BorderSide(
                                     color: const Color(
                                       0xFFDAE2FD,

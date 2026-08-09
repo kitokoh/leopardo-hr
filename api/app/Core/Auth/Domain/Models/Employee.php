@@ -40,6 +40,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int|null $position_id
  * @property int|null $schedule_id
  * @property int|null $site_id
+ * @property int|null $salary_structure_id
  * @property string|null $matricule
  * @property string|null $zkteco_id
  * @property string $first_name
@@ -60,7 +61,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $nationality
  * @property string|null $marital_status
  * @property string $contract_type
- * @property Carbon $contract_start
+ * @property Carbon|null $contract_start
  * @property Carbon|null $contract_end
  * @property string $salary_type
  * @property float|null $salary_base
@@ -136,6 +137,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'department_id',
         'position_id',
         'site_id',
+        'salary_structure_id',
         'matricule',
         'zkteco_id',
         'first_name',
