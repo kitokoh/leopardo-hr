@@ -6,6 +6,7 @@
 ## [Unreleased]
 
 ### Added
+- **test: tests paie/paiement sur les vraies migrations (F-13, #1543/#1569).** Migration de 17 fichiers `Feature` (BankExport, BulkPayment, CotisationSimulation, PaymentBatch, PaymentDocument, PaySlip, SocialDeclaration, jobs paie, IBAN, webhooks) de `CreatesMvpSchema` vers `RefreshTenantDatabase` ; rapport de dérive archivé dans `docs/audits/DRIFT_F13_2026-08-09.md`.
 - **fix(ci): garde CHANGELOG mojibake renforcée (#1612).** `check-governance.ps1` détecte désormais les patrons de ré-encodage NON standard observés dans l'historique (em dash, flèche, coche, accents é/ô/è/ç/à préfixés par « + » ou « G » et leurs formes doublement ré-encodées « tiret ») en plus des patrons classiques (double-encodage « A tilde + e », « a accent circonflexe + euro », caractère de remplacement) — un commit réintroduisant un de ces patrons fait échouer la CI (Governance Gates). Auto-test dédié `check-governance-mojibake-test.ps1` branché sur le job Governance : liste noire détectée + caractères légitimes (é è ê à ç ô ù ï — – … ✓ ✗ → § • « ») admis + CHANGELOG courant propre.
 
 ### Added
