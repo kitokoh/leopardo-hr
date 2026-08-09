@@ -80,6 +80,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payroll-runs/{payrollRun}/unlock', [PayrollRunController::class, 'unlock'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/cancel', [PayrollRunController::class, 'cancel'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/summary', [PayrollRunController::class, 'summary'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/anomalies', [PayrollRunController::class, 'anomalies'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/export', [PayrollRunController::class, 'export'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/journal', [PayrollRunController::class, 'journal'])->whereNumber('payrollRun');
 
