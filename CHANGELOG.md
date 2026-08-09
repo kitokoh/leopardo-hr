@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Added
+- **docs: convergence mobile F-27 + état des lieux chiffrement au repos (F-17).** `docs/mobile/CONVERGENCE_F27.md` (#1557) : stratégie de convergence progressive des apps non-employee vers le socle `leopardo_core` (socle unique, parallélisme contrôlé, traqueur de duplication, gardes CI), avec inventaire 2026-08-09 des apps. `docs/security/DATA_AT_REST.md` (#1547/#1595) : metadata des documents de paie chiffré (F-17, PR #1611), exception documentée pour les colonnes de salaire (agrégations/benchmark), rétention biométrie.
+- **fix(ci): garde CHANGELOG mojibake renforcée (#1612).** `check-governance.ps1` détecte désormais les patrons de ré-encodage NON standard observés dans l'historique (GÇö, GåÆ, Gùï, +¬/+¦/+¿/+º/+á, â-¬/â-¦/â-¿/â-á, ó——) en plus des patrons classiques (Ã©, â€, U+FFFD) — un commit réintroduisant un de ces patrons fait échouer la CI (Governance Gates). Auto-test dédié `check-governance-mojibake-test.ps1` branché sur le job Governance : liste noire détectée + caractères légitimes (é è ê à ç ô ù ï — – … ✓ ✗ → § • « ») admis + CHANGELOG courant propre.
+- **fix(ci): garde CHANGELOG mojibake renforcée (#1612).** `check-governance.ps1` détecte désormais les patrons de ré-encodage NON standard observés dans l'historique (em dash, flèche, coche, accents é/ô/è/ç/à préfixés par « + » ou « G » et leurs formes doublement ré-encodées « tiret ») en plus des patrons classiques (double-encodage « A tilde + e », « a accent circonflexe + euro », caractère de remplacement) — un commit réintroduisant un de ces patrons fait échouer la CI (Governance Gates). Auto-test dédié `check-governance-mojibake-test.ps1` branché sur le job Governance : liste noire détectée + caractères légitimes (é è ê à ç ô ù ï — – … ✓ ✗ → § • « ») admis + CHANGELOG courant propre.
+
 ### Fixed
 - **test(mobile): tests critiques leopardo_employee + flutter test en CI (F-30, #1560).** Nouveau dossier `test/` pour l'app employee : parsing des anomalies de pointage (7 tests), repository pointage — check-in/check-out, payload GPS/note, mode hors-ligne (file Hive `offline_punches`), propagation des erreurs non-réseau, correction de pointage (8 tests) — via le pattern Dio interceptor + fakes mémoire (aucun plugin). `mobile-apps-ci.yml` exécute désormais `flutter test` pour `leopardo_employee` en plus de `leopardo_core`.
 

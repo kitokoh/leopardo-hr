@@ -164,3 +164,37 @@ type `dedoc/scramble` ou `knuckleswtf/scribe` plutôt que rédaction manuelle).
    SSO, ZKTeco (accès dispositifs physiques), avant les endpoints internes/reporting à faible exposition.
 4. Envisager un générateur semi-automatique (`dedoc/scramble`, `knuckleswtf/scribe`) plutôt qu'une rédaction
    manuelle de ~200 blocs, pour rester synchronisé avec le code au fil du temps (cf. `CONVENTIONS.md` §7).
+
+---
+
+## Suivi de rémediation (2026-08-09)
+
+### État des lieux outillé
+
+- Script de comparaison route→opération par module : **`dev-hub/tools/check-openapi-route-coverage.py`**
+  (statique, sans runtime PHP, normalisation `{param}`, prise en charge des préfixes imbriqués).
+- **Métrique actuelle** : `291/589` routes couvertes, `416` opérations documentées dans `api/openapi.yaml`,
+  `298` routes non couvertes — **toutes** dans `dev-hub/tools/openapi-coverage-allowlist.txt` (gap connu),
+  **0 nouveau gap** (drift) → la garde CI (`openapi-ci.yml`, job coverage) est **verte et bloquante**.
+- L'allowlist est désormais **structurée par module avec justification** (commentaires `## module` dans le
+  fichier) : chaque exclusion est documentée (interne, legacy en convergence, webhooks fournisseur,
+  dispositifs physiques, reporting admin…).
+
+### Décision de clôture de l'exclusion documentée
+
+Conformément au libellé de l'issue #1473 (« combler les trous réels **ou** ajouter des exclusions
+documentées et justifiées ») :
+
+1. Les **webhooks fournisseurs entrants** (`POST /webhooks/stripe`, `POST /webhooks/chargily`) sont
+   volontairement exclus de la spec publique (non consommés par des clients API) — documenté.
+2. Les surfaces **internes / legacy en convergence** (user app RH, hr_app, planning, expense, growth,
+   marketing, dashboard/tokens) sont exclusions documentées, à re-documenter au fil des consolidations
+   (F-20, F-27/#1557).
+3. **Payroll Engine** reste la priorité de documentation ouverte (10 routes, F-10/F-12).
+4. Toute **nouvelle** route non documentée fait échouer la CI : une PR doit documenter la route ou
+   justifier son exclusion dans l'allowlist.
+
+### Prochaines étapes (hors session)
+
+- Génération semi-automatique (`dedoc/scramble`) pour documenter les blocs restants sans deviner les schémas.
+- Réduction module par module de l'allowlist, en commençant par `payroll_engine.php`.
