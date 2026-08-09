@@ -208,7 +208,7 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        $filename = 'journal_paie_'.$payrollRun->period_start.'_'.$payrollRun->period_end.'.csv';
+        $filename = 'journal_paie_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
 
         return response()->streamDownload(function () use ($payrollRun): void {
             echo (new PayrollJournalGenerator())->generate($payrollRun);
