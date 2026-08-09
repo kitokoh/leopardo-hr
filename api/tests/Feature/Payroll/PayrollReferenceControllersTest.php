@@ -356,4 +356,54 @@ class PayrollReferenceControllersTest extends TestCase
         $migration->up();
         $this->assertSame($raw, \Illuminate\Support\Facades\DB::table('payment_documents')->where('id', $id)->value('metadata'));
     }
+
+    public function test_payment_metadata_encrypted_at_rest_on_batches_items_confirmations(): void
+    {
+        // F-17 (#1595) : payment_batches / payment_items / payment_confirmations
+        // portent des métadonnées libres (références, notes, user-agent) —
+        // elles doivent être chiffrées au repos comme payment_documents.
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+
+        $batch = \App\Modules\Payroll\Domain\Models\PaymentBatch::query()->create([
+            'company_id' => $this->company->id,
+            'status' => 'draft',
+            'metadata' => ['internal_note' => 'VIP-2026-001', 'phone' => '+213555123456'],
+        ]);
+
+        $item = \App\Modules\Payroll\Domain\Models\PaymentItem::query()->create([
+            'company_id' => $this->company->id,
+            'payment_batch_id' => $batch->id,
+            'employee_id' => $employee->id,
+            'status' => 'pending',
+            'metadata' => ['reference' => 'VIR-2026-002'],
+        ]);
+
+        $confirmation = \App\Modules\Payroll\Domain\Models\PaymentConfirmation::query()->create([
+            'company_id' => $this->company->id,
+            'payment_batch_id' => $batch->id,
+            'payment_item_id' => $item->id,
+            'employee_id' => $employee->id,
+            'status' => 'confirmed',
+            'confirmed_at' => now(),
+            'document_version' => 'v1',
+            'metadata' => ['user_agent' => 'LeopardoEmployee/1.0', 'ip' => '41.111.222.333'],
+        ]);
+
+        // Round-trip via les casts : les tableaux sont lus déchiffrés.
+        $this->assertSame(['internal_note' => 'VIP-2026-001', 'phone' => '+213555123456'], $batch->fresh()->metadata);
+        $this->assertSame(['reference' => 'VIR-2026-002'], $item->fresh()->metadata);
+        $this->assertSame('LeopardoEmployee/1.0', $confirmation->fresh()->metadata['user_agent']);
+
+        // Au repos : payloads chiffrés (non-JSON, données en clair absentes).
+        foreach (['payment_batches', 'payment_items', 'payment_confirmations'] as $table) {
+            $raw = \Illuminate\Support\Facades\DB::table($table)
+                ->where('company_id', $this->company->id)
+                ->value('metadata');
+            $this->assertIsString($raw);
+            $this->assertStringStartsNotWith('{', (string) $raw);
+            $this->assertStringNotContainsString('VIP-2026-001', (string) $raw);
+            $this->assertStringNotContainsString('VIR-2026-002', (string) $raw);
+        }
+    }
 }

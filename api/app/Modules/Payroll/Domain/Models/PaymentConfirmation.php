@@ -54,7 +54,7 @@ class PaymentConfirmation extends Model
 
     protected $casts = [
         'confirmed_at' => 'datetime',
-        'metadata' => 'array',
+        'metadata' => 'encrypted:array',
     ];
 
     /** @return BelongsTo<PaymentItem, $this> */
