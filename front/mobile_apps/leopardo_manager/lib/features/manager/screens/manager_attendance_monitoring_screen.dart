@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -10,6 +11,7 @@ import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 
 class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
   const ManagerAttendanceMonitoringScreen({super.key});
@@ -197,7 +199,7 @@ class _EmployeeDayDetailSheet extends ConsumerWidget {
                   ),
                   if (day.lateMinutes > 0) ...[
                     const SizedBox(height: 14),
-                    MobilePanel(
+                    GlassCard(
                       color: AppColors.warning.withValues(alpha: 0.10),
                       child: Row(
                         children: [
@@ -254,7 +256,7 @@ class _DaySessionRow extends StatelessWidget {
         ? AppColors.warning
         : ((session.lateMinutes ?? 0) > 0 ? AppColors.warning : AppColors.rh);
 
-    return MobilePanel(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
@@ -330,7 +332,7 @@ class _AttendanceBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MobilePanel(
+        GlassCard(
           child: Row(
             children: [
               Expanded(
@@ -427,7 +429,7 @@ class _AnomalyBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MobilePanel(
+        GlassCard(
           child: Row(
             children: [
               Expanded(
@@ -547,7 +549,7 @@ class _ManagerCorrectionsScreenState
           data: (items) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MobilePanel(
+              GlassCard(
                 child: Row(
                   children: [
                     const MobileIconBubble(
@@ -606,7 +608,7 @@ class _AttendanceRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
-      child: MobilePanel(
+      child: GlassCard(
         margin: const EdgeInsets.only(bottom: 8),
         child: Row(
           children: [
@@ -665,7 +667,7 @@ class _AnomalyRow extends StatelessWidget {
       _ => AppColors.info,
     };
 
-    return MobilePanel(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -724,7 +726,7 @@ class _CorrectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MobilePanel(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -854,7 +856,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MobilePanel(
+    return GlassCard(
       child: Column(
         children: [
           MobileIconBubble(icon: icon, color: AppColors.rh, size: 48),
