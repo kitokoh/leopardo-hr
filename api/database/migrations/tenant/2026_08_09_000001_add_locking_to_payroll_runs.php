@@ -26,14 +26,18 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Schéma résolu via le search_path (même ordre que DB::table) —
+        // toute garde/ALTER ci-dessous est qualifiée avec ce schéma (#1613).
+        $schema = resolveTableSchema('payroll_runs');
+
         // 1) Étendre l'enum natif PG si la colonne en est un.
         $result = DB::selectOne("
             SELECT data_type, udt_name
             FROM information_schema.columns
             WHERE table_name = 'payroll_runs'
               AND column_name = 'status'
-              AND table_schema = current_schema()
-        ");
+              AND table_schema = ?
+        ", [$schema]);
 
         if ($result && $result->data_type === 'USER-DEFINED') {
             $enumName = $result->udt_name;
@@ -74,21 +78,23 @@ return new class extends Migration
               AND pg_get_constraintdef(oid) LIKE '%error%'
         ");
         if ($hasNewStatuses === null) {
-            DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
+            DB::statement("ALTER TABLE \"{$schema}\".\"payroll_runs\" DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
             // Full status lifecycle including async states (processing/error from
             // ProcessPayrollBatchJob) and locked (F-11 closing workflow).
-            DB::statement("
-                ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check
-                CHECK ((status)::text = ANY ((ARRAY[
-                    'draft', 'calculating', 'processing', 'calculated', 'validated',
-                    'paid', 'locked', 'cancelled', 'error'
-                ]::text[])))
-            ");
+            if ($schema !== null) {
+                DB::statement("
+                    ALTER TABLE \"{$schema}\".\"payroll_runs\" ADD CONSTRAINT payroll_runs_status_check
+                    CHECK ((status)::text = ANY ((ARRAY[
+                        'draft', 'calculating', 'processing', 'calculated', 'validated',
+                        'paid', 'locked', 'cancelled', 'error'
+                    ]::text[])))
+                ");
+            }
         }
 
         // 2) Colonnes de verrouillage.
-        if (! Schema::hasColumn('payroll_runs', 'locked_by')) {
-            Schema::table('payroll_runs', function (Blueprint $table): void {
+        if ($schema !== null && ! schemaHasColumn('payroll_runs', 'locked_by')) {
+            Schema::table("{$schema}.payroll_runs", function (Blueprint $table): void {
                 $table->unsignedInteger('locked_by')->nullable()->after('paid_at');
                 $table->timestampTz('locked_at')->nullable()->after('locked_by');
 
@@ -99,8 +105,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasColumn('payroll_runs', 'locked_at')) {
-            Schema::table('payroll_runs', function (Blueprint $table): void {
+        $schema = resolveTableSchema('payroll_runs');
+        if ($schema !== null && schemaHasColumn('payroll_runs', 'locked_at')) {
+            Schema::table("{$schema}.payroll_runs", function (Blueprint $table): void {
                 $table->dropForeign(['locked_by']);
                 $table->dropColumn(['locked_by', 'locked_at']);
             });
