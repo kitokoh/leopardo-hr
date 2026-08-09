@@ -52,7 +52,7 @@
               </div>
 
               <div>
-                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">ClÃ© d'AccÃ¨s</label>
+                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Clé d'Accès</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <LockClosedIcon class="h-5 w-5 text-slate-500" />
@@ -168,7 +168,7 @@
       <div class="flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-600">
         <span>Â© 2026 Leopardo Systems</span>
         <div class="flex items-center gap-4">
-          <a href="#" class="hover:text-slate-400 transition-colors">SÃ©curitÃ©</a>
+          <a href="#" class="hover:text-slate-400 transition-colors">Sécurité</a>
           <a href="#" class="hover:text-slate-400 transition-colors">Support</a>
         </div>
       </div>
@@ -178,7 +178,7 @@
     <div v-if="showDemoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" @click="showDemoModal = false"></div>
       <div class="w-full max-w-sm relative p-8 text-center bg-slate-900 shadow-2xl rounded-3xl border border-white/10 z-10">
-         <h3 class="text-xl font-black text-white uppercase tracking-tight">AccÃ¨s DÃ©mo</h3>
+         <h3 class="text-xl font-black text-white uppercase tracking-tight">Accès Démo</h3>
          <p class="mt-4 text-slate-400 text-sm font-medium italic">administrateurs plateforme</p>
          <div class="mt-8 space-y-3">
            <button
@@ -252,7 +252,7 @@ async function handleLogin() {
       router.push('/')
     } else if (result.requiresTwoFactor) {
       requiresTwoFactor.value = true
-      error.value = result.message || 'Un code de vÃ©rification est requis.'
+      error.value = result.message || 'Un code de vérification est requis.'
     } else {
       error.value = result.message || 'Erreur de connexion'
     }

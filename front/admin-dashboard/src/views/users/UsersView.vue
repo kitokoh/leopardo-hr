@@ -79,15 +79,15 @@
 
         <!-- Role Filter -->
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.role.label', 'RÃ´le') }}</label>
+          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.role.label', 'Rôle') }}</label>
           <select
             v-model="filters.role"
             class="block w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none appearance-none"
           >
-            <option value="">{{ $t('users.filters.role.all', 'Tous les rÃ´les') }}</option>
+            <option value="">{{ $t('users.filters.role.all', 'Tous les rôles') }}</option>
             <option value="admin">{{ $t('users.filters.role.admin', 'Administrateur') }}</option>
             <option value="manager">{{ $t('users.filters.role.manager', 'Manager') }}</option>
-            <option value="employee">{{ $t('users.filters.role.employee', 'EmployÃ©') }}</option>
+            <option value="employee">{{ $t('users.filters.role.employee', 'Employé') }}</option>
             <option value="hr">{{ $t('users.filters.role.hr', 'RH') }}</option>
           </select>
         </div>
@@ -99,7 +99,7 @@
           @click="showAdvancedFilters = !showAdvancedFilters"
           class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors flex items-center"
         >
-          <span>{{ showAdvancedFilters ? $t('users.filters.advanced.hide', 'Masquer les filtres avancÃ©s') : $t('users.filters.advanced.show', 'Afficher les filtres avancÃ©s') }}</span>
+          <span>{{ showAdvancedFilters ? $t('users.filters.advanced.hide', 'Masquer les filtres avancés') : $t('users.filters.advanced.show', 'Afficher les filtres avancés') }}</span>
           <ChevronDownIcon :class="['ml-2 h-4 w-4 transition-transform duration-300', showAdvancedFilters ? 'rotate-180' : '']" />
         </button>
       </div>
@@ -135,7 +135,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.lastLogin.label', 'DerniÃ¨re connexion') }}</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.lastLogin.label', 'Dernière connexion') }}</label>
             <select
               v-model="filters.lastLogin"
               class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
@@ -144,7 +144,7 @@
               <option value="today">{{ $t('users.filters.lastLogin.today', "Aujourd'hui") }}</option>
               <option value="week">{{ $t('users.filters.lastLogin.week', 'Cette semaine') }}</option>
               <option value="month">{{ $t('users.filters.lastLogin.month', 'Ce mois') }}</option>
-              <option value="never">{{ $t('users.filters.lastLogin.never', 'Jamais connectÃ©') }}</option>
+              <option value="never">{{ $t('users.filters.lastLogin.never', 'Jamais connecté') }}</option>
             </select>
           </div>
 
@@ -172,7 +172,7 @@
         <div class="flex items-center">
           <InformationCircleIcon class="h-5 w-5 text-brand-500 mr-2" />
           <span class="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">
-            {{ $t('users.bulkPanel.selectedCount', ':count sÃ©lectionnÃ©(s)').replace(':count', String(selectedUsers.length)) }}
+            {{ $t('users.bulkPanel.selectedCount', ':count sélectionné(s)').replace(':count', String(selectedUsers.length)) }}
           </span>
         </div>
 
@@ -187,7 +187,7 @@
             @click="bulkAction('deactivate')"
             class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
           >
-            {{ $t('users.bulkPanel.deactivate', 'DÃ©sactiver') }}
+            {{ $t('users.bulkPanel.deactivate', 'Désactiver') }}
           </button>
           <button
             @click="bulkAction('suspend')"
@@ -493,10 +493,10 @@ async function bulkAction(action) {
 
     switch (action) {
       case 'activate':
-        toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) activÃ©(s)').replace(':count', String(selectedUsers.value.length)))
+        toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) activé(s)').replace(':count', String(selectedUsers.value.length)))
         break
       case 'deactivate':
-        toast.success(t('users.toast.bulkDeactivated', ':count utilisateur(s) dÃ©sactivÃ©(s)').replace(':count', String(selectedUsers.value.length)))
+        toast.success(t('users.toast.bulkDeactivated', ':count utilisateur(s) désactivé(s)').replace(':count', String(selectedUsers.value.length)))
         break
       case 'suspend':
         toast.success(t('users.toast.bulkSuspended', ':count utilisateur(s) suspendu(s)').replace(':count', String(selectedUsers.value.length)))
@@ -510,7 +510,7 @@ async function bulkAction(action) {
     await loadUsers()
   } catch (error) {
     console.error('Bulk action failed:', error)
-    toast.error(t('users.toast.bulkError', "Erreur lors de l'action groupÃ©e"))
+    toast.error(t('users.toast.bulkError', "Erreur lors de l'action groupée"))
   }
 }
 
@@ -525,12 +525,12 @@ function editUser(user) {
 }
 
 async function deleteUser(user) {
-  if (confirm(t('users.confirm.delete', 'ÃŠtes-vous sÃ»r de vouloir supprimer :name ?').replace(':name', user.name))) {
+  if (confirm(t('users.confirm.delete', 'ÃŠtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
 
-      toast.success(t('users.toast.deleted', 'Utilisateur supprimÃ©'))
+      toast.success(t('users.toast.deleted', 'Utilisateur supprimé'))
       await loadUsers()
     } catch (error) {
       console.error('Delete failed:', error)
@@ -545,7 +545,7 @@ function impersonateUser(user) {
 }
 
 function handleUserCreated() {
-  toast.success(t('users.toast.created', 'Utilisateur crÃ©Ã© avec succÃ¨s'))
+  toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
   showCreateModal.value = false
   loadUsers()
 }
@@ -564,7 +564,7 @@ async function exportUsers() {
     await new Promise(resolve => setTimeout(resolve, 2000))
 
     const csvContent = "data:text/csv;charset=utf-8," +
-      "Nom,Email,Statut,RÃ´le,Entreprise,Date d'inscription\n" +
+      "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
       filteredUsers.value.map(user =>
         `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
       ).join('\n')
@@ -577,7 +577,7 @@ async function exportUsers() {
     link.click()
     document.body.removeChild(link)
 
-    toast.success(t('users.toast.exportDone', 'Export terminÃ©'))
+    toast.success(t('users.toast.exportDone', 'Export terminé'))
   } catch (error) {
     console.error('Export failed:', error)
     toast.error(t('users.toast.exportError', "Erreur lors de l'export"))
@@ -588,7 +588,7 @@ function exportSelectedUsers() {
   const selectedUserData = users.value.filter(u => selectedUsers.value.includes(u.id))
 
   const csvContent = "data:text/csv;charset=utf-8," +
-    "Nom,Email,Statut,RÃ´le,Entreprise,Date d'inscription\n" +
+    "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
     selectedUserData.map(user =>
       `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
     ).join('\n')
@@ -601,7 +601,7 @@ function exportSelectedUsers() {
   link.click()
   document.body.removeChild(link)
 
-  toast.success(t('users.toast.selectionExportDone', 'Export de la sÃ©lection terminÃ©'))
+  toast.success(t('users.toast.selectionExportDone', 'Export de la sélection terminé'))
 }
 </script>
 

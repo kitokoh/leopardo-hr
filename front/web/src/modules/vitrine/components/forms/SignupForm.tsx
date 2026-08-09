@@ -541,7 +541,7 @@ export function SignupForm({
                   <div className="flex items-center gap-2 text-center justify-center mb-3">
                     <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Votre adresse email a bien Ã©tÃ© vÃ©rifiÃ©e.
+                      Votre adresse email a bien été vérifiée.
                     </p>
                   </div>
                   {provisionedData?.manager ? (

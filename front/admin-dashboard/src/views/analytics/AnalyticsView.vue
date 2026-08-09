@@ -6,7 +6,7 @@
 
       <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Analytics AvancÃ©es</h1>
+          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Analytics Avancées</h1>
           <p class="text-slate-500 dark:text-slate-400 font-medium">
             Analyse approfondie des performances et tendances de la plateforme
           </p>
@@ -95,7 +95,7 @@
         <div class="flex items-center justify-between mb-8">
           <div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Analyse de Cohortes</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">RÃ©tention des utilisateurs par mois</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Rétention des utilisateurs par mois</p>
           </div>
           <InformationCircleIcon class="h-6 w-6 text-slate-400 cursor-help" />
         </div>
@@ -124,7 +124,7 @@
       <!-- Churn Prediction -->
       <div class="card p-8 border-t-4 border-t-red-500">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">PrÃ©diction de Churn</h3>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prédiction de Churn</h3>
           <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800 dark:text-red-300">
             {{ analytics.churnPrediction.riskUsers }} Ã  risque
           </span>
@@ -135,7 +135,7 @@
       <!-- Revenue Forecast -->
       <div class="card p-8 border-t-4 border-t-brand-500">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">PrÃ©vision Revenus</h3>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prévision Revenus</h3>
           <span class="text-xs font-bold text-slate-500 dark:text-slate-400">3 PROCHAINS MOIS</span>
         </div>
         <RevenueForecastWidget :data="analytics.revenueForecast" />
@@ -144,9 +144,9 @@
       <!-- Feature Adoption -->
       <div class="card p-8 border-t-4 border-t-cyan-500">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Adoption FonctionnalitÃ©s</h3>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Adoption Fonctionnalités</h3>
           <button class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors">
-            Voir dÃ©tails
+            Voir détails
           </button>
         </div>
         <FeatureAdoptionWidget :data="analytics.featureAdoption" />
@@ -158,7 +158,7 @@
       <div class="flex items-center justify-between mb-8">
         <div>
           <h3 class="text-xl font-bold text-slate-900 dark:text-white">Segmentation Utilisateurs</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">RÃ©partition stratÃ©gique de la base</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Répartition stratégique de la base</p>
         </div>
         <div class="flex items-center space-x-3">
           <select
@@ -168,7 +168,7 @@
             <option value="behavior">Comportement</option>
             <option value="value">Valeur</option>
             <option value="engagement">Engagement</option>
-            <option value="geography">GÃ©ographie</option>
+            <option value="geography">Géographie</option>
           </select>
           <button
             @click="refreshSegmentation"
@@ -294,7 +294,7 @@ async function loadCohortData() {
 
   analytics.cohortData = [
     { month: 'Jan 2026', week0: 100, week1: 85, week2: 72, week3: 65, week4: 58 },
-    { month: 'FÃ©v 2026', week0: 100, week1: 88, week2: 75, week3: 68, week4: 62 },
+    { month: 'Fév 2026', week0: 100, week1: 88, week2: 75, week3: 68, week4: 62 },
     { month: 'Mar 2026', week0: 100, week1: 90, week2: 78, week3: 71, week4: 65 },
     { month: 'Avr 2026', week0: 100, week1: 87, week2: 74, week3: 67, week4: 60 }
   ]
@@ -318,8 +318,8 @@ async function loadSegmentationData() {
   await new Promise(resolve => setTimeout(resolve, 400))
 
   analytics.segmentationData = [
-    { segment: 'Champions', users: 450, value: 'TrÃ¨s Ã©levÃ©e', color: '#10B981' },
-    { segment: 'Loyaux', users: 680, value: 'Ã‰levÃ©e', color: '#3B82F6' },
+    { segment: 'Champions', users: 450, value: 'Très élevée', color: '#10B981' },
+    { segment: 'Loyaux', users: 680, value: 'Ã‰levée', color: '#3B82F6' },
     { segment: 'Potentiels', users: 320, value: 'Moyenne', color: '#F59E0B' },
     { segment: 'Nouveaux', users: 890, value: 'Faible', color: '#8B5CF6' },
     { segment: 'Ã€ risque', users: 120, value: 'Critique', color: '#EF4444' }
@@ -347,8 +347,8 @@ async function loadInsights() {
     {
       id: 1,
       type: 'opportunity',
-      title: 'OpportunitÃ© d\'amÃ©lioration du onboarding',
-      description: 'Les utilisateurs qui complÃ¨tent le tutoriel ont 3x plus de chances de s\'abonner.',
+      title: 'Opportunité d\'amélioration du onboarding',
+      description: 'Les utilisateurs qui complètent le tutoriel ont 3x plus de chances de s\'abonner.',
       impact: 'high',
       action: 'Optimiser le parcours d\'onboarding',
       confidence: 0.89
@@ -356,19 +356,19 @@ async function loadInsights() {
     {
       id: 2,
       type: 'warning',
-      title: 'Baisse d\'engagement dÃ©tectÃ©e',
-      description: 'Les utilisateurs du segment "Entreprises 50-100" montrent une baisse d\'activitÃ© de 15%.',
+      title: 'Baisse d\'engagement détectée',
+      description: 'Les utilisateurs du segment "Entreprises 50-100" montrent une baisse d\'activité de 15%.',
       impact: 'medium',
-      action: 'Lancer une campagne de rÃ©engagement',
+      action: 'Lancer une campagne de réengagement',
       confidence: 0.76
     },
     {
       id: 3,
       type: 'success',
       title: 'Performance exceptionnelle',
-      description: 'Le taux de conversion mobile a augmentÃ© de 25% ce mois-ci.',
+      description: 'Le taux de conversion mobile a augmenté de 25% ce mois-ci.',
       impact: 'positive',
-      action: 'Analyser les facteurs de succÃ¨s',
+      action: 'Analyser les facteurs de succès',
       confidence: 0.95
     }
   ]
@@ -383,13 +383,13 @@ async function refreshSegmentation() {
   isLoading.value = true
   await loadSegmentationData()
   isLoading.value = false
-  toast.success('Segmentation actualisÃ©e')
+  toast.success('Segmentation actualisée')
 }
 
 async function exportReport() {
   try {
     // Simulate report generation
-    toast.info('GÃ©nÃ©ration du rapport en cours...')
+    toast.info('Génération du rapport en cours...')
     await new Promise(resolve => setTimeout(resolve, 2000))
 
     // Create and download mock report
@@ -410,7 +410,7 @@ async function exportReport() {
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
 
-    toast.success('Rapport exportÃ© avec succÃ¨s')
+    toast.success('Rapport exporté avec succès')
   } catch (error) {
     console.error('Export failed:', error)
     toast.error('Erreur lors de l\'export')
