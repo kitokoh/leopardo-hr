@@ -36,9 +36,14 @@ use Illuminate\Support\Carbon;
 class PayrollRun extends Model
 {
     public const STATUS_DRAFT = 'draft';
+    public const STATUS_CALCULATING = 'calculating';
+    public const STATUS_PROCESSING = 'processing'; // async batch job in progress
     public const STATUS_CALCULATED = 'calculated';
     public const STATUS_VALIDATED = 'validated';
+    public const STATUS_PAID = 'paid';
     public const STATUS_LOCKED = 'locked';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_ERROR = 'error'; // async batch job failed
     use BelongsToCompany;
 
     protected $fillable = [

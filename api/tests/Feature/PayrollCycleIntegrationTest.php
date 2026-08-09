@@ -293,8 +293,9 @@ class PayrollCycleIntegrationTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->getJson('/api/v1/me/balance')
-            ->assertOk()
+        $resp = $this->getJson('/api/v1/me/balance');
+        fwrite(STDERR, "BALANCE=".$resp->getContent()."\n");
+        $resp->assertOk()
             ->assertJsonPath('data.overtime_hours', 5)
             ->assertJsonPath('data.overtime_pay', 3750); // 5h * 500 * 1.5
     }
