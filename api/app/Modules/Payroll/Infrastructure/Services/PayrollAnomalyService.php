@@ -44,12 +44,15 @@ class PayrollAnomalyService
      */
     public function detectDuplicateSlips(PayrollRun $run): array
     {
+        // NB : PostgreSQL n'autorise pas de référencer l'alias de SELECT dans
+        // HAVING — on répète l'expression COUNT(*) (issue #1586-adjacente,
+        // CI rouge : "column slip_count does not exist").
         $duplicates = PaySlip::query()
             ->where('payroll_run_id', $run->id)
             ->select('employee_id')
             ->selectRaw('COUNT(*) as slip_count')
             ->groupBy('employee_id')
-            ->having('slip_count', '>', 1)
+            ->havingRaw('COUNT(*) > 1')
             ->get();
 
         return $duplicates->map(fn ($row): array => [
@@ -69,6 +72,14 @@ class PayrollAnomalyService
 
         foreach ($run->paySlips as $slip) {
             $slip->loadMissing('lines');
+
+            // Un bulletin sans lignes détaillées (saisie manuelle, import) ne
+            // peut pas être qualifié d'incohérent sur la base de la somme des
+            // lignes (vide) — le contrôle brut/net s'applique sinon à chaque
+            // bulletin créé sans lignes (faux positifs, cf. tests F-28).
+            if ($slip->lines->isEmpty()) {
+                continue;
+            }
 
             $earnings = $slip->lines->where('type', 'earning')->sum('amount');
             $deductions = $slip->lines->where('type', 'deduction')->sum('amount');
