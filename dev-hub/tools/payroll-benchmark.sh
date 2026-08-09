@@ -66,7 +66,8 @@ else
       # La note porte le total : « (auto) total=Ns » ; sinon on tombe sur la durée calculate (colonne 4).
       LAST_TOTAL=$(echo "${LAST_ROW}" | grep -oE "total=[0-9.]+s" | grep -oE "[0-9.]+" | head -1 || true)
       if [[ -z "${LAST_TOTAL}" ]]; then
-        LAST_TOTAL=$(echo "${LAST_ROW}" | awk -F'|' '{gsub(/ /,"",$4); print $4}' | tr -d 's' || true)
+        # Colonne « Durée calculate » (les runs existants utilisent « 1,04 s »).
+        LAST_TOTAL=$(echo "${LAST_ROW}" | awk -F'|' '{gsub(/ /,"",$4); print $4}' | tr -d 's' | tr ',' '.' || true)
       fi
       if [[ -n "${LAST_TOTAL}" ]] && awk "BEGIN{exit !(${TOTAL_SECONDS} > ${LAST_TOTAL} * 1.20)}"; then
         echo "::error::F-12 : régression de ${TOTAL_SECONDS}s vs ${LAST_TOTAL}s au run précédent (> 20 %) — ouvrir une issue de perf."
