@@ -14,15 +14,26 @@ import path from "path";
  * `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
  * enforce it.
  *
- * DÉCISION 2026-08-09 (#1607) :
- *  - Statut : **Report-Only maintenu**. Aucune remontée de violations
- *    collectée/analysée en production à ce jour ; le parcours checkout
- *    Stripe + GA4/Mixpanel/Sentry charge des scripts tiers — passer en
- *    enforce sans rapport propre exposerait la vitrine à une régression
- *    bloquante (scripts bloqués, checkout cassé).
- *  - Condition de bascule : collecter les violations (report-to/report-uri)
- *    ≥ 1 cycle de release, vérifier zéro violation bloquante sur accueil /
- *    docs / checkout, puis flipper la clé du header. Suivi : #1607.
+ * ── DÉCISION DATÉE — CSP vitrine (issue #1607, revue 2026-08-09) ──────────
+ * Décision : MAINTENIR `Content-Security-Policy-Report-Only`.
+ * Justification :
+ *   1. Le passage en enforce exige d'abord de supprimer `'unsafe-inline'` de
+ *      `script-src` (bootstrap inline GA4/Mixpanel dans layout.tsx) — ce qui
+ *      demande un câblage nonce/hash. Sans lui, enforce casserait
+ *      l'analytics, Sentry et le checkout Stripe (régression e2e réelle).
+ *   2. Aucun endpoint d'ingestion des rapports (`report-uri`/`report-to`)
+ *      n'existe côté API — les violations ne remontent que dans la console
+ *      navigateur. Ajouter `report-uri` maintenant sans endpoint produirait
+ *      un flux de 404 inexploitable.
+ * Plan de passage en enforce (revue datée) :
+ *   - [ ] Câbler nonce/hash sur les scripts inline (layout.tsx) ;
+ *   - [ ] Ajouter un endpoint d'ingestion CSP côté API
+ *         (`POST /api/v1/security/csp-report`) + `report-to` ;
+ *   - [ ] Collecter 30 jours de rapports sur la vitrine de prod ;
+ *   - [ ] Basculer le header en `Content-Security-Policy` (enforce) ;
+ *   - [ ] Vérifier e2e vitrine (login, checkout, docs) + test de headers.
+ * Prochaine revue : 2026-09-09 (ou à chaque changement de dépendance tierce).
+ * ────────────────────────────────────────────────────────────────────────────
  *
  * Origins below come from what actually gets loaded today:
  *  - script-src: GA4 (googletagmanager.com), Mixpanel (mxpnl.com), Sentry
