@@ -16,42 +16,19 @@ use Illuminate\Support\Facades\Schema;
  * verrouillage) : après verrouillage, toute modification exige un
  * déverrouillage motivé et tracé (PayrollClosingService).
  *
- * Résolution dynamique de l'enum (même pattern que
- * 2026_06_29_000205_extend_attendance_logs_method_for_geo_auto.php) :
- * la colonne peut être un ENUM natif PostgreSQL ou un VARCHAR selon le
- * contexte (schéma de test manuel vs migrations réelles) ; on n'altère le
- * type que s'il s'agit d'un ENUM, et l'ajout de valeur est idempotent.
+ * NB : le type enum natif PostgreSQL ne supporte pas l'ajout de valeur en
+ * plein milieu ; `ADD VALUE` est idempotent via IF NOT EXISTS. Les statuts
+ * existants (draft/calculating/calculated/validated/paid/cancelled) ne sont
+ * pas modifiés.
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        // 1) Étendre l'enum natif PG si la colonne en est un.
-        $result = DB::selectOne("
-            SELECT data_type, udt_name
-            FROM information_schema.columns
-            WHERE table_name = 'payroll_runs'
-              AND column_name = 'status'
-              AND table_schema = current_schema()
-        ");
+        // Étendre l'enum natif PG (créé par la migration
+        // 2026_05_10_100001_create_payroll_engine_tables.php).
+        DB::statement("ALTER TYPE payroll_runs_status ADD VALUE IF NOT EXISTS 'locked'");
 
-        if ($result && $result->data_type === 'USER-DEFINED') {
-            $enumName = $result->udt_name;
-
-            $exists = DB::selectOne("
-                SELECT 1 FROM pg_enum pe
-                JOIN pg_type pt ON pt.oid = pe.enumtypid
-                WHERE pt.typname = ?
-                  AND pe.enumlabel = 'locked'
-            ", [$enumName]);
-
-            if (! $exists) {
-                DB::statement("ALTER TYPE {$enumName} ADD VALUE IF NOT EXISTS 'locked'");
-            }
-        }
-        // Colonne VARCHAR → toute valeur acceptée, aucune action.
-
-        // 2) Colonnes de verrouillage.
         if (! Schema::hasColumn('payroll_runs', 'locked_by')) {
             Schema::table('payroll_runs', function (Blueprint $table): void {
                 $table->unsignedInteger('locked_by')->nullable()->after('paid_at');
