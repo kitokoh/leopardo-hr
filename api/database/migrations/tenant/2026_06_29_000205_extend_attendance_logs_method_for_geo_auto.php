@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\DB;
  * On s'assure simplement que la valeur 'geo_auto' est documentée et acceptée.
  *
  * Si la colonne est encore un ENUM PostgreSQL, on ajoute la valeur.
- * Si c'est déjà un VARCHAR, aucune action nécessaire.
+ * Si c'est un VARCHAR + contrainte CHECK (cas Laravel `$table->enum()` sur
+ * Postgres), on étend la contrainte CHECK avec 'geo_auto'.
  */
 return new class extends Migration
 {
@@ -46,8 +47,36 @@ return new class extends Migration
             if (! $exists) {
                 DB::statement("ALTER TYPE {$enumName} ADD VALUE IF NOT EXISTS 'geo_auto'");
             }
+        } else {
+            // VARCHAR généré par Laravel (`$table->enum()` sur Postgres) avec une
+            // contrainte CHECK — étendre la liste des valeurs autorisées.
+            $checks = DB::select("
+                SELECT conname, pg_get_constraintdef(oid) AS definition
+                FROM pg_constraint
+                WHERE conrelid = 'attendance_logs'::regclass
+                  AND contype = 'c'
+                  AND pg_get_constraintdef(oid) LIKE '%method%'
+            ");
+
+            foreach ($checks as $check) {
+                if (str_contains($check->definition, "'geo_auto'")) {
+                    continue; // Déjà étendue
+                }
+
+                DB::statement("ALTER TABLE attendance_logs DROP CONSTRAINT {$check->conname}");
+
+                $allowed = ['mobile', 'qr', 'biometric', 'manual', 'geo_auto'];
+                $list = implode(', ', array_map(
+                    static fn (string $value): string => "'{$value}'::character varying",
+                    $allowed
+                ));
+
+                DB::statement(
+                    "ALTER TABLE attendance_logs ADD CONSTRAINT {$check->conname} "
+                    ."CHECK ((method)::text = ANY ((ARRAY[{$list}])::text[]))"
+                );
+            }
         }
-        // Si VARCHAR → aucune action requise, toute valeur est acceptée
 
         DB::statement(
             "COMMENT ON COLUMN attendance_logs.method IS 'mobile|qr|biometric|manual|geo_auto. geo_auto = généré par SmartAttendance après approbation.'"
