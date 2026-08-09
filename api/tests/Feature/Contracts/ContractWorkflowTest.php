@@ -11,24 +11,17 @@ use App\Modules\HR\Domain\Models\ContractAmendment;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class ContractWorkflowTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         $this->createContractSchemaIfNeeded();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     private function createContractSchemaIfNeeded(): void
