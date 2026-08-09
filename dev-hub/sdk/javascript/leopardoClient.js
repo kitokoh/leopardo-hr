@@ -1315,6 +1315,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payroll-runs/{payrollRun}/cancel", options);
     },
 
+    /** Journal de paie mensuel CSV (F-10) */
+    getPayrollRunsByPayrollRunJournal(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/journal", options);
+    },
+
+    /** Verrouiller la session de paie (cloture comptable, F-11) */
+    postPayrollRunsByPayrollRunLock(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/lock", options);
+    },
+
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
@@ -1328,6 +1338,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume de la session de paie */
     getPayrollRunsByPayrollRunSummary(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/summary", options);
+    },
+
+    /** Deverrouiller une session cloturee (raison obligatoire, F-11) */
+    postPayrollRunsByPayrollRunUnlock(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/unlock", options);
     },
 
     /** Valider la session de paie */
