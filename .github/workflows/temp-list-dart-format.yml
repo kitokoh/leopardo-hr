@@ -1,0 +1,30 @@
+name: TEMP - Dart Format List On Branch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  list:
+    name: list-unformatted
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/ci-red-main-2026-08-09
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter-android
+
+      - name: List unformatted files per app
+        shell: bash
+        run: |
+          set +e
+          for app in leopardo_core leopardo_employee leopardo_hr leopardo_manager leopardo_platform_admin leopardo_marketing; do
+            echo "### APP $app"
+            (cd front/mobile_apps/$app && dart format --output=none --set-exit-if-changed . 2>&1 | head -40)
+            echo "### APP $app EXIT=$?"
+          done
+          echo "=== LIST DONE ==="
