@@ -82,7 +82,7 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 
 **Source des heures sup** : non branchée (0) — le lien pointage → paie (F-20) alimentera `overtime_hours`.
 
-## 4. Congés payés (F-07 — implémenté 2026-08-08)
+## 6. Congés payés (F-07 — implémenté 2026-08-08)
 
 - **Acquisition** : 2,5 j/mois (30 j/an), via politique `accrual_type=monthly` (commande `leave:accrue`, plafond `max_balance`).
 - **Indemnité de congés** : la PLUS FAVORABLE entre
@@ -95,7 +95,7 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 - ⚠️ À confirmer : assiette du « salaires bruts de référence » (12 mois glissants vs exercice).
 - **Intégration bulletin** : à brancher sur les absences approuvées (F-20) — versée au départ en congé.
 
-## 4. À compléter (prochaine itération — besoin expert paie DZ)
+## 7. À compléter (prochaine itération — besoin expert paie DZ)
 
 1. Congés payés : acquisition 2,5 j/mois, plafond, indemnité (1/10ᵉ vs maintien).
 2. Préavis : durées légales, indemnité compensatrice.
