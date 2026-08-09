@@ -93,3 +93,4 @@ composer.phar
 # Local SQLite dev/test databases
 *.sqlite
 *.sqlite3
+docs/validation/I18N_DEBT_REPORT_2026_08_09.md
