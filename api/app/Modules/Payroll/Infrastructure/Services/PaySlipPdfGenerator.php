@@ -72,7 +72,7 @@ class PaySlipPdfGenerator
      */
     private function companyLegalIdentifiers(?Company $company): array
     {
-        if ($company === null || ! is_array($company->metadata)) {
+        if ($company === null) {
             return [];
         }
 
