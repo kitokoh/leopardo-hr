@@ -10,8 +10,8 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
-use Tests\Support\CreatesSmartAttendanceSchema;
+use Tests\RefreshTenantDatabase;
+
 use Tests\TestCase;
 
 /**
@@ -21,8 +21,8 @@ use Tests\TestCase;
  */
 class GeoEntryExitTest extends TestCase
 {
-    use CreatesMvpSchema;
-    use CreatesSmartAttendanceSchema;
+    
+    use RefreshTenantDatabase;
 
     // Coordonnées géofence de référence (Alger)
     private const GEO_LAT  = 36.7538;
@@ -43,8 +43,6 @@ class GeoEntryExitTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-        $this->createSmartAttendanceTables();
 
         $this->company = Company::query()->create([
             'name'         => 'TestCorp Geo',
@@ -84,13 +82,6 @@ class GeoEntryExitTest extends TestCase
             'role'          => 'employee',
             'status'        => 'active',
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->dropSmartAttendanceTables();
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     // ── Tests ────────────────────────────────────────────────────────────────

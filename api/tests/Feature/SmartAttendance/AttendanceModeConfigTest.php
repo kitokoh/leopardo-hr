@@ -10,8 +10,8 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
-use Tests\Support\CreatesSmartAttendanceSchema;
+use Tests\RefreshTenantDatabase;
+
 use Tests\TestCase;
 
 /**
@@ -24,8 +24,8 @@ use Tests\TestCase;
  */
 class AttendanceModeConfigTest extends TestCase
 {
-    use CreatesMvpSchema;
-    use CreatesSmartAttendanceSchema;
+    
+    use RefreshTenantDatabase;
 
     private Company $company;
     private Employee $employee;
@@ -35,8 +35,6 @@ class AttendanceModeConfigTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-        $this->createSmartAttendanceTables();
 
         $this->company = Company::query()->create([
             'name'         => 'ModeCorp',
@@ -89,13 +87,6 @@ class AttendanceModeConfigTest extends TestCase
             'manager_role'  => 'principal',
             'status'        => 'active',
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->dropSmartAttendanceTables();
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     // ── Tests GET /config ─────────────────────────────────────────────────────

@@ -12,8 +12,8 @@ use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
-use Tests\Support\CreatesSmartAttendanceSchema;
+use Tests\RefreshTenantDatabase;
+
 use Tests\TestCase;
 
 /**
@@ -28,8 +28,8 @@ use Tests\TestCase;
  */
 class GeoSessionDashboardTest extends TestCase
 {
-    use CreatesMvpSchema;
-    use CreatesSmartAttendanceSchema;
+    
+    use RefreshTenantDatabase;
 
     private Company $company;
     private Employee $employee;
@@ -38,8 +38,6 @@ class GeoSessionDashboardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-        $this->createSmartAttendanceTables();
 
         $this->company = Company::query()->create([
             'name'         => 'DashboardCorp',
@@ -82,13 +80,6 @@ class GeoSessionDashboardTest extends TestCase
             'manager_role'  => 'rh',
             'status'        => 'active',
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->dropSmartAttendanceTables();
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
