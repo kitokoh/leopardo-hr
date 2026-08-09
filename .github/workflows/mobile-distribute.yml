@@ -79,13 +79,7 @@ jobs:
             project_path: front/mobile_apps/leopardo_hr
             artifact_name: leopardo-hr
             version_prefix: hr
-            firebase_secret: FIREBASE_APP_ID_HR
-            # Décision documentée (#1615) : le secret GitHub `FIREBASE_APP_ID_HR`
-            # (app id Firebase de l'app hr) doit être créé dans Settings →
-            # Secrets → Actions. En attendant, le fallback de l'expression
-            # `secrets.FIREBASE_APP_ID_HR` ci-dessous reste explicite — action
-            # humaine requise pour créer le secret puis supprimer l'ancien
-            # FIREBASE_APP_ID (voir issue #1615).
+            firebase_secret: FIREBASE_APP_ID
             android_package: com.leopardo.rh
 
     steps:
@@ -153,7 +147,7 @@ jobs:
         # exposed to this job, matching the CodeQL rule's own "Correct Usage"
         # example (per-branch literal secret access instead of dynamic indexing).
         env:
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
@@ -176,7 +170,7 @@ jobs:
           PROJECT_PATH: ${{ matrix.app.project_path }}
           APP_NAME: ${{ matrix.app.name }}
           ANDROID_PACKAGE: ${{ matrix.app.android_package }}
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
@@ -295,11 +289,11 @@ jobs:
 
       - name: Firebase App Distribution (staging)
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1.7.1
         # actions/excessive-secrets-exposure: see rationale on the
         # "Validate required secrets for staging distribution" step above.
         with:
-          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
+          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testeurs-internes
           file: ${{ env.BUILD_FILE }}
@@ -315,7 +309,7 @@ jobs:
         # actions/excessive-secrets-exposure: see rationale on the
         # "Validate required secrets for staging distribution" step above.
         env:
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID_HR }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || secrets.FIREBASE_APP_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           FIREBASE_READBACK_REQUIRED: ${{ secrets.FIREBASE_READBACK_REQUIRED }}
