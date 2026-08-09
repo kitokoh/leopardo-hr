@@ -6235,6 +6235,46 @@ paths:
         "422":
           description: "Only calculated runs can be validated"
 
+
+  /payroll-runs/{payrollRun}/anomalies:
+    get:
+      tags: ["Payroll"]
+      summary: "Rapport d'anomalies pre-cloture (F-20)"
+      description: "Lecture seule : doublons, bulletins incoherents, variance de brut > 30 %, ecarts pointage -> paie (heures supplementaires pointees non integrees). Action humaine requise avant clouture."
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste d'anomalies (type, severite, message)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      run_id: { type: integer }
+                      total: { type: integer }
+                      anomalies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type: { type: string }
+                            severity: { type: string }
+                            employee_id: { type: integer }
+                            message: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Run introuvable (isolation tenant)"
+
   /payroll-runs/{payrollRun}/cancel:
     post:
       tags: ["Payroll"]
