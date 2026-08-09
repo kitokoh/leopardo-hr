@@ -176,7 +176,7 @@ class ProfilePermissionErrorContractTest extends TestCase
      */
     private function actors(string $suffix = 'A'): array
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => "Contract Co {$suffix}",
             'slug' => 'contract-co-'.Str::lower($suffix).'-'.Str::random(6),
             'sector' => 'services',
