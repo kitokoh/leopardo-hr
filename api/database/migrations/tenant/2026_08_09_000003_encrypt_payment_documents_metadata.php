@@ -26,7 +26,7 @@ return new class extends Migration
 
         $rows = DB::table('payment_documents')
             ->whereNotNull('metadata')
-            ->where('metadata', '!=', '')
+            ->whereRaw("metadata::text <> ''")
             ->get(['id', 'metadata']);
 
         foreach ($rows as $row) {
