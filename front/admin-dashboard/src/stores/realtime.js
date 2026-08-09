@@ -4,6 +4,7 @@ import { io } from 'socket.io-client'
 import { useDashboardStore } from './dashboard'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
+import { getAuthToken } from '@/services/token-storage'
 
 // PA2-COMM-013 — Fallback polling robuste : quand le canal push (Socket.IO)
 // est indisponible (proxy/firewall bloquant les websockets, serveur
@@ -47,7 +48,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
       return
     }
 
-    const token = localStorage.getItem('admin_token')
+    const token = getAuthToken()
     if (!token) {
       console.warn('Pas de token pour la connexion WebSocket')
       // No token yet (not logged in): nothing to poll either, bail out.
@@ -135,7 +136,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
   }
 
   async function pollNotifications() {
-    const token = localStorage.getItem('admin_token')
+    const token = getAuthToken()
     if (!token || pollInFlight) {
       return
     }

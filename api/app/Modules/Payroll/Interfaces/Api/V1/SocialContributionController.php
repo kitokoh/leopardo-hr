@@ -22,7 +22,7 @@ class SocialContributionController extends Controller
             abort(403);
         }
 
-        $query = SocialContribution::query();
+        $query = SocialContribution::where('company_id', $actor->company_id);
 
         if ($request->filled('country_code')) {
             $query->forCountry($request->input('country_code'));

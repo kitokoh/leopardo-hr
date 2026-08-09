@@ -120,6 +120,33 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 - Commande : `php artisan test`
 - **Coverage gate** : seuil actuel 55%, cible 60%
 
+#### Règle PendingCommand — `run()` explicite (#1596)
+
+`$this->artisan(...)` retourne un `PendingCommand` : la commande s'exécute
+**paresseusement dans `__destruct()`**, pas immédiatement.
+Toute assertion sur l'état de la base (ou tout effet secondaire) qui suit
+l'assignation sans appel explicite tournera **avant** que la commande soit
+réellement exécutée.
+
+**Toujours appeler `->run()` avant la première assertion DB :**
+
+```php
+// ❌ Mauvais — la commande s'exécute après les assertions (ordre trompeur)
+$cmd = $this->artisan('my:command');
+$this->assertDatabaseHas('table', [...]);  // évalué AVANT la commande
+
+// ✅ Correct
+$cmd = $this->artisan('my:command');
+$cmd->run();  // exécution synchrone immédiate
+$this->assertDatabaseHas('table', [...]);
+
+// ✅ Aussi correct (enchaînement sans assignation)
+$this->artisan('my:command')->assertSuccessful();
+```
+
+6 fichiers de test à risque identifiés lors de l'audit 2026-08-09
+(`grep -r '= \$this->artisan(' tests/`) ; corriger au fur et à mesure.
+
 ### 3.2 Frontend E2E (Playwright)
 
 - Specs dans `front/admin-dashboard/e2e/`

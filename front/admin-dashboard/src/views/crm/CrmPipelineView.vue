@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Pipeline Commercial</h1>
         <p class="mt-1 text-sm text-gray-500">
-          Suivi des leads de l'entrÃ©e jusqu'Ã  la conversion payante.
+          Suivi des leads de l'entrée jusqu'Ã  la conversion payante.
         </p>
       </div>
       <button class="btn-secondary" :disabled="isLoading" @click="loadPipeline">
@@ -50,7 +50,7 @@
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
           <div v-for="item in pipeline.leads" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-colors cursor-pointer" @click="openRequest(item.id)">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
-            <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non prÃ©cisÃ©' }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non précisé' }}</p>
             <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
@@ -127,7 +127,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-transparent rounded-t-xl">
           <h2 class="font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-slate-400"></span>
-            RejetÃ©s / ExpirÃ©s
+            Rejetés / Expirés
           </h2>
           <span class="text-xs font-semibold px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded-full text-slate-600 dark:text-slate-400">
             {{ pipeline.rejected?.length || 0 }}
@@ -178,7 +178,7 @@ const meta = ref({
 
 const SOURCE_LABELS = {
   signup_form: 'Inscription',
-  demo_form: 'Demande de dÃ©mo',
+  demo_form: 'Demande de démo',
   contact_form: 'Contact',
   newsletter_form: 'Newsletter',
   self_service_trial: 'Essai self-service',

@@ -172,6 +172,23 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter pub get --offline || flutter pub get
 
+      - name: Restore Firebase config from secret (issue #1467)
+        # google-services.json n'est PLUS committé (clé API réelle exposée) :
+        # un stub à clés factices est versionné pour les builds locaux/forks ;
+        # le fichier réel est restauré depuis le secret GOOGLE_SERVICES_JSON.
+        shell: bash
+        run: |
+          if [[ -n "${GOOGLE_SERVICES_JSON}" ]]; then
+            for target in front/mobile_apps/leopardo_employee front/mobile_apps/leopardo_hr front/mobile_apps/leopardo_manager front/mobile_apps/leopardo_platform_admin; do
+              printf '%s' "${GOOGLE_SERVICES_JSON}" > "${target}/android/app/google-services.json"
+            done
+            echo "Firebase config restaurée depuis le secret."
+          else
+            echo "::warning::GOOGLE_SERVICES_JSON non défini — build avec le stub (clés factices)."
+          fi
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+
       - name: Build debug APK
         working-directory: ${{ matrix.project.path }}
         run: flutter build apk --debug --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}

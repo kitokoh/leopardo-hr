@@ -100,6 +100,7 @@ jobs:
           PROJECT_PATH: ${{ matrix.app.project_path }}
           APP_NAME: ${{ matrix.app.name }}
           ANDROID_PACKAGE: ${{ matrix.app.android_package }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           set -euo pipefail
           READY=true
@@ -112,6 +113,11 @@ jobs:
             READY=false
           fi
           CONFIG_FILE="${PROJECT_PATH}/android/app/google-services.json"
+          if [[ -n "${GOOGLE_SERVICES_JSON}" ]]; then
+            mkdir -p "$(dirname "${CONFIG_FILE}")"
+            printf '%s' "${GOOGLE_SERVICES_JSON}" > "${CONFIG_FILE}"
+            echo "Firebase config restaurée depuis le secret (issue #1467)."
+          fi
           if [[ ! -f "${CONFIG_FILE}" ]]; then
             echo "Missing Firebase config: ${CONFIG_FILE}. Skipping ${{ matrix.app.name }} Firebase distribution."
             READY=false

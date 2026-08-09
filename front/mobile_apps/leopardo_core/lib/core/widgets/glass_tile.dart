@@ -38,7 +38,7 @@ class GlassTile extends StatelessWidget {
             ? Colors.black.withValues(alpha: 0.2)
             : Colors.black.withValues(alpha: 0.05);
     final defaultIconColor =
-        iconColor ?? AppColors.primary; // Emerald by default
+        iconColor ?? AppColors.rh; // Emerald (brand) by default
 
     return GestureDetector(
       onTap: onTap,
@@ -75,11 +75,9 @@ class GlassTile extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   title,
-                  style:
-                      AppTypography.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ) ??
-                      const TextStyle(fontWeight: FontWeight.w600),
+                  style: AppTypography.title.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -87,11 +85,9 @@ class GlassTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle!,
-                    style:
-                        AppTypography.bodySmall?.copyWith(
-                          color: isDark ? Colors.white70 : Colors.black54,
-                        ) ??
-                        const TextStyle(),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: isDark ? Colors.white70 : Colors.black54,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

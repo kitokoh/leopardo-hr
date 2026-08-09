@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { normalizeLocale } from '@/i18n/index.js'
+import { getAuthToken, removeAuthToken } from '@/services/token-storage'
 
 /** Résout la locale active depuis localStorage ou navigator. */
 function resolveAdminLocale() {
@@ -117,7 +118,7 @@ api.interceptors.request.use(
   (config) => {
     config.url = normalizeApiPath(config.url, config.baseURL || apiBaseURL)
 
-    const token = localStorage.getItem('admin_token')
+    const token = getAuthToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -172,7 +173,7 @@ api.interceptors.response.use(
         case 401:
           if (!originalRequest?._retry) {
             originalRequest._retry = true
-            localStorage.removeItem('admin_token')
+            removeAuthToken()
             delete api.defaults.headers.common.Authorization
 
             if (window.location.pathname !== '/login') {

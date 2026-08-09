@@ -22,7 +22,7 @@
     </div>
 
     <div v-if="loading" class="p-12 text-center text-slate-500 font-bold uppercase tracking-widest animate-pulse">
-      Synchronisation des donnÃ©es...
+      Synchronisation des données...
     </div>
 
     <div v-else>
@@ -33,7 +33,7 @@
               <tr>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Partenaire</th>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Taux HT (%)</th>
-                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">RÃ©fÃ©rÃ©s</th>
+                <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Référés</th>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Statut Candidature</th>
                 <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
               </tr>
@@ -63,11 +63,11 @@
                   >
                     Approuver
                   </button>
-                  <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">GÃ©rer</button>
+                  <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">Gérer</button>
                 </td>
               </tr>
               <tr v-if="partners.length === 0">
-                <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">Aucun partenaire trouvÃ©.</td>
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">Aucun partenaire trouvé.</td>
               </tr>
             </tbody>
           </table>
@@ -97,7 +97,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4">
-                  <button v-if="payout.status === 'pending'" @click="updatePayout(payout, 'paid')" class="text-teal-600 font-bold text-xs uppercase underline">Marquer PayÃ©</button>
+                  <button v-if="payout.status === 'pending'" @click="updatePayout(payout, 'paid')" class="text-teal-600 font-bold text-xs uppercase underline">Marquer Payé</button>
                 </td>
               </tr>
                <tr v-if="payouts.length === 0">
@@ -116,7 +116,7 @@
             <span class="ml-2">Admin #{{ log.admin_id }} modified {{ log.auditable_type }} #{{ log.auditable_id }}</span>
             <div class="text-slate-400 ml-4">Reason: {{ log.reason }}</div>
           </div>
-          <div v-if="auditLogs.length === 0" class="text-center py-8 opacity-50">ZÃ©ro log d'audit Growth pour le moment.</div>
+          <div v-if="auditLogs.length === 0" class="text-center py-8 opacity-50">Zéro log d'audit Growth pour le moment.</div>
         </div>
       </div>
     </div>

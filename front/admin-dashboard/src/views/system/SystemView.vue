@@ -9,7 +9,7 @@
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between relative z-10">
           <div>
-            <h1 class="text-4xl font-black tracking-tight text-white uppercase">Administration SystÃ¨me</h1>
+            <h1 class="text-4xl font-black tracking-tight text-white uppercase">Administration Système</h1>
             <p class="mt-2 text-slate-400 font-medium text-lg">
               Monitoring, configuration et automatisation de la plateforme Leopardo RH.
             </p>
@@ -65,7 +65,7 @@
         icon="ServerIcon"
       />
       <SystemStatusCard
-        title="Base de DonnÃ©es"
+        title="Base de Données"
         :status="systemStatus.database"
         :details="systemStatus.databaseDetails"
         icon="CircleStackIcon"
@@ -89,7 +89,7 @@
       <div class="lg:col-span-8 space-y-8">
         <section class="card">
           <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">MÃ©triques Temps RÃ©el</h3>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Métriques Temps Réel</h3>
             <button
               @click="refreshMetrics"
               class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -135,7 +135,7 @@
         <!-- Security Monitoring -->
         <section class="card">
           <div class="border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 flex items-center justify-between">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">SÃ©curitÃ©</h3>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Sécurité</h3>
             <span
               :class="[
                 'px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all duration-500 shadow-glass-sm',
@@ -275,7 +275,7 @@ const systemStatus = reactive({
   database: 'healthy',
   databaseDetails: 'Connexions: 45/100 â€¢ Latence: 12ms',
   api: 'healthy',
-  apiDetails: 'Temps de rÃ©ponse moyen: 89ms',
+  apiDetails: 'Temps de réponse moyen: 89ms',
   websocket: 'healthy',
   websocketDetails: '1,247 connexions actives',
   maintenanceMode: false
@@ -367,7 +367,7 @@ async function loadSystemData() {
     ])
   } catch (error) {
     console.error('Failed to load system data:', error)
-    toast.error('Erreur lors du chargement des donnÃ©es systÃ¨me')
+    toast.error('Erreur lors du chargement des données système')
   }
 }
 
@@ -381,7 +381,7 @@ async function loadQueueObservability() {
     queueObservability.value = response.data?.data || null
   } catch (error) {
     console.error('Failed to load queue observability:', error)
-    toast.error('Erreur lors du chargement de l\'observabilitÃ© des jobs')
+    toast.error('Erreur lors du chargement de l\'observabilité des jobs')
   } finally {
     isLoadingObservability.value = false
   }
@@ -397,7 +397,7 @@ async function loadNotificationObservability() {
     notificationObservability.value = response.data?.data || null
   } catch (error) {
     console.error('Failed to load notification observability:', error)
-    toast.error('Erreur lors du chargement de l\'observabilitÃ© des notifications')
+    toast.error('Erreur lors du chargement de l\'observabilité des notifications')
   } finally {
     isLoadingNotificationObservability.value = false
   }
@@ -409,7 +409,7 @@ async function loadAutomatedTasks() {
     {
       id: 1,
       name: 'Sauvegarde quotidienne',
-      description: 'Sauvegarde automatique de la base de donnÃ©es',
+      description: 'Sauvegarde automatique de la base de données',
       schedule: '0 2 * * *',
       enabled: true,
       lastRun: new Date(Date.now() - 3600000),
@@ -485,7 +485,7 @@ async function loadSecurityAlerts() {
       id: 2,
       type: 'rate_limit_exceeded',
       severity: 'low',
-      message: 'Limite de taux dÃ©passÃ©e pour l\'API',
+      message: 'Limite de taux dépassée pour l\'API',
       details: 'Endpoint: /api/users â€¢ IP: 10.0.0.50',
       timestamp: new Date(Date.now() - 3600000),
       status: 'investigating'
@@ -516,7 +516,7 @@ async function loadApiTests() {
     },
     {
       id: 3,
-      name: 'Test crÃ©ation entreprise',
+      name: 'Test création entreprise',
       method: 'POST',
       endpoint: '/api/companies',
       lastRun: new Date(Date.now() - 2700000),
@@ -640,7 +640,7 @@ async function runHealthCheck() {
     systemStatus.api = 'healthy'
     systemStatus.websocket = 'healthy'
 
-    toast.success('Health check terminÃ© â€¢ Tous les services sont opÃ©rationnels')
+    toast.success('Health check terminé â€¢ Tous les services sont opérationnels')
   } catch (error) {
     console.error('Health check failed:', error)
     toast.error('Erreur lors du health check')
@@ -654,9 +654,9 @@ async function toggleMaintenanceMode() {
     systemStatus.maintenanceMode = !systemStatus.maintenanceMode
 
     if (systemStatus.maintenanceMode) {
-      toast.warning('Mode maintenance activÃ©')
+      toast.warning('Mode maintenance activé')
     } else {
-      toast.success('Mode maintenance dÃ©sactivÃ©')
+      toast.success('Mode maintenance désactivé')
     }
   } catch (error) {
     console.error('Failed to toggle maintenance mode:', error)
@@ -666,7 +666,7 @@ async function toggleMaintenanceMode() {
 
 function refreshMetrics() {
   updatePerformanceMetrics()
-  toast.success('MÃ©triques actualisÃ©es')
+  toast.success('Métriques actualisées')
 }
 
 // Task management
@@ -674,23 +674,23 @@ function toggleTask(taskId) {
   const task = automatedTasks.value.find(t => t.id === taskId)
   if (task) {
     task.enabled = !task.enabled
-    toast.success(`TÃ¢che ${task.enabled ? 'activÃ©e' : 'dÃ©sactivÃ©e'}`)
+    toast.success(`Tâche ${task.enabled ? 'activée' : 'désactivée'}`)
   }
 }
 
 function editTask(task) {
-  toast.info(`Ã‰dition de la tÃ¢che: ${task.name}`)
+  toast.info(`Ã‰dition de la tâche: ${task.name}`)
 }
 
 function deleteTask(taskId) {
   automatedTasks.value = automatedTasks.value.filter(t => t.id !== taskId)
-  toast.success('TÃ¢che supprimÃ©e')
+  toast.success('Tâche supprimée')
 }
 
 function handleTaskCreated(task) {
   automatedTasks.value.push(task)
   showCreateTaskModal.value = false
-  toast.success('TÃ¢che crÃ©Ã©e avec succÃ¨s')
+  toast.success('Tâche créée avec succès')
 }
 
 // Backup management
@@ -710,10 +710,10 @@ async function createBackup() {
     }
 
     backups.value.unshift(newBackup)
-    toast.success('Sauvegarde crÃ©Ã©e avec succÃ¨s')
+    toast.success('Sauvegarde créée avec succès')
   } catch (error) {
     console.error('Backup creation failed:', error)
-    toast.error('Erreur lors de la crÃ©ation de la sauvegarde')
+    toast.error('Erreur lors de la création de la sauvegarde')
   } finally {
     isCreatingBackup.value = false
   }
@@ -725,11 +725,11 @@ function restoreBackup(backup) {
 
 function deleteBackup(backupId) {
   backups.value = backups.value.filter(b => b.id !== backupId)
-  toast.success('Sauvegarde supprimÃ©e')
+  toast.success('Sauvegarde supprimée')
 }
 
 function downloadBackup(backup) {
-  toast.info(`TÃ©lÃ©chargement de: ${backup.name}`)
+  toast.info(`Téléchargement de: ${backup.name}`)
 }
 
 // Security
@@ -739,7 +739,7 @@ function investigateAlert(alert) {
 
 function dismissSecurityAlert(alertId) {
   securityAlerts.value = securityAlerts.value.filter(a => a.id !== alertId)
-  toast.success('Alerte fermÃ©e')
+  toast.success('Alerte fermée')
 }
 
 // Configuration
@@ -749,7 +749,7 @@ function updateConfig(section, config) {
 }
 
 function resetConfig(section) {
-  toast.warning(`Configuration ${section} rÃ©initialisÃ©e`)
+  toast.warning(`Configuration ${section} réinitialisée`)
 }
 
 function exportConfig() {
@@ -763,18 +763,18 @@ function exportConfig() {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 
-  toast.success('Configuration exportÃ©e')
+  toast.success('Configuration exportée')
 }
 
 function handleConfigImported(config) {
   systemConfig.value = config
   showImportModal.value = false
-  toast.success('Configuration importÃ©e')
+  toast.success('Configuration importée')
 }
 
 // API Testing
 function runApiTest(test) {
-  toast.info(`ExÃ©cution du test: ${test.name}`)
+  toast.info(`Exécution du test: ${test.name}`)
 }
 
 function editApiTest(test) {
@@ -783,13 +783,13 @@ function editApiTest(test) {
 
 function deleteApiTest(testId) {
   apiTests.value = apiTests.value.filter(t => t.id !== testId)
-  toast.success('Test supprimÃ©')
+  toast.success('Test supprimé')
 }
 
 function handleApiTestCreated(test) {
   apiTests.value.push(test)
   showApiTesterModal.value = false
-  toast.success('Test API crÃ©Ã©')
+  toast.success('Test API créé')
 }
 
 // Scaling
@@ -801,10 +801,10 @@ function updateScalingConfig(config) {
 function manualScale(action) {
   if (action === 'up') {
     scalingMetrics.currentInstances++
-    toast.success('Instance ajoutÃ©e manuellement')
+    toast.success('Instance ajoutée manuellement')
   } else {
     scalingMetrics.currentInstances--
-    toast.success('Instance supprimÃ©e manuellement')
+    toast.success('Instance supprimée manuellement')
   }
 }
 
@@ -813,7 +813,7 @@ function toggleLoadBalancerNode(nodeId) {
   const node = loadBalancerNodes.value.find(n => n.id === nodeId)
   if (node) {
     node.status = node.status === 'healthy' ? 'unhealthy' : 'healthy'
-    toast.success(`NÅ“ud ${node.name} ${node.status === 'healthy' ? 'activÃ©' : 'dÃ©sactivÃ©'}`)
+    toast.success(`NÅ“ud ${node.name} ${node.status === 'healthy' ? 'activé' : 'désactivé'}`)
   }
 }
 

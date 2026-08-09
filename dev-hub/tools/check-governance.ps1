@@ -162,4 +162,22 @@ if ($webFeatureChanged) {
     Pass "Web scenario governance updated."
 }
 
+# Issue #1589 : le CHANGELOG a un historique d'encodage mixte latin-1/UTF-8
+# (mojibake). Garde : le fichier doit rester un UTF-8 valide et ne doit pas
+# contenir de séquences de ré-encodage (Ã©, C3 83 C2 A9, etc.) qui cassent
+# toute lecture automatisée.
+if (Test-Path "CHANGELOG.md") {
+    $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path "CHANGELOG.md"))
+    try {
+        $enc = New-Object System.Text.UTF8Encoding($false, $true)
+        $text = $enc.GetString($bytes)
+        if ($text -match "\u00c3[\u00a0-\u00bf]|\u00e2\u20ac|\ufffd") {
+            Fail "CHANGELOG.md contient des séquences mojibake (ré-encodage latin-1/UTF-8) — ré-encoder en UTF-8 propre (issue #1589)."
+        }
+    } catch [System.Text.DecoderFallbackException] {
+        Fail "CHANGELOG.md n'est pas un UTF-8 valide (issue #1589) : $($_.Exception.Message)"
+    }
+    Pass "CHANGELOG.md encoding is valid UTF-8 without mojibake."
+}
+
 Pass "Governance checks passed."

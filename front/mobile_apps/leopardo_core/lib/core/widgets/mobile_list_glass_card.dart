@@ -24,7 +24,7 @@ class MobileListGlassCard extends StatelessWidget {
   final Color iconColor;
   final String title;
 
-  /// String, Widget or List<Widget> (task list passes a list of lines).
+  /// String, Widget or `List<Widget>` (task list passes a list of lines).
   final Object? subtitle;
   final Widget? trailing;
   final Widget? footer;
