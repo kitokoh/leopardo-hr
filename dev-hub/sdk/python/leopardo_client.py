@@ -1088,6 +1088,10 @@ class LeopardoClient:
         """Journal de paie mensuel CSV (F-10)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_journal_2(self, **kwargs):
+        """Journal de paie mensuel CSV (F-10)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
+
     def post_payroll_runs_by_payrollrun_lock(self, **kwargs):
         """Verrouiller la session de paie (cloture comptable, F-11)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/lock", **kwargs)
