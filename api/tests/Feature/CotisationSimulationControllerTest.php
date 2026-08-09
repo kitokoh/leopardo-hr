@@ -6,12 +6,12 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class CotisationSimulationControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     private Company $company;
 
@@ -22,7 +22,6 @@ class CotisationSimulationControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create();
 
@@ -36,12 +35,6 @@ class CotisationSimulationControllerTest extends TestCase
             'company_id' => $this->company->id,
             'role' => 'employee',
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     public function test_simulate_requires_authentication(): void

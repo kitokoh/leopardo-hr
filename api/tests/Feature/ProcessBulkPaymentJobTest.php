@@ -15,7 +15,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Support\Facades\Queue;
 use RuntimeException;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -27,19 +27,7 @@ use Tests\TestCase;
  */
 class ProcessBulkPaymentJobTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_bulk_payment_processes_all_slips_marks_run_paid_and_notifies_trigger_on_full_success(): void
     {

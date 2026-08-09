@@ -584,9 +584,17 @@ class LeopardoClient:
         """Archiver un employe"""
         return self.request("POST", "/employees/{employee}/archive", **kwargs)
 
+    def get_employees_by_employee_certificate_of_employment(self, **kwargs):
+        """Certificat de travail PDF (fin de contrat, F-08)"""
+        return self.request("GET", "/employees/{employee}/certificate-of-employment", **kwargs)
+
     def get_employees_by_employee_daily_summary(self, **kwargs):
         """Resume journalier d'un employe"""
         return self.request("GET", "/employees/{employee}/daily-summary", **kwargs)
+
+    def get_employees_by_employee_end_of_contract(self, **kwargs):
+        """Solde de tout compte (fin de contrat, F-08)"""
+        return self.request("GET", "/employees/{employee}/end-of-contract", **kwargs)
 
     def get_employees_by_employee_quick_estimate(self, **kwargs):
         """Estimation sur periode"""
@@ -1063,6 +1071,10 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun(self, **kwargs):
         """Voir une session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
+        """Rapport d'anomalies pre-cloture (F-20)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/anomalies", **kwargs)
 
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
