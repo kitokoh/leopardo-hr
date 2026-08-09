@@ -99,10 +99,10 @@ class EndOfContractService
         $structure = \App\Modules\Payroll\Domain\Models\SalaryStructure::query()
             ->where('company_id', $employee->company_id)
             ->where('active', true)
-            ->where('country_code', $employee->company?->country ?? 'DZ')
+            ->where('country_code', $employee->company->country ?? 'DZ')
             ->first();
 
-        return $structure?->base_salary ?? 0.0;
+        return $structure->base_salary ?? 0.0;
     }
 
     private function yearsOfService(Employee $employee, Carbon $endDate): float
@@ -116,7 +116,7 @@ class EndOfContractService
             return 0;
         }
 
-        return max(0, $employee->contract_start->diffInMonths($endDate));
+        return (int) max(0, $employee->contract_start->diffInMonths($endDate));
     }
 
     private function proratedDays(Employee $employee, Carbon $endDate): float
