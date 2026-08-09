@@ -9,6 +9,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('employees');
+
         $driver = DB::getDriverName();
 
         if ($driver === 'pgsql') {
@@ -18,7 +21,7 @@ return new class extends Migration
             return;
         }
 
-        Schema::table('employees', function (Blueprint $table): void {
+        Schema::table("{$schema}.employees", function (Blueprint $table): void {
             $table->dropUnique('employees_company_id_email_unique');
             $table->unique('email');
         });
@@ -26,6 +29,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('employees');
+
         $driver = DB::getDriverName();
 
         if ($driver === 'pgsql') {
@@ -35,7 +41,7 @@ return new class extends Migration
             return;
         }
 
-        Schema::table('employees', function (Blueprint $table): void {
+        Schema::table("{$schema}.employees", function (Blueprint $table): void {
             $table->dropUnique('employees_email_unique');
             $table->unique(['company_id', 'email']);
         });
