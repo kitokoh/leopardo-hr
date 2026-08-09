@@ -25,7 +25,6 @@ class PayrollCrossTenantAdversarialTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
-    private Company $companyB;
     private Employee $managerB;
 
     protected function setUp(): void
@@ -37,7 +36,6 @@ class PayrollCrossTenantAdversarialTest extends TestCase
         $this->companyA = $a;
         /** @var Company $b */
         $b = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->companyB = $b;
         /** @var Employee $managerB */
         $managerB = Employee::factory()->manager()->create(['company_id' => $b->id]);
         $this->managerB = $managerB;
