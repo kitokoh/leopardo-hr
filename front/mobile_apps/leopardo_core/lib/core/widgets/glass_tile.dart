@@ -84,7 +84,7 @@ class GlassTile extends StatelessWidget {
                 if (subtitle != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    subtitle,
+                    subtitle!,
                     style: AppTypography.bodySmall.copyWith(
                       color: isDark ? Colors.white70 : Colors.black54,
                     ),
