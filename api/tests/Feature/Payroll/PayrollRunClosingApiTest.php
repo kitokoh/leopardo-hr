@@ -124,6 +124,13 @@ class PayrollRunClosingApiTest extends TestCase
             ->first();
         $this->assertNotNull($unlockLog);
         $this->assertSame('Erreur de paramétrage IRG constatée par le comptable', $unlockLog->metadata['reason'] ?? null);
+        // L'audit trail avant/après doit retenir les VRAIES valeurs pré-déverrouillage
+        // (locked_by/locked_at non nuls) — régression gardée (PR #1632).
+        $this->assertNotNull($unlockLog->old_values['locked_by'] ?? null);
+        $this->assertNotNull($unlockLog->old_values['locked_at'] ?? null);
+        $this->assertSame(PayrollRun::STATUS_LOCKED, $unlockLog->old_values['status'] ?? null);
+        $this->assertNull($unlockLog->new_values['locked_by'] ?? 'sentinel');
+        $this->assertSame(PayrollRun::STATUS_VALIDATED, $unlockLog->new_values['status'] ?? null);
 
         // Re-verrouillage possible après déverrouillage.
         $this->postJson("/api/v1/payroll-runs/{$run->id}/lock")
