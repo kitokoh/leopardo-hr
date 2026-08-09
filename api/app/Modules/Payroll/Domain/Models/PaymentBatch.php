@@ -67,7 +67,7 @@ class PaymentBatch extends Model
         'items_count' => 'integer',
         'marked_paid_at' => 'datetime',
         'confirmed_at' => 'datetime',
-        'metadata' => 'array',
+        'metadata' => 'encrypted:array',
     ];
 
     /** @return BelongsTo<PayrollRun, $this> */

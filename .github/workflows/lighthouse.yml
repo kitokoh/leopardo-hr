@@ -66,7 +66,7 @@ jobs:
       - name: Run Lighthouse CI
         id: lighthouse
         continue-on-error: true
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12.6.2
         with:
           configPath: './front/web/lighthouserc.json'
           budgetPath: './front/web/budget.json'
