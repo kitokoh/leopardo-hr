@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, MonitorSmartphone, ShieldCheck } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
@@ -82,7 +83,13 @@ export function OperationalProofSection({ locale }: OperationalProofSectionProps
   return (
     <section className="px-4 py-16 sm:px-6 lg:px-8" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-emerald-200/70 bg-slate-950 text-white shadow-2xl shadow-emerald-950/20 dark:border-emerald-900/60">
-        <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+        <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+        className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]"
+      >
           <div className="p-8 sm:p-10 lg:p-14">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-200">
               <ShieldCheck className="h-4 w-4" />
@@ -117,8 +124,15 @@ export function OperationalProofSection({ locale }: OperationalProofSectionProps
               <span className="text-sm font-semibold uppercase tracking-[0.24em]">Leopardo stack</span>
             </div>
             <div className="grid gap-3">
-              {copy.proofs.map((proof) => (
-                <div key={proof.title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              {copy.proofs.map((proof, i) => (
+                <motion.div
+                  key={proof.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: 'easeOut' }}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                >
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="mt-0.5 h-5 w-5 flex-none text-emerald-300" />
                     <div>
@@ -126,11 +140,11 @@ export function OperationalProofSection({ locale }: OperationalProofSectionProps
                       <div className="mt-1 text-sm leading-6 text-slate-300">{proof.detail}</div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
