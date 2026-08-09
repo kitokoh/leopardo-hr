@@ -59,6 +59,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
         Gate::define('downloadExport', [ExportPolicy::class, 'download']);
 
+        Gate::define('viewApiDocs', function (?Employee $user = null) {
+            // Pour l'instant, on autorise l'accès à la doc en dev, ou on peut exiger un accès Super Admin
+            return app()->environment('local') || ($user && $user->company_id);
+        });
+
         Model::preventLazyLoading(app()->isLocal());
 
         RateLimiter::for('api', function (Request $request) {
