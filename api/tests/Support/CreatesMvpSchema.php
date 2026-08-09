@@ -1449,7 +1449,7 @@ trait CreatesMvpSchema
                 $table->string('mime_type', 80)->default('application/pdf');
                 $table->unsignedBigInteger('size_bytes')->nullable();
                 $table->text('error_message')->nullable();
-                $table->json('metadata')->nullable();
+                $table->text('metadata')->nullable();
                 $table->unsignedInteger('requested_by')->nullable()->index();
                 $table->timestampTz('generated_at')->nullable();
                 $table->timestamps();

@@ -289,7 +289,7 @@ jobs:
 
       - name: Firebase App Distribution (staging)
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1.7.1
         # actions/excessive-secrets-exposure: see rationale on the
         # "Validate required secrets for staging distribution" step above.
         with:
