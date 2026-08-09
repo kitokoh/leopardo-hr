@@ -8,16 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('employees')) {
+        $schema = resolveTableSchema('employees');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('employees', function (Blueprint $table): void {
-            if (! Schema::hasColumn('employees', 'recovery_email')) {
+        Schema::table("{$schema}.employees", function (Blueprint $table): void {
+            if (! schemaHasColumn('employees', 'recovery_email')) {
                 $table->string('recovery_email', 150)->nullable()->after('personal_email');
             }
 
-            if (! Schema::hasColumn('employees', 'personal_phone')) {
+            if (! schemaHasColumn('employees', 'personal_phone')) {
                 $table->string('personal_phone', 30)->nullable()->after('phone');
             }
         });
@@ -25,16 +26,17 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('employees')) {
+        $schema = resolveTableSchema('employees');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('employees', function (Blueprint $table): void {
-            if (Schema::hasColumn('employees', 'personal_phone')) {
+        Schema::table("{$schema}.employees", function (Blueprint $table): void {
+            if (schemaHasColumn('employees', 'personal_phone')) {
                 $table->dropColumn('personal_phone');
             }
 
-            if (Schema::hasColumn('employees', 'recovery_email')) {
+            if (schemaHasColumn('employees', 'recovery_email')) {
                 $table->dropColumn('recovery_email');
             }
         });

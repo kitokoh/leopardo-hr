@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('employees');
+
+        Schema::table("{$schema}.employees", function (Blueprint $table) {
             $table->unsignedSmallInteger('failed_login_attempts')->default(0);
             $table->timestampTz('locked_until')->nullable();
         });
@@ -22,7 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('employees');
+
+        Schema::table("{$schema}.employees", function (Blueprint $table) {
             $table->dropColumn(['failed_login_attempts', 'locked_until']);
         });
     }

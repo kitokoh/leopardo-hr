@@ -45,8 +45,11 @@ return new class extends Migration
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE company_announcements ADD CONSTRAINT company_announcements_audience_type_check CHECK (audience_type IN ('company', 'department', 'employee'))");
-            DB::statement("ALTER TABLE company_announcements ADD CONSTRAINT company_announcements_priority_check CHECK (priority IN ('low', 'normal', 'high', 'urgent'))");
+            $schema = resolveTableSchema('company_announcements');
+            if ($schema !== null) {
+                DB::statement("ALTER TABLE \"{$schema}\".\"company_announcements\" ADD CONSTRAINT company_announcements_audience_type_check CHECK (audience_type IN ('company', 'department', 'employee'))");
+                DB::statement("ALTER TABLE \"{$schema}\".\"company_announcements\" ADD CONSTRAINT company_announcements_priority_check CHECK (priority IN ('low', 'normal', 'high', 'urgent'))");
+            }
         }
     }
 
