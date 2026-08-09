@@ -56,15 +56,32 @@ class PayrollBenchmark extends Command
 
         // ── calculate ──────────────────────────────────────────────────────
         if (in_array($step, ['calculate', 'all'], true)) {
+            // Barrière N+1 (#1594) : compteur de requêtes SQL pendant le calcul.
+            // Une requête par employé par entité chargée = signature N+1 ;
+            // l'ordre de grandeur attendu est < 20 requêtes/employé.
+            $queryCount = 0;
+            $sqlListener = static function () use (&$queryCount): void {
+                $queryCount++;
+            };
+            DB::listen($sqlListener);
+
             $start = microtime(true);
             $peakBefore = memory_get_peak_usage(true);
             DB::statement('SET search_path TO public,shared_tenants');
             $run = $calculator->calculateRun($run);
             $duration = microtime(true) - $start;
+
+            // Le listener ne doit être actif que pendant calculate : le retirer
+            // dès que calculateRun a fini pour que le compteur s'arrête (avant
+            // l'impression des métriques et les étapes validate-rh / lock).
+            DB::connection()->getEventDispatcher()->removeListener('illuminate.query', $sqlListener);
+
             $this->table(['métrique', 'valeur'], [
                 ['employés', $run->employee_count],
                 ['durée calculate', sprintf('%.2fs', $duration)],
                 ['temps/employé', sprintf('%.1fms', $duration * 1000 / max(1, $run->employee_count))],
+                ['requêtes SQL', (string) $queryCount],
+                ['requêtes/employé', sprintf('%.1f', $queryCount / max(1, $run->employee_count))],
                 ['pic mémoire', sprintf('%.1f Mo', (memory_get_peak_usage(true) - $peakBefore) / 1048576)],
                 ['total_gross', number_format((float) $run->total_gross, 2)],
                 ['total_net', number_format((float) $run->total_net, 2)],
