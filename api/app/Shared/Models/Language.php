@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * @property int $id
@@ -71,7 +72,7 @@ class Language extends Model
 
     public static function activeCodes(): array
     {
-        return Cache::remember(self::ACTIVE_CODES_CACHE_KEY, now()->addMinutes(10), function (): array {
+        $resolve = function (): array {
             if (! self::publicLanguagesTableExists()) {
                 return self::SUPPORTED;
             }
@@ -84,7 +85,17 @@ class Language extends Model
                 ->all();
 
             return $codes !== [] ? $codes : self::SUPPORTED;
-        });
+        };
+
+        try {
+            return Cache::remember(self::ACTIVE_CODES_CACHE_KEY, now()->addMinutes(10), $resolve);
+        } catch (Throwable) {
+            // Le cache (Redis) peut être indisponible (démarrage, incident) :
+            // on ne fait pas tomber toute l'API — le résolveur DB reste la
+            // source de vérité. La sonde /api/v1/health doit rester joignable
+            // même cache dégradé (HealthController documente ce contrat).
+            return $resolve();
+        }
     }
 
     private static function publicLanguagesTableExists(): bool

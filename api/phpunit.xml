@@ -19,7 +19,7 @@
     </source>
     <coverage>
         <report>
-            <clover outputFile="build/logs/clover.xml"/>
+            <clover outputFile="storage/coverage/clover.xml"/>
             <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
         </report>
     </coverage>

@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.4'
           extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
@@ -90,7 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.4'
           extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
@@ -132,7 +132,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.4'
           coverage: pcov
@@ -214,7 +214,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: '8.4'
           extensions: pdo, pdo_pgsql, sqlite3, bcmath, mbstring, xml, zip, gd
