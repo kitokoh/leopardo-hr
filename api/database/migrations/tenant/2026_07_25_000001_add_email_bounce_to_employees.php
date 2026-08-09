@@ -14,8 +14,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('employees') && ! Schema::hasColumn('employees', 'email_bounced_at')) {
-            Schema::table('employees', function (Blueprint $table): void {
+        $schema = resolveTableSchema('employees');
+        if ($schema !== null && ! schemaHasColumn('employees', 'email_bounced_at')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table): void {
                 $table->timestampTz('email_bounced_at')->nullable();
                 $table->string('email_bounce_reason', 255)->nullable();
             });
@@ -24,8 +25,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('employees') && Schema::hasColumn('employees', 'email_bounced_at')) {
-            Schema::table('employees', function (Blueprint $table): void {
+        $schema = resolveTableSchema('employees');
+        if ($schema !== null && schemaHasColumn('employees', 'email_bounced_at')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table): void {
                 $table->dropColumn(['email_bounced_at', 'email_bounce_reason']);
             });
         }

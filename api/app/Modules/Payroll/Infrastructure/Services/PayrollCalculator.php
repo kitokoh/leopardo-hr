@@ -454,15 +454,32 @@ class PayrollCalculator
     {
         $twelveMonthsAgo = (clone $run->period_start)->subMonths(12);
 
-        $gross = PaySlip::query()
+        $slips = PaySlip::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
             ->where('status', 'validated')
             ->where('period_start', '>=', $twelveMonthsAgo)
             ->where('period_start', '<', $run->period_start)
-            ->sum('gross_salary');
+            ->get(['gross_salary', 'period_start']);
 
-        return $gross > 0.0 ? (float) $gross : $baseSalary * 12.0;
+        if ($slips->isEmpty()) {
+            return $baseSalary * 12.0;
+        }
+
+        $gross = (float) $slips->sum('gross_salary');
+
+        // Période partielle (embauche en cours d'année) : on normalise sur 12
+        // mois pour ne pas sous-évaluer le 1/10ᵉ (ex. 3 bulletins → gross × 12/3).
+        $months = $slips
+            ->map(fn ($slip) => $slip->period_start->format('Y-m'))
+            ->unique()
+            ->count();
+
+        if ($months > 0 && $months < 12) {
+            $gross = $gross * (12.0 / $months);
+        }
+
+        return $gross;
     }
 
     /**
@@ -474,13 +491,20 @@ class PayrollCalculator
     {
         $year = (int) $run->period_start->format('Y');
 
-        $days = LeaveBalance::query()
+        // Jours ACQUIS = solde restant + jours déjà pris (+ en attente) :
+        // LeaveBalance.balance n'est que le RESTANT (décrémenté à l'approbation
+        // d'un congé) — l'utiliser seul sous-évalue l'acquisition (F-07 #1537).
+        $row = LeaveBalance::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
             ->where('year', $year)
-            ->sum('balance');
+            ->whereHas('absenceType', fn ($q) => $q->where('is_paid', true))
+            ->selectRaw('SUM(balance + used + pending) as acquired')
+            ->first();
 
-        return $days > 0.0 ? (float) $days : 30.0;
+        $days = $row !== null ? (float) $row->acquired : 0.0;
+
+        return $days > 0.0 ? $days : 30.0;
     }
 
     public function computeLeaveIndemnity(
