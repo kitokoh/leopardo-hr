@@ -51,7 +51,7 @@
 
     <!-- Turnover Prediction -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <div class="rounded-lg glass-card p-6 shadow">
+      <div class="rounded-lg p-6 shadow">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Prediction turnover</h2>
         <div v-if="loadingTurnover" class="py-8 text-center text-sm text-gray-500">Analyse en cours...</div>
         <template v-else-if="turnover">
@@ -99,7 +99,7 @@
       </div>
 
       <!-- Absenteeism Prediction -->
-      <div class="rounded-lg glass-card p-6 shadow">
+      <div class="rounded-lg p-6 shadow">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Prediction absenteisme</h2>
         <div v-if="loadingAbsenteeism" class="py-8 text-center text-sm text-gray-500">Analyse en cours...</div>
         <template v-else-if="absenteeism">

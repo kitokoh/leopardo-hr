@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen glass-card px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
+  <div class="min-h-screen px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
     <div class="mx-auto max-w-max">
       <main class="sm:flex">
         <p class="text-4xl font-bold tracking-tight text-indigo-600 sm:text-5xl">404</p>
@@ -22,7 +22,7 @@
             </router-link>
             <button
               @click="goBack"
-              class="inline-flex items-center rounded-md glass-card px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:glass-bg"
+              class="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:glass-bg"
             >
               Page prÃ©cÃ©dente
             </button>
@@ -36,7 +36,7 @@
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <router-link
             to="/users"
-            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
@@ -52,7 +52,7 @@
 
           <router-link
             to="/companies"
-            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
@@ -68,7 +68,7 @@
 
           <router-link
             to="/support"
-            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>
@@ -84,7 +84,7 @@
 
           <router-link
             to="/system"
-            class="group relative rounded-lg border border-gray-300 glass-card px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative rounded-lg border border-gray-300 px-6 py-5 shadow-sm hover:border-gray-400"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>

@@ -38,7 +38,7 @@
       
       <!-- Colonne: Leads -->
       <div class="flex-shrink-0 w-80 bg-slate-50 dark:bg-slate-800/30 rounded-xl flex flex-col border border-slate-200 dark:border-slate-800">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center glass-card dark:bg-slate-900 rounded-t-xl">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
             Leads Entrants
@@ -67,7 +67,7 @@
 
       <!-- Colonne: Trials -->
       <div class="flex-shrink-0 w-80 bg-emerald-50/30 dark:bg-emerald-900/10 rounded-xl flex flex-col border border-emerald-100 dark:border-emerald-900/30">
-        <div class="p-4 border-b border-emerald-100 dark:border-emerald-900/30 flex justify-between items-center glass-card dark:bg-slate-900 rounded-t-xl">
+        <div class="p-4 border-b border-emerald-100 dark:border-emerald-900/30 flex justify-between items-center dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
             En Essai (Trial)
@@ -96,7 +96,7 @@
 
       <!-- Colonne: Active (Payant) -->
       <div class="flex-shrink-0 w-80 bg-blue-50/30 dark:bg-blue-900/10 rounded-xl flex flex-col border border-blue-100 dark:border-blue-900/30">
-        <div class="p-4 border-b border-blue-100 dark:border-blue-900/30 flex justify-between items-center glass-card dark:bg-slate-900 rounded-t-xl">
+        <div class="p-4 border-b border-blue-100 dark:border-blue-900/30 flex justify-between items-center dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-500"></span>
             Clients Actifs

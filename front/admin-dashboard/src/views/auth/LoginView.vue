@@ -177,7 +177,7 @@
     <!-- Demo Modal -->
     <div v-if="showDemoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" @click="showDemoModal = false"></div>
-      <div class="w-full max-w-sm relative glass-card p-8 text-center bg-slate-900 shadow-2xl rounded-3xl border border-white/10 z-10">
+      <div class="w-full max-w-sm relative p-8 text-center bg-slate-900 shadow-2xl rounded-3xl border border-white/10 z-10">
          <h3 class="text-xl font-black text-white uppercase tracking-tight">AccÃ¨s DÃ©mo</h3>
          <p class="mt-4 text-slate-400 text-sm font-medium italic">administrateurs plateforme</p>
          <div class="mt-8 space-y-3">
