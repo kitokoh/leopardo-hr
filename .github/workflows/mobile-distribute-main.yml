@@ -166,7 +166,7 @@ jobs:
 
       - name: Firebase App Distribution (staging)
         if: env.MOBILE_DISTRIBUTE_READY == 'true'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1.7.1
         with:
           appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
