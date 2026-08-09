@@ -15,7 +15,7 @@ use Tests\TestCase;
  */
 class FeatureManifestApiTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private Employee $user;
 

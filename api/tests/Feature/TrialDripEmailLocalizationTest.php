@@ -24,7 +24,7 @@ use Tests\TestCase;
  */
 class TrialDripEmailLocalizationTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     /**
      * @return array<string, array{0: string}>

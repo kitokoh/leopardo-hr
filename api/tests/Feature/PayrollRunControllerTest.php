@@ -19,7 +19,7 @@ use Tests\TestCase;
 
 class PayrollRunControllerTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function bindFakePayrollCalculator(): void
     {

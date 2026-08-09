@@ -22,7 +22,7 @@ use Tests\TestCase;
  */
 class PostPublicationTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function makeAccountAndPost(string $companyId, array $platforms): SocialPost
     {

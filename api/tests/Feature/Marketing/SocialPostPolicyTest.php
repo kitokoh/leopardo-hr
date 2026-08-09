@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class SocialPostPolicyTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function makePost(string $companyId, string $status = SocialPost::STATUS_DRAFT): SocialPost
     {

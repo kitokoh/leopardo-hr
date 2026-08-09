@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class SelfServiceTrialTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     public function test_signup_sends_otp_and_creates_pending_request()
     {

@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 class SocialPublishingServiceTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function makePost(string $companyId, ?SocialAccount $account = null): SocialPost
     {

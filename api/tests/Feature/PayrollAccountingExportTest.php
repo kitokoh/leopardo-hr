@@ -18,7 +18,7 @@ use Tests\TestCase;
  */
 class PayrollAccountingExportTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     public function test_export_csv_includes_currency_country_and_period(): void
     {

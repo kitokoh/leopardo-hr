@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 class SchedulePostActionTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function makeDraftPost(string $companyId): SocialPost
     {

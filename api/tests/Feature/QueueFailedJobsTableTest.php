@@ -23,7 +23,7 @@ use Tests\TestCase;
  */
 class QueueFailedJobsTableTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     public function test_failed_jobs_table_exists_with_expected_columns(): void
     {

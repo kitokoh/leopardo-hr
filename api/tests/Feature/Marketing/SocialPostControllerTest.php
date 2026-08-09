@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 class SocialPostControllerTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function marketingManager(Company $company): Employee
     {

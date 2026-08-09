@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class DisconnectSocialAccountActionTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     public function test_disconnect_marks_active_account_as_revoked(): void
     {

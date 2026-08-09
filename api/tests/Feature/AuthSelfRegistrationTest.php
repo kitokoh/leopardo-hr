@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class AuthSelfRegistrationTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     protected function setUp(): void
     {

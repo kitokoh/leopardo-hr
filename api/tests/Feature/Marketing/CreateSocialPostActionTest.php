@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 class CreateSocialPostActionTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     public function test_creates_a_draft_post_for_a_connected_company(): void
     {

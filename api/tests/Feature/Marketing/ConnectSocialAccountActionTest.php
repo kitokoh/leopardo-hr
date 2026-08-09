@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 class ConnectSocialAccountActionTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     public function test_creates_a_new_active_social_account_with_encrypted_profile_ref(): void
     {

@@ -29,7 +29,7 @@ use Tests\TestCase;
  */
 class ProcessPayrollBatchJobTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     protected function tearDown(): void
     {

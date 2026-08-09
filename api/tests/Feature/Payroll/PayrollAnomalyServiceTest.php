@@ -16,7 +16,7 @@ use Tests\TestCase;
  */
 class PayrollAnomalyServiceTest extends TestCase
 {
-    use RefreshTenantDatabase;
+    use Tests\RefreshTenantDatabase;
 
     private function makeRun(Company $company, string $status = 'calculated', string $period = '2026-07'): PayrollRun
     {
