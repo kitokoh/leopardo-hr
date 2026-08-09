@@ -4,18 +4,24 @@ on:
   pull_request:
     paths:
       - "api/openapi.yaml"
+      - "api/routes/**"
       - "dev-hub/openapi/v1.yaml"
       - "dev-hub/sdk/**"
       - "dev-hub/tools/generate-openapi-sdk.mjs"
+      - "dev-hub/tools/check-openapi-route-coverage.py"
+      - "dev-hub/tools/openapi-coverage-allowlist.txt"
       - ".github/workflows/openapi-ci.yml"
   push:
     branches:
       - main
     paths:
       - "api/openapi.yaml"
+      - "api/routes/**"
       - "dev-hub/openapi/v1.yaml"
       - "dev-hub/sdk/**"
       - "dev-hub/tools/generate-openapi-sdk.mjs"
+      - "dev-hub/tools/check-openapi-route-coverage.py"
+      - "dev-hub/tools/openapi-coverage-allowlist.txt"
       - ".github/workflows/openapi-ci.yml"
 
 permissions:
@@ -43,3 +49,15 @@ jobs:
         # see a stale/divergent stub. This fails the build if api/openapi.yaml
         # changed without regenerating dev-hub/openapi/v1.yaml and the SDKs.
         run: node dev-hub/tools/generate-openapi-sdk.mjs --check
+
+  route-coverage:
+    name: Route → OpenAPI coverage guard (issue #1473)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Compare routes vs openapi.yaml
+        # Toute route NON documentée ET NON allowlistée fait échouer le job.
+        # Gaps connus : dev-hub/tools/openapi-coverage-allowlist.txt.
+        run: python3 dev-hub/tools/check-openapi-route-coverage.py
