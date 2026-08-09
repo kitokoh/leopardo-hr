@@ -16,7 +16,7 @@ use Tests\TestCase;
  */
 class PrecalculatePayrollRunsCommandTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use \Tests\RefreshTenantDatabase;
 
     public function test_dispatches_batch_job_for_a_draft_run_approaching_its_pay_day(): void
     {

@@ -170,7 +170,7 @@ class PayrollTenantIsolationTest extends TestCase
             'payroll_run_id' => $dataA['run']->id,
             'status' => 'completed',
             'file_path' => 'exports/bank-a.csv',
-            'format' => 'csv',
+            'format' => 'csv_generic',
         ]);
 
         Sanctum::actingAs($this->managerB);

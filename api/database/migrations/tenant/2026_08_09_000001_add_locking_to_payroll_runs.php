@@ -51,6 +51,35 @@ return new class extends Migration
         }
         // Colonne VARCHAR → toute valeur acceptée, aucune action.
 
+        // 1b) Mettre à jour le CHECK constraint généré par Laravel
+        // (`payroll_runs_status_check`, liste explicite IN (...)) : l'ALTER TYPE
+        // ci-dessus ne l'affecte pas — sans cette étape, tout INSERT en statut
+        // 'locked' échoue (SQLSTATE 23514, CI rouge 2026-08-09).
+        $checks = DB::select("
+            SELECT pg_get_constraintdef(oid) AS def
+            FROM pg_constraint
+            WHERE conrelid = 'payroll_runs'::regclass
+              AND contype = 'c'
+              AND conname = 'payroll_runs_status_check'
+        ");
+        foreach ($checks as $row) {
+            $def = (string) $row->def;
+            if (str_contains($def, "'locked'")) {
+                continue; // déjà à jour (idempotent)
+            }
+            $newDef = preg_replace(
+                "/'paid'\\s*,?/",
+                "'paid', 'locked'",
+                $def,
+                1
+            );
+            if ($newDef === null || $newDef === $def) {
+                continue;
+            }
+            DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT payroll_runs_status_check");
+            DB::statement("ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check CHECK ({$newDef})");
+        }
+
         // 2) Colonnes de verrouillage.
         if (! Schema::hasColumn('payroll_runs', 'locked_by')) {
             Schema::table('payroll_runs', function (Blueprint $table): void {

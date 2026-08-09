@@ -29,11 +29,10 @@ use Tests\TestCase;
  */
 class ProcessPayrollBatchJobTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use \Tests\RefreshTenantDatabase;
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
         Mockery::close();
     }

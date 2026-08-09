@@ -15,7 +15,7 @@ use Tests\TestCase;
  */
 class PayrollCycleSettingsTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use \Tests\RefreshTenantDatabase;
 
     public function test_manager_can_read_default_cycle_settings(): void
     {

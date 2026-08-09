@@ -3247,7 +3247,7 @@ parameters:
 			path: app/Modules/HR/Interfaces/Api/V1/Controllers/RoleAssignmentController.php
 
 		-
-			message: '#^Parameter \#1 \.\.\.\$values of method Illuminate\\Support\\Collection\<int,array\<string, bool\|int\|string\|null\>\>\:\:push\(\) expects array\{company_id\: int\|null, company_name\: string\|null, start_date\: string, end_date\: string\|null, job_title\: string, contract_type\: string, status\: string, current\: bool\}, array\{company_id\: string\|null, company_name\: string\|null, start_date\: string, end_date\: string\|null, job_title\: mixed, contract_type\: string, status\: string, current\: bool\} given\.$#'
+			message: '#^Parameter \#1 \.\.\.\$values of method Illuminate\\Support\\Collection\<int,array\<string, bool\|int\|string\|null\>\>\:\:push\(\) expects array\{company_id\: int\|null, company_name\: string\|null, start_date\: string, end_date\: string\|null, job_title\: string, contract_type\: string, status\: string, current\: bool\}, array\{company_id\: string\|null, company_name\: string\|null, start_date\: string\|null, end_date\: string\|null, job_title\: mixed, contract_type\: string, status\: string, current\: bool\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Controllers/SelfServiceController.php
@@ -3255,7 +3255,7 @@ parameters:
 		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 2
+			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Controllers/SelfServiceController.php
 
 		-
@@ -7267,6 +7267,12 @@ parameters:
 			path: tests/Feature/PaymentWebhookControllerTest.php
 
 		-
+			message: '#^Method Tests\\Feature\\Payroll\\Golden\\GoldenDzFinalSettlementTest\:\:settlementProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/Golden/GoldenDzFinalSettlementTest.php
+
+		-
 			message: '#^Method Tests\\Feature\\Payroll\\Golden\\GoldenDzIrgBracketsTest\:\:cnasProvider\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -7283,6 +7289,48 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Feature/Payroll/Golden/GoldenDzIrgBracketsTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\Golden\\GoldenDzLeaveIndemnityTest\:\:indemnityProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/Golden/GoldenDzLeaveIndemnityTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\Golden\\GoldenDzProrataOvertimeTest\:\:overtimeProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/Golden/GoldenDzProrataOvertimeTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\Golden\\GoldenDzProrataOvertimeTest\:\:prorataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/Golden/GoldenDzProrataOvertimeTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\Golden\\GoldenDzProrataOvertimeTest\:\:workedDaysProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/Golden/GoldenDzProrataOvertimeTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 9
+			path: tests/Feature/Payroll/Golden/GoldenDzSalaryStructurePerEmployeeTest.php
+
+		-
+			message: '#^Cannot access property \$gross_salary on App\\Modules\\Payroll\\Domain\\Models\\PaySlip\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: tests/Feature/Payroll/Golden/GoldenDzSalaryStructurePerEmployeeTest.php
+
+		-
+			message: '#^Cannot access property \$total_gross on App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Payroll/Golden/GoldenDzSalaryStructurePerEmployeeTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -7307,6 +7355,150 @@ parameters:
 			identifier: argument.type
 			count: 8
 			path: tests/Feature/Payroll/PayrollAnomalyServiceTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 10
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Cannot access property \$locked_by on App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Cannot access property \$validated_by on App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Payroll\\PayrollClosingTest\:\:makeRun\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Parameter \#1 \$run of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollCalculator\:\:calculateRun\(\) expects App\\Modules\\Payroll\\Domain\\Models\\PayrollRun, App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Parameter \#2 \$actor of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollClosingService\:\:unlock\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Parameter \#2 \$validator of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollClosingService\:\:lock\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Parameter \#2 \$validator of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollClosingService\:\:validateRh\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Feature/Payroll/PayrollClosingTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Feature/Payroll/PayrollExportsTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\PayrollExportsTest\:\:seededRun\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/PayrollExportsTest.php
+
+		-
+			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\Payroll\\PayrollExportsTest\:\:slip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/Payroll/PayrollExportsTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:seedPayrollData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$companyB \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$managerA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$managerA is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Payroll\\PayrollTenantIsolationTest\:\:\$managerB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Payroll/PayrollTenantIsolationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 19
+			path: tests/Feature/Payroll/PayrollWorkInputsTest.php
+
+		-
+			message: '#^Parameter \#1 \$company of method Tests\\Feature\\Payroll\\PayrollWorkInputsTest\:\:makeRun\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Feature/Payroll/PayrollWorkInputsTest.php
+
+		-
+			message: '#^Parameter \#2 \$employee of method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollCalculator\:\:collectWorkInputs\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Feature/Payroll/PayrollWorkInputsTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'

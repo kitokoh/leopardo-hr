@@ -19,7 +19,7 @@ use Tests\TestCase;
  */
 class PayrollCycleIntegrationTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use \Tests\RefreshTenantDatabase;
 
     public function test_full_payroll_cycle_create_compute_validate(): void
     {

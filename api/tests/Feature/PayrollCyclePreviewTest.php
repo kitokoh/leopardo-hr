@@ -17,7 +17,7 @@ use Tests\TestCase;
  */
 class PayrollCyclePreviewTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use \Tests\RefreshTenantDatabase;
 
     public function test_manager_can_preview_default_monthly_cycle(): void
     {

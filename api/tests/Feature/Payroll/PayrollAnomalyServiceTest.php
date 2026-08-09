@@ -16,7 +16,7 @@ use Tests\TestCase;
  */
 class PayrollAnomalyServiceTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use \Tests\RefreshTenantDatabase;
 
     private function makeRun(Company $company, string $status = 'calculated', string $period = '2026-07'): PayrollRun
     {
@@ -69,7 +69,17 @@ class PayrollAnomalyServiceTest extends TestCase
 
         $run = $this->makeRun($company);
         $this->makeSlip($run, $employee, 60000.0, 13900.0, 46100.0);
-        $this->makeSlip($run, $employee, 60000.0, 13900.0, 46100.0);
+
+        // Le schéma réel interdit les doublons (UNIQUE payroll_run_id,
+        // employee_id) — le détecteur couvre les données héritées d'avant la
+        // contrainte. On désactive temporairement la contrainte pour simuler
+        // cet état historique, puis on la restaure.
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE pay_slips DROP CONSTRAINT pay_slips_payroll_run_id_employee_id_unique');
+        try {
+            $this->makeSlip($run, $employee, 60000.0, 13900.0, 46100.0);
+        } finally {
+            \Illuminate\Support\Facades\DB::statement('ALTER TABLE pay_slips ADD CONSTRAINT pay_slips_payroll_run_id_employee_id_unique UNIQUE (payroll_run_id, employee_id)');
+        }
 
         $anomalies = (new PayrollAnomalyService())->detectForRun($run->fresh(['paySlips']));
 
