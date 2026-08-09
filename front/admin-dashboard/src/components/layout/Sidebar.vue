@@ -138,8 +138,9 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 import {
   HomeIcon,
   ChartBarIcon,
@@ -183,7 +184,9 @@ defineProps({
 defineEmits(['close'])
 
 const router = useRouter()
-const { t } = useI18n()
+const localeStore = useLocaleStore()
+/** Traduction avec fallback sur le libellé anglais de la clé */
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()

@@ -81,12 +81,22 @@
 
 <script setup>
 import { reactive } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
-const { t } = useI18n()
+const localeStore = useLocaleStore()
+/** Traduction avec fallback sur la clé elle-même pour faciliter le débogage */
+const t = (key, vars = {}) => {
+  let msg = translate(localeStore.current, key) || key
+  // Interpolation simple : {{ provider }} → valeur de vars.provider
+  for (const [k, v] of Object.entries(vars)) {
+    msg = msg.replace(`{{ ${k} }}`, String(v))
+  }
+  return msg
+}
 const toast = useToast()
 
 const forms = reactive({

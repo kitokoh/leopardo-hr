@@ -255,5 +255,38 @@
     "launch_readiness": "Readiness lancement",
     "recent_activity": "Activite recente",
     "recent_activity_hint": "Dernieres actions de votre equipe"
+  },
+  "marketing": {
+    "oauth": {
+      "nav_title": "Marketing OAuth",
+      "title": "Paramètres OAuth Marketing",
+      "subtitle": "Connectez vos comptes réseaux sociaux via Ayrshare",
+      "ayrshare_info": "Ces paramètres sont utilisés par Ayrshare pour publier sur vos réseaux sociaux. Obtenez vos identifiants dans votre console développeur respective.",
+      "save": "Enregistrer",
+      "saved_ok": "Configuration {{ provider }} enregistrée",
+      "providers": {
+        "linkedin": {
+          "label": "LinkedIn",
+          "description": "Connexion à l'API LinkedIn Marketing"
+        },
+        "facebook": {
+          "label": "Facebook / Meta",
+          "description": "Connexion à l'API Facebook Graph"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Connexion à l'API Twitter v2"
+        }
+      },
+      "fields": {
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "redirect_uri": "Redirect URI",
+        "secret_hint": "(laissez vide pour conserver)",
+        "placeholder_id": "Votre Client ID",
+        "placeholder_secret": "Nouveau secret (optionnel)",
+        "placeholder_uri": "https://example.com/oauth/callback"
+      }
+    }
   }
 }
