@@ -45,7 +45,10 @@ php artisan payroll:benchmark --employees=10000 --step=lock
 ## Historique des runs
 
 | Date | Employés | Step | Durée calculate | Temps/employé | Pic mémoire | Env | Note |
-|---|---|---|---|---|---|---|---|
-| (à remplir) | | | | | | | |
+|---|---|---|---|---|---|---|---|---|
+| 2026-08-09 | 100 | all | 1,04 s | 10,4 ms | 2,0 Mo | local (PG 16, PHP 8.4, 4 vCPU) | Premier run — pipeline validé |
+| 2026-08-09 | 1 000 | all | 10,02 s | 10,0 ms | 4,0 Mo | local (PG 16, PHP 8.4, 4 vCPU) | ≈ objectif conseillé < 10 s |
+| 2026-08-09 | 10 000 | all | 90,15 s | 9,0 ms | 50,0 Mo | local (PG 16, PHP 8.4, 4 vCPU) | **Cible F-12 : 90 s < 30 min ✔** (seed 1,04 s) |
+
 
 *Généré par `dev-hub/tools/payroll-benchmark.sh` (#1604).*
