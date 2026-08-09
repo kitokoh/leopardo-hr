@@ -6,11 +6,15 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Domain\Models\SalaryComponent;
+use App\Modules\Payroll\Domain\Models\PaymentBatch;
+use App\Modules\Payroll\Domain\Models\PaymentConfirmation;
+use App\Modules\Payroll\Domain\Models\PaymentDocument;
+use App\Modules\Payroll\Domain\Models\PaymentItem;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
-use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -23,9 +27,10 @@ use Tests\TestCase;
  */
 class PayrollReferenceControllersTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     private Company $company;
+
     private Employee $manager;
 
     protected function setUp(): void
@@ -294,7 +299,7 @@ class PayrollReferenceControllersTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
-        $doc = \App\Modules\Payroll\Domain\Models\PaymentDocument::create([
+        $doc = PaymentDocument::create([
             'company_id' => $this->company->id,
             'employee_id' => $employee->id,
             'document_type' => 'pay_slip',
@@ -308,14 +313,14 @@ class PayrollReferenceControllersTest extends TestCase
 
         // Round-trip : la lecture via le cast renvoie le tableau déchiffré.
         $fresh = $doc->fresh();
-        $this->assertInstanceOf(\App\Modules\Payroll\Domain\Models\PaymentDocument::class, $fresh);
+        $this->assertInstanceOf(PaymentDocument::class, $fresh);
         $this->assertIsArray($fresh->metadata);
         $this->assertSame(37500, $fresh->metadata['net_salary']);
         $this->assertSame('VIR-2026-07-001', $fresh->metadata['payment_reference']);
 
         // Au repos (DB), la valeur ne contient ni le montant ni la référence
         // en clair — elle est chiffrée (payload non-JSON).
-        $raw = \Illuminate\Support\Facades\DB::table('payment_documents')
+        $raw = DB::table('payment_documents')
             ->where('id', $doc->id)
             ->value('metadata');
 
@@ -332,7 +337,7 @@ class PayrollReferenceControllersTest extends TestCase
         // up() de la migration de backfill : la valeur doit passer en chiffré.
         /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
-        $id = \Illuminate\Support\Facades\DB::table('payment_documents')->insertGetId([
+        $id = DB::table('payment_documents')->insertGetId([
             'company_id' => $this->company->id,
             'employee_id' => $employee->id,
             'document_type' => 'pay_slip',
@@ -345,7 +350,7 @@ class PayrollReferenceControllersTest extends TestCase
         $migration = require base_path('database/migrations/tenant/2026_08_09_000003_encrypt_payment_documents_metadata.php');
         $migration->up();
 
-        $raw = \Illuminate\Support\Facades\DB::table('payment_documents')
+        $raw = DB::table('payment_documents')
             ->where('id', $id)
             ->value('metadata');
 
@@ -354,6 +359,65 @@ class PayrollReferenceControllersTest extends TestCase
 
         // Idempotence : rejouer ne casse pas (la valeur est déjà chiffrée).
         $migration->up();
-        $this->assertSame($raw, \Illuminate\Support\Facades\DB::table('payment_documents')->where('id', $id)->value('metadata'));
+        $this->assertSame($raw, DB::table('payment_documents')->where('id', $id)->value('metadata'));
+    }
+
+    public function test_payment_metadata_encrypted_at_rest_on_batches_items_confirmations(): void
+    {
+        // F-17 (#1595) : payment_batches / payment_items / payment_confirmations
+        // portent des métadonnées libres (références, notes, user-agent) —
+        // elles doivent être chiffrées au repos comme payment_documents.
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+
+        $batch = PaymentBatch::query()->create([
+            'company_id' => $this->company->id,
+            'status' => 'draft',
+            'metadata' => ['internal_note' => 'VIP-2026-001', 'phone' => '+213555123456'],
+        ]);
+
+        $item = PaymentItem::query()->create([
+            'company_id' => $this->company->id,
+            'payment_batch_id' => $batch->id,
+            'employee_id' => $employee->id,
+            'status' => 'pending',
+            'metadata' => ['reference' => 'VIR-2026-002'],
+        ]);
+
+        $confirmation = PaymentConfirmation::query()->create([
+            'company_id' => $this->company->id,
+            'payment_batch_id' => $batch->id,
+            'payment_item_id' => $item->id,
+            'employee_id' => $employee->id,
+            'status' => 'confirmed',
+            'confirmed_at' => now(),
+            'document_version' => 'v1',
+            'metadata' => ['user_agent' => 'LeopardoEmployee/1.0', 'ip' => '41.111.222.333'],
+        ]);
+
+        // Round-trip via les casts : les tableaux sont lus déchiffrés.
+        $freshBatch = $batch->fresh();
+        $this->assertNotNull($freshBatch);
+        $this->assertSame(['internal_note' => 'VIP-2026-001', 'phone' => '+213555123456'], $freshBatch->metadata);
+
+        $freshItem = $item->fresh();
+        $this->assertNotNull($freshItem);
+        $this->assertSame(['reference' => 'VIR-2026-002'], $freshItem->metadata);
+
+        $freshConfirmation = $confirmation->fresh();
+        $this->assertNotNull($freshConfirmation);
+        $this->assertIsArray($freshConfirmation->metadata);
+        $this->assertSame('LeopardoEmployee/1.0', $freshConfirmation->metadata['user_agent']);
+
+        // Au repos : payloads chiffrés (non-JSON, données en clair absentes).
+        foreach (['payment_batches', 'payment_items', 'payment_confirmations'] as $table) {
+            $raw = DB::table($table)
+                ->where('company_id', $this->company->id)
+                ->value('metadata');
+            $this->assertIsString($raw);
+            $this->assertStringStartsNotWith('{', (string) $raw);
+            $this->assertStringNotContainsString('VIP-2026-001', (string) $raw);
+            $this->assertStringNotContainsString('VIR-2026-002', (string) $raw);
+        }
     }
 }
