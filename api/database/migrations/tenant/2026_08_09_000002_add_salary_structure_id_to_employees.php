@@ -18,8 +18,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('employees') && ! Schema::hasColumn('employees', 'salary_structure_id')) {
-            Schema::table('employees', function (Blueprint $table) {
+        $schema = resolveTableSchema('employees');
+        if ($schema !== null && ! schemaHasColumn('employees', 'salary_structure_id')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table) {
                 $table->unsignedBigInteger('salary_structure_id')->nullable()->after('site_id');
                 $table->foreign('salary_structure_id')
                     ->references('id')
@@ -32,8 +33,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('employees') && Schema::hasColumn('employees', 'salary_structure_id')) {
-            Schema::table('employees', function (Blueprint $table) {
+        $schema = resolveTableSchema('employees');
+        if ($schema !== null && schemaHasColumn('employees', 'salary_structure_id')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table) {
                 $table->dropForeign(['salary_structure_id']);
                 $table->dropIndex(['company_id', 'salary_structure_id']);
                 $table->dropColumn('salary_structure_id');

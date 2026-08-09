@@ -86,6 +86,7 @@ app/
 - **PostgreSQL only** — ne pas utiliser de syntaxe MySQL-specifique
 - Champs obligatoires : `id`, `company_id` (sauf modeles globaux), `created_at`, `updated_at`
 
+D
 #### Règle search_path — migrations tenant (#1613, bug F-17 #1595)
 
 `Schema::hasTable('x')` / `Schema::table('x', ...)` interrogent **`current_schema()` uniquement**,
@@ -118,6 +119,7 @@ private function resolveTableSchema(string $table): ?string
 - Utiliser `Schema::table("{$schema}.{$table}", ...)` (préfixe schéma) pour les ALTER.
 - Utiliser `DB::table($table)` (résolution search_path) pour les lectures/écritures.
 - Un garde `if ($schema === null) { return; }` remplace `Schema::hasTable()`.
+
 
 ### 2.7 DDD pour nouveaux modules
 
