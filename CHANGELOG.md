@@ -6,6 +6,7 @@
 ## [Unreleased]
 
 ### Added
+- **docs(payroll): première baseline benchmark F-12 (#1594) — 10 000 employés clôturés en 90 s.** Runs réels `payroll:benchmark` (seed + calculate + validate-rh + lock) consignés dans `docs/payroll/BENCHMARK.md` : 100 emp → 1,04 s ; 1 000 emp → 10,02 s ; 10 000 emp → 90,15 s (9,0 ms/employé, pic 50 Mo) sur env local PG16/PHP8.4 — **20× sous la cible < 30 min**, scaling linéaire confirmé.
 - **fix(ci): garde CHANGELOG mojibake renforcée (#1612).** `check-governance.ps1` détecte désormais les patrons de ré-encodage NON standard observés dans l'historique (em dash, flèche, coche, accents é/ô/è/ç/à préfixés par « + » ou « G » et leurs formes doublement ré-encodées « tiret ») en plus des patrons classiques (double-encodage « A tilde + e », « a accent circonflexe + euro », caractère de remplacement) — un commit réintroduisant un de ces patrons fait échouer la CI (Governance Gates). Auto-test dédié `check-governance-mojibake-test.ps1` branché sur le job Governance : liste noire détectée + caractères légitimes (é è ê à ç ô ù ï — – … ✓ ✗ → § • « ») admis + CHANGELOG courant propre.
 
 ### Added
