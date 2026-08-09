@@ -215,13 +215,6 @@ class PaymentBatchController extends Controller
             $confirmedAt = now();
             $documentVersion = (string) ($validated['document_version'] ?? 'v1');
 
-            // PA2-PAY-016 - Timestamped consent hash binding this confirmation
-            // to the payment item, amount, currency and instant, without a
-            // premature PKI/certificate stack.
-            $documentHash = $this->consentSignatureService->hash(
-                $this->consentSignatureService->buildPayload($paymentItem, $confirmedAt, $documentVersion)
-            );
-
             $confirmation = PaymentConfirmation::query()->create([
                 'company_id' => $actor->company_id,
                 'payment_batch_id' => $paymentItem->payment_batch_id,
@@ -233,9 +226,27 @@ class PaymentBatchController extends Controller
                 'ip_address' => $request->ip(),
                 'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'document_version' => $documentVersion,
-                'document_hash' => $documentHash,
                 'metadata' => $validated['metadata'] ?? null,
             ]);
+
+            // PA2-PAY-016 - Timestamped consent hash binding this confirmation
+            // to the payment item, amount, currency and instant, without a
+            // premature PKI/certificate stack.
+            //
+            // Le hash est calculé sur la valeur `confirmed_at` RÉELLEMENT
+            // persistée (la colonne est timestamp(0) : PostgreSQL arrondit à la
+            // seconde — hasher `now()` avec les millisecondes rendrait la
+            // signature invérifiable après lecture, car le payload différerait).
+            // `refresh()` recharge la valeur arrondie par le serveur.
+            $confirmation->refresh();
+            $documentHash = $this->consentSignatureService->hash(
+                $this->consentSignatureService->buildPayload(
+                    $paymentItem,
+                    $confirmation->confirmed_at,
+                    $documentVersion
+                )
+            );
+            $confirmation->forceFill(['document_hash' => $documentHash])->save();
 
             $paymentItem->forceFill([
                 'status' => PaymentItem::STATUS_CONFIRMED,
