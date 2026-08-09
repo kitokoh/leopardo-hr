@@ -1171,6 +1171,71 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+
+  /employees/{employee}/end-of-contract:
+    get:
+      tags: ["Payroll"]
+      summary: "Solde de tout compte (fin de contrat, F-08)"
+      description: "Calcul du solde de tout compte : prorata du dernier mois, indemnite de conges payes non pris, preavis, indemnite d'anciennete (1 mois/an, regime DZ documente). Reserve aux managers, isole par tenant."
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail du solde de tout compte"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      employee_id: { type: integer }
+                      end_date: { type: string }
+                      years_of_service: { type: number }
+                      monthly_base: { type: number }
+                      breakdown:
+                        type: object
+                        properties:
+                          prorated_pay: { type: number }
+                          leave_indemnity: { type: number }
+                          notice_pay: { type: number }
+                          severance: { type: number }
+                          total: { type: number }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Employe introuvable (isolation tenant)"
+
+  /employees/{employee}/certificate-of-employment:
+    get:
+      tags: ["Payroll"]
+      summary: "Certificat de travail PDF (fin de contrat, F-08)"
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "PDF (Content-Disposition: attachment)"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager role required"
+        "404":
+          description: "Employe introuvable (isolation tenant)"
+
   /employees/{employee}/archive:
     post:
       tags: ["Employees"]
