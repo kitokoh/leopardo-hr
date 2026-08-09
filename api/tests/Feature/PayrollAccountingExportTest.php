@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -19,19 +18,7 @@ use Tests\TestCase;
  */
 class PayrollAccountingExportTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use Tests\RefreshTenantDatabase;
 
     public function test_export_csv_includes_currency_country_and_period(): void
     {

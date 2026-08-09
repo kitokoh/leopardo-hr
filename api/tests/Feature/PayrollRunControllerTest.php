@@ -15,24 +15,11 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class PayrollRunControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use Tests\RefreshTenantDatabase;
 
     private function bindFakePayrollCalculator(): void
     {
