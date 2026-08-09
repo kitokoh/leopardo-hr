@@ -1072,6 +1072,10 @@ class LeopardoClient:
         """Annuler une session de paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/cancel", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_journal(self, **kwargs):
+        """Journal de paie mensuel CSV (F-10)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
+
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
