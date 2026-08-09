@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
+use Illuminate\Support\Facades\DB;
 
 trait RefreshTenantDatabase
 {
@@ -19,9 +20,7 @@ trait RefreshTenantDatabase
             '--path' => 'database/migrations/public',
         ]);
 
-        $this->artisan('migrate', [
-            '--path' => 'database/migrations/tenant',
-        ]);
+        $this->runTenantMigrations();
 
         $this->app[Kernel::class]->setArtisan(null);
     }
@@ -36,9 +35,7 @@ trait RefreshTenantDatabase
                 '--path' => 'database/migrations/public',
             ]);
 
-            $this->artisan('migrate', [
-                '--path' => 'database/migrations/tenant',
-            ]);
+            $this->runTenantMigrations();
 
             $this->app[Kernel::class]->setArtisan(null);
 
@@ -46,5 +43,30 @@ trait RefreshTenantDatabase
         }
 
         $this->beginDatabaseTransaction();
+    }
+
+    /**
+     * Exécute les migrations tenant dans le schéma `shared_tenants`.
+     *
+     * Aligné sur le bootstrap CI (`.github/actions/setup-backend-db` qui lance
+     * `DB_SEARCH_PATH=shared_tenants php artisan migrate --path=...tenant`) :
+     * sans ce SET, les tables tenant atterrissent dans le premier schéma du
+     * search_path de la connexion (`public,shared_tenants` en tests) alors que
+     * l'application résout les tables via `current_schema()` → `shared_tenants`
+     * (ex. `Schema::hasColumn` du listing employés).
+     */
+    private function runTenantMigrations(): void
+    {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants');
+        }
+
+        $this->artisan('migrate', [
+            '--path' => 'database/migrations/tenant',
+        ]);
+
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
     }
 }

@@ -6,9 +6,8 @@ namespace Tests\Feature\HR;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -22,7 +21,7 @@ use Tests\TestCase;
  */
 class HrControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected Company $company;
     protected Company $otherCompany;
@@ -33,19 +32,12 @@ class HrControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
 
         $this->company      = Company::factory()->create();
         $this->otherCompany = Company::factory()->create();
         $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         $this->employee     = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->otherManager = Employee::factory()->manager()->create(['company_id' => $this->otherCompany->id]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     // ── Employees ────────────────────────────────────────────────────────────
