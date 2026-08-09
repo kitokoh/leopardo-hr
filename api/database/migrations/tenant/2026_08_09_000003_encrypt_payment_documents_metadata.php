@@ -20,12 +20,22 @@ use Illuminate\Support\Facades\Schema;
  *    existantes (employees.iban/bank_account : text + EncryptedCast).
  * 2. Backfill : chaque ligne en clair est chiffrée avec la clé APP_KEY
  *    (AES-256, même encrypter que le cast Eloquent). Idempotente.
+ *
+ * NB search_path : `DB::table('x')` résout la table via le search_path de la
+ * session, alors que `Schema::hasTable('x')` interroge uniquement
+ * `current_schema()`. Selon le contexte (CI : DB_SEARCH_PATH=shared_tenants ;
+ * phpunit après `migrate:fresh` où la migration 0001 pose `SET search_path TO
+ * public`) la table peut vivre dans un autre schéma que current_schema() — le
+ * garde d'existence et le changement de colonne sont donc résolus via
+ * `current_schemas(false)` (même ordre que la résolution de DB::table).
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('payment_documents')) {
+        $schema = $this->resolveTableSchema('payment_documents');
+
+        if ($schema === null) {
             return;
         }
 
@@ -34,10 +44,10 @@ return new class extends Migration
             SELECT data_type FROM information_schema.columns
             WHERE table_name = 'payment_documents'
               AND column_name = 'metadata'
-              AND table_schema = current_schema()
-        ");
+              AND table_schema = ?
+        ", [$schema]);
         if ($columnType && $columnType->data_type === 'json') {
-            Schema::table('payment_documents', function (Blueprint $table): void {
+            Schema::table("{$schema}.payment_documents", function (Blueprint $table): void {
                 $table->text('metadata')->nullable()->change();
             });
         }
@@ -61,6 +71,24 @@ return new class extends Migration
                 ->where('id', $row->id)
                 ->update(['metadata' => Crypt::encryptString((string) $row->metadata)]);
         }
+    }
+
+    /**
+     * Résout le schéma où `DB::table('payment_documents')` trouverait la table
+     * (premier schéma du search_path qui la contient), ou null si absente.
+     */
+    private function resolveTableSchema(string $table): ?string
+    {
+        $row = DB::selectOne("
+            SELECT t.table_schema
+            FROM information_schema.tables t
+            WHERE t.table_name = ?
+              AND t.table_schema = ANY (current_schemas(false))
+            ORDER BY array_position(current_schemas(false), t.table_schema)
+            LIMIT 1
+        ", [$table]);
+
+        return $row ? (string) $row->table_schema : null;
     }
 
     public function down(): void
