@@ -261,7 +261,7 @@
       "nav_title": "Marketing OAuth",
       "title": "Paramètres OAuth Marketing",
       "subtitle": "Connectez vos comptes réseaux sociaux via Ayrshare",
-      "ayrshare_info": "Ces paramètres sont utilisés par Ayrshare pour publier sur vos réseaux sociaux. Obtenez vos identifiants dans votre console développeur respective.",
+      "ayrshare_info": "Ces paramètres sont utilisés par Ayrshare pour publier sur vos réseaux sociaux.",
       "save": "Enregistrer",
       "saved_ok": "Configuration {{ provider }} enregistrée",
       "providers": {

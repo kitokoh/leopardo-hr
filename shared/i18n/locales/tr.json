@@ -255,5 +255,38 @@
     "launch_readiness": "Lansman Hazırlığı",
     "recent_activity": "Son Etkinlik",
     "recent_activity_hint": "Ekibinizin son eylemleri"
+  },
+  "marketing": {
+    "oauth": {
+      "nav_title": "Pazarlama OAuth",
+      "title": "Pazarlama OAuth Ayarları",
+      "subtitle": "Ayrshare aracılığıyla sosyal medya hesaplarınızı bağlayın",
+      "ayrshare_info": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır.",
+      "save": "Kaydet",
+      "saved_ok": "{{ provider }} yapılandırması kaydedildi",
+      "providers": {
+        "linkedin": {
+          "label": "LinkedIn",
+          "description": "LinkedIn Marketing API bağlantısı"
+        },
+        "facebook": {
+          "label": "Facebook / Meta",
+          "description": "Facebook Graph API bağlantısı"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Twitter API v2 bağlantısı"
+        }
+      },
+      "fields": {
+        "client_id": "İstemci Kimliği",
+        "client_secret": "İstemci Sırrı",
+        "redirect_uri": "Yönlendirme URI",
+        "secret_hint": "(mevcut değeri korumak için boş bırakın)",
+        "placeholder_id": "İstemci Kimliğiniz",
+        "placeholder_secret": "Yeni sır (isteğe bağlı)",
+        "placeholder_uri": "https://example.com/oauth/callback"
+      }
+    }
   }
 }

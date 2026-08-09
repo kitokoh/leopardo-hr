@@ -266,15 +266,15 @@
       "saved_ok": "تم حفظ إعدادات {{ provider }}",
       "providers": {
         "linkedin": {
-          "label": "LinkedIn",
+          "label": "لينكدإن",
           "description": "الاتصال بـ LinkedIn Marketing API"
         },
         "facebook": {
-          "label": "Facebook / Meta",
+          "label": "فيسبوك / ميتا",
           "description": "الاتصال بـ Facebook Graph API"
         },
         "twitter": {
-          "label": "X (Twitter)",
+          "label": "إكس (تويتر)",
           "description": "الاتصال بـ Twitter API v2"
         }
       },
