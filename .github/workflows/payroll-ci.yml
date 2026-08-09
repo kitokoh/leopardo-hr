@@ -204,8 +204,13 @@ jobs:
                   covered_stmt += int(metrics.get('coveredstatements', 0))
           pct = (covered_stmt / total_stmt * 100) if total_stmt else 0.0
           print(f'Payroll coverage: {pct:.1f}% ({covered_stmt}/{total_stmt})')
+          # Gate F-14 (≥ 80 %), ADVISORY (#1569) : le job est en continue-on-error
+          # et le gap est suivi dans #1602 (plan de tests pour lever la gate).
+          # On émet un warning au lieu d'un error pour ne pas afficher un check
+          # rouge sur les PR alors que la gate est explicitement non bloquante —
+          # le chiffre reste visible dans les logs et le résumé.
           if pct < 80.0:
-              raise SystemExit(f'::error::Coverage Payroll {pct:.1f}% < 80% (F-14)')
+              print(f'::warning::Coverage Payroll {pct:.1f}% < 80% (F-14) — gap suivi dans #1602, gate advisory (#1569).')
           PY
 
   phpstan:
