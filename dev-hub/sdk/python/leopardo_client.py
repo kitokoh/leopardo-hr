@@ -1072,6 +1072,10 @@ class LeopardoClient:
         """Voir une session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
+        """Rapport d'anomalies pre-cloture (F-20)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/anomalies", **kwargs)
+
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/calculate", **kwargs)
@@ -1084,6 +1088,10 @@ class LeopardoClient:
         """Journal de paie mensuel CSV (F-10)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
 
+    def post_payroll_runs_by_payrollrun_lock(self, **kwargs):
+        """Verrouiller la session de paie (cloture comptable, F-11)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/lock", **kwargs)
+
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
@@ -1095,6 +1103,10 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun_summary(self, **kwargs):
         """Resume de la session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}/summary", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_unlock(self, **kwargs):
+        """Deverrouiller une session cloturee (raison obligatoire, F-11)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/unlock", **kwargs)
 
     def post_payroll_runs_by_payrollrun_validate(self, **kwargs):
         """Valider la session de paie"""
