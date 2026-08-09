@@ -5,6 +5,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- **fix(payroll): indemnité de congés payés — jours ACQUIS et non le solde restant (F-07, #1537, PR #1659).** `PayrollCalculator::accruedLeaveDays()` sommait `LeaveBalance.balance` (= restant, décrémenté à l'approbation d'un congé) : un employé ayant pris 5 j sur 30 acquis était indemnisé sur 25 (1/10ᵉ sous-évalué de 20 %). Corrigé : `SUM(balance + used + pending)` restreint aux types de congés payés. `referenceGross12Months()` normalise aussi la période partielle (embauche en cours d'année : gross × 12/mois couverts). Golden `GoldenDzLeaveIndemnityRealDataTest` mis à jour (48 000 → 40 000 DZD, calcul à la main sur 30 j acquis).
+
 ### Added
 - **feat(payroll): journal de paie mensuel exposé via l'API (F-10, #1540).** Nouveau `GET /payroll-runs/{run}/journal` → CSV (une ligne par bulletin validé : matricule, nom, brut, cotisations, IRG, autres déductions, net, coût employeur + ligne de totaux), réservé principal/comptable, isolation tenant. Le générateur `PayrollJournalGenerator` (existant, testé en unitaire) était jusqu'ici sans route API. Tests : `PayrollJournalApiTest`. Matrice RBAC_ROUTE_MATRIX mise à jour.
 
