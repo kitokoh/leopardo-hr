@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
 import '../../core/platform_providers.dart';
@@ -35,7 +37,7 @@ class PlatformDashboardScreen extends ConsumerWidget {
       ),
       children: [
         metrics.when(
-          data: (data) => MobilePanel(
+          data: (data) => GlassCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -90,7 +92,7 @@ class PlatformDashboardScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 18),
         const MobileSectionLabel('Actions plateforme'),
-        MobileListCard(
+        MobileListGlassCard(
           icon: Icons.business_rounded,
           iconColor: AppColors.rh,
           title: 'Entreprises clientes',
@@ -98,7 +100,7 @@ class PlatformDashboardScreen extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/companies'),
         ),
-        MobileListCard(
+        MobileListGlassCard(
           icon: Icons.add_business_rounded,
           iconColor: AppColors.info,
           title: 'Creer une entreprise',
@@ -106,7 +108,7 @@ class PlatformDashboardScreen extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/companies/new'),
         ),
-        MobileListCard(
+        MobileListGlassCard(
           icon: Icons.fact_check_rounded,
           iconColor: AppColors.warning,
           title: 'Demandes clients',

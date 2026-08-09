@@ -23,8 +23,9 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (Schema::hasTable('webhook_deliveries') && ! Schema::hasColumn('webhook_deliveries', 'dead_lettered_at')) {
-            Schema::table('webhook_deliveries', function (Blueprint $table) {
+        $schema = resolveTableSchema('webhook_deliveries');
+        if ($schema !== null && ! schemaHasColumn('webhook_deliveries', 'dead_lettered_at')) {
+            Schema::table("{$schema}.webhook_deliveries", function (Blueprint $table) {
                 $table->timestampTz('dead_lettered_at')->nullable()->index();
             });
         }
@@ -32,8 +33,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('webhook_deliveries') && Schema::hasColumn('webhook_deliveries', 'dead_lettered_at')) {
-            Schema::table('webhook_deliveries', function (Blueprint $table) {
+        $schema = resolveTableSchema('webhook_deliveries');
+        if ($schema !== null && schemaHasColumn('webhook_deliveries', 'dead_lettered_at')) {
+            Schema::table("{$schema}.webhook_deliveries", function (Blueprint $table) {
                 $table->dropColumn('dead_lettered_at');
             });
         }

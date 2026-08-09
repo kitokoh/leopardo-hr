@@ -13,8 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('notification_preferences') && ! Schema::hasColumn('notification_preferences', 'whatsapp_consent_given')) {
-            Schema::table('notification_preferences', function (Blueprint $table): void {
+        $schema = resolveTableSchema('notification_preferences');
+        if ($schema !== null && ! schemaHasColumn('notification_preferences', 'whatsapp_consent_given')) {
+            Schema::table("{$schema}.notification_preferences", function (Blueprint $table): void {
                 $table->boolean('whatsapp_consent_given')->default(false)->after('whatsapp_enabled');
                 $table->timestampTz('whatsapp_consent_at')->nullable()->after('whatsapp_consent_given');
             });
@@ -23,8 +24,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('notification_preferences') && Schema::hasColumn('notification_preferences', 'whatsapp_consent_given')) {
-            Schema::table('notification_preferences', function (Blueprint $table): void {
+        $schema = resolveTableSchema('notification_preferences');
+        if ($schema !== null && schemaHasColumn('notification_preferences', 'whatsapp_consent_given')) {
+            Schema::table("{$schema}.notification_preferences", function (Blueprint $table): void {
                 $table->dropColumn(['whatsapp_consent_given', 'whatsapp_consent_at']);
             });
         }
