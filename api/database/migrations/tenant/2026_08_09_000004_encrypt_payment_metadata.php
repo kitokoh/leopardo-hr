@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Schema;
  * 2. Backfill : chaque ligne en clair est chiffrée avec l'encrypter courant
  *    (AES-256, APP_KEY). Idempotente — une valeur déjà chiffrée est laissée
  *    telle quelle.
+ *
+ * NB search_path : voir 2026_08_09_000003 — le garde d'existence et le
+ * changement de colonne sont résolus via `current_schemas(false)` pour
+ * correspondre à la résolution de `DB::table()` (CI vs phpunit diffèrent).
  */
 return new class extends Migration
 {
@@ -36,7 +40,9 @@ return new class extends Migration
     public function up(): void
     {
         foreach (self::TABLES as $table => $column) {
-            if (! Schema::hasTable($table)) {
+            $schema = $this->resolveTableSchema($table);
+
+            if ($schema === null) {
                 continue;
             }
 
@@ -44,11 +50,11 @@ return new class extends Migration
                 SELECT data_type FROM information_schema.columns
                 WHERE table_name = ?
                   AND column_name = ?
-                  AND table_schema = current_schema()
-            ", [$table, $column]);
+                  AND table_schema = ?
+            ", [$table, $column, $schema]);
 
             if ($columnType && $columnType->data_type === 'json') {
-                Schema::table($table, function (Blueprint $table) use ($column): void {
+                Schema::table("{$schema}.{$table}", function (Blueprint $table) use ($column): void {
                     $table->text($column)->nullable()->change();
                 });
             }
@@ -72,6 +78,24 @@ return new class extends Migration
                     ->update([$column => Crypt::encryptString((string) $row->{$column})]);
             }
         }
+    }
+
+    /**
+     * Résout le schéma où `DB::table($table)` trouverait la table (premier
+     * schéma du search_path qui la contient), ou null si absente.
+     */
+    private function resolveTableSchema(string $table): ?string
+    {
+        $row = DB::selectOne("
+            SELECT t.table_schema
+            FROM information_schema.tables t
+            WHERE t.table_name = ?
+              AND t.table_schema = ANY (current_schemas(false))
+            ORDER BY array_position(current_schemas(false), t.table_schema)
+            LIMIT 1
+        ", [$table]);
+
+        return $row ? (string) $row->table_schema : null;
     }
 
     public function down(): void
