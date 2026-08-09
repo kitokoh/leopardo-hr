@@ -63,7 +63,9 @@ class PayrollJournalApiTest extends TestCase
             'status' => 'validated',
         ]);
 
+        /** @var Employee $e1 */
         $e1 = Employee::factory()->create(['company_id' => $this->company->id]);
+        /** @var Employee $e2 */
         $e2 = Employee::factory()->create(['company_id' => $this->company->id]);
 
         PaySlip::create([
@@ -114,6 +116,7 @@ class PayrollJournalApiTest extends TestCase
         Sanctum::actingAs($this->manager);
 
         $run = $this->seededRun();
+        /** @var Employee $e3 */
         $e3 = Employee::factory()->create(['company_id' => $this->company->id]);
         PaySlip::create([
             'payroll_run_id' => $run->id,
