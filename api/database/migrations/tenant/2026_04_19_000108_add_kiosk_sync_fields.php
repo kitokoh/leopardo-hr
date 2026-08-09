@@ -8,12 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('attendance_kiosks', function (Blueprint $table): void {
+        // Schémas résolus via le search_path (issue #1613).
+        $schemaKiosks = resolveTableSchema('attendance_kiosks');
+        $schemaLogs = resolveTableSchema('attendance_logs');
+
+        Schema::table("{$schemaKiosks}.attendance_kiosks", function (Blueprint $table): void {
             $table->string('sync_token_hash', 255)->nullable()->after('device_code');
             $table->timestampTz('last_sync_at')->nullable()->after('last_seen_at');
         });
 
-        Schema::table('attendance_logs', function (Blueprint $table): void {
+        Schema::table("{$schemaLogs}.attendance_logs", function (Blueprint $table): void {
             $table->string('source_device_code', 40)->nullable()->after('method');
             $table->string('external_event_id', 100)->nullable()->after('source_device_code');
             $table->string('biometric_type', 20)->nullable()->after('external_event_id');
@@ -25,7 +29,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('attendance_logs', function (Blueprint $table): void {
+        // Schémas résolus via le search_path (issue #1613).
+        $schemaKiosks = resolveTableSchema('attendance_kiosks');
+        $schemaLogs = resolveTableSchema('attendance_logs');
+
+        Schema::table("{$schemaLogs}.attendance_logs", function (Blueprint $table): void {
             $table->dropUnique(['external_event_id']);
             $table->dropColumn([
                 'source_device_code',
@@ -35,7 +43,7 @@ return new class extends Migration
             ]);
         });
 
-        Schema::table('attendance_kiosks', function (Blueprint $table): void {
+        Schema::table("{$schemaKiosks}.attendance_kiosks", function (Blueprint $table): void {
             $table->dropColumn([
                 'sync_token_hash',
                 'last_sync_at',
