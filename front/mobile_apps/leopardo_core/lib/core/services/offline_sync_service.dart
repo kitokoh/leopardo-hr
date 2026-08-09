@@ -4,13 +4,20 @@ import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 
+/// Signature d'envoi d'un pointage vers l'API (injectable pour les tests).
+typedef SyncPunchSender = Future<void> Function(String path, Map<String, dynamic> payload);
+
 class OfflineSyncService {
   final ApiClient apiClient;
   final Connectivity connectivity;
+
+  /// Surcharge d'envoi (tests unitaires) — remplace apiClient quand fournie.
+  final SyncPunchSender? sendPunchOverride;
+
   late final Box<Map<dynamic, dynamic>> _offlineBox;
   StreamSubscription? _connectivitySub;
 
-  OfflineSyncService(this.apiClient, this.connectivity);
+  OfflineSyncService(this.apiClient, this.connectivity, {this.sendPunchOverride});
 
   bool _initialized = false;
 
@@ -28,14 +35,14 @@ class OfflineSyncService {
     // Listen to network changes
     _connectivitySub = connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
       if (results.any((result) => result != ConnectivityResult.none)) {
-        _syncPendingPunches();
+        syncPendingPunches();
       }
     });
 
     // Initial check
     final results = await connectivity.checkConnectivity();
     if (results.any((result) => result != ConnectivityResult.none)) {
-      _syncPendingPunches();
+      syncPendingPunches();
     }
   }
 
@@ -47,7 +54,8 @@ class OfflineSyncService {
     });
   }
 
-  Future<void> _syncPendingPunches() async {
+  /// Sync de la file hors-ligne (appelé à la reconnexion, public pour les tests).
+  Future<void> syncPendingPunches() async {
     if (_offlineBox.isEmpty) return;
 
     final keys = _offlineBox.keys.toList();
@@ -60,20 +68,29 @@ class OfflineSyncService {
 
       try {
         final path = type == 'check-in' ? '/attendance/check-in' : '/attendance/check-out';
-        await apiClient.requestWithRetry(
-          path,
-          method: 'POST',
-          data: payload,
-          maxRetriesOverride: 0,
-        );
+        final sender = sendPunchOverride;
+        if (sender != null) {
+          await sender(path, payload);
+        } else {
+          await apiClient.requestWithRetry(
+            path,
+            method: 'POST',
+            data: payload,
+            maxRetriesOverride: 0,
+          );
+        }
         // Success : purge l'entrée (règle « 1er pointage gagne » — le serveur
         // a accepté ce pointage, les doublons éventuels sont rejetés côté API).
         await _offlineBox.delete(key);
       } on ApiException catch (e) {
-        // 4xx = erreur métier définitive (ex. double check-in rejeté,
-        // identifiant inconnu) : inutile de re-tenter — on purge la file pour
-        // éviter une boucle de retry infinie (issue #1551, F-21).
-        if (e.statusCode != null && e.statusCode! >= 400 && e.statusCode! < 500) {
+        // 4xx = erreur métier définitive (ex. double check-in rejeté 409/422,
+        // identifiant inconnu 404) : inutile de re-tenter — on purge la file
+        // pour éviter une boucle de retry infinie (issue #1551, F-21).
+        // Seules les erreurs 4xx DÉFINITIVES sont purgées : 401 (re-login
+        // possible), 403 (droits peut-être rétablies), 408/425/429
+        // (transitoires) restent en file et seront retentées à la prochaine
+        // connexion.
+        if (e.statusCode != null && _definitive4xx.contains(e.statusCode)) {
           await _offlineBox.delete(key);
         }
       } catch (_) {
@@ -82,6 +99,9 @@ class OfflineSyncService {
       }
     }
   }
+
+  /// Codes 4xx définitifs : l'API a tranché, un retry ne changera rien.
+  static const Set<int> _definitive4xx = {400, 404, 409, 410, 422};
 
   void dispose() {
     _connectivitySub?.cancel();
