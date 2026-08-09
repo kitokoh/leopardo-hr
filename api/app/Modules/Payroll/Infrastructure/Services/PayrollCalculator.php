@@ -6,8 +6,6 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -24,6 +22,8 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -502,7 +502,7 @@ class PayrollCalculator
             ->selectRaw('SUM(balance + used + pending) as acquired')
             ->first();
 
-        $days = $row !== null ? (float) $row->acquired : 0.0;
+        $days = $row !== null ? (float) $row->getAttribute('acquired') : 0.0;
 
         return $days > 0.0 ? $days : 30.0;
     }

@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
+use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
+use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
+use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -121,7 +126,7 @@ class PayrollRunController extends Controller
             // Étape 1 du workflow F-11 : validation RH via le service de clôture
             // (mise à jour conditionnelle atomique + audit trail `payroll_run_validated`).
             $this->closing->validateRh($payrollRun, $actor);
-        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+        } catch (PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
@@ -176,7 +181,7 @@ class PayrollRunController extends Controller
 
         try {
             $this->closing->lock($payrollRun, $actor);
-        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+        } catch (PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
@@ -204,7 +209,7 @@ class PayrollRunController extends Controller
 
         try {
             $this->closing->unlock($payrollRun, $actor, $validated['reason']);
-        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+        } catch (PayrollRunLockedException|\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
@@ -248,7 +253,7 @@ class PayrollRunController extends Controller
         ]);
     }
 
-/**
+    /**
      * F-10 (#1540) : journal de paie mensuel (CSV) — une ligne par bulletin
      * validé + ligne de totaux (contrôle comptable). Régime de preuve horodaté
      * par le run. Réservé aux managers principal/comptable.
@@ -267,13 +272,13 @@ class PayrollRunController extends Controller
         $filename = 'journal_paie_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
 
         return response()->streamDownload(function () use ($payrollRun): void {
-            echo (new PayrollJournalGenerator())->generate($payrollRun);
+            echo (new PayrollJournalGenerator)->generate($payrollRun);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
-/**
+    /**
      * F-20 (#1550) : rapport pré-clôture des anomalies (doublons, bulletins
      * incohérents, variance de brut, écarts pointage → paie). Lecture seule —
      * l'action humaine décide des corrections avant validation/verrouillage.
@@ -289,7 +294,7 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        $anomalies = (new PayrollAnomalyService())->detectForRun($payrollRun->load('paySlips'));
+        $anomalies = (new PayrollAnomalyService)->detectForRun($payrollRun->load('paySlips'));
 
         return response()->json([
             'data' => [
@@ -300,7 +305,7 @@ class PayrollRunController extends Controller
         ]);
     }
 
-    public function export(Request $request, PayrollRun $payrollRun, \App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService $exportService): StreamedResponse
+    public function export(Request $request, PayrollRun $payrollRun, PayrollAccountingExportService $exportService): StreamedResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -313,15 +318,13 @@ class PayrollRunController extends Controller
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="paie_' . $payrollRun->period_start . '.csv"',
+            'Content-Disposition' => 'attachment; filename="paie_'.$payrollRun->period_start.'.csv"',
         ];
 
         return response()->streamDownload(
             $exportService->generateCsvClosure($payrollRun),
-            'paie_' . $payrollRun->period_start . '.csv',
+            'paie_'.$payrollRun->period_start.'.csv',
             $headers
         );
     }
 }
-
-
