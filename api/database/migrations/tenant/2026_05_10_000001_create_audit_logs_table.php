@@ -11,39 +11,42 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (Schema::hasTable('audit_logs')) {
-            Schema::table('audit_logs', function (Blueprint $table) {
-                if (! Schema::hasColumn('audit_logs', 'user_id')) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('audit_logs');
+
+        if (schemaTableExists('audit_logs')) {
+            Schema::table("{$schema}.audit_logs", function (Blueprint $table) {
+                if (! schemaHasColumn('audit_logs', 'user_id')) {
                     $table->unsignedInteger('user_id')->nullable()->index()->after('company_id');
                 }
-                if (! Schema::hasColumn('audit_logs', 'auditable_type')) {
+                if (! schemaHasColumn('audit_logs', 'auditable_type')) {
                     $table->string('auditable_type', 100)->nullable()->after('action');
                 }
-                if (! Schema::hasColumn('audit_logs', 'auditable_id')) {
+                if (! schemaHasColumn('audit_logs', 'auditable_id')) {
                     $table->unsignedBigInteger('auditable_id')->nullable()->after('auditable_type');
                 }
-                if (! Schema::hasColumn('audit_logs', 'old_values')) {
+                if (! schemaHasColumn('audit_logs', 'old_values')) {
                     $table->jsonb('old_values')->nullable()->after('auditable_id');
                 }
-                if (! Schema::hasColumn('audit_logs', 'new_values')) {
+                if (! schemaHasColumn('audit_logs', 'new_values')) {
                     $table->jsonb('new_values')->nullable()->after('old_values');
                 }
-                if (! Schema::hasColumn('audit_logs', 'ip_address')) {
+                if (! schemaHasColumn('audit_logs', 'ip_address')) {
                     $table->string('ip_address', 45)->nullable()->after('new_values');
                 }
-                if (! Schema::hasColumn('audit_logs', 'user_agent')) {
+                if (! schemaHasColumn('audit_logs', 'user_agent')) {
                     $table->string('user_agent', 500)->nullable()->after('ip_address');
                 }
-                if (! Schema::hasColumn('audit_logs', 'metadata')) {
+                if (! schemaHasColumn('audit_logs', 'metadata')) {
                     $table->jsonb('metadata')->nullable()->after('user_agent');
                 }
             });
 
-            if (Schema::hasColumn('audit_logs', 'target_type')) {
-                DB::statement('ALTER TABLE audit_logs ALTER COLUMN target_type DROP NOT NULL');
+            if (schemaHasColumn('audit_logs', 'target_type')) {
+                DB::statement("ALTER TABLE \"{$schema}\".\"audit_logs\" ALTER COLUMN target_type DROP NOT NULL");
             }
-            if (Schema::hasColumn('audit_logs', 'target_id')) {
-                DB::statement('ALTER TABLE audit_logs ALTER COLUMN target_id DROP NOT NULL');
+            if (schemaHasColumn('audit_logs', 'target_id')) {
+                DB::statement("ALTER TABLE \"{$schema}\".\"audit_logs\" ALTER COLUMN target_id DROP NOT NULL");
             }
 
             return;
@@ -70,6 +73,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('audit_logs');
+
         Schema::dropIfExists('audit_logs');
     }
 };

@@ -40,6 +40,7 @@ return [
     'payslip_column_amount' => 'Montant',
     'payslip_gross_salary' => 'Salaire brut',
     'payslip_total_deductions' => 'Total retenues',
+    'payslip_annual_cumuls' => 'Cumuls annuels',
     'payslip_net_to_pay' => 'NET À PAYER',
     'payslip_generated_on' => 'Document généré le :date',
     'payslip_official_notice' => 'Ce bulletin de paie est un document officiel. Conservez-le sans limitation de durée.',

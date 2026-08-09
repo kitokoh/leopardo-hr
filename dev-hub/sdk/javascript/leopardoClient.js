@@ -1325,6 +1325,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payroll-runs/{payrollRun}/cancel", options);
     },
 
+    /** Journal de paie mensuel CSV (F-10) */
+    getPayrollRunsByPayrollRunJournal(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/journal", options);
+    },
+
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
