@@ -29,7 +29,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -54,6 +59,8 @@ class AbsenceApproveTest extends TestCase
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -64,6 +71,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
@@ -118,7 +127,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -143,6 +157,8 @@ class AbsenceApproveTest extends TestCase
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -153,6 +169,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
@@ -207,7 +225,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -232,6 +255,8 @@ class AbsenceApproveTest extends TestCase
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -242,6 +267,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
@@ -284,7 +311,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -309,6 +341,8 @@ class AbsenceApproveTest extends TestCase
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -319,6 +353,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
@@ -356,7 +392,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -381,6 +422,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee', // Regular employee, not manager
@@ -416,7 +459,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -441,6 +489,8 @@ class AbsenceApproveTest extends TestCase
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -451,6 +501,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
@@ -503,7 +555,12 @@ class AbsenceApproveTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -528,6 +585,8 @@ class AbsenceApproveTest extends TestCase
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
@@ -538,6 +597,8 @@ class AbsenceApproveTest extends TestCase
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
