@@ -27,7 +27,7 @@
     <div class="meta">
         <div><strong>{{ __('pdf.cert_employee_label') }}</strong> {{ $employee->first_name }} {{ $employee->last_name }}</div>
         <div><strong>{{ __('pdf.cert_matricule_label') }}</strong> {{ $employee->matricule ?? $employee->id }}</div>
-        <div><strong>{{ __('pdf.cert_position_label') }}</strong> {{ $employee->position ?? __('pdf.cert_position_fallback') }}</div>
+        <div><strong>{{ __('pdf.cert_position_label') }}</strong> {{ $employee->position?->name ?? __('pdf.cert_position_fallback') }}</div>
         <div><strong>{{ __('pdf.cert_hire_date_label') }}</strong> {{ $employee->contract_start?->format('d/m/Y') ?? '—' }}</div>
         <div><strong>{{ __('pdf.cert_seniority_label') }}</strong> {{ $months_of_service }} {{ __('pdf.cert_months_suffix') }}</div>
     </div>
@@ -40,7 +40,7 @@
             {{ __('pdf.cert_was_employed') }}
             {{ $employee->contract_start?->format('d/m/Y') ?? '—' }}
             {{ __('pdf.cert_to') }} {{ $settlement['end_date'] ?? '—' }} {{ __('pdf.cert_as') }}
-            {{ $employee->position ?? __('pdf.cert_employee_fallback') }}.
+            {{ $employee->position?->name ?? __('pdf.cert_employee_fallback') }}.
         </p>
         <p>
             {{ __('pdf.cert_issued_for') }}
