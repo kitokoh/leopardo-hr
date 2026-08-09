@@ -32,6 +32,7 @@ jamais être commités.
 |---|---|---|
 | Mot de passe Redis Upstash | 4 fichiers .md (dont `docs/audits/AUDIT.md`, `docs/PLAN_ACTION2/08_...`) + historique git | 🔴 #1472 ouvert depuis 2026-07-01 |
 | Clés API Google (`google-services.json`) | 4 apps Android | 🔴 #1467 (2 alertes secret scanning) |
+| **Mot de passe PostgreSQL Neon** (URL `postgresql://neondb_owner:<pass>@ep-odd-morning-abt600ow-pooler…`) | Historique git — commit `70ca415c` (2026-04-14, « Kitokoh patch 6 (#37) »), fichier `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` | 🔴 **#1601** — plus dans HEAD, mais historique public → à inclure dans la purge coordonnée avec #1472 |
 | Autres (à inventorier) | scan TruffleHog fetch-depth 0 | À faire |
 
 ## Étape 1 — Inventaire complet
@@ -49,6 +50,7 @@ git log -p --all | grep -nE "redis|upstash|api[_-]?key|google-services|AKIA|sk_l
 
 1. **Upstash** : régénérer le mot de passe de la base Redis (console Upstash) ; mettre à jour le secret GitHub `REDIS_PASSWORD` et l'env Render.
 2. **Firebase** : régénérer/restreindre les clés API Google (console Google Cloud) ; mettre à jour `google-services.json` dans un canal privé (ne plus committer) ou via secret build.
+3. **Neon (PostgreSQL)** : régénérer le mot de passe de la base (console Neon → Settings → Reset password), mettre à jour l'URL de connexion sur Render (service API + workers) — cf. issue #1601.
 3. **Vérifier** que l'app tourne avec les nouveaux secrets (staging d'abord).
 
 ## Étape 3 — Purge de l'historique git
