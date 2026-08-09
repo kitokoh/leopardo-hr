@@ -35,15 +35,12 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
     }
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(expenseRepositoryProvider)
-          .submitClaim(
+      await ref.read(expenseRepositoryProvider).submitClaim(
             category: _categoryController.text,
             amount: amount,
             date: DateTime.now().toIso8601String().split('T').first,
-            description: _descController.text.isNotEmpty
-                ? _descController.text
-                : null,
+            description:
+                _descController.text.isNotEmpty ? _descController.text : null,
           );
       _categoryController.clear();
       _amountController.clear();

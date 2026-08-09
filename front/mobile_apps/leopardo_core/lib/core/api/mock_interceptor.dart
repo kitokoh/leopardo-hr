@@ -45,9 +45,8 @@ class MockInterceptor extends Interceptor {
               "check_in": options.data is Map
                   ? options.data["check_in"]
                   : "2026-04-15T08:00:00Z",
-              "check_out": options.data is Map
-                  ? options.data["check_out"]
-                  : null,
+              "check_out":
+                  options.data is Map ? options.data["check_out"] : null,
               "hours_worked": 8,
               "late_minutes": 0,
               "status": "manual",

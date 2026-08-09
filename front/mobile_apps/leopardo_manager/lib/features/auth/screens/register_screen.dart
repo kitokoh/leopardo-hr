@@ -36,9 +36,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
 
-    final success = await ref
-        .read(authProvider.notifier)
-        .register(
+    final success = await ref.read(authProvider.notifier).register(
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
           email: _emailController.text.trim(),

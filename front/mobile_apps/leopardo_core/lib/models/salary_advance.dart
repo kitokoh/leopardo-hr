@@ -69,9 +69,8 @@ class SalaryAdvance {
     }
 
     final employee = json['employee'];
-    final employeeMap = employee is Map
-        ? employee.cast<String, dynamic>()
-        : null;
+    final employeeMap =
+        employee is Map ? employee.cast<String, dynamic>() : null;
     final company = json['company'];
     final companyMap = company is Map ? company.cast<String, dynamic>() : null;
     final firstName = employeeMap?['first_name']?.toString().trim() ?? '';
@@ -85,16 +84,14 @@ class SalaryAdvance {
       amount: _parseDouble(json['amount']),
       employeeName:
           (json['employee_name']?.toString().trim().isNotEmpty ?? false)
-          ? json['employee_name'].toString().trim()
-          : (composedName.isEmpty ? null : composedName),
+              ? json['employee_name'].toString().trim()
+              : (composedName.isEmpty ? null : composedName),
       employeeEmail: employeeMap?['email']?.toString(),
-      companyId:
-          json['company_id']?.toString() ??
+      companyId: json['company_id']?.toString() ??
           employeeMap?['company_id']?.toString(),
       companyName:
           json['company_name']?.toString() ?? companyMap?['name']?.toString(),
-      currency:
-          json['currency']?.toString() ??
+      currency: json['currency']?.toString() ??
           companyMap?['currency']?.toString() ??
           'DZD',
       reason: json['reason'] as String?,
@@ -116,8 +113,7 @@ class SalaryAdvance {
       monthlyDeduction: _parseDouble(json['monthly_deduction']),
       amountRemaining: _parseDouble(json['amount_remaining']),
       repaymentPlan: plan,
-      hasProof:
-          json['has_proof'] as bool? ??
+      hasProof: json['has_proof'] as bool? ??
           (json['proof_path']?.toString().isNotEmpty ?? false),
       requestedAt: DateTime.tryParse(json['requested_at']?.toString() ?? ''),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),

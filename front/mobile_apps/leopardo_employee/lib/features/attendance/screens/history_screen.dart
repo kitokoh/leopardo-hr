@@ -235,7 +235,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
                       final timeRange = log.checkIn != null
                           ? 'de ${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} à '
-                                '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "en cours"}'
+                              '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "en cours"}'
                           : 'pas de pointage';
 
                       final hours = log.workedHours ?? 0;
@@ -265,7 +265,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             subtitle: Text(
                               log.checkIn != null
                                   ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                        '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
                                   : 'Absence',
                             ),
                             trailing: Text(

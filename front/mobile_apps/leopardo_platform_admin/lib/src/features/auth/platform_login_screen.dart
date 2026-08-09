@@ -37,9 +37,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref
-        .read(platformAuthControllerProvider.notifier)
-        .login(
+    await ref.read(platformAuthControllerProvider.notifier).login(
           email: _emailController.text.trim(),
           password: _passwordController.text,
           twoFactorCode: _twoFactorController.text.trim(),
@@ -123,8 +121,8 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) =>
                           value == null || !value.contains('@')
-                          ? l10n.platformLoginEmailRequired
-                          : null,
+                              ? l10n.platformLoginEmailRequired
+                              : null,
                     ),
                     const SizedBox(height: 12),
                     _PlatformTextField(

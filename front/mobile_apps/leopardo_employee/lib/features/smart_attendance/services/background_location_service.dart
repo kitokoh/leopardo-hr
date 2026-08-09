@@ -54,8 +54,8 @@ class BackgroundLocationService {
   BackgroundLocationService({
     required SmartAttendanceRepository repository,
     required GeofenceService geofenceService,
-  }) : _repository = repository,
-       _geofenceService = geofenceService;
+  })  : _repository = repository,
+        _geofenceService = geofenceService;
 
   /// Démarre la surveillance de position.
   ///

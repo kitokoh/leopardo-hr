@@ -77,9 +77,8 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final initials = employee.fullName.isNotEmpty
-        ? employee.fullName[0].toUpperCase()
-        : '?';
+    final initials =
+        employee.fullName.isNotEmpty ? employee.fullName[0].toUpperCase() : '?';
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -248,8 +247,8 @@ class _ProfileLanguageCardState extends ConsumerState<_ProfileLanguageCard> {
     super.initState();
     _selectedLanguage =
         widget.languageLabels.containsKey(widget.employee.language)
-        ? widget.employee.language
-        : 'fr';
+            ? widget.employee.language
+            : 'fr';
   }
 
   Future<void> _saveLanguage() async {

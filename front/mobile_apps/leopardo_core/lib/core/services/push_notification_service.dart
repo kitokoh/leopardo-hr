@@ -106,8 +106,7 @@ class PushNotificationService {
     if (Platform.isAndroid) {
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
+              AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(
             const AndroidNotificationChannel(
               'leopardo_hr_default',
@@ -141,9 +140,8 @@ class PushNotificationService {
     if (token == null || apiClient == null) return;
 
     try {
-      final platform = Platform.isIOS
-          ? 'ios'
-          : (Platform.isAndroid ? 'android' : 'web');
+      final platform =
+          Platform.isIOS ? 'ios' : (Platform.isAndroid ? 'android' : 'web');
       await apiClient.requestWithRetry(
         '/device-tokens',
         method: 'POST',

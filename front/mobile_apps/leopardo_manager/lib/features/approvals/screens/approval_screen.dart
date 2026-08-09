@@ -217,19 +217,19 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                       children: [
                                         Text(
                                           a.requesterName,
-                                          style: AppTypography.subtitle
-                                              .copyWith(
-                                                color: MobileSurface.text,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                          style:
+                                              AppTypography.subtitle.copyWith(
+                                            color: MobileSurface.text,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           a.summary,
-                                          style: AppTypography.bodySmall
-                                              .copyWith(
-                                                color: MobileSurface.muted,
-                                              ),
+                                          style:
+                                              AppTypography.bodySmall.copyWith(
+                                            color: MobileSurface.muted,
+                                          ),
                                         ),
                                       ],
                                     ),

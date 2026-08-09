@@ -47,8 +47,8 @@ class MobileListGlassCard extends StatelessWidget {
       subtitleWidget = Text(
         subtitle! as String,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: isDark ? AppColors.mobileDarkMuted : Colors.grey[600],
-        ),
+              color: isDark ? AppColors.mobileDarkMuted : Colors.grey[600],
+            ),
       );
     } else if (subtitle is List<Widget>) {
       subtitleWidget = Column(
@@ -92,13 +92,13 @@ class MobileListGlassCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: isDark
-                                    ? AppColors.mobileDarkText
-                                    : Colors.black87,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: isDark
+                                        ? AppColors.mobileDarkText
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         if (subtitleWidget != null) ...[
                           const SizedBox(height: 2),

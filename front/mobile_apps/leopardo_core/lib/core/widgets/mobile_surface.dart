@@ -51,8 +51,7 @@ class MobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PreferredSizeWidget? resolvedAppBar =
-        appBar ??
+    final PreferredSizeWidget? resolvedAppBar = appBar ??
         (title == null
             ? null
             : MobileTopBar(

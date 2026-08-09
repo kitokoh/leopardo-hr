@@ -85,8 +85,8 @@ class _AiVoiceScreenState extends ConsumerState<AiVoiceScreen> {
                 _recording
                     ? 'Ecoute en cours...'
                     : _processing
-                    ? 'Traitement...'
-                    : 'Appuyez pour parler',
+                        ? 'Traitement...'
+                        : 'Appuyez pour parler',
                 style: AppTypography.subtitle.copyWith(
                   color: AppColors.textDark,
                 ),

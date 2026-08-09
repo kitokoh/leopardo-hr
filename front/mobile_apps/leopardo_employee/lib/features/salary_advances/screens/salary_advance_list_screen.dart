@@ -92,9 +92,8 @@ class _SalaryAdvanceListScreenState
                       icon: Icons.payments_outlined,
                       iconColor: color,
                       title: amount,
-                      subtitle: months == null
-                          ? reason
-                          : '$reason - $months mois',
+                      subtitle:
+                          months == null ? reason : '$reason - $months mois',
                       trailing: MobileStatusPill(
                         label: _getStatusLabel(advance),
                         color: color,
@@ -124,9 +123,8 @@ class _SalaryAdvanceListScreenState
   }
 
   Widget? _advanceFooter(BuildContext context, SalaryAdvance advance) {
-    final proofButton = advance.hasProof
-        ? _proofButton(context, advance.id)
-        : null;
+    final proofButton =
+        advance.hasProof ? _proofButton(context, advance.id) : null;
 
     if (advance.validationStatus == 'payment_declared') {
       return Column(
@@ -509,9 +507,7 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .requestAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,

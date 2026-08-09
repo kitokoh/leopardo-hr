@@ -86,8 +86,8 @@ class TrainingScreen extends ConsumerWidget {
                                       backgroundColor: AppColors.borderDark,
                                       valueColor:
                                           const AlwaysStoppedAnimation<Color>(
-                                            AppColors.success,
-                                          ),
+                                        AppColors.success,
+                                      ),
                                       minHeight: 6,
                                     ),
                                   ),

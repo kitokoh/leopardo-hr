@@ -29,8 +29,7 @@ class GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bgColor =
-        color ??
+    final bgColor = color ??
         (isDark
             ? AppColors.mobileDarkGlass.withValues(alpha: 0.4)
             : Colors.white.withValues(alpha: 0.7));

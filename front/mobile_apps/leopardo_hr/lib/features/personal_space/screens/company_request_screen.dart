@@ -173,9 +173,8 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-        validator: required
-            ? (v) => (v ?? '').isEmpty ? 'Obligatoire' : null
-            : null,
+        validator:
+            required ? (v) => (v ?? '').isEmpty ? 'Obligatoire' : null : null,
       ),
     );
   }

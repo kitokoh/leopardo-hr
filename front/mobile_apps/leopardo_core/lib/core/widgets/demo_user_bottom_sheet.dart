@@ -110,17 +110,17 @@ Future<DemoUser?> showDemoUserBottomSheet(
   final companies = allowedRoles == null
       ? demoCompanies
       : demoCompanies
-            .map(
-              (company) => DemoCompany(
-                name: company.name,
-                country: company.country,
-                users: company.users
-                    .where((user) => allowedRoles.contains(user.role))
-                    .toList(),
-              ),
-            )
-            .where((company) => company.users.isNotEmpty)
-            .toList();
+          .map(
+            (company) => DemoCompany(
+              name: company.name,
+              country: company.country,
+              users: company.users
+                  .where((user) => allowedRoles.contains(user.role))
+                  .toList(),
+            ),
+          )
+          .where((company) => company.users.isNotEmpty)
+          .toList();
 
   return showModalBottomSheet<DemoUser>(
     context: context,

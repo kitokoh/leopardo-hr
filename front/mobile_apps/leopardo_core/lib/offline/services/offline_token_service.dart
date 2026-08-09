@@ -16,7 +16,7 @@ class OfflineTokenService {
   static const _edgeLicenseKey = 'leopardo_edge_license';
 
   OfflineTokenService({FlutterSecureStorage? storage})
-    : _storage = storage ?? const FlutterSecureStorage();
+      : _storage = storage ?? const FlutterSecureStorage();
 
   Future<void> saveTokens({
     required String accessToken,

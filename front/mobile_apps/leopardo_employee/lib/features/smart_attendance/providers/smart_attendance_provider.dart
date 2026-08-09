@@ -145,7 +145,7 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
   final BackgroundLocationService _backgroundService;
 
   ActiveGeoSessionNotifier(this._repository, this._backgroundService)
-    : super(const ActiveGeoSessionState()) {
+      : super(const ActiveGeoSessionState()) {
     loadSessions();
   }
 
@@ -200,12 +200,12 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
 /// Provider de la session GPS active — StateNotifierProvider.
 final activeGeoSessionProvider =
     StateNotifierProvider<ActiveGeoSessionNotifier, ActiveGeoSessionState>((
-      ref,
-    ) {
-      final repository = ref.watch(smartAttendanceRepositoryProvider);
-      final backgroundService = ref.watch(backgroundLocationServiceProvider);
-      return ActiveGeoSessionNotifier(repository, backgroundService);
-    });
+  ref,
+) {
+  final repository = ref.watch(smartAttendanceRepositoryProvider);
+  final backgroundService = ref.watch(backgroundLocationServiceProvider);
+  return ActiveGeoSessionNotifier(repository, backgroundService);
+});
 
 /// Provider des sessions récentes uniquement (dérivé de activeGeoSessionProvider)
 final recentGeoSessionsProvider = Provider<List<GeoAttendanceSession>>((ref) {

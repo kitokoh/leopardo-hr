@@ -56,20 +56,20 @@ class PaymentDocument {
   bool get isAvailable => status == 'available' && isDownloadable;
 
   String get typeLabel => switch (documentType) {
-    'advance_receipt' => 'Recu avance',
-    'payment_slip' => 'Bulletin',
-    'payroll_summary' => 'Resume paie',
-    'payment_receipt' => 'Recu paiement',
-    _ => 'Document paiement',
-  };
+        'advance_receipt' => 'Recu avance',
+        'payment_slip' => 'Bulletin',
+        'payroll_summary' => 'Resume paie',
+        'payment_receipt' => 'Recu paiement',
+        _ => 'Document paiement',
+      };
 
   String get statusLabel => switch (status) {
-    'pending' => 'En attente',
-    'generating' => 'Generation',
-    'available' => 'Disponible',
-    'failed' => 'Erreur',
-    _ => status,
-  };
+        'pending' => 'En attente',
+        'generating' => 'Generation',
+        'available' => 'Disponible',
+        'failed' => 'Erreur',
+        _ => status,
+      };
 
   static int _asInt(dynamic value) {
     if (value is int) return value;

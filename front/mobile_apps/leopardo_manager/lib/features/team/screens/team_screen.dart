@@ -319,13 +319,13 @@ class _EmployeesTab extends ConsumerWidget {
   }
 
   Color _workStateColor(String state) => switch (state) {
-    'present' => AppColors.rh,
-    'break' => AppColors.warning,
-    'leave' => AppColors.info,
-    'mission' => AppColors.ia,
-    'absent' => AppColors.danger,
-    _ => MobileSurface.disabled,
-  };
+        'present' => AppColors.rh,
+        'break' => AppColors.warning,
+        'leave' => AppColors.info,
+        'mission' => AppColors.ia,
+        'absent' => AppColors.danger,
+        _ => MobileSurface.disabled,
+      };
 
   void _showActions(
     BuildContext context,
@@ -740,20 +740,20 @@ class _InvitationsTab extends ConsumerWidget {
   }
 
   String _invitationLabel(String status) => switch (status) {
-    'pending' => 'En attente',
-    'sent' => 'Envoyee',
-    'accepted' => 'Acceptee',
-    'expired' => 'Expiree',
-    'revoked' => 'Revoquee',
-    _ => status,
-  };
+        'pending' => 'En attente',
+        'sent' => 'Envoyee',
+        'accepted' => 'Acceptee',
+        'expired' => 'Expiree',
+        'revoked' => 'Revoquee',
+        _ => status,
+      };
 
   Color _invitationColor(String status) => switch (status) {
-    'accepted' => AppColors.rh,
-    'sent' || 'pending' => AppColors.info,
-    'expired' || 'revoked' => AppColors.danger,
-    _ => MobileSurface.disabled,
-  };
+        'accepted' => AppColors.rh,
+        'sent' || 'pending' => AppColors.info,
+        'expired' || 'revoked' => AppColors.danger,
+        _ => MobileSurface.disabled,
+      };
 
   Future<void> _resend(
     BuildContext context,
@@ -1071,9 +1071,8 @@ class _EmployeeQrImportSheetState
 
     setState(() => _loading = true);
     try {
-      final prefill = await ref
-          .read(employeeRepositoryProvider)
-          .scanEmployeeQr(token);
+      final prefill =
+          await ref.read(employeeRepositoryProvider).scanEmployeeQr(token);
       if (!mounted) return;
       Navigator.of(context).pop();
       widget.onPrefillReady(prefill);
@@ -1225,8 +1224,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
   Widget build(BuildContext context) {
     final schedulesAsync = ref.watch(schedulesProvider);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final currency =
-        ref.watch(authProvider).employee?.currency ??
+    final currency = ref.watch(authProvider).employee?.currency ??
         widget.employee.currency ??
         'DZD';
 
@@ -1262,8 +1260,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                       decoration: const InputDecoration(labelText: 'Prenom'),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                          ? 'Obligatoire'
-                          : null,
+                              ? 'Obligatoire'
+                              : null,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -1273,8 +1271,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                       decoration: const InputDecoration(labelText: 'Nom'),
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                          ? 'Obligatoire'
-                          : null,
+                              ? 'Obligatoire'
+                              : null,
                     ),
                   ),
                 ],
@@ -1342,9 +1340,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                   labelText: _salaryType == 'hourly'
                       ? 'Taux horaire'
                       : 'Salaire de base',
-                  suffixText: _salaryType == 'hourly'
-                      ? '$currency/h'
-                      : currency,
+                  suffixText:
+                      _salaryType == 'hourly' ? '$currency/h' : currency,
                 ),
               ),
               const SizedBox(height: 10),
@@ -1660,8 +1657,8 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   ],
                   validator: (v) =>
                       (_role == 'manager' && (v == null || v.isEmpty))
-                      ? 'Selectionnez un type'
-                      : null,
+                          ? 'Selectionnez un type'
+                          : null,
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
@@ -1770,12 +1767,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
           contractStart: _hireDate.text,
           scheduleId: _scheduleId,
           salaryType: _salaryType,
-          salaryBase: _salaryType == 'hourly'
-              ? null
-              : _parseAmount(_salaryBase.text),
-          hourlyRate: _salaryType == 'hourly'
-              ? _parseAmount(_hourlyRate.text)
-              : null,
+          salaryBase:
+              _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+          hourlyRate:
+              _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
           department: _department.text,
           jobTitle: _jobTitle.text,
           workLocation: _workLocation.text,
@@ -1793,12 +1788,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
           contractStart: _hireDate.text,
           scheduleId: _scheduleId,
           salaryType: _salaryType,
-          salaryBase: _salaryType == 'hourly'
-              ? null
-              : _parseAmount(_salaryBase.text),
-          hourlyRate: _salaryType == 'hourly'
-              ? _parseAmount(_hourlyRate.text)
-              : null,
+          salaryBase:
+              _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+          hourlyRate:
+              _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
           department: _department.text,
           jobTitle: _jobTitle.text,
           workLocation: _workLocation.text,

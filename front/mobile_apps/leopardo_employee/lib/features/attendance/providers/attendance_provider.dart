@@ -222,8 +222,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         notes: notes,
       );
       final now = DateTime.now();
-      final isToday =
-          log.date.year == now.year &&
+      final isToday = log.date.year == now.year &&
           log.date.month == now.month &&
           log.date.day == now.day;
       state = state.copyWith(
@@ -340,8 +339,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-    });
+  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+});
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
   ref,
@@ -372,8 +371,8 @@ final todayTasksProvider = FutureProvider<List<Map<String, dynamic>>>((
 /// fails to render because of this enrichment.
 final monthlyAnomaliesProvider =
     FutureProvider.family<AttendanceAnomalyReport, DateTime>((ref, date) async {
-      final repo = ref.watch(attendanceRepositoryProvider);
-      final from = DateTime(date.year, date.month, 1);
-      final to = DateTime(date.year, date.month + 1, 0);
-      return await repo.getMyAnomalies(from: from, to: to);
-    });
+  final repo = ref.watch(attendanceRepositoryProvider);
+  final from = DateTime(date.year, date.month, 1);
+  final to = DateTime(date.year, date.month + 1, 0);
+  return await repo.getMyAnomalies(from: from, to: to);
+});

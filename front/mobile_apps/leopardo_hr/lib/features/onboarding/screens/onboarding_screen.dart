@@ -78,9 +78,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ],
               );
             }
-            final completed = steps
-                .where((s) => s.completed || s.skipped)
-                .length;
+            final completed =
+                steps.where((s) => s.completed || s.skipped).length;
             final total = steps.length;
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -143,9 +142,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           color: isDone
                               ? AppColors.textMutedDark
                               : AppColors.textDark,
-                          decoration: isDone
-                              ? TextDecoration.lineThrough
-                              : null,
+                          decoration:
+                              isDone ? TextDecoration.lineThrough : null,
                         ),
                       ),
                       subtitle: step.description != null

@@ -10,8 +10,8 @@ class AttendanceLocationService {
     Duration timeout = const Duration(seconds: 3),
   }) async {
     try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled()
-          .timeout(timeout);
+      final serviceEnabled =
+          await Geolocator.isLocationServiceEnabled().timeout(timeout);
       if (!serviceEnabled) {
         return const AttendanceLocationContext(
           status: AttendanceLocationStatus.serviceDisabled,

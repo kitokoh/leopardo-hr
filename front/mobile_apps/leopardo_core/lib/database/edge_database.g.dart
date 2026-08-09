@@ -46,12 +46,12 @@ class $AttendanceLogsTable extends AttendanceLogs
   @override
   late final GeneratedColumnWithTypeConverter<AttendanceType, String> type =
       GeneratedColumn<String>(
-        'type',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      ).withConverter<AttendanceType>($AttendanceLogsTable.$convertertype);
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<AttendanceType>($AttendanceLogsTable.$convertertype);
 
   @override
   late final GeneratedColumn<DateTime> checkedAt = GeneratedColumn<DateTime>(
@@ -103,16 +103,16 @@ class $AttendanceLogsTable extends AttendanceLogs
 
   @override
   List<GeneratedColumn> get $columns => [
-    localId,
-    remoteId,
-    employeeId,
-    type,
-    checkedAt,
-    source,
-    locationJson,
-    syncStatus,
-    createdAt,
-  ];
+        localId,
+        remoteId,
+        employeeId,
+        type,
+        checkedAt,
+        source,
+        locationJson,
+        syncStatus,
+        createdAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -287,17 +287,19 @@ class AttendanceLog extends DataClass implements Insertable<AttendanceLog> {
     Value<String?> locationJson = const Value.absent(),
     String? syncStatus,
     DateTime? createdAt,
-  }) => AttendanceLog(
-    localId: localId ?? this.localId,
-    remoteId: remoteId.present ? remoteId.value : this.remoteId,
-    employeeId: employeeId ?? this.employeeId,
-    type: type ?? this.type,
-    checkedAt: checkedAt ?? this.checkedAt,
-    source: source ?? this.source,
-    locationJson: locationJson.present ? locationJson.value : this.locationJson,
-    syncStatus: syncStatus ?? this.syncStatus,
-    createdAt: createdAt ?? this.createdAt,
-  );
+  }) =>
+      AttendanceLog(
+        localId: localId ?? this.localId,
+        remoteId: remoteId.present ? remoteId.value : this.remoteId,
+        employeeId: employeeId ?? this.employeeId,
+        type: type ?? this.type,
+        checkedAt: checkedAt ?? this.checkedAt,
+        source: source ?? this.source,
+        locationJson:
+            locationJson.present ? locationJson.value : this.locationJson,
+        syncStatus: syncStatus ?? this.syncStatus,
+        createdAt: createdAt ?? this.createdAt,
+      );
 
   @override
   String toString() {
@@ -317,16 +319,16 @@ class AttendanceLog extends DataClass implements Insertable<AttendanceLog> {
 
   @override
   int get hashCode => Object.hash(
-    localId,
-    remoteId,
-    employeeId,
-    type,
-    checkedAt,
-    source,
-    locationJson,
-    syncStatus,
-    createdAt,
-  );
+        localId,
+        remoteId,
+        employeeId,
+        type,
+        checkedAt,
+        source,
+        locationJson,
+        syncStatus,
+        createdAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -376,10 +378,10 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
     this.locationJson = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.createdAt = const Value.absent(),
-  }) : localId = Value(localId),
-       employeeId = Value(employeeId),
-       type = Value(type),
-       checkedAt = Value(checkedAt);
+  })  : localId = Value(localId),
+        employeeId = Value(employeeId),
+        type = Value(type),
+        checkedAt = Value(checkedAt);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -411,8 +413,7 @@ class AttendanceLogsCompanion extends UpdateCompanion<AttendanceLog> {
   }
 
   @override
-  String toString() =>
-      'AttendanceLogsCompanion(localId: $localId, '
+  String toString() => 'AttendanceLogsCompanion(localId: $localId, '
       'remoteId: $remoteId, employeeId: $employeeId, type: $type, '
       'checkedAt: $checkedAt, source: $source, locationJson: $locationJson, '
       'syncStatus: $syncStatus, createdAt: $createdAt)';
@@ -505,16 +506,16 @@ class $EmployeeCacheTable extends EmployeeCache
 
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    firstName,
-    lastName,
-    email,
-    badgeQr,
-    department,
-    jobTitle,
-    isActive,
-    syncedAt,
-  ];
+        id,
+        firstName,
+        lastName,
+        email,
+        badgeQr,
+        department,
+        jobTitle,
+        isActive,
+        syncedAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -687,37 +688,37 @@ class EmployeeCacheData extends DataClass
     Value<String?> jobTitle = const Value.absent(),
     bool? isActive,
     Value<int?> syncedAt = const Value.absent(),
-  }) => EmployeeCacheData(
-    id: id ?? this.id,
-    firstName: firstName ?? this.firstName,
-    lastName: lastName ?? this.lastName,
-    email: email ?? this.email,
-    badgeQr: badgeQr.present ? badgeQr.value : this.badgeQr,
-    department: department.present ? department.value : this.department,
-    jobTitle: jobTitle.present ? jobTitle.value : this.jobTitle,
-    isActive: isActive ?? this.isActive,
-    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
-  );
+  }) =>
+      EmployeeCacheData(
+        id: id ?? this.id,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        email: email ?? this.email,
+        badgeQr: badgeQr.present ? badgeQr.value : this.badgeQr,
+        department: department.present ? department.value : this.department,
+        jobTitle: jobTitle.present ? jobTitle.value : this.jobTitle,
+        isActive: isActive ?? this.isActive,
+        syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
+      );
 
   @override
-  String toString() =>
-      'EmployeeCacheData(id: $id, firstName: $firstName, '
+  String toString() => 'EmployeeCacheData(id: $id, firstName: $firstName, '
       'lastName: $lastName, email: $email, badgeQr: $badgeQr, '
       'department: $department, jobTitle: $jobTitle, isActive: $isActive, '
       'syncedAt: $syncedAt)';
 
   @override
   int get hashCode => Object.hash(
-    id,
-    firstName,
-    lastName,
-    email,
-    badgeQr,
-    department,
-    jobTitle,
-    isActive,
-    syncedAt,
-  );
+        id,
+        firstName,
+        lastName,
+        email,
+        badgeQr,
+        department,
+        jobTitle,
+        isActive,
+        syncedAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -767,10 +768,10 @@ class EmployeeCacheCompanion extends UpdateCompanion<EmployeeCacheData> {
     this.jobTitle = const Value.absent(),
     this.isActive = const Value.absent(),
     this.syncedAt = const Value.absent(),
-  }) : id = Value(id),
-       firstName = Value(firstName),
-       lastName = Value(lastName),
-       email = Value(email);
+  })  : id = Value(id),
+        firstName = Value(firstName),
+        lastName = Value(lastName),
+        email = Value(email);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -790,8 +791,7 @@ class EmployeeCacheCompanion extends UpdateCompanion<EmployeeCacheData> {
   }
 
   @override
-  String toString() =>
-      'EmployeeCacheCompanion(id: $id, firstName: $firstName, '
+  String toString() => 'EmployeeCacheCompanion(id: $id, firstName: $firstName, '
       'lastName: $lastName, email: $email, badgeQr: $badgeQr, '
       'department: $department, jobTitle: $jobTitle, isActive: $isActive, '
       'syncedAt: $syncedAt)';
@@ -898,17 +898,17 @@ class $SyncQueueTable extends SyncQueue
 
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    entityType,
-    entityLocalId,
-    operation,
-    payloadJson,
-    retryCount,
-    lastError,
-    status,
-    createdAt,
-    processedAt,
-  ];
+        id,
+        entityType,
+        entityLocalId,
+        operation,
+        payloadJson,
+        retryCount,
+        lastError,
+        status,
+        createdAt,
+        processedAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1083,22 +1083,22 @@ class SyncQueueData extends DataClass implements Insertable<SyncQueueData> {
     String? status,
     DateTime? createdAt,
     Value<DateTime?> processedAt = const Value.absent(),
-  }) => SyncQueueData(
-    id: id ?? this.id,
-    entityType: entityType ?? this.entityType,
-    entityLocalId: entityLocalId ?? this.entityLocalId,
-    operation: operation ?? this.operation,
-    payloadJson: payloadJson ?? this.payloadJson,
-    retryCount: retryCount ?? this.retryCount,
-    lastError: lastError.present ? lastError.value : this.lastError,
-    status: status ?? this.status,
-    createdAt: createdAt ?? this.createdAt,
-    processedAt: processedAt.present ? processedAt.value : this.processedAt,
-  );
+  }) =>
+      SyncQueueData(
+        id: id ?? this.id,
+        entityType: entityType ?? this.entityType,
+        entityLocalId: entityLocalId ?? this.entityLocalId,
+        operation: operation ?? this.operation,
+        payloadJson: payloadJson ?? this.payloadJson,
+        retryCount: retryCount ?? this.retryCount,
+        lastError: lastError.present ? lastError.value : this.lastError,
+        status: status ?? this.status,
+        createdAt: createdAt ?? this.createdAt,
+        processedAt: processedAt.present ? processedAt.value : this.processedAt,
+      );
 
   @override
-  String toString() =>
-      'SyncQueueData(id: $id, entityType: $entityType, '
+  String toString() => 'SyncQueueData(id: $id, entityType: $entityType, '
       'entityLocalId: $entityLocalId, operation: $operation, '
       'payloadJson: $payloadJson, retryCount: $retryCount, '
       'lastError: $lastError, status: $status, createdAt: $createdAt, '
@@ -1106,17 +1106,17 @@ class SyncQueueData extends DataClass implements Insertable<SyncQueueData> {
 
   @override
   int get hashCode => Object.hash(
-    id,
-    entityType,
-    entityLocalId,
-    operation,
-    payloadJson,
-    retryCount,
-    lastError,
-    status,
-    createdAt,
-    processedAt,
-  );
+        id,
+        entityType,
+        entityLocalId,
+        operation,
+        payloadJson,
+        retryCount,
+        lastError,
+        status,
+        createdAt,
+        processedAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -1170,10 +1170,10 @@ class SyncQueueCompanion extends UpdateCompanion<SyncQueueData> {
     this.status = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.processedAt = const Value.absent(),
-  }) : entityType = Value(entityType),
-       entityLocalId = Value(entityLocalId),
-       operation = Value(operation),
-       payloadJson = Value(payloadJson);
+  })  : entityType = Value(entityType),
+        entityLocalId = Value(entityLocalId),
+        operation = Value(operation),
+        payloadJson = Value(payloadJson);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1364,8 +1364,8 @@ class EdgeConfigCompanion extends UpdateCompanion<EdgeConfigData> {
     required String key,
     required String value,
     this.updatedAt = const Value.absent(),
-  }) : key = Value(key),
-       value = Value(value);
+  })  : key = Value(key),
+        value = Value(value);
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1400,9 +1400,9 @@ abstract class _$EdgeDatabase extends GeneratedDatabase {
 
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    attendanceLogs,
-    employeeCache,
-    syncQueue,
-    edgeConfig,
-  ];
+        attendanceLogs,
+        employeeCache,
+        syncQueue,
+        edgeConfig,
+      ];
 }

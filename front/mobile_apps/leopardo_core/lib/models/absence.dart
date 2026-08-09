@@ -39,9 +39,8 @@ class Absence {
 
   factory Absence.fromJson(Map<String, dynamic> json) {
     final employee = json['employee'];
-    final employeeMap = employee is Map
-        ? employee.cast<String, dynamic>()
-        : null;
+    final employeeMap =
+        employee is Map ? employee.cast<String, dynamic>() : null;
     final company = json['company'];
     final companyMap = company is Map ? company.cast<String, dynamic>() : null;
     final firstName = employeeMap?['first_name']?.toString().trim() ?? '';
@@ -59,18 +58,16 @@ class Absence {
       status: json['status'] as String,
       employeeName:
           (json['employee_name']?.toString().trim().isNotEmpty ?? false)
-          ? json['employee_name'].toString().trim()
-          : (composedName.isEmpty ? null : composedName),
+              ? json['employee_name'].toString().trim()
+              : (composedName.isEmpty ? null : composedName),
       employeeEmail: employeeMap?['email']?.toString(),
-      companyId:
-          json['company_id']?.toString() ??
+      companyId: json['company_id']?.toString() ??
           employeeMap?['company_id']?.toString(),
       companyName:
           json['company_name']?.toString() ?? companyMap?['name']?.toString(),
       reason: json['reason'] as String?,
       rejectionReason: json['rejected_reason'] as String?,
-      hasProof:
-          json['has_proof'] as bool? ??
+      hasProof: json['has_proof'] as bool? ??
           (json['proof_path']?.toString().isNotEmpty ?? false),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
     );

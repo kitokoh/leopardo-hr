@@ -175,9 +175,7 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
     setState(() => _saving = true);
 
     try {
-      await ref
-          .read(companyBrandingRepositoryProvider)
-          .update(
+      await ref.read(companyBrandingRepositoryProvider).update(
             CompanyBrandingPayload(
               displayName: _nameCtrl.text,
               logoUrl: _logoCtrl.text,

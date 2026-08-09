@@ -56,6 +56,51 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kisisel hesap: belgelerinizi duzenleyin, sonra alaninizdan bir sirket olusturun veya katilin.';
 
   @override
+  String get authBackTooltip => 'Geri';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'Calisan girisi';
+
+  @override
+  String get authManagerLoginSubtitle => 'Yonetici / IK girisi';
+
+  @override
+  String get authEmailProfessionalLabel => 'Is e-postasi';
+
+  @override
+  String get authEmailLabel => 'E-posta';
+
+  @override
+  String get authEmailRequired => 'E-posta zorunlu';
+
+  @override
+  String get authEmailInvalid => 'Gecersiz e-posta';
+
+  @override
+  String get authPasswordLabel => 'Sifre';
+
+  @override
+  String get authPasswordRequired => 'Sifre zorunlu';
+
+  @override
+  String get authPasswordTooShort => 'Sifre cok kisa';
+
+  @override
+  String get authContinueWithGoogle => 'Google ile devam et';
+
+  @override
+  String get authActivateInvitation => 'Davetimi etkinlestir';
+
+  @override
+  String get authPersonalAccountLink => 'Kisisel hesap';
+
+  @override
+  String get authActivateManagerAccess => 'Yonetici erisimimi etkinlestir';
+
+  @override
+  String get authTryDemoAccount => 'Demo hesabini dene';
+
+  @override
   String get commonLanguageLabel => 'Dil';
 
   @override
@@ -82,6 +127,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get commonLanguageVariantsEnGb => 'Ingilizce (Birlesik Krallik)';
+
+  @override
+  String get commonOr => 'veya';
 
   @override
   String get modulesAttendance => 'Puantaj';
@@ -247,54 +295,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get aiChatErrorMessage => 'Hata: asistana ulasilamadi.';
 
   @override
-  String get authBackTooltip => 'Geri';
-
-  @override
-  String get authEmployeeLoginSubtitle => 'Calisan girisi';
-
-  @override
-  String get authManagerLoginSubtitle => 'Yonetici / IK girisi';
-
-  @override
-  String get authEmailProfessionalLabel => 'Is e-postasi';
-
-  @override
-  String get authEmailLabel => 'E-posta';
-
-  @override
-  String get authEmailRequired => 'E-posta zorunlu';
-
-  @override
-  String get authEmailInvalid => 'Gecersiz e-posta';
-
-  @override
-  String get authPasswordLabel => 'Sifre';
-
-  @override
-  String get authPasswordRequired => 'Sifre zorunlu';
-
-  @override
-  String get authPasswordTooShort => 'Sifre cok kisa';
-
-  @override
-  String get authContinueWithGoogle => 'Google ile devam et';
-
-  @override
-  String get authActivateInvitation => 'Davetimi etkinlestir';
-
-  @override
-  String get authPersonalAccountLink => 'Kisisel hesap';
-
-  @override
-  String get authActivateManagerAccess => 'Yonetici erisimimi etkinlestir';
-
-  @override
-  String get commonOr => 'veya';
-
-  @override
-  String get authTryDemoAccount => 'Demo hesabini dene';
-
-  @override
   String get platformLoginTitle => 'Leopardo Platform';
 
   @override
@@ -322,4 +322,286 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get platformLoginUseDemoAccount => 'Demo hesabini kullan';
+
+  @override
+  String get usersPageTitle => 'Kullanici Yonetimi';
+
+  @override
+  String get usersPageSummary =>
+      ':count kullanici - :active aktif - :newToday bugun yeni';
+
+  @override
+  String get usersActionsBulk => 'Islemler (:count)';
+
+  @override
+  String get usersActionsExport => 'Disa Aktar';
+
+  @override
+  String get usersActionsNew => 'Yeni';
+
+  @override
+  String get usersFiltersSearchLabel => 'Ara';
+
+  @override
+  String get usersFiltersSearchPlaceholder => 'Ad, e-posta, sirket...';
+
+  @override
+  String get usersFiltersStatusLabel => 'Durum';
+
+  @override
+  String get usersFiltersStatusAll => 'Tum durumlar';
+
+  @override
+  String get usersFiltersStatusActive => 'Aktif';
+
+  @override
+  String get usersFiltersStatusInactive => 'Pasif';
+
+  @override
+  String get usersFiltersStatusSuspended => 'Askiya alindi';
+
+  @override
+  String get usersFiltersStatusPending => 'Beklemede';
+
+  @override
+  String get usersFiltersRoleLabel => 'Rol';
+
+  @override
+  String get usersFiltersRoleAll => 'Tum roller';
+
+  @override
+  String get usersFiltersRoleAdmin => 'Yonetici';
+
+  @override
+  String get usersFiltersRoleManager => 'Mudur';
+
+  @override
+  String get usersFiltersRoleEmployee => 'Calisan';
+
+  @override
+  String get usersFiltersRoleHr => 'IK';
+
+  @override
+  String get usersFiltersCompanyLabel => 'Sirket';
+
+  @override
+  String get usersFiltersCompanyAll => 'Tum sirketler';
+
+  @override
+  String get usersFiltersRegistrationdateLabel => 'Kayit tarihi';
+
+  @override
+  String get usersFiltersRegistrationdateAll => 'Tum tarihler';
+
+  @override
+  String get usersFiltersRegistrationdateToday => 'Bugun';
+
+  @override
+  String get usersFiltersRegistrationdateWeek => 'Bu hafta';
+
+  @override
+  String get usersFiltersRegistrationdateMonth => 'Bu ay';
+
+  @override
+  String get usersFiltersRegistrationdateQuarter => 'Bu ceyrek';
+
+  @override
+  String get usersFiltersLastloginLabel => 'Son giris';
+
+  @override
+  String get usersFiltersLastloginAll => 'Tumu';
+
+  @override
+  String get usersFiltersLastloginToday => 'Bugun';
+
+  @override
+  String get usersFiltersLastloginWeek => 'Bu hafta';
+
+  @override
+  String get usersFiltersLastloginMonth => 'Bu ay';
+
+  @override
+  String get usersFiltersLastloginNever => 'Hic giris yapmadi';
+
+  @override
+  String get usersFiltersSegmentLabel => 'Segment';
+
+  @override
+  String get usersFiltersSegmentAll => 'Tum segmentler';
+
+  @override
+  String get usersFiltersSegmentChampions => 'Sadikler';
+
+  @override
+  String get usersFiltersSegmentLoyal => 'Bagli';
+
+  @override
+  String get usersFiltersSegmentPotential => 'Potansiyel';
+
+  @override
+  String get usersFiltersSegmentNew => 'Yeni';
+
+  @override
+  String get usersFiltersSegmentAtrisk => 'Risk altinda';
+
+  @override
+  String get usersFiltersAdvancedShow => 'Gelismis filtreleri goster';
+
+  @override
+  String get usersFiltersAdvancedHide => 'Gelismis filtreleri gizle';
+
+  @override
+  String get usersBulkpanelSelectedcount => ':count secildi';
+
+  @override
+  String get usersBulkpanelActivate => 'Etkinlestir';
+
+  @override
+  String get usersBulkpanelDeactivate => 'Devre disi birak';
+
+  @override
+  String get usersBulkpanelSuspend => 'Askiya al';
+
+  @override
+  String get usersBulkpanelExport => 'Disa Aktar';
+
+  @override
+  String get usersBulkpanelCancel => 'Vazgec';
+
+  @override
+  String get usersToastLoaderror => 'Kullanicilar yuklenirken hata olustu';
+
+  @override
+  String get usersToastBulkactivated => ':count kullanici etkinlestirildi';
+
+  @override
+  String get usersToastBulkdeactivated =>
+      ':count kullanici devre disi birakildi';
+
+  @override
+  String get usersToastBulksuspended => ':count kullanici askiya alindi';
+
+  @override
+  String get usersToastBulkerror => 'Toplu islem basarisiz oldu';
+
+  @override
+  String get usersToastDeleted => 'Kullanici silindi';
+
+  @override
+  String get usersToastDeleteerror => 'Kullanici silinirken hata olustu';
+
+  @override
+  String get usersToastImpersonating => ':name olarak giris yapiliyor';
+
+  @override
+  String get usersToastCreated => 'Kullanici basariyla olusturuldu';
+
+  @override
+  String get usersToastUpdated => 'Kullanici guncellendi';
+
+  @override
+  String get usersToastExportinprogress => 'Disa aktarim yapiliyor...';
+
+  @override
+  String get usersToastExportdone => 'Disa aktarim tamamlandi';
+
+  @override
+  String get usersToastExporterror => 'Disa aktarim basarisiz oldu';
+
+  @override
+  String get usersToastSelectionexportdone => 'Secim disa aktarimi tamamlandi';
+
+  @override
+  String get usersConfirmDelete =>
+      ':name kullanicisini silmek istediginizden emin misiniz?';
+
+  @override
+  String get dashboardTitle => 'Kontrol Paneli';
+
+  @override
+  String get dashboardCompany => 'Şirket';
+
+  @override
+  String get dashboardActiveEmployees => 'Aktif';
+
+  @override
+  String get dashboardUpgrade => 'Yükselt';
+
+  @override
+  String get dashboardPriorityActions => 'Öncelikli Eylemler';
+
+  @override
+  String get dashboardLaunchReadiness => 'Lansman Hazırlığı';
+
+  @override
+  String get dashboardRecentActivity => 'Son Etkinlik';
+
+  @override
+  String get dashboardRecentActivityHint => 'Ekibinizin son eylemleri';
+
+  @override
+  String get marketingOauthNavTitle => 'Pazarlama OAuth';
+
+  @override
+  String get marketingOauthTitle => 'Pazarlama OAuth Ayarları';
+
+  @override
+  String get marketingOauthSubtitle =>
+      'Ayrshare aracılığıyla sosyal medya hesaplarınızı bağlayın';
+
+  @override
+  String get marketingOauthAyrshareInfo =>
+      'Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır.';
+
+  @override
+  String get marketingOauthSave => 'Kaydet';
+
+  @override
+  String marketingOauthSavedOk(Object provider) {
+    return '$provider yapılandırması kaydedildi';
+  }
+
+  @override
+  String get marketingOauthProvidersLinkedinLabel => 'LinkedIn';
+
+  @override
+  String get marketingOauthProvidersLinkedinDescription =>
+      'LinkedIn Marketing API bağlantısı';
+
+  @override
+  String get marketingOauthProvidersFacebookLabel => 'Facebook / Meta';
+
+  @override
+  String get marketingOauthProvidersFacebookDescription =>
+      'Facebook Graph API bağlantısı';
+
+  @override
+  String get marketingOauthProvidersTwitterLabel => 'X (Twitter)';
+
+  @override
+  String get marketingOauthProvidersTwitterDescription =>
+      'Twitter API v2 bağlantısı';
+
+  @override
+  String get marketingOauthFieldsClientId => 'İstemci Kimliği';
+
+  @override
+  String get marketingOauthFieldsClientSecret => 'İstemci Sırrı';
+
+  @override
+  String get marketingOauthFieldsRedirectUri => 'Yönlendirme URI';
+
+  @override
+  String get marketingOauthFieldsSecretHint =>
+      '(mevcut değeri korumak için boş bırakın)';
+
+  @override
+  String get marketingOauthFieldsPlaceholderId => 'İstemci Kimliğiniz';
+
+  @override
+  String get marketingOauthFieldsPlaceholderSecret => 'Yeni sır (isteğe bağlı)';
+
+  @override
+  String get marketingOauthFieldsPlaceholderUri =>
+      'https://example.com/oauth/callback';
 }

@@ -115,14 +115,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 );
               }
 
-              final completed = steps
-                  .where((s) => s.completed || s.skipped)
-                  .length;
+              final completed =
+                  steps.where((s) => s.completed || s.skipped).length;
               final total = steps.length;
               final progress = total > 0 ? completed / total : 0.0;
-              final requiredDone = steps
-                  .where((s) => s.required && s.completed)
-                  .length;
+              final requiredDone =
+                  steps.where((s) => s.required && s.completed).length;
               final requiredTotal = steps.where((s) => s.required).length;
               final allRequiredDone = requiredDone >= requiredTotal;
 
@@ -184,8 +182,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                     backgroundColor: MobileSurface.border,
                                     valueColor:
                                         const AlwaysStoppedAnimation<Color>(
-                                          AppColors.rh,
-                                        ),
+                                      AppColors.rh,
+                                    ),
                                     minHeight: 8,
                                   ),
                                 ),
@@ -245,10 +243,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         borderColor: step.completed
                             ? AppColors.success.withValues(alpha: 0.6)
                             : isSkipped
-                            ? MobileSurface.border.withValues(alpha: 0.3)
-                            : step.required
-                            ? AppColors.rh.withValues(alpha: 0.4)
-                            : MobileSurface.border,
+                                ? MobileSurface.border.withValues(alpha: 0.3)
+                                : step.required
+                                    ? AppColors.rh.withValues(alpha: 0.4)
+                                    : MobileSurface.border,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -260,21 +258,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                 color: step.completed
                                     ? AppColors.success.withValues(alpha: 0.15)
                                     : isSkipped
-                                    ? MobileSurface.muted.withValues(alpha: 0.1)
-                                    : AppColors.rh.withValues(alpha: 0.15),
+                                        ? MobileSurface.muted
+                                            .withValues(alpha: 0.1)
+                                        : AppColors.rh.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
                                 step.completed
                                     ? Icons.check_circle
                                     : isSkipped
-                                    ? Icons.skip_next
-                                    : _iconFor(step.key),
+                                        ? Icons.skip_next
+                                        : _iconFor(step.key),
                                 color: step.completed
                                     ? AppColors.success
                                     : isSkipped
-                                    ? MobileSurface.muted
-                                    : AppColors.rh,
+                                        ? MobileSurface.muted
+                                        : AppColors.rh,
                                 size: 22,
                               ),
                             ),
@@ -291,18 +290,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                       Expanded(
                                         child: Text(
                                           step.title,
-                                          style: AppTypography.subtitle
-                                              .copyWith(
-                                                color: isDone
-                                                    ? MobileSurface.muted
-                                                    : MobileSurface.text,
-                                                fontWeight: isDone
-                                                    ? FontWeight.normal
-                                                    : FontWeight.w600,
-                                                decoration: isSkipped
-                                                    ? TextDecoration.lineThrough
-                                                    : null,
-                                              ),
+                                          style:
+                                              AppTypography.subtitle.copyWith(
+                                            color: isDone
+                                                ? MobileSurface.muted
+                                                : MobileSurface.text,
+                                            fontWeight: isDone
+                                                ? FontWeight.normal
+                                                : FontWeight.w600,
+                                            decoration: isSkipped
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                          ),
                                         ),
                                       ),
                                       if (step.required && !isDone)
@@ -326,9 +325,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                             'Requis',
                                             style: AppTypography.bodySmall
                                                 .copyWith(
-                                                  color: AppColors.rh,
-                                                  fontSize: 10,
-                                                ),
+                                              color: AppColors.rh,
+                                              fontSize: 10,
+                                            ),
                                           ),
                                         ),
                                     ],

@@ -174,9 +174,8 @@ class _NotificationTile extends StatelessWidget {
                               title,
                               style: AppTypography.bodySmall.copyWith(
                                 color: MobileSurface.text,
-                                fontWeight: isRead
-                                    ? FontWeight.w500
-                                    : FontWeight.w700,
+                                fontWeight:
+                                    isRead ? FontWeight.w500 : FontWeight.w700,
                               ),
                             ),
                           ),

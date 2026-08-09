@@ -123,9 +123,8 @@ class ListColumn {
         return value.toString();
 
       case ListColumnType.number:
-        final num? numValue = value is num
-            ? value
-            : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
 
         if (format != null) {
@@ -162,16 +161,14 @@ class ListColumn {
         return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
 
       case ListColumnType.currency:
-        final num? numValue = value is num
-            ? value
-            : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(2)} €';
 
       case ListColumnType.percentage:
-        final num? numValue = value is num
-            ? value
-            : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(1)}%';
 

@@ -41,12 +41,12 @@ class SyncService {
     required String cloudBaseUrl,
     required String edgeNodeId,
     required String edgeToken,
-  }) : _db = db,
-       _dio = dio,
-       _edgeBaseUrl = edgeBaseUrl,
-       _cloudBaseUrl = cloudBaseUrl,
-       _edgeNodeId = edgeNodeId,
-       _edgeToken = edgeToken;
+  })  : _db = db,
+        _dio = dio,
+        _edgeBaseUrl = edgeBaseUrl,
+        _cloudBaseUrl = cloudBaseUrl,
+        _edgeNodeId = edgeNodeId,
+        _edgeToken = edgeToken;
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {

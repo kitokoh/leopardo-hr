@@ -5,19 +5,17 @@ import 'package:leopardo_hr/features/smart_attendance/data/models/geo_attendance
 
 final hrSmartAttendanceRepositoryProvider =
     Provider<HrSmartAttendanceRepository>((ref) {
-      return HrSmartAttendanceRepository(ref.watch(apiClientProvider));
-    });
+  return HrSmartAttendanceRepository(ref.watch(apiClientProvider));
+});
 
 /// Liste des sessions en attente de validation manager.
 final pendingGeoSessionsProvider =
     FutureProvider.autoDispose<List<GeoAttendanceSession>>((ref) async {
-      return ref
-          .watch(hrSmartAttendanceRepositoryProvider)
-          .getPendingSessions();
-    });
+  return ref.watch(hrSmartAttendanceRepositoryProvider).getPendingSessions();
+});
 
 /// Stats du dashboard Smart Attendance.
 final smartAttendanceDashboardProvider =
     FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
-      return ref.watch(hrSmartAttendanceRepositoryProvider).getDashboardStats();
-    });
+  return ref.watch(hrSmartAttendanceRepositoryProvider).getDashboardStats();
+});

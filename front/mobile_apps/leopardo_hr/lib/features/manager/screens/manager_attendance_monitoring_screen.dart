@@ -442,9 +442,8 @@ class _AnomalyBody extends StatelessWidget {
                 child: _Metric(
                   label: 'Retard',
                   value: '${report.lateMinutes}m',
-                  color: report.lateMinutes > 0
-                      ? AppColors.warning
-                      : AppColors.rh,
+                  color:
+                      report.lateMinutes > 0 ? AppColors.warning : AppColors.rh,
                 ),
               ),
             ],

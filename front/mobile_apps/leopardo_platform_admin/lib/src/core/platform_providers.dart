@@ -28,5 +28,5 @@ final platformRepositoryProvider = Provider<PlatformRepository>((ref) {
 
 final platformCountryDefaultsProvider =
     FutureProvider<List<PlatformCountryDefault>>((ref) {
-      return ref.watch(platformRepositoryProvider).countryDefaults();
-    });
+  return ref.watch(platformRepositoryProvider).countryDefaults();
+});

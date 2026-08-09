@@ -92,8 +92,7 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel =
-        (stats['today'] as String?) ??
+    final dateLabel = (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {

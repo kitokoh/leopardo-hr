@@ -51,7 +51,7 @@ class PayrollRecord {
   factory PayrollRecord.fromMePaySlipJson(Map<String, dynamic> json) {
     final periodStart =
         DateTime.tryParse(json['period_start']?.toString() ?? '') ??
-        DateTime.utc(1970);
+            DateTime.utc(1970);
     return PayrollRecord(
       id: (json['id'] as num?)?.toInt() ?? 0,
       employeeId: (json['employee_id'] as num?)?.toInt() ?? 0,

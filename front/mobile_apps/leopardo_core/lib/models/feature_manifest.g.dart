@@ -27,23 +27,24 @@ Map<String, dynamic> _$FeatureManifestToJson(FeatureManifest instance) =>
     };
 
 ManifestDiff _$ManifestDiffFromJson(Map<String, dynamic> json) => ManifestDiff(
-  newFeatures: (json['new_features'] as List<dynamic>)
-      .map((e) => Feature.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  removedFeatures: (json['removed_features'] as List<dynamic>)
-      .map((e) => Feature.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  modifiedFeatures: (json['modified_features'] as List<dynamic>)
-      .map((e) => Feature.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
+      newFeatures: (json['new_features'] as List<dynamic>)
+          .map((e) => Feature.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      removedFeatures: (json['removed_features'] as List<dynamic>)
+          .map((e) => Feature.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      modifiedFeatures: (json['modified_features'] as List<dynamic>)
+          .map((e) => Feature.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$ManifestDiffToJson(
   ManifestDiff instance,
-) => <String, dynamic>{
-  'new_features': instance.newFeatures.map((e) => e.toJson()).toList(),
-  'removed_features': instance.removedFeatures.map((e) => e.toJson()).toList(),
-  'modified_features': instance.modifiedFeatures
-      .map((e) => e.toJson())
-      .toList(),
-};
+) =>
+    <String, dynamic>{
+      'new_features': instance.newFeatures.map((e) => e.toJson()).toList(),
+      'removed_features':
+          instance.removedFeatures.map((e) => e.toJson()).toList(),
+      'modified_features':
+          instance.modifiedFeatures.map((e) => e.toJson()).toList(),
+    };

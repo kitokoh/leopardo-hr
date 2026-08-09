@@ -26,8 +26,8 @@ class LocalAttendanceLogs extends Table {
   RealColumn get gpsLng => real().nullable()();
   TextColumn get status => text().withDefault(const Constant('present'))();
   TextColumn get syncStatus => text().withDefault(
-    const Constant('pending'),
-  )(); // pending|synced|conflict|failed
+        const Constant('pending'),
+      )(); // pending|synced|conflict|failed
   TextColumn get externalEventId => text().nullable()();
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now())();
@@ -48,8 +48,8 @@ class LocalAbsences extends Table {
   DateTimeColumn get endDate => dateTime()();
   TextColumn get reason => text().nullable()();
   TextColumn get status => text().withDefault(
-    const Constant('pending'),
-  )(); // pending|approved|rejected
+        const Constant('pending'),
+      )(); // pending|approved|rejected
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now())();
@@ -173,7 +173,8 @@ class EdgeDatabase extends _$EdgeDatabase {
     );
     final log = await (select(
       localAttendanceLogs,
-    )..where((t) => t.id.equals(logId))).getSingle();
+    )..where((t) => t.id.equals(logId)))
+        .getSingle();
     await _enqueue('attendance_logs', logId, 'update', _logToJson(log));
   }
 
@@ -194,21 +195,21 @@ class EdgeDatabase extends _$EdgeDatabase {
       (select(localEmployees)..where((t) => t.id.equals(id))).getSingleOrNull();
 
   Future<List<LocalEmployee>> searchEmployees(String query) =>
-      (select(localEmployees)..where(
-            (t) =>
-                t.firstName.contains(query) |
-                t.lastName.contains(query) |
-                t.email.contains(query),
-          ))
+      (select(localEmployees)
+            ..where(
+              (t) =>
+                  t.firstName.contains(query) |
+                  t.lastName.contains(query) |
+                  t.email.contains(query),
+            ))
           .get();
 
   // ── Sync Queue ───────────────────────────────────────
 
-  Future<List<LocalSyncQueueItem>> getPendingItems() =>
-      (select(localSyncQueue)
-            ..where((t) => t.status.equals('pending'))
-            ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
-          .get();
+  Future<List<LocalSyncQueueItem>> getPendingItems() => (select(localSyncQueue)
+        ..where((t) => t.status.equals('pending'))
+        ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+      .get();
 
   Future<void> markSynced(String itemId) =>
       (update(localSyncQueue)..where((t) => t.id.equals(itemId))).write(
@@ -241,31 +242,31 @@ class EdgeDatabase extends _$EdgeDatabase {
 
   // Helper serializers
   Map<String, dynamic> _logToJson(LocalAttendanceLog l) => {
-    'id': l.id,
-    'employee_id': l.employeeId,
-    'company_id': l.companyId,
-    'check_in': l.checkIn.toIso8601String(),
-    'check_out': l.checkOut?.toIso8601String(),
-    'method': l.method,
-    'work_type': l.workType,
-    'gps_lat': l.gpsLat,
-    'gps_lng': l.gpsLng,
-    'status': l.status,
-    'external_event_id': l.externalEventId,
-    'updated_at': l.updatedAt.toIso8601String(),
-  };
+        'id': l.id,
+        'employee_id': l.employeeId,
+        'company_id': l.companyId,
+        'check_in': l.checkIn.toIso8601String(),
+        'check_out': l.checkOut?.toIso8601String(),
+        'method': l.method,
+        'work_type': l.workType,
+        'gps_lat': l.gpsLat,
+        'gps_lng': l.gpsLng,
+        'status': l.status,
+        'external_event_id': l.externalEventId,
+        'updated_at': l.updatedAt.toIso8601String(),
+      };
 
   Map<String, dynamic> _absenceToJson(LocalAbsence a) => {
-    'id': a.id,
-    'employee_id': a.employeeId,
-    'company_id': a.companyId,
-    'absence_type_id': a.absenceTypeId,
-    'start_date': a.startDate.toIso8601String(),
-    'end_date': a.endDate.toIso8601String(),
-    'reason': a.reason,
-    'status': a.status,
-    'updated_at': a.updatedAt.toIso8601String(),
-  };
+        'id': a.id,
+        'employee_id': a.employeeId,
+        'company_id': a.companyId,
+        'absence_type_id': a.absenceTypeId,
+        'start_date': a.startDate.toIso8601String(),
+        'end_date': a.endDate.toIso8601String(),
+        'reason': a.reason,
+        'status': a.status,
+        'updated_at': a.updatedAt.toIso8601String(),
+      };
 
   String _jsonEncode(Map<String, dynamic> map) {
     // simple JSON encode — use dart:convert in real code

@@ -44,9 +44,8 @@ class NotificationRepository {
   }
 
   List<AppNotification> _decodeNotifications(dynamic payload) {
-    final rawItems = payload is Map<String, dynamic>
-        ? payload['data']
-        : payload;
+    final rawItems =
+        payload is Map<String, dynamic> ? payload['data'] : payload;
     if (rawItems is! List) {
       return const <AppNotification>[];
     }

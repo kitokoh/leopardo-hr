@@ -21,8 +21,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience =
-        employee?.mobileExperience ??
+    final experience = employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],

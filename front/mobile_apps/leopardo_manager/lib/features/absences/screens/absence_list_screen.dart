@@ -79,8 +79,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                     '${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)}';
                 final requester =
                     absence.employeeName?.trim().isNotEmpty == true
-                    ? absence.employeeName!
-                    : 'Employe #${absence.employeeId}';
+                        ? absence.employeeName!
+                        : 'Employe #${absence.employeeId}';
 
                 return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
@@ -132,9 +132,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
     required Employee? actor,
   }) {
     final details = _absenceContext(absence);
-    final proofButton = absence.hasProof
-        ? _proofButton(context, absence.id)
-        : null;
+    final proofButton =
+        absence.hasProof ? _proofButton(context, absence.id) : null;
 
     if (absence.status == 'pending') {
       if (_canDecideAbsence(actor, absence)) {
@@ -204,9 +203,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
   Future<void> _viewProof(BuildContext context, int absenceId) async {
     setState(() => _downloadingProofId = absenceId);
     try {
-      final path = await ref
-          .read(absenceRepositoryProvider)
-          .downloadProof(absenceId);
+      final path =
+          await ref.read(absenceRepositoryProvider).downloadProof(absenceId);
       if (!mounted) return;
 
       final uri = Uri.file(path);
@@ -377,12 +375,12 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
   }
 
   static String _statusLabel(String status) => switch (status) {
-    'approved' => 'approuvee',
-    'pending' => 'en attente',
-    'rejected' => 'rejetee',
-    'cancelled' => 'annulee',
-    _ => status,
-  };
+        'approved' => 'approuvee',
+        'pending' => 'en attente',
+        'rejected' => 'rejetee',
+        'cancelled' => 'annulee',
+        _ => status,
+      };
 
   static Color _getStatusColor(String status) {
     switch (status) {
@@ -604,9 +602,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(absenceRepositoryProvider)
-          .requestAbsence(
+      await ref.read(absenceRepositoryProvider).requestAbsence(
             absenceTypeId: selectedType.id,
             startDate: _startDate,
             endDate: _endDate,
@@ -691,14 +687,12 @@ class _AbsenceTypeOption {
     if (id == null) return null;
 
     final name = type['name']?.toString();
-    final remaining =
-        balance['remaining_days'] ??
+    final remaining = balance['remaining_days'] ??
         balance['remaining'] ??
         balance['balance'] ??
         balance['available_days'];
-    final suffix = remaining == null
-        ? ''
-        : ' - ${remaining.toString()} j disponibles';
+    final suffix =
+        remaining == null ? '' : ' - ${remaining.toString()} j disponibles';
 
     return _AbsenceTypeOption(
       id: id,

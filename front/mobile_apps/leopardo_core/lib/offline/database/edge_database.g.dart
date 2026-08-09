@@ -88,12 +88,10 @@ class LocalAttendanceLog extends DataClass
           : Value(checkOut),
       method: Value(method),
       workType: Value(workType),
-      gpsLat: gpsLat == null && nullToAbsent
-          ? const Value.absent()
-          : Value(gpsLat),
-      gpsLng: gpsLng == null && nullToAbsent
-          ? const Value.absent()
-          : Value(gpsLng),
+      gpsLat:
+          gpsLat == null && nullToAbsent ? const Value.absent() : Value(gpsLat),
+      gpsLng:
+          gpsLng == null && nullToAbsent ? const Value.absent() : Value(gpsLng),
       status: Value(status),
       syncStatus: Value(syncStatus),
       externalEventId: externalEventId == null && nullToAbsent
@@ -163,24 +161,25 @@ class LocalAttendanceLog extends DataClass
     Value<String?> externalEventId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) => LocalAttendanceLog(
-    id: id ?? this.id,
-    employeeId: employeeId ?? this.employeeId,
-    companyId: companyId ?? this.companyId,
-    checkIn: checkIn ?? this.checkIn,
-    checkOut: checkOut.present ? checkOut.value : this.checkOut,
-    method: method ?? this.method,
-    workType: workType ?? this.workType,
-    gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
-    gpsLng: gpsLng.present ? gpsLng.value : this.gpsLng,
-    status: status ?? this.status,
-    syncStatus: syncStatus ?? this.syncStatus,
-    externalEventId: externalEventId.present
-        ? externalEventId.value
-        : this.externalEventId,
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-  );
+  }) =>
+      LocalAttendanceLog(
+        id: id ?? this.id,
+        employeeId: employeeId ?? this.employeeId,
+        companyId: companyId ?? this.companyId,
+        checkIn: checkIn ?? this.checkIn,
+        checkOut: checkOut.present ? checkOut.value : this.checkOut,
+        method: method ?? this.method,
+        workType: workType ?? this.workType,
+        gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
+        gpsLng: gpsLng.present ? gpsLng.value : this.gpsLng,
+        status: status ?? this.status,
+        syncStatus: syncStatus ?? this.syncStatus,
+        externalEventId: externalEventId.present
+            ? externalEventId.value
+            : this.externalEventId,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
 
   @override
   String toString() {
@@ -205,21 +204,21 @@ class LocalAttendanceLog extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    id,
-    employeeId,
-    companyId,
-    checkIn,
-    checkOut,
-    method,
-    workType,
-    gpsLat,
-    gpsLng,
-    status,
-    syncStatus,
-    externalEventId,
-    createdAt,
-    updatedAt,
-  );
+        id,
+        employeeId,
+        companyId,
+        checkIn,
+        checkOut,
+        method,
+        workType,
+        gpsLat,
+        gpsLng,
+        status,
+        syncStatus,
+        externalEventId,
+        createdAt,
+        updatedAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -289,20 +288,20 @@ class LocalAttendanceLogsCompanion extends UpdateCompanion<LocalAttendanceLog> {
     Value<String?> externalEventId = const Value.absent(),
     Value<DateTime> createdAt = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  }) : id = id,
-       employeeId = Value(employeeId),
-       companyId = Value(companyId),
-       checkIn = Value(checkIn),
-       checkOut = checkOut,
-       method = method,
-       workType = workType,
-       gpsLat = gpsLat,
-       gpsLng = gpsLng,
-       status = status,
-       syncStatus = syncStatus,
-       externalEventId = externalEventId,
-       createdAt = createdAt,
-       updatedAt = updatedAt;
+  })  : id = id,
+        employeeId = Value(employeeId),
+        companyId = Value(companyId),
+        checkIn = Value(checkIn),
+        checkOut = checkOut,
+        method = method,
+        workType = workType,
+        gpsLat = gpsLat,
+        gpsLng = gpsLng,
+        status = status,
+        syncStatus = syncStatus,
+        externalEventId = externalEventId,
+        createdAt = createdAt,
+        updatedAt = updatedAt;
 
   static Insertable<LocalAttendanceLog> custom({
     Expression<String>? id,
@@ -615,21 +614,21 @@ class $LocalAttendanceLogsTable extends LocalAttendanceLogs
 
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    employeeId,
-    companyId,
-    checkIn,
-    checkOut,
-    method,
-    workType,
-    gpsLat,
-    gpsLng,
-    status,
-    syncStatus,
-    externalEventId,
-    createdAt,
-    updatedAt,
-  ];
+        id,
+        employeeId,
+        companyId,
+        checkIn,
+        checkOut,
+        method,
+        workType,
+        gpsLat,
+        gpsLng,
+        status,
+        syncStatus,
+        externalEventId,
+        createdAt,
+        updatedAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -867,9 +866,8 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
       absenceTypeId: Value(absenceTypeId),
       startDate: Value(startDate),
       endDate: Value(endDate),
-      reason: reason == null && nullToAbsent
-          ? const Value.absent()
-          : Value(reason),
+      reason:
+          reason == null && nullToAbsent ? const Value.absent() : Value(reason),
       status: Value(status),
       syncStatus: Value(syncStatus),
       createdAt: Value(createdAt),
@@ -927,19 +925,20 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
     String? syncStatus,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) => LocalAbsence(
-    id: id ?? this.id,
-    employeeId: employeeId ?? this.employeeId,
-    companyId: companyId ?? this.companyId,
-    absenceTypeId: absenceTypeId ?? this.absenceTypeId,
-    startDate: startDate ?? this.startDate,
-    endDate: endDate ?? this.endDate,
-    reason: reason.present ? reason.value : this.reason,
-    status: status ?? this.status,
-    syncStatus: syncStatus ?? this.syncStatus,
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-  );
+  }) =>
+      LocalAbsence(
+        id: id ?? this.id,
+        employeeId: employeeId ?? this.employeeId,
+        companyId: companyId ?? this.companyId,
+        absenceTypeId: absenceTypeId ?? this.absenceTypeId,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        reason: reason.present ? reason.value : this.reason,
+        status: status ?? this.status,
+        syncStatus: syncStatus ?? this.syncStatus,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
 
   @override
   String toString() {
@@ -961,18 +960,18 @@ class LocalAbsence extends DataClass implements Insertable<LocalAbsence> {
 
   @override
   int get hashCode => Object.hash(
-    id,
-    employeeId,
-    companyId,
-    absenceTypeId,
-    startDate,
-    endDate,
-    reason,
-    status,
-    syncStatus,
-    createdAt,
-    updatedAt,
-  );
+        id,
+        employeeId,
+        companyId,
+        absenceTypeId,
+        startDate,
+        endDate,
+        reason,
+        status,
+        syncStatus,
+        createdAt,
+        updatedAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -1030,17 +1029,17 @@ class LocalAbsencesCompanion extends UpdateCompanion<LocalAbsence> {
     Value<String> syncStatus = const Value.absent(),
     Value<DateTime> createdAt = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  }) : id = id,
-       employeeId = Value(employeeId),
-       companyId = Value(companyId),
-       absenceTypeId = Value(absenceTypeId),
-       startDate = Value(startDate),
-       endDate = Value(endDate),
-       reason = reason,
-       status = status,
-       syncStatus = syncStatus,
-       createdAt = createdAt,
-       updatedAt = updatedAt;
+  })  : id = id,
+        employeeId = Value(employeeId),
+        companyId = Value(companyId),
+        absenceTypeId = Value(absenceTypeId),
+        startDate = Value(startDate),
+        endDate = Value(endDate),
+        reason = reason,
+        status = status,
+        syncStatus = syncStatus,
+        createdAt = createdAt,
+        updatedAt = updatedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1199,18 +1198,18 @@ class $LocalAbsencesTable extends LocalAbsences
 
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    employeeId,
-    companyId,
-    absenceTypeId,
-    startDate,
-    endDate,
-    reason,
-    status,
-    syncStatus,
-    createdAt,
-    updatedAt,
-  ];
+        id,
+        employeeId,
+        companyId,
+        absenceTypeId,
+        startDate,
+        endDate,
+        reason,
+        status,
+        syncStatus,
+        createdAt,
+        updatedAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1414,9 +1413,8 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
       firstName: Value(firstName),
       lastName: Value(lastName),
       email: Value(email),
-      phone: phone == null && nullToAbsent
-          ? const Value.absent()
-          : Value(phone),
+      phone:
+          phone == null && nullToAbsent ? const Value.absent() : Value(phone),
       departmentId: departmentId == null && nullToAbsent
           ? const Value.absent()
           : Value(departmentId),
@@ -1491,21 +1489,24 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
     Value<String?> faceEncoding = const Value.absent(),
     Value<String?> biometricId = const Value.absent(),
     DateTime? updatedAt,
-  }) => LocalEmployee(
-    id: id ?? this.id,
-    companyId: companyId ?? this.companyId,
-    firstName: firstName ?? this.firstName,
-    lastName: lastName ?? this.lastName,
-    email: email ?? this.email,
-    phone: phone.present ? phone.value : this.phone,
-    departmentId: departmentId.present ? departmentId.value : this.departmentId,
-    positionId: positionId.present ? positionId.value : this.positionId,
-    role: role ?? this.role,
-    status: status ?? this.status,
-    faceEncoding: faceEncoding.present ? faceEncoding.value : this.faceEncoding,
-    biometricId: biometricId.present ? biometricId.value : this.biometricId,
-    updatedAt: updatedAt ?? this.updatedAt,
-  );
+  }) =>
+      LocalEmployee(
+        id: id ?? this.id,
+        companyId: companyId ?? this.companyId,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        email: email ?? this.email,
+        phone: phone.present ? phone.value : this.phone,
+        departmentId:
+            departmentId.present ? departmentId.value : this.departmentId,
+        positionId: positionId.present ? positionId.value : this.positionId,
+        role: role ?? this.role,
+        status: status ?? this.status,
+        faceEncoding:
+            faceEncoding.present ? faceEncoding.value : this.faceEncoding,
+        biometricId: biometricId.present ? biometricId.value : this.biometricId,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
 
   @override
   String toString() {
@@ -1529,20 +1530,20 @@ class LocalEmployee extends DataClass implements Insertable<LocalEmployee> {
 
   @override
   int get hashCode => Object.hash(
-    id,
-    companyId,
-    firstName,
-    lastName,
-    email,
-    phone,
-    departmentId,
-    positionId,
-    role,
-    status,
-    faceEncoding,
-    biometricId,
-    updatedAt,
-  );
+        id,
+        companyId,
+        firstName,
+        lastName,
+        email,
+        phone,
+        departmentId,
+        positionId,
+        role,
+        status,
+        faceEncoding,
+        biometricId,
+        updatedAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -1608,19 +1609,19 @@ class LocalEmployeesCompanion extends UpdateCompanion<LocalEmployee> {
     Value<String?> faceEncoding = const Value.absent(),
     Value<String?> biometricId = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  }) : id = Value(id),
-       companyId = Value(companyId),
-       firstName = Value(firstName),
-       lastName = Value(lastName),
-       email = Value(email),
-       phone = phone,
-       departmentId = departmentId,
-       positionId = positionId,
-       role = role,
-       status = status,
-       faceEncoding = faceEncoding,
-       biometricId = biometricId,
-       updatedAt = updatedAt;
+  })  : id = Value(id),
+        companyId = Value(companyId),
+        firstName = Value(firstName),
+        lastName = Value(lastName),
+        email = Value(email),
+        phone = phone,
+        departmentId = departmentId,
+        positionId = positionId,
+        role = role,
+        status = status,
+        faceEncoding = faceEncoding,
+        biometricId = biometricId,
+        updatedAt = updatedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1799,20 +1800,20 @@ class $LocalEmployeesTable extends LocalEmployees
 
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    companyId,
-    firstName,
-    lastName,
-    email,
-    phone,
-    departmentId,
-    positionId,
-    role,
-    status,
-    faceEncoding,
-    biometricId,
-    updatedAt,
-  ];
+        id,
+        companyId,
+        firstName,
+        lastName,
+        email,
+        phone,
+        departmentId,
+        positionId,
+        role,
+        status,
+        faceEncoding,
+        biometricId,
+        updatedAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2055,17 +2056,18 @@ class LocalSyncQueueItem extends DataClass
     int? attemptCount,
     DateTime? createdAt,
     Value<DateTime?> syncedAt = const Value.absent(),
-  }) => LocalSyncQueueItem(
-    id: id ?? this.id,
-    entityType: entityType ?? this.entityType,
-    entityId: entityId ?? this.entityId,
-    operation: operation ?? this.operation,
-    payload: payload ?? this.payload,
-    status: status ?? this.status,
-    attemptCount: attemptCount ?? this.attemptCount,
-    createdAt: createdAt ?? this.createdAt,
-    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
-  );
+  }) =>
+      LocalSyncQueueItem(
+        id: id ?? this.id,
+        entityType: entityType ?? this.entityType,
+        entityId: entityId ?? this.entityId,
+        operation: operation ?? this.operation,
+        payload: payload ?? this.payload,
+        status: status ?? this.status,
+        attemptCount: attemptCount ?? this.attemptCount,
+        createdAt: createdAt ?? this.createdAt,
+        syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
+      );
 
   @override
   String toString() {
@@ -2085,16 +2087,16 @@ class LocalSyncQueueItem extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    id,
-    entityType,
-    entityId,
-    operation,
-    payload,
-    status,
-    attemptCount,
-    createdAt,
-    syncedAt,
-  );
+        id,
+        entityType,
+        entityId,
+        operation,
+        payload,
+        status,
+        attemptCount,
+        createdAt,
+        syncedAt,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -2144,15 +2146,15 @@ class LocalSyncQueueCompanion extends UpdateCompanion<LocalSyncQueueItem> {
     Value<int> attemptCount = const Value.absent(),
     Value<DateTime> createdAt = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
-  }) : id = id,
-       entityType = Value(entityType),
-       entityId = Value(entityId),
-       operation = Value(operation),
-       payload = Value(payload),
-       status = status,
-       attemptCount = attemptCount,
-       createdAt = createdAt,
-       syncedAt = syncedAt;
+  })  : id = id,
+        entityType = Value(entityType),
+        entityId = Value(entityId),
+        operation = Value(operation),
+        payload = Value(payload),
+        status = status,
+        attemptCount = attemptCount,
+        createdAt = createdAt,
+        syncedAt = syncedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2284,16 +2286,16 @@ class $LocalSyncQueueTable extends LocalSyncQueue
 
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    entityType,
-    entityId,
-    operation,
-    payload,
-    status,
-    attemptCount,
-    createdAt,
-    syncedAt,
-  ];
+        id,
+        entityType,
+        entityId,
+        operation,
+        payload,
+        status,
+        attemptCount,
+        createdAt,
+        syncedAt,
+      ];
 
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2485,13 +2487,14 @@ class LocalDepartment extends DataClass implements Insertable<LocalDepartment> {
     String? name,
     Value<String?> code = const Value.absent(),
     DateTime? updatedAt,
-  }) => LocalDepartment(
-    id: id ?? this.id,
-    companyId: companyId ?? this.companyId,
-    name: name ?? this.name,
-    code: code.present ? code.value : this.code,
-    updatedAt: updatedAt ?? this.updatedAt,
-  );
+  }) =>
+      LocalDepartment(
+        id: id ?? this.id,
+        companyId: companyId ?? this.companyId,
+        name: name ?? this.name,
+        code: code.present ? code.value : this.code,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
 
   @override
   String toString() {
@@ -2540,11 +2543,11 @@ class LocalDepartmentsCompanion extends UpdateCompanion<LocalDepartment> {
     required String name,
     Value<String?> code = const Value.absent(),
     Value<DateTime> updatedAt = const Value.absent(),
-  }) : id = Value(id),
-       companyId = Value(companyId),
-       name = Value(name),
-       code = code,
-       updatedAt = updatedAt;
+  })  : id = Value(id),
+        companyId = Value(companyId),
+        name = Value(name),
+        code = code,
+        updatedAt = updatedAt;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2733,10 +2736,10 @@ abstract class _$EdgeDatabase extends GeneratedDatabase {
 
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    localAttendanceLogs,
-    localAbsences,
-    localEmployees,
-    localSyncQueue,
-    localDepartments,
-  ];
+        localAttendanceLogs,
+        localAbsences,
+        localEmployees,
+        localSyncQueue,
+        localDepartments,
+      ];
 }

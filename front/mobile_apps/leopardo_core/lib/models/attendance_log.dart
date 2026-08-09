@@ -55,37 +55,31 @@ class AttendanceLog {
 
     return AttendanceLog(
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
-      employeeId:
-          int.tryParse(
+      employeeId: int.tryParse(
             (json['employee_id'] ?? json['employeeId'])?.toString() ?? '',
           ) ??
           0,
       date: DateTime.parse(
         (json['date'] ?? DateTime.now().toIso8601String()) as String,
       ),
-      sessionNumber:
-          int.tryParse(
+      sessionNumber: int.tryParse(
             (json['session_number'] ?? json['sessionNumber'])?.toString() ?? '',
           ) ??
           1,
-      checkIn: json['check_in'] != null
-          ? DateTime.parse(json['check_in'])
-          : null,
-      checkOut: json['check_out'] != null
-          ? DateTime.parse(json['check_out'])
-          : null,
+      checkIn:
+          json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
+      checkOut:
+          json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
       status: (json['status'] ?? 'incomplete') as String,
       workType: (json['work_type'] ?? json['workType'] ?? 'normal').toString(),
       punchNote: json['punch_note']?.toString(),
       punchMeta: json['punch_meta'] is Map
           ? (json['punch_meta'] as Map).cast<String, dynamic>()
           : null,
-      workedHours: hoursRaw != null
-          ? double.tryParse(hoursRaw.toString())
-          : null,
-      overtimeHours: overtimeRaw != null
-          ? double.tryParse(overtimeRaw.toString())
-          : null,
+      workedHours:
+          hoursRaw != null ? double.tryParse(hoursRaw.toString()) : null,
+      overtimeHours:
+          overtimeRaw != null ? double.tryParse(overtimeRaw.toString()) : null,
       lateMinutes: lateRaw != null ? int.tryParse(lateRaw.toString()) : null,
       timezone: json['timezone']?.toString(),
       deviceTimezone: json['device_timezone']?.toString(),

@@ -52,12 +52,11 @@ class EmployeeDayDetail {
     final rawSessions = json['sessions'];
     final sessions = rawSessions is List
         ? rawSessions
-              .whereType<Map>()
-              .map(
-                (entry) =>
-                    AttendanceLog.fromJson(entry.cast<String, dynamic>()),
-              )
-              .toList()
+            .whereType<Map>()
+            .map(
+              (entry) => AttendanceLog.fromJson(entry.cast<String, dynamic>()),
+            )
+            .toList()
         : const <AttendanceLog>[];
 
     return EmployeeDayDetail(

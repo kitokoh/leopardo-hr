@@ -164,9 +164,8 @@ class DetailField {
         return value.toString();
 
       case DetailFieldType.number:
-        final num? numValue = value is num
-            ? value
-            : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
 
         if (format != null) {
@@ -203,16 +202,14 @@ class DetailField {
         return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
 
       case DetailFieldType.currency:
-        final num? numValue = value is num
-            ? value
-            : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(2)} €';
 
       case DetailFieldType.percentage:
-        final num? numValue = value is num
-            ? value
-            : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(1)}%';
 

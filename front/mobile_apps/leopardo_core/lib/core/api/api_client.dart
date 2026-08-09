@@ -28,14 +28,14 @@ class ApiClient {
   final VoidCallback? onUnauthorized;
 
   ApiClient(this._storage, this._preferences, {this.onUnauthorized})
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: resolveBaseUrl(),
-          connectTimeout: _defaultTimeout,
-          receiveTimeout: _defaultTimeout,
-          headers: {'Accept': 'application/json'},
-        ),
-      ) {
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: resolveBaseUrl(),
+            connectTimeout: _defaultTimeout,
+            receiveTimeout: _defaultTimeout,
+            headers: {'Accept': 'application/json'},
+          ),
+        ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -129,8 +129,7 @@ class ApiClient {
     Duration? timeoutOverride,
     RetryCallback? onRetry,
   }) async {
-    final maxRetries =
-        maxRetriesOverride ??
+    final maxRetries = maxRetriesOverride ??
         (isLoginRequest ? _loginMaxRetries : _defaultMaxRetries);
     final timeout =
         timeoutOverride ?? (isLoginRequest ? _loginTimeout : _defaultTimeout);
@@ -169,8 +168,7 @@ class ApiClient {
         lastError = e;
 
         final isColdStart = _isColdStartStatus(e.response?.statusCode ?? 0);
-        final isTimeout =
-            e.type == DioExceptionType.connectionTimeout ||
+        final isTimeout = e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
             e.type == DioExceptionType.sendTimeout;
         final isNetwork = e.type == DioExceptionType.connectionError;
@@ -195,8 +193,8 @@ class ApiClient {
       statusCode == 502 || statusCode == 503 || statusCode == 504;
 
   Future<void> _backoff(int attempt) => Future.delayed(
-    Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)),
-  );
+        Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)),
+      );
 
   DioException _handleError(DioException e) {
     String message = "Impossible de se connecter au serveur";

@@ -40,37 +40,37 @@ class _AttendanceModePickerScreenState
 
   /// Liste des modes disponibles avec leur libellÃ©, icÃ´ne et description.
   List<Map<String, dynamic>> get _modes => [
-    {
-      'id': 'gps_auto',
-      'label': 'GPS Automatique',
-      'icon': Icons.location_on_rounded,
-      'color': AppColors.mobileAccentGreen,
-      'description':
-          'Votre prÃ©sence est dÃ©tectÃ©e automatiquement dÃ¨s que vous entrez '
-          'dans la zone de l\'entreprise. Aucune action requise de votre part.',
-      'badge': 'RecommandÃ©',
-    },
-    {
-      'id': 'qr_code',
-      'label': 'QR Code',
-      'icon': Icons.qr_code_scanner_rounded,
-      'color': AppColors.mobileAccentPurple,
-      'description':
-          'Scannez le QR Code affichÃ© Ã  l\'entrÃ©e de l\'entreprise pour '
-          'pointer votre arrivÃ©e et votre dÃ©part.',
-      'badge': null,
-    },
-    {
-      'id': 'manual',
-      'label': 'Manuel',
-      'icon': Icons.touch_app_rounded,
-      'color': _muted,
-      'description':
-          'Pointez manuellement en appuyant sur les boutons ArrivÃ©e et '
-          'DÃ©part dans l\'Ã©cran de prÃ©sence.',
-      'badge': null,
-    },
-  ];
+        {
+          'id': 'gps_auto',
+          'label': 'GPS Automatique',
+          'icon': Icons.location_on_rounded,
+          'color': AppColors.mobileAccentGreen,
+          'description':
+              'Votre prÃ©sence est dÃ©tectÃ©e automatiquement dÃ¨s que vous entrez '
+                  'dans la zone de l\'entreprise. Aucune action requise de votre part.',
+          'badge': 'RecommandÃ©',
+        },
+        {
+          'id': 'qr_code',
+          'label': 'QR Code',
+          'icon': Icons.qr_code_scanner_rounded,
+          'color': AppColors.mobileAccentPurple,
+          'description':
+              'Scannez le QR Code affichÃ© Ã  l\'entrÃ©e de l\'entreprise pour '
+                  'pointer votre arrivÃ©e et votre dÃ©part.',
+          'badge': null,
+        },
+        {
+          'id': 'manual',
+          'label': 'Manuel',
+          'icon': Icons.touch_app_rounded,
+          'color': _muted,
+          'description':
+              'Pointez manuellement en appuyant sur les boutons ArrivÃ©e et '
+                  'DÃ©part dans l\'Ã©cran de prÃ©sence.',
+          'badge': null,
+        },
+      ];
 
   Future<void> _confirmSelection() async {
     if (_isSaving) return;

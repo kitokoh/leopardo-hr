@@ -35,12 +35,12 @@ class SmartAttendanceConfig {
   }
 
   Map<String, dynamic> toJson() => {
-    'forced_mode': forcedMode,
-    'gps_enabled': gpsEnabled,
-    'latitude': latitude,
-    'longitude': longitude,
-    'radius': radius,
-  };
+        'forced_mode': forcedMode,
+        'gps_enabled': gpsEnabled,
+        'latitude': latitude,
+        'longitude': longitude,
+        'radius': radius,
+      };
 
   /// Indique si la zone géographique est complètement configurée
   bool get hasValidZone =>

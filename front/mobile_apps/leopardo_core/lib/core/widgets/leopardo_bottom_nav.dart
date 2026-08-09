@@ -58,8 +58,7 @@ class LeopardoBottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: items.map((item) {
-              final isActive =
-                  currentRoute == item.route ||
+              final isActive = currentRoute == item.route ||
                   (item.route != '/' && currentRoute.startsWith(item.route));
               return _NavBarItem(
                 item: item,

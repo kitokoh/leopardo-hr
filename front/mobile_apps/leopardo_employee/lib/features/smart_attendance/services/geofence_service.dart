@@ -105,8 +105,7 @@ class GeofenceService {
     final deltaLambda = _toRadians(lng2 - lng1);
 
     // Formule Haversine
-    final a =
-        math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
+    final a = math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
         math.cos(phi1) *
             math.cos(phi2) *
             math.sin(deltaLambda / 2) *
