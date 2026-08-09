@@ -30,6 +30,12 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Couvre les deux chemins existants : `POST /employees/{id}/assign-role` (dashboard web) **et** `PATCH /employees/{id}` (utilisé par l'app mobile manager `TeamScreen._toggleHrRole`), qui contournait auparavant tout audit
   - Tests Feature : `RoleAssignmentAuditTest` (6 tests couvrant nomination/revocation sur les deux endpoints, non-régression sur les champs non lies au rôle, et rejet d'un manager non-principal)
 
+### Fixed
+- **test(f-13b): migration des tests Feature HR + Attendance + SmartAttendance vers les vraies migrations (issues #1593 #1606).**
+  - Les tests des modules HR (`HrControllerTest`), Attendance (13 fichiers) et SmartAttendance (5 fichiers) abandonnent le trait manuel `CreatesMvpSchema`/`CreatesSmartAttendanceSchema` (schéma SQL figé de ~2150 lignes, en dérive) au profit du trait `RefreshTenantDatabase` (vraies migrations `public` + `tenant`), sur le même pattern que Payroll et Absences
+  - Créations `Company`/`Employee` alignées sur les colonnes NOT NULL du vrai schéma (`plan_id`, `subscription_start`/`subscription_end`, `language`, `currency`, `first_name`/`last_name`)
+  - Le test de sécurité `KioskCrossTenantIsolationTest` (surface kiosk du module Attendance) est migré lui aussi ; les appels aux tables SmartAttendance créées à la main sont supprimés (tables désormais créées par les migrations)
+
 ## [4.21.0] - 2026-07-01
 
 ### Changed

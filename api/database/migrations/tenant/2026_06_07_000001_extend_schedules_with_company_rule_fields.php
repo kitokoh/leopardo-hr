@@ -8,28 +8,29 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('schedules')) {
+        $schema = resolveTableSchema('schedules');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('schedules', function (Blueprint $table): void {
-            if (! Schema::hasColumn('schedules', 'rest_days')) {
+        Schema::table("{$schema}.schedules", function (Blueprint $table): void {
+            if (! schemaHasColumn('schedules', 'rest_days')) {
                 $table->json('rest_days')->nullable()->after('work_days');
             }
 
-            if (! Schema::hasColumn('schedules', 'break_rules')) {
+            if (! schemaHasColumn('schedules', 'break_rules')) {
                 $table->json('break_rules')->nullable()->after('break_minutes');
             }
 
-            if (! Schema::hasColumn('schedules', 'leave_rules')) {
+            if (! schemaHasColumn('schedules', 'leave_rules')) {
                 $table->json('leave_rules')->nullable()->after('rest_days');
             }
 
-            if (! Schema::hasColumn('schedules', 'assignment_notes')) {
+            if (! schemaHasColumn('schedules', 'assignment_notes')) {
                 $table->text('assignment_notes')->nullable()->after('leave_rules');
             }
 
-            if (! Schema::hasColumn('schedules', 'updated_at')) {
+            if (! schemaHasColumn('schedules', 'updated_at')) {
                 $table->timestampTz('updated_at')->nullable()->after('created_at');
             }
         });
@@ -37,13 +38,14 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('schedules')) {
+        $schema = resolveTableSchema('schedules');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('schedules', function (Blueprint $table): void {
+        Schema::table("{$schema}.schedules", function (Blueprint $table): void {
             foreach (['rest_days', 'break_rules', 'leave_rules', 'assignment_notes'] as $column) {
-                if (Schema::hasColumn('schedules', $column)) {
+                if (schemaHasColumn('schedules', $column)) {
                     $table->dropColumn($column);
                 }
             }

@@ -705,9 +705,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/employees/{employee}/archive", options);
     },
 
+    /** Certificat de travail PDF (fin de contrat, F-08) */
+    getEmployeesByEmployeeCertificateOfEmployment(options = {}) {
+      return request("GET", "/employees/{employee}/certificate-of-employment", options);
+    },
+
     /** Resume journalier d'un employe */
     getEmployeesByEmployeeDailySummary(options = {}) {
       return request("GET", "/employees/{employee}/daily-summary", options);
+    },
+
+    /** Solde de tout compte (fin de contrat, F-08) */
+    getEmployeesByEmployeeEndOfContract(options = {}) {
+      return request("GET", "/employees/{employee}/end-of-contract", options);
     },
 
     /** Estimation sur periode */
@@ -1318,6 +1328,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Annuler une session de paie */
     postPayrollRunsByPayrollRunCancel(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/cancel", options);
+    },
+
+    /** Journal de paie mensuel CSV (F-10) */
+    getPayrollRunsByPayrollRunJournal(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/journal", options);
     },
 
     /** Lister les bulletins de paie d'une session */

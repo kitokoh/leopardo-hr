@@ -56,11 +56,15 @@ class AttendanceRepository {
               e.message.toLowerCase().contains('internet'))) {
         final box =
             await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
-        await box.add({
-          'type': 'check-in',
-          'payload': payload,
-          'timestamp': DateTime.now().toIso8601String()
-        });
+        // Règle F-21 « 1er pointage gagne » : un check-in déjà en file pour
+        // aujourd'hui n'est pas re-ajouté (le serveur rejetterait un doublon).
+        if (!await _hasQueuedPunchToday(box, 'check-in')) {
+          await box.add({
+            'type': 'check-in',
+            'payload': payload,
+            'timestamp': DateTime.now().toIso8601String()
+          });
+        }
         return AttendanceLog(
           id: 0,
           employeeId: 0,
@@ -108,11 +112,13 @@ class AttendanceRepository {
               e.message.toLowerCase().contains('internet'))) {
         final box =
             await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
-        await box.add({
-          'type': 'check-out',
-          'payload': payload,
-          'timestamp': DateTime.now().toIso8601String()
-        });
+        if (!await _hasQueuedPunchToday(box, 'check-out')) {
+          await box.add({
+            'type': 'check-out',
+            'payload': payload,
+            'timestamp': DateTime.now().toIso8601String()
+          });
+        }
         return AttendanceLog(
           id: 0,
           employeeId: 0,
@@ -437,5 +443,20 @@ class AttendanceRepository {
     final minutes = (absolute.inMinutes % 60).toString().padLeft(2, '0');
 
     return 'UTC$sign$hours:$minutes; local=${now.timeZoneName}';
+  }
+
+  /// Règle F-21 « 1er pointage gagne » : vérifie si un pointage du même type
+  /// est déjà en file pour aujourd'hui (évite les doublons hors-ligne).
+  Future<bool> _hasQueuedPunchToday(
+    Box<Map<dynamic, dynamic>> box,
+    String type,
+  ) async {
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    for (final item in box.values) {
+      if (item['type'] != type) continue;
+      final queuedAt = (item['timestamp'] as String?) ?? '';
+      if (queuedAt.startsWith(today)) return true;
+    }
+    return false;
   }
 }

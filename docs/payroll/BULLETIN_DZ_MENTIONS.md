@@ -25,7 +25,8 @@
 - brut = Σ lignes earning · net = brut − Σ déductions · totaux de run = Σ bulletins.
 - Chaque mention du bulletin a une donnée source dans PaySlip/PaySlipLine (test F-09).
 
-## État d'avancement
+## État d'avancement (2026-08-09)
 - [x] Données disponibles dans PaySlip/PaySlipLine (gross, net, lines typées).
-- [ ] Vue `pdf.payslip` alignée sur cette checklist (prochaine itération).
-- [ ] Archivage automatique Cabinet + horodatage (prochaine itération).
+- [x] Vue `pdf.payslip` alignée : bloc employeur (adresse + **NIF/RC/CNAS employeur/ID.Nat** via `company.metadata`), bloc employé, période/présence, rémunération détaillée, **cumuls annuels** (brut/retenues/net) — PR #1643.
+- [x] Test automatique des mentions : `PaySlipDzMentionsTest` (NIF/RC/CNAS/ID.Nat + cumuls annuels).
+- [ ] Archivage automatique Cabinet + horodatage (suivi #1548).
