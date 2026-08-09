@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
@@ -6,15 +7,16 @@ import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/primary_button.dart';
+import '../repositories/providers.dart';
 
-class PostCreateScreen extends StatefulWidget {
+class PostCreateScreen extends ConsumerStatefulWidget {
   const PostCreateScreen({super.key});
 
   @override
-  State<PostCreateScreen> createState() => _PostCreateScreenState();
+  ConsumerState<PostCreateScreen> createState() => _PostCreateScreenState();
 }
 
-class _PostCreateScreenState extends State<PostCreateScreen> {
+class _PostCreateScreenState extends ConsumerState<PostCreateScreen> {
   final TextEditingController _contentController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   List<XFile> _mediaFiles = [];
@@ -22,6 +24,7 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
   bool _postLinkedIn = true;
   bool _postFacebook = false;
   bool _postX = false;
+  bool _isSubmitting = false;
 
   DateTime? _scheduledDate;
   TimeOfDay? _scheduledTime;
@@ -57,6 +60,55 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
           _scheduledTime = pickedTime;
         });
       }
+    }
+  }
+
+  Future<void> _submitPost() async {
+    if (_contentController.text.trim().isEmpty) return;
+
+    setState(() => _isSubmitting = true);
+    try {
+      final repository = ref.read(socialPostRepositoryProvider);
+      List<String> platforms = [];
+      if (_postLinkedIn) platforms.add('linkedin');
+      if (_postFacebook) platforms.add('meta');
+      if (_postX) platforms.add('twitter');
+
+      String? scheduledAt;
+      if (_scheduledDate != null && _scheduledTime != null) {
+        final dt = DateTime(
+          _scheduledDate!.year,
+          _scheduledDate!.month,
+          _scheduledDate!.day,
+          _scheduledTime!.hour,
+          _scheduledTime!.minute,
+        );
+        scheduledAt = dt.toIso8601String();
+      }
+
+      await repository.createPost({
+        'content': _contentController.text.trim(),
+        'platforms': platforms,
+        'scheduled_at': scheduledAt,
+      });
+
+      // Refresh the calendar provider
+      ref.invalidate(postsProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post créé avec succès')),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -127,7 +179,7 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
           padding: const EdgeInsets.all(16.0),
           child: ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.schedule, color: AppColors.primary),
+            leading: const Icon(Icons.schedule, color: AppColors.primary),
             title: Text(
               _scheduledDate == null
                   ? 'Publier maintenant'
@@ -142,11 +194,10 @@ class _PostCreateScreenState extends State<PostCreateScreen> {
         ),
         const SizedBox(height: 32),
         PrimaryButton(
-          onPressed: () {
-            // Action to create post
-            context.pop();
-          },
-          text: _scheduledDate == null ? 'Publier' : 'Planifier le Post',
+          onPressed: _isSubmitting ? () {} : _submitPost,
+          text: _isSubmitting 
+              ? 'Création en cours...' 
+              : (_scheduledDate == null ? 'Publier' : 'Planifier le Post'),
         ),
         const SizedBox(height: 32),
       ],

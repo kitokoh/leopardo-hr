@@ -87,7 +87,7 @@
 
 ## 3. 🟠 Nouveaux points relevés (cette passe)
 
-1. **Secret Neon DB réel dans l'historique git** (`npg_xLVA9Cyn2rRU`, commit 70ca415c,
+1. **Secret Neon DB réel dans l'historique git** (`npg_***REDACTED***`, commit 70ca415c,
    docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md, avril 2026) — plus dans HEAD mais
    l'historique est public → **joindre à #1472** (purge). Détecté par TruffleHog local.
 2. **6 workflows `temp-*` de debug poussés sur main** (temp-dart-format, temp-regen-phpstan-strict,

@@ -53,6 +53,11 @@ jobs:
       - name: Copy env (as documented in DEVELOPMENT.md)
         run: cp api/.env.example api/.env
 
+      # Garde anti-régression (#1605) : .env.example doit rester parsable par
+      # phpdotenv et sans placeholder cassant le boot (REDIS_URL/AUTH_MODEL…).
+      - name: Guard .env.example safety (#1605)
+        run: bash dev-hub/tools/check-env-example-safety.sh
+
       # Volontairement identique a la commande documentee dans README.md /
       # DEVELOPMENT.md — pas un raccourci CI. Si cette etape ou une des
       # suivantes echoue, c'est que la doc d'onboarding elle-meme est cassee.
@@ -75,6 +80,14 @@ jobs:
           docker compose exec -T api composer install --no-interaction --prefer-dist
           docker compose exec -T api php artisan key:generate --force
 
+      # `php artisan serve` charge `.env` UNE SEULE fois au démarrage du
+      # processus (Dotenv immutable) : `key:generate` réécrit `.env` mais le
+      # serve tourne encore avec l'ancien APP_KEY (vide). Redémarrage explicite
+      # du conteneur pour que le serve reparte avec la nouvelle clé — sans
+      # quoi /api/v1/health répond 500 (cf. issue #1591, root cause #1608).
+      - name: Restart api so serve picks up the new APP_KEY
+        run: docker compose restart api
+
       - name: leopardo:migrate --seed --demo (the documented onboarding command)
         run: docker compose exec -T api php artisan leopardo:migrate --seed --demo
 
@@ -83,17 +96,21 @@ jobs:
           # `key:generate` rewrites .env and `php artisan serve` auto-restarts
           # on env change — retry the health probe so the check is not racing
           # the server restart window (observed as a flaky curl exit 22).
-          for i in $(seq 1 15); do
-            response=$(curl --fail --silent "http://localhost:8000/api/v1/health" 2>/dev/null || true)
-            if echo "$response" | grep -q '"status":"ok"'; then
-              echo "$response"
+          # Augmenté de 15 à 30 retries (60s) — anti-flaky (#1609), combiné à la
+          # root-cause #1591 (serve relit .env après restart api).
+          for i in $(seq 1 30); do
+            # Pas de --fail : on veut voir le code HTTP et le body réels.
+            code=$(curl -s -o /tmp/health_body.txt -w "%{http_code}" "http://localhost:8000/api/v1/health" || true)
+            if [ "$code" = "200" ] && grep -q '"status":"ok"' /tmp/health_body.txt; then
+              cat /tmp/health_body.txt
               echo "Health check OK (attempt $i)."
               exit 0
             fi
-            echo "Health check not ready yet (attempt $i/15)..."
+            echo "Health check not ready yet (attempt $i/30) — HTTP $code"
             sleep 2
           done
-          echo "$response"
+          echo "Last response body:"
+          cat /tmp/health_body.txt 2>/dev/null || echo "(vide)"
           echo "Health check never reported status ok."
           exit 1
 
@@ -127,7 +144,10 @@ jobs:
 
       - name: Dump container logs on failure
         if: failure()
-        run: docker compose logs --no-color --tail=200
+        run: |
+          docker compose logs --no-color --tail=200
+          echo "===== laravel.log (last 60) ====="
+          docker compose exec -T api sh -c 'tail -60 storage/logs/laravel.log 2>/dev/null || echo "(pas de laravel.log)"' || true
 
       - name: Tear down
         if: always()
