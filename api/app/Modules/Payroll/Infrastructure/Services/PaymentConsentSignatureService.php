@@ -33,7 +33,11 @@ class PaymentConsentSignatureService
             'amount' => number_format((float) $item->amount, 2, '.', ''),
             'currency' => $item->currency,
             'document_version' => $documentVersion,
-            'confirmed_at' => $confirmedAt->toIso8601String(),
+            // Canonicalisation UTC : le hash de consentement ne doit pas
+            // dépendre du fuseau de session PostgreSQL (CI en UTC, local en
+            // -04) ni du fuseau du serveur — deux représentations du même
+            // instant ne doivent pas produire deux signatures différentes.
+            'confirmed_at' => $confirmedAt->copy()->utc()->toIso8601String(),
         ];
     }
 
