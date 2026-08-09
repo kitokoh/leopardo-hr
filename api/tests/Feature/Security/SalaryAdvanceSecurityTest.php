@@ -261,7 +261,11 @@ class SalaryAdvanceSecurityTest extends TestCase
             ->where('employee_id', $employee->id)
             ->where('company_id', $company->id)
             ->where('type', 'payroll')
-            ->where('created_at', '>=', $testStartedAt)
+            // Binding ISO-8601 avec offset explicite : la comparaison ne dépend
+            // pas du fuseau de session PostgreSQL (la CI tourne en UTC, le
+            // local peut être -04 ; un binding naïf rend le test dépendant de
+            // l'hôte — cf. #1597).
+            ->whereRaw('created_at >= ?::timestamptz', [$testStartedAt->toIso8601String()])
             ->whereRaw("data->>'salary_advance_id' = ?", [(string) $advance->id])
             ->whereRaw("COALESCE(data->>'payment_document_id', '') = ''")
             ->get()

@@ -14,6 +14,16 @@ import path from "path";
  * `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
  * enforce it.
  *
+ * DÉCISION 2026-08-09 (#1607) :
+ *  - Statut : **Report-Only maintenu**. Aucune remontée de violations
+ *    collectée/analysée en production à ce jour ; le parcours checkout
+ *    Stripe + GA4/Mixpanel/Sentry charge des scripts tiers — passer en
+ *    enforce sans rapport propre exposerait la vitrine à une régression
+ *    bloquante (scripts bloqués, checkout cassé).
+ *  - Condition de bascule : collecter les violations (report-to/report-uri)
+ *    ≥ 1 cycle de release, vérifier zéro violation bloquante sur accueil /
+ *    docs / checkout, puis flipper la clé du header. Suivi : #1607.
+ *
  * Origins below come from what actually gets loaded today:
  *  - script-src: GA4 (googletagmanager.com), Mixpanel (mxpnl.com), Sentry
  *    browser bundle (sentry-cdn.com). 'unsafe-inline' is required because
