@@ -10,7 +10,9 @@ use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +20,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PayrollRunController extends Controller
 {
-    public function __construct(private readonly PayrollCalculator $calculator) {}
+    public function __construct(
+        private readonly PayrollCalculator $calculator,
+        private readonly PayrollClosingService $closing,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -113,19 +118,15 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        if ($payrollRun->status !== 'calculated') {
-            return response()->json(['message' => 'Only calculated payroll runs can be validated.'], 422);
+        try {
+            // Étape 1 du workflow F-11 : validation RH via le service de clôture
+            // (mise à jour conditionnelle atomique + audit trail `payroll_run_validated`).
+            $this->closing->validateRh($payrollRun, $actor);
+        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        DB::transaction(function () use ($payrollRun, $actor) {
-            $payrollRun->update([
-                'status' => 'validated',
-                'validated_by' => $actor->id,
-                'validated_at' => now(),
-            ]);
-
-            $payrollRun->paySlips()->update(['status' => 'validated']);
-        });
+        $payrollRun->paySlips()->update(['status' => 'validated']);
 
         if (config('performance.payroll.queue_pdf_warmup', true)) {
             WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
@@ -145,13 +146,66 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        if (in_array($payrollRun->status, ['paid', 'cancelled'], true)) {
-            return response()->json(['message' => 'Payroll run cannot be cancelled.'], 422);
+        if (in_array($payrollRun->status, ['paid', 'cancelled', 'locked'], true)) {
+            return response()->json(['message' => 'Payroll run cannot be cancelled in current status.'], 422);
         }
 
         $payrollRun->update(['status' => 'cancelled']);
 
         return (new PayrollRunResource($payrollRun->refresh()))->response();
+    }
+
+    /**
+     * Étape 2 du workflow F-11 — clôture comptable : verrouille un run validé.
+     * Toute modification ultérieure (recalcul, annulation) est refusée tant que
+     * le run est verrouillé ; l'opération est tracée (audit `payroll_run_locked`).
+     */
+    public function lock(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        try {
+            $this->closing->lock($payrollRun, $actor);
+        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
+    }
+
+    /**
+     * Déverrouillage motivé d'un run clôturé (retour à `validated`).
+     * La raison est obligatoire et tracée (audit `payroll_run_unlocked`).
+     */
+    public function unlock(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        try {
+            $this->closing->unlock($payrollRun, $actor, $validated['reason']);
+        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
     }
 
     public function summary(Request $request, PayrollRun $payrollRun): JsonResponse
