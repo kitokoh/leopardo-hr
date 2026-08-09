@@ -10,48 +10,49 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('tasks')) {
+        $schema = resolveTableSchema('tasks');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('tasks', function (Blueprint $table): void {
-            if (! Schema::hasColumn('tasks', 'estimated_minutes')) {
+        Schema::table("{$schema}.tasks", function (Blueprint $table): void {
+            if (! schemaHasColumn('tasks', 'estimated_minutes')) {
                 $table->unsignedSmallInteger('estimated_minutes')->nullable()->after('priority');
             }
 
-            if (! Schema::hasColumn('tasks', 'completed_minutes')) {
+            if (! schemaHasColumn('tasks', 'completed_minutes')) {
                 $table->unsignedSmallInteger('completed_minutes')->nullable()->after('estimated_minutes');
             }
 
-            if (! Schema::hasColumn('tasks', 'completed_at')) {
+            if (! schemaHasColumn('tasks', 'completed_at')) {
                 $table->timestampTz('completed_at')->nullable()->after('completed_minutes');
             }
 
-            if (! Schema::hasColumn('tasks', 'completion_note')) {
+            if (! schemaHasColumn('tasks', 'completion_note')) {
                 $table->text('completion_note')->nullable()->after('completed_at');
             }
 
-            if (! Schema::hasColumn('tasks', 'performance_score')) {
+            if (! schemaHasColumn('tasks', 'performance_score')) {
                 $table->decimal('performance_score', 5, 2)->nullable()->after('completion_note');
             }
 
-            if (! Schema::hasColumn('tasks', 'recurrence_rule')) {
+            if (! schemaHasColumn('tasks', 'recurrence_rule')) {
                 $table->string('recurrence_rule', 120)->nullable()->after('performance_score');
             }
 
-            if (! Schema::hasColumn('tasks', 'template_key')) {
+            if (! schemaHasColumn('tasks', 'template_key')) {
                 $table->string('template_key', 100)->nullable()->after('recurrence_rule')->index();
             }
 
-            if (! Schema::hasColumn('tasks', 'category')) {
+            if (! schemaHasColumn('tasks', 'category')) {
                 $table->string('category', 100)->nullable()->after('status');
             }
 
-            if (! Schema::hasColumn('tasks', 'checklist')) {
+            if (! schemaHasColumn('tasks', 'checklist')) {
                 $table->jsonb('checklist')->nullable()->after('category');
             }
 
-            if (! Schema::hasColumn('tasks', 'visibility')) {
+            if (! schemaHasColumn('tasks', 'visibility')) {
                 $table->string('visibility', 20)->default('visible')->after('checklist');
             }
         });
@@ -59,13 +60,14 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('tasks')) {
+        $schema = resolveTableSchema('tasks');
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('tasks', function (Blueprint $table): void {
+        Schema::table("{$schema}.tasks", function (Blueprint $table): void {
             foreach (['visibility', 'checklist', 'category', 'template_key', 'recurrence_rule', 'performance_score', 'completion_note', 'completed_at', 'completed_minutes', 'estimated_minutes'] as $column) {
-                if (Schema::hasColumn('tasks', $column)) {
+                if (schemaHasColumn('tasks', $column)) {
                     $table->dropColumn($column);
                 }
             }
