@@ -93,12 +93,16 @@ Assert-Contains `
     "leopardo_platform_admin" `
     "Mobile Apps CI"
 
+# PR #1396 extracted mobile distribution from deploy-main.yml into the
+# dedicated mobile-distribute-main.yml workflow. The checks that were
+# previously on deploy-main.yml are now on mobile-distribute-main.yml.
 $deployMain = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/deploy-main.yml") -Raw
 $mobileDistribute = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-distribute.yml") -Raw
+$mobileDistributeMain = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") -Raw
 
-Assert-Contains $deployMain "leopardo_platform_admin" "Deploy main mobile distribution"
-Assert-Contains $deployMain "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Deploy main mobile distribution"
-Assert-Contains $deployMain "leopardo-platform-admin-staging" "Deploy main mobile distribution"
+Assert-Contains $mobileDistributeMain "leopardo_platform_admin" "Deploy main mobile distribution"
+Assert-Contains $mobileDistributeMain "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Deploy main mobile distribution"
+Assert-Contains $mobileDistributeMain "leopardo-platform-admin-staging" "Deploy main mobile distribution"
 
 Assert-Contains $mobileDistribute "branches:" "Mobile distribute auto trigger"
 Assert-Contains $mobileDistribute "front/mobile_apps/**" "Mobile distribute auto trigger"
@@ -107,11 +111,11 @@ Assert-Contains $mobileDistribute "platform_admin" "Mobile distribute app select
 Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute matrix"
 Assert-Contains $mobileDistribute "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Mobile distribute matrix"
 Assert-Contains $mobileDistribute "FIREBASE_READBACK_REQUIRED" "Mobile distribute Firebase readback strict toggle"
-Assert-Contains $deployMain "FIREBASE_READBACK_REQUIRED" "Deploy main Firebase readback strict toggle"
+Assert-Contains $mobileDistributeMain "FIREBASE_READBACK_REQUIRED" "Deploy main Firebase readback strict toggle"
 Assert-Contains $mobileDistribute "mobilesdk_app_id" "Mobile distribute Firebase app id/native config guard"
 Assert-Contains $mobileDistribute "retrying readback with FIREBASE_TOKEN" "Mobile distribute Firebase token readback fallback"
-Assert-Contains $deployMain "mobilesdk_app_id" "Deploy main Firebase app id/native config guard"
-Assert-Contains $deployMain "retrying readback with FIREBASE_TOKEN" "Deploy main Firebase token readback fallback"
+Assert-Contains $mobileDistributeMain "mobilesdk_app_id" "Deploy main Firebase app id/native config guard"
+Assert-Contains $mobileDistributeMain "retrying readback with FIREBASE_TOKEN" "Deploy main Firebase token readback fallback"
 
 Assert-Contains `
     (Get-Content -LiteralPath (Join-Path $repoRoot "dev-hub/tools/install-mobile-firebase-configs.ps1") -Raw) `

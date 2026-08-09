@@ -431,10 +431,10 @@ onMounted(fetchData)
 <style scoped>
 @reference '../../style.css';
 .form-input {
-  @apply block w-full rounded-2xl border border-slate-200 glass-card px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
+  @apply block w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400 font-medium;
 }
 .form-select {
-  @apply rounded-xl border border-slate-200 glass-card px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-700 outline-none transition focus:border-brand-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200;
+  @apply rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold uppercase tracking-widest text-slate-700 outline-none transition focus:border-brand-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200;
 }
 </style>
 

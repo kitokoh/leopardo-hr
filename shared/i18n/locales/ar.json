@@ -255,5 +255,38 @@
     "launch_readiness": "جاهزية الإطلاق",
     "recent_activity": "النشاط الأخير",
     "recent_activity_hint": "آخر إجراءات فريقك"
+  },
+  "marketing": {
+    "oauth": {
+      "nav_title": "تسويق OAuth",
+      "title": "إعدادات OAuth التسويق",
+      "subtitle": "اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare",
+      "ayrshare_info": "تُستخدم هذه الإعدادات بواسطة Ayrshare للنشر على شبكاتك الاجتماعية.",
+      "save": "حفظ",
+      "saved_ok": "تم حفظ إعدادات {provider}",
+      "providers": {
+        "linkedin": {
+          "label": "لينكدإن",
+          "description": "الاتصال بـ LinkedIn Marketing API"
+        },
+        "facebook": {
+          "label": "فيسبوك / ميتا",
+          "description": "الاتصال بـ Facebook Graph API"
+        },
+        "twitter": {
+          "label": "إكس (تويتر)",
+          "description": "الاتصال بـ Twitter API v2"
+        }
+      },
+      "fields": {
+        "client_id": "معرف العميل",
+        "client_secret": "سر العميل",
+        "redirect_uri": "رابط إعادة التوجيه",
+        "secret_hint": "(اتركه فارغاً للإبقاء على الحالي)",
+        "placeholder_id": "معرف العميل الخاص بك",
+        "placeholder_secret": "سر جديد (اختياري)",
+        "placeholder_uri": "https://example.com/oauth/callback"
+      }
+    }
   }
 }

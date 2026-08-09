@@ -23,13 +23,13 @@
       </button>
     </div>
 
-    <div v-if="loading" class="rounded-lg glass-card p-8 text-center text-sm text-gray-500 shadow">
+    <div v-if="loading" class="rounded-lg p-8 text-center text-sm text-gray-500 shadow">
       Chargement du rapport...
     </div>
-    <div v-else-if="error" class="rounded-lg glass-card p-8 text-center text-sm text-red-600 shadow">
+    <div v-else-if="error" class="rounded-lg p-8 text-center text-sm text-red-600 shadow">
       {{ error }}
     </div>
-    <div v-else-if="reportData" class="rounded-lg glass-card p-6 shadow">
+    <div v-else-if="reportData" class="rounded-lg p-6 shadow">
       <h2 class="mb-4 text-lg font-semibold text-gray-900">
         {{ currentTabLabel }}
       </h2>

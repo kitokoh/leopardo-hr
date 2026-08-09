@@ -156,8 +156,13 @@ Assert-IosFirebaseBundle `
     "com.leopardo.manager" `
     "Manager"
 
+# PR #1396 extracted the mobile distribution step from deploy-main.yml into
+# the dedicated mobile-distribute-main.yml workflow. These checks now look
+# at the correct file for the Firebase read-after-write guard and the app-ID
+# secrets (deploy-main.yml still orchestrates the API deploy; the mobile
+# distribution logic lives in mobile-distribute-main.yml).
 Assert-FileContains `
-    (Join-Path $repoRoot ".github/workflows/deploy-main.yml") `
+    (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
     "appdistribution:releases:list" `
     "Main deploy Firebase read-after-write"
 Assert-FileContains `
@@ -165,11 +170,11 @@ Assert-FileContains `
     "appdistribution:releases:list" `
     "Manual mobile distribution Firebase read-after-write"
 Assert-FileContains `
-    (Join-Path $repoRoot ".github/workflows/deploy-main.yml") `
+    (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
     "FIREBASE_EMPLOYEE_ANDROID_APP_ID" `
     "Main deploy employee Firebase secret"
 Assert-FileContains `
-    (Join-Path $repoRoot ".github/workflows/deploy-main.yml") `
+    (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
     "FIREBASE_MANAGER_ANDROID_APP_ID" `
     "Main deploy manager Firebase secret"
 

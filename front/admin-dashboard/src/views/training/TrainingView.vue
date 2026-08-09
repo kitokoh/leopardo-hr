@@ -27,7 +27,7 @@
       <div
         v-for="course in courses"
         :key="course.id"
-        class="cursor-pointer rounded-lg glass-card p-5 shadow ring-1 ring-gray-200 transition hover:shadow-md hover:ring-indigo-300"
+        class="cursor-pointer rounded-lg p-5 shadow ring-1 ring-gray-200 transition hover:shadow-md hover:ring-indigo-300"
         @click="viewCourse(course)"
       >
         <div class="flex items-start justify-between">
@@ -93,7 +93,7 @@
       <div class="absolute inset-0 glass-bg0/50 transition-opacity" @click="closeDetail" />
       <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
         <div class="w-screen max-w-lg">
-          <div class="flex h-full flex-col overflow-y-auto glass-card shadow-xl">
+          <div class="flex h-full flex-col overflow-y-auto shadow-xl">
             <div class="border-b border-gray-200 px-6 py-4">
               <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-gray-900">{{ selectedCourse.title }}</h2>
