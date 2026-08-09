@@ -239,6 +239,7 @@ class PayrollReferenceControllersTest extends TestCase
 
     public function test_employee_cannot_manage_reference_data(): void
     {
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         Sanctum::actingAs($employee);
 
@@ -252,6 +253,7 @@ class PayrollReferenceControllersTest extends TestCase
 
     public function test_reference_data_is_tenant_scoped(): void
     {
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         SalaryStructure::create([
@@ -285,6 +287,7 @@ class PayrollReferenceControllersTest extends TestCase
 
     public function test_payment_document_metadata_is_encrypted_at_rest(): void
     {
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
 
         $doc = \App\Modules\Payroll\Domain\Models\PaymentDocument::create([
@@ -301,6 +304,8 @@ class PayrollReferenceControllersTest extends TestCase
 
         // Round-trip : la lecture via le cast renvoie le tableau déchiffré.
         $fresh = $doc->fresh();
+        $this->assertInstanceOf(\App\Modules\Payroll\Domain\Models\PaymentDocument::class, $fresh);
+        $this->assertIsArray($fresh->metadata);
         $this->assertSame(37500, $fresh->metadata['net_salary']);
         $this->assertSame('VIR-2026-07-001', $fresh->metadata['payment_reference']);
 
@@ -321,6 +326,7 @@ class PayrollReferenceControllersTest extends TestCase
     {
         // Simule une ligne historique en clair (avant F-17) puis exécute le
         // up() de la migration de backfill : la valeur doit passer en chiffré.
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $id = \Illuminate\Support\Facades\DB::table('payment_documents')->insertGetId([
             'company_id' => $this->company->id,
