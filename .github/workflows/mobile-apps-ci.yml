@@ -140,6 +140,13 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter test
 
+      # F-30 (#1560) : l'app employee (noyau pointage) doit avoir des tests
+      # critiques verts en CI — check-in/check-out, offline, anomalies.
+      - name: Run employee critical tests
+        if: matrix.project.name == 'leopardo_employee'
+        working-directory: ${{ matrix.project.path }}
+        run: flutter test
+
   flutter-build-debug:
     name: Build Debug ${{ matrix.project.name }}
     runs-on: ubuntu-latest
