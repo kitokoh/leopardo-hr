@@ -96,7 +96,9 @@ jobs:
           # `key:generate` rewrites .env and `php artisan serve` auto-restarts
           # on env change — retry the health probe so the check is not racing
           # the server restart window (observed as a flaky curl exit 22).
-          for i in $(seq 1 15); do
+          # Augmenté de 15 à 30 retries (60s) — anti-flaky (#1609), combiné à la
+          # root-cause #1591 (serve relit .env après restart api).
+          for i in $(seq 1 30); do
             # Pas de --fail : on veut voir le code HTTP et le body réels.
             code=$(curl -s -o /tmp/health_body.txt -w "%{http_code}" "http://localhost:8000/api/v1/health" || true)
             if [ "$code" = "200" ] && grep -q '"status":"ok"' /tmp/health_body.txt; then
@@ -104,7 +106,7 @@ jobs:
               echo "Health check OK (attempt $i)."
               exit 0
             fi
-            echo "Health check not ready yet (attempt $i/15) — HTTP $code"
+            echo "Health check not ready yet (attempt $i/30) — HTTP $code"
             sleep 2
           done
           echo "Last response body:"
