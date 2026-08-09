@@ -351,6 +351,38 @@
     }
 
     .status {
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: rgba(9, 20, 37, .7);
+    padding: 14px 18px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease;
+}
+
+.status-pulse-ok {
+    animation: statusPulseOk .9s ease;
+}
+
+.status-pulse-error {
+    animation: statusPulseError .9s ease;
+}
+
+@keyframes statusPulseOk {
+    0% { border-color: var(--accent); box-shadow: 0 0 0 0 rgba(16, 185, 129, .45); transform: scale(1); }
+    60% { border-color: var(--accent); box-shadow: 0 0 0 14px rgba(16, 185, 129, 0); transform: scale(1.015); }
+    100% { border-color: var(--line); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+}
+
+@keyframes statusPulseError {
+    0% { border-color: #ef4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, .45); }
+    60% { border-color: #ef4444; box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+    100% { border-color: var(--line); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+
       margin-top: 14px;
       min-height: 54px;
       border-radius: 16px;
