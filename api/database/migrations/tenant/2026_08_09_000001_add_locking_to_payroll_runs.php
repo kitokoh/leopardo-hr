@@ -52,32 +52,28 @@ return new class extends Migration
         // Colonne VARCHAR → toute valeur acceptée, aucune action.
 
         // 1b) Mettre à jour le CHECK constraint généré par Laravel
-        // (`payroll_runs_status_check`, liste explicite IN (...)) : l'ALTER TYPE
+        // (`payroll_runs_status_check`, liste explicite) : l'ALTER TYPE
         // ci-dessus ne l'affecte pas — sans cette étape, tout INSERT en statut
         // 'locked' échoue (SQLSTATE 23514, CI rouge 2026-08-09).
-        $checks = DB::select("
-            SELECT pg_get_constraintdef(oid) AS def
-            FROM pg_constraint
+        // Recréation VERSION-INDÉPENDANTE (le format de pg_get_constraintdef
+        // diffère entre PG14/PG16) : on reconstruit la liste complète des
+        // statuts au lieu de patcher la définition récupérée.
+        $hasLocked = DB::selectOne("
+            SELECT 1 FROM pg_constraint
             WHERE conrelid = 'payroll_runs'::regclass
               AND contype = 'c'
               AND conname = 'payroll_runs_status_check'
+              AND pg_get_constraintdef(oid) LIKE '%'locked'%'
         ");
-        foreach ($checks as $row) {
-            $def = (string) $row->def;
-            if (str_contains($def, "'locked'")) {
-                continue; // déjà à jour (idempotent)
-            }
-            $newDef = preg_replace(
-                "/'paid'::character varying/",
-                "'paid'::character varying, 'locked'::character varying",
-                $def,
-                1
-            );
-            if ($newDef === null || $newDef === $def) {
-                continue;
-            }
-            DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT payroll_runs_status_check");
-            DB::statement("ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check CHECK {$newDef}");
+        if ($hasLocked === null) {
+            DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
+            DB::statement("
+                ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check
+                CHECK ((status)::text = ANY ((ARRAY[
+                    'draft', 'calculating', 'calculated', 'validated',
+                    'paid', 'locked', 'cancelled'
+                ]::text[])))
+            ");
         }
 
         // 2) Colonnes de verrouillage.
