@@ -19,7 +19,12 @@ class ExpenseClaimResource extends JsonResource
             'id' => $this->id,
             'employee_id' => $this->employee_id,
             'title' => $this->title,
-            'amount' => $this->amount,
+            // Audit passe 3 (#1608) : `amount` était un champ fantôme (absent du
+            // modèle, toujours null) ; le champ réel est `total_amount`. On
+            // expose la valeur réelle, avec `amount` conservé en alias pour la
+            // compatibilité des clients existants.
+            'total_amount' => $this->total_amount,
+            'amount' => $this->total_amount,
             'currency' => $this->currency,
             'category' => $this->category,
             'description' => $this->description,

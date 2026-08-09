@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Shared\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * @property int $id
@@ -19,7 +21,8 @@ use Illuminate\Support\Str;
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Language extends Model
 {
@@ -71,7 +74,7 @@ class Language extends Model
 
     public static function activeCodes(): array
     {
-        return Cache::remember(self::ACTIVE_CODES_CACHE_KEY, now()->addMinutes(10), function (): array {
+        $resolve = function (): array {
             if (! self::publicLanguagesTableExists()) {
                 return self::SUPPORTED;
             }
@@ -84,19 +87,37 @@ class Language extends Model
                 ->all();
 
             return $codes !== [] ? $codes : self::SUPPORTED;
-        });
+        };
+
+        try {
+            return Cache::remember(self::ACTIVE_CODES_CACHE_KEY, now()->addMinutes(10), $resolve);
+        } catch (Throwable) {
+            // Le cache (Redis) peut être indisponible (démarrage, incident) :
+            // on ne fait pas tomber toute l'API — le résolveur DB reste la
+            // source de vérité. La sonde /api/v1/health doit rester joignable
+            // même cache dégradé (HealthController documente ce contrat).
+            return $resolve();
+        }
     }
 
     private static function publicLanguagesTableExists(): bool
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            return self::query()->getModel()->getConnection()->getSchemaBuilder()->hasTable('languages');
-        }
+        try {
+            if (DB::getDriverName() !== 'pgsql') {
+                return self::query()->getModel()->getConnection()->getSchemaBuilder()->hasTable('languages');
+            }
 
-        return DB::table('information_schema.tables')
-            ->where('table_schema', 'public')
-            ->where('table_name', 'languages')
-            ->exists();
+            return DB::table('information_schema.tables')
+                ->where('table_schema', 'public')
+                ->where('table_name', 'languages')
+                ->exists();
+        } catch (Throwable) {
+            // DB injoignable (démarrage, incident réseau) : on ne fait pas
+            // tomber toute l'API — SetLocale doit rester fonctionnel avec les
+            // codes par défaut (la sonde /api/v1/health reporte la DB en 503,
+            // pas en 500 HTML, cf. contrat HealthController).
+            return false;
+        }
     }
 
     private static function publicLanguagesQuery()

@@ -54,7 +54,7 @@ class PaymentItem extends Model
         'amount' => 'float',
         'paid_at' => 'datetime',
         'confirmed_at' => 'datetime',
-        'metadata' => 'array',
+        'metadata' => 'encrypted:array',
     ];
 
     /** @return BelongsTo<PaymentBatch, $this> */
