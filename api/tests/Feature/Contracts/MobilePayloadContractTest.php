@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Contracts;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -22,6 +22,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_auth_me_payload_matches_mobile_contract(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
@@ -37,6 +38,7 @@ class MobilePayloadContractTest extends TestCase
             'features' => ['rh' => true, 'finance' => true],
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-NORA',
@@ -118,6 +120,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_me_daily_summary_payload_matches_mobile_contract(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
@@ -132,6 +135,7 @@ class MobilePayloadContractTest extends TestCase
             'currency' => 'DZD',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-ME',
@@ -189,6 +193,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_attendance_today_collection_payload_matches_mobile_contract(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
@@ -202,6 +207,7 @@ class MobilePayloadContractTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
+        /** @var Employee $manager */
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'first_name' => 'Leila',
@@ -212,6 +218,7 @@ class MobilePayloadContractTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'first_name' => 'Sami',
@@ -274,6 +281,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_employees_index_payload_matches_mobile_contract(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
@@ -289,6 +297,7 @@ class MobilePayloadContractTest extends TestCase
             'features' => ['rh' => true, 'finance' => true],
         ]);
 
+        /** @var Employee $manager */
         $manager = Employee::query()->create([
             'company_id' => $company->id,
             'first_name' => 'Leila',
@@ -358,6 +367,7 @@ class MobilePayloadContractTest extends TestCase
 
     public function test_attendance_history_payload_matches_mobile_contract(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
@@ -370,6 +380,7 @@ class MobilePayloadContractTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::query()->create([
             'company_id' => $company->id,
             'matricule' => 'EMP-H',
@@ -426,4 +437,3 @@ class MobilePayloadContractTest extends TestCase
         ]);
     }
 }
-
