@@ -21,15 +21,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('attendance_mode_settings') && ! Schema::hasColumn('attendance_mode_settings', 'punch_photo_mode')) {
-            Schema::table('attendance_mode_settings', function (Blueprint $table): void {
+        $schema = resolveTableSchema('attendance_mode_settings');
+        if ($schema !== null && ! schemaHasColumn('attendance_mode_settings', 'punch_photo_mode')) {
+            Schema::table("{$schema}.attendance_mode_settings", function (Blueprint $table): void {
                 // Valeurs: null | kiosk | photo_required
                 $table->string('punch_photo_mode', 20)->nullable()->after('forced_mode');
             });
         }
 
-        if (Schema::hasTable('attendance_logs') && ! Schema::hasColumn('attendance_logs', 'punch_photo_path')) {
-            Schema::table('attendance_logs', function (Blueprint $table): void {
+        $schema = resolveTableSchema('attendance_logs');
+        if ($schema !== null && ! schemaHasColumn('attendance_logs', 'punch_photo_path')) {
+            Schema::table("{$schema}.attendance_logs", function (Blueprint $table): void {
                 $table->string('punch_photo_path', 255)->nullable()->after('punch_meta');
             });
         }
@@ -37,14 +39,16 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('attendance_logs') && Schema::hasColumn('attendance_logs', 'punch_photo_path')) {
-            Schema::table('attendance_logs', function (Blueprint $table): void {
+        $schema = resolveTableSchema('attendance_logs');
+        if ($schema !== null && schemaHasColumn('attendance_logs', 'punch_photo_path')) {
+            Schema::table("{$schema}.attendance_logs", function (Blueprint $table): void {
                 $table->dropColumn('punch_photo_path');
             });
         }
 
-        if (Schema::hasTable('attendance_mode_settings') && Schema::hasColumn('attendance_mode_settings', 'punch_photo_mode')) {
-            Schema::table('attendance_mode_settings', function (Blueprint $table): void {
+        $schema = resolveTableSchema('attendance_mode_settings');
+        if ($schema !== null && schemaHasColumn('attendance_mode_settings', 'punch_photo_mode')) {
+            Schema::table("{$schema}.attendance_mode_settings", function (Blueprint $table): void {
                 $table->dropColumn('punch_photo_mode');
             });
         }

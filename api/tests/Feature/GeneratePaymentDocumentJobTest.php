@@ -10,7 +10,7 @@ use App\Jobs\GeneratePaymentDocumentJob;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Facades\Storage;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -27,19 +27,12 @@ use Tests\TestCase;
  */
 class GeneratePaymentDocumentJobTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         Storage::fake('local');
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     public function test_advance_receipt_job_generates_pdf_with_correct_amount_and_currency(): void

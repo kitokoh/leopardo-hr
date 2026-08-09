@@ -40,6 +40,7 @@ return [
     'payslip_column_amount' => 'Tutar',
     'payslip_gross_salary' => 'Brüt maaş',
     'payslip_total_deductions' => 'Toplam kesinti',
+    'payslip_annual_cumuls' => 'Yıllık kümülatifler',
     'payslip_net_to_pay' => 'ÖDENECEK NET TUTAR',
     'payslip_generated_on' => 'Belge :date tarihinde oluşturuldu',
     'payslip_official_notice' => 'Bu maaş bordrosu resmi bir belgedir. Süresiz olarak saklayınız.',

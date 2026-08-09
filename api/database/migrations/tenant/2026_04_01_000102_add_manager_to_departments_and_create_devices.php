@@ -16,9 +16,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('departments');
+
         // ── 1. departments.manager_id — résolution dépendance circulaire ───────
-        if (! Schema::hasColumn('departments', 'manager_id')) {
-            Schema::table('departments', function (Blueprint $table) {
+        if (! schemaHasColumn('departments', 'manager_id')) {
+            Schema::table("{$schema}.departments", function (Blueprint $table) {
                 $table->unsignedInteger('manager_id')->nullable()->after('name');
                 $table->foreign('manager_id')
                     ->references('id')->on('employees')
@@ -68,9 +71,12 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('departments');
+
         Schema::dropIfExists('devices');
         Schema::dropIfExists('employee_devices');
-        Schema::table('departments', function (Blueprint $table) {
+        Schema::table("{$schema}.departments", function (Blueprint $table) {
             $table->dropForeign(['manager_id']);
             $table->dropColumn('manager_id');
         });
