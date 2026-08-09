@@ -60,23 +60,26 @@ class PayrollClosingService
                 ]);
 
             if ($updated === 0) {
-                throw new PayrollRunLockedException('L\'état du run a changé entre la lecture et la validation.');
+                $fresh = $run->fresh();
+                throw $fresh?->status === PayrollRun::STATUS_LOCKED
+                    ? new PayrollRunLockedException()
+                    : new PayrollAlreadyValidatedException('L\'état du run a changé entre la lecture et la validation.');
             }
 
-            $fresh = $run->fresh() ?? $run;
+            $run->refresh();
             $this->writeAudit(
-                $fresh,
+                $run,
                 $validator,
                 'payroll_run_validated',
                 ['status' => PayrollRun::STATUS_CALCULATED],
                 [
                     'status' => PayrollRun::STATUS_VALIDATED,
                     'validated_by' => $validator->id,
-                    'validated_at' => $fresh->validated_at?->toISOString(),
+                    'validated_at' => $run->validated_at?->toISOString(),
                 ]
             );
 
-            return $fresh;
+            return $run;
         });
     }
 
@@ -112,20 +115,20 @@ class PayrollClosingService
                     : new \RuntimeException('L\'état du run a changé entre la lecture et le verrouillage.');
             }
 
-            $fresh = $run->fresh() ?? $run;
+            $run->refresh();
             $this->writeAudit(
-                $fresh,
+                $run,
                 $validator,
                 'payroll_run_locked',
                 ['status' => PayrollRun::STATUS_VALIDATED],
                 [
                     'status' => PayrollRun::STATUS_LOCKED,
                     'locked_by' => $validator->id,
-                    'locked_at' => $fresh->locked_at?->toISOString(),
+                    'locked_at' => $run->locked_at?->toISOString(),
                 ]
             );
 
-            return $fresh;
+            return $run;
         });
     }
 
@@ -155,20 +158,23 @@ class PayrollClosingService
                 ]);
 
             if ($updated === 0) {
-                throw new PayrollRunLockedException('L\'état du run a changé entre la lecture et le déverrouillage.');
+                $fresh = $run->fresh();
+                throw $fresh?->status === PayrollRun::STATUS_LOCKED
+                    ? new PayrollRunLockedException('L\'état du run a changé entre la lecture et le déverrouillage.')
+                    : new \RuntimeException('L\'état du run a changé entre la lecture et le déverrouillage.');
             }
 
-            $fresh = $run->fresh() ?? $run;
+            $run->refresh();
             $this->writeAudit(
-                $fresh,
+                $run,
                 $actor,
                 'payroll_run_unlocked',
-                ['status' => PayrollRun::STATUS_LOCKED],
-                ['status' => PayrollRun::STATUS_VALIDATED],
+                ['status' => PayrollRun::STATUS_LOCKED, 'locked_by' => $run->getOriginal('locked_by'), 'locked_at' => $run->getOriginal('locked_at')?->toISOString()],
+                ['status' => PayrollRun::STATUS_VALIDATED, 'locked_by' => null, 'locked_at' => null],
                 $reason
             );
 
-            return $fresh;
+            return $run;
         });
     }
 

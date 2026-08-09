@@ -66,7 +66,7 @@ class PayrollClosingTest extends TestCase
         // Audit trail : 2 entrées.
         $logs = AuditLog::where('company_id', $company->id)->where('auditable_type', $run->getMorphClass())->get();
         $this->assertCount(2, $logs);
-        $this->assertSame(['payroll_run_validated', 'payroll_run_locked'], $logs->pluck('action')->sort()->values()->all());
+        $this->assertSame(['payroll_run_validated', 'payroll_run_locked'], $logs->pluck('action')->values()->all());
     }
 
     public function test_lock_requires_rh_validation_first(): void
@@ -110,7 +110,7 @@ class PayrollClosingTest extends TestCase
             $service->unlock($run, $comptable, '');
             $this->fail('Unlock without reason should throw.');
         } catch (\RuntimeException $e) {
-            $this->assertStringContainsString('reason', $e->getMessage());
+            $this->assertStringContainsString('raison', $e->getMessage());
         }
 
         // Déverrouillage motivé.
