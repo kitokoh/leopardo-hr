@@ -75,7 +75,7 @@ class ContractWorkflowTest extends TestCase
 
     private function makeManagerAndCompany(): array
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Contract Co',
             'slug' => 'contract-co',
             'sector' => 'construction',
@@ -115,7 +115,7 @@ class ContractWorkflowTest extends TestCase
 
     private function makeOtherTenant(string $suffix = '02'): array
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => "Other Contract Co {$suffix}",
             'slug' => "other-contract-co-{$suffix}",
             'sector' => 'services',
