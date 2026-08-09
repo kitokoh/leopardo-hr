@@ -24,10 +24,11 @@ use Tests\TestCase;
  * Scénario calculé à la main :
  *   base mensuelle 60 000 DZD · 10 jours de congé payé · 22 jours ouvrés
  *   référence 12 mois réelle : 12 bulletins validés à 100 000 → 1 200 000
- *   acquis réels : LeaveBalance = 25 j (au lieu du défaut 30)
+ *   acquis réels : LeaveBalance balance 25 + used 5 = 30 j (et non le seul
+ *   solde restant 25 — corr. audit 2026-08-09, #1634)
  *
  *   maintien = 60 000 × 10 / 22          = 27 272,73
- *   1/10ᵉ    = (1 200 000 / 10) × 10/25  = 48 000,00  → retenu (plus favorable)
+ *   1/10ᵉ    = (1 200 000 / 10) × 10/30  = 40 000,00  → retenu (plus favorable)
  *
  * Avec l'ancienne approximation (base×12 = 720 000 / acquis 30) :
  *   1/10ᵉ = 24 000 < maintien → 27 272,73 aurait été retenu à tort.
@@ -100,10 +101,13 @@ class GoldenDzLeaveIndemnityRealDataTest extends TestCase
             ]);
         }
 
-        // Jours acquis réels : 25 (LeaveBalance, année de la période du run).
+        // Jours acquis réels : 30 (balance restante 25 + 5 déjà pris —
+        // LeaveBalance.balance n'est que le restant, l'acquisition = balance
+        // + used + pending, année de la période du run).
         LeaveBalance::create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
+            'absence_type_id' => $type->id,
             'balance' => 25,
             'used' => 5,
             'pending' => 0,
@@ -126,7 +130,7 @@ class GoldenDzLeaveIndemnityRealDataTest extends TestCase
 
         $indemnityLine = $slip->lines->where('name', 'Indemnité de congés payés')->first();
         $this->assertNotNull($indemnityLine, 'La ligne indemnité de congés payés doit être présente.');
-        $this->assertSame(48000.0, (float) $indemnityLine->amount);
+        $this->assertSame(40000.0, (float) $indemnityLine->amount);
     }
 
     public function test_leave_indemnity_falls_back_without_history(): void

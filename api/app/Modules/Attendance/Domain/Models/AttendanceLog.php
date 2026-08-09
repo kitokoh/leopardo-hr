@@ -30,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $corrected_by
  * @property bool $synced_from_offline
  * @property array|null $punch_meta
+ * @property string $work_type
+ * @property string|null $punch_note
  * @property string|null $punch_photo_path
  * @property Carbon $created_at
  * @property Carbon $updated_at

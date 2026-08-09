@@ -15,8 +15,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('employees') && ! Schema::hasColumn('employees', 'metadata')) {
-            Schema::table('employees', function (Blueprint $table): void {
+        $schema = resolveTableSchema('employees');
+        if ($schema !== null && ! schemaHasColumn('employees', 'metadata')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table): void {
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
             });
 
@@ -29,8 +30,9 @@ return new class extends Migration
     {
         DB::statement('DROP INDEX IF EXISTS employees_metadata_gin');
 
-        if (Schema::hasTable('employees') && Schema::hasColumn('employees', 'metadata')) {
-            Schema::table('employees', function (Blueprint $table): void {
+        $schema = resolveTableSchema('employees');
+        if ($schema !== null && schemaHasColumn('employees', 'metadata')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table): void {
                 $table->dropColumn('metadata');
             });
         }

@@ -21,8 +21,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasColumn('company_announcements', 'status')) {
-            Schema::table('company_announcements', function (Blueprint $table): void {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('company_announcements');
+
+        if (! schemaHasColumn('company_announcements', 'status')) {
+            Schema::table("{$schema}.company_announcements", function (Blueprint $table): void {
                 // draft: saved but never fanned out; scheduled: will publish
                 // at scheduled_at via the announcements:publish-scheduled
                 // command; published: already fanned out (existing rows and
@@ -40,25 +43,28 @@ return new class extends Migration
             // default column above — no data backfill needed beyond the
             // column default itself.
 
-            Schema::table('company_announcements', function (Blueprint $table): void {
+            Schema::table("{$schema}.company_announcements", function (Blueprint $table): void {
                 $table->index(['company_id', 'status']);
                 $table->index(['status', 'scheduled_at']);
             });
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE company_announcements ADD CONSTRAINT company_announcements_status_check CHECK (status IN ('draft', 'scheduled', 'published', 'cancelled'))");
+            DB::statement("ALTER TABLE \"{$schema}\".\"company_announcements\" ADD CONSTRAINT company_announcements_status_check CHECK (status IN ('draft', 'scheduled', 'published', 'cancelled'))");
         }
     }
 
     public function down(): void
     {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('company_announcements');
+
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE company_announcements DROP CONSTRAINT IF EXISTS company_announcements_status_check');
+            DB::statement("ALTER TABLE \"{$schema}\".\"company_announcements\" DROP CONSTRAINT IF EXISTS company_announcements_status_check");
         }
 
-        if (Schema::hasColumn('company_announcements', 'status')) {
-            Schema::table('company_announcements', function (Blueprint $table): void {
+        if (schemaHasColumn('company_announcements', 'status')) {
+            Schema::table("{$schema}.company_announcements", function (Blueprint $table): void {
                 $table->dropIndex(['company_id', 'status']);
                 $table->dropIndex(['status', 'scheduled_at']);
                 $table->dropColumn(['status', 'scheduled_at', 'cancelled_at', 'cancelled_by']);
