@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -205,7 +206,8 @@ class PayrollCalculator
                 $baseSalary,
                 $inputs['paid_leave_days'],
                 $worked['working_days'],
-                $baseSalary * 12.0 // référence 12 mois (approximation documentée F-07)
+                $this->referenceGross12Months($run, $employee, $baseSalary),
+                $this->accruedLeaveDays($run, $employee)
             )
             : 0.0;
 
@@ -443,6 +445,44 @@ class PayrollCalculator
      * Intégration à venir : alimentée par les absences approuvées (F-20),
      * versée dans le bulletin lors d'un départ en congé.
      */
+    /**
+     * F-07 (#1537) — salaires bruts validés des 12 mois précédant la période
+     * du run (règle du 1/10ᵉ). Fallback : base mensuelle × 12 quand aucun
+     * historique validé n'existe encore (premier cycle de paie).
+     */
+    private function referenceGross12Months(PayrollRun $run, Employee $employee, float $baseSalary): float
+    {
+        $twelveMonthsAgo = (clone $run->period_start)->subMonths(12);
+
+        $gross = PaySlip::query()
+            ->where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->where('status', 'validated')
+            ->where('period_start', '>=', $twelveMonthsAgo)
+            ->where('period_start', '<', $run->period_start)
+            ->sum('gross_salary');
+
+        return $gross > 0.0 ? (float) $gross : $baseSalary * 12.0;
+    }
+
+    /**
+     * F-07 (#1537) — jours de congés acquis par l'employé (LeaveBalance,
+     * alimenté par `leave:accrue`) sur l'année de la période du run.
+     * Fallback : 30 jours (acquisition légale DZ, congés payés annuels).
+     */
+    private function accruedLeaveDays(PayrollRun $run, Employee $employee): float
+    {
+        $year = (int) $run->period_start->format('Y');
+
+        $days = LeaveBalance::query()
+            ->where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->where('year', $year)
+            ->sum('balance');
+
+        return $days > 0.0 ? (float) $days : 30.0;
+    }
+
     public function computeLeaveIndemnity(
         float $monthlyBase,
         float $leaveDays,
