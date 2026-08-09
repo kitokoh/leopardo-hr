@@ -1064,6 +1064,10 @@ class LeopardoClient:
         """Voir une session de paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
+        """Rapport d'anomalies pre-cloture (F-20)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/anomalies", **kwargs)
+
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/calculate", **kwargs)
