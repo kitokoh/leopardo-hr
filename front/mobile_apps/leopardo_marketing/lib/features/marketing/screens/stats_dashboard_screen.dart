@@ -27,14 +27,16 @@ class MarketingStats {
 
 class PlatformStats {
   final String platform;
+  final int posts;
   final int impressions;
-  final int likes;
+  final int engagements;
   final int clicks;
 
   const PlatformStats({
     required this.platform,
+    required this.posts,
     required this.impressions,
-    required this.likes,
+    required this.engagements,
     required this.clicks,
   });
 }
