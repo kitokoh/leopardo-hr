@@ -31,6 +31,11 @@
         @if(!empty($company->city)) — {{ $company->city }} @endif
         @if(!empty($company->country)) ({{ $company->country }}) @endif
     </div>
+    @if(!empty($companyLegal))
+    <div style="font-size: 9px; color: #555; margin-top: 4px;">
+        @foreach($companyLegal as $label => $value) <span>{{ $label }} : {{ $value }}</span>@if(!$loop->last) · @endif @endforeach
+    </div>
+    @endif
 
     <div class="title">{{ __('pdf.payslip_title') }}</div>
     <div class="period">{{ __('pdf.period') }} : {{ $slip->period_start->format('d/m/Y') }} — {{ $slip->period_end->format('d/m/Y') }}</div>
@@ -122,6 +127,22 @@
             <td class="amount">{{ number_format($slip->total_deductions, 2, ',', ' ') }} {{ $currency }}</td>
         </tr>
     </table>
+
+    @if(($annualCumuls['gross'] ?? 0) > 0)
+    <div class="section-title">{{ __('pdf.payslip_annual_cumuls') }}</div>
+    <table>
+        <tr>
+            <th>{{ __('pdf.payslip_gross_salary') }}</th>
+            <th>{{ __('pdf.payslip_total_deductions') }}</th>
+            <th>{{ __('pdf.payslip_net_to_pay') }}</th>
+        </tr>
+        <tr>
+            <td class="amount">{{ number_format($annualCumuls['gross'], 2, ',', ' ') }} {{ $currency }}</td>
+            <td class="amount">{{ number_format($annualCumuls['deductions'], 2, ',', ' ') }} {{ $currency }}</td>
+            <td class="amount">{{ number_format($annualCumuls['net'], 2, ',', ' ') }} {{ $currency }}</td>
+        </tr>
+    </table>
+    @endif
 
     <div class="net-box">
         <div class="net-label">{{ __('pdf.payslip_net_to_pay') }}</div>
