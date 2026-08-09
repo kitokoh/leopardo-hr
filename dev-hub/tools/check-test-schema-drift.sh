@@ -21,6 +21,39 @@
 # L'objectif à terme : supprimer CreatesMvpSchema au profit des vraies
 # migrations (RefreshTenantDatabase) — voir issues #1489 / #1543 (F-13).
 set -uo pipefail
+# ── Mode rapport F-13 (#1543) : % tests du noyau sur les vraies migrations ──
+if [[ "${1:-}" == "--report-f13" ]]; then
+  API_DIR="${2:-api}"
+  FEATURE_DIR="${API_DIR}/tests/Feature"
+  CORE_MODULES="Payroll HR Attendance SmartAttendance Contracts"
+  total=0; real=0; manual=0
+  for mod in $CORE_MODULES; do
+    dir="${FEATURE_DIR}/${mod}"
+    [[ -d "${dir}" ]] || continue
+    while IFS= read -r f; do
+      total=$((total + 1))
+      if grep -q "RefreshTenantDatabase" "${f}"; then
+        real=$((real + 1))
+      elif grep -q "CreatesMvpSchema" "${f}"; then
+        manual=$((manual + 1))
+      else
+        real=$((real + 1))   # ni l'un ni l'autre (Golden, unit-like) => pas de schéma manuel
+      fi
+    done < <(find "${dir}" -name "*Test.php" | sort)
+  done
+  pct=0
+  if [[ "${total}" -gt 0 ]]; then
+    pct=$((real * 100 / total))
+  fi
+  echo "F-13 (#1543) — tests du noyau sur vraies migrations :"
+  echo "  total=${total} refresh=${real} manual=${manual}  =>  ${pct}% sur migrations réelles (cible ≥ 80%)"
+  if [[ "${pct}" -ge 80 ]]; then
+    echo "  OK Seuil F-13 atteint (≥ 80%)."
+  else
+    echo "  WARN Seuil F-13 non atteint — reste ${manual} fichier(s) sur le schéma manuel."
+  fi
+  exit 0
+fi
 
 API_DIR="${1:-api}"
 
