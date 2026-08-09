@@ -10,6 +10,7 @@ import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/payrolls/providers/payroll_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 
 class PayrollListScreen extends ConsumerStatefulWidget {
   const PayrollListScreen({super.key});
@@ -170,7 +171,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
               else
                 ...payrolls.map((payroll) {
                   final isDownloading = _downloadingId == payroll.id;
-                  return MobilePanel(
+                  return GlassCard(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       children: [
@@ -446,7 +447,7 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return summaryAsync.when(
-      data: (summary) => MobilePanel(
+      data: (summary) => GlassCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -557,14 +558,14 @@ class _SummaryCard extends StatelessWidget {
           ],
         ),
       ),
-      loading: () => const MobilePanel(
+      loading: () => const GlassCard(
         child: LinearProgressIndicator(
           minHeight: 3,
           color: AppColors.rh,
           backgroundColor: MobileSurface.surface,
         ),
       ),
-      error: (_, __) => const MobilePanel(
+      error: (_, __) => const GlassCard(
         child: Text(
           'Resume paie temporairement indisponible',
           style: TextStyle(color: MobileSurface.secondary),
