@@ -10,6 +10,7 @@ use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -188,6 +189,31 @@ class PayrollRunController extends Controller
                     'total_cost' => $s->total_cost,
                 ]),
             ],
+        ]);
+    }
+
+    /**
+     * F-10 (#1540) : journal de paie mensuel (CSV) — une ligne par bulletin
+     * validé + ligne de totaux (contrôle comptable). Régime de preuve horodaté
+     * par le run. Réservé aux managers principal/comptable.
+     */
+    public function journal(Request $request, PayrollRun $payrollRun): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $filename = 'journal_paie_'.$payrollRun->period_start.'_'.$payrollRun->period_end.'.csv';
+
+        return response()->streamDownload(function () use ($payrollRun): void {
+            echo (new PayrollJournalGenerator())->generate($payrollRun);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 
