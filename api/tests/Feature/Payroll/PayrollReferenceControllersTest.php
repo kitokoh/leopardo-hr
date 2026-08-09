@@ -391,9 +391,18 @@ class PayrollReferenceControllersTest extends TestCase
         ]);
 
         // Round-trip via les casts : les tableaux sont lus déchiffrés.
-        $this->assertSame(['internal_note' => 'VIP-2026-001', 'phone' => '+213555123456'], $batch->fresh()->metadata);
-        $this->assertSame(['reference' => 'VIR-2026-002'], $item->fresh()->metadata);
-        $this->assertSame('LeopardoEmployee/1.0', $confirmation->fresh()->metadata['user_agent']);
+        $freshBatch = $batch->fresh();
+        $this->assertNotNull($freshBatch);
+        $this->assertSame(['internal_note' => 'VIP-2026-001', 'phone' => '+213555123456'], $freshBatch->metadata);
+
+        $freshItem = $item->fresh();
+        $this->assertNotNull($freshItem);
+        $this->assertSame(['reference' => 'VIR-2026-002'], $freshItem->metadata);
+
+        $freshConfirmation = $confirmation->fresh();
+        $this->assertNotNull($freshConfirmation);
+        $this->assertIsArray($freshConfirmation->metadata);
+        $this->assertSame('LeopardoEmployee/1.0', $freshConfirmation->metadata['user_agent']);
 
         // Au repos : payloads chiffrés (non-JSON, données en clair absentes).
         foreach (['payment_batches', 'payment_items', 'payment_confirmations'] as $table) {
