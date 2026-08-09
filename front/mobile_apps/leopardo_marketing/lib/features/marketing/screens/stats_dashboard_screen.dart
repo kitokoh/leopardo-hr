@@ -34,6 +34,12 @@ class PlatformStats {
 
   const PlatformStats({
     required this.platform,
+    required this.posts,
+    required this.impressions,
+    required this.engagements,
+    required this.clicks,
+  });
+}
 
 // ─── Provider Riverpod ────────────────────────────────────────────────────────
 
