@@ -6,7 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
 
 /**
@@ -44,7 +44,7 @@ class EndOfContractService
      */
     public function settlement(Employee $employee, ?Carbon $endDate = null): array
     {
-        $endDate = $endDate ?? Carbon::today();
+        $endDate = $endDate ?? $this->resolveEndDate($employee);
         $monthlyBase = $this->monthlyBase($employee);
         $workingDays = PayrollCalculator::STANDARD_WORKING_DAYS;
 
@@ -80,7 +80,7 @@ class EndOfContractService
     /** @return array{employee: Employee, company: ?\App\Core\Tenant\Domain\Models\Company, months_of_service: int, settlement: array<string, mixed>} */
     public function certificateData(Employee $employee, ?Carbon $endDate = null): array
     {
-        $endDate = $endDate ?? Carbon::today();
+        $endDate = $endDate ?? $this->resolveEndDate($employee);
 
         return [
             'employee' => $employee,
@@ -105,6 +105,13 @@ class EndOfContractService
         return $structure->base_salary ?? 0.0;
     }
 
+    private function resolveEndDate(Employee $employee): Carbon
+    {
+        return $employee->contract_end !== null
+            ? Carbon::parse($employee->contract_end)
+            : Carbon::today();
+    }
+
     private function yearsOfService(Employee $employee, Carbon $endDate): float
     {
         return $this->monthsOfService($employee, $endDate) / 12.0;
@@ -126,20 +133,36 @@ class EndOfContractService
             ? $employee->contract_start
             : $monthStart;
 
-        return max(0.0, (float) $start->diffInDays($endDate) + 1);
+        // Jours OUVRÉS (lun-ven) effectués dans le mois de départ : le prorata
+        // est ensuite divisé par STANDARD_WORKING_DAYS (22) côté
+        // computeFinalSettlement — mélanger jours calendaires et jours ouvrés
+        // fausserait le calcul (départ au 15 → 15/22 au lieu de ~11/22).
+        $businessDays = 0;
+        $cursor = $start->copy();
+        while ($cursor->lte($endDate)) {
+            if ($cursor->isWeekday()) {
+                $businessDays++;
+            }
+            $cursor->addDay();
+        }
+
+        return max(0.0, (float) $businessDays);
     }
 
     private function unpaidLeaveDays(Employee $employee, Carbon $endDate): float
     {
-        $monthStart = $endDate->copy()->startOfMonth();
+        // Congés payés ACQUIS et non pris au départ (indemnité compensatrice) :
+        // LeaveBalance.balance = solde restant pour l'année (acquis − pris).
+        // Les absences sans solde sont déjà déduites du bulletin du mois et ne
+        // doivent pas être re-payées ici (F-08, doc solde de tout compte DZ).
+        $year = (int) $endDate->format('Y');
 
-        return (float) Absence::query()
+        return (float) LeaveBalance::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
-            ->where('status', 'approved')
-            ->whereBetween('start_date', [$monthStart, $endDate])
-            ->whereHas('absenceType', fn ($q) => $q->where('is_paid', false))
-            ->sum('days_count');
+            ->where('year', $year)
+            ->whereHas('absenceType', fn ($q) => $q->where('is_paid', true))
+            ->sum('balance');
     }
 
     private function referenceGross12Months(Employee $employee, Carbon $endDate): float
