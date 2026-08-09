@@ -21,6 +21,8 @@ class TaxSlabController extends Controller
             abort(403);
         }
 
+        // Scope to the authenticated employee's company for tenant isolation.
+        // Without this filter, slabs from other tenants leak across companies.
         $query = TaxSlab::where('company_id', $actor->company_id);
 
         if ($request->filled('country_code')) {
@@ -73,6 +75,10 @@ class TaxSlabController extends Controller
         if (! $actor->isManager()) {
             abort(403);
         }
+        // Tenant isolation: reject cross-company access.
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:150',
@@ -95,6 +101,10 @@ class TaxSlabController extends Controller
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
+        }
+        // Tenant isolation: reject cross-company access.
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
         }
 
         $taxSlab->delete();

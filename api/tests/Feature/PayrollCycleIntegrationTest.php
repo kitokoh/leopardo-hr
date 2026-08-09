@@ -278,7 +278,7 @@ class PayrollCycleIntegrationTest extends TestCase
             'check_out' => now()->startOfMonth()->addDays(2)->setTime(19, 0),
             'hours_worked' => 11,
             'overtime_hours' => 3,
-            'status' => 'ontime',
+            'status' => 'ontime', // 'complete' is not a valid attendance_logs status; 'ontime' denotes a completed shift
         ]);
         AttendanceLog::create([
             'company_id' => $company->id,
@@ -288,7 +288,7 @@ class PayrollCycleIntegrationTest extends TestCase
             'check_out' => now()->startOfMonth()->addDays(3)->setTime(18, 0),
             'hours_worked' => 10,
             'overtime_hours' => 2,
-            'status' => 'ontime',
+            'status' => 'ontime', // 'complete' is not a valid attendance_logs status; 'ontime' denotes a completed shift
         ]);
 
         Sanctum::actingAs($employee);
@@ -321,7 +321,7 @@ class PayrollCycleIntegrationTest extends TestCase
             'check_out' => now()->startOfMonth()->addDays(1)->setTime(20, 0),
             'hours_worked' => 12,
             'overtime_hours' => 4,
-            'status' => 'ontime',
+            'status' => 'ontime', // 'complete' is not a valid attendance_logs status; 'ontime' denotes a completed shift
         ]);
 
         Sanctum::actingAs($manager);
