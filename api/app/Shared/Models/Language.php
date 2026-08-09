@@ -100,14 +100,22 @@ class Language extends Model
 
     private static function publicLanguagesTableExists(): bool
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            return self::query()->getModel()->getConnection()->getSchemaBuilder()->hasTable('languages');
-        }
+        try {
+            if (DB::getDriverName() !== 'pgsql') {
+                return self::query()->getModel()->getConnection()->getSchemaBuilder()->hasTable('languages');
+            }
 
-        return DB::table('information_schema.tables')
-            ->where('table_schema', 'public')
-            ->where('table_name', 'languages')
-            ->exists();
+            return DB::table('information_schema.tables')
+                ->where('table_schema', 'public')
+                ->where('table_name', 'languages')
+                ->exists();
+        } catch (Throwable) {
+            // DB injoignable (démarrage, incident réseau) : on ne fait pas
+            // tomber toute l'API — SetLocale doit rester fonctionnel avec les
+            // codes par défaut (la sonde /api/v1/health reporte la DB en 503,
+            // pas en 500 HTML, cf. contrat HealthController).
+            return false;
+        }
     }
 
     private static function publicLanguagesQuery()

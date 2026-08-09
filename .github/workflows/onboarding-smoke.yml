@@ -80,6 +80,14 @@ jobs:
           docker compose exec -T api composer install --no-interaction --prefer-dist
           docker compose exec -T api php artisan key:generate --force
 
+      # `php artisan serve` charge `.env` UNE SEULE fois au démarrage du
+      # processus (Dotenv immutable) : `key:generate` réécrit `.env` mais le
+      # serve tourne encore avec l'ancien APP_KEY (vide). Redémarrage explicite
+      # du conteneur pour que le serve reparte avec la nouvelle clé — sans
+      # quoi /api/v1/health répond 500 (cf. issue #1591, root cause #1608).
+      - name: Restart api so serve picks up the new APP_KEY
+        run: docker compose restart api
+
       - name: leopardo:migrate --seed --demo (the documented onboarding command)
         run: docker compose exec -T api php artisan leopardo:migrate --seed --demo
 
