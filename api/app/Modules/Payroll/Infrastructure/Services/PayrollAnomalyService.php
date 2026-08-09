@@ -49,7 +49,9 @@ class PayrollAnomalyService
             ->select('employee_id')
             ->selectRaw('COUNT(*) as slip_count')
             ->groupBy('employee_id')
-            ->having('slip_count', '>', 1)
+            // PostgreSQL interdit de référencer un alias de SELECT dans HAVING
+            // (contrairement à MySQL) — SQLSTATE[42703] sur main (#1576-era).
+            ->havingRaw('COUNT(*) > 1')
             ->get();
 
         return $duplicates->map(fn ($row): array => [

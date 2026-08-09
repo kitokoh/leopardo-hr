@@ -19,7 +19,7 @@ class ExpenseClaimResource extends JsonResource
             'id' => $this->id,
             'employee_id' => $this->employee_id,
             'title' => $this->title,
-            'amount' => $this->amount,
+            'total_amount' => $this->total_amount,
             'currency' => $this->currency,
             'category' => $this->category,
             'description' => $this->description,
