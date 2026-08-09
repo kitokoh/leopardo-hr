@@ -62,7 +62,7 @@
       @export="exportBalances"
     />
 
-    <div v-else class="rounded-lg glass-card p-6 shadow">
+    <div v-else class="rounded-lg p-6 shadow">
       <h2 class="mb-4 text-lg font-semibold text-gray-900">
         Politiques de conges
       </h2>
