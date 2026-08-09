@@ -13,6 +13,51 @@ const CONFIG = {
   announcementRefreshInterval: 60000,
 };
 
+// ── Feedback audio (issue #1628) ──────────────────────────
+// Retour sonore immédiat au pointage (succès/échec) via Web Audio API,
+// sans asset externe. Non bloquant : si l'API audio est indisponible
+// (navigateur, permissions, contexte), le pointage fonctionne quand même.
+const feedback = (() => {
+  let ctx = null;
+
+  function ensureContext() {
+    if (!window.AudioContext && !window.webkitAudioContext) return null;
+    if (!ctx) {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      try { ctx = new Ctor(); } catch { return null; }
+    }
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch { /* noop */ } }
+    return ctx;
+  }
+
+  function tone(freq, start, duration, gainValue, type = 'sine') {
+    const audio = ensureContext();
+    if (!audio) return;
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, audio.currentTime + start);
+    gain.gain.exponentialRampToValueAtTime(gainValue, audio.currentTime + start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + start + duration);
+    osc.connect(gain).connect(audio.destination);
+    osc.start(audio.currentTime + start);
+    osc.stop(audio.currentTime + start + duration + 0.05);
+  }
+
+  return {
+    /** Succès : double bip ascendant (do→mi). */
+    success() {
+      tone(523.25, 0, 0.18, 0.25);
+      tone(659.25, 0.14, 0.24, 0.25);
+    },
+    /** Échec : buzz grave court. */
+    error() {
+      tone(196.0, 0, 0.28, 0.22, 'triangle');
+    },
+  };
+})();
+
 // ── State ────────────────────────────────────────────
 const state = {
   status: null,
@@ -203,6 +248,18 @@ async function retrySync() {
   }
 }
 
+function pulseStatus(success) {
+  const box = $('#statusBox');
+  if (!box) return;
+  box.classList.remove('status-pulse-ok', 'status-pulse-error');
+  // Force reflow pour relancer l'animation CSS.
+  void box.offsetWidth;
+  box.classList.add(success ? 'status-pulse-ok' : 'status-pulse-error');
+  window.setTimeout(() => {
+    box.classList.remove('status-pulse-ok', 'status-pulse-error');
+  }, 900);
+}
+
 async function submitPunch(action) {
   if (state.isPunching) return;
   const identifier = els.identifier.value.trim();
@@ -227,11 +284,15 @@ async function submitPunch(action) {
     const employeeLabel = employee?.name || identifier;
     const eventTime = payload.data.occurred_at ? formatTime(payload.data.occurred_at) : formatTime(new Date().toISOString());
     setStatus('#statusBox', t('punch.confirmed', { action: actionLabel(action), mode, time: eventTime, employee: employeeLabel }));
+    pulseStatus(true);
+    feedback.success();
     els.identifier.value = '';
     els.identifier.focus();
     await refreshStatus();
   } catch (error) {
     setStatus('#statusBox', error.message || t('error.punchFailed'), true);
+    pulseStatus(false);
+    feedback.error();
   } finally {
     state.isPunching = false;
     setPunchButtonsDisabled(false);
