@@ -494,6 +494,49 @@ class PayrollCalculator
             ->sum('days_count');
     }
 
+    /**
+     * Programme FOCUS (F-08) — solde de tout compte (fin de contrat).
+     *
+     * Composants :
+     *  - prorata du mois de départ (jours travaillés / jours ouvrés),
+     *  - indemnité de congés non pris (règle F-07 : maintien vs 1/10ᵉ),
+     *  - indemnité de préavis non effectué (jours × base/jours ouvrés),
+     *  - indemnité de licenciement : base × années d'ancienneté ×
+     *    $severanceMonthsPerYear (par défaut 1 mois/an — À CONFIRMER,
+     *    loi 90-11, voir docs/payroll/DZ_COMPLIANCE.md §4).
+     *
+     * @return array{prorated_pay: float, leave_indemnity: float, notice_pay: float, severance: float, total: float}
+     */
+    public function computeFinalSettlement(
+        float $monthlyBase,
+        float $yearsOfService,
+        float $proratedDays,
+        float $workingDays,
+        float $unpaidLeaveDays,
+        float $referenceGross12Months,
+        float $severanceMonthsPerYear = 1.0,
+        float $noticeDays = 0.0
+    ): array {
+        $proratedPay = $this->computeProratedBase($monthlyBase, $workingDays, $proratedDays);
+        $leaveIndemnity = $this->computeLeaveIndemnity($monthlyBase, $unpaidLeaveDays, $workingDays, $referenceGross12Months);
+        $noticePay = $noticeDays > 0.0
+            ? $this->computeProratedBase($monthlyBase, $workingDays, $noticeDays)
+            : 0.0;
+        $severance = $yearsOfService > 0.0
+            ? round($monthlyBase * $yearsOfService * $severanceMonthsPerYear, 2)
+            : 0.0;
+
+        $total = round($proratedPay + $leaveIndemnity + $noticePay + $severance, 2);
+
+        return [
+            'prorated_pay' => $proratedPay,
+            'leave_indemnity' => $leaveIndemnity,
+            'notice_pay' => $noticePay,
+            'severance' => $severance,
+            'total' => $total,
+        ];
+    }
+
     private function computeComponentAmount(SalaryComponent $component, float $baseSalary, float $grossSalary): float
     {
         return match ($component->calculation_type) {
