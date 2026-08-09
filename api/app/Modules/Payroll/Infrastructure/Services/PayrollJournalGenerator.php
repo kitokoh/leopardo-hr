@@ -75,6 +75,14 @@ class PayrollJournalGenerator
             return implode(',', array_map(static function ($cell): string {
                 $cell = (string) $cell;
 
+                // Neutralisation CSV formula injection (OWASP) : une cellule
+                // commençant par =, +, -, @ ou des tabulations/CR est préfixée
+                // d'une apostrophe pour empêcher l'exécution dans Excel/LibreOffice
+                // (les champs matricule/nom sont contrôlés par l'employé).
+                if ($cell !== '' && str_contains('=+-@'."\t".chr(13), $cell[0])) {
+                    $cell = "'".$cell;
+                }
+
                 return '"'.str_replace('"', '""', $cell).'"';
             }, $row));
         }, $rows);

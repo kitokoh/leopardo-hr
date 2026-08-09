@@ -11,7 +11,7 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Planning\Domain\Models\Task;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -21,19 +21,7 @@ use Tests\TestCase;
  */
 class AttendanceRegularityTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_can_view_their_own_regularity_score(): void
     {
