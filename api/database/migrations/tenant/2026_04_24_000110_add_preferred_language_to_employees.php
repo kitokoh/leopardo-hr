@@ -14,8 +14,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasColumn('employees', 'preferred_language')) {
-            Schema::table('employees', function (Blueprint $table) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('employees');
+
+        if (! schemaHasColumn('employees', 'preferred_language')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table) {
                 $table->char('preferred_language', 2)->nullable()->after('status');
             });
         }
@@ -23,8 +26,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasColumn('employees', 'preferred_language')) {
-            Schema::table('employees', function (Blueprint $table) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('employees');
+
+        if (schemaHasColumn('employees', 'preferred_language')) {
+            Schema::table("{$schema}.employees", function (Blueprint $table) {
                 $table->dropColumn('preferred_language');
             });
         }
