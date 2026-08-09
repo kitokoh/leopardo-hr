@@ -38,15 +38,20 @@ return new class extends Migration
         if ($result && $result->data_type === 'USER-DEFINED') {
             $enumName = $result->udt_name;
 
-            $exists = DB::selectOne("
-                SELECT 1 FROM pg_enum pe
-                JOIN pg_type pt ON pt.oid = pe.enumtypid
-                WHERE pt.typname = ?
-                  AND pe.enumlabel = 'locked'
-            ", [$enumName]);
+            // Valeurs requises par le domaine (verrouillage F-11 + batch job) :
+            // 'locked' (clôture 2 étapes), 'processing' et 'error'
+            // (ProcessPayrollBatchJob). Ajout idempotent.
+            foreach (['locked', 'processing', 'error'] as $label) {
+                $exists = DB::selectOne("
+                    SELECT 1 FROM pg_enum pe
+                    JOIN pg_type pt ON pt.oid = pe.enumtypid
+                    WHERE pt.typname = ?
+                      AND pe.enumlabel = ?
+                ", [$enumName, $label]);
 
-            if (! $exists) {
-                DB::statement("ALTER TYPE {$enumName} ADD VALUE IF NOT EXISTS 'locked'");
+                if (! $exists) {
+                    DB::statement("ALTER TYPE {$enumName} ADD VALUE IF NOT EXISTS '{$label}'");
+                }
             }
         }
         // Colonne VARCHAR → toute valeur acceptée, aucune action.
@@ -54,24 +59,27 @@ return new class extends Migration
         // 1b) Mettre à jour le CHECK constraint généré par Laravel
         // (`payroll_runs_status_check`, liste explicite) : l'ALTER TYPE
         // ci-dessus ne l'affecte pas — sans cette étape, tout INSERT en statut
-        // 'locked' échoue (SQLSTATE 23514, CI rouge 2026-08-09).
-        // Recréation VERSION-INDÉPENDANTE (le format de pg_get_constraintdef
-        // diffère entre PG14/PG16) : on reconstruit la liste complète des
-        // statuts au lieu de patcher la définition récupérée.
-        $hasLocked = DB::selectOne("
+        // 'locked'/'processing'/'error' échoue (SQLSTATE 23514, CI rouge
+        // 2026-08-09). Recréation VERSION-INDÉPENDANTE (le format de
+        // pg_get_constraintdef diffère entre PG14/PG16) : on reconstruit la
+        // liste complète des statuts au lieu de patcher la définition
+        // récupérée.
+        $hasNewStatuses = DB::selectOne("
             SELECT 1 FROM pg_constraint
             WHERE conrelid = 'payroll_runs'::regclass
               AND contype = 'c'
               AND conname = 'payroll_runs_status_check'
               AND pg_get_constraintdef(oid) LIKE '%locked%'
+              AND pg_get_constraintdef(oid) LIKE '%processing%'
+              AND pg_get_constraintdef(oid) LIKE '%error%'
         ");
-        if ($hasLocked === null) {
+        if ($hasNewStatuses === null) {
             DB::statement("ALTER TABLE payroll_runs DROP CONSTRAINT IF EXISTS payroll_runs_status_check");
             DB::statement("
                 ALTER TABLE payroll_runs ADD CONSTRAINT payroll_runs_status_check
                 CHECK ((status)::text = ANY ((ARRAY[
                     'draft', 'calculating', 'calculated', 'validated',
-                    'paid', 'locked', 'cancelled'
+                    'paid', 'locked', 'cancelled', 'processing', 'error'
                 ]::text[])))
             ");
         }

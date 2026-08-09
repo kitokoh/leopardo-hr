@@ -206,11 +206,11 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       final path = await ref
           .read(absenceRepositoryProvider)
           .downloadProof(absenceId);
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       final uri = Uri.file(path);
       final canLaunch = await canLaunchUrl(uri);
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       if (canLaunch) {
         await launchUrl(uri);
@@ -220,7 +220,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
         );
       }
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -284,12 +284,12 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       await ref.read(absenceRepositoryProvider).approveAbsence(absence.id);
       ref.invalidate(absencesProvider);
       ref.invalidate(leaveBalancesProvider);
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Absence approuvee.')));
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -359,12 +359,12 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       await ref.read(absenceRepositoryProvider).cancelAbsence(absenceId);
       ref.invalidate(absencesProvider);
       ref.invalidate(leaveBalancesProvider);
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d absence annulee.')),
       );
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
@@ -615,13 +615,13 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
       ref.invalidate(absencesProvider);
       ref.invalidate(leaveBalancesProvider);
       await ref.refresh(absencesProvider.future).then((_) {});
-      if (!mounted) return;
+      if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demande d absence transmise au RH.')),
       );
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,

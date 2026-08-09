@@ -73,19 +73,31 @@ class PayrollAnomalyServiceTest extends TestCase
         // Le schéma réel interdit les doublons (UNIQUE payroll_run_id,
         // employee_id) — le détecteur couvre les données héritées d'avant la
         // contrainte. On désactive temporairement la contrainte pour simuler
-        // cet état historique, puis on la restaure.
+        // cet état historique, puis on supprime le doublon AVANT de restaurer
+        // la contrainte (sinon le ALTER TABLE ADD CONSTRAINT échoue car la
+        // table contient encore la paire dupliquée — SQLSTATE 23505).
         \Illuminate\Support\Facades\DB::statement('ALTER TABLE pay_slips DROP CONSTRAINT pay_slips_payroll_run_id_employee_id_unique');
         try {
             $this->makeSlip($run, $employee, 60000.0, 13900.0, 46100.0);
+
+            $anomalies = (new PayrollAnomalyService())->detectForRun($run->fresh(['paySlips']));
+
+            $this->assertCount(1, $anomalies);
+            $this->assertSame('duplicate_slip', $anomalies[0]['type']);
+            $this->assertSame('high', $anomalies[0]['severity']);
         } finally {
+            // Supprime le doublon puis restaure la contrainte unique.
+            PaySlip::query()
+                ->where('payroll_run_id', $run->id)
+                ->where('employee_id', $employee->id)
+                ->orderBy('id')
+                ->skip(1)
+                ->take(PHP_INT_MAX)
+                ->get()
+                ->each(fn (PaySlip $slip) => $slip->delete());
+
             \Illuminate\Support\Facades\DB::statement('ALTER TABLE pay_slips ADD CONSTRAINT pay_slips_payroll_run_id_employee_id_unique UNIQUE (payroll_run_id, employee_id)');
         }
-
-        $anomalies = (new PayrollAnomalyService())->detectForRun($run->fresh(['paySlips']));
-
-        $this->assertCount(1, $anomalies);
-        $this->assertSame('duplicate_slip', $anomalies[0]['type']);
-        $this->assertSame('high', $anomalies[0]['severity']);
     }
 
     public function test_incoherent_slip_is_detected(): void
