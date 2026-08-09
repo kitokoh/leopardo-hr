@@ -1449,7 +1449,7 @@ trait CreatesMvpSchema
                 $table->string('mime_type', 80)->default('application/pdf');
                 $table->unsignedBigInteger('size_bytes')->nullable();
                 $table->text('error_message')->nullable();
-                $table->json('metadata')->nullable();
+                $table->text('metadata')->nullable();
                 $table->unsignedInteger('requested_by')->nullable()->index();
                 $table->timestampTz('generated_at')->nullable();
                 $table->timestamps();
@@ -1496,7 +1496,7 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('marked_paid_by')->nullable()->index();
                 $table->timestampTz('marked_paid_at')->nullable();
                 $table->timestampTz('confirmed_at')->nullable();
-                $table->json('metadata')->nullable();
+                $table->text('metadata')->nullable();
                 $table->timestamps();
             });
         }
@@ -1514,7 +1514,7 @@ trait CreatesMvpSchema
                 $table->string('status', 30)->default('pending')->index();
                 $table->timestampTz('paid_at')->nullable();
                 $table->timestampTz('confirmed_at')->nullable();
-                $table->json('metadata')->nullable();
+                $table->text('metadata')->nullable();
                 $table->timestamps();
             });
         }
@@ -1555,7 +1555,7 @@ trait CreatesMvpSchema
                 $table->string('user_agent', 500)->nullable();
                 $table->string('document_version', 40)->default('v1');
                 $table->string('document_hash', 64)->nullable();
-                $table->json('metadata')->nullable();
+                $table->text('metadata')->nullable();
                 $table->timestamps();
             });
         }

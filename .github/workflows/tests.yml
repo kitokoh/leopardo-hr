@@ -182,7 +182,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: "8.4"
           coverage: none
@@ -202,7 +202,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: "8.4"
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
@@ -721,7 +721,7 @@ jobs:
 
       - name: Send CI report email (if SMTP configured)
         if: always() && env.CI_SMTP_SERVER != '' && env.CI_SMTP_USERNAME != '' && env.CI_SMTP_PASSWORD != ''
-        uses: dawidd6/action-send-mail@v18
+        uses: dawidd6/action-send-mail@94de994a9f6fffee200243214e17002e2920bb59 # v18
         with:
           server_address: ${{ env.CI_SMTP_SERVER }}
           server_port: 587
