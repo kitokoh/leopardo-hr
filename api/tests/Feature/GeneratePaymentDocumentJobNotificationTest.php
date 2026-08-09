@@ -10,7 +10,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Facades\Storage;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -20,19 +20,7 @@ use Tests\TestCase;
  */
 class GeneratePaymentDocumentJobNotificationTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_is_notified_when_advance_receipt_becomes_available(): void
     {

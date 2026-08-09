@@ -40,6 +40,7 @@ return [
     'payslip_column_amount' => 'المبلغ',
     'payslip_gross_salary' => 'الراتب الإجمالي',
     'payslip_total_deductions' => 'إجمالي الاستقطاعات',
+    'payslip_annual_cumuls' => 'الإجماليات السنوية',
     'payslip_net_to_pay' => 'صافي المستحق للدفع',
     'payslip_generated_on' => 'تم إنشاء المستند في :date',
     'payslip_official_notice' => 'كشف الراتب هذا وثيقة رسمية. يرجى الاحتفاظ به دون تحديد مدة.',
