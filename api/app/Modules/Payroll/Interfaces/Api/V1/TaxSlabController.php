@@ -75,6 +75,10 @@ class TaxSlabController extends Controller
         if (! $actor->isManager()) {
             abort(403);
         }
+        // Tenant isolation: reject cross-company access.
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:150',
@@ -97,6 +101,10 @@ class TaxSlabController extends Controller
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
+        }
+        // Tenant isolation: reject cross-company access.
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
         }
 
         $taxSlab->delete();
