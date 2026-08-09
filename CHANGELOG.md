@@ -6,6 +6,7 @@
 ## [Unreleased]
 
 ### Added
+- **test: tests paie/paiement sur les vraies migrations (F-13, #1543/#1569).** Migration de 17 fichiers `Feature` (BankExport, BulkPayment, CotisationSimulation, PaymentBatch, PaymentDocument, PaySlip, SocialDeclaration, jobs paie, IBAN, webhooks) de `CreatesMvpSchema` vers `RefreshTenantDatabase` ; rapport de dérive archivé dans `docs/audits/DRIFT_F13_2026-08-09.md`.
 - **docs: convergence mobile F-27 + état des lieux chiffrement au repos (F-17).** `docs/mobile/CONVERGENCE_F27.md` (#1557) : stratégie de convergence progressive des apps non-employee vers le socle `leopardo_core` (socle unique, parallélisme contrôlé, traqueur de duplication, gardes CI), avec inventaire 2026-08-09 des apps. `docs/security/DATA_AT_REST.md` (#1547/#1595) : metadata des documents de paie chiffré (F-17, PR #1611), exception documentée pour les colonnes de salaire (agrégations/benchmark), rétention biométrie.
 
 ### Added

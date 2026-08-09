@@ -6,24 +6,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class PaymentWebhookControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_stripe_invoice_paid_marks_invoice_paid_and_records_payment(): void
     {
