@@ -28,8 +28,22 @@ runs:
         java-version: ${{ inputs.java-version }}
 
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
       with:
         channel: ${{ inputs.flutter-channel }}
         flutter-version: ${{ inputs.flutter-version }}
         cache: true
+
+    # Les apps mobiles déclarent compileSdk = 37 (AGP récent) — le runner
+    # ubuntu-latest ne préinstalle pas platforms;android-37 : sans cette étape
+    # Gradle échoue avec "Failed to find Platform SDK with path:
+    # platforms;android-37" (mobile-apps-ci + mobile-distribute, cf. #1560).
+    - name: Install Android SDK platform 37
+      shell: bash
+      run: |
+        if command -v sdkmanager >/dev/null 2>&1; then
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-37" "build-tools;37.0.0" >/dev/null 2>&1 || true
+        else
+          echo "::warning::sdkmanager introuvable — plateforme android-37 non installée (builds Android pourraient échouer)."
+        fi
