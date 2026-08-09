@@ -102,7 +102,8 @@ class PaySlipPdfGenerator
      */
     private function annualCumuls(PaySlip $paySlip): array
     {
-        $year = $paySlip->period_start?->format('Y');
+        $periodStart = $paySlip->period_start;
+        $year = $periodStart instanceof \Carbon\CarbonInterface ? $periodStart->format('Y') : null;
         if ($year === null) {
             return ['gross' => 0.0, 'deductions' => 0.0, 'net' => 0.0];
         }
