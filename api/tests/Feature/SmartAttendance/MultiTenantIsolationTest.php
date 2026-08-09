@@ -10,8 +10,7 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
-use Tests\Support\CreatesSmartAttendanceSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -22,8 +21,7 @@ use Tests\TestCase;
  */
 class MultiTenantIsolationTest extends TestCase
 {
-    use CreatesMvpSchema;
-    use CreatesSmartAttendanceSchema;
+    use RefreshTenantDatabase;
 
     // Company A
     private Company $companyA;
@@ -38,8 +36,6 @@ class MultiTenantIsolationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-        $this->createSmartAttendanceTables();
 
         // ── Company A ─────────────────────────────────────────────────────
         $this->companyA = Company::query()->create([
@@ -60,6 +56,11 @@ class MultiTenantIsolationTest extends TestCase
                     'radius_meters' => 200,
                 ],
             ],
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
         ]);
 
         $scheduleA = Schedule::query()->create([
@@ -79,6 +80,8 @@ class MultiTenantIsolationTest extends TestCase
             'password_hash' => Hash::make('password'),
             'role'          => 'employee',
             'status'        => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
         ]);
 
         $this->managerA = Employee::query()->create([
@@ -89,6 +92,8 @@ class MultiTenantIsolationTest extends TestCase
             'role'          => 'manager',
             'manager_role'  => 'rh',
             'status'        => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
         ]);
 
         // ── Company B ─────────────────────────────────────────────────────
@@ -110,6 +115,11 @@ class MultiTenantIsolationTest extends TestCase
                     'radius_meters' => 300,
                 ],
             ],
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
         ]);
 
         $scheduleB = Schedule::query()->create([
@@ -129,6 +139,8 @@ class MultiTenantIsolationTest extends TestCase
             'password_hash' => Hash::make('password'),
             'role'          => 'employee',
             'status'        => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
         ]);
 
         $this->managerB = Employee::query()->create([
@@ -139,15 +151,11 @@ class MultiTenantIsolationTest extends TestCase
             'role'          => 'manager',
             'manager_role'  => 'rh',
             'status'        => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
         ]);
     }
 
-    protected function tearDown(): void
-    {
-        $this->dropSmartAttendanceTables();
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
