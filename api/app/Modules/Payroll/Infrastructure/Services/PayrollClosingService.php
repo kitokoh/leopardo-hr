@@ -148,6 +148,12 @@ class PayrollClosingService
         }
 
         return DB::transaction(function () use ($run, $actor, $reason): PayrollRun {
+            // Capturer les valeurs pré-déverrouillage AVANT l'update : après
+            // update/refresh, locked_by/locked_at sont null (l'audit trail
+            // avant/après serait faux).
+            $lockedBy = $run->locked_by;
+            $lockedAt = $run->locked_at;
+
             $updated = PayrollRun::query()
                 ->whereKey($run->id)
                 ->where('status', PayrollRun::STATUS_LOCKED)
@@ -169,7 +175,7 @@ class PayrollClosingService
                 $run,
                 $actor,
                 'payroll_run_unlocked',
-                ['status' => PayrollRun::STATUS_LOCKED, 'locked_by' => $run->getOriginal('locked_by'), 'locked_at' => $run->getOriginal('locked_at')?->toISOString()],
+                ['status' => PayrollRun::STATUS_LOCKED, 'locked_by' => $lockedBy, 'locked_at' => $lockedAt?->toISOString()],
                 ['status' => PayrollRun::STATUS_VALIDATED, 'locked_by' => null, 'locked_at' => null],
                 $reason
             );

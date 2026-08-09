@@ -12,7 +12,6 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -126,7 +125,11 @@ class PayrollRunController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        $payrollRun->paySlips()->update(['status' => 'validated']);
+        // Étape 2 : bascule des bulletins en `validated` (transaction propre —
+        // une panne ici ne doit pas laisser de bulletins non validés sur un run validé).
+        DB::transaction(function () use ($payrollRun): void {
+            $payrollRun->paySlips()->update(['status' => 'validated']);
+        });
 
         if (config('performance.payroll.queue_pdf_warmup', true)) {
             WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
