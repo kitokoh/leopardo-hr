@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
  * @property float $rate
  * @property float $cap
  * @property Carbon $effective_from
- * @property Carbon $effective_to
+ * @property Carbon|null $effective_to
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
