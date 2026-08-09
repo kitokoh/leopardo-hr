@@ -12,8 +12,7 @@ use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
-use Tests\Support\CreatesSmartAttendanceSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -28,8 +27,7 @@ use Tests\TestCase;
  */
 class GeoSessionDashboardTest extends TestCase
 {
-    use CreatesMvpSchema;
-    use CreatesSmartAttendanceSchema;
+    use RefreshTenantDatabase;
 
     private Company $company;
     private Employee $employee;
@@ -38,8 +36,6 @@ class GeoSessionDashboardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-        $this->createSmartAttendanceTables();
 
         $this->company = Company::query()->create([
             'name'         => 'DashboardCorp',
@@ -52,6 +48,11 @@ class GeoSessionDashboardTest extends TestCase
             'tenancy_type' => 'shared',
             'status'       => 'active',
             'timezone'     => 'UTC',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
         ]);
 
         $schedule = Schedule::query()->create([
@@ -71,6 +72,8 @@ class GeoSessionDashboardTest extends TestCase
             'password_hash' => Hash::make('password'),
             'role'          => 'employee',
             'status'        => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
         ]);
 
         $this->manager = Employee::query()->create([
@@ -81,15 +84,11 @@ class GeoSessionDashboardTest extends TestCase
             'role'          => 'manager',
             'manager_role'  => 'rh',
             'status'        => 'active',
+            'first_name' => 'Test',
+            'last_name' => 'User',
         ]);
     }
 
-    protected function tearDown(): void
-    {
-        $this->dropSmartAttendanceTables();
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
