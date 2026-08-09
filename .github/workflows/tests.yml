@@ -587,6 +587,9 @@ jobs:
       - name: Validate governance and changelog
         run: pwsh dev-hub/tools/check-governance.ps1 -BaseRef ${{ github.event.pull_request.base.sha }} -HeadRef ${{ github.event.pull_request.head.sha }}
 
+      - name: Self-test mojibake guard (#1612)
+        run: pwsh dev-hub/tools/check-governance-mojibake-test.ps1
+
   dependency-review:
     name: Dependency Review (PR Security)
     runs-on: ubuntu-latest
