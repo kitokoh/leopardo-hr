@@ -48,15 +48,23 @@ class GoldenDzSalaryStructurePerEmployeeTest extends TestCase
         // L'employé A est sur la structure A (120 000), le B sur la structure
         // B (60 000), le C n'a pas d'affectation → repli sur la première
         // structure active (A, 120 000) — comportement historique #1587.
+        // NB : contract_start explicite AVANT la période (2026-07) pour éviter
+        // le prorata aléatoire de la factory (dateTimeBetween(-3y, -1m) peut
+        // générer une date postérieure au 2026-07-01 → prorata flaky).
         $employeeA = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_structure_id' => $structureA->id,
+            'contract_start' => '2026-01-01',
         ]);
         $employeeB = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_structure_id' => $structureB->id,
+            'contract_start' => '2026-01-01',
         ]);
-        $employeeC = Employee::factory()->create(['company_id' => $company->id]);
+        $employeeC = Employee::factory()->create([
+            'company_id' => $company->id,
+            'contract_start' => '2026-01-01',
+        ]);
 
         $run = PayrollRun::create([
             'company_id' => $company->id,
