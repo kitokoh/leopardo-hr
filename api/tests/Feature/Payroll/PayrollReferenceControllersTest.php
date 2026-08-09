@@ -205,6 +205,14 @@ class PayrollReferenceControllersTest extends TestCase
         $this->getJson('/api/v1/social-contributions?country_code=DZ')->assertOk()->assertJsonCount(1, 'data');
         $this->getJson('/api/v1/social-contributions?type=employer')->assertOk()->assertJsonCount(0, 'data');
 
+        // La resource expose les champs réels (type/rate) et non plus les
+        // champs fantômes employee_rate/employer_rate (corrigé #1409).
+        $this->getJson('/api/v1/social-contributions')->assertOk()
+            ->assertJsonPath('data.0.type', 'employee')
+            ->assertJsonPath('data.0.rate', 9.0)
+            ->assertJsonMissingPath('data.0.employee_rate')
+            ->assertJsonMissingPath('data.0.employer_rate');
+
         $this->putJson("/api/v1/social-contributions/{$id}", ['rate' => 9.5])
             ->assertOk()
             ->assertJsonPath('data.name', 'CNAS');
