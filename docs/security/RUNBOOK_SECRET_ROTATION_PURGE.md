@@ -5,6 +5,27 @@
 > (fenêtre de maintenance), validée par le propriétaire du repo, et réalisée en
 > coordination avec les hébergeurs (Render, Upstash, Firebase).
 
+## Statut 2026-08-09 — Clés Google (issue #1467, partiel)
+
+Les 4 `google-services.json` committés (projet Firebase `leopardo-rh`, une seule
+clé API partagée `AIzaSyCYauGS…`) ont été **retirés de l'arbre git** et remplacés
+par un **stub à clés factices** versionné (`AIzaSyREPLACE_WITH_REAL_FIREBASE_KEY_0000`).
+Les builds CI restaurent le fichier réel depuis le secret Actions
+`GOOGLE_SERVICES_JSON` (mobile-apps-ci.yml, mobile-distribute.yml,
+mobile-distribute-main.yml).
+
+Restant (action humaine) :
+1. **Rotation de la clé API Google** dans la console Firebase (la clé committée
+   reste exploitable depuis l'historique git et les alertes Secret Scanning).
+2. Purge de l'historique git (cf. section purge plus bas) — les 4 fichiers
+   concernés + le secret Redis (#1472).
+3. Après purge, résoudre les 2 alertes GitHub Secret Scanning (google_api_key).
+
+Local : `dev-hub/tools/install-mobile-firebase-configs.ps1` (télécharge les
+fichiers réels depuis Firebase) puis build — les fichiers réels ne doivent
+jamais être commités.
+
+
 ## Périmètre des secrets exposés (au 2026-08-07)
 
 | Secret | Où | Statut |
