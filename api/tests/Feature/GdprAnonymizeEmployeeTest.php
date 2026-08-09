@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Console\Commands\GdprAnonymizeEmployeeCommand;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
@@ -58,7 +57,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'status' => 'validated',
         ]);
 
-        $this->artisan(GdprAnonymizeEmployeeCommand::class, ['employee' => $employee->id])
+        $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id])
             ->assertSuccessful();
 
         $employee->refresh();
@@ -67,7 +66,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
         $this->assertSame('Anonymisé', $employee->first_name);
         $this->assertSame('anonyme-'.$employee->id.'@anonyme.local', $employee->email);
         $this->assertNull($employee->personal_phone);
-        $this->assertNull($employee->date_of_birth);
+        $this->assertNull($employee->getRawOriginal('date_of_birth'));
         $this->assertNull($employee->nationality);
         $this->assertFalse($employee->biometric_face_enabled);
         $this->assertSame('archived', $employee->status);
@@ -83,12 +82,13 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'auditable_id' => $employee->id,
         ]);
         $log = AuditLog::where('action', 'gdpr_employee_anonymized')->where('auditable_id', $employee->id)->first();
+        $this->assertNotNull($log);
         $this->assertTrue($log->metadata['payroll_history_kept']);
     }
 
     public function test_anonymize_unknown_employee_fails(): void
     {
-        $this->artisan(GdprAnonymizeEmployeeCommand::class, ['employee' => 999999])
+        $this->artisan('gdpr:anonymize-employee', ['employee' => 999999])
             ->assertFailed();
     }
 }
