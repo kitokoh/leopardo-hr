@@ -1,0 +1,38 @@
+name: TEMP - Dart Format Definitif
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    name: format-with-pubget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/ci-red-main-2026-08-09
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter-android
+
+      - name: pub get + dart format (write mode)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for app in leopardo_core leopardo_employee leopardo_hr leopardo_manager leopardo_platform_admin leopardo_marketing; do
+            if [[ -d "front/mobile_apps/$app" ]]; then
+              echo "### APP $app"
+              (cd "front/mobile_apps/$app" && flutter pub get >/dev/null 2>&1 || true)
+              (cd "front/mobile_apps/$app" && dart format . 2>&1 | tail -2 || true)
+            fi
+          done
+
+      - name: Upload formatted
+        uses: actions/upload-artifact@v7
+        with:
+          name: dart-formatted-final
+          path: front/mobile_apps/
+          if-no-files-found: error
