@@ -9,24 +9,12 @@ use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class CheckInTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_can_check_in_and_uses_server_time(): void
     {
@@ -40,6 +28,11 @@ class CheckInTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'UTC',
         ]);
 
@@ -55,6 +48,8 @@ class CheckInTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -104,6 +99,11 @@ class CheckInTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'Africa/Algiers',
             'metadata' => [
                 'attendance_geofence' => [
@@ -126,6 +126,8 @@ class CheckInTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -166,6 +168,11 @@ class CheckInTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'UTC',
         ]);
 
@@ -181,6 +188,8 @@ class CheckInTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -212,6 +221,11 @@ class CheckInTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'UTC',
         ]);
 
@@ -227,6 +241,8 @@ class CheckInTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -255,6 +271,11 @@ class CheckInTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
             'timezone' => 'UTC',
         ]);
 
@@ -270,6 +291,8 @@ class CheckInTest extends TestCase
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
