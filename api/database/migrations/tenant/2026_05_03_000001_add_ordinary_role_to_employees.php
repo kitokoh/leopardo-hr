@@ -15,8 +15,8 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE \"{\$schema}\".\"employees\" DROP CONSTRAINT IF EXISTS employees_role_check");
-            DB::statement("ALTER TABLE \"{\$schema}\".\"employees\" ADD CONSTRAINT employees_role_check CHECK (role IN ('manager', 'employee', 'ordinary'))");
+            DB::statement("ALTER TABLE \"{$schema}\".\"employees\" DROP CONSTRAINT IF EXISTS employees_role_check");
+            DB::statement("ALTER TABLE \"{$schema}\".\"employees\" ADD CONSTRAINT employees_role_check CHECK (role IN ('manager', 'employee', 'ordinary'))");
         }
     }
 
@@ -29,8 +29,8 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE \"{\$schema}\".\"employees\" DROP CONSTRAINT IF EXISTS employees_role_check");
-            DB::statement("ALTER TABLE \"{\$schema}\".\"employees\" ADD CONSTRAINT employees_role_check CHECK (role IN ('manager', 'employee'))");
+            DB::statement("ALTER TABLE \"{$schema}\".\"employees\" DROP CONSTRAINT IF EXISTS employees_role_check");
+            DB::statement("ALTER TABLE \"{$schema}\".\"employees\" ADD CONSTRAINT employees_role_check CHECK (role IN ('manager', 'employee'))");
         }
     }
 };
