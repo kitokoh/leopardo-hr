@@ -9,7 +9,6 @@ use App\Jobs\ProcessPayrollBatchJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -17,19 +16,7 @@ use Tests\TestCase;
  */
 class PrecalculatePayrollRunsCommandTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_dispatches_batch_job_for_a_draft_run_approaching_its_pay_day(): void
     {

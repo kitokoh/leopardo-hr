@@ -8,7 +8,6 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
-use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -17,19 +16,7 @@ use Tests\TestCase;
  */
 class PayrollAnomalyServiceTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     private function makeRun(Company $company, string $status = 'calculated', string $period = '2026-07'): PayrollRun
     {
