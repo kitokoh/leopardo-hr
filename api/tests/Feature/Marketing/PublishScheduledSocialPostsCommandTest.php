@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class PublishScheduledSocialPostsCommandTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     private function makeAccount(string $companyId): SocialAccount
     {

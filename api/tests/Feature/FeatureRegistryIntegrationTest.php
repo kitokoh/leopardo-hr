@@ -12,7 +12,7 @@ use Tests\TestCase;
  */
 class FeatureRegistryIntegrationTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     private FeatureRegistryInterface $registry;
 

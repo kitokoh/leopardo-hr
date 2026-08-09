@@ -20,7 +20,7 @@ use Tests\TestCase;
  */
 class SocialAccountModelTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_social_account_can_be_created_and_is_scoped_to_company(): void
     {

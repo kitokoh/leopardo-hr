@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class AuthGoogleSignInTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_google_callback_creates_new_ordinary_user()
     {

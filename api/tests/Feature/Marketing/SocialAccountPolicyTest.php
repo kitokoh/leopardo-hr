@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class SocialAccountPolicyTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     private function makeAccount(string $companyId): SocialAccount
     {
