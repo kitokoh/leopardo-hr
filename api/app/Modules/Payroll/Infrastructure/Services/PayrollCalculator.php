@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -94,6 +95,12 @@ class PayrollCalculator
 
     public function calculateRun(PayrollRun $run): PayrollRun
     {
+        // Programme FOCUS (F-11) : un run verrouillé (clôture comptable) ne peut
+        // plus être recalculé — aucune modification silencieuse après clôture.
+        if ($run->status === PayrollRun::STATUS_LOCKED) {
+            throw new PayrollRunLockedException('Payroll run is locked (closing done). Unlock with reason first.');
+        }
+
         $companyId = $run->company_id;
         $rules = $this->getRules($run->country_code);
         // Scope the rules to this company so any company-specific TaxSlab/
