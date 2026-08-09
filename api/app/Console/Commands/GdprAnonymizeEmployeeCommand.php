@@ -8,6 +8,8 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /**
  * Programme FOCUS — F-18 (#1548) : droit à l'effacement (RGPD).
@@ -48,7 +50,9 @@ class GdprAnonymizeEmployeeCommand extends Command
                 'phone' => null,
                 'address_line' => null,
                 'postal_code' => null,
-                'password_hash' => null,
+                // `password_hash` est NOT NULL dans le vrai schéma (migrations tenant) :
+                // on invalide l'ancien mot de passe avec un hash aléatoire au lieu de NULL.
+                'password_hash' => Hash::make(Str::random(64)),
                 'date_of_birth' => null,
                 'place_of_birth' => null,
                 'nationality' => null,
