@@ -46,11 +46,18 @@ class GeofenceService {
   /// - [ZoneEvent.enter] si l'employé vient d'entrer dans la zone
   /// - [ZoneEvent.exit] si l'employé vient de sortir de la zone
   /// - [ZoneEvent.none] si l'état n'a pas changé ou si la config est invalide
+  /// Fiabilité GPS (F-21, #1551) : au-delà de cette tolérance (en mètres),
+  /// une position est considérée trop imprécise pour déclencher un événement
+  /// de zone. Tolérance = max(50 m, rayon de la zone) : on accepte une
+  /// précision dégradée tant qu'elle reste meilleure que la taille de la zone.
+  static const double _accuracyFloorMeters = 50.0;
+
   ZoneEvent checkPosition(
     double lat,
     double lng,
-    SmartAttendanceConfig config,
-  ) {
+    SmartAttendanceConfig config, {
+    double? accuracyMeters,
+  }) {
     // Vérification que la configuration GPS est valide
     if (!config.gpsEnabled || !config.hasValidZone) {
       return ZoneEvent.none;
@@ -59,6 +66,16 @@ class GeofenceService {
     final centerLat = config.latitude!;
     final centerLng = config.longitude!;
     final radiusMeters = config.radius!;
+
+    // Position trop imprécise (GPS approximatif) : on ignore la mesure sans
+    // modifier l'état interne — évite les faux enter/exit au voisinage de
+    // l'horizon quand la précision se dégrade (test de fiabilité F-21).
+    final tolerance = radiusMeters > _accuracyFloorMeters
+        ? radiusMeters
+        : _accuracyFloorMeters;
+    if (accuracyMeters != null && accuracyMeters > tolerance) {
+      return ZoneEvent.none;
+    }
 
     // Calcul de la distance entre la position courante et le centre
     final distance = distanceMeters(lat, lng, centerLat, centerLng);
