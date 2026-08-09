@@ -80,6 +80,12 @@ jobs:
             artifact_name: leopardo-hr
             version_prefix: hr
             firebase_secret: FIREBASE_APP_ID_HR
+            # Décision documentée (#1615) : le secret GitHub `FIREBASE_APP_ID_HR`
+            # (app id Firebase de l'app hr) doit être créé dans Settings →
+            # Secrets → Actions. En attendant, le fallback de l'expression
+            # `secrets.FIREBASE_APP_ID_HR` ci-dessous reste explicite — action
+            # humaine requise pour créer le secret puis supprimer l'ancien
+            # FIREBASE_APP_ID (voir issue #1615).
             android_package: com.leopardo.rh
 
     steps:
