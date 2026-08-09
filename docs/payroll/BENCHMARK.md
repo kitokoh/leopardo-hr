@@ -45,6 +45,10 @@ php artisan payroll:benchmark --employees=10000 --step=lock
 
 ## Historique des runs
 
+| Date | Employés | Step | Durée calculate | Temps/employé | Requêtes/employé | Pic mémoire | Env | Note |
+|---|---|---|---|---|---|---|---|---|
+| 2026-08-09 | 1 000 | calculate | 9,15 s | 9,2 ms | 11,0 | 4,0 Mo | local (PG 14, PHP 8.4, 4 vCPU) | Métrique N+1 (#1594) : 11 req/employé < 20 — pas de signature N+1 |
+
 | Date | Employés | Step | Durée calculate | Temps/employé | Pic mémoire | Env | Note |
 |---|---|---|---|---|---|---|---|---|
 | 2026-08-09 | 100 | all | 1,04 s | 10,4 ms | 2,0 Mo | local (PG 16, PHP 8.4, 4 vCPU) | Premier run — pipeline validé |
