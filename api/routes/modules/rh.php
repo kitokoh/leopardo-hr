@@ -15,6 +15,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
+use App\Modules\Payroll\Interfaces\Api\V1\EndOfContractController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
@@ -46,6 +47,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
+    Route::get('/employees/{employee}/end-of-contract', [EndOfContractController::class, 'settlement'])->whereNumber('employee');
+    Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');
     Route::post('/employees/import', [EmployeeImportController::class, 'import']);
     Route::get('/employees/import-template', [EmployeeImportController::class, 'template']);
     Route::get('/me/qr-profile', [OnboardingQrController::class, 'employeeProfile']);
