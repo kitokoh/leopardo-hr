@@ -15,24 +15,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class PaymentBatchControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_manager_creates_marks_paid_and_employee_confirms_payment_batch(): void
     {
