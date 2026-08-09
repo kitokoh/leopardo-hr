@@ -20,7 +20,7 @@ use Tests\TestCase;
  */
 class FeatureRegistryTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     private FeatureRegistry $registry;
 

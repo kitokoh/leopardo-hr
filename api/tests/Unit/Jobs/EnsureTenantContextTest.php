@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class EnsureTenantContextTest extends TestCase
 {
-    use Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_it_skips_jobs_that_do_not_implement_tenant_scoped_job(): void
     {
