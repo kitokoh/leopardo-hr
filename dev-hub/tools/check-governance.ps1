@@ -162,17 +162,25 @@ if ($webFeatureChanged) {
     Pass "Web scenario governance updated."
 }
 
-# Issue #1589 : le CHANGELOG a un historique d'encodage mixte latin-1/UTF-8
-# (mojibake). Garde : le fichier doit rester un UTF-8 valide et ne doit pas
-# contenir de séquences de ré-encodage (Ã©, C3 83 C2 A9, etc.) qui cassent
-# toute lecture automatisée.
+# Issue #1589 + #1612 : le CHANGELOG a un historique d'encodage mixte
+# latin-1/UTF-8 (mojibake). Garde : le fichier doit rester un UTF-8 valide et
+# ne doit pas contenir de séquences de ré-encodage.
+#
+# #1589 couvrait les patrons classiques (Ã©, â€, U+FFFD). #1612 ajoute la liste
+# noire des patrons NON standard observés dans l'historique (outillage
+# défectueux, ~830 occurrences réparées le 2026-08-09) :
+#   GÇö (em dash) · GåÆ (flèche) · Gùï (✓) · +¬/+¦/+¿/+º/+á (é/ô/è/ç/à) ·
+#   â-¬/â-¦/â-¿/â-á (é/ô/è/à doublement ré-encodés) · ó—— (flèche).
+# Tout ré-encodage de l'un de ces patrons fait échouer la garde ; les
+# caractères légitimes (é è ê à ç ô ù ï — – … ✓ ✗ → § • « ») restent admis.
 if (Test-Path "CHANGELOG.md") {
     $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path "CHANGELOG.md"))
     try {
         $enc = New-Object System.Text.UTF8Encoding($false, $true)
         $text = $enc.GetString($bytes)
-        if ($text -match "\u00c3[\u00a0-\u00bf]|\u00e2\u20ac|\ufffd") {
-            Fail "CHANGELOG.md contient des séquences mojibake (ré-encodage latin-1/UTF-8) — ré-encoder en UTF-8 propre (issue #1589)."
+        $mojibakePattern = 'G\u00c7\u00f6|G\u00e5\u00c6|G\u00f9\u00ef|\+\u00ac|\+\u00a6|\+\u00bf|\+\u00ba|\+\u00e1|\u00e2-\u00ac|\u00e2-\u00a6|\u00e2-\u00bf|\u00e2-\u00e1|\u00f3\u2014{2}|\u00c3[\u00a0-\u00bf]|\u00e2\u20ac|\ufffd'
+        if ($text -match $mojibakePattern) {
+            Fail "CHANGELOG.md contient des séquences mojibake (ré-encodage latin-1/UTF-8) — ré-encoder en UTF-8 propre (issues #1589/#1612)."
         }
     } catch [System.Text.DecoderFallbackException] {
         Fail "CHANGELOG.md n'est pas un UTF-8 valide (issue #1589) : $($_.Exception.Message)"
