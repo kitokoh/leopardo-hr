@@ -24,6 +24,16 @@ Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for 
 
 ---
 
+## 🔒 Security: never quote a real secret
+
+This repository is **public**. Never copy a real secret (password, token, API key,
+connection string — even partially truncated) into an audit report, issue, PR,
+commit message, log, or doc. Use `<REDACTED>` placeholders and link the tracking
+issue instead. The CI guard `secret-scan.yml` scans both HEAD and history; a real
+secret in a report is a security incident (see [SECURITY.md](SECURITY.md), issue #1614).
+
+---
+
 ## 📜 Code of Conduct
 
 By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
