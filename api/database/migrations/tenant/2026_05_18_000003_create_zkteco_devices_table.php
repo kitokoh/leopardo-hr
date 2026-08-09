@@ -61,7 +61,10 @@ return new class extends Migration
 
         Schema::create('kiosk_announcements', function (Blueprint $table): void {
             $table->id();
-            $table->unsignedBigInteger('company_id');
+            // `companies.id` est un UUID (uuid primary key) : la colonne doit
+            // être uuid, pas bigint — un bigint empêche toute référence réelle
+            // à companies et casse l'isolation tenant (F-13b, tests Contracts).
+            $table->uuid('company_id');
             $table->string('title', 200);
             $table->text('body');
             $table->enum('priority', ['low', 'normal', 'high', 'urgent'])->default('normal');
