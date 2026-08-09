@@ -111,9 +111,39 @@ class PayrollJournalApiTest extends TestCase
         $this->assertSame('80000.00', $lines[3][6]);  // net total
     }
 
-    public function test_journal_only_returns_validated_slips(): void
+    public function test_journal_neutralizes_csv_formula_injection(): void
     {
         Sanctum::actingAs($this->manager);
+
+        $run = $this->seededRun();
+
+        // Employé « hostile » : nom commençant par = (injection de formule CSV).
+        /** @var Employee $evil */
+        $evil = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'first_name' => '=HYPERLINK("http://evil.example","x")',
+            'last_name' => 'Doe',
+        ]);
+        PaySlip::create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $run->company_id,
+            'employee_id' => $evil->id,
+            'period_start' => $run->period_start,
+            'period_end' => $run->period_end,
+            'gross_salary' => 10000,
+            'net_salary' => 8000,
+            'status' => 'validated',
+        ]);
+
+        $response = $this->getJson("/api/v1/payroll-runs/{$run->id}/journal")->assertOk();
+
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('"\'=HYPERLINK', $content, 'La cellule hostile doit être préfixée d\'une apostrophe.');
+        $this->assertStringNotContainsString('"=HYPERLINK', $content, 'Aucune cellule ne doit commencer par = non neutralisé.');
+    }
+
+    public function test_journal_only_returns_validated_slips(): void
+    {        Sanctum::actingAs($this->manager);
 
         $run = $this->seededRun();
         /** @var Employee $e3 */

@@ -25,18 +25,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('bank_exports')) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('bank_exports');
+
+        if (! schemaTableExists('bank_exports')) {
             return;
         }
 
         if (Schema::getConnection()->getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE bank_exports DROP CONSTRAINT IF EXISTS bank_exports_status_check');
+            DB::statement("ALTER TABLE \"{$schema}\".\"bank_exports\" DROP CONSTRAINT IF EXISTS bank_exports_status_check");
             DB::statement(
-                'ALTER TABLE bank_exports ADD CONSTRAINT bank_exports_status_check '.
+                "ALTER TABLE \"{$schema}\".\"bank_exports\" ADD CONSTRAINT bank_exports_status_check ".
                 "CHECK (status IN ('pending', 'generating', 'generated', 'failed', 'sent', 'confirmed'))"
             );
-            DB::statement('ALTER TABLE bank_exports ALTER COLUMN file_path DROP NOT NULL');
-            DB::statement("ALTER TABLE bank_exports ALTER COLUMN status SET DEFAULT 'pending'");
+            DB::statement("ALTER TABLE \"{$schema}\".\"bank_exports\" ALTER COLUMN file_path DROP NOT NULL");
+            DB::statement("ALTER TABLE \"{$schema}\".\"bank_exports\" ALTER COLUMN status SET DEFAULT 'pending'");
         }
         // Note: SQLite (used by default in local/unit test runs) has no
         // NOT NULL/CHECK constraint enforcement issue here since
@@ -44,8 +47,8 @@ return new class extends Migration
         // `file_path` NOT NULL as strictly; no DBAL-dependent ->change()
         // is used so this migration works without doctrine/dbal installed.
 
-        if (! Schema::hasColumn('bank_exports', 'error_message')) {
-            Schema::table('bank_exports', function (Blueprint $table) {
+        if (! schemaHasColumn('bank_exports', 'error_message')) {
+            Schema::table("{$schema}.bank_exports", function (Blueprint $table) {
                 $table->text('error_message')->nullable()->after('file_path');
             });
         }
@@ -53,23 +56,26 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('bank_exports')) {
+        // Schéma résolu via le search_path (issue #1613).
+        $schema = resolveTableSchema('bank_exports');
+
+        if (! schemaTableExists('bank_exports')) {
             return;
         }
 
-        if (Schema::hasColumn('bank_exports', 'error_message')) {
-            Schema::table('bank_exports', function (Blueprint $table) {
+        if (schemaHasColumn('bank_exports', 'error_message')) {
+            Schema::table("{$schema}.bank_exports", function (Blueprint $table) {
                 $table->dropColumn('error_message');
             });
         }
 
         if (Schema::getConnection()->getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE bank_exports DROP CONSTRAINT IF EXISTS bank_exports_status_check');
+            DB::statement("ALTER TABLE \"{$schema}\".\"bank_exports\" DROP CONSTRAINT IF EXISTS bank_exports_status_check");
             DB::statement(
-                'ALTER TABLE bank_exports ADD CONSTRAINT bank_exports_status_check '.
+                "ALTER TABLE \"{$schema}\".\"bank_exports\" ADD CONSTRAINT bank_exports_status_check ".
                 "CHECK (status IN ('generated', 'sent', 'confirmed'))"
             );
-            DB::statement("ALTER TABLE bank_exports ALTER COLUMN status SET DEFAULT 'generated'");
+            DB::statement("ALTER TABLE \"{$schema}\".\"bank_exports\" ALTER COLUMN status SET DEFAULT 'generated'");
         }
     }
 };

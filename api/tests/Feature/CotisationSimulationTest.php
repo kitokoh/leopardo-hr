@@ -7,24 +7,12 @@ namespace Tests\Feature;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class CotisationSimulationTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_simulate_dz_cotisations(): void
     {
