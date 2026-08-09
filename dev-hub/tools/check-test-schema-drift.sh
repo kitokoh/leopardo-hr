@@ -41,6 +41,21 @@ if [[ "${1:-}" == "--report-f13" ]]; then
       fi
     done < <(find "${dir}" -name "*Test.php" | sort)
   done
+  # Tests du noyau paie/paiement à la racine de Feature/ (16 fichiers migrés
+  # par la PR F-13 — invisibles au scan par module sinon) : on les compte via
+  # un filtre de domaine (payroll/payment).
+  ROOT_PAYROLL_PATTERN='Pay|Salary|Cotisation|Bank|Payment|Iban|Social|Bulk|Cnas'
+  while IFS= read -r f; do
+    total=$((total + 1))
+    if grep -q "RefreshTenantDatabase" "${f}"; then
+      real=$((real + 1))
+    elif grep -q "CreatesMvpSchema" "${f}"; then
+      manual=$((manual + 1))
+    else
+      real=$((real + 1))
+    fi
+  done < <(find "${FEATURE_DIR}" -maxdepth 1 -name "*Test.php" \
+    | grep -E "${ROOT_PAYROLL_PATTERN}" | sort)
   pct=0
   if [[ "${total}" -gt 0 ]]; then
     pct=$((real * 100 / total))
