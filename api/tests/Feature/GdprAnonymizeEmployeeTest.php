@@ -170,8 +170,12 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'first_name' => 'Yacine',
         ]);
 
-        $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true])->assertSuccessful();
-        $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true])->assertSuccessful();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true]);
+        $cmd->assertSuccessful();
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true]);
+        $cmd->assertSuccessful();
 
         // Une seule entrée d'audit, pas de doublon.
         $this->assertSame(1, AuditLog::where('action', 'gdpr_employee_anonymized')->where('auditable_id', $employee->id)->count());
@@ -188,11 +192,13 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'first_name' => 'Lina',
         ]);
 
-        $this->artisan('gdpr:anonymize-employee', [
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('gdpr:anonymize-employee', [
             'employee' => $employee->id,
             '--company' => $company->id,
             '--force' => true,
-        ])->assertSuccessful();
+        ]);
+        $cmd->assertSuccessful();
 
         $employee->refresh();
         $this->assertSame('Anonymisé', $employee->first_name);
