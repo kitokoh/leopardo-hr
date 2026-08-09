@@ -28,6 +28,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $validated_by
  * @property Carbon|null $validated_at
  * @property Carbon|null $paid_at
+ * @property string|null $locked_by
+ * @property Carbon|null $locked_at
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
