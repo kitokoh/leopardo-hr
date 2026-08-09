@@ -1305,6 +1305,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}", options);
     },
 
+    /** Rapport d'anomalies pre-cloture (F-20) */
+    getPayrollRunsByPayrollRunAnomalies(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/anomalies", options);
+    },
+
     /** Calculer la paie */
     postPayrollRunsByPayrollRunCalculate(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/calculate", options);
