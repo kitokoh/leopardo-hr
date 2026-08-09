@@ -28,8 +28,9 @@ return new class extends Migration
     public function up(): void
     {
         foreach (self::TIMESTAMP_TABLES as $tableName) {
-            if (Schema::hasTable($tableName) && ! Schema::hasColumn($tableName, 'updated_at')) {
-                Schema::table($tableName, function (Blueprint $table): void {
+            $schema = resolveTableSchema($tableName);
+            if ($schema !== null && ! schemaHasColumn($tableName, 'updated_at')) {
+                Schema::table("{$schema}.{$tableName}", function (Blueprint $table): void {
                     // PostgreSQL n'a pas d'equivalent natif au "ON UPDATE CURRENT_TIMESTAMP" de
                     // MySQL dans le schema builder Laravel ; Eloquent gere deja updated_at
                     // automatiquement a chaque save(), donc un defaut useCurrent() (valeur
@@ -39,8 +40,9 @@ return new class extends Migration
             }
         }
 
-        if (Schema::hasTable('expense_claims') && ! Schema::hasColumn('expense_claims', 'rejection_reason')) {
-            Schema::table('expense_claims', function (Blueprint $table): void {
+        $schema = resolveTableSchema('expense_claims');
+        if ($schema !== null && ! schemaHasColumn('expense_claims', 'rejection_reason')) {
+            Schema::table("{$schema}.expense_claims", function (Blueprint $table): void {
                 $table->text('rejection_reason')->nullable();
             });
         }
@@ -49,15 +51,17 @@ return new class extends Migration
     public function down(): void
     {
         foreach (self::TIMESTAMP_TABLES as $tableName) {
-            if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'updated_at')) {
-                Schema::table($tableName, function (Blueprint $table): void {
+            $schema = resolveTableSchema($tableName);
+            if ($schema !== null && schemaHasColumn($tableName, 'updated_at')) {
+                Schema::table("{$schema}.{$tableName}", function (Blueprint $table): void {
                     $table->dropColumn('updated_at');
                 });
             }
         }
 
-        if (Schema::hasTable('expense_claims') && Schema::hasColumn('expense_claims', 'rejection_reason')) {
-            Schema::table('expense_claims', function (Blueprint $table): void {
+        $schema = resolveTableSchema('expense_claims');
+        if ($schema !== null && schemaHasColumn('expense_claims', 'rejection_reason')) {
+            Schema::table("{$schema}.expense_claims", function (Blueprint $table): void {
                 $table->dropColumn('rejection_reason');
             });
         }
