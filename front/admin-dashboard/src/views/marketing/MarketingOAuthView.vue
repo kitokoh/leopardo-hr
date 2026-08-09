@@ -91,9 +91,9 @@ const localeStore = useLocaleStore()
 /** Traduction avec fallback sur la clé elle-même pour faciliter le débogage */
 const t = (key, vars = {}) => {
   let msg = translate(localeStore.current, key) || key
-  // Interpolation simple : {{ provider }} → valeur de vars.provider
+  // Interpolation : supporte {var} (ICU, format ARB) et {{ var }} (Vue legacy).
   for (const [k, v] of Object.entries(vars)) {
-    msg = msg.replace(`{{ ${k} }}`, String(v))
+    msg = msg.replace(`{${k}}`, String(v)).replace(`{{ ${k} }}`, String(v))
   }
   return msg
 }

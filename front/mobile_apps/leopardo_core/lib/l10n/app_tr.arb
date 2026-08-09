@@ -175,7 +175,7 @@
   "marketingOauthSubtitle": "Ayrshare aracılığıyla sosyal medya hesaplarınızı bağlayın",
   "marketingOauthAyrshareInfo": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır.",
   "marketingOauthSave": "Kaydet",
-  "marketingOauthSavedOk": "{{ provider }} yapılandırması kaydedildi",
+  "marketingOauthSavedOk": "{provider} yapılandırması kaydedildi",
   "marketingOauthProvidersLinkedinLabel": "LinkedIn",
   "marketingOauthProvidersLinkedinDescription": "LinkedIn Marketing API bağlantısı",
   "marketingOauthProvidersFacebookLabel": "Facebook / Meta",

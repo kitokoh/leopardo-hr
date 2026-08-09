@@ -175,7 +175,7 @@
   "marketingOauthSubtitle": "اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare",
   "marketingOauthAyrshareInfo": "تُستخدم هذه الإعدادات بواسطة Ayrshare للنشر على شبكاتك الاجتماعية.",
   "marketingOauthSave": "حفظ",
-  "marketingOauthSavedOk": "تم حفظ إعدادات {{ provider }}",
+  "marketingOauthSavedOk": "تم حفظ إعدادات {provider}",
   "marketingOauthProvidersLinkedinLabel": "لينكدإن",
   "marketingOauthProvidersLinkedinDescription": "الاتصال بـ LinkedIn Marketing API",
   "marketingOauthProvidersFacebookLabel": "فيسبوك / ميتا",

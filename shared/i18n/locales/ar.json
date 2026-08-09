@@ -263,7 +263,7 @@
       "subtitle": "اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare",
       "ayrshare_info": "تُستخدم هذه الإعدادات بواسطة Ayrshare للنشر على شبكاتك الاجتماعية.",
       "save": "حفظ",
-      "saved_ok": "تم حفظ إعدادات {{ provider }}",
+      "saved_ok": "تم حفظ إعدادات {provider}",
       "providers": {
         "linkedin": {
           "label": "لينكدإن",

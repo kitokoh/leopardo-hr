@@ -263,7 +263,7 @@
       "subtitle": "Ayrshare aracılığıyla sosyal medya hesaplarınızı bağlayın",
       "ayrshare_info": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır.",
       "save": "Kaydet",
-      "saved_ok": "{{ provider }} yapılandırması kaydedildi",
+      "saved_ok": "{provider} yapılandırması kaydedildi",
       "providers": {
         "linkedin": {
           "label": "LinkedIn",

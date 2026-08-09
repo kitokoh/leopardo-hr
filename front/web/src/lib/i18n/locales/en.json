@@ -263,7 +263,7 @@
       "subtitle": "Connect your social media accounts via Ayrshare",
       "ayrshare_info": "These settings are used by Ayrshare to post to your social networks.",
       "save": "Save",
-      "saved_ok": "{{ provider }} configuration saved",
+      "saved_ok": "{provider} configuration saved",
       "providers": {
         "linkedin": {
           "label": "LinkedIn",

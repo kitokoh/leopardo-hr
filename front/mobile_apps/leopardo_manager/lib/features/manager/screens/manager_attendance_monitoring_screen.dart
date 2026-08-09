@@ -7,7 +7,6 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
-import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';

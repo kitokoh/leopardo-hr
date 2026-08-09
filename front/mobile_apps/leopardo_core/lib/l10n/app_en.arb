@@ -175,7 +175,7 @@
   "marketingOauthSubtitle": "Connect your social media accounts via Ayrshare",
   "marketingOauthAyrshareInfo": "These settings are used by Ayrshare to post to your social networks.",
   "marketingOauthSave": "Save",
-  "marketingOauthSavedOk": "{{ provider }} configuration saved",
+  "marketingOauthSavedOk": "{provider} configuration saved",
   "marketingOauthProvidersLinkedinLabel": "LinkedIn",
   "marketingOauthProvidersLinkedinDescription": "Connect to LinkedIn Marketing API",
   "marketingOauthProvidersFacebookLabel": "Facebook / Meta",
