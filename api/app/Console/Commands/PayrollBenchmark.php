@@ -60,15 +60,22 @@ class PayrollBenchmark extends Command
             // Une requête par employé par entité chargée = signature N+1 ;
             // l'ordre de grandeur attendu est < 20 requêtes/employé.
             $queryCount = 0;
-            DB::listen(static function () use (&$queryCount): void {
+            $sqlListener = static function () use (&$queryCount): void {
                 $queryCount++;
-            });
+            };
+            DB::listen($sqlListener);
 
             $start = microtime(true);
             $peakBefore = memory_get_peak_usage(true);
             DB::statement('SET search_path TO public,shared_tenants');
             $run = $calculator->calculateRun($run);
             $duration = microtime(true) - $start;
+
+            // Le listener ne doit être actif que pendant calculate : le retirer
+            // dès que calculateRun a fini pour que le compteur s'arrête (avant
+            // l'impression des métriques et les étapes validate-rh / lock).
+            DB::connection()->getEventDispatcher()->removeListener('illuminate.query', $sqlListener);
+
             $this->table(['métrique', 'valeur'], [
                 ['employés', $run->employee_count],
                 ['durée calculate', sprintf('%.2fs', $duration)],
