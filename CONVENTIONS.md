@@ -86,6 +86,39 @@ app/
 - **PostgreSQL only** — ne pas utiliser de syntaxe MySQL-specifique
 - Champs obligatoires : `id`, `company_id` (sauf modeles globaux), `created_at`, `updated_at`
 
+#### Règle search_path — migrations tenant (#1613, bug F-17 #1595)
+
+`Schema::hasTable('x')` / `Schema::table('x', ...)` interrogent **`current_schema()` uniquement**,
+alors que `DB::table('x')` résout via le **search_path** de la session. Selon le contexte
+(CI `DB_SEARCH_PATH=shared_tenants` ; phpunit après `migrate:fresh` où `public/0001` pose
+`SET search_path TO public`), la même table peut vivre dans `public` ou `shared_tenants` —
+le garde répond alors `false` à tort et un backfill/ALTER est **silencieusement sauté**
+(cause racine du backfill F-17 non exécuté, corrigé en 2026-08-09).
+
+**Les migrations tenant doivent résoudre le schéma de la table via `current_schemas(false)`
+(même ordre que la résolution `DB::table`), pas via `current_schema()` ni un nom nu :**
+
+```php
+// ✅ Pattern imposé (migrations 2026_08_09_000003/000004)
+private function resolveTableSchema(string $table): ?string
+{
+    $row = DB::selectOne("
+        SELECT t.table_schema
+        FROM information_schema.tables t
+        WHERE t.table_name = ?
+          AND t.table_schema = ANY (current_schemas(false))
+        ORDER BY array_position(current_schemas(false), t.table_schema)
+        LIMIT 1
+    ", [$table]);
+
+    return $row ? (string) $row->table_schema : null;
+}
+```
+
+- Utiliser `Schema::table("{$schema}.{$table}", ...)` (préfixe schéma) pour les ALTER.
+- Utiliser `DB::table($table)` (résolution search_path) pour les lectures/écritures.
+- Un garde `if ($schema === null) { return; }` remplace `Schema::hasTable()`.
+
 ### 2.7 DDD pour nouveaux modules
 
 Les **nouveaux modules** suivent la structure DDD (template dans `stubs/module-template/`) :
