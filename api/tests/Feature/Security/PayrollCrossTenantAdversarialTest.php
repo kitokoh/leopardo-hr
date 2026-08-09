@@ -24,10 +24,6 @@ class PayrollCrossTenantAdversarialTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
-    private Company $companyB;
-
     private Employee $managerB;
 
     protected function setUp(): void
