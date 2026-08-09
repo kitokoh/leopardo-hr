@@ -11,7 +11,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -28,18 +28,11 @@ use Tests\TestCase;
  */
 class ProfilePermissionErrorContractTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     public function test_employee_surface_rejects_unauthenticated_requests_with_stable_401_envelope(): void

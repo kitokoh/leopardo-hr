@@ -13,24 +13,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class FrontendJsonContractTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         $this->ensureKioskContractTables();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     public function test_admin_dashboard_summary_payload_matches_frontend_contract(): void
