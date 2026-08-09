@@ -21,8 +21,6 @@ class EndOfContractApiTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $company;
-
     private Employee $manager;
 
     private Employee $employee;
@@ -33,7 +31,6 @@ class EndOfContractApiTest extends TestCase
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->company = $company;
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->manager = $manager;
