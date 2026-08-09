@@ -125,7 +125,7 @@ class PayrollCycleService
 
         $employees = Employee::query()
             ->where('company_id', $company->id)
-            ->when(Schema::hasColumn('employees', 'status'), function ($query): void {
+            ->when($this->columnExists('employees', 'status'), function ($query): void {
                 $query->where('status', '!=', 'archived');
             })
             ->get();
@@ -243,12 +243,12 @@ class PayrollCycleService
     public function getMobileSummary(Employee $actor, int $limit = 50): array
     {
         $isGlobalPayrollManager = $actor->hasManagerRole('principal', 'rh', 'comptable');
-        $hasManagerColumn = Schema::hasColumn('employees', 'manager_id');
+        $hasManagerColumn = $this->columnExists('employees', 'manager_id');
 
         $employees = Employee::query()
             ->select($this->employeeSummaryColumns())
             ->where('company_id', $actor->company_id)
-            ->when(Schema::hasColumn('employees', 'status'), function ($query): void {
+            ->when($this->columnExists('employees', 'status'), function ($query): void {
                 $query->where('status', '!=', 'archived');
             })
             ->when($isGlobalPayrollManager === false && $hasManagerColumn, function ($query) use ($actor): void {
@@ -260,8 +260,8 @@ class PayrollCycleService
             ->when($isGlobalPayrollManager === false && $hasManagerColumn === false, function ($query) use ($actor): void {
                 $query->where('id', $actor->id);
             })
-            ->when(Schema::hasColumn('employees', 'first_name'), fn ($query) => $query->orderBy('first_name'))
-            ->when(Schema::hasColumn('employees', 'last_name'), fn ($query) => $query->orderBy('last_name'))
+            ->when($this->columnExists('employees', 'first_name'), fn ($query) => $query->orderBy('first_name'))
+            ->when($this->columnExists('employees', 'last_name'), fn ($query) => $query->orderBy('last_name'))
             ->orderBy('id')
             ->limit(max(1, min($limit, 100)))
             ->get();
@@ -360,7 +360,7 @@ class PayrollCycleService
 
         return array_values(array_filter(
             $columns,
-            static fn (string $column): bool => Schema::hasColumn('employees', $column)
+            static fn (string $column): bool => self::columnExists('employees', $column)
         ));
     }
 
@@ -452,7 +452,7 @@ class PayrollCycleService
 
     private function companySetting(string $key, string $default): string
     {
-        if (Schema::hasTable('company_settings') === false) {
+        if (! $this->tableExists('company_settings')) {
             return $default;
         }
 
@@ -496,13 +496,13 @@ class PayrollCycleService
             ->where('employee_id', $employee->id)
             ->where('company_id', $employee->company_id);
 
-        if (Schema::hasColumn('salary_advances', 'validation_status')) {
+        if ($this->columnExists('salary_advances', 'validation_status')) {
             $query->whereIn('validation_status', ['payment_declared', 'employee_confirmed']);
         } else {
             $query->where('status', 'approved');
         }
 
-        if (Schema::hasColumn('salary_advances', 'payment_declared_at')) {
+        if ($this->columnExists('salary_advances', 'payment_declared_at')) {
             $query->whereBetween('payment_declared_at', [$start, $end]);
         } else {
             $query->whereBetween('updated_at', [$start, $end]);
@@ -521,10 +521,11 @@ class PayrollCycleService
      */
     private function cycleOvertimeHours(Employee $employee, Carbon $start, Carbon $end): float
     {
-        if (Schema::hasTable('attendance_logs') === false) {
-            return 0.0;
-        }
-
+        // Audit passe 3 (#1606, bug B6) : les gardes Schema::hasTable
+        // dépendantes du search_path sont interdites — `current_schema()` vaut
+        // `shared_tenants` (premier du path) alors que les tables vivent dans
+        // `public` sur le vrai schéma, ce qui court-circuitait le calcul en
+        // retournant toujours 0. La table existe dans les deux schémas.
         return (float) AttendanceLog::query()
             ->where('employee_id', $employee->id)
             ->where('company_id', $employee->company_id)
@@ -627,5 +628,25 @@ class PayrollCycleService
         }
 
         return $candidate;
+    }
+
+
+    /**
+     * Vérifie l'existence d'une table indépendamment du search_path : les
+     * tables métier vivent dans `public` (vraies migrations) alors que
+     * `current_schema()` résout `shared_tenants` (premier du path) — une
+     * garde naïve serait toujours fausse sur le vrai schéma (#1597/#1606).
+     */
+    private static function tableExists(string $table): bool
+    {
+        return Schema::hasTable('public.'.$table) || Schema::hasTable($table);
+    }
+
+    /**
+     * Idem pour une colonne (cf. tableExists).
+     */
+    private static function columnExists(string $table, string $column): bool
+    {
+        return Schema::hasColumn('public.'.$table, $column) || Schema::hasColumn($table, $column);
     }
 }
