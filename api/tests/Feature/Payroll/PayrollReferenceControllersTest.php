@@ -209,7 +209,7 @@ class PayrollReferenceControllersTest extends TestCase
         // champs fantômes employee_rate/employer_rate (corrigé #1409).
         $this->getJson('/api/v1/social-contributions')->assertOk()
             ->assertJsonPath('data.0.type', 'employee')
-            ->assertJsonPath('data.0.rate', 9.0)
+            ->assertJsonPath('data.0.rate', 9)
             ->assertJsonMissingPath('data.0.employee_rate')
             ->assertJsonMissingPath('data.0.employer_rate');
 
