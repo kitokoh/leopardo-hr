@@ -43,10 +43,11 @@ class DemoDzSeederTest extends TestCase
         // Les runs clôturés portent des bulletins calculés + verrouillage.
         foreach ($runs as $run) {
             $this->assertGreaterThan(0, $run->paySlips()->count(), 'chaque run doit produire des bulletins');
-            $this->assertNotNull($run->total_gross);
+            $this->assertGreaterThan(0, $run->total_gross);
         }
 
         $locked = $runs->firstWhere('status', 'locked');
+        $this->assertNotNull($locked);
         $this->assertNotNull($locked->locked_at);
         $this->assertNotNull($locked->locked_by);
     }
