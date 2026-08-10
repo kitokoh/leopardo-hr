@@ -9,8 +9,6 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
@@ -26,25 +24,24 @@ class SubscriptionConfirmedMail extends Mailable implements ShouldQueue
         public readonly string $invoiceUrl,
     ) {}
 
-    public function envelope(): Envelope
+    public function build(): self
     {
-        return new Envelope(
-            subject: __('mail.subscription_confirmed.subject'),
-        );
-    }
+        $locale = $this->company->language ?? 'fr';
 
-    public function content(): Content
-    {
-        return new Content(
-            markdown: 'emails.subscription-confirmed',
-            with: [
+        // S-5 (#1665) : épingler la locale applicative AVANT le rendu (le
+        // worker de queue n'a pas la locale du tenant par défaut).
+        \Illuminate\Support\Facades\App::setLocale($locale);
+
+        return $this
+            ->subject(__('mail.subscription_confirmed.subject'))
+            ->markdown('emails.subscription-confirmed', [
                 'companyName' => $this->company->name,
                 'plan' => $this->subscription->plan,
                 'periodEnd' => $this->subscription->current_period_end,
                 'invoiceUrl' => $this->invoiceUrl,
                 'dashboardUrl' => config('app.frontend_url').'/dashboard',
-            ],
-        );
+                'locale' => $locale,
+            ]);
     }
 }
 

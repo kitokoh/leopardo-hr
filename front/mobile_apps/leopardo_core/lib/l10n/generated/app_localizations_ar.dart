@@ -57,6 +57,51 @@ class AppLocalizationsAr extends AppLocalizations {
       'الحساب الشخصي: نظم مستنداتك، ثم انشئ شركة او انضم اليها من مساحتك.';
 
   @override
+  String get authBackTooltip => 'رجوع';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'تسجيل دخول الموظف';
+
+  @override
+  String get authManagerLoginSubtitle => 'تسجيل دخول المدير / الموارد البشرية';
+
+  @override
+  String get authEmailProfessionalLabel => 'البريد الالكتروني المهني';
+
+  @override
+  String get authEmailLabel => 'البريد الالكتروني';
+
+  @override
+  String get authEmailRequired => 'البريد الالكتروني مطلوب';
+
+  @override
+  String get authEmailInvalid => 'بريد الكتروني غير صالح';
+
+  @override
+  String get authPasswordLabel => 'كلمة المرور';
+
+  @override
+  String get authPasswordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get authPasswordTooShort => 'كلمة المرور قصيرة جدا';
+
+  @override
+  String get authContinueWithGoogle => 'الاستمرار مع Google';
+
+  @override
+  String get authActivateInvitation => 'تفعيل دعوتي';
+
+  @override
+  String get authPersonalAccountLink => 'حساب شخصي';
+
+  @override
+  String get authActivateManagerAccess => 'تفعيل صلاحية المدير';
+
+  @override
+  String get authTryDemoAccount => 'تجربة حساب تجريبي';
+
+  @override
   String get commonLanguageLabel => 'اللغة';
 
   @override
@@ -82,6 +127,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get commonLanguageVariantsEnGb => 'الانجليزية (المملكة المتحدة)';
+
+  @override
+  String get commonOr => 'او';
 
   @override
   String get modulesAttendance => 'الحضور';
@@ -246,54 +294,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get aiChatErrorMessage => 'خطأ: تعذر الاتصال بالمساعد.';
 
   @override
-  String get authBackTooltip => 'رجوع';
-
-  @override
-  String get authEmployeeLoginSubtitle => 'تسجيل دخول الموظف';
-
-  @override
-  String get authManagerLoginSubtitle => 'تسجيل دخول المدير / الموارد البشرية';
-
-  @override
-  String get authEmailProfessionalLabel => 'البريد الالكتروني المهني';
-
-  @override
-  String get authEmailLabel => 'البريد الالكتروني';
-
-  @override
-  String get authEmailRequired => 'البريد الالكتروني مطلوب';
-
-  @override
-  String get authEmailInvalid => 'بريد الكتروني غير صالح';
-
-  @override
-  String get authPasswordLabel => 'كلمة المرور';
-
-  @override
-  String get authPasswordRequired => 'كلمة المرور مطلوبة';
-
-  @override
-  String get authPasswordTooShort => 'كلمة المرور قصيرة جدا';
-
-  @override
-  String get authContinueWithGoogle => 'الاستمرار مع Google';
-
-  @override
-  String get authActivateInvitation => 'تفعيل دعوتي';
-
-  @override
-  String get authPersonalAccountLink => 'حساب شخصي';
-
-  @override
-  String get authActivateManagerAccess => 'تفعيل صلاحية المدير';
-
-  @override
-  String get commonOr => 'او';
-
-  @override
-  String get authTryDemoAccount => 'تجربة حساب تجريبي';
-
-  @override
   String get platformLoginTitle => 'ليوباردو بلاتفورم';
 
   @override
@@ -320,4 +320,295 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get platformLoginUseDemoAccount => 'استخدام الحساب التجريبي';
+
+  @override
+  String get usersPageTitle => 'إدارة المستخدمين';
+
+  @override
+  String get usersPageSummary =>
+      ':count مستخدم - :active نشط - :newToday جديد اليوم';
+
+  @override
+  String get usersActionsBulk => 'إجراءات (:count)';
+
+  @override
+  String get usersActionsExport => 'تصدير';
+
+  @override
+  String get usersActionsNew => 'جديد';
+
+  @override
+  String get usersFiltersSearchLabel => 'بحث';
+
+  @override
+  String get usersFiltersSearchPlaceholder =>
+      'الاسم، البريد الإلكتروني، الشركة...';
+
+  @override
+  String get usersFiltersStatusLabel => 'الحالة';
+
+  @override
+  String get usersFiltersStatusAll => 'جميع الحالات';
+
+  @override
+  String get usersFiltersStatusActive => 'نشط';
+
+  @override
+  String get usersFiltersStatusInactive => 'غير نشط';
+
+  @override
+  String get usersFiltersStatusSuspended => 'معلق';
+
+  @override
+  String get usersFiltersStatusPending => 'قيد الانتظار';
+
+  @override
+  String get usersFiltersRoleLabel => 'الدور';
+
+  @override
+  String get usersFiltersRoleAll => 'جميع الأدوار';
+
+  @override
+  String get usersFiltersRoleAdmin => 'مسؤول';
+
+  @override
+  String get usersFiltersRoleManager => 'مدير';
+
+  @override
+  String get usersFiltersRoleEmployee => 'موظف';
+
+  @override
+  String get usersFiltersRoleHr => 'الموارد البشرية';
+
+  @override
+  String get usersFiltersCompanyLabel => 'الشركة';
+
+  @override
+  String get usersFiltersCompanyAll => 'جميع الشركات';
+
+  @override
+  String get usersFiltersRegistrationdateLabel => 'تاريخ التسجيل';
+
+  @override
+  String get usersFiltersRegistrationdateAll => 'جميع التواريخ';
+
+  @override
+  String get usersFiltersRegistrationdateToday => 'اليوم';
+
+  @override
+  String get usersFiltersRegistrationdateWeek => 'هذا الأسبوع';
+
+  @override
+  String get usersFiltersRegistrationdateMonth => 'هذا الشهر';
+
+  @override
+  String get usersFiltersRegistrationdateQuarter => 'هذا الفصل';
+
+  @override
+  String get usersFiltersLastloginLabel => 'آخر تسجيل دخول';
+
+  @override
+  String get usersFiltersLastloginAll => 'الكل';
+
+  @override
+  String get usersFiltersLastloginToday => 'اليوم';
+
+  @override
+  String get usersFiltersLastloginWeek => 'هذا الأسبوع';
+
+  @override
+  String get usersFiltersLastloginMonth => 'هذا الشهر';
+
+  @override
+  String get usersFiltersLastloginNever => 'لم يسجل الدخول ابدا';
+
+  @override
+  String get usersFiltersSegmentLabel => 'الشريحة';
+
+  @override
+  String get usersFiltersSegmentAll => 'جميع الشرائح';
+
+  @override
+  String get usersFiltersSegmentChampions => 'الأبطال';
+
+  @override
+  String get usersFiltersSegmentLoyal => 'الموالون';
+
+  @override
+  String get usersFiltersSegmentPotential => 'المحتملون';
+
+  @override
+  String get usersFiltersSegmentNew => 'جديد';
+
+  @override
+  String get usersFiltersSegmentAtrisk => 'معرض للخطر';
+
+  @override
+  String get usersFiltersAdvancedShow => 'إظهار الفلاتر المتقدمة';
+
+  @override
+  String get usersFiltersAdvancedHide => 'إخفاء الفلاتر المتقدمة';
+
+  @override
+  String get usersBulkpanelSelectedcount => ':count محدد';
+
+  @override
+  String get usersBulkpanelActivate => 'تفعيل';
+
+  @override
+  String get usersBulkpanelDeactivate => 'تعطيل';
+
+  @override
+  String get usersBulkpanelSuspend => 'تعليق';
+
+  @override
+  String get usersBulkpanelExport => 'تصدير';
+
+  @override
+  String get usersBulkpanelCancel => 'إلغاء';
+
+  @override
+  String get usersToastLoaderror => 'خطأ في تحميل المستخدمين';
+
+  @override
+  String get usersToastBulkactivated => 'تم تفعيل :count مستخدم';
+
+  @override
+  String get usersToastBulkdeactivated => 'تم تعطيل :count مستخدم';
+
+  @override
+  String get usersToastBulksuspended => 'تم تعليق :count مستخدم';
+
+  @override
+  String get usersToastBulkerror => 'فشل الإجراء الجماعي';
+
+  @override
+  String get usersToastDeleted => 'تم حذف المستخدم';
+
+  @override
+  String get usersToastDeleteerror => 'خطأ في حذف المستخدم';
+
+  @override
+  String get usersToastImpersonating => 'تسجيل الدخول باسم :name';
+
+  @override
+  String get usersToastCreated => 'تم إنشاء المستخدم بنجاح';
+
+  @override
+  String get usersToastUpdated => 'تم تحديث المستخدم';
+
+  @override
+  String get usersToastExportinprogress => 'التصدير قيد التنفيذ...';
+
+  @override
+  String get usersToastExportdone => 'تم التصدير';
+
+  @override
+  String get usersToastExporterror => 'فشل التصدير';
+
+  @override
+  String get usersToastSelectionexportdone => 'تم تصدير التحديد';
+
+  @override
+  String get usersConfirmDelete => 'هل انت متأكد من رغبتك في حذف :name؟';
+
+  @override
+  String get dashboardTitle => 'لوحة التحكم';
+
+  @override
+  String get dashboardCompany => 'الشركة';
+
+  @override
+  String get dashboardActiveEmployees => 'نشطون';
+
+  @override
+  String get dashboardUpgrade => 'ترقية';
+
+  @override
+  String get dashboardPriorityActions => 'إجراءات ذات أولوية';
+
+  @override
+  String get dashboardLaunchReadiness => 'جاهزية الإطلاق';
+
+  @override
+  String get dashboardRecentActivity => 'النشاط الأخير';
+
+  @override
+  String get dashboardRecentActivityHint => 'آخر إجراءات فريقك';
+
+  @override
+  String get marketingOauthNavTitle => 'تسويق OAuth';
+
+  @override
+  String get marketingOauthTitle => 'إعدادات OAuth التسويق';
+
+  @override
+  String get marketingOauthSubtitle =>
+      'اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare';
+
+  @override
+  String get marketingOauthAyrshareInfo =>
+      'تُستخدم هذه الإعدادات بواسطة Ayrshare للنشر على شبكاتك الاجتماعية.';
+
+  @override
+  String get marketingOauthSave => 'حفظ';
+
+  @override
+  String marketingOauthSavedOk(Object provider) {
+    return 'تم حفظ إعدادات $provider';
+  }
+
+  @override
+  String get marketingOauthProvidersLinkedinLabel => 'لينكدإن';
+
+  @override
+  String get marketingOauthProvidersLinkedinDescription =>
+      'الاتصال بـ LinkedIn Marketing API';
+
+  @override
+  String get marketingOauthProvidersFacebookLabel => 'فيسبوك / ميتا';
+
+  @override
+  String get marketingOauthProvidersFacebookDescription =>
+      'الاتصال بـ Facebook Graph API';
+
+  @override
+  String get marketingOauthProvidersTwitterLabel => 'إكس (تويتر)';
+
+  @override
+  String get marketingOauthProvidersTwitterDescription =>
+      'الاتصال بـ Twitter API v2';
+
+  @override
+  String get marketingOauthFieldsClientId => 'معرف العميل';
+
+  @override
+  String get marketingOauthFieldsClientSecret => 'سر العميل';
+
+  @override
+  String get marketingOauthFieldsRedirectUri => 'رابط إعادة التوجيه';
+
+  @override
+  String get marketingOauthFieldsSecretHint =>
+      '(اتركه فارغاً للإبقاء على الحالي)';
+
+  @override
+  String get marketingOauthFieldsPlaceholderId => 'معرف العميل الخاص بك';
+
+  @override
+  String get marketingOauthFieldsPlaceholderSecret => 'سر جديد (اختياري)';
+
+  @override
+  String get marketingOauthFieldsPlaceholderUri =>
+      'https://example.com/oauth/callback';
+
+  @override
+  String attendanceSendingToServer(Object label) {
+    return 'جار إرسال $label إلى الخادم...';
+  }
+
+  @override
+  String attendanceRetryAfterFailure(Object label) {
+    return '$label. حاول مرة أخرى.';
+  }
 }

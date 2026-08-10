@@ -23,6 +23,12 @@ class TrialWelcomeMail extends Mailable
     {
         $locale = $this->company->language ?? 'fr';
 
+        // S-5 (#1665) : les vues résolvent leurs chaînes via __() — il faut
+        // épingler la locale applicative AVANT le rendu, sinon le corps du
+        // mail se rend dans la locale ambiante (Accept-Language / défaut) et
+        // le sujet/le corps peuvent être dans des langues différentes.
+        \Illuminate\Support\Facades\App::setLocale($locale);
+
         return $this
             ->subject($this->resolveSubject($locale))
             ->view('emails.trial-welcome', [
@@ -39,7 +45,7 @@ class TrialWelcomeMail extends Mailable
         return match ($locale) {
             'en' => 'Your Leopardo RH workspace is ready!',
             'ar' => 'مساحة عملك في Leopardo RH جاهزة!',
-            'tr' => 'Leopardo RH calisma alaniniz hazir!',
+            'tr' => 'Leopardo RH çalışma alanınız hazır!',
             default => 'Votre espace Leopardo RH est prêt !',
         };
     }

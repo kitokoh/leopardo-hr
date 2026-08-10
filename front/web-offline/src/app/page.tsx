@@ -109,7 +109,7 @@ export default function HomePage() {
               {health.last_sync && (
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Dernière synchronisation</span>
-                  <span className="text-white">{new Date(health.last_sync).toLocaleString('fr-FR')}</span>
+                  <span className="text-white">{new Date(health.last_sync).toLocaleString(typeof window !== 'undefined' ? navigator.language : 'fr-FR')}</span>
                 </div>
               )}
             </div>
