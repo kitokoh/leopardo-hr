@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Exceptions\PayrollBalanceUnavailableException;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Carbon\Carbon;
@@ -273,6 +274,18 @@ class PayrollCycleService
     }
 
     /**
+     * Solde employé avec erreur VISIBLE (S-3, #1663).
+     *
+     * L'ancien `safeEmployeeBalance()` avalait toute exception et renvoyait
+     * un payload de secours à zéros (`warning: partial_balance_fallback`) —
+     * le client mobile affichait un solde de 0 alors que le calcul avait
+     * échoué (dette silencieuse). Désormais l'exception est journalisée puis
+     * propagée : l'API répond 500 explicite, le client sait que le solde est
+     * indisponible, et le rapport d'anomalies reste lisible (aucune valeur
+     * inventée).
+     *
+     * @throws PayrollBalanceUnavailableException
+     *
      * @return array<string, mixed>
      */
     private function safeEmployeeBalance(Employee $employee): array
@@ -280,61 +293,13 @@ class PayrollCycleService
         try {
             return $this->getEmployeeBalance($employee);
         } catch (\Throwable $exception) {
-            Log::warning('payroll.mobile_summary.employee_balance_failed', [
+            Log::error('payroll.mobile_summary.employee_balance_failed', [
                 'employee_id' => $employee->id,
                 'company_id' => $employee->company_id,
                 'error' => $exception->getMessage(),
             ]);
 
-            $company = $this->resolveCompany($employee);
-            $settings = [
-                'pay_cycle' => 'monthly',
-                'pay_day' => 1,
-                'week_start' => 1,
-            ];
-            $cycle = $this->monthlyPeriod(Carbon::now($company?->timezone ?: 'UTC'));
-
-            if ($company instanceof Company) {
-                try {
-                    $settings = $this->payrollSettings($company);
-                    $cycle = $this->getCurrentCycle($company);
-                } catch (\Throwable $settingsException) {
-                    Log::warning('payroll.mobile_summary.company_settings_failed', [
-                        'employee_id' => $employee->id,
-                        'company_id' => $employee->company_id,
-                        'error' => $settingsException->getMessage(),
-                    ]);
-                }
-            }
-
-            $grossDue = $this->fallbackGrossDue($employee, $settings['pay_cycle']);
-
-            return [
-                'employee_id' => $employee->id,
-                'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-                'period' => [
-                    'start' => $cycle['start']->toDateString(),
-                    'end' => $cycle['end']->toDateString(),
-                    'label' => $cycle['label'],
-                    'cycle' => $settings['pay_cycle'],
-                ],
-                'country' => $company !== null ? $company->country : '',
-                'currency' => $company?->currency ?? 'DZD',
-                'gross_due' => round($grossDue, 2),
-                'advances' => 0.0,
-                'paid' => 0.0,
-                'remaining' => round(max(0.0, $grossDue), 2),
-                'overtime_hours' => 0.0,
-                'overtime_pay' => 0.0,
-                'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
-                'pay_slip' => [
-                    'id' => null,
-                    'status' => null,
-                    'payroll_run_id' => null,
-                    'receipt_available' => false,
-                ],
-                'warning' => 'partial_balance_fallback',
-            ];
+            throw new PayrollBalanceUnavailableException($exception->getMessage());
         }
     }
 
