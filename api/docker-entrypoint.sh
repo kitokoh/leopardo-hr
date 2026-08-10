@@ -304,8 +304,14 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Running base seeders (idempotent)..."
     php artisan db:seed --class=DatabaseSeeder --force
 
-    echo "Running gated demo seed (DEMO_SEED_ONCE)..."
-    php artisan db:seed --class=DemoCompanyOnceSeeder --force
+    # Audit #1697 : la démo ne doit jamais être seedée en production
+    # (garde-fou additionnel à DISABLE_DEMO_SEEDING dans render.yaml).
+    if [ "${APP_ENV:-}" != "production" ]; then
+        echo "Running gated demo seed (DEMO_SEED_ONCE)..."
+        php artisan db:seed --class=DemoCompanyOnceSeeder --force
+    else
+        echo "Skipping demo seed (APP_ENV=production)."
+    fi
 
     echo "Backfilling notification preferences for active employees..."
     php artisan notifications:backfill-preferences
@@ -314,4 +320,15 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
 fi
 
 export SERVER_NAME=":${PORT:-8080}"
+
+# Audit #1698 : sur Render, `dockerCommand` (ex. `php artisan queue:work
+# redis` ou `sh -c "while true; do php artisan schedule:run; ..."`) est passé
+# comme arguments de l'ENTRYPOINT. Avant ce fix, ils étaient ignorés et les
+# services « worker »/« scheduler » bootaient FrankenPHP au lieu de consommer
+# la queue — les jobs Redis restaient en attente indéfiniment.
+if [ "$#" -gt 0 ]; then
+    echo "Starting ENTRYPOINT command: $*"
+    exec "$@"
+fi
+
 exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile

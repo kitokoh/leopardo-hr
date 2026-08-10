@@ -50,7 +50,7 @@ jobs:
       # gating, and the same approach applied to owasp-zap.yml.
       - name: Determine if E2E should run
         id: check
-        uses: actions/github-script@v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             if (context.eventName === 'workflow_dispatch') {
@@ -89,7 +89,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Resolve staging URL
         id: url
@@ -170,10 +170,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -186,8 +186,7 @@ jobs:
       - name: Install Playwright
         working-directory: front/admin-dashboard
         run: |
-          npm install --no-save @playwright/test
-          npx playwright install --with-deps chromium
+                    npx playwright install --with-deps chromium
 
       - name: Run Playwright E2E tests
         working-directory: front/admin-dashboard
@@ -198,7 +197,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: e2e-admin-playwright-report
           path: |
@@ -215,10 +214,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '20.x'
           cache: 'npm'
@@ -231,8 +230,7 @@ jobs:
       - name: Install Playwright
         working-directory: front/web
         run: |
-          npm install --no-save @playwright/test
-          npx playwright install --with-deps chromium
+                    npx playwright install --with-deps chromium
 
       - name: Run Playwright E2E tests
         working-directory: front/web
@@ -243,7 +241,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: e2e-web-playwright-report
           path: |

@@ -1,0 +1,25 @@
+# Audit #1705 : ne jamais embarquer le .env local (secrets) ni les artefacts
+# inutiles dans les couches d'image.
+.env
+.env.*
+!.env.example
+!.env.testing.example
+.git
+.gitignore
+**/.git
+tests
+docs
+dev-hub
+phpstan*.neon
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*.php
+storage/coverage
+storage/test-results
+node_modules
+vendor
+Dockerfile.prod
+docker-compose.yml
+*.md
+!README.md
