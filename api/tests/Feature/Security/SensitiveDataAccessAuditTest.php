@@ -289,5 +289,6 @@ class SensitiveDataAccessAuditTest extends TestCase
         $cmd->expectsOutputToContain('hr_data.payroll_journal_exported');
         $cmd->expectsOutputToContain('hr_data.export');
         $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate (PendingCommand est lazy)
     }
 }
