@@ -16,6 +16,10 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   create-release:
     name: Create GitHub Release
@@ -23,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -36,6 +40,13 @@ jobs:
           else
             TAG="${GITHUB_REF_NAME}"
           fi
+
+          # Audit #1712 : refus des tags invalides (injection / typos).
+          if [[ ! "${TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: ${TAG} (expected vX.Y.Z)" >&2
+            exit 1
+          fi
+
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "Release tag: ${TAG}"
 
@@ -97,7 +108,7 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        uses: actions/github-script@v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const fs = require('fs');

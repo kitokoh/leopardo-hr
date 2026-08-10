@@ -323,7 +323,7 @@ async function searchEmployeeInfo() {
     // Avatar
     const avatarEl = $('#empAvatar');
     if (emp.photo_url) {
-      avatarEl.innerHTML = `<img src="${emp.photo_url}" alt="${emp.name}" />`;
+      avatarEl.innerHTML = `<img src="${safeImageUrl(emp.photo_url)}" alt="${escapeHtml(emp.name)}" />`;
     } else {
       avatarEl.textContent = initials(emp.name);
     }
@@ -337,8 +337,8 @@ async function searchEmployeeInfo() {
     const attEl = $('#empAttendance');
     if (att) {
       let html = '';
-      if (att.check_in) html += `<span class="att-badge att-in">${t('attendance.checkIn', { time: formatTime(att.check_in) })}</span>`;
-      if (att.check_out) html += `<span class="att-badge att-out">${t('attendance.checkOut', { time: formatTime(att.check_out) })}</span>`;
+      if (att.check_in) html += `<span class="att-badge att-in">${escapeHtml(t('attendance.checkIn', { time: formatTime(att.check_in) }))}</span>`;
+      if (att.check_out) html += `<span class="att-badge att-out">${escapeHtml(t('attendance.checkOut', { time: formatTime(att.check_out) }))}</span>`;
       if (!att.check_in && !att.check_out) html = `<span class="att-badge att-pending">${t('info.attendance.none')}</span>`;
       attEl.innerHTML = html;
     } else {
@@ -356,9 +356,9 @@ async function searchEmployeeInfo() {
     if (balances.length > 0) {
       balancesEl.innerHTML = balances.map(b => `
         <div class="balance-item">
-          <div class="balance-type">${b.leave_type}</div>
-          <div class="balance-value">${b.remaining}</div>
-          <div class="balance-total">${t('balances.ofDays', { total: b.total })}</div>
+          <div class="balance-type">${escapeHtml(b.leave_type)}</div>
+          <div class="balance-value">${escapeHtml(b.remaining)}</div>
+          <div class="balance-total">${escapeHtml(t('balances.ofDays', { total: b.total }))}</div>
         </div>
       `).join('');
     } else {
@@ -386,13 +386,16 @@ async function loadAnnouncements() {
       return;
     }
 
-    container.innerHTML = items.map(a => `
-      <div class="announcement ${a.priority}" role="article">
-        <span class="ann-priority ${a.priority}">${a.priority}</span>
-        <div class="ann-title">${escapeHtml(a.title)}</div>
-        <div class="ann-body">${escapeHtml(a.body)}</div>
-      </div>
-    `).join('');
+    container.innerHTML = items.map(a => {
+      const priority = escapeHtml(a.priority);
+      return `
+        <div class="announcement ${priority}" role="article">
+          <span class="ann-priority ${priority}">${priority}</span>
+          <div class="ann-title">${escapeHtml(a.title)}</div>
+          <div class="ann-body">${escapeHtml(a.body)}</div>
+        </div>
+      `;
+    }).join('');
   } catch (error) {
     container.innerHTML = `<p style="text-align:center;padding:20px;color:#fecdd3;">${t('announcements.error', { message: escapeHtml(error.message) })}</p>`;
   }
@@ -424,9 +427,9 @@ async function searchLeaveBalance() {
     if (balances.length > 0) {
       container.innerHTML = balances.map(b => `
         <div class="balance-item">
-          <div class="balance-type">${b.leave_type}</div>
-          <div class="balance-value">${b.remaining}</div>
-          <div class="balance-total">${t('leave.balances.usedOfTotal', { used: b.used, total: b.total })}</div>
+          <div class="balance-type">${escapeHtml(b.leave_type)}</div>
+          <div class="balance-value">${escapeHtml(b.remaining)}</div>
+          <div class="balance-total">${escapeHtml(t('leave.balances.usedOfTotal', { used: b.used, total: b.total }))}</div>
         </div>
       `).join('');
     } else {
@@ -530,9 +533,19 @@ function renderBiometricStatus(biometric) {
 }
 
 function escapeHtml(str) {
+  if (str == null) return '';
   const div = document.createElement('div');
-  div.textContent = str || '';
+  div.appendChild(document.createTextNode(String(str)));
   return div.innerHTML;
+}
+
+// Audit #1701 : n'autorise que les URLs d'image sûres (http/https, chemin
+// relatif ou data:image) — jamais javascript: ni protocole arbitraire.
+function safeImageUrl(url) {
+  if (url == null) return '';
+  const value = String(url);
+  if (/^(https?:|\/|data:image\/)/i.test(value)) return escapeHtml(value);
+  return '';
 }
 
 // ── ZKTeco Bridge (hardware interface) ───────────────
@@ -658,12 +671,12 @@ function initDemoAccess() {
 
   let html = '';
   for (const company of DEMO_COMPANIES) {
-    html += `<div class="demo-company-title">${company.name} (${company.country})</div>`;
+    html += `<div class="demo-company-title">${escapeHtml(company.name)} (${escapeHtml(company.country)})</div>`;
     for (const emp of company.employees) {
-      html += `<button class="demo-user-btn" data-matricule="${emp.matricule}" data-email="${emp.email}">`;
-      html += `<span class="demo-user-role">${emp.role}</span>`;
-      html += `<div class="demo-user-name">${emp.name}</div>`;
-      html += `<div class="demo-user-email">${emp.matricule} · ${emp.email}</div>`;
+      html += `<button class="demo-user-btn" data-matricule="${escapeHtml(emp.matricule)}" data-email="${escapeHtml(emp.email)}">`;
+      html += `<span class="demo-user-role">${escapeHtml(emp.role)}</span>`;
+      html += `<div class="demo-user-name">${escapeHtml(emp.name)}</div>`;
+      html += `<div class="demo-user-email">${escapeHtml(emp.matricule)} · ${escapeHtml(emp.email)}</div>`;
       html += `</button>`;
     }
   }
