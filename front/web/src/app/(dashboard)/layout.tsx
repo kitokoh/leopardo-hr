@@ -150,10 +150,9 @@ export default function DashboardLayout({
       return;
     }
 
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      storeAuthSession(token, payload.data);
-    }
+    // Audit #1699 : session portée par le cookie httpOnly — plus de token
+    // en localStorage à relire.
+    storeAuthSession(null, payload.data);
 
     setUserOverride(payload.data);
     setLocaleOverride(normalizeLocale(payload.data.language));

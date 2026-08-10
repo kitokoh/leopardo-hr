@@ -5,7 +5,7 @@ import json
 from urllib import error, parse, request as urllib_request
 
 
-open_api_version = "4.16.190-2026-05-29"
+open_api_version = "4.23.5"
 
 
 class LeopardoApiError(Exception):
@@ -1085,10 +1085,6 @@ class LeopardoClient:
         return self.request("POST", "/payroll-runs/{payrollRun}/cancel", **kwargs)
 
     def get_payroll_runs_by_payrollrun_journal(self, **kwargs):
-        """Journal de paie mensuel CSV (F-10)"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
-
-    def get_payroll_runs_by_payrollrun_journal_2(self, **kwargs):
         """Journal de paie mensuel CSV (F-10)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
 
