@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
@@ -27,6 +28,7 @@ class PayrollRunController extends Controller
     public function __construct(
         private readonly PayrollCalculator $calculator,
         private readonly PayrollClosingService $closing,
+        private readonly DataAccessAuditLogger $dataAccessAuditLogger,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -268,6 +270,10 @@ class PayrollRunController extends Controller
         if ($actor->isManager() === false) {
             abort(403);
         }
+
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.payroll_journal_viewed', $payrollRun, [
+            'resource' => 'payroll_journal',
+        ]);
 
         $filename = 'journal_paie_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
 

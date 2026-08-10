@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -19,10 +20,14 @@ use Symfony\Component\HttpFoundation\Response;
  *  - GET /employees/{employee}/certificate-of-employment → certificat de travail (PDF)
  *
  * Réservé aux managers (principal/RH/comptable), isolé par tenant.
+ * Les lectures sont tracées dans `audit_logs` (Spec S-2, #1662).
  */
 class EndOfContractController extends Controller
 {
-    public function __construct(private readonly EndOfContractService $service) {}
+    public function __construct(
+        private readonly EndOfContractService $service,
+        private readonly DataAccessAuditLogger $dataAccessAuditLogger,
+    ) {}
 
     public function settlement(Request $request, Employee $employee): JsonResponse
     {
@@ -34,6 +39,11 @@ class EndOfContractController extends Controller
         if ($actor->isManager() === false) {
             abort(403);
         }
+
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.end_of_contract_viewed', $employee, [
+            'resource' => 'end_of_contract',
+            'target_employee_id' => $employee->id,
+        ]);
 
         return response()->json([
             'data' => $this->service->settlement($employee),
@@ -50,6 +60,11 @@ class EndOfContractController extends Controller
         if ($actor->isManager() === false) {
             abort(403);
         }
+
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.certificate_downloaded', $employee, [
+            'resource' => 'certificate_of_employment',
+            'target_employee_id' => $employee->id,
+        ]);
 
         $data = $this->service->certificateData($employee);
         $pdf = Pdf::loadView('pdf.certificate_of_employment', $data);

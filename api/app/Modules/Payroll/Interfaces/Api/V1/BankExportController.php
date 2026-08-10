@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\BankExportResource;
 use App\Jobs\GenerateBankExportJob;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BankExportController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $dataAccessAuditLogger) {}
+
     public function generate(Request $request, PayrollRun $payrollRun): JsonResponse
     {
         /** @var Employee $actor */
@@ -72,6 +75,11 @@ class BankExportController extends Controller
             abort(403);
         }
 
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.bank_export_viewed', $bankExport, [
+            'resource' => 'bank_export',
+            'format' => $bankExport->format,
+        ]);
+
         $bankExport->load('payrollRun:id,period_start,period_end,status');
 
         return (new BankExportResource($bankExport))->response();
@@ -87,6 +95,11 @@ class BankExportController extends Controller
         if (! $actor->isManager()) {
             abort(403);
         }
+
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.bank_export_downloaded', $bankExport, [
+            'resource' => 'bank_export',
+            'format' => $bankExport->format,
+        ]);
 
         if ($bankExport->status !== BankExport::STATUS_GENERATED && $bankExport->status !== BankExport::STATUS_SENT && $bankExport->status !== BankExport::STATUS_CONFIRMED) {
             return response()->json([

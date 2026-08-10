@@ -39,6 +39,34 @@ class DataAccessAuditLogger
         }
     }
 
+    /**
+     * Trace une lecture de donnée sensible (bulletins, exports, journal,
+     * certificat, fin de contrat — Spec S-2, #1662).
+     *
+     * Applique l'échantillonnage configurable `audit.sensitive_access.sampling`
+     * (1.0 = 100 %, 0.0 = désactivé) pour borner le volume, et catégorise la
+     * trace `sensitive_data_access` (interrogeable par `audit:sensitive-report`).
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    public function recordSensitive(Request $request, Employee $actor, string $action, ?Model $target = null, array $metadata = []): void
+    {
+        $sampling = (float) config('audit.sensitive_access.sampling', 1.0);
+
+        if ($sampling <= 0.0) {
+            return;
+        }
+
+        if ($sampling < 1.0 && (mt_rand() / mt_getrandmax()) > $sampling) {
+            return;
+        }
+
+        $this->record($request, $actor, $action, $target, [
+            'category' => 'sensitive_data_access',
+            ...$metadata,
+        ]);
+    }
+
     private function truncateUserAgent(?string $userAgent): ?string
     {
         if ($userAgent === null) {

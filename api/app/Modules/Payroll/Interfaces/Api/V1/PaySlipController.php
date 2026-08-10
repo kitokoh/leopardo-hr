@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 
 class PaySlipController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $dataAccessAuditLogger) {}
+
     /**
      * Liste paginee des bulletins du tenant courant (manager).
      * Evite le pattern N+1 "un GET pay-slips par run" cote SPA.
@@ -162,6 +165,11 @@ class PaySlipController extends Controller
         if (! $isOwner && ! $isManager) {
             abort(404);
         }
+
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.pay_slip_downloaded', $paySlip, [
+            'resource' => 'pay_slip_pdf',
+            'payroll_run_id' => $paySlip->payroll_run_id,
+        ]);
 
         $disk = Storage::disk('local');
 

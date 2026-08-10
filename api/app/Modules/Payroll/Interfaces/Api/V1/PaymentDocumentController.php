@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaymentDocumentResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PaymentDocumentController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $dataAccessAuditLogger) {}
+
     public function myDocuments(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -50,6 +53,12 @@ class PaymentDocumentController extends Controller
         $actor = $request->user();
 
         $this->authorizeDocumentAccess($paymentDocument, $actor);
+
+        $this->dataAccessAuditLogger->recordSensitive($request, $actor, 'hr_data.payment_doc_downloaded', $paymentDocument, [
+            'resource' => 'payment_document',
+            'document_type' => $paymentDocument->document_type,
+            'payroll_run_id' => $paymentDocument->payroll_run_id,
+        ]);
 
         if ($paymentDocument->status !== PaymentDocument::STATUS_AVAILABLE || $paymentDocument->path === null) {
             return response()->json([
