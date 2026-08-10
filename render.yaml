@@ -19,6 +19,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
+      # passe super-admin « password123 » en production.
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
       - key: APP_URL
         fromService:
           name: leopardo-api
@@ -141,6 +145,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
+      # passe super-admin « password123 » en production.
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
@@ -223,6 +231,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
+      # passe super-admin « password123 » en production.
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION

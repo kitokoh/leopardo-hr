@@ -32,3 +32,7 @@
 /api/app/Http/Middleware/   @kitokoh
 /api/app/Policies/          @kitokoh
 /api/config/                @kitokoh
+
+# Audit #1712 : @kitokoh est seul propriétaire — la protection de branche
+# exige une revue approuvée ; pour les chemins sensibles (workflows,
+# middleware, configs, seeders), prévoir un second reviewer qualifié.

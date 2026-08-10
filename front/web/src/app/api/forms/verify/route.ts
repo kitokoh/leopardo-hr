@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 import { getClientIp } from '../_lib/lead-capture';
@@ -10,7 +11,8 @@ const verifySchema = z.object({
   code: z.string().length(6),
 });
 
-const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL || 'https://gestionemployerbackend.onrender.com';
+const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL ||
+  resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 
 export async function POST(request: NextRequest) {
   try {

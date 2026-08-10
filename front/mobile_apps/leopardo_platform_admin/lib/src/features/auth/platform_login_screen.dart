@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -22,6 +23,11 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
   bool _obscurePassword = true;
 
   void _fillDemoAccount() {
+    // Audit #1697 : l'accès démo (compte à mot de passe connu) ne doit
+    // exister qu'en debug — jamais dans les binaires de production.
+    if (!kDebugMode) {
+      return;
+    }
     _emailController.text = 'admin@leopardo-rh.com';
     _passwordController.text = 'password123';
     _twoFactorController.clear();
