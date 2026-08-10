@@ -34,25 +34,24 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
         cache: true
 
-    # Les apps mobiles déclarent compileSdk = 37 (AGP récent) — le runner
-    # ubuntu-latest ne préinstalle pas platforms;android-37 : sans cette étape
-    # Gradle échoue avec "Failed to find Platform SDK with path:
-    # platforms;android-37" (mobile-apps-ci + mobile-distribute, cf. #1560).
-    # android-actions/setup-android installe cmdline-tools + plateforme 37 de
-    # façon fiable (accepte les licences, pose ANDROID_HOME/ANDROID_SDK_ROOT
-    # dans GITHUB_ENV pour les étapes suivantes — le runner ne les expose pas
-    # toujours, ce qui faisait échouer le build même après installation).
-    - name: Setup Android SDK (platform 37)
+    # Les apps mobiles compilent en compileSdk 36 (flutter.compileSdkVersion,
+    # permission_handler pinné en ^12 — audit #1715). La plateforme
+    # platforms;android-37 n'existe PAS sur le canal stable de Google
+    # (canal preview uniquement, répertoire android-37.0 non reconnu par AGP) :
+    # on installe donc le SDK stable android-36 + build-tools 36.
+    # android-actions/setup-android (pinné, #1706) pose ANDROID_HOME/
+    # ANDROID_SDK_ROOT dans GITHUB_ENV et accepte les licences de façon fiable.
+    - name: Setup Android SDK (platform 36)
       uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
       with:
-        packages: 'tools platform-tools platforms;android-37 build-tools;37.0.0'
+        packages: 'tools platform-tools platforms;android-36 build-tools;36.0.0'
 
-    - name: Verify Android SDK platform 37
+    - name: Verify Android SDK platform 36
       shell: bash
       run: |
         echo "ANDROID_HOME=${ANDROID_HOME:-<unset>}"
-        if [[ -d "${ANDROID_HOME}/platforms/android-37" ]]; then
-          echo "platforms;android-37 OK (${ANDROID_HOME}/platforms/android-37)."
+        if [[ -d "${ANDROID_HOME}/platforms/android-36" ]]; then
+          echo "platforms;android-36 OK (${ANDROID_HOME}/platforms/android-36)."
         else
-          echo "::warning::platforms;android-37 absent (ANDROID_HOME=${ANDROID_HOME}) — builds Android peuvent échouer."
+          echo "::warning::platforms;android-36 absent (ANDROID_HOME=${ANDROID_HOME}) — builds Android peuvent échouer."
         fi
