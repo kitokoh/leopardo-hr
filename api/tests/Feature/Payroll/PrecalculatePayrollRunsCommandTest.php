@@ -38,7 +38,9 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $this->artisan('payroll:precalculate')->assertSuccessful();
+        $cmd = $this->artisan('payroll:precalculate');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Queue::assertPushed(ProcessPayrollBatchJob::class, function ($job) use ($run, $company) {
             return $this->jobTargets($job, $run->id, (string) $company->id);
@@ -65,7 +67,9 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $this->artisan('payroll:precalculate')->assertSuccessful();
+        $cmd = $this->artisan('payroll:precalculate');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Queue::assertNotPushed(ProcessPayrollBatchJob::class);
     }
@@ -90,7 +94,9 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $this->artisan('payroll:precalculate')->assertSuccessful();
+        $cmd = $this->artisan('payroll:precalculate');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Queue::assertNotPushed(ProcessPayrollBatchJob::class);
     }
@@ -123,7 +129,9 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'cancelled',
         ]);
 
-        $this->artisan('payroll:precalculate')->assertSuccessful();
+        $cmd = $this->artisan('payroll:precalculate');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Queue::assertNotPushed(ProcessPayrollBatchJob::class);
     }
@@ -149,7 +157,9 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'calculated_at' => Carbon::parse('2026-01-27'),
         ]);
 
-        $this->artisan('payroll:precalculate')->assertSuccessful();
+        $cmd = $this->artisan('payroll:precalculate');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Queue::assertPushed(ProcessPayrollBatchJob::class, function ($job) use ($run, $company) {
             return $this->jobTargets($job, $run->id, (string) $company->id);
@@ -176,7 +186,9 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
-        $this->artisan('payroll:precalculate', ['--dry-run' => true])->assertSuccessful();
+        $cmd = $this->artisan('payroll:precalculate', ['--dry-run' => true]);
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Queue::assertNotPushed(ProcessPayrollBatchJob::class);
     }
