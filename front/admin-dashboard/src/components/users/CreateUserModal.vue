@@ -9,7 +9,7 @@
 
       <!-- Modal panel -->
       <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-        <form @submit.prevent="handleSubmit">
+        <form novalidate @submit.prevent="handleSubmit">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -21,32 +21,32 @@
                 </h3>
                 <div class="mt-4 space-y-4">
                   <!-- Name -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Nom complet *
-                    </label>
+                  <FormField id="name" label="Nom complet" required :error="fieldErrors.name" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="name"
                       v-model="form.name"
                       type="text"
                       required
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       placeholder="Jean Dupont"
                     />
-                  </div>
+                  </FormField>
 
                   <!-- Email -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Adresse email *
-                    </label>
+                  <FormField id="email" label="Adresse email" required :error="fieldErrors.email" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="email"
                       v-model="form.email"
                       type="email"
                       required
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       placeholder="jean.dupont@example.com"
                     />
-                  </div>
+                  </FormField>
 
                   <!-- Role -->
                   <div>
@@ -122,18 +122,18 @@
                   </div>
 
                   <!-- Custom password -->
-                  <div v-if="!form.generatePassword">
-                    <label class="block text-sm font-medium text-gray-700">
-                      Mot de passe {{ form.generatePassword ? '' : '*' }}
-                    </label>
+                  <FormField v-if="!form.generatePassword" id="password" label="Mot de passe" required :error="fieldErrors.password" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="password"
                       v-model="form.password"
                       type="password"
                       :required="!form.generatePassword"
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       placeholder="Mot de passe sécurisé"
                     />
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </div>
@@ -172,15 +172,37 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { UserPlusIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
+import FormField from '@/components/common/FormField.vue'
 
 const emit = defineEmits(['close', 'created'])
 const toast = useToast()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const isLoading = ref(false)
 const companies = ref([])
+const attempted = ref(false)
+
+// S-6 (#1666) : feedback inline par champ (aria-invalid + aria-describedby).
+const fieldErrors = computed(() => {
+  if (!attempted.value) return {}
+  const errors = {}
+  if (!form.name) errors.name = t('users.errors.name_required', 'Le nom complet est requis.')
+  if (!form.email) {
+    errors.email = t('auth.email_required', "L'adresse email est requise.")
+  } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
+    errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
+  }
+  if (!form.generatePassword && !form.password) {
+    errors.password = t('users.errors.password_required', 'Le mot de passe est requis.')
+  }
+  return errors
+})
 
 // Form data
 const form = reactive({
@@ -211,6 +233,12 @@ async function loadCompanies() {
 }
 
 async function handleSubmit() {
+  attempted.value = true
+  if (Object.keys(fieldErrors.value).length > 0) {
+    toast.error(t('users.errors.fix_fields', 'Veuillez corriger les champs en rouge'))
+    return
+  }
+
   isLoading.value = true
 
   try {

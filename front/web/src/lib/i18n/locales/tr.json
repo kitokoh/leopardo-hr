@@ -55,7 +55,8 @@
     "activate_invitation": "Davetimi etkinlestir",
     "personal_account_link": "Kisisel hesap",
     "activate_manager_access": "Yonetici erisimimi etkinlestir",
-    "try_demo_account": "Demo hesabini dene"
+    "try_demo_account": "Demo hesabini dene",
+    "two_factor_required": "2FA kodu gereklidir."
   },
   "common": {
     "language": {
@@ -244,6 +245,11 @@
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
+    },
+    "errors": {
+      "name_required": "Ad soyad gereklidir.",
+      "password_required": "Şifre gereklidir.",
+      "fix_fields": "Lütfen kırmızı alanları düzeltin"
     }
   },
   "dashboard": {
