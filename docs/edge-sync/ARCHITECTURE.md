@@ -279,6 +279,7 @@ Renouvellement automatique:
 | v1.2 | Kiosque ZKTeco natif sur Edge | Haute |
 | v1.3 | IA locale (reconnaissance faciale offline) | Moyenne |
 | v1.4 | SQLCipher pour Edge SQLite | Moyenne |
+| v1.5 | Exclusion iCloud iOS (`NSURLIsExcludedFromBackupKey` sur `leopardo_edge.sqlite` + Documents) — audit #1700 : les bases locales doivent rester hors sauvegarde iCloud tant que SQLCipher n'est pas actif | Moyenne |
 | v2.0 | Edge mesh (sync entre Edge nodes) | Basse |
 | v2.1 | Edge Kubernetes (déploiement enterprise) | Basse |
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +30,7 @@ class CompanyBrandingController extends Controller
         $validated = $request->validate([
             'display_name' => ['sometimes', 'nullable', 'string', 'min:2', 'max:120'],
             'logo_url' => ['sometimes', 'nullable', 'url', 'max:2048'],
-            'logo' => ['sometimes', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'logo' => ['sometimes', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'primary_color' => ['sometimes', 'nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'accent_color' => ['sometimes', 'nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'brand_mode' => ['sometimes', 'nullable', 'in:default,light,dark,auto'],
@@ -155,4 +155,3 @@ class CompanyBrandingController extends Controller
         }
     }
 }
-

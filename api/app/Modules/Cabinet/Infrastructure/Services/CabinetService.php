@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Mail\CabinetShareMail;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use App\Modules\Cabinet\Domain\Models\CabinetShare;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -81,7 +81,7 @@ class CabinetService
             'folder_id' => $data['folder_id'] ?? null,
             'name' => $data['name'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
             'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getClientMimeType(),
+            'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'disk' => 'local',
             'path' => $path,
@@ -204,4 +204,3 @@ class CabinetService
             ->send(new CabinetShareMail($share));
     }
 }
-

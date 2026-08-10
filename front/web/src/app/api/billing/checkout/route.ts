@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({
@@ -15,7 +16,8 @@ const checkoutSchema = z.object({
 });
 
 const LEOPARDO_API_URL =
-  process.env.LEOPARDO_API_URL || 'https://gestionemployerbackend.onrender.com';
+  process.env.LEOPARDO_API_URL ||
+  resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 
 /** Sandbox plan prices (EUR cents) — used when Stripe is not configured or in test mode */

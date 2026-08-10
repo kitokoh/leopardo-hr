@@ -36,20 +36,14 @@ function sanitizeValue(value: unknown): string | number | boolean | null {
   return String(value);
 }
 
-const LOCAL_API_BASE_URL = 'http://localhost:8000/api/v1';
-const DEPLOYED_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (process.env.NODE_ENV === 'production' ? DEPLOYED_API_BASE_URL : LOCAL_API_BASE_URL);
-
 function shouldPersistEvent(name: ClientAnalyticsEventName): boolean {
   return name !== 'login_failed';
 }
 
 function persistEvent(payload: ClientAnalyticsPayload): void {
-  const token = window.localStorage.getItem('auth_token');
-
-  if (!token || !shouldPersistEvent(payload.name)) {
+  // Audit #1699 : plus de token en localStorage — l'événement passe par le
+  // proxy same-origin /api/v1/[...path] qui injecte le cookie httpOnly.
+  if (!shouldPersistEvent(payload.name)) {
     return;
   }
 
@@ -61,12 +55,11 @@ function persistEvent(payload: ClientAnalyticsPayload): void {
     properties: payload.properties,
   });
 
-  void fetch(`${API_BASE_URL}/client-events`, {
+  void fetch('/api/v1/client-events', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': `Bearer ${token}`,
     },
     body,
     keepalive: body.length < 60000,

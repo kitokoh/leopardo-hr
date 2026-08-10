@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 
-const DEFAULT_BACKEND_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
+
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
 const HOP_BY_HOP_HEADERS = new Set([
@@ -17,14 +18,7 @@ const HOP_BY_HOP_HEADERS = new Set([
   'upgrade',
 ]);
 
-function resolveBackendBaseUrl(): string {
-  return (
-    process.env.API_PROXY_TARGET ||
-    process.env.BACKEND_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    DEFAULT_BACKEND_API_URL
-  ).replace(/\/$/, '');
-}
+// resolveBackendBaseUrl importé depuis @/lib/backend-url (audit #1701)
 
 function toBackendUrl(request: NextRequest, path: string[]): string {
   const url = new URL(request.url);
@@ -106,13 +100,24 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   return proxy(request, context);
 }
 
-export async function OPTIONS() {
+const ALLOWED_CORS_ORIGINS = [
+  'https://gestionemployer-backend.vercel.app',
+  'https://leopardo-rh.com',
+  'https://www.leopardo-rh.com',
+  'http://localhost:3000',
+];
+
+export async function OPTIONS(request: NextRequest) {
+  // Audit #1701 : plus de wildcard — on n'echo que les origines connues.
+  const origin = request.headers.get('origin') || '';
+  const allowOrigin = ALLOWED_CORS_ORIGINS.includes(origin) ? origin : '';
+
   return new Response(null, {
     status: 204,
     headers: {
       'Access-Control-Allow-Headers': 'Authorization, Content-Type, Accept, Accept-Language',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-      'Access-Control-Allow-Origin': '*',
+      ...(allowOrigin ? { 'Access-Control-Allow-Origin': allowOrigin, 'Vary': 'Origin' } : {}),
       'Cache-Control': 'no-store',
     },
   });
