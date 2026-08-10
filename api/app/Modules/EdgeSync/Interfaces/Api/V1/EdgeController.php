@@ -273,7 +273,7 @@ class EdgeController extends Controller
             'ip_address' => ['nullable', 'ip'],
         ]);
 
-        Log::info('[Edge] Heartbeat reçu (legacy, no-op)', ['node_id' => $validated['node_id']]);
+        Log::info('[Edge] Heartbeat received (legacy, no-op)', ['node_id' => $validated['node_id']]);
 
         return response()->json([
             'status' => 'ok',

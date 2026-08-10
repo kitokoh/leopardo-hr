@@ -65,7 +65,19 @@ class DeviceTokenController extends Controller
             ->orderByDesc('last_used_at')
             ->paginate($request->integer('per_page', 25));
 
-        return new JsonResponse(['data' => $tokens]);
+        // Pagination (#1703) : `data` reste une liste simple (contrat
+        // historique des clients), les métadonnées de page sont exposées
+        // dans `meta` — un paginator brut dans `data` cassait
+        // `assertJsonCount(1, 'data')` et les clients (13 clés imbriquées).
+        return new JsonResponse([
+            'data' => $tokens->items(),
+            'meta' => [
+                'current_page' => $tokens->currentPage(),
+                'per_page' => $tokens->perPage(),
+                'total' => $tokens->total(),
+                'last_page' => $tokens->lastPage(),
+            ],
+        ]);
     }
 
     public function sendTest(Request $request): JsonResponse
