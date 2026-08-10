@@ -190,5 +190,5 @@
   "marketingOauthFieldsPlaceholderSecret": "Nouveau secret (optionnel)",
   "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback",
   "attendanceSendingToServer": "{label} vers le serveur...",
-  "attendanceRetryAfterFailure": "{label}. Reessayez."
+  "attendanceRetryAfterFailure": "{label}. Réessayez."
 }

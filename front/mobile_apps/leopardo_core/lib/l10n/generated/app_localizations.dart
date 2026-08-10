@@ -1245,7 +1245,7 @@ abstract class AppLocalizations {
   /// No description provided for @attendanceRetryAfterFailure.
   ///
   /// In fr, this message translates to:
-  /// **'{label}. Reessayez.'**
+  /// **'{label}. Réessayez.'**
   String attendanceRetryAfterFailure(Object label);
 }
 
