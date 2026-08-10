@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 
 class PaySlipController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
+
     /**
      * Liste paginee des bulletins du tenant courant (manager).
      * Evite le pattern N+1 "un GET pay-slips par run" cote SPA.
@@ -67,6 +70,10 @@ class PaySlipController extends Controller
             ->orderByDesc('id')
             ->paginate($perPage);
 
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', null, [
+            'result_count' => $slips->total(),
+        ]);
+
         return PaySlipResource::collection($slips)->response();
     }
 
@@ -85,6 +92,10 @@ class PaySlipController extends Controller
             ->with(['employee:id,first_name,last_name,email', 'lines'])
             ->paginate($request->integer('per_page', 20));
 
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', $payrollRun, [
+            'result_count' => $slips->total(),
+        ]);
+
         return PaySlipResource::collection($slips)->response();
     }
 
@@ -100,6 +111,8 @@ class PaySlipController extends Controller
         }
 
         $paySlip->load(['employee:id,first_name,last_name,email', 'lines', 'payrollRun']);
+
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.detail', $paySlip);
 
         return (new PaySlipResource($paySlip))->response();
     }
@@ -131,6 +144,11 @@ class PaySlipController extends Controller
             ->orderByDesc('id')
             ->paginate((int) ($validated['per_page'] ?? 12));
 
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', null, [
+            'scope' => 'self_service',
+            'result_count' => $slips->total(),
+        ]);
+
         return PaySlipResource::collection($slips)->response();
     }
 
@@ -148,6 +166,10 @@ class PaySlipController extends Controller
 
         $paySlip->load('lines');
 
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.detail', $paySlip, [
+            'scope' => 'self_service',
+        ]);
+
         return (new PaySlipResource($paySlip))->response();
     }
 
@@ -162,6 +184,10 @@ class PaySlipController extends Controller
         if (! $isOwner && ! $isManager) {
             abort(404);
         }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.download', $paySlip, [
+            'scope' => $isOwner && ! $isManager ? 'self_service' : 'manager',
+        });
 
         $disk = Storage::disk('local');
 

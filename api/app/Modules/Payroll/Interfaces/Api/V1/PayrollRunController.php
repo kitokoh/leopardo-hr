@@ -17,6 +17,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,7 @@ class PayrollRunController extends Controller
     public function __construct(
         private readonly PayrollCalculator $calculator,
         private readonly PayrollClosingService $closing,
+        private readonly DataAccessAuditLogger $auditLogger,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -268,6 +270,8 @@ class PayrollRunController extends Controller
         if ($actor->isManager() === false) {
             abort(403);
         }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.journal', $payrollRun);
 
         $filename = 'journal_paie_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
 
