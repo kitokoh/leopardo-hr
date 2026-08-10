@@ -53,14 +53,14 @@ class CameraController extends Controller
             $query->whereIn('id', $cameraIds);
         }
 
-        $cameras = $query->get();
+        $cameras = $query->paginate($request->integer('per_page', 50));
 
         /** @var Company $company */
         $company = currentCompany();
         $max = $this->cameras->maxCameras($company);
 
         return new JsonResponse([
-            'data' => $cameras->map(fn (Camera $cam) => $this->cameras->buildStreamPayload($cam, $actor)),
+            'data' => $cameras->through(fn (Camera $cam) => $this->cameras->buildStreamPayload($cam, $actor)),
             'plan_limit' => [
                 'max_cameras' => $max,
                 'current_count' => $this->cameras->countActive($company),

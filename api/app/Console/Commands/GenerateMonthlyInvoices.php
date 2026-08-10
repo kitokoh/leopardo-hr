@@ -37,19 +37,19 @@ class GenerateMonthlyInvoices extends Command
                     $year = now()->format('Y');
                     $seq = Invoice::where('company_id', $subscription->company_id)->count() + 1;
 
+                    // Audit #1702 : la colonne réelle est `number` (le champ
+                    // `invoice_number` n'est pas fillable — le numéro était
+                    // silencieusement perdu) ; amount_ht/tax_rate/plan_name/
+                    // period ne sont pas des colonnes du modèle.
                     $invoice = Invoice::create([
                         'company_id' => $subscription->company_id,
                         'subscription_id' => $subscription->id,
-                        'invoice_number' => sprintf('LEO-%s-%04d', $year, $seq),
+                        'number' => sprintf('LEO-%s-%04d', $year, $seq),
                         'amount' => $pricing['amount'],
-                        'amount_ht' => $pricing['amount'],
-                        'tax_rate' => 0,
                         'tax_amount' => 0,
                         'total' => $pricing['amount'],
                         'currency' => $pricing['currency'],
                         'status' => 'pending',
-                        'plan_name' => ucfirst($subscription->plan),
-                        'period' => now()->format('F Y'),
                         'due_date' => now()->addDays(30),
                     ]);
 
@@ -59,7 +59,7 @@ class GenerateMonthlyInvoices extends Command
                     ]);
 
                     $generated++;
-                    Log::info("Invoice generated: {$invoice->invoice_number} for company={$subscription->company_id}");
+                    Log::info("Invoice generated: {$invoice->number} for company={$subscription->company_id}");
                 });
             } catch (\Throwable $e) {
                 Log::error("Failed to generate invoice for subscription {$subscription->id}: {$e->getMessage()}");
