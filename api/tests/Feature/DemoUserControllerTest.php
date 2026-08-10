@@ -9,22 +9,20 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class DemoUserControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
     }
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
     }
 
@@ -257,9 +255,11 @@ class DemoUserControllerTest extends TestCase
             'leave_balance' => 12,
         ]);
 
-        DB::statement('CREATE TABLE IF NOT EXISTS shared_tenants.companies (LIKE public.companies INCLUDING ALL)');
+        // Avec les vraies migrations (RefreshTenantDatabase), `companies` vit
+        // dans public et `shared_tenants` est déjà le schéma tenant des tests :
+        // on simule simplement la perte du lookup (comme une base migrée avant
+        // le backfill) sans changer le search_path.
         DB::table('public.user_lookups')->where('email', $employee->email)->delete();
-        DB::statement('SET search_path TO public');
 
         $loginResponse = $this->postJson('/api/v1/auth/login', [
             'email' => $employee->email,

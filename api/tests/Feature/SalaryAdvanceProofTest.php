@@ -29,7 +29,7 @@ class SalaryAdvanceProofTest extends TestCase
 
     private function createCompany(string $name): Company
     {
-        return Company::query()->create([
+        return Company::factory()->create([
             'id' => (string) Str::uuid(),
             'name' => $name,
             'slug' => Str::slug($name),

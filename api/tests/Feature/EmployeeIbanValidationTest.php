@@ -16,7 +16,7 @@ class EmployeeIbanValidationTest extends TestCase
 
     private function createManager(): array
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -28,7 +28,7 @@ class EmployeeIbanValidationTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
@@ -92,7 +92,7 @@ class EmployeeIbanValidationTest extends TestCase
     {
         [$company, $manager] = $this->createManager();
 
-        $employee = Employee::query()->create([
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -115,7 +115,7 @@ class EmployeeIbanValidationTest extends TestCase
     {
         [$company, $manager] = $this->createManager();
 
-        $employee = Employee::query()->create([
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),

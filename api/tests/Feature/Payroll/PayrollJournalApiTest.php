@@ -101,7 +101,7 @@ class PayrollJournalApiTest extends TestCase
         $response = $this->getJson("/api/v1/payroll-runs/{$run->id}/journal")
             ->assertOk()
             ->assertHeader('Content-Type', 'text/csv; charset=UTF-8')
-            ->assertHeader('Content-Disposition', 'attachment; filename="journal_paie_2026-07-01_2026-07-31.csv"');
+            ->assertHeader('Content-Disposition', 'attachment; filename=journal_paie_2026-07-01_2026-07-31.csv');
 
         $lines = array_map('str_getcsv', explode("\n", trim($response->streamedContent())));
         $this->assertCount(4, $lines);

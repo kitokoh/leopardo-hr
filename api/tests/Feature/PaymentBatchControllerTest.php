@@ -105,7 +105,7 @@ class PaymentBatchControllerTest extends TestCase
     public function test_employee_cannot_confirm_another_employee_payment_item(): void
     {
         [, , $employee, $run] = $this->fixture();
-        $other = Employee::query()->create([
+        $other = Employee::factory()->create([
             'company_id' => $employee->company_id,
             'email' => 'other@company.test',
             'password_hash' => Hash::make('password123'),
@@ -139,7 +139,7 @@ class PaymentBatchControllerTest extends TestCase
      */
     private function fixture(): array
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'services',
@@ -153,7 +153,7 @@ class PaymentBatchControllerTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
@@ -162,7 +162,7 @@ class PaymentBatchControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
