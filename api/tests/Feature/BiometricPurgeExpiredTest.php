@@ -293,7 +293,7 @@ class BiometricPurgeExpiredTest extends TestCase
             $cmd->run();
         }
 
-        $this->assertSame('biometrics/faces/kept.jpg', $expired->fresh()->biometric_face_reference_path);
+        $this->assertSame('biometrics/faces/kept.jpg', $expired->refresh()->biometric_face_reference_path);
         Storage::disk('local')->assertExists('biometrics/faces/kept.jpg');
     }
 
@@ -326,7 +326,7 @@ class BiometricPurgeExpiredTest extends TestCase
 
         // La référence hors périmètre est nullifiée en base (elle ne pointe
         // plus vers un template) mais le fichier arbitraire n'est PAS supprimé.
-        $this->assertNull($expired->fresh()->biometric_fingerprint_reference_path);
+        $this->assertNull($expired->refresh()->biometric_fingerprint_reference_path);
         Storage::disk('local')->assertMissing('biometrics/faces/legit.jpg');
         Storage::disk('local')->assertExists('docs/secrets/env.bak');
     }
