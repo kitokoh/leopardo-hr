@@ -43,6 +43,7 @@ class BiometricPurgeExpiredTest extends TestCase
         $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
         $cmd->expectsOutputToContain('employe(s) avec templates biometriques expire(s)');
         $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
 
         /** @var Employee|null $fresh */
         $fresh = $expired->fresh();
@@ -84,6 +85,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var PendingCommand $cmd */
         $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
         $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
 
         /** @var Employee|null $activeFresh */
         $activeFresh = $active->fresh();
@@ -112,6 +114,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var PendingCommand $cmd */
         $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
         $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
 
         /** @var Employee|null $fresh */
         $fresh = $expired->fresh();
@@ -133,6 +136,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var PendingCommand $first */
         $first = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
         $first->assertExitCode(0);
+        $first->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
         $firstAudits = AuditLog::query()
             ->where('company_id', $company->id)
             ->where('action', 'biometric_templates_purged')
@@ -143,6 +147,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var PendingCommand $second */
         $second = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
         $second->assertExitCode(0);
+        $second->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
         $secondAudits = AuditLog::query()
             ->where('company_id', $company->id)
             ->where('action', 'biometric_templates_purged')
@@ -168,6 +173,7 @@ class BiometricPurgeExpiredTest extends TestCase
             '--dry-run' => true,
         ]);
         $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
 
         /** @var Employee|null $fresh */
         $fresh = $expired->fresh();
@@ -202,6 +208,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var PendingCommand $cmd */
         $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
         $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant les assertions DB (PendingCommand est lazy)
 
         /** @var BiometricEnrollmentRequest $request */
         $request = BiometricEnrollmentRequest::query()
