@@ -6,7 +6,7 @@
 ## [Unreleased]
 
 ### Fixed
-### Fixed
+- **fix(ci): déploiement staging rouge sur main (issue #1485).** `deploy-staging.yml` : quand `STAGING_API_URL` / `RENDER_STAGING_DEPLOY_HOOK_URL` ne sont pas configurés (pas de staging réel), le job saute proprement avec un warning au lieu d'échouer — même convention que `database-backup.yml`. La production n'est JAMAIS utilisée comme cible ; configurer un vrai staging réactive le job sans autre changement.
 - **fix(ci): déploiement Vercel de la vitrine en échec depuis le 2026-07-19.** Retrait de `outputFileTracingRoot` + `turbopack.root` de `front/web/next.config.ts` (ajoutés dans 14944cf0, delta corrélé 1:1 avec le premier échec Vercel ; inutiles dans un package Next autonome) + pin de l'environnement : `engines.node >=20.9` dans `front/web/package.json` et `.nvmrc` (22).
 - **fix(payroll): indemnité de congés payés — jours ACQUIS et non le solde restant (F-07, #1537, PR #1659).** `PayrollCalculator::accruedLeaveDays()` sommait `LeaveBalance.balance` (= restant, décrémenté à l'approbation d'un congé) : un employé ayant pris 5 j sur 30 acquis était indemnisé sur 25 (1/10ᵉ sous-évalué de 20 %). Corrigé : `SUM(balance + used + pending)` restreint aux types de congés payés. `referenceGross12Months()` normalise aussi la période partielle (embauche en cours d'année : gross × 12/mois couverts). Golden `GoldenDzLeaveIndemnityRealDataTest` mis à jour (48 000 → 40 000 DZD, calcul à la main sur 30 j acquis).
 
