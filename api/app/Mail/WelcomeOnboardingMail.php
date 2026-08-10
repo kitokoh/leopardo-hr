@@ -27,7 +27,12 @@ class WelcomeOnboardingMail extends Mailable
             'fr' => 'Bienvenue sur Leopardo RH — Démarrez maintenant',
             'en' => 'Welcome to Leopardo RH — Get Started',
             'ar' => 'مرحبًا بك في Leopardo RH — ابدأ الآن',
+            'tr' => 'Leopardo RH çalışma alanınıza hoş geldiniz — Başlayın',
         ];
+
+        // S-5 (#1665) : épingler la locale pour que le rendu de la vue
+        // (__()) soit dans la langue de l'entreprise, pas la locale ambiante.
+        \Illuminate\Support\Facades\App::setLocale($this->emailLocale);
 
         return $this
             ->subject($subjects[$this->emailLocale] ?? $subjects['fr'])

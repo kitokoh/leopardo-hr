@@ -294,5 +294,9 @@
         "placeholder_uri": "https://example.com/oauth/callback"
       }
     }
+  },
+  "attendance": {
+    "sending_to_server": "جار إرسال {label} إلى الخادم...",
+    "retry_after_failure": "{label}. حاول مرة أخرى."
   }
 }

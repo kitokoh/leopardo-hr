@@ -1,19 +1,19 @@
 @component('mail::message')
-# Bienvenue chez {{ $companyName }}, {{ $employeeName }} !
+# {{ __('emails.email_welcome_employee_subject', ['company' => $companyName, 'name' => $employeeName]) }}
 
-Votre compte Leopardo RH a été créé. Voici vos informations de connexion :
+{{ __('emails.email_welcome_employee_intro') }}
 
-**Email :** {{ $employeeName }}
-**Mot de passe temporaire :** `{{ $temporaryPassword }}`
+**{{ __('emails.email_welcome_employee_email_label') }} :** {{ $employeeName }}
+**{{ __('emails.email_welcome_employee_password_label') }} :** `{{ $temporaryPassword }}`
 
-Veuillez changer votre mot de passe lors de votre première connexion.
+{{ __('emails.email_welcome_employee_change_note') }}
 
 @component('mail::button', ['url' => $loginUrl])
-Accéder à mon espace
+{{ __('emails.email_welcome_employee_button') }}
 @endcomponent
 
-Si vous avez des questions, contactez votre responsable RH.
+{{ __('emails.email_welcome_employee_help') }}
 
-Cordialement,
-L'équipe Leopardo RH
+{{ __('emails.email_welcome_employee_regards') }},
+{{ __('emails.email_welcome_employee_team') }}
 @endcomponent
