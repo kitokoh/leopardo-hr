@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 /**
  * Content-Security-Policy (Report-Only for now).
@@ -72,10 +71,6 @@ const cspDirectives = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname),
-  turbopack: {
-    root: path.join(__dirname),
-  },
   // Image optimization
   images: {
     formats: ["image/avif", "image/webp"],
