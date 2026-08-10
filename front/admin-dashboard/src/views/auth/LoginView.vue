@@ -29,7 +29,7 @@
 
       <div class="glass-card p-1 pb-1 overflow-hidden shadow-premium">
         <div class="bg-slate-900/40 backdrop-blur-3xl p-8 rounded-[1.4rem]">
-          <form class="space-y-6" @submit.prevent="handleLogin">
+          <form novalidate class="space-y-6" @submit.prevent="handleLogin">
             <div class="space-y-5">
               <FormField
                 id="email"
@@ -228,10 +228,14 @@ import {
   SparklesIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
 import FormField from '@/components/common/FormField.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const form = reactive({
   email: '',
@@ -252,15 +256,15 @@ const fieldErrors = computed(() => {
   if (!attempted.value) return {}
   const errors = {}
   if (!form.email) {
-    errors.email = "L'adresse email est requise."
+    errors.email = t('auth.email_required', "L'adresse email est requise.")
   } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
-    errors.email = "Le format de l'adresse email est invalide."
+    errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
   }
   if (!form.password) {
-    errors.password = 'La clé d\'accès est requise.'
+    errors.password = t('auth.password_required', "La clé d'accès est requise.")
   }
   if (requiresTwoFactor.value && !form.twoFactorCode) {
-    errors.twoFactorCode = 'Le code 2FA est requis.'
+    errors.twoFactorCode = t('auth.two_factor_required', 'Le code 2FA est requis.')
   }
   return errors
 })
