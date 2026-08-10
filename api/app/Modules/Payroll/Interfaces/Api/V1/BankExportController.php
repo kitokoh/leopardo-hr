@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\BankExportResource;
 use App\Jobs\GenerateBankExportJob;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BankExportController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
+
     public function generate(Request $request, PayrollRun $payrollRun): JsonResponse
     {
         /** @var Employee $actor */
@@ -97,10 +100,15 @@ class BankExportController extends Controller
             ], 409);
         }
 
-        if ($bankExport->file_path === null || ! Storage::disk('local')->exists($bankExport->file_path)) {
+        $filePath = $bankExport->file_path;
+        if ($filePath === null || ! Storage::disk('local')->exists($filePath)) {
             return response()->json(['message' => 'Export file not found.'], 404);
         }
 
-        return Storage::disk('local')->download($bankExport->file_path);
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.bank_export', $bankExport, [
+            'format' => $bankExport->format,
+        ]);
+
+        return Storage::disk('local')->download($filePath);
     }
 }
