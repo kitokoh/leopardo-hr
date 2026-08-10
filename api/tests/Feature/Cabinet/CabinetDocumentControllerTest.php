@@ -9,7 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -25,7 +25,7 @@ use Tests\TestCase;
  */
 class CabinetDocumentControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected Company $company;
     protected Company $otherCompany;
@@ -35,7 +35,6 @@ class CabinetDocumentControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         Storage::fake('local');
 
         $this->company      = Company::factory()->create();
@@ -46,7 +45,6 @@ class CabinetDocumentControllerTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
     }
 

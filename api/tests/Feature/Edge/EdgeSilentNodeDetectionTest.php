@@ -108,8 +108,9 @@ class EdgeSilentNodeDetectionTest extends TestCase
     {
         $this->insertNode('edge-ok-001', ['last_seen_at' => Carbon::now()->toDateTimeString()]);
 
-        $this->artisan('edge:detect-silent-nodes', ['--threshold' => 30])
-            ->assertExitCode(0);
+        $cmd = $this->artisan('edge:detect-silent-nodes', ['--threshold' => 30]);
+        $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
     }
 
     /**
@@ -128,10 +129,12 @@ class EdgeSilentNodeDetectionTest extends TestCase
             ->where('node_id', 'edge-dry-001')
             ->value('status');
 
-        $this->artisan('edge:detect-silent-nodes', [
+        $cmd = $this->artisan('edge:detect-silent-nodes', [
             '--threshold' => 30,
             '--dry-run'   => true,
-        ])->assertExitCode(0);
+        ]);
+        $cmd->assertExitCode(0);
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Notification::assertNothingSent();
 
