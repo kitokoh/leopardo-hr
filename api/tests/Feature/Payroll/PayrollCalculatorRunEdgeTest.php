@@ -10,6 +10,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -47,6 +48,18 @@ class PayrollCalculatorRunEdgeTest extends TestCase
             'period_end' => $periodEnd,
             'country_code' => 'DZ',
             'status' => $status,
+        ]);
+
+        // calculateRun ne crée de bulletin que si l'entreprise a une structure
+        // salariale active pour le pays du run (F-13 : vraies migrations).
+        SalaryStructure::create([
+            'company_id' => $this->company->id,
+            'name' => 'Grille par défaut (test)',
+            'base_salary' => 60000,
+            'currency' => 'DZD',
+            'country_code' => 'DZ',
+            'frequency' => 'monthly',
+            'active' => true,
         ]);
 
         return $run;
