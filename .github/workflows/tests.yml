@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -116,7 +116,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -151,7 +151,7 @@ jobs:
 
       - name: Upload backend test reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: backend-test-reports
           path: |
@@ -179,7 +179,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup PHP 8.4
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
@@ -199,7 +199,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup PHP 8.4
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
@@ -215,12 +215,13 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
+          # Audit #1706 : clé au hash exact du lockfile — pas de restore-keys
+          # préfixé (un cache d'un lockfile différent serait un vecteur de
+          # poisoning sur les PR).
           key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
-          restore-keys: |
-            composer-${{ runner.os }}-php84-
 
       - name: Validate composer.json
         id: validate_composer
@@ -290,10 +291,24 @@ jobs:
           done < storage/test-results/pint-targets.txt
 
           ./vendor/bin/pint "${pint_targets[@]}" || true
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore: auto-fix pint formatting" || true
-          git push || true
+
+          # Audit #1708 : le push auto-fix ne doit JAMAIS cibler main (les
+          # corrections de style se font sur les branches de PR) et ne doit
+          # pas s'exécuter sur les forks (le token du workflow ne s'y
+          # applique pas de toute façon).
+          is_pr_push = "false"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]]; then
+              is_pr_push = "true"
+            fi
+          fi
+
+          if [[ "${is_pr_push}" == "true" ]]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -am "chore: auto-fix pint formatting" || true
+            git push || true
+          fi
 
       - name: Lint PHP source files
         id: php_lint
@@ -382,7 +397,7 @@ jobs:
 
       - name: Upload backend quality summary
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: backend-quality-summary
           path: api/storage/test-results/backend-quality-summary.md
@@ -390,7 +405,7 @@ jobs:
 
       - name: Upload backend quality reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: backend-quality-reports
           path: |
@@ -440,7 +455,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup backend (PHP + Composer + multi-tenant DB, PCOV coverage)
         uses: ./.github/actions/setup-backend-db
@@ -542,7 +557,7 @@ jobs:
 
       - name: Upload backend coverage summary
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: backend-coverage-summary
           path: |
@@ -553,7 +568,7 @@ jobs:
 
       - name: Upload backend coverage reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: backend-coverage-reports
           path: |
@@ -580,7 +595,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -600,17 +615,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Review dependency changes
+        # Audit #1706 : ce job était décoratif (continue-on-error:true) alors
+        # qu'il est listé comme requis — il est désormais bloquant.
         id: dependency_review
-        continue-on-error: true
-        uses: actions/dependency-review-action@v5
-
-      - name: Note dependency review unavailability
-        if: steps.dependency_review.outcome == 'failure'
-        run: |
-          echo "Dependency review unavailable on this repository. Enable GitHub Dependency Graph/security analysis to enforce this gate."
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
 
   notify:
     name: Notify Result
@@ -623,7 +634,13 @@ jobs:
       - backend-coverage
       - governance-gates
       - dependency-review
-    if: always()
+    # Audit #1706 : les secrets SMTP ne doivent pas être exposés sur les PR
+    # (un auteur same-repo pourrait les lire en modifiant ce workflow).
+    if: >-
+      always() && (
+        github.event_name == 'push' && github.ref == 'refs/heads/main'
+        || github.event_name == 'workflow_dispatch'
+      )
     env:
       CI_SMTP_SERVER: ${{ secrets.CI_SMTP_SERVER }}
       CI_SMTP_USERNAME: ${{ secrets.CI_SMTP_USERNAME }}
@@ -634,14 +651,14 @@ jobs:
     steps:
       - name: Download backend quality summary
         if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.backend-quality.result)
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: backend-quality-summary
           path: artifacts/backend-quality-summary
 
       - name: Download backend coverage summary
         if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.backend-coverage.result)
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: backend-coverage-summary
           path: artifacts/backend-coverage-summary
@@ -716,7 +733,7 @@ jobs:
 
       - name: Upload CI report artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ci-report
           path: ci-report.md
