@@ -11,6 +11,7 @@ use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -82,7 +83,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'status' => 'validated',
         ]);
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true]);
         $cmd->assertSuccessful();
 
@@ -133,9 +134,10 @@ class GdprAnonymizeEmployeeTest extends TestCase
 
     public function test_anonymize_unknown_employee_fails(): void
     {
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => 999999]);
         $cmd->assertFailed();
+        $cmd->run(); // exécution immédiate — convention A-1 (aucune assertion post-commande sans run())
     }
 
     public function test_anonymize_dry_run_writes_nothing(): void
@@ -149,7 +151,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'first_name' => 'Sara',
         ]);
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--dry-run' => true]);
         $cmd->assertSuccessful();
 
@@ -170,12 +172,14 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'first_name' => 'Yacine',
         ]);
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true]);
         $cmd->assertSuccessful();
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd->run(); // exécution immédiate avant la seconde exécution + assertions DB (A-1)
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true]);
         $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions DB (A-1)
 
         // Une seule entrée d'audit, pas de doublon.
         $this->assertSame(1, AuditLog::where('action', 'gdpr_employee_anonymized')->where('auditable_id', $employee->id)->count());
@@ -192,7 +196,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
             'first_name' => 'Lina',
         ]);
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', [
             'employee' => $employee->id,
             '--company' => $company->id,
