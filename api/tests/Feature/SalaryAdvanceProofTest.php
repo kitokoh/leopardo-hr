@@ -29,7 +29,8 @@ class SalaryAdvanceProofTest extends TestCase
 
     private function createCompany(string $name): Company
     {
-        return Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'id' => (string) Str::uuid(),
             'name' => $name,
             'slug' => Str::slug($name),
@@ -41,6 +42,8 @@ class SalaryAdvanceProofTest extends TestCase
             'tenancy_type' => 'shared',
             'status' => 'active',
         ]);
+
+        return $company;
     }
 
     private function createEmployee(Company $company, string $role, ?string $managerRole = null): Employee

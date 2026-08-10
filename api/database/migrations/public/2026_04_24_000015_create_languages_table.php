@@ -15,6 +15,21 @@ return new class extends Migration
         DB::statement('SET search_path TO public');
 
         if (Schema::hasTable('languages')) {
+            // La table existe déjà (créée par `2026_04_01_000003`, schéma sans
+            // `updated_at`) : réconcilier les colonnes modernes au lieu de
+            // simplement retourner — sinon les inserts Eloquent échouent
+            // (`column updated_at does not exist`). Migration additive.
+            if (! Schema::hasColumn('languages', 'updated_at')) {
+                Schema::table('languages', function (Blueprint $table): void {
+                    $table->timestampTz('updated_at')->useCurrent();
+                });
+            }
+            if (! Schema::hasColumn('languages', 'name_native')) {
+                Schema::table('languages', function (Blueprint $table): void {
+                    $table->string('name_native', 50)->default('');
+                });
+            }
+
             return;
         }
 

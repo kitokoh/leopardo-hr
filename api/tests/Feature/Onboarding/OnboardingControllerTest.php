@@ -7,12 +7,12 @@ namespace Tests\Feature\Onboarding;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class OnboardingControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected Company $company;
     protected Company $otherCompany;
@@ -23,7 +23,6 @@ class OnboardingControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         $this->company      = Company::factory()->create();
         $this->otherCompany = Company::factory()->create();
         $this->manager      = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
@@ -33,7 +32,6 @@ class OnboardingControllerTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
     }
 
