@@ -8,6 +8,7 @@
       :id="id"
       :aria-invalid="ariaInvalid"
       :aria-describedby="describedBy"
+      :described-by="describedBy"
       :error="error"
     />
 
