@@ -175,6 +175,8 @@ jobs:
             tests/Feature/PayrollCountryRulesTemporalVersioningTest.php \
             tests/Unit/PayrollCountryRulesTest.php \
             tests/Unit/PayrollCalculatorCountryRulesTest.php \
+            tests/Unit/PayrollCalculatorEdgeCasesTest.php \
+            tests/Feature/Payroll/PayrollCalculatorRunEdgeTest.php \
             tests/Feature/GenerateBankExportJobTest.php \
             tests/Feature/BankExportControllerTest.php \
             tests/Feature/BulkPaymentControllerTest.php \
