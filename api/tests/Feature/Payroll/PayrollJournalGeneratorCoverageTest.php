@@ -86,13 +86,13 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
     {
         [$run, $employee] = $this->runWithSlips('validated');
 
-        // Matricule contrôlé par l'employé : injection =CMD() neutralisée.
-        $employee->update(['matricule' => '=HYPERLINK("http://evil")']);
+        // Matricule contrôlé par l'employé : injection =1+2 neutralisée (varchar(20)).
+        $employee->update(['matricule' => '=1+2']);
 
         $csv = (new PayrollJournalGenerator)->generate($run->fresh());
 
-        $this->assertStringContainsString("'=HYPERLINK", $csv);
-        $this->assertStringNotContainsString('",=HYPERLINK', $csv);
+        $this->assertStringContainsString("'=1+2", $csv);
+        $this->assertStringNotContainsString('",=1+2', $csv);
     }
 
     public function test_uses_employee_id_when_matricule_missing(): void
@@ -117,6 +117,15 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
             'company_id' => $company->id,
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
+            'matricule' => null,
+        ]);
+
+        /** @var Employee $employee2 */
+        $employee2 = Employee::factory()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Marie',
+            'last_name' => 'Martin',
+            'matricule' => null,
         ]);
 
         /** @var PayrollRun $run */
@@ -128,15 +137,17 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
             'status' => 'locked',
         ]);
 
-        foreach ([60000, 60000] as $gross) {
+        // Contrainte unique (payroll_run_id, employee_id) : un bulletin par
+        // employé par run — deux employés pour deux bulletins.
+        foreach ([$employee, $employee2] as $target) {
             /** @var PaySlip $slip */
             $slip = PaySlip::create([
                 'payroll_run_id' => $run->id,
                 'company_id' => $run->company_id,
-                'employee_id' => $employee->id,
+                'employee_id' => $target->id,
                 'period_start' => $run->period_start,
                 'period_end' => $run->period_end,
-                'gross_salary' => $gross,
+                'gross_salary' => 60000,
                 'total_deductions' => 10000,
                 'net_salary' => 50000,
                 'status' => $status,
