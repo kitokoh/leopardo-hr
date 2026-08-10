@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -49,7 +50,10 @@ class SensitiveDataAccessAuditTest extends TestCase
         Sanctum::actingAs($this->manager);
     }
 
-    private function seededRun(): PayrollRun
+    /**
+     * @return array{0: PayrollRun, 1: PaySlip}
+     */
+    private function seededRun(): array
     {
         /** @var PayrollRun $run */
         $run = PayrollRun::create([
@@ -71,9 +75,8 @@ class SensitiveDataAccessAuditTest extends TestCase
             'net_salary' => 48000,
             'status' => 'validated',
         ]);
-        $run->slip = $slip;
 
-        return $run;
+        return [$run, $slip];
     }
 
     private function lastSensitiveLog(): ?AuditLog
@@ -88,7 +91,7 @@ class SensitiveDataAccessAuditTest extends TestCase
 
     public function test_pay_slip_list_is_logged(): void
     {
-        $run = $this->seededRun();
+        $this->seededRun();
 
         $this->getJson('/api/v1/pay-slips')->assertOk();
 
@@ -100,9 +103,9 @@ class SensitiveDataAccessAuditTest extends TestCase
 
     public function test_pay_slip_detail_is_logged(): void
     {
-        $run = $this->seededRun();
+        [, $slip] = $this->seededRun();
 
-        $this->getJson('/api/v1/pay-slips/'.$run->slip->id)->assertOk();
+        $this->getJson('/api/v1/pay-slips/'.$slip->id)->assertOk();
 
         $log = $this->lastSensitiveLog();
         $this->assertNotNull($log);
@@ -111,12 +114,12 @@ class SensitiveDataAccessAuditTest extends TestCase
 
     public function test_pay_slip_download_is_logged(): void
     {
-        $run = $this->seededRun();
+        [, $slip] = $this->seededRun();
         Storage::fake('local');
         Storage::disk('local')->put('slips/bulletin.pdf', 'fake-pdf');
-        $run->slip->update(['pdf_path' => 'slips/bulletin.pdf']);
+        $slip->update(['pdf_path' => 'slips/bulletin.pdf']);
 
-        $this->get('/api/v1/pay-slips/'.$run->slip->id.'/pdf')
+        $this->get('/api/v1/pay-slips/'.$slip->id.'/pdf')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/pdf');
 
@@ -127,7 +130,7 @@ class SensitiveDataAccessAuditTest extends TestCase
 
     public function test_payroll_journal_is_logged(): void
     {
-        $run = $this->seededRun();
+        [$run] = $this->seededRun();
 
         $this->getJson("/api/v1/payroll-runs/{$run->id}/journal")->assertOk();
 
@@ -171,7 +174,7 @@ class SensitiveDataAccessAuditTest extends TestCase
 
     public function test_bank_export_download_is_logged(): void
     {
-        $run = $this->seededRun();
+        [$run] = $this->seededRun();
         Storage::fake('local');
         Storage::disk('local')->put('exports/virement.xml', 'fake-xml');
 
@@ -244,9 +247,9 @@ class SensitiveDataAccessAuditTest extends TestCase
         $this->getJson('/api/v1/pay-slips')->assertOk();
         $this->getJson('/api/v1/export/payroll-journal')->assertOk();
 
-        $this->artisan('audit:sensitive-report --days=30')
-            ->expectsOutputToContain('pay_slip.list')
-            ->expectsOutputToContain('payroll.accounting_export')
-            ->assertSuccessful();
+        $exitCode = Artisan::call('audit:sensitive-report', ['--days' => 30]);
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('pay_slip.list', Artisan::output());
+        $this->assertStringContainsString('payroll.accounting_export', Artisan::output());
     }
 }
