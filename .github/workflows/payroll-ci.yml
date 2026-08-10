@@ -155,13 +155,9 @@ jobs:
           set -euo pipefail
           mkdir -p storage/coverage
           # Include ALL payroll-related tests (F-14) — not just tests/Feature/Payroll:
-          # tests/Feature/Payroll*  → integration & controller tests that exercise
-          #                           PayrollCalculator, PayrollCycleService, PayrollService
-          # tests/Unit/Payroll*     → pure country-rules & calculator unit tests
-          # Note: set -o pipefail ensures test failures propagate through the tee pipe.
-          # Include ALL payroll-related tests (F-14) — not just tests/Feature/Payroll:
           #   - tests/Feature/Payroll* → integration & controller tests
           #   - tests/Unit/Payroll*    → pure country-rules & calculator unit tests
+          # Note: set -o pipefail ensures test failures propagate through the tee pipe.
           # S-4 (#1664) : tests paie hors tests/Feature/Payroll (générateurs,
           # controllers, jobs) portés dans la mesure — couverture réelle du
           # noyau paie.
