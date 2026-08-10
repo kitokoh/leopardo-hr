@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
@@ -59,6 +60,7 @@ Future<void> _openOfflineCache() async {
   await Hive.initFlutter();
   try {
     await Hive.openBox('offlineCache');
+    SecureStorage.purgeLegacyHiveToken();
   } catch (error, stackTrace) {
     debugPrint('Hive offlineCache recovery after open failure: $error');
     debugPrintStack(stackTrace: stackTrace);

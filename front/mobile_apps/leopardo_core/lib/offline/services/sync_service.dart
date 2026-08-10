@@ -19,7 +19,15 @@ class SyncService {
   final String _edgeBaseUrl;   // e.g. http://leopardo.local:7878
   final String _cloudBaseUrl;  // e.g. https://api.leopardo.app
   final String _edgeNodeId;    // Cloud-issued UUID for this Edge node
-  final String _edgeToken;     // Bearer secret, distinct from _edgeNodeId
+  String _edgeToken;           // Bearer secret, distinct from _edgeNodeId
+
+  /// Audit #1700 : le secret est hydraté depuis flutter_secure_storage au
+  /// démarrage (après construction du provider) — setter mutable.
+  void updateEdgeToken(String token) {
+    if (token.trim().isNotEmpty) {
+      _edgeToken = token.trim();
+    }
+  }
 
   SyncMode _currentMode = SyncMode.offline;
   Timer? _syncTimer;
@@ -140,12 +148,24 @@ class SyncService {
       }
 
       for (final batch in batches) {
-        final records = batch.map((item) => {
-          'entity_type': item.entityType,
-          'entity_id': item.entityId,
-          'operation': item.operation,
-          'payload': jsonDecode(item.payload),
-        }).toList();
+        final List<Map<String, dynamic>> records;
+        try {
+          records = batch.map((item) => {
+            'entity_type': item.entityType,
+            'entity_id': item.entityId,
+            'operation': item.operation,
+            'payload': jsonDecode(item.payload),
+          }).toList();
+        } on FormatException {
+          // Audit #1707 : payload illisible (anciens enregistrements
+          // sérialisés par l'encodeur maison) — marquer le batch en erreur
+          // et continuer au lieu de bloquer la file pour toujours.
+          for (final item in batch) {
+            await _db.markFailed(item.id);
+            failed++;
+          }
+          continue;
+        }
 
         try {
           // Both the Cloud API and the local Edge node instance expose the
