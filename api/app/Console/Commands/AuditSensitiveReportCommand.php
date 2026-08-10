@@ -45,13 +45,21 @@ class AuditSensitiveReportCommand extends Command
             ->selectRaw("metadata->>'resource' as resource, COUNT(*) as total")
             ->groupBy(DB::raw("metadata->>'resource'"))
             ->orderByDesc('total')
-            ->get();
+            ->get()
+            ->map(fn (AuditLog $row): array => [
+                'resource' => (string) $row->getAttribute('resource'),
+                'total' => (int) $row->getAttribute('total'),
+            ]);
 
         $byUser = (clone $query)
             ->selectRaw('COALESCE(user_id::text, \'system\') as user, COUNT(*) as total')
             ->groupBy(DB::raw('COALESCE(user_id::text, \'system\')'))
             ->orderByDesc('total')
-            ->get();
+            ->get()
+            ->map(fn (AuditLog $row): array => [
+                'user' => (string) $row->getAttribute('user'),
+                'total' => (int) $row->getAttribute('total'),
+            ]);
 
         $total = (clone $query)->count();
 
@@ -75,9 +83,9 @@ class AuditSensitiveReportCommand extends Command
         ));
 
         $this->newLine();
-        $this->table(['Ressource', 'Accès'], $byResource->map(fn ($row) => [$row->resource, $row->total])->all());
+        $this->table(['Ressource', 'Accès'], $byResource->map(fn (array $row): array => [$row['resource'], $row['total']])->all());
         $this->newLine();
-        $this->table(['Utilisateur', 'Accès'], $byUser->map(fn ($row) => [$row->user, $row->total])->all());
+        $this->table(['Utilisateur', 'Accès'], $byUser->map(fn (array $row): array => [$row['user'], $row['total']])->all());
 
         return self::SUCCESS;
     }
