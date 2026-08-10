@@ -94,6 +94,12 @@ class DemoDzSeeder extends Seeder
 
         $existingEmployees = (int) Employee::query()->where('company_id', $company->id)
             ->where('role', 'employee')
+            ->whereNotIn('email', [
+                'rh.demo-dz@leopardo.test',
+                'comptable.demo-dz@leopardo.test',
+                'principal.demo-dz@leopardo.test',
+                'employe.demo-dz@leopardo.test',
+            ])
             ->count();
         $toCreate = max(0, $count - $existingEmployees);
         if ($toCreate > 0) {
@@ -263,6 +269,13 @@ class DemoDzSeeder extends Seeder
                     'status' => 'draft',
                 ]
             );
+
+            // Idempotence (F-23) : un run déjà clôturé (verrouillé) ne doit pas
+            // être recalculé — PayrollCalculator refuse les runs verrouillés
+            // (F-11) ; on saute le cycle déjà livré.
+            if ($run->status === PayrollRun::STATUS_LOCKED) {
+                continue;
+            }
 
             $calculator->calculateRun($run);
 
