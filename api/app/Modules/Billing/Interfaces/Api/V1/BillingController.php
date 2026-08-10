@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\InvoiceResource;
 use App\Http\Resources\Api\V1\SubscriptionResource;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
@@ -21,8 +21,7 @@ class BillingController extends Controller
 {
     public function __construct(
         private readonly StripeService $stripeService,
-    ) {
-    }
+    ) {}
 
     public function subscription(Request $request): JsonResponse
     {
@@ -32,7 +31,7 @@ class BillingController extends Controller
             ->latest()
             ->first();
 
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json(['data' => null, 'message' => 'No active subscription.'], 404);
         }
 
@@ -43,7 +42,7 @@ class BillingController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        if (!$user->isManager()) {
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -56,7 +55,7 @@ class BillingController extends Controller
             ->latest()
             ->first();
 
-        if (!$subscription) {
+        if (! $subscription) {
             $subscription = Subscription::create([
                 'company_id' => $user->company_id,
                 'plan' => $validated['plan'],
@@ -81,7 +80,7 @@ class BillingController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        if (!$user->isManager()) {
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -106,7 +105,7 @@ class BillingController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        if (!$user->isManager()) {
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -233,7 +232,7 @@ class BillingController extends Controller
 
         $stripeCustomerId = $company->metadata['stripe_customer_id'] ?? null;
 
-        if (!$stripeCustomerId) {
+        if (! $stripeCustomerId) {
             return new JsonResponse([
                 'error' => 'NO_STRIPE_CUSTOMER',
                 'message' => 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
@@ -263,5 +262,3 @@ class BillingController extends Controller
         }
     }
 }
-
-

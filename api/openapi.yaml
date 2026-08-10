@@ -6415,31 +6415,6 @@ paths:
         "422":
           description: "Only calculated runs can be validated"
 
-
-  /payroll-runs/{payrollRun}/journal:
-    get:
-      tags: ["Payroll"]
-      summary: "Journal de paie mensuel CSV (F-10)"
-      description: "Une ligne par bulletin valide (matricule, nom, brut, cotisations, IRG, autres deductions, net, cout employeur) + ligne de totaux. Reserve aux managers principal/comptable."
-      parameters:
-        - name: payrollRun
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200":
-          description: "Fichier CSV (Content-Disposition: attachment)"
-          content:
-            text/csv:
-              schema:
-                type: string
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          description: "Manager role required"
-        "404":
-          description: "Run introuvable (isolation tenant)"
-
   /payroll-runs/{payrollRun}/cancel:
     post:
       tags: ["Payroll"]

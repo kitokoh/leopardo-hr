@@ -6,17 +6,17 @@ namespace App\Modules\Growth\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Billing\Domain\Models\Partner;
-use App\Modules\Payroll\Domain\Models\Commission;
 use App\Modules\Billing\Domain\Models\PartnerAuditLog;
+use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
+use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class GrowthAdminController extends Controller
 {
-    public function __construct(private PartnerService $partnerService)
-    {}
+    public function __construct(private PartnerService $partnerService) {}
 
     /**
      * List all partners for the platform.
@@ -57,7 +57,7 @@ class GrowthAdminController extends Controller
      */
     public function payouts(): JsonResponse
     {
-        $requests = \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::with('partner.user')
+        $requests = PartnerPayoutRequest::with('partner.user')
             ->latest()
             ->get();
 
@@ -67,7 +67,7 @@ class GrowthAdminController extends Controller
     /**
      * Update payout request status with audit.
      */
-    public function updatePayoutStatus(Request $request, \App\Modules\Billing\Domain\Models\PartnerPayoutRequest $payout): JsonResponse
+    public function updatePayoutStatus(Request $request, PartnerPayoutRequest $payout): JsonResponse
     {
         $validated = $request->validate([
             'status' => 'required|in:paid,rejected',
@@ -113,4 +113,3 @@ class GrowthAdminController extends Controller
         ]);
     }
 }
-

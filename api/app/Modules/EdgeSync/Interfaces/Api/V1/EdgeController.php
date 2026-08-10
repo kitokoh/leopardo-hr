@@ -45,7 +45,7 @@ use Illuminate\Support\Facades\Log;
 class EdgeController extends Controller
 {
     public function __construct(
-        private readonly SyncEngineService  $syncEngine,
+        private readonly SyncEngineService $syncEngine,
         private readonly EdgeLicenseService $licenseService,
     ) {}
 
@@ -57,7 +57,7 @@ class EdgeController extends Controller
     public function installScript(): Response
     {
         $cloudApiUrl = config('app.url');
-        $version     = config('app.version', '1.0.0');
+        $version = config('app.version', '1.0.0');
 
         $script = <<<BASH
         #!/usr/bin/env bash
@@ -127,9 +127,9 @@ class EdgeController extends Controller
         $script = preg_replace('/^        /m', '', $script) ?? $script;
 
         return response($script, 200, [
-            'Content-Type'           => 'text/x-shellscript; charset=utf-8',
-            'Content-Disposition'    => 'inline; filename="leopardo-edge-install.sh"',
-            'Cache-Control'          => 'no-cache, no-store',
+            'Content-Type' => 'text/x-shellscript; charset=utf-8',
+            'Content-Disposition' => 'inline; filename="leopardo-edge-install.sh"',
+            'Cache-Control' => 'no-cache, no-store',
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }
@@ -137,16 +137,16 @@ class EdgeController extends Controller
     /** GET /edge/download/docker-compose.yml */
     public function downloadDockerCompose(): Response
     {
-        $version     = config('app.version', '1.0.0');
+        $version = config('app.version', '1.0.0');
         $cloudApiUrl = config('app.url');
 
         $filePath = base_path('edge/docker-compose.yml');
 
         if (file_exists($filePath)) {
             return response((string) file_get_contents($filePath), 200, [
-                'Content-Type'        => 'application/yaml; charset=utf-8',
+                'Content-Type' => 'application/yaml; charset=utf-8',
                 'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
-                'Cache-Control'       => 'public, max-age=300',
+                'Cache-Control' => 'public, max-age=300',
             ]);
         }
 
@@ -167,9 +167,9 @@ class EdgeController extends Controller
         $yaml = preg_replace('/^        /m', '', $yaml) ?? $yaml;
 
         return response($yaml, 200, [
-            'Content-Type'        => 'application/yaml; charset=utf-8',
+            'Content-Type' => 'application/yaml; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
-            'Cache-Control'       => 'public, max-age=300',
+            'Cache-Control' => 'public, max-age=300',
         ]);
     }
 
@@ -192,9 +192,9 @@ class EdgeController extends Controller
         $env = preg_replace('/^        /m', '', $env) ?? $env;
 
         return response($env, 200, [
-            'Content-Type'        => 'text/plain; charset=utf-8',
+            'Content-Type' => 'text/plain; charset=utf-8',
             'Content-Disposition' => 'attachment; filename=".env.edge.example"',
-            'Cache-Control'       => 'public, max-age=300',
+            'Cache-Control' => 'public, max-age=300',
         ]);
     }
 
@@ -222,8 +222,8 @@ class EdgeController extends Controller
         $pem = str_replace('\\n', "\n", $pem);
 
         return response($pem, 200, [
-            'Content-Type'   => 'application/x-pem-file',
-            'Cache-Control'  => 'public, max-age=3600',
+            'Content-Type' => 'application/x-pem-file',
+            'Cache-Control' => 'public, max-age=3600',
             'X-Edge-Version' => config('app.version', '1.0.0'),
         ]);
     }
@@ -242,9 +242,9 @@ class EdgeController extends Controller
     public function health(): JsonResponse
     {
         return response()->json([
-            'edge'   => true,
+            'edge' => true,
             'status' => 'ok',
-            'time'   => Carbon::now()->toIso8601String(),
+            'time' => Carbon::now()->toIso8601String(),
         ]);
     }
 
@@ -267,16 +267,16 @@ class EdgeController extends Controller
     public function heartbeat(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'node_id'       => ['required', 'string', 'max:64'],
+            'node_id' => ['required', 'string', 'max:64'],
             'pending_count' => ['integer', 'min:0'],
-            'version'       => ['string', 'max:32'],
-            'ip_address'    => ['nullable', 'ip'],
+            'version' => ['string', 'max:32'],
+            'ip_address' => ['nullable', 'ip'],
         ]);
 
         Log::info('[Edge] Heartbeat reçu (legacy, no-op)', ['node_id' => $validated['node_id']]);
 
         return response()->json([
-            'status'      => 'ok',
+            'status' => 'ok',
             'server_time' => Carbon::now()->toIso8601String(),
         ]);
     }
