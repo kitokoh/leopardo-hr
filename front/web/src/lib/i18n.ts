@@ -1605,7 +1605,10 @@ export function getLocaleDirection(locale: AppLocale, isRtl?: boolean): 'ltr' | 
 
 const INTL_LOCALE_MAP: Record<AppLocale, string> = {
   fr: 'fr-FR',
-  ar: 'ar-SA',
+  // S-5 (#1665) : ar-SA force le calendrier HIJRI et les chiffres
+  // arabes orientaux pour les dates — en pratique les clients attendent
+  // le calendrier grégorien (ar-EG, défaut grégorien).
+  ar: 'ar-EG',
   tr: 'tr-TR',
   en: 'en-US',
 };
