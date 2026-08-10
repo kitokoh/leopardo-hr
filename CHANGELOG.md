@@ -7,6 +7,7 @@
 
 ### Fixed
 - **test: audit PendingCommand lazy — run() explicite avant assertions d'état (A-1, #1679).** `PendingCommand` exécute la commande au `__destruct` : les tests qui chaînent `$this->artisan(...)->assertExitCode(0)` puis vérifient la base constataient un état **avant** exécution. Corrigé dans `PurgeAuditLogsCommandTest` (test 3) et `GdprAnonymizeEmployeeTest` (2 usages restants) ; 13 fichiers audités, le reste vérifié sûr (chaînage jeté → exécution en fin d'instruction). Convention documentée dans `docs/GESTION_PROJET/CONVENTIONS_TESTS.md` §1.
+  **Suite PHPStan strict** : 5 fichiers restants annotés `/** @var PendingCommand */` (15 sites) — AnnouncementControllerTest, EdgeSilentNodeDetectionTest, PublishScheduledPostJobTest, PublishScheduledSocialPostsCommandTest, PrecalculatePayrollRunsCommandTest — pour lever `Cannot call method run() on PendingCommand|int`.
 - **fix(payroll): indemnité de congés payés — jours ACQUIS et non le solde restant (F-07, #1537, PR #1659).** `PayrollCalculator::accruedLeaveDays()` sommait `LeaveBalance.balance` (= restant, décrémenté à l'approbation d'un congé) : un employé ayant pris 5 j sur 30 acquis était indemnisé sur 25 (1/10ᵉ sous-évalué de 20 %). Corrigé : `SUM(balance + used + pending)` restreint aux types de congés payés. `referenceGross12Months()` normalise aussi la période partielle (embauche en cours d'année : gross × 12/mois couverts). Golden `GoldenDzLeaveIndemnityRealDataTest` mis à jour (48 000 → 40 000 DZD, calcul à la main sur 30 j acquis).
 
 ### Added
