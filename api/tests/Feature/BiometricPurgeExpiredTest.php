@@ -262,7 +262,7 @@ class BiometricPurgeExpiredTest extends TestCase
 
         /** @var Employee|null $fresh */
         $fresh = $active->fresh();
-        $this->assertNotNull($fresh);
+        $this->assertInstanceOf(Employee::class, $fresh);
         $this->assertSame('biometrics/faces/active.jpg', $fresh->biometric_face_reference_path);
         $this->assertSame('biometrics/fp/active.jpg', $fresh->biometric_fingerprint_reference_path);
         $this->assertTrue((bool) $fresh->biometric_face_enabled);
