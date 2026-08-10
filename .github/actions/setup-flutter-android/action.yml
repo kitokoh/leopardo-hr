@@ -38,12 +38,27 @@ runs:
     # ubuntu-latest ne préinstalle pas platforms;android-37 : sans cette étape
     # Gradle échoue avec "Failed to find Platform SDK with path:
     # platforms;android-37" (mobile-apps-ci + mobile-distribute, cf. #1560).
+    # sdkmanager n'est pas sur PATH sur ubuntu-24.04 : on le cherche aussi
+    # sous $ANDROID_HOME/cmdline-tools/{latest,8.0,12.0}/bin.
     - name: Install Android SDK platform 37
       shell: bash
       run: |
-        if command -v sdkmanager >/dev/null 2>&1; then
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platforms;android-37" "build-tools;37.0.0" >/dev/null 2>&1 || true
+        export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+        SDKMANAGER=""
+        for CANDIDATE in "$(command -v sdkmanager 2>/dev/null)"           "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"           "${ANDROID_HOME}/cmdline-tools/12.0/bin/sdkmanager"           "${ANDROID_HOME}/cmdline-tools/8.0/bin/sdkmanager"; do
+          if [[ -n "${CANDIDATE}" && -x "${CANDIDATE}" ]]; then
+            SDKMANAGER="${CANDIDATE}"
+            break
+          fi
+        done
+        if [[ -n "${SDKMANAGER}" ]]; then
+          yes | "${SDKMANAGER}" --licenses >/dev/null 2>&1 || true
+          "${SDKMANAGER}" "platforms;android-37" "build-tools;37.0.0" >/dev/null 2>&1 || true
+          if "${SDKMANAGER}" --list_installed 2>/dev/null | grep -q "platforms;android-37"; then
+            echo "platforms;android-37 installé."
+          else
+            echo "::warning::platforms;android-37 toujours absent après installation (ANDROID_HOME=${ANDROID_HOME}) — les builds Android peuvent échouer."
+          fi
         else
           echo "::warning::sdkmanager introuvable — plateforme android-37 non installée (builds Android pourraient échouer)."
         fi
