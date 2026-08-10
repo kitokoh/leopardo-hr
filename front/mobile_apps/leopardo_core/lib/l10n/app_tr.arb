@@ -192,5 +192,7 @@
   "marketingOauthFieldsSecretHint": "(mevcut değeri korumak için boş bırakın)",
   "marketingOauthFieldsPlaceholderId": "İstemci Kimliğiniz",
   "marketingOauthFieldsPlaceholderSecret": "Yeni sır (isteğe bağlı)",
-  "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback"
+  "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback",
+  "attendanceSendingToServer": "{label} sunucuya gönderiliyor...",
+  "attendanceRetryAfterFailure": "{label}. Lütfen tekrar deneyin."
 }

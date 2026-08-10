@@ -294,5 +294,9 @@
         "placeholder_uri": "https://example.com/oauth/callback"
       }
     }
+  },
+  "attendance": {
+    "sending_to_server": "{label} sunucuya gönderiliyor...",
+    "retry_after_failure": "{label}. Lütfen tekrar deneyin."
   }
 }

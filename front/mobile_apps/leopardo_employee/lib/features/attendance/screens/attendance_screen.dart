@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/pulse_button.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
@@ -165,7 +166,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       SnackBar(
-        content: Text('${choice.loadingLabel} vers le serveur...'),
+        content: Text(context.l10n.attendanceSendingToServer(choice.loadingLabel)),
         duration: const Duration(seconds: 2),
         backgroundColor: AppColors.rhDark,
       ),
@@ -186,7 +187,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           success
               ? choice.successLabel
               : ref.read(attendanceProvider).error ??
-                  '${choice.failureLabel}. Reessayez.',
+                  context.l10n.attendanceRetryAfterFailure(choice.failureLabel),
         ),
         backgroundColor: success ? AppColors.rh : AppColors.danger,
       ),

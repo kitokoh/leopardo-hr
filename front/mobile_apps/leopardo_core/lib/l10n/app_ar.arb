@@ -192,5 +192,7 @@
   "marketingOauthFieldsSecretHint": "(اتركه فارغاً للإبقاء على الحالي)",
   "marketingOauthFieldsPlaceholderId": "معرف العميل الخاص بك",
   "marketingOauthFieldsPlaceholderSecret": "سر جديد (اختياري)",
-  "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback"
+  "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback",
+  "attendanceSendingToServer": "جار إرسال {label} إلى الخادم...",
+  "attendanceRetryAfterFailure": "{label}. حاول مرة أخرى."
 }

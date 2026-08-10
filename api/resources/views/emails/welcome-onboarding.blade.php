@@ -14,46 +14,18 @@
 <div class="container">
     <div class="logo">Leopardo RH</div>
 
-    @if($locale === 'ar')
-        <h2>مرحبًا {{ $user->name ?? '' }}!</h2>
-        <p>شكرًا لانضمامك إلى <strong>Leopardo RH</strong>. شركتك <strong>{{ $company->name }}</strong> مسجلة بنجاح.</p>
-        <p>إليك ما يمكنك فعله الآن:</p>
-        <ul>
-            <li>أكمل إعداد الشركة عبر قائمة التحقق</li>
-            <li>أضف الموظفين الأوائل</li>
-            <li>ابدأ تتبع الحضور</li>
-        </ul>
-        <p>فريق دعمنا متاح لمساعدتك في أي وقت.</p>
-    @elseif($locale === 'en')
-        <h2>Welcome {{ $user->name ?? '' }}!</h2>
-        <p>Thank you for joining <strong>Leopardo RH</strong>. Your company <strong>{{ $company->name }}</strong> is registered.</p>
-        <p>Here is what you can do now:</p>
-        <ul>
-            <li>Complete your setup via the onboarding checklist</li>
-            <li>Add your first employees</li>
-            <li>Start tracking attendance</li>
-        </ul>
-        <p>Our support team is available anytime to help you get started.</p>
-    @else
-        <h2>Bienvenue {{ $user->name ?? '' }} !</h2>
-        <p>Merci d'avoir rejoint <strong>Leopardo RH</strong>. Votre entreprise <strong>{{ $company->name }}</strong> est enregistrée.</p>
-        <p>Voici ce que vous pouvez faire maintenant :</p>
-        <ul>
-            <li>Complétez la configuration via la checklist d'onboarding</li>
-            <li>Ajoutez vos premiers employés</li>
-            <li>Démarrez le suivi de présence</li>
-        </ul>
-        <p>Notre équipe support est disponible pour vous aider à tout moment.</p>
-    @endif
+    <h2>{{ __('emails.email_welcome_onboarding_subject', ['name' => $user->name ?? '']) }}</h2>
+    <p>{{ __('emails.email_welcome_onboarding_intro', ['company' => $company->name]) }}</p>
+    <p>{{ __('emails.email_welcome_onboarding_what_now') }}</p>
+    <ul>
+        <li>{{ __('emails.email_welcome_onboarding_step1') }}</li>
+        <li>{{ __('emails.email_welcome_onboarding_step2') }}</li>
+        <li>{{ __('emails.email_welcome_onboarding_step3') }}</li>
+    </ul>
+    <p>{{ __('emails.email_welcome_onboarding_support') }}</p>
 
     <div class="footer">
-        @if($locale === 'ar')
-            <p>لقد تلقيت هذا البريد لأنك سجلت في Leopardo RH.</p>
-        @elseif($locale === 'en')
-            <p>You received this email because you registered on Leopardo RH.</p>
-        @else
-            <p>Vous recevez cet email car vous êtes inscrit(e) sur Leopardo RH.</p>
-        @endif
+        <p>{{ __('emails.email_welcome_onboarding_footer') }}</p>
     </div>
 </div>
 </body>
