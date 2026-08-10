@@ -37,8 +37,7 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
       if (payload.data) {
         // Update local user 
         const updatedUser = { ...user, company: { ...user.company, metadata: { ...user.company?.metadata, onboarding_completed: true } } };
-        const token = localStorage.getItem('auth_token');
-        if (token) storeAuthSession(token, updatedUser);
+        storeAuthSession(null, updatedUser);
       }
       
       setIsOpen(false);

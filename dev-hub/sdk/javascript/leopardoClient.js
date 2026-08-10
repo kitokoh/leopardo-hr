@@ -1335,11 +1335,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/journal", options);
     },
 
-    /** Journal de paie mensuel CSV (F-10) */
-    getPayrollRunsByPayrollRunJournal2(options = {}) {
-      return request("GET", "/payroll-runs/{payrollRun}/journal", options);
-    },
-
     /** Verrouiller la session de paie (cloture comptable, F-11) */
     postPayrollRunsByPayrollRunLock(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/lock", options);
@@ -2209,4 +2204,4 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
 export default createLeopardoClient;
 
-export const openApiVersion = "4.16.190-2026-05-29";
+export const openApiVersion = "4.23.5";

@@ -9,16 +9,7 @@
  * unauthenticated (tenant is resolved from `{companySlug}` on the backend).
  */
 
-const DEFAULT_BACKEND_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
-
-function resolveBackendBaseUrl(): string {
-  return (
-    process.env.API_PROXY_TARGET ||
-    process.env.BACKEND_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    DEFAULT_BACKEND_API_URL
-  ).replace(/\/$/, '');
-}
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
 export interface PublicJobPosting {
   id: number;
