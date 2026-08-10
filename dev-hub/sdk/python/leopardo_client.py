@@ -5,7 +5,7 @@ import json
 from urllib import error, parse, request as urllib_request
 
 
-open_api_version = "4.16.190-2026-05-29"
+open_api_version = "4.23.5"
 
 
 class LeopardoApiError(Exception):
