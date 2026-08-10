@@ -10,6 +10,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -49,6 +50,18 @@ class PayrollCalculatorRunEdgeTest extends TestCase
             'status' => $status,
         ]);
 
+        // calculateRun ne crée de bulletin que si l'entreprise a une structure
+        // salariale active pour le pays du run (F-13 : vraies migrations).
+        SalaryStructure::create([
+            'company_id' => $this->company->id,
+            'name' => 'Grille par défaut (test)',
+            'base_salary' => 60000,
+            'currency' => 'DZD',
+            'country_code' => 'DZ',
+            'frequency' => 'monthly',
+            'active' => true,
+        ]);
+
         return $run;
     }
 
@@ -67,7 +80,7 @@ class PayrollCalculatorRunEdgeTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'salary_type' => 'monthly',
+            'salary_type' => 'fixed',
             'salary_base' => 60000,
         ]);
 
@@ -90,7 +103,7 @@ class PayrollCalculatorRunEdgeTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'salary_type' => 'monthly',
+            'salary_type' => 'fixed',
             'salary_base' => 60000,
             'contract_start' => '2026-07-16',
         ]);
@@ -109,7 +122,7 @@ class PayrollCalculatorRunEdgeTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'salary_type' => 'monthly',
+            'salary_type' => 'fixed',
             'salary_base' => 60000,
         ]);
 

@@ -2,35 +2,34 @@
 
 namespace Tests\Feature;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Models\Language;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class AuthProfileSettingsTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
     }
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
     }
 
     public function test_employee_can_update_own_profile(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -42,7 +41,8 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Karim',
             'last_name' => 'Aouad',
@@ -81,7 +81,8 @@ class AuthProfileSettingsTest extends TestCase
 
     public function test_employee_can_view_durable_career_summary(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a-career',
             'sector' => 'restaurant',
@@ -93,7 +94,8 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Karim',
             'last_name' => 'Aouad',
@@ -102,7 +104,7 @@ class AuthProfileSettingsTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
             'contract_start' => '2026-01-15',
-            'contract_type' => 'cdi',
+            'contract_type' => 'CDI',
             'extra_data' => ['job_title' => 'Technicien terrain'],
         ]);
 
@@ -122,7 +124,8 @@ class AuthProfileSettingsTest extends TestCase
 
     public function test_employee_can_view_personal_cabinet_stats(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a-cabinet',
             'sector' => 'restaurant',
@@ -134,7 +137,8 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Karim',
             'last_name' => 'Aouad',
@@ -174,7 +178,8 @@ class AuthProfileSettingsTest extends TestCase
 
     public function test_employee_can_change_password_with_current_password(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -186,7 +191,8 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
@@ -236,7 +242,8 @@ class AuthProfileSettingsTest extends TestCase
 
     public function test_employee_cannot_change_password_with_wrong_current_password(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -248,7 +255,8 @@ class AuthProfileSettingsTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
@@ -290,7 +298,8 @@ class AuthProfileSettingsTest extends TestCase
             'is_active' => true,
         ]);
 
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -303,7 +312,8 @@ class AuthProfileSettingsTest extends TestCase
             'language' => 'fr',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
@@ -342,7 +352,8 @@ class AuthProfileSettingsTest extends TestCase
             'is_active' => false,
         ]);
 
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
@@ -355,7 +366,8 @@ class AuthProfileSettingsTest extends TestCase
             'language' => 'fr',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
@@ -375,4 +387,3 @@ class AuthProfileSettingsTest extends TestCase
         $this->assertNull($employee->fresh()->preferred_language);
     }
 }
-
