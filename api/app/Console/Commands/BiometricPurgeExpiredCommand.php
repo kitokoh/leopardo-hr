@@ -131,7 +131,7 @@ class BiometricPurgeExpiredCommand extends Command
             return 0;
         }
 
-        DB::transaction(function () use ($company, $expired): void {
+        DB::transaction(function () use ($company, $expired, $months, $cutoff): void {
             foreach ($expired as $employee) {
                 $employee->update([
                     'biometric_face_reference_path' => null,
