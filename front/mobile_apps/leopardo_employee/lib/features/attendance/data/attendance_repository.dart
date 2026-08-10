@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
@@ -51,9 +52,7 @@ class AttendanceRepository {
       );
       return AttendanceLog.fromJson(_dataMap(response.data));
     } catch (e) {
-      if (e is ApiException &&
-          (e.message.toLowerCase().contains('connexion') ||
-              e.message.toLowerCase().contains('internet'))) {
+      if (_isOfflineNetworkError(e)) {
         final box =
             await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
         // Règle F-21 « 1er pointage gagne » : un check-in déjà en file pour
@@ -107,9 +106,7 @@ class AttendanceRepository {
       );
       return AttendanceLog.fromJson(_dataMap(response.data));
     } catch (e) {
-      if (e is ApiException &&
-          (e.message.toLowerCase().contains('connexion') ||
-              e.message.toLowerCase().contains('internet'))) {
+      if (_isOfflineNetworkError(e)) {
         final box =
             await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
         if (!await _hasQueuedPunchToday(box, 'check-out')) {
@@ -456,6 +453,23 @@ class AttendanceRepository {
       if (item['type'] != type) continue;
       final queuedAt = (item['timestamp'] as String?) ?? '';
       if (queuedAt.startsWith(today)) return true;
+    }
+    return false;
+  }
+
+  /// Une erreur est « hors-ligne » si le transport a échoué (connexion,
+  /// timeout) ou si l'API signale une indisponibilité réseau. Les erreurs
+  /// métier (4xx/5xx avec réponse) ne sont PAS mises en file.
+  static bool _isOfflineNetworkError(Object e) {
+    if (e is DioException) {
+      return e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout;
+    }
+    if (e is ApiException) {
+      final message = e.message.toLowerCase();
+      return message.contains('connexion') || message.contains('internet');
     }
     return false;
   }

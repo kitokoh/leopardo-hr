@@ -85,6 +85,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
         /** @var \Illuminate\Testing\PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--force' => true]);
         $cmd->assertSuccessful();
+        $cmd->run();
 
         $employee->refresh();
 
@@ -152,6 +153,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
         /** @var \Illuminate\Testing\PendingCommand $cmd */
         $cmd = $this->artisan('gdpr:anonymize-employee', ['employee' => $employee->id, '--dry-run' => true]);
         $cmd->assertSuccessful();
+        $cmd->run();
 
         $employee->refresh();
         $this->assertSame('Sara', $employee->first_name);
@@ -199,6 +201,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
             '--force' => true,
         ]);
         $cmd->assertSuccessful();
+        $cmd->run();
 
         $employee->refresh();
         $this->assertSame('Anonymisé', $employee->first_name);
