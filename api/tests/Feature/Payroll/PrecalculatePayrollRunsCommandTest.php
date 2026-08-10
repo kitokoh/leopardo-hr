@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
+use Illuminate\Testing\PendingCommand;
 
 /**
  * PA2-PAY-012 — nightly progressive payroll pre-calculation.
@@ -38,6 +39,7 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('payroll:precalculate');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -67,6 +69,7 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('payroll:precalculate');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -94,6 +97,7 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('payroll:precalculate');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -129,6 +133,7 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'cancelled',
         ]);
 
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('payroll:precalculate');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -157,6 +162,7 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'calculated_at' => Carbon::parse('2026-01-27'),
         ]);
 
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('payroll:precalculate');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -186,6 +192,7 @@ class PrecalculatePayrollRunsCommandTest extends TestCase
             'status' => 'draft',
         ]);
 
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('payroll:precalculate', ['--dry-run' => true]);
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)

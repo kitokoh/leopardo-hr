@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
+use Illuminate\Testing\PendingCommand;
 
 class AnnouncementControllerTest extends TestCase
 {
@@ -296,6 +297,7 @@ class AnnouncementControllerTest extends TestCase
         $this->assertSame(0, Notification::query()->where('employee_id', $employee->id)->count());
 
         // Not due yet: the command must not publish it.
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('announcements:publish-scheduled');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -304,6 +306,7 @@ class AnnouncementControllerTest extends TestCase
 
         // Move past the due time and run the command again.
         Carbon::setTestNow($scheduledAt->clone()->addMinute());
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('announcements:publish-scheduled');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
@@ -373,6 +376,7 @@ class AnnouncementControllerTest extends TestCase
 
         // The publish-scheduled command must skip cancelled rows.
         Carbon::setTestNow(now()->addHours(2));
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('announcements:publish-scheduled');
         $cmd->assertSuccessful();
         $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
