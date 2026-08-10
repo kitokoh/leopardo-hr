@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { getApiBaseUrl } from '@/lib/backend-url';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
   applyDocumentLocale,
@@ -135,7 +136,7 @@ function googleAuthHref(): string {
   const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
   const baseUrl = process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
     ? directApi
-    : 'https://gestionemployerbackend.onrender.com/api/v1';
+    : getApiBaseUrl();
 
   return `${baseUrl}/auth/google`;
 }

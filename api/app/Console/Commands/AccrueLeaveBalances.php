@@ -41,6 +41,11 @@ class AccrueLeaveBalances extends Command
             // les gros tenants (le 1er du mois).
             Employee::where('company_id', $policy->company_id)
                 ->chunkById(500, function ($employees) use ($policy, $year, $today, &$count): void {
+                    // Audit #1703 : UNE transaction par chunk (au lieu d'une
+                    // par employé) — les transactions imbriquées deviennent
+                    // des savepoints (isolation par employé conservée, mais
+                    // plus de milliers de BEGIN/COMMIT par tenant).
+                    DB::transaction(function () use ($employees, $policy, $year, $today, &$count): void {
                     foreach ($employees as $employee) {
                         try {
                             DB::transaction(function () use ($policy, $employee, $year, $today, &$count): void {
@@ -76,6 +81,7 @@ class AccrueLeaveBalances extends Command
                             Log::warning("Leave accrual failed for employee {$employee->id}: {$e->getMessage()}");
                         }
                     }
+                    });
                 });
         }
 

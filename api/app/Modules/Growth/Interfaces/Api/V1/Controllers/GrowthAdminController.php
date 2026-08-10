@@ -23,13 +23,23 @@ class GrowthAdminController extends Controller
      */
     public function partners(Request $request): JsonResponse
     {
-        $perPage = $request->integer('per_page', 25);
+        $perPage = max(1, min((int) $request->integer('per_page', 25), 100));
 
         $partners = Partner::with('user:id,first_name,last_name,email')
             ->withCount('referredCompanies')
             ->paginate($perPage);
 
-        return new JsonResponse(['data' => $partners]);
+        // Pagination (#1703) : `data` reste une liste simple (contrat
+        // historique), les métadonnées de page sont exposées dans `meta`.
+        return new JsonResponse([
+            'data' => $partners->items(),
+            'meta' => [
+                'current_page' => $partners->currentPage(),
+                'per_page' => $partners->perPage(),
+                'total' => $partners->total(),
+                'last_page' => $partners->lastPage(),
+            ],
+        ]);
     }
 
     /**

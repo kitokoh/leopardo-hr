@@ -6,6 +6,11 @@
 ## [Unreleased]
 
 ### Security
+- **audit 2026-08-10 (#1694–#1712) — complétions revue :** purge ponctuelle du miroir Hive legacy du JWT au démarrage des 4 apps mobiles (#1700) ; login démo `platform_admin` gaté `kDebugMode` (aligné employee/hr/manager, #1697) ; `client_secret` SSO préservé lors d'une réécriture de config sans secret (#1694) ; URLs backend entièrement centralisées dans `src/lib/backend-url.ts` (checkout, lead-capture, signup, verify, careers, api-client, login, kiosk) (#1701).
+- **audit 2026-08-10 (#1694–#1712) — complétions revue :** `per_page` plafonné à 100 sur Growth/Cameras/Notification/CabinetShare + contrat de réponse `data` restauré (liste simple + `meta`, jamais de paginator brut) (#1703) ; `AccrueLeaveBalances` : une transaction par chunk (savepoints par employé) au lieu d'une par employé (#1703) ; follow-up exclusion iCloud iOS documenté (roadmap Edge) (#1700).
+
+
+### Security
 - **audit 2026-08-10 (#1694–#1712).** Durcissement sécurité + qualité : SSO SAML/OIDC ne marque plus la config active (validation non implémentée) et chiffre `certificate`/`client_secret` au repos ; callbacks 501 explicites ; uploads contraints (SVG retiré du logo, allow-lists MIME Cabinet/Notification, MIME détecté serveur) ; `POST /edge/heartbeat` sans écriture DB ; `DISABLE_DEMO_SEEDING=true` en production + mot de passe démo centralisé (`DEMO_PASSWORD`) ; login démo mobile gaté `kDebugMode` ; `SENTRY_TRACES_SAMPLE_RATE` 0.1 ; auth web cookie httpOnly effective (rewrite `/api/*` retiré de vercel.json, plus de token en localStorage) ; XSS kiosk éliminé (échappement + `safeImageUrl`) ; mobile : JWT hors Hive, `edge_token` en `flutter_secure_storage`, backups Android désactivés ; CI : 69 actions pinnées SHA, secrets SMTP restreints, dependency-review bloquant.
 
 ### Fixed

@@ -30,13 +30,25 @@ class CabinetShareController extends Controller
     {
         $actor = $this->employee($request);
 
+        $perPage = max(1, min((int) $request->integer('per_page', 25), 100));
+
         $shares = CabinetShare::where('employee_id', $actor->id)
             ->with('shareable')
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 25));
+            ->paginate($perPage);
 
+        // Pagination (#1703) : `data` reste une liste simple (contrat
+        // historique des clients), les métadonnées de page sont exposées
+        // dans `meta` — un paginator brut dans `data` cassait
+        // `assertJsonCount(1, 'data')` et les clients (13 clés imbriquées).
         return response()->json([
-            'data' => $shares->through(fn (CabinetShare $s) => $this->serialize($s)),
+            'data' => $shares->through(fn (CabinetShare $s) => $this->serialize($s))->items(),
+            'meta' => [
+                'current_page' => $shares->currentPage(),
+                'per_page' => $shares->perPage(),
+                'total' => $shares->total(),
+                'last_page' => $shares->lastPage(),
+            ],
         ]);
     }
 

@@ -63,7 +63,7 @@ class DeviceTokenController extends Controller
             ->where('employee_id', $user->id)
             ->where('is_active', true)
             ->orderByDesc('last_used_at')
-            ->paginate($request->integer('per_page', 25));
+            ->paginate(max(1, min((int) $request->integer('per_page', 25), 100)));
 
         // Pagination (#1703) : `data` reste une liste simple (contrat
         // historique des clients), les métadonnées de page sont exposées
