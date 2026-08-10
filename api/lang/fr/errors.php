@@ -34,6 +34,8 @@ return [
     'CAMERA_TOKEN_EXPIRED' => 'L\'accès à cette caméra a expiré.',
     'CAMERA_TOKEN_REVOKED' => 'Cet accès a été révoqué.',
 
+    // Payroll
+    'PAYROLL_BALANCE_UNAVAILABLE' => 'Le solde employé est temporairement indisponible. Veuillez réessayer dans quelques instants.',
     // Général
     'NOT_FOUND' => 'Ressource introuvable.',
     'FORBIDDEN' => 'Vous n\'avez pas les droits pour cette action.',
