@@ -32,11 +32,6 @@ const emptySubscribe = () => () => {};
 
 const ADMIN_FALLBACK_PATH = '/dashboard';
 
-type LoginPayload = {
-  data?: StoredAuthUser | { token?: string };
-  token?: string;
-};
-
 type DemoPersona = {
   email: string;
   name: string;
@@ -69,18 +64,6 @@ type DemoUsersPayload = {
     }>;
   };
 };
-
-function extractToken(payload: LoginPayload): string | null {
-  if (typeof payload.token === 'string' && payload.token.trim() !== '') {
-    return payload.token;
-  }
-
-  if (payload.data && typeof payload.data === 'object' && 'token' in payload.data && typeof payload.data.token === 'string') {
-    return payload.data.token;
-  }
-
-  return null;
-}
 
 function resolvePostLoginTarget(user: StoredAuthUser): string {
   if (user.role === 'super_admin') {
@@ -246,14 +229,12 @@ function LoginInner() {
         },
       });
 
-      const loginPayload = await loginResponse.json() as LoginPayload;
-      const token = extractToken(loginPayload);
+      const loginPayload = await loginResponse.json() as { data?: StoredAuthUser | { token?: string }; token?: string };
 
-      if (!token) {
-        throw new Error(labels.login.errors.missingToken);
-      }
-
-      localStorage.setItem('auth_token', token);
+      // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token`
+      // posé par le route handler /api/v1/auth/login — il n'est jamais
+      // renvoyé au navigateur et ne doit pas être stocké en localStorage.
+      void loginPayload;
 
       const meResponse = await apiFetch('/auth/me');
       const mePayload = await meResponse.json() as { data?: StoredAuthUser };
@@ -263,7 +244,7 @@ function LoginInner() {
         throw new Error(labels.login.errors.missingUser);
       }
 
-      storeAuthSession(token, user);
+      storeAuthSession(null, user);
       applyDocumentLocale(normalizeLocale(user.language), user.is_rtl);
       const target = resolvePostLoginTarget(user);
       trackClientEvent('login_success', {
@@ -304,7 +285,7 @@ function LoginInner() {
       setRetryAttempt(0);
       setSubmitting(false);
     }
-  }, [labels.login.errors.generic, labels.login.errors.missingToken, labels.login.errors.missingUser, locale, router]);
+  }, [labels.login.errors.generic, labels.login.errors.missingUser, locale, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
