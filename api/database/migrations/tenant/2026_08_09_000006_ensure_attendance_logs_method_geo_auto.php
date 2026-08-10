@@ -6,27 +6,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Migration SmartAttendance 05 — Ajout de la valeur 'geo_auto' dans attendance_logs.method
+ * S-3 (#1663) — Ré-application ADDITIVE du fix `geo_auto` sur
+ * `attendance_logs.method`.
  *
- * ⚠️ S-3 (#1663) : cette migration a été modifiée RÉTROACTIVEMENT (revue PR
- * #1644) pour devenir additive. Les environnements déjà migrés avec
- * l'ancienne version doivent appliquer
- * `2026_08_09_000006_ensure_attendance_logs_method_geo_auto` (ré-application
- * idempotente) — ne PAS réécrire cette migration à nouveau.
+ * Contexte : la migration `2026_06_29_000205_extend_attendance_logs_method_for_geo_auto`
+ * a été modifiée RÉTROACTIVEMENT (revue PR #1644, F-13b) pour devenir
+ * additive/idempotente. Les environnements déjà migrés avec l'ancienne
+ * version ne rejoueront JAMAIS le nouveau code de 000205 — cette migration
+ * ré-applique la même logique idempotente pour eux.
  *
- * Migration ADDITIVE uniquement — ne modifie aucune donnée existante.
- * Le champ `method` était VARCHAR(20) (migré depuis ENUM).
- * On s'assure simplement que la valeur 'geo_auto' est documentée et acceptée.
- *
- * Si la colonne est encore un ENUM PostgreSQL, on ajoute la valeur.
- * Si c'est un VARCHAR + contrainte CHECK (cas Laravel `$table->enum()` sur
- * Postgres), on étend la contrainte CHECK avec 'geo_auto'.
+ * No-op sur un env neuf (000205 a déjà fait le travail) et sur un env déjà
+ * corrigé (gardes d'existence).
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        // Vérifier le type réel de la colonne
+        if (! schemaTableExists('attendance_logs')) {
+            return;
+        }
+
         $result = DB::selectOne("
             SELECT data_type, udt_name
             FROM information_schema.columns
@@ -36,11 +35,11 @@ return new class extends Migration
         ");
 
         if (! $result) {
-            return; // Table absente dans ce contexte, skip
+            return; // Colonne absente, rien à faire.
         }
 
         if ($result->data_type === 'USER-DEFINED') {
-            // C'est un ENUM PostgreSQL natif — ajouter la valeur
+            // ENUM PostgreSQL natif — ajouter la valeur si absente.
             $enumName = $result->udt_name;
 
             $exists = DB::selectOne("
@@ -54,8 +53,7 @@ return new class extends Migration
                 DB::statement("ALTER TYPE {$enumName} ADD VALUE IF NOT EXISTS 'geo_auto'");
             }
         } else {
-            // VARCHAR généré par Laravel (`$table->enum()` sur Postgres) avec une
-            // contrainte CHECK — étendre la liste des valeurs autorisées.
+            // VARCHAR généré par Laravel + contrainte CHECK — étendre la liste.
             $checks = DB::select("
                 SELECT conname, pg_get_constraintdef(oid) AS definition
                 FROM pg_constraint
@@ -66,7 +64,7 @@ return new class extends Migration
 
             foreach ($checks as $check) {
                 if (str_contains($check->definition, "'geo_auto'")) {
-                    continue; // Déjà étendue
+                    continue; // Déjà étendue.
                 }
 
                 DB::statement("ALTER TABLE attendance_logs DROP CONSTRAINT {$check->conname}");
@@ -91,7 +89,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        // PostgreSQL ne permet pas de supprimer une valeur d'ENUM
-        // Aucune rollback nécessaire pour un VARCHAR
+        // PostgreSQL ne permet pas de retirer une valeur d'ENUM — no-op assumé
+        // (identique à 000205).
     }
 };
