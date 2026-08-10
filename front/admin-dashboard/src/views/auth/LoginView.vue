@@ -20,7 +20,7 @@
           Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
         </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
-          Platform Administration â€¢ v4.16
+          Platform Administration • v4.16
         </p>
         <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
           Connectez-vous a votre espace
@@ -79,7 +79,7 @@
                     :aria-invalid="ariaInvalid"
                     :aria-describedby="describedBy"
                     class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                   />
                   <button
                     type="button"
