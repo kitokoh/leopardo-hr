@@ -52,11 +52,19 @@ class AutoCloseAttendanceCommand extends Command
                 return;
             }
 
-            if ($log->check_in->greaterThan(Carbon::now('UTC')->subHours($policy['threshold_hours']))) {
+            // Audit #1702 : le schéma autorise check_in nullable (le query
+            // filtre whereNotNull) — garde explicite pour PHPStan niveau 8.
+            $checkIn = $log->check_in;
+
+            if ($checkIn === null) {
                 return;
             }
 
-            $autoCheckOut = $log->check_in
+            if ($checkIn->greaterThan(Carbon::now('UTC')->subHours($policy['threshold_hours']))) {
+                return;
+            }
+
+            $autoCheckOut = $checkIn
                 ->copy()
                 ->addHours($policy['workday_hours'])
                 ->addMinutes($policy['overtime_margin_minutes']);
@@ -65,7 +73,7 @@ class AutoCloseAttendanceCommand extends Command
                 $autoCheckOut = Carbon::now('UTC');
             }
 
-            $hoursWorked = round($log->check_in->diffInMinutes($autoCheckOut) / 60, 2);
+            $hoursWorked = round($checkIn->diffInMinutes($autoCheckOut) / 60, 2);
             $meta = array_merge($log->punch_meta ?? [], [
                 'auto_close' => [
                     'closed_at' => Carbon::now('UTC')->toIso8601String(),
@@ -89,7 +97,7 @@ class AutoCloseAttendanceCommand extends Command
                 'attendance_log_id' => $log->id,
                 'employee_id' => $log->employee_id,
                 'company_id' => $log->company_id,
-                'check_in' => $log->check_in?->toIso8601String(),
+                'check_in' => $checkIn->toIso8601String(),
                 'auto_check_out' => $autoCheckOut->toIso8601String(),
             ]);
 
@@ -141,8 +149,9 @@ class AutoCloseAttendanceCommand extends Command
      */
     private function resolvePolicy(?Company $company, int $fallbackThreshold): array
     {
-        $metadata = $company?->metadata ?? [];
-        $policy = is_array($metadata) ? ($metadata['attendance_auto_close'] ?? []) : [];
+        // `??` gère déjà le cas $company null — le nullsafe est redondant (niveau 8).
+        $metadata = $company->metadata ?? [];
+        $policy = $metadata['attendance_auto_close'] ?? [];
         $policy = is_array($policy) ? $policy : [];
 
         return [

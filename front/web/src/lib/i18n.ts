@@ -1661,9 +1661,12 @@ export function storePreferredLocale(locale: AppLocale): void {
   window.localStorage.setItem(PREFERRED_LOCALE_KEY, locale);
 }
 
-export function storeAuthSession(token: string, user: StoredAuthUser): void {
+// Audit #1699 : le token n'est plus stocké côté JS (cookie httpOnly
+// `leopardo_token` géré par les route handlers). Le paramètre token est
+// conservé pour la compatibilité d'appel mais jamais écrit au repos.
+export function storeAuthSession(_token: string | null | undefined, user: StoredAuthUser): void {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
   window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   storePreferredLocale(normalizeLocale(user.language));
 }

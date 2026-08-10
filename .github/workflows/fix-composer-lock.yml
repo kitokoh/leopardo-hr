@@ -13,12 +13,16 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+concurrency:
+  group: fix-composer-lock-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   regen-lock:
     name: composer update predis → commit lock
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref || github.ref_name }}

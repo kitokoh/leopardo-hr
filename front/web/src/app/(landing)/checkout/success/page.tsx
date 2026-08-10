@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
+import { DEFAULT_BACKEND_API_URL } from '@/lib/backend-url';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 /* ─────────────────────────────────────────────
@@ -63,7 +64,7 @@ const nextSteps = [
     color: 'emerald',
     title: 'Connectez-vous à votre espace',
     desc: 'Accédez au dashboard manager et configurez votre première équipe.',
-    href: 'https://gestionemployerbackend.onrender.com/api/v1/auth/login',
+    href: `${DEFAULT_BACKEND_API_URL}/auth/login`,
     cta: 'Accéder au dashboard',
     external: true,
   },
@@ -81,7 +82,7 @@ const nextSteps = [
     color: 'violet',
     title: 'Invitez votre équipe',
     desc: 'Envoyez les invitations depuis le dashboard — vos employés reçoivent leur accès par email.',
-    href: 'https://gestionemployerbackend.onrender.com/api/v1/auth/login',
+    href: `${DEFAULT_BACKEND_API_URL}/auth/login`,
     cta: 'Gérer les invitations',
     external: true,
   },
@@ -317,7 +318,7 @@ function SuccessInner() {
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <a
-              href="https://gestionemployerbackend.onrender.com/api/v1/auth/login"
+              href={`${DEFAULT_BACKEND_API_URL}/auth/login`}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"

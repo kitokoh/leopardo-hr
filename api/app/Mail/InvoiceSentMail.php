@@ -24,9 +24,9 @@ class InvoiceSentMail extends Mailable
     public function build(): self
     {
         $subjects = [
-            'fr' => 'Votre facture Leopardo RH — '.$this->invoice->invoice_number,
-            'en' => 'Your Leopardo RH Invoice — '.$this->invoice->invoice_number,
-            'ar' => 'فاتورتك من Leopardo RH — '.$this->invoice->invoice_number,
+            'fr' => 'Votre facture Leopardo RH — '.$this->invoice->number,
+            'en' => 'Your Leopardo RH Invoice — '.$this->invoice->number,
+            'ar' => 'فاتورتك من Leopardo RH — '.$this->invoice->number,
         ];
 
         return $this
@@ -35,4 +35,3 @@ class InvoiceSentMail extends Mailable
             ->with(['locale' => $this->emailLocale]);
     }
 }
-
