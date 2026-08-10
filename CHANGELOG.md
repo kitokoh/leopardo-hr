@@ -6,6 +6,7 @@
 ## [Unreleased]
 
 ### Fixed
+- **fix(ci): ratchet coverage backend 60 → 65 % (A-4, #1682).** `BACKEND_COVERAGE_MIN` (variable repo + défauts tests.yml/coverage-gate.yml) passé de 40/60 à **65** — coverage global mesuré ≥ 68 % (pcov, suite complète, 2026-08-10). Gate « Backend Coverage (PHP 8.4 + PostgreSQL 16) » désormais bloquante à 65 %.
 - **fix(payroll): indemnité de congés payés — jours ACQUIS et non le solde restant (F-07, #1537, PR #1659).** `PayrollCalculator::accruedLeaveDays()` sommait `LeaveBalance.balance` (= restant, décrémenté à l'approbation d'un congé) : un employé ayant pris 5 j sur 30 acquis était indemnisé sur 25 (1/10ᵉ sous-évalué de 20 %). Corrigé : `SUM(balance + used + pending)` restreint aux types de congés payés. `referenceGross12Months()` normalise aussi la période partielle (embauche en cours d'année : gross × 12/mois couverts). Golden `GoldenDzLeaveIndemnityRealDataTest` mis à jour (48 000 → 40 000 DZD, calcul à la main sur 30 j acquis).
 
 ### Added
