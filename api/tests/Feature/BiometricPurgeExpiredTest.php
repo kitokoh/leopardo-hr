@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -25,6 +26,9 @@ class BiometricPurgeExpiredTest extends TestCase
 
     public function test_purges_expired_templates_after_contract_end(): void
     {
+        Storage::disk('local')->put('biometrics/faces/expired.jpg', 'fake-face');
+        Storage::disk('local')->put('biometrics/fp/expired.jpg', 'fake-fp');
+
         /** @var Company $company */
         $company = Company::factory()->create();
 
@@ -52,6 +56,10 @@ class BiometricPurgeExpiredTest extends TestCase
         $this->assertNull($fresh->biometric_fingerprint_reference_path);
         $this->assertFalse((bool) $fresh->biometric_face_enabled);
         $this->assertFalse((bool) $fresh->biometric_fingerprint_enabled);
+
+        // Fichiers physiques supprimés.
+        $this->assertFalse(Storage::disk('local')->exists('biometrics/faces/expired.jpg'));
+        $this->assertFalse(Storage::disk('local')->exists('biometrics/fp/expired.jpg'));
 
         // Opération tracée dans audit_logs.
         $this->assertDatabaseHas('audit_logs', [

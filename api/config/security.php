@@ -29,4 +29,12 @@ return [
         'enterprise_per_minute' => (int) env('RATE_LIMIT_PLAN_ENTERPRISE_PER_MINUTE', 0),
         'default_per_minute' => (int) env('RATE_LIMIT_PLAN_DEFAULT_PER_MINUTE', 100),
     ],
+
+    // S-1 (#1661) — Rétention des templates biométriques (RGPD / Loi 18-07).
+    // Durée par défaut : 24 mois après la fin de contrat (ou après le
+    // consentement si pas de fin de contrat). Référence :
+    // docs/security/POLITIQUE_RETENTION_DOCUMENTS.md §Biométrie.
+    'biometric' => [
+        'retention_months' => (int) env('BIOMETRIC_RETENTION_MONTHS', 24),
+    ],
 ];

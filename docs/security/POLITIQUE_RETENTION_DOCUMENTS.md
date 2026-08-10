@@ -56,10 +56,14 @@
   employés concernés. Les timestamps de consentement sont conservés à titre de
   preuve de la base légale passée ; l'opération elle-même est tracée dans
   `audit_logs` (action `biometric_templates_purged`).
-- **Fichiers stockés** : la commande nullifie les **chemins** de référence ; la
-  suppression physique des objets de stockage est couverte par la rotation des
-  fichiers de la plateforme (les templates ZKTeco résident côté terminal
-  kiosque/SDK, hors périmètre de la base).
+- **Durée configurable** : 24 mois par défaut, via la config
+  `security.biometric.retention_months` (env `BIOMETRIC_RETENTION_MONTHS`),
+  surchargeable par l'option `--months={N}` de la commande.
+- **Fichiers stockés** : la commande nullifie les **chemins** de référence **et**
+  supprime physiquement les fichiers correspondants
+  (`storage/app/biometrics/...`, disque `local`) après la mise à jour en base.
+  Les templates ZKTeco résident côté terminal kiosque/SDK (hors périmètre de la
+  base) ; la rotation des fichiers de la plateforme couvre le reste.
 
 ## 3. Mise en œuvre technique
 
