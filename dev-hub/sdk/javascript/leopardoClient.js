@@ -2209,4 +2209,4 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
 export default createLeopardoClient;
 
-export const openApiVersion = "4.16.190-2026-05-29";
+export const openApiVersion = "4.23.5";
