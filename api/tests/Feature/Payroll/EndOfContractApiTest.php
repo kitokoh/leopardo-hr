@@ -42,6 +42,8 @@ class EndOfContractApiTest extends TestCase
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->manager = $manager;
         // S-4 (#1664) : le vrai schéma n'a pas de colonne `employees.position`
+        // (c'était une colonne du schéma manuel CreatesMvpSchema) — le libellé
+        // de poste passe par la relation position_id → positions.
         /** @var Position $position */
         $position = Position::create([
             'company_id' => $company->id,
