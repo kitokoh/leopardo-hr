@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
 import { areFormsEnabled, captureMarketingLead, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
 import { RateLimiter, sanitizeEmail, sanitizeInput } from '@/modules/vitrine/lib/validation';
@@ -22,7 +23,8 @@ const signupSchema = z.object({
   timestamp: z.string().optional(),
 });
 
-const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL || 'https://gestionemployerbackend.onrender.com';
+const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL ||
+  resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 
 export async function POST(request: NextRequest) {
   if (!areFormsEnabled()) {

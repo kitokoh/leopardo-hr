@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    PLAN CONFIG
@@ -191,7 +192,7 @@ function googleAuthHref(): string {
   const baseUrl =
     process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
       ? directApi
-      : 'https://gestionemployerbackend.onrender.com/api/v1';
+      : getApiBaseUrl();
   return `${baseUrl}/auth/google`;
 }
 

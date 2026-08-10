@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
+use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -99,8 +100,10 @@ class SSOController extends Controller
 
             return response()->json([
                 'data' => $result,
-                'message' => 'SAML assertion recue (stub — validation complete a implementer).',
+                'message' => 'SAML assertion recue.',
             ]);
+        } catch (SSOValidationNotImplementedException $e) {
+            return response()->json(['error' => $e->getMessage()], 501);
         } catch (\RuntimeException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
@@ -119,11 +122,12 @@ class SSOController extends Controller
 
             return response()->json([
                 'data' => $result,
-                'message' => 'OIDC callback recu (stub — echange token a implementer).',
+                'message' => 'OIDC callback recu.',
             ]);
+        } catch (SSOValidationNotImplementedException $e) {
+            return response()->json(['error' => $e->getMessage()], 501);
         } catch (\RuntimeException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
     }
 }
-

@@ -1,0 +1,28 @@
+# ============================================================
+# Leopardo Edge Web UI — production server image
+#
+# Audit #1711 : edge/docker-compose.yml référençait un Dockerfile.edge qui
+# n'existait pas dans front/web — le service edge-ui ne pouvait pas builder.
+# Image serveur Next.js standard (build + start), utilisée par la stack
+# Edge locale (http://leopardo.local:7879).
+# ============================================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start", "--", "--hostname", "0.0.0.0", "--port", "3000"]
