@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ListChecks, Plus, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getPreferredLocale, toIntlLocale } from '@/lib/i18n';
 import { PostEditor, type PostEditorSubmitPayload } from '@/modules/marketing/components/PostEditor';
 import {
   STATUS_STYLES,
@@ -128,7 +129,7 @@ export default function SocialCalendarPage() {
   const grid = useMemo(() => buildMonthGrid(monthStart), [monthStart]);
   const today = dayKey(new Date());
 
-  const monthLabel = monthStart.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const monthLabel = monthStart.toLocaleDateString(toIntlLocale(getPreferredLocale()), { month: 'long', year: 'numeric' });
 
   const handleCreatePost = async (payload: PostEditorSubmitPayload) => {
     setSubmitting(true);
@@ -312,7 +313,7 @@ export default function SocialCalendarPage() {
         <section className="rounded-3xl border border-app-border bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-              Nouvelle publication â€” {composerDay.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              Nouvelle publication â€” {composerDay.toLocaleDateString(toIntlLocale(getPreferredLocale()), { day: 'numeric', month: 'long', year: 'numeric' })}
             </h2>
             <button
               type="button"

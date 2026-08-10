@@ -1,17 +1,18 @@
 @component('mail::message')
-# Abonnement confirmé — {{ $companyName }}
+# {{ __('emails.email_subscription_confirmed_subject', ['company' => $companyName]) }}
 
-Merci pour votre abonnement ! Votre plan **{{ strtoupper($plan) }}** est maintenant actif.
+{{ __('emails.email_subscription_confirmed_thanks') }}
+{{ __('emails.email_subscription_confirmed_plan_active', ['plan' => strtoupper($plan)]) }}
 
-**Prochaine facture :** {{ \Carbon\Carbon::parse($periodEnd)->format('d/m/Y') }}
+**{{ __('emails.email_subscription_confirmed_next_invoice') }}** {{ \Carbon\Carbon::parse($periodEnd)->translatedFormat('d/m/Y') }}
 
 @component('mail::button', ['url' => $dashboardUrl])
-Accéder au tableau de bord
+{{ __('emails.email_subscription_confirmed_dashboard_button') }}
 @endcomponent
 
 @component('mail::button', ['url' => $invoiceUrl, 'color' => 'success'])
-Télécharger la facture
+{{ __('emails.email_subscription_confirmed_invoice_button') }}
 @endcomponent
 
-Merci de faire confiance à Leopardo RH.
+{{ __('emails.email_subscription_confirmed_footer') }}
 @endcomponent

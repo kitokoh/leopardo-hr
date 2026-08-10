@@ -188,5 +188,7 @@
   "marketingOauthFieldsSecretHint": "(leave blank to keep current)",
   "marketingOauthFieldsPlaceholderId": "Your Client ID",
   "marketingOauthFieldsPlaceholderSecret": "New secret (optional)",
-  "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback"
+  "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback",
+  "attendanceSendingToServer": "Sending {label} to the server...",
+  "attendanceRetryAfterFailure": "{label}. Please try again."
 }
