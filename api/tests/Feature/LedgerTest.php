@@ -8,7 +8,7 @@ use App\Modules\Payroll\Domain\Models\LedgerEntry;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Modules\Payroll\Infrastructure\Services\LedgerService;
 use Illuminate\Support\Str;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -19,19 +19,7 @@ use Tests\TestCase;
  */
 class LedgerTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_ledger_service_records_entry_with_running_balance(): void
     {
@@ -170,20 +158,19 @@ class LedgerTest extends TestCase
             ->assertStatus(404);
     }
 
+    /** F-13 (#1543/#1569) : factories sur les vraies migrations (ex-CreatesMvpSchema). */
     private function createCompany(): Company
     {
-        return Company::query()->create([
-            'id' => (string) Str::uuid(),
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Ledger Test Co',
-            'slug' => Str::slug('Ledger Test Co '.Str::random(6)),
+            'slug' => 'ledger-'.Str::random(6),
             'sector' => 'test',
             'country' => 'DZ',
-            'city' => 'Alger',
-            'email' => strtolower(Str::random(8)).'@test.com',
-            'schema_name' => 'shared_tenants',
-            'tenancy_type' => 'shared',
-            'status' => 'active',
+            'currency' => 'DZD',
         ]);
+
+        return $company;
     }
 
     private function createEmployee(Company $company, string $role, ?string $managerRole = null): Employee
@@ -194,7 +181,6 @@ class LedgerTest extends TestCase
             'role' => $role,
             'manager_role' => $managerRole,
             'email' => strtolower(Str::random(10)).'@test.com',
-            'password_hash' => bcrypt('password'),
             'status' => 'active',
         ]);
 
