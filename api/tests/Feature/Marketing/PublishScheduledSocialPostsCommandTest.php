@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use Illuminate\Testing\PendingCommand;
 
 class PublishScheduledSocialPostsCommandTest extends TestCase
 {
@@ -56,7 +57,10 @@ class PublishScheduledSocialPostsCommandTest extends TestCase
             'scheduled_at' => Carbon::now()->addHour(),
         ]);
 
-        $this->artisan('marketing:publish-scheduled-posts')->assertSuccessful();
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('marketing:publish-scheduled-posts');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         $this->assertSame(SocialPost::STATUS_PUBLISHED, $duePost->fresh()->status);
         $this->assertSame('post_ayr_due', $duePost->fresh()->provider_post_ref);
@@ -84,7 +88,10 @@ class PublishScheduledSocialPostsCommandTest extends TestCase
             'scheduled_at' => Carbon::now()->subMinute(),
         ]);
 
-        $this->artisan('marketing:publish-scheduled-posts')->assertSuccessful();
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('marketing:publish-scheduled-posts');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         $fresh = $duePost->fresh();
         $this->assertSame(SocialPost::STATUS_FAILED, $fresh->status);
@@ -96,7 +103,10 @@ class PublishScheduledSocialPostsCommandTest extends TestCase
     {
         Http::fake();
 
-        $this->artisan('marketing:publish-scheduled-posts')->assertSuccessful();
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('marketing:publish-scheduled-posts');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Http::assertNothingSent();
     }
