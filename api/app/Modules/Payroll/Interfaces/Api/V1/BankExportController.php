@@ -100,12 +100,13 @@ class BankExportController extends Controller
             ], 409);
         }
 
-        if ($bankExport->file_path === null || ! Storage::disk('local')->exists($bankExport->file_path)) {
+        $filePath = $bankExport->file_path;
+        if ($filePath === null || ! Storage::disk('local')->exists($filePath)) {
             return response()->json(['message' => 'Export file not found.'], 404);
         }
 
         $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.bank_export_downloaded', $bankExport);
 
-        return Storage::disk('local')->download($bankExport->file_path);
+        return Storage::disk('local')->download($filePath);
     }
 }

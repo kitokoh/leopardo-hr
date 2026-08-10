@@ -46,17 +46,18 @@ class SensitiveAccessReportCommand extends Command
 
         foreach ($logs as $log) {
             $key = $log->action.'|'.$log->company_id;
+            $createdAt = $log->created_at ?? now();
             $buckets[$key] ??= [
                 'action' => $log->action,
                 'company_id' => (string) $log->company_id,
                 'accesses' => 0,
                 'actors' => [],
-                'last_seen' => $log->created_at,
+                'last_seen' => $createdAt,
             ];
             $buckets[$key]['accesses']++;
             $buckets[$key]['actors'][(string) $log->user_id] = true;
-            if ($log->created_at !== null && $log->created_at->gt($buckets[$key]['last_seen'])) {
-                $buckets[$key]['last_seen'] = $log->created_at;
+            if ($createdAt->gt($buckets[$key]['last_seen'])) {
+                $buckets[$key]['last_seen'] = $createdAt;
             }
         }
 
@@ -93,12 +94,13 @@ class SensitiveAccessReportCommand extends Command
         $csvPath = $this->option('csv');
 
         if ($this->option('json')) {
-            $this->line(json_encode([
+            $json = json_encode([
                 'since' => $cutoff->toDateString(),
                 'company_id' => $companyId !== '' ? $companyId : null,
                 'total_accesses' => $totalAccesses,
                 'rows' => $rows,
-            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $this->line($json === false ? '{}' : $json);
 
             return self::SUCCESS;
         }
