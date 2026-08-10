@@ -1330,3 +1330,8 @@ Note 2026-08-09 (F-10, #1540) : `GET /payroll-runs/{run}/journal` exporte le jou
 Réparation de la suite backend (tests.yml + payroll-ci) sur les vraies migrations : `national_id` élargi à varchar(500) (cast `encrypted`), `languages.updated_at` réconcilié (00015 + migration additive), tests alignés sur les contraintes réelles (factories pour plan_id/first_name, statuts attendance_logs, Content-Disposition Symfony, PDF dompdf v3 avec décompression FlateDecode + UTF-16BE/LE, PendingCommand->run() explicite), `DemoDzSeeder` idempotent face au verrouillage F-11. Aucun endpoint HTTP ajouté/modifié.
 
 - Scenario a valider : suite complète `Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)` + `Tests module Payroll` + `Backend Coverage (PHPUnit)` vertes sur main.
+## Issue #1661 — Commande `biometric:purge-expired` (rétention biométrique, Spec S-1)
+
+Nouvelle commande console `biometric:purge-expired` (rétention par défaut 24 mois, options `--company` et `--dry-run`) qui nullifie les références de templates biométriques expirées (contrat terminé depuis > N mois, ou consentement datant de > N mois quand aucune fin de contrat n'est renseignée), tenant par tenant via `TenantManager::withinTenant`, tracée dans `audit_logs` (action `biometric_templates_purged`), planifiée hebdomadairement (`routes/console.php`, `onOneServer`). Aucun endpoint HTTP ajouté/modifié.
+
+- Scenario a valider : `tests/Feature/BiometricPurgeExpiredTest` (purgé après fin de contrat / non-purgé employé actif / consentement expiré sans contrat / idempotence / dry-run / demandes d'enrôlement / société inconnue) + politique de rétention v2 dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`.
