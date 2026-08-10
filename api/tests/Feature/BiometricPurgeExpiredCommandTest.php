@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -38,20 +39,26 @@ class BiometricPurgeExpiredCommandTest extends TestCase
         return $company;
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function makeExpiredEmployee(Company $company, array $overrides = []): Employee
     {
+        $facePath = 'biometrics/faces/'.$company->id.'/face.jpg';
+        $fingerprintPath = 'biometrics/faces/'.$company->id.'/fp.jpg';
+
         /** @var Employee $employee */
         $employee = Employee::factory()->create(array_merge([
             'company_id' => $company->id,
             'biometric_face_enabled' => true,
             'biometric_fingerprint_enabled' => true,
-            'biometric_face_reference_path' => 'biometrics/faces/'.$company->id.'/face.jpg',
-            'biometric_fingerprint_reference_path' => 'biometrics/faces/'.$company->id.'/fp.jpg',
+            'biometric_face_reference_path' => $facePath,
+            'biometric_fingerprint_reference_path' => $fingerprintPath,
             'biometric_consent_at' => now()->subMonths(30),
         ], $overrides));
 
-        Storage::disk('local')->put($employee->biometric_face_reference_path, 'fake-face');
-        Storage::disk('local')->put($employee->biometric_fingerprint_reference_path, 'fake-fp');
+        Storage::disk('local')->put($facePath, 'fake-face');
+        Storage::disk('local')->put($fingerprintPath, 'fake-fp');
 
         return $employee;
     }
@@ -61,9 +68,9 @@ class BiometricPurgeExpiredCommandTest extends TestCase
         $company = $this->makeCompany();
         $employee = $this->makeExpiredEmployee($company);
 
-        $this->artisan('biometric:purge-expired')
-            ->expectsOutputToContain('Terminé')
-            ->assertSuccessful();
+        $exitCode = Artisan::call('biometric:purge-expired');
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('Terminé', Artisan::output());
 
         $employee->refresh();
         $this->assertNull($employee->biometric_face_reference_path);
@@ -77,6 +84,7 @@ class BiometricPurgeExpiredCommandTest extends TestCase
             'action' => 'biometric_templates_purged',
         ]);
         $audit = AuditLog::where('action', 'biometric_templates_purged')->first();
+        $this->assertNotNull($audit);
         $this->assertSame(1, $audit->metadata['employees_purged']);
     }
 
@@ -87,7 +95,7 @@ class BiometricPurgeExpiredCommandTest extends TestCase
             'biometric_consent_at' => now()->subMonths(1),
         ]);
 
-        $this->artisan('biometric:purge-expired')->assertSuccessful();
+        $this->assertSame(0, Artisan::call('biometric:purge-expired'));
 
         $employee->refresh();
         $this->assertNotNull($employee->biometric_face_reference_path);
@@ -110,7 +118,7 @@ class BiometricPurgeExpiredCommandTest extends TestCase
             'contract_end' => now()->subMonths(30)->toDateString(),
         ]);
 
-        $this->artisan('biometric:purge-expired')->assertSuccessful();
+        $this->assertSame(0, Artisan::call('biometric:purge-expired'));
 
         $active->refresh();
         $expired->refresh();
@@ -123,9 +131,9 @@ class BiometricPurgeExpiredCommandTest extends TestCase
         $company = $this->makeCompany();
         $employee = $this->makeExpiredEmployee($company);
 
-        $this->artisan('biometric:purge-expired --dry-run')
-            ->expectsOutputToContain('DRY-RUN')
-            ->assertSuccessful();
+        $exitCode = Artisan::call('biometric:purge-expired', ['--dry-run' => true]);
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('DRY-RUN', Artisan::output());
 
         $employee->refresh();
         $this->assertNotNull($employee->biometric_face_reference_path);
@@ -139,8 +147,8 @@ class BiometricPurgeExpiredCommandTest extends TestCase
         $company = $this->makeCompany();
         $this->makeExpiredEmployee($company);
 
-        $this->artisan('biometric:purge-expired')->assertSuccessful();
-        $this->artisan('biometric:purge-expired')->assertSuccessful();
+        $this->assertSame(0, Artisan::call('biometric:purge-expired'));
+        $this->assertSame(0, Artisan::call('biometric:purge-expired'));
 
         $this->assertSame(1, AuditLog::where('action', 'biometric_templates_purged')->count());
     }
@@ -152,8 +160,7 @@ class BiometricPurgeExpiredCommandTest extends TestCase
         $this->makeExpiredEmployee($companyA);
         $employeeB = $this->makeExpiredEmployee($companyB);
 
-        $this->artisan('biometric:purge-expired', ['--company' => (string) $companyA->id])
-            ->assertSuccessful();
+        $this->assertSame(0, Artisan::call('biometric:purge-expired', ['--company' => (string) $companyA->id]));
 
         $employeeB->refresh();
         $this->assertNotNull($employeeB->biometric_face_reference_path);
@@ -177,7 +184,7 @@ class BiometricPurgeExpiredCommandTest extends TestCase
         ]);
         Storage::disk('local')->put('biometrics/requests/face.jpg', 'fake-face');
 
-        $this->artisan('biometric:purge-expired')->assertSuccessful();
+        $this->assertSame(0, Artisan::call('biometric:purge-expired'));
 
         $request->refresh();
         $this->assertNull($request->requested_face_reference_path);
