@@ -6,6 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * ⚠️ S-3 (#1663) : cette migration a été modifiée RÉTROACTIVEMENT
+     * (commit 0e82521a, F-13b) pour que `kiosk_announcements.company_id`
+     * soit uuid et non bigint. Les environnements déjà migrés avec
+     * l'ancienne version doivent appliquer
+     * `2026_08_09_000007_kiosk_announcements_company_id_uuid` (conversion
+     * additive) — ne PAS réécrire cette migration à nouveau.
+     */
     public function up(): void
     {
         if (Schema::hasTable('zkteco_devices')) {
