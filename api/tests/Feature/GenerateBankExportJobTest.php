@@ -66,6 +66,11 @@ class GenerateBankExportJobTest extends TestCase
     {
         [$company] = $this->companyAndEmployee();
 
+        // Le scénario « run manquant » est défensif (le FK bank_exports →
+        // payroll_runs empêche normalement une référence orpheline) : on crée
+        // la ligne avec les FKs désactivés pour cette session, comme le ferait
+        // une base migrée avant l'ajout de la contrainte.
+        DB::statement('SET session_replication_role = replica');
         $export = BankExport::query()->create([
             'payroll_run_id' => 999_999,
             'company_id' => $company->id,
@@ -75,6 +80,7 @@ class GenerateBankExportJobTest extends TestCase
             'transfer_count' => 0,
             'status' => BankExport::STATUS_PENDING,
         ]);
+        DB::statement('SET session_replication_role = DEFAULT');
 
         $thrown = null;
 

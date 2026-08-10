@@ -264,6 +264,13 @@ class DemoDzSeeder extends Seeder
                 ]
             );
 
+            // Idempotence (F-23) : un run déjà clôturé (verrouillé) ne doit pas
+            // être recalculé — PayrollCalculator refuse les runs verrouillés
+            // (F-11) ; on saute le cycle déjà livré.
+            if ($run->status === PayrollRun::STATUS_LOCKED) {
+                continue;
+            }
+
             $calculator->calculateRun($run);
 
             if ($back > 0) {

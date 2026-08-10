@@ -109,9 +109,9 @@ class PayrollHardeningTest extends TestCase
 
         /** @var PayrollCycleService&\Mockery\MockInterface $service */
         $service = Mockery::mock(PayrollCycleService::class)->makePartial();
-        $service->shouldReceive('getEmployeeBalance')
-            ->once()
-            ->andThrow(new \RuntimeException('paie indisponible'));
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $service->shouldReceive('getEmployeeBalance');
+        $expectation->once()->andThrow(new \RuntimeException('paie indisponible'));
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('paie indisponible');

@@ -9,22 +9,20 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class DemoUserControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
     }
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
         parent::tearDown();
     }
 

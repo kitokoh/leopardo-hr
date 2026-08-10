@@ -139,7 +139,7 @@ class PaymentBatchControllerTest extends TestCase
      */
     private function fixture(): array
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'services',
