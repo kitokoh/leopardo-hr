@@ -53,7 +53,7 @@ class CameraController extends Controller
             $query->whereIn('id', $cameraIds);
         }
 
-        $cameras = $query->paginate($request->integer('per_page', 50));
+        $cameras = $query->paginate(max(1, min((int) $request->integer('per_page', 50), 100)));
 
         /** @var Company $company */
         $company = currentCompany();

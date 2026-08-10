@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 /// Audit #1700 : le token de session ne doit JAMAIS être écrit au repos dans
 /// un box Hive non chiffré (l'ancien « fallback » écrivait systématiquement
@@ -10,7 +11,23 @@ class SecureStorage {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   static const String _tokenKey = 'auth_token';
   static const Duration _timeout = Duration(seconds: 2);
+  static const String _legacyHiveBox = 'offlineCache';
+  static const String _legacyHiveKey = 'auth_token';
   String? _cachedToken;
+
+  /// Audit #1700 : purge ponctuelle du miroir Hive legacy — les anciennes
+  /// versions écrivaient le JWT dans le box `offlineCache` non chiffré.
+  /// Les installations mises à niveau doivent nettoyer ce résidu au repos
+  /// (idempotent : no-op si le box n'est pas ouvert ou la clé absente).
+  static void purgeLegacyHiveToken() {
+    try {
+      if (Hive.isBoxOpen(_legacyHiveBox)) {
+        Hive.box(_legacyHiveBox).delete(_legacyHiveKey);
+      }
+    } catch (_) {
+      // ignore : nettoyage best-effort, ne doit jamais faire échouer le boot
+    }
+  }
 
   Future<void> saveToken(String token) async {
     _cachedToken = token;
