@@ -52,7 +52,10 @@ class PayrollClosingTest extends TestCase
         $this->assertSame($comptable->id, $run->fresh()->locked_by);
 
         // Audit trail : 2 entrées.
-        $logs = AuditLog::where('company_id', $company->id)->where('auditable_type', $run->getMorphClass())->get();
+        $logs = AuditLog::where('company_id', $company->id)
+            ->where('auditable_type', $run->getMorphClass())
+            ->orderBy('id')
+            ->get();
         $this->assertCount(2, $logs);
         $this->assertSame(['payroll_run_validated', 'payroll_run_locked'], $logs->pluck('action')->values()->all());
     }
