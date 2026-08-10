@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\HR\Domain\Models\Position;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Date;
@@ -40,11 +41,21 @@ class EndOfContractApiTest extends TestCase
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $this->manager = $manager;
+        // S-4 (#1664) : le vrai schéma n'a pas de colonne `employees.position`
+        /** @var Position $position */
+        $position = Position::create([
+            'company_id' => $company->id,
+            'name' => 'Développeur',
+        ]);
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'contract_start' => '2023-07-01',
             'salary_base' => 60000,
+<<<<<<< HEAD
+=======
+            'position_id' => $position->id,
+>>>>>>> 393522c9 (fix(tests): EndOfContractApiTest — position_id au lieu de 'position' (main vert, #1664))
         ]);
         $this->employee = $employee;
 
