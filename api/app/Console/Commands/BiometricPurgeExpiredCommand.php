@@ -50,10 +50,31 @@ class BiometricPurgeExpiredCommand extends Command
     public function handle(TenantManager $tenantManager): int
     {
         $monthsOption = $this->option('months');
-        $months = $monthsOption !== null && $monthsOption !== ''
-            ? (int) $monthsOption
-            : (int) config('security.biometric.retention_months', 24);
-        $months = max(1, $months);
+
+        // Audit #1661 (revue) : refuser toute valeur invalide au lieu de la
+        // coercer silencieusement en 1 mois — un `--months=0`, un oubli de
+        // variable d'env ou une typo déclencherait une purge massive.
+        if ($monthsOption !== null && $monthsOption !== '') {
+            if (! ctype_digit($monthsOption) || (int) $monthsOption < 1) {
+                $this->error(sprintf(
+                    'Valeur invalide pour --months="%s" : entier positif attendu (ex: 24).',
+                    $monthsOption
+                ));
+
+                return self::FAILURE;
+            }
+            $months = (int) $monthsOption;
+        } else {
+            $configured = config('security.biometric.retention_months', 24);
+            if (! is_int($configured) || $configured < 1) {
+                $this->warn(sprintf(
+                    'Config security.biometric.retention_months invalide (%s) — repli sur 24 mois.',
+                    var_export($configured, true)
+                ));
+                $configured = 24;
+            }
+            $months = $configured;
+        }
         $dryRun = (bool) $this->option('dry-run');
         $companyId = (string) ($this->option('company') ?? '');
 
@@ -103,6 +124,12 @@ class BiometricPurgeExpiredCommand extends Command
     private function purgeTenant(Company $company, Carbon $cutoff, int $months, bool $dryRun): int
     {
         $expired = Employee::query()
+            // Audit #1661 (revue) : ne JAMAIS purger un employé encore en
+            // poste — un contract_end obsolète (renouvellement sur place,
+            // réembauche, saisie en retard) ne doit pas priver un employé
+            // actif de son accès biométrique. La purge ne concerne que les
+            // employés sortis (suspended/archived).
+            ->where('status', '!=', 'active')
             ->where(function (Builder $query) use ($cutoff): void {
                 $query->whereNotNull('contract_end')
                     ->whereDate('contract_end', '<', $cutoff)
@@ -151,6 +178,9 @@ class BiometricPurgeExpiredCommand extends Command
             ->get();
 
         // Chemins physiques à supprimer (templates kiosk/mobile en storage local).
+        // Audit #1661 (revue) : le chemin d'empreinte peut être fourni par le
+        // client (BiometricEnrollmentService) — on ne supprime que des chemins
+        // générés serveur sous `biometrics/`, jamais de path traversal.
         $filesToDelete = [];
         foreach ($expired as $employee) {
             foreach (['biometric_face_reference_path', 'biometric_fingerprint_reference_path'] as $column) {
@@ -168,7 +198,11 @@ class BiometricPurgeExpiredCommand extends Command
                 }
             }
         }
-        $filesToDelete = array_values(array_unique($filesToDelete));
+        $filesToDelete = array_values(array_unique(array_filter(
+            $filesToDelete,
+            static fn (string $path): bool => str_starts_with($path, 'biometrics/')
+                && ! str_contains($path, '..')
+        )));
 
         if ($dryRun) {
             $this->line(sprintf(
@@ -197,12 +231,8 @@ class BiometricPurgeExpiredCommand extends Command
                 ]);
         });
 
-        if ($filesToDelete !== []) {
-            foreach ($filesToDelete as $path) {
-                Storage::disk('local')->delete($path);
-            }
-        }
-
+        // Audit écrit AVANT la suppression physique : même si un delete
+        // échoue, la purge DB est tracée (audit #1661, revue).
         AuditLog::create([
             'company_id' => $company->id,
             'user_id' => null,
@@ -221,6 +251,23 @@ class BiometricPurgeExpiredCommand extends Command
                 'policy' => 'docs/security/POLITIQUE_RETENTION_DOCUMENTS.md',
             ],
         ]);
+
+        if ($filesToDelete !== []) {
+            foreach ($filesToDelete as $path) {
+                try {
+                    Storage::disk('local')->delete($path);
+                } catch (\Throwable $e) {
+                    // Non bloquant : la référence DB est déjà nullifiée et
+                    // tracée — on journalise pour un nettoyage manuel.
+                    $this->warn(sprintf(
+                        '  [%s] suppression impossible pour "%s" : %s',
+                        $company->name,
+                        $path,
+                        $e->getMessage()
+                    ));
+                }
+            }
+        }
 
         $this->info(sprintf(
             '  [%s] %d employe(s) purges — %d fichier(s) supprimes — audit trace.',
