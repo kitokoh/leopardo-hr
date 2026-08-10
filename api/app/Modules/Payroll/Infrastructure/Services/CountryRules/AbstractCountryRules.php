@@ -77,6 +77,10 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      * TaxSlabController CRUD API (and the underlying `tax_slabs` table) actually
      * affect payroll calculations, instead of being a disconnected admin screen.
      *
+     * S-3 (#1663, D-01) : les barèmes « par défaut » sont NATIONAUX (périmètre
+     * pays résolu par la règle, ex. DZ) — tout barème spécifique entreprise
+     * doit être déclaré en base (`tax_slabs`) pour être pris en compte.
+     *
      * Wrapped defensively: if called outside a booted Laravel app (e.g. pure
      * PHPUnit\Framework\TestCase unit tests with no facade root/DB), silently
      * falls back to defaultTaxSlabs() so existing unit tests keep passing

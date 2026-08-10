@@ -34,6 +34,8 @@ return [
     'CAMERA_TOKEN_EXPIRED' => 'انتهت صلاحية الوصول إلى هذه الكاميرا.',
     'CAMERA_TOKEN_REVOKED' => 'تم إلغاء هذا الوصول.',
 
+    // Payroll
+    'PAYROLL_BALANCE_UNAVAILABLE' => 'رصيد الموظف غير متوفر مؤقتًا. يرجى المحاولة مرة أخرى بعد قليل.',
     // Général
     'NOT_FOUND' => 'المورد غير موجود.',
     'FORBIDDEN' => 'ليس لديك صلاحية لهذا الإجراء.',

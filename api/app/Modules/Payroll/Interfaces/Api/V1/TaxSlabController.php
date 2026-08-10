@@ -10,6 +10,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TaxSlabController extends Controller
 {
@@ -87,7 +88,14 @@ class TaxSlabController extends Controller
             'rate' => 'sometimes|numeric|min:0|max:100',
             'fixed_deduction' => 'sometimes|numeric|min:0',
             'effective_from' => 'sometimes|date',
-            'effective_to' => 'nullable|date',
+            // S-3 (#1663) : effective_to doit rester strictement postérieur à
+            // effective_from même en update partiel (Rule::when garde le cas
+            // où effective_from n'est pas fourni dans la requête).
+            'effective_to' => [
+                'nullable',
+                'date',
+                Rule::when($request->filled('effective_from'), 'after:effective_from'),
+            ],
         ]);
 
         $taxSlab->update($validated);
