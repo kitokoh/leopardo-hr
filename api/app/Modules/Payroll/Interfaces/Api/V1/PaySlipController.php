@@ -187,7 +187,7 @@ class PaySlipController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.download', $paySlip, [
             'scope' => $isOwner && ! $isManager ? 'self_service' : 'manager',
-        });
+        ]);
 
         $disk = Storage::disk('local');
 
