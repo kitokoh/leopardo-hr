@@ -92,6 +92,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         $cmd = $this->artisan('audit:purge');
         $cmd->expectsOutputToContain('0');
         $cmd->assertSuccessful();
+        $cmd->run(); // exécution explicite (A-1 #1679) : PendingCommand est lazy (__destruct)
 
         $this->assertSame(1, DB::table('audit_logs')->count());
     }
