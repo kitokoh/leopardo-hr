@@ -114,11 +114,10 @@ jobs:
   coverage:
     name: Coverage Payroll ≥ 80 %
     runs-on: ubuntu-latest
-    # TODO(#1569): Les tests Feature/Payroll utilisent encore CreatesMvpSchema
-    # (schéma manuel, dérive des vraies migrations) — la couverture réelle est
-    # limitée jusqu'à la migration vers RefreshTenantDatabase (#1543).
-    # Gate en advisory (continue-on-error) jusqu'à resolution de #1569.
-    continue-on-error: true
+    # S-4 (#1664) : gate BLOQUANTE — la migration RefreshTenantDatabase
+    # (#1543/#1569) est terminée et le plan de tests (#1602) a porté la
+    # couverture du module au-dessus de 80 %. continue-on-error retiré : un
+    # coverage < 80 % fait échouer la PR.
     services:
       postgres:
         image: postgres:16
@@ -160,6 +159,12 @@ jobs:
           #                           PayrollCalculator, PayrollCycleService, PayrollService
           # tests/Unit/Payroll*     → pure country-rules & calculator unit tests
           # Note: set -o pipefail ensures test failures propagate through the tee pipe.
+          # Include ALL payroll-related tests (F-14) — not just tests/Feature/Payroll:
+          #   - tests/Feature/Payroll* → integration & controller tests
+          #   - tests/Unit/Payroll*    → pure country-rules & calculator unit tests
+          # S-4 (#1664) : tests paie hors tests/Feature/Payroll (générateurs,
+          # controllers, jobs) portés dans la mesure — couverture réelle du
+          # noyau paie.
           php artisan test \
             tests/Feature/Payroll \
             tests/Feature/PayrollCycleIntegrationTest.php \
@@ -170,6 +175,24 @@ jobs:
             tests/Feature/PayrollCountryRulesTemporalVersioningTest.php \
             tests/Unit/PayrollCountryRulesTest.php \
             tests/Unit/PayrollCalculatorCountryRulesTest.php \
+            tests/Feature/GenerateBankExportJobTest.php \
+            tests/Feature/BankExportControllerTest.php \
+            tests/Feature/BulkPaymentControllerTest.php \
+            tests/Feature/PaymentBatchControllerTest.php \
+            tests/Feature/ProcessBulkPaymentJobTest.php \
+            tests/Feature/PaymentDocumentControllerTest.php \
+            tests/Feature/GeneratePaymentDocumentJobTest.php \
+            tests/Feature/CotisationSimulationControllerTest.php \
+            tests/Feature/EmployeeLoanControllerTest.php \
+            tests/Feature/LedgerTest.php \
+            tests/Feature/PaySlipControllerTest.php \
+            tests/Feature/SocialDeclarationControllerTest.php \
+            tests/Feature/SalaryAdvanceProofTest.php \
+            tests/Feature/DemoDzSeederTest.php \
+            tests/Feature/Security/PayrollCrossTenantAdversarialTest.php \
+            tests/Unit/BankExportGeneratorTest.php \
+            tests/Unit/SocialDeclarationGeneratorTest.php \
+            tests/Unit/PaymentConsentSignatureServiceTest.php \
             --coverage-clover=storage/coverage/payroll-clover.xml \
             --coverage-text 2>&1 | tee storage/coverage/payroll-summary.txt
 
@@ -204,13 +227,11 @@ jobs:
                   covered_stmt += int(metrics.get('coveredstatements', 0))
           pct = (covered_stmt / total_stmt * 100) if total_stmt else 0.0
           print(f'Payroll coverage: {pct:.1f}% ({covered_stmt}/{total_stmt})')
-          # Gate F-14 (≥ 80 %), ADVISORY (#1569) : le job est en continue-on-error
-          # et le gap est suivi dans #1602 (plan de tests pour lever la gate).
-          # On émet un warning au lieu d'un error pour ne pas afficher un check
-          # rouge sur les PR alors que la gate est explicitement non bloquante —
-          # le chiffre reste visible dans les logs et le résumé.
+          # S-4 (#1664) : gate BLOQUANTE (F-14) — ≥ 80 % requis, sinon échec.
           if pct < 80.0:
-              print(f'::warning::Coverage Payroll {pct:.1f}% < 80% (F-14) — gap suivi dans #1602, gate advisory (#1569).')
+              print(f'::error::Coverage Payroll {pct:.1f}% < 80% (F-14) — gate bloquante S-4 (#1664).')
+              sys.exit(1)
+          print('Coverage Payroll ≥ 80 % : gate OK.')
           PY
 
   phpstan:
