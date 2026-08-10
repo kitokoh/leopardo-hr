@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 /**
@@ -58,7 +59,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         $this->createAuditLog(10);   // 10 mois → conservé
         $this->createAuditLog(2);    // 2 mois → conservé
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('audit:purge');
         $cmd->expectsOutputToContain('2');
         $cmd->assertSuccessful();
@@ -75,7 +76,7 @@ class PurgeAuditLogsCommandTest extends TestCase
         $this->createAuditLog(13);   // 13 mois → à purger avec --older-than=12
         $this->createAuditLog(6);    // 6 mois → conservé
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('audit:purge', ['--older-than' => 12]);
         $cmd->expectsOutputToContain('1');
         $cmd->assertSuccessful();
@@ -88,10 +89,11 @@ class PurgeAuditLogsCommandTest extends TestCase
     {
         $this->createAuditLog(1);
 
-        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        /** @var PendingCommand $cmd */
         $cmd = $this->artisan('audit:purge');
         $cmd->expectsOutputToContain('0');
         $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions DB (PendingCommand est lazy, cf. convention A-1)
 
         $this->assertSame(1, DB::table('audit_logs')->count());
     }
