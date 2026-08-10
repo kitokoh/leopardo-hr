@@ -1,58 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to function is_array\(\) with array\<mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Console/Commands/AutoCloseAttendanceCommand.php
-
-		-
-			message: '#^Cannot call method copy\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Console/Commands/AutoCloseAttendanceCommand.php
-
-		-
-			message: '#^Cannot call method diffInMinutes\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Console/Commands/AutoCloseAttendanceCommand.php
-
-		-
-			message: '#^Cannot call method greaterThan\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Console/Commands/AutoCloseAttendanceCommand.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>metadata" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Console/Commands/AutoCloseAttendanceCommand.php
-
-		-
 			message: '#^Parameter \#1 \$string of method Illuminate\\Console\\Command\:\:line\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Console/Commands/BackfillNotificationPreferences.php
 
 		-
-			message: '#^Relation ''company'' is not found in App\\Modules\\Billing\\Domain\\Models\\Subscription model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/CheckTrialExpiring.php
-
-		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
 			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 6
 			path: app/Console/Commands/EdgeSyncDaemonCommand.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Billing\\Domain\\Models\\Invoice\:\:\$invoice_number\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/GenerateMonthlyInvoices.php
 
 		-
 			message: '#^Cannot call method diffForHumans\(\) on Illuminate\\Support\\Carbon\|null\.$#'
@@ -1595,12 +1553,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Listeners/WebhookListener.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Billing\\Domain\\Models\\Invoice\:\:\$invoice_number\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Mail/InvoiceSentMail.php
 
 		-
 			message: '#^Property App\\Mail\\RoleAssignmentMail\:\:\$appLinks type has no value type specified in iterable type array\.$#'

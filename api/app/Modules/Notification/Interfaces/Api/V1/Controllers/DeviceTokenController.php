@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Notification\Domain\Models\DeviceToken;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Http\JsonResponse;
@@ -63,9 +63,21 @@ class DeviceTokenController extends Controller
             ->where('employee_id', $user->id)
             ->where('is_active', true)
             ->orderByDesc('last_used_at')
-            ->get();
+            ->paginate(max(1, min((int) $request->integer('per_page', 25), 100)));
 
-        return new JsonResponse(['data' => $tokens]);
+        // Pagination (#1703) : `data` reste une liste simple (contrat
+        // historique des clients), les métadonnées de page sont exposées
+        // dans `meta` — un paginator brut dans `data` cassait
+        // `assertJsonCount(1, 'data')` et les clients (13 clés imbriquées).
+        return new JsonResponse([
+            'data' => $tokens->items(),
+            'meta' => [
+                'current_page' => $tokens->currentPage(),
+                'per_page' => $tokens->perPage(),
+                'total' => $tokens->total(),
+                'last_page' => $tokens->lastPage(),
+            ],
+        ]);
     }
 
     public function sendTest(Request $request): JsonResponse
@@ -105,5 +117,3 @@ class DeviceTokenController extends Controller
         ]);
     }
 }
-
-
