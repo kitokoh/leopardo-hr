@@ -1,23 +1,25 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
+/// Audit #1700 : le token de session ne doit JAMAIS être écrit au repos dans
+/// un box Hive non chiffré (l'ancien « fallback » écrivait systématiquement
+/// le JWT dans `offlineCache`, lisible par quiconque a accès aux fichiers de
+/// l'appareil ou à une sauvegarde extraite). Le token ne vit que dans
+/// flutter_secure_storage (Keystore/Keychain) + un cache mémoire pour la
+/// durée de vie du process.
 class SecureStorage {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   static const String _tokenKey = 'auth_token';
   static const Duration _timeout = Duration(seconds: 2);
   String? _cachedToken;
 
-  Box<dynamic>? get _boxOrNull =>
-      Hive.isBoxOpen('offlineCache') ? Hive.box('offlineCache') : null;
-
   Future<void> saveToken(String token) async {
     _cachedToken = token;
-    await _boxOrNull?.put(_tokenKey, token);
 
     try {
       await _storage.write(key: _tokenKey, value: token).timeout(_timeout);
     } catch (_) {
-      // Keep Hive + memory fallback when secure storage is unavailable/slow.
+      // Cache mémoire conservé ; un échec d'écriture secure storage ne doit
+      // pas faire échouer le login, mais le token ne sera pas persistant.
     }
   }
 
@@ -30,37 +32,32 @@ class SecureStorage {
       final token = await _storage.read(key: _tokenKey).timeout(_timeout);
       if (token != null && token.isNotEmpty) {
         _cachedToken = token;
-        await _boxOrNull?.put(_tokenKey, token);
         return token;
       }
     } catch (_) {
-      // Fall back to Hive below.
+      // ignore : secure storage indisponible
     }
 
-    final token = _boxOrNull?.get(_tokenKey) as String?;
-    _cachedToken = token;
-    return token;
+    return null;
   }
 
   Future<void> deleteToken() async {
     _cachedToken = null;
-    await _boxOrNull?.delete(_tokenKey);
 
     try {
       await _storage.delete(key: _tokenKey).timeout(_timeout);
     } catch (_) {
-      // Ignore secure storage cleanup failures when fallback storage is already cleared.
+      // ignore
     }
   }
 
   Future<void> clearAll() async {
     _cachedToken = null;
-    await _boxOrNull?.delete(_tokenKey);
 
     try {
       await _storage.deleteAll().timeout(_timeout);
     } catch (_) {
-      // Ignore secure storage cleanup failures when fallback storage is already cleared.
+      // ignore
     }
   }
 }

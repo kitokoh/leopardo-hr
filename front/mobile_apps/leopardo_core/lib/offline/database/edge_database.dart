@@ -2,6 +2,7 @@
 // Leopardo Edge — Local SQLite database using Drift
 // ============================================================
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:drift/drift.dart';
@@ -271,13 +272,10 @@ class EdgeDatabase extends _$EdgeDatabase {
         'updated_at': a.updatedAt.toIso8601String(),
       };
 
-  String _jsonEncode(Map<String, dynamic> map) {
-    // simple JSON encode — use dart:convert in real code
-    return map.entries
-        .map((e) => '"${e.key}":"${e.value}"')
-        .join(',')
-        .let((s) => '{$s}');
-  }
+  // Audit #1707 : l'ancien encodeur maison n'échappait pas les guillemets
+  // (un `reason` libre contenant " produisait un payload injetable → la file
+  // de sync se bloquait à vie). Utilisation de dart:convert.
+  String _jsonEncode(Map<String, dynamic> map) => jsonEncode(map);
 }
 
 LazyDatabase _openConnection() {
@@ -288,6 +286,3 @@ LazyDatabase _openConnection() {
   });
 }
 
-extension on String {
-  T let<T>(T Function(String) block) => block(this);
-}

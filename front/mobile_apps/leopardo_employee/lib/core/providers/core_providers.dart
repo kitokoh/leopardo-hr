@@ -86,6 +86,13 @@ final syncServiceProvider = Provider<SyncService>((ref) {
     edgeToken: preferences.edgeToken,
   );
   service.start();
+  // Audit #1700 : le bearer secret Edge est persisté dans
+  // flutter_secure_storage — on l'hydrate en arrière-plan au démarrage.
+  unawaited(
+    preferences.hydrateEdgeToken().then((_) {
+      service.updateEdgeToken(preferences.edgeToken);
+    }),
+  );
   ref.onDispose(service.stop);
   return service;
 });
