@@ -28,7 +28,7 @@ class PayrollCalculatorCoverageTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->calculator = new PayrollCalculator();
+        $this->calculator = new PayrollCalculator;
     }
 
     // ── computeProratedBase ────────────────────────────────────────────────
@@ -186,6 +186,7 @@ class PayrollCalculatorCoverageTest extends TestCase
 
     public function test_collect_work_inputs_sums_overtime_and_leave(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         /** @var Employee $employee */
@@ -266,6 +267,7 @@ class PayrollCalculatorCoverageTest extends TestCase
      */
     private function runAndEmployee(string $start, string $end): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         /** @var Employee $employee */
