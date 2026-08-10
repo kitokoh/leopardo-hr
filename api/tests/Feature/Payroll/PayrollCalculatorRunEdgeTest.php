@@ -67,7 +67,7 @@ class PayrollCalculatorRunEdgeTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'salary_type' => 'monthly',
+            'salary_type' => 'fixed',
             'salary_base' => 60000,
         ]);
 
@@ -90,7 +90,7 @@ class PayrollCalculatorRunEdgeTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'salary_type' => 'monthly',
+            'salary_type' => 'fixed',
             'salary_base' => 60000,
             'contract_start' => '2026-07-16',
         ]);
@@ -109,7 +109,7 @@ class PayrollCalculatorRunEdgeTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'salary_type' => 'monthly',
+            'salary_type' => 'fixed',
             'salary_base' => 60000,
         ]);
 
