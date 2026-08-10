@@ -52,10 +52,7 @@ class EndOfContractApiTest extends TestCase
             'company_id' => $company->id,
             'contract_start' => '2023-07-01',
             'salary_base' => 60000,
-<<<<<<< HEAD
-=======
             'position_id' => $position->id,
->>>>>>> 442e2749 (fix(tests): EndOfContractApiTest — position_id au lieu de 'position' (main vert, #1664))
         ]);
         $this->employee = $employee;
 
