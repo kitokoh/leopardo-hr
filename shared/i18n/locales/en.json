@@ -55,7 +55,8 @@
     "activate_invitation": "Activate my invitation",
     "personal_account_link": "Personal account",
     "activate_manager_access": "Activate my manager access",
-    "try_demo_account": "Try a demo account"
+    "try_demo_account": "Try a demo account",
+    "two_factor_required": "The 2FA code is required."
   },
   "common": {
     "language": {
@@ -244,6 +245,11 @@
     },
     "confirm": {
       "delete": "Are you sure you want to delete :name?"
+    },
+    "errors": {
+      "name_required": "The full name is required.",
+      "password_required": "The password is required.",
+      "fix_fields": "Please fix the highlighted fields"
     }
   },
   "dashboard": {

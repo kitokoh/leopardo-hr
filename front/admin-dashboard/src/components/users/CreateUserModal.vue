@@ -9,7 +9,7 @@
 
       <!-- Modal panel -->
       <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-        <form @submit.prevent="handleSubmit">
+        <form novalidate @submit.prevent="handleSubmit">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -175,10 +175,14 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { UserPlusIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
 import FormField from '@/components/common/FormField.vue'
 
 const emit = defineEmits(['close', 'created'])
 const toast = useToast()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const isLoading = ref(false)
 const companies = ref([])
@@ -188,14 +192,14 @@ const attempted = ref(false)
 const fieldErrors = computed(() => {
   if (!attempted.value) return {}
   const errors = {}
-  if (!form.name) errors.name = 'Le nom complet est requis.'
+  if (!form.name) errors.name = t('users.errors.name_required', 'Le nom complet est requis.')
   if (!form.email) {
-    errors.email = "L'adresse email est requise."
+    errors.email = t('auth.email_required', "L'adresse email est requise.")
   } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
-    errors.email = "Le format de l'adresse email est invalide."
+    errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
   }
   if (!form.generatePassword && !form.password) {
-    errors.password = 'Le mot de passe est requis.'
+    errors.password = t('users.errors.password_required', 'Le mot de passe est requis.')
   }
   return errors
 })
@@ -231,7 +235,7 @@ async function loadCompanies() {
 async function handleSubmit() {
   attempted.value = true
   if (Object.keys(fieldErrors.value).length > 0) {
-    toast.error('Veuillez corriger les champs en rouge')
+    toast.error(t('users.errors.fix_fields', 'Veuillez corriger les champs en rouge'))
     return
   }
 
