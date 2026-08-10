@@ -2,7 +2,7 @@ openapi: "3.0.3"
 
 info:
   title: "Leopardo RH API"
-  version: "4.16.190-2026-05-29"
+  version: "4.23.5"
   description: |
     OpenAPI alignee sur la surface API reellement exposee par origin/main.
 
@@ -6414,7 +6414,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           description: "Only calculated runs can be validated"
-
 
   /payroll-runs/{payrollRun}/cancel:
     post:

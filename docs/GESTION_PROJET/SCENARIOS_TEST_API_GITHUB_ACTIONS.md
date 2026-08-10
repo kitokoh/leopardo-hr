@@ -910,11 +910,12 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `GET /api/v1/sso/status` retourne le statut SSO de l'entreprise (enabled, provider) â RBAC manager principal uniquement
 - `POST /api/v1/sso/configure` configure SSO pour l'entreprise (provider in:saml,oidc, entity_id URL, sso_url URL) â RBAC manager principal
 - `DELETE /api/v1/sso/disable` desactive SSO pour l'entreprise â RBAC manager principal
-- `POST /api/v1/sso/saml/{companyId}/callback` recoit la reponse SAML de l'IdP â stub, validation complete a implementer
-- `GET /api/v1/sso/oidc/{companyId}/callback` recoit le callback OIDC (code, state, id_token) â stub, echange token a implementer
+- `POST /api/v1/sso/saml/{companyId}/callback` recoit la reponse SAML de l'IdP â audit #1694 : 501 explicite tant que la validation n'est pas implementee (jamais de succes vide)
+- `GET /api/v1/sso/oidc/{companyId}/callback` recoit le callback OIDC (code, state, id_token) â idem : 501 explicite
 - Les endpoints de gestion (status, configure, disable) sont proteges par auth:sanctum + tenant
 - Les callbacks sont publics (recus directement de l'IdP)
 - Configuration stockee en JSONB dans company_sso_configs (unique par company_id)
+- Audit #1694 : `POST /configure` ne marque JAMAIS la config active tant que la validation n'est pas implementee (is_active=false) ; `certificate`/`client_secret` chiffres au repos (Crypt) et jamais renvoyes au client ; tests : chiffrement au repos, 501 callbacks, is_active=false
 
 ### Optimisation planning IA (C14 - Iteration 12)
 - `GET /api/v1/planning/weekly-optimization` retourne l'analyse de couverture departement, les conflits planning et les recommandations pour la semaine donnee
@@ -927,7 +928,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 ### Push Notifications / Device Tokens (G8 - Batch 1)
 - `POST /api/v1/device-tokens` enregistre un token FCM (platform: ios/android/web, token: string) â self-service employe
 - `DELETE /api/v1/device-tokens` supprime un token FCM â self-service employe
-- `GET /api/v1/device-tokens` liste les tokens actifs de l'employe connecte
+- `GET /api/v1/device-tokens` liste les tokens actifs de l'employe connecte (pagine : `data` = liste simple, `meta` = pagination)
 - `POST /api/v1/push-notifications/send` envoie une notification push a un employe â RBAC manager uniquement
 - Les tokens invalides (NotRegistered, InvalidRegistration) sont automatiquement desactives
 
