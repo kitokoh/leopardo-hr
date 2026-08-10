@@ -55,7 +55,8 @@
     "activate_invitation": "Activer mon invitation",
     "personal_account_link": "Compte perso",
     "activate_manager_access": "Activer mon acces manager",
-    "try_demo_account": "Tester avec un compte demo"
+    "try_demo_account": "Tester avec un compte demo",
+    "two_factor_required": "Le code 2FA est requis."
   },
   "common": {
     "language": {
@@ -244,6 +245,11 @@
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
+    },
+    "errors": {
+      "name_required": "Le nom complet est requis.",
+      "password_required": "Le mot de passe est requis.",
+      "fix_fields": "Veuillez corriger les champs en rouge"
     }
   },
   "dashboard": {
