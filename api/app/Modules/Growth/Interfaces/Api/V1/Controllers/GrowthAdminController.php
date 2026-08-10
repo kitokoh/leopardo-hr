@@ -21,11 +21,13 @@ class GrowthAdminController extends Controller
     /**
      * List all partners for the platform.
      */
-    public function partners(): JsonResponse
+    public function partners(Request $request): JsonResponse
     {
+        $perPage = $request->integer('per_page', 25);
+
         $partners = Partner::with('user:id,first_name,last_name,email')
             ->withCount('referredCompanies')
-            ->get();
+            ->paginate($perPage);
 
         return new JsonResponse(['data' => $partners]);
     }
