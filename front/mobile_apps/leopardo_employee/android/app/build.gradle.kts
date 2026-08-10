@@ -8,7 +8,10 @@ plugins {
 
 android {
     namespace = "com.leopardo.employee"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android (permission_handler ^13) compile contre SDK 37 ;
+    // flutter.compileSdkVersion (36 sur stable 3.44) fait échouer le build CI
+    // ("Failed to find Platform SDK with path: platforms;android-37").
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
