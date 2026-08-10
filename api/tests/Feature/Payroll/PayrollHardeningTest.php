@@ -11,7 +11,6 @@ use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Laravel\Sanctum\Sanctum;
-use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -145,12 +144,13 @@ class PayrollHardeningTest extends TestCase
 
     public function test_mobile_summary_returns_500_explicit_error_when_balance_fails(): void
     {
-        $service = Mockery::mock(PayrollCycleService::class);
-        $service->shouldReceive('getMobileSummary')
-            ->once()
-            ->andThrow(new PayrollBalanceUnavailableException('solde indisponible (test)'));
-
-        $this->app->instance(PayrollCycleService::class, $service);
+        $this->app->instance(PayrollCycleService::class, new class extends PayrollCycleService
+        {
+            public function getMobileSummary(Employee $actor, int $limit = 50): array
+            {
+                throw new PayrollBalanceUnavailableException('solde indisponible (test)');
+            }
+        });
 
         $this->getJson('/api/v1/payroll/mobile-summary')
             ->assertStatus(500)
@@ -159,12 +159,13 @@ class PayrollHardeningTest extends TestCase
 
     public function test_mobile_summary_does_not_return_zeroed_fallback_payload(): void
     {
-        $service = Mockery::mock(PayrollCycleService::class);
-        $service->shouldReceive('getMobileSummary')
-            ->once()
-            ->andThrow(new PayrollBalanceUnavailableException('solde indisponible (test)'));
-
-        $this->app->instance(PayrollCycleService::class, $service);
+        $this->app->instance(PayrollCycleService::class, new class extends PayrollCycleService
+        {
+            public function getMobileSummary(Employee $actor, int $limit = 50): array
+            {
+                throw new PayrollBalanceUnavailableException('solde indisponible (test)');
+            }
+        });
 
         $response = $this->getJson('/api/v1/payroll/mobile-summary');
 
