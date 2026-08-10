@@ -16,7 +16,9 @@ class DemoCompanyOnceSeeder extends Seeder
         'digitalflow-tunis',
     ];
 
-    private const DEMO_SUPER_ADMIN_PASSWORD = 'password123';
+    // Audit #1697 : mot de passe démo centralisé dans config/demo.php
+    // (surchargé par env DEMO_PASSWORD) — plus aucun littéral dans le code.
+    private const DEMO_SUPER_ADMIN_PASSWORD_CONFIG_KEY = 'demo.password';
 
     public function run(): void
     {
@@ -321,8 +323,10 @@ class DemoCompanyOnceSeeder extends Seeder
 
         $updates = [];
 
-        if (! Hash::check(self::DEMO_SUPER_ADMIN_PASSWORD, (string) $superAdmin->password_hash)) {
-            $updates['password_hash'] = Hash::make(self::DEMO_SUPER_ADMIN_PASSWORD);
+        $demoPassword = (string) config(self::DEMO_SUPER_ADMIN_PASSWORD_CONFIG_KEY, 'password123');
+
+        if (! Hash::check($demoPassword, (string) $superAdmin->password_hash)) {
+            $updates['password_hash'] = Hash::make($demoPassword);
         }
 
         if ($this->publicColumnExists('super_admins', 'two_fa_secret') && $superAdmin->two_fa_secret !== null) {
