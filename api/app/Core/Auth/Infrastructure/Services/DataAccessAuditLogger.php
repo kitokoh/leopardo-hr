@@ -17,6 +17,10 @@ class DataAccessAuditLogger
      */
     public function record(Request $request, Employee $actor, string $action, ?Model $target = null, array $metadata = []): void
     {
+        if (! $this->shouldSample($actor, $action)) {
+            return;
+        }
+
         try {
             AuditLog::query()->create([
                 'company_id' => $actor->company_id,
@@ -37,6 +41,30 @@ class DataAccessAuditLogger
         } catch (Throwable $exception) {
             report($exception);
         }
+    }
+
+    /**
+     * Échantillonnage configurable (S-2, #1662) — voir config/audit.php.
+     *
+     * Déterministe par (acteur, action) : un même acteur sur une même action
+     * est toujours tracé ou jamais, ce qui rend le comportement testable et
+     * évite les trous aléatoires dans la traçabilité d'un acteur donné.
+     */
+    private function shouldSample(Employee $actor, string $action): bool
+    {
+        $rate = (float) config('audit.data_access.sample_rate', 1.0);
+
+        if ($rate >= 1.0) {
+            return true;
+        }
+
+        if ($rate <= 0.0) {
+            return false;
+        }
+
+        $bucket = (((int) crc32($action.'|'.$actor->id)) % 10000) / 10000;
+
+        return $bucket < $rate;
     }
 
     private function truncateUserAgent(?string $userAgent): ?string

@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Schema;
 
 class ExportController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $dataAccessAuditLogger) {}
+
     public function employees(Request $request): JsonResponse
     {
         /** @var Employee $user */
@@ -48,6 +51,11 @@ class ExportController extends Controller
 
         $employees = $query->orderBy('last_name')->get();
         $format = $validated['format'] ?? 'json';
+
+        $this->dataAccessAuditLogger->record($request, $user, 'hr_data.export_employees', null, [
+            'export' => 'employees',
+            'format' => $format,
+        ]);
 
         if ($format === 'csv') {
             $csv = $this->toCsv($employees);
@@ -96,6 +104,11 @@ class ExportController extends Controller
             ->get();
 
         $format = $validated['format'] ?? 'json';
+
+        $this->dataAccessAuditLogger->record($request, $user, 'hr_data.export_attendance', null, [
+            'export' => 'attendance',
+            'format' => $format,
+        ]);
 
         if ($format === 'csv') {
             return response()->json([
@@ -405,6 +418,14 @@ class ExportController extends Controller
         ]);
 
         $format = $validated['format'] ?? 'json';
+
+        /** @var Employee $user */
+        $user = $request->user();
+        $this->dataAccessAuditLogger->record($request, $user, 'hr_data.export', null, [
+            'export' => $filenamePrefix,
+            'format' => $format,
+        ]);
+
         if ($format === 'csv' || $format === 'xlsx') {
             return response()->json([
                 'data' => [

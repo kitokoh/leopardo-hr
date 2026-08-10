@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -22,7 +23,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EndOfContractController extends Controller
 {
-    public function __construct(private readonly EndOfContractService $service) {}
+    public function __construct(
+        private readonly EndOfContractService $service,
+        private readonly DataAccessAuditLogger $dataAccessAuditLogger,
+    ) {}
 
     public function settlement(Request $request, Employee $employee): JsonResponse
     {
@@ -35,8 +39,14 @@ class EndOfContractController extends Controller
             abort(403);
         }
 
+        $settlement = $this->service->settlement($employee);
+
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.end_of_contract_viewed', $employee, [
+            'gross_amount' => $settlement['gross'] ?? null,
+        ]);
+
         return response()->json([
-            'data' => $this->service->settlement($employee),
+            'data' => $settlement,
         ]);
     }
 
@@ -54,6 +64,8 @@ class EndOfContractController extends Controller
         $data = $this->service->certificateData($employee);
         $pdf = Pdf::loadView('pdf.certificate_of_employment', $data);
         $pdf->setPaper('A4', 'portrait');
+
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.certificate_downloaded', $employee);
 
         return $pdf->download('certificat_travail_'.$employee->id.'.pdf');
     }

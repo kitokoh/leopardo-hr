@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
 
 class PaySlipController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $dataAccessAuditLogger) {}
+
     /**
      * Liste paginee des bulletins du tenant courant (manager).
      * Evite le pattern N+1 "un GET pay-slips par run" cote SPA.
@@ -101,6 +104,10 @@ class PaySlipController extends Controller
 
         $paySlip->load(['employee:id,first_name,last_name,email', 'lines', 'payrollRun']);
 
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.pay_slip_viewed', $paySlip, [
+            'access' => 'manager',
+        ]);
+
         return (new PaySlipResource($paySlip))->response();
     }
 
@@ -148,6 +155,10 @@ class PaySlipController extends Controller
 
         $paySlip->load('lines');
 
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.pay_slip_viewed', $paySlip, [
+            'access' => 'self_service',
+        ]);
+
         return (new PaySlipResource($paySlip))->response();
     }
 
@@ -175,6 +186,10 @@ class PaySlipController extends Controller
             $paySlip->employee_id,
             $paySlip->period_start->format('Y_m')
         );
+
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.pay_slip_downloaded', $paySlip, [
+            'access' => $isOwner && ! $isManager ? 'self_service' : 'manager',
+        ]);
 
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
