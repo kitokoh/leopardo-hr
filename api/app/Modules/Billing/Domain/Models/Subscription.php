@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Domain\Models;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -24,7 +27,9 @@ use Illuminate\Support\Carbon;
  * @property int|null $chargily_subscription_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @property-read Company|null $company
+ *
+ * @mixin Builder<static>
  */
 class Subscription extends Model
 {
@@ -53,6 +58,12 @@ class Subscription extends Model
             'current_period_end' => 'datetime',
             'cancelled_at' => 'datetime',
         ];
+    }
+
+    /** @return BelongsTo<Company, $this> */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /** @return HasMany<Invoice, $this> */

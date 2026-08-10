@@ -36,43 +36,53 @@ class AccrueLeaveBalances extends Command
         $count = 0;
 
         foreach ($policies as $policy) {
-            $employees = Employee::where('company_id', $policy->company_id)->get();
+            // Audit #1703 : chunkById au lieu de charger tous les employés en
+            // mémoire — évite des milliers de requêtes et un pic mémoire sur
+            // les gros tenants (le 1er du mois).
+            Employee::where('company_id', $policy->company_id)
+                ->chunkById(500, function ($employees) use ($policy, $year, $today, &$count): void {
+                    // Audit #1703 : UNE transaction par chunk (au lieu d'une
+                    // par employé) — les transactions imbriquées deviennent
+                    // des savepoints (isolation par employé conservée, mais
+                    // plus de milliers de BEGIN/COMMIT par tenant).
+                    DB::transaction(function () use ($employees, $policy, $year, $today, &$count): void {
+                    foreach ($employees as $employee) {
+                        try {
+                            DB::transaction(function () use ($policy, $employee, $year, $today, &$count): void {
+                                $balance = LeaveBalance::firstOrCreate(
+                                    [
+                                        'company_id' => $policy->company_id,
+                                        'employee_id' => $employee->id,
+                                        'absence_type_id' => $policy->absence_type_id,
+                                        'year' => $year,
+                                    ],
+                                    ['balance' => 0, 'used' => 0, 'pending' => 0]
+                                );
 
-            foreach ($employees as $employee) {
-                try {
-                    DB::transaction(function () use ($policy, $employee, $year, $today, &$count): void {
-                        $balance = LeaveBalance::firstOrCreate(
-                            [
-                                'company_id' => $policy->company_id,
-                                'employee_id' => $employee->id,
-                                'absence_type_id' => $policy->absence_type_id,
-                                'year' => $year,
-                            ],
-                            ['balance' => 0, 'used' => 0, 'pending' => 0]
-                        );
+                                if ($policy->max_balance && ($balance->balance + $policy->accrual_amount) > $policy->max_balance) {
+                                    return;
+                                }
 
-                        if ($policy->max_balance && ($balance->balance + $policy->accrual_amount) > $policy->max_balance) {
-                            return;
+                                $balance->increment('balance', $policy->accrual_amount);
+
+                                LeaveAccrual::create([
+                                    'company_id' => $policy->company_id,
+                                    'employee_id' => $employee->id,
+                                    'leave_policy_id' => $policy->id,
+                                    'amount' => $policy->accrual_amount,
+                                    'type' => 'accrual',
+                                    'description' => "Monthly accrual — {$today->format('F Y')}",
+                                    'effective_date' => $today->toDateString(),
+                                ]);
+
+                                $count++;
+                            });
+                        } catch (\Throwable $e) {
+                            Log::warning("Leave accrual failed for employee {$employee->id}: {$e->getMessage()}");
                         }
-
-                        $balance->increment('balance', $policy->accrual_amount);
-
-                        LeaveAccrual::create([
-                            'company_id' => $policy->company_id,
-                            'employee_id' => $employee->id,
-                            'leave_policy_id' => $policy->id,
-                            'amount' => $policy->accrual_amount,
-                            'type' => 'accrual',
-                            'description' => "Monthly accrual — {$today->format('F Y')}",
-                            'effective_date' => $today->toDateString(),
-                        ]);
-
-                        $count++;
+                    }
                     });
-                } catch (\Throwable $e) {
-                    Log::warning("Leave accrual failed for employee {$employee->id}: {$e->getMessage()}");
-                }
-            }
+                });
         }
 
         $this->info("Accrued leave for {$count} employee-policy combinations.");
@@ -80,4 +90,3 @@ class AccrueLeaveBalances extends Command
         return self::SUCCESS;
     }
 }
-

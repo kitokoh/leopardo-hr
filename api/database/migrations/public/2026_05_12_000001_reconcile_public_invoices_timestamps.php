@@ -21,12 +21,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('invoices') || ! Schema::hasColumn('invoices', 'updated_at')) {
-            return;
-        }
-
-        Schema::table('invoices', function (Blueprint $table): void {
-            $table->dropColumn('updated_at');
-        });
+        // Audit #1710: `updated_at` porte des données métier (factures en prod).
+        // Un rollback détruirait silencieusement le timestamp — refuser.
+        throw new RuntimeException(
+            'Rollback impossible : la colonne invoices.updated_at contient des données métier. '
+            .'Effectuer une migration additive inverse manuelle si nécessaire.'
+        );
     }
 };
