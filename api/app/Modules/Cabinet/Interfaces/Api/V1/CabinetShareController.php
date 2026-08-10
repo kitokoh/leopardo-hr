@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Cabinet\Interfaces\Api\V1\Requests\ShareRequest;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use App\Modules\Cabinet\Domain\Models\CabinetShare;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
+use App\Modules\Cabinet\Interfaces\Api\V1\Requests\ShareRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -181,4 +181,3 @@ class CabinetShareController extends Controller
         ];
     }
 }
-

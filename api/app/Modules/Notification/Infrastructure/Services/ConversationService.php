@@ -12,6 +12,8 @@ use App\Modules\Notification\Domain\Models\ConversationMessage;
 use App\Modules\Notification\Domain\Models\ConversationThread;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Modules\Planning\Domain\Models\Absence;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
 
@@ -121,7 +123,7 @@ class ConversationService
      * a manager sees the threads where they are the assigned manager.
      * Always tenant-scoped.
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, ConversationThread>
+     * @return LengthAwarePaginator<int, ConversationThread>
      */
     public function threadsFor(Employee $actor, int $perPage = 20)
     {
@@ -192,7 +194,7 @@ class ConversationService
 
         $modelClass = self::SUBJECT_MODELS[$subjectType];
 
-        /** @var \Illuminate\Database\Eloquent\Model|null $subject */
+        /** @var Model|null $subject */
         $subject = $modelClass::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)

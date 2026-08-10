@@ -84,4 +84,3 @@ class AccrueLeaveBalances extends Command
         return self::SUCCESS;
     }
 }
-

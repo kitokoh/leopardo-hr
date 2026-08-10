@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
-use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

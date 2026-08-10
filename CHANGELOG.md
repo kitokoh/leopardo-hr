@@ -5,6 +5,17 @@
 
 ## [Unreleased]
 
+### Security
+- **audit 2026-08-10 (#1694–#1712).** Durcissement sécurité + qualité : SSO SAML/OIDC ne marque plus la config active (validation non implémentée) et chiffre `certificate`/`client_secret` au repos ; callbacks 501 explicites ; uploads contraints (SVG retiré du logo, allow-lists MIME Cabinet/Notification, MIME détecté serveur) ; `POST /edge/heartbeat` sans écriture DB ; `DISABLE_DEMO_SEEDING=true` en production + mot de passe démo centralisé (`DEMO_PASSWORD`) ; login démo mobile gaté `kDebugMode` ; `SENTRY_TRACES_SAMPLE_RATE` 0.1 ; auth web cookie httpOnly effective (rewrite `/api/*` retiré de vercel.json, plus de token en localStorage) ; XSS kiosk éliminé (échappement + `safeImageUrl`) ; mobile : JWT hors Hive, `edge_token` en `flutter_secure_storage`, backups Android désactivés ; CI : 69 actions pinnées SHA, secrets SMTP restreints, dependency-review bloquant.
+
+### Fixed
+- **audit 2026-08-10 (bugs réels).** Numéro de facture jamais enregistré (`GenerateMonthlyInvoices` écrivait `invoice_number` non-fillable → `number`) ; null-derefs `Carbon|null` dans `AutoCloseAttendanceCommand` ; eager-load `company` inexistant dans `CheckTrialExpiring` (relation ajoutée) ; file de sync mobile bloquée à vie (encodeur JSON maison → `jsonEncode` + `FormatException` gérée) ; workers/scheduler Render ne démarraient jamais (`ENTRYPOINT` ignorait `dockerCommand`) ; `edge/docker-compose.yml` + `front/web/Dockerfile.edge` manquant (stack Edge non buildable) ; index FK `salary_advances` manquants (PostgreSQL).
+
+### Added
+- **audit 2026-08-10.** Ratchet PHPStan étendu à `phpstan-strict-baseline.neon` (rejet de toute nouvelle entrée) ; pagination sur Growth/Cameras/DeviceToken/CabinetShare ; `AccrueLeaveBalances` en `chunkById` ; `down()` des migrations porteuses de données refusent le rollback ; gate de déploiement anti « stale SHA » ; `.dockerignore` api/ + racine ; concurrency groups sur 14 workflows ; `release.yml` valide le tag `vX.Y.Z`.
+
+
+
 ### Fixed
 - **fix(payroll): indemnité de congés payés — jours ACQUIS et non le solde restant (F-07, #1537, PR #1659).** `PayrollCalculator::accruedLeaveDays()` sommait `LeaveBalance.balance` (= restant, décrémenté à l'approbation d'un congé) : un employé ayant pris 5 j sur 30 acquis était indemnisé sur 25 (1/10ᵉ sous-évalué de 20 %). Corrigé : `SUM(balance + used + pending)` restreint aux types de congés payés. `referenceGross12Months()` normalise aussi la période partielle (embauche en cours d'année : gross × 12/mois couverts). Golden `GoldenDzLeaveIndemnityRealDataTest` mis à jour (48 000 → 40 000 DZD, calcul à la main sur 30 j acquis).
 
