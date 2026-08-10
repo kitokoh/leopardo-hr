@@ -9,17 +9,10 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-const DEFAULT_BACKEND_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 const COOKIE_NAME = 'leopardo_token';
 
-function resolveBackendBaseUrl(): string {
-  return (
-    process.env.API_PROXY_TARGET ||
-    process.env.BACKEND_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    DEFAULT_BACKEND_API_URL
-  ).replace(/\/$/, '');
-}
+// resolveBackendBaseUrl importé depuis @/lib/backend-url (audit #1701)
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const cookieStore = await cookies();
