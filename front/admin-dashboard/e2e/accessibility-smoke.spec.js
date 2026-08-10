@@ -48,4 +48,34 @@ test.describe('Accessibility smoke tests', () => {
       expect(alt !== null || role === 'presentation').toBe(true)
     }
   })
+
+  test('login page exposes inline field errors with ARIA wiring (S-6 #1666)', async ({ page }) => {
+    await page.goto('/login')
+
+    // Submit the empty form → inline errors must appear with aria-invalid +
+    // aria-describedby + role="alert" (WCAG W6).
+    const submitButton = page.getByRole('button', { name: /Se connecter/i })
+    await submitButton.click()
+
+    const emailInput = page.getByLabel(/Adresse email/i)
+    const passwordInput = page.getByLabel(/Clé d'Accès/i)
+
+    await expect(emailInput).toHaveAttribute('aria-invalid', 'true')
+    await expect(passwordInput).toHaveAttribute('aria-invalid', 'true')
+
+    const describedByEmail = await emailInput.getAttribute('aria-describedby')
+    expect(describedByEmail).toBeTruthy()
+    const describedByPassword = await passwordInput.getAttribute('aria-describedby')
+    expect(describedByPassword).toBeTruthy()
+
+    // The error message nodes exist, are associated and use role="alert"
+    if (describedByEmail) {
+      await expect(page.locator(`#${describedByEmail}`)).toBeVisible()
+      await expect(page.locator(`#${describedByEmail}`)).toHaveAttribute('role', 'alert')
+    }
+    if (describedByPassword) {
+      await expect(page.locator(`#${describedByPassword}`)).toBeVisible()
+      await expect(page.locator(`#${describedByPassword}`)).toHaveAttribute('role', 'alert')
+    }
+  })
 })
