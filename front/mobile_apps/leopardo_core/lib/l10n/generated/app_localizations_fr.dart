@@ -618,6 +618,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String attendanceRetryAfterFailure(Object label) {
-    return '$label. Réessayez.';
+    return '$label. Reessayez.';
   }
 }
