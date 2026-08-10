@@ -71,7 +71,7 @@ class PayrollHardeningTest extends TestCase
             'hours_worked' => 8,
         ]);
 
-        $this->assertSame('geo_auto', $log->fresh()->method);
+        $this->assertSame('geo_auto', $log->refresh()->method);
     }
 
     public function test_zkteco_devices_company_id_is_uuid(): void
@@ -107,7 +107,7 @@ class PayrollHardeningTest extends TestCase
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
 
-        /** @var PayrollCycleService $service */
+        /** @var PayrollCycleService&\Mockery\MockInterface $service */
         $service = Mockery::mock(PayrollCycleService::class)->makePartial();
         $service->shouldReceive('getEmployeeBalance')
             ->once()
