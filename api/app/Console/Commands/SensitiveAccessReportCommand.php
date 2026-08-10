@@ -47,11 +47,13 @@ class SensitiveAccessReportCommand extends Command
             ->groupBy('action', 'company_id')
             ->orderByDesc('total')
             ->get()
-            ->map(fn ($row): array => [
-                'action' => $row->action,
-                'company_id' => $row->company_id,
-                'total' => (int) $row->total,
-            ]);
+            ->map(function (AuditLog $row): array {
+                return [
+                    'action' => $row->action,
+                    'company_id' => $row->company_id,
+                    'total' => (int) $row->getAttribute('total'),
+                ];
+            });
 
         $total = (int) $rows->sum('total');
 

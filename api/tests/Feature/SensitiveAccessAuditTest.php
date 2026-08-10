@@ -202,10 +202,12 @@ class SensitiveAccessAuditTest extends TestCase
         $this->getJson("/api/v1/payroll-runs/{$run->id}/journal")
             ->assertOk();
 
-        $this->artisan('audit:sensitive-report', ['--days' => 30])
-            ->expectsOutputToContain('Accès sensibles tracés')
-            ->expectsOutputToContain('hr_data.payroll_journal_viewed')
-            ->assertExitCode(0);
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('audit:sensitive-report', ['--days' => 30]);
+        $cmd->expectsOutputToContain('Accès sensibles tracés');
+        $cmd->expectsOutputToContain('hr_data.payroll_journal_viewed');
+        $cmd->assertSuccessful();
+        $cmd->run();
     }
 
     private function makeRun(): PayrollRun
