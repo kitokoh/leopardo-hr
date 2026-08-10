@@ -2,6 +2,8 @@
  * Utility functions for the vitrine module
  */
 
+import { getPreferredLocale, toIntlLocale } from "@/lib/i18n";
+
 /**
  * Combine class names
  */
@@ -13,7 +15,7 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
  * Format number with thousand separator
  */
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat("fr-FR").format(num);
+  return new Intl.NumberFormat(toIntlLocale(getPreferredLocale())).format(num);
 }
 
 /**
@@ -23,7 +25,7 @@ export function formatCurrency(
   amount: number,
   currency: string = "EUR"
 ): string {
-  return new Intl.NumberFormat("fr-FR", {
+  return new Intl.NumberFormat(toIntlLocale(getPreferredLocale()), {
     style: "currency",
     currency: currency,
   }).format(amount);
@@ -32,7 +34,7 @@ export function formatCurrency(
 /**
  * Format date
  */
-export function formatDate(date: Date | string, locale: string = "fr-FR"): string {
+export function formatDate(date: Date | string, locale: string = toIntlLocale(getPreferredLocale())): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat(locale, {
     year: "numeric",
@@ -44,7 +46,7 @@ export function formatDate(date: Date | string, locale: string = "fr-FR"): strin
 /**
  * Format time
  */
-export function formatTime(date: Date | string, locale: string = "fr-FR"): string {
+export function formatTime(date: Date | string, locale: string = toIntlLocale(getPreferredLocale())): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat(locale, {
     hour: "2-digit",
@@ -57,7 +59,7 @@ export function formatTime(date: Date | string, locale: string = "fr-FR"): strin
  */
 export function formatDateTime(
   date: Date | string,
-  locale: string = "fr-FR"
+  locale: string = toIntlLocale(getPreferredLocale())
 ): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat(locale, {
