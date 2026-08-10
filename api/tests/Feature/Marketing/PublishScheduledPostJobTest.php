@@ -54,7 +54,9 @@ class PublishScheduledPostJobTest extends TestCase
             'scheduled_at' => Carbon::now()->addHour(),
         ]);
 
-        $this->artisan('marketing:publish-scheduled-posts')->assertSuccessful();
+        $cmd = $this->artisan('marketing:publish-scheduled-posts');
+        $cmd->assertSuccessful();
+        $cmd->run(); // exécution immédiate avant assertions d'état (PendingCommand lazy — convention A-1)
 
         Bus::assertDispatched(
             PublishScheduledPostJob::class,

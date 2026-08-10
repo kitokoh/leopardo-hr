@@ -11,7 +11,6 @@ import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
-import 'package:leopardo_core/core/widgets/glass_card.dart';
 
 class ManagerAttendanceMonitoringScreen extends ConsumerWidget {
   const ManagerAttendanceMonitoringScreen({super.key});
