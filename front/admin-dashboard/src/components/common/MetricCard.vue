@@ -55,7 +55,7 @@ const formattedValue = computed(() => {
 
   if (props.format === 'currency') {
     // Formatage monétaire sans devise fixe — unité définie par le contexte
-    return new Intl.NumberFormat(toIntlLocale(localeStore.locale), {
+    return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(v)
@@ -63,7 +63,7 @@ const formattedValue = computed(() => {
 
   // Valeur entière ou décimale sans unité
   if (Number.isInteger(v)) {
-    return new Intl.NumberFormat(toIntlLocale(localeStore.locale)).format(v)
+    return new Intl.NumberFormat(toIntlLocale(localeStore.current)).format(v)
   }
   return Number(v).toFixed(2)
 })
