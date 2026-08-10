@@ -59,8 +59,16 @@ class CameraController extends Controller
         $company = currentCompany();
         $max = $this->cameras->maxCameras($company);
 
+        // Pagination (#1703) : `data` reste une liste simple (contrat
+        // historique), les métadonnées de page sont exposées dans `meta`.
         return new JsonResponse([
-            'data' => $cameras->through(fn (Camera $cam) => $this->cameras->buildStreamPayload($cam, $actor)),
+            'data' => $cameras->through(fn (Camera $cam) => $this->cameras->buildStreamPayload($cam, $actor))->items(),
+            'meta' => [
+                'current_page' => $cameras->currentPage(),
+                'per_page' => $cameras->perPage(),
+                'total' => $cameras->total(),
+                'last_page' => $cameras->lastPage(),
+            ],
             'plan_limit' => [
                 'max_cameras' => $max,
                 'current_count' => $this->cameras->countActive($company),
