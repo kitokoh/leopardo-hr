@@ -26,7 +26,7 @@ class StoreConversationThreadRequest extends FormRequest
             'subject_type' => ['nullable', 'string', Rule::in(ConversationThread::SUBJECT_TYPES)],
             'subject_id' => ['nullable', 'integer', 'required_with:subject_type'],
             'recipient_id' => ['nullable', 'integer'],
-            'attachment' => ['nullable', 'file', 'max:5120'],
+            'attachment' => ['nullable', 'file', 'max:5120', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,txt,csv,png,jpg,jpeg,webp'],
         ];
     }
 }

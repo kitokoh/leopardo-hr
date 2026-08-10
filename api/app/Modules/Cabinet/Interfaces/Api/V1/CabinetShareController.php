@@ -33,10 +33,10 @@ class CabinetShareController extends Controller
         $shares = CabinetShare::where('employee_id', $actor->id)
             ->with('shareable')
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate($request->integer('per_page', 25));
 
         return response()->json([
-            'data' => $shares->map(fn (CabinetShare $s) => $this->serialize($s)),
+            'data' => $shares->through(fn (CabinetShare $s) => $this->serialize($s)),
         ]);
     }
 

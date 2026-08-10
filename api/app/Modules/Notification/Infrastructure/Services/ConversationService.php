@@ -89,7 +89,7 @@ class ConversationService
                 'local',
             );
             $attachmentOriginalName = $attachment->getClientOriginalName();
-            $attachmentMimeType = $attachment->getClientMimeType();
+            $attachmentMimeType = $attachment->getMimeType();
             $attachmentSize = $attachment->getSize();
         }
 

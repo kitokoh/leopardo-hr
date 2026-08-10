@@ -81,7 +81,7 @@ class CabinetService
             'folder_id' => $data['folder_id'] ?? null,
             'name' => $data['name'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
             'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getClientMimeType(),
+            'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'disk' => 'local',
             'path' => $path,

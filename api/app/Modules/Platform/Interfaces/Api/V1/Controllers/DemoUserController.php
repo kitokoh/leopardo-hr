@@ -24,7 +24,7 @@ class DemoUserController extends Controller
                 'super_admin' => [
                     'label' => 'Super Administrateur',
                     'email' => config('demo.super_admin_email', 'admin@leopardo-rh.com'),
-                    'password' => 'password123',
+                    'password' => config('demo.password'),
                     'role' => 'super_admin',
                     'surface' => 'admin-platform',
                     'primary_path' => '/platform',
@@ -147,7 +147,7 @@ class DemoUserController extends Controller
             'name' => $name,
             'role' => $role,
             'manager_role' => $managerRole,
-            'password' => 'password123',
+            'password' => config('demo.password'),
             'surface' => $surface,
             'primary_path' => $primaryPath,
             'use_cases' => $useCases,
