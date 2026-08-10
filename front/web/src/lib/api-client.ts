@@ -6,7 +6,6 @@
  */
 
 import {
-  AUTH_TOKEN_KEY,
   clearAuthSession,
   getApiErrorMessage,
   getPreferredLocale,
@@ -132,11 +131,6 @@ export async function apiFetch(
   // cookie server-side and injects it as a Bearer Authorization header before
   // forwarding the request to Laravel.
   //
-  // For backward compat during the migration window, we still fall back to a
-  // localStorage token if one happens to be present. This allows existing
-  // sessions to continue working without a forced logout. Remove this fallback
-  // after one full session expiry cycle (7 days post-deploy).
-  const legacyToken = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
   const isLoginRequest = endpoint === '/auth/login' || endpoint === '/platform/auth/login';
   const timeoutMs = isLoginRequest ? 60000 : 20000;
 
@@ -144,9 +138,6 @@ export async function apiFetch(
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Accept-Language': typeof window !== 'undefined' ? getPreferredLocale() : 'fr',
-    // Only attach legacy token explicitly if present (cookie-based sessions
-    // do not need this header — the proxy injects it server-side)
-    ...(legacyToken ? { 'Authorization': `Bearer ${legacyToken}` } : {}),
     ...options.headers,
   };
 
