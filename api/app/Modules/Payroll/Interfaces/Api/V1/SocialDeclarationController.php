@@ -33,6 +33,8 @@ class SocialDeclarationController extends Controller
             'year' => 'required|integer|min:2020|max:2099',
         ]);
 
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnas_declaration');
+
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
             ->where('status', 'active')
@@ -114,6 +116,8 @@ class SocialDeclarationController extends Controller
             'quarter' => 'required|in:Q1,Q2,Q3,Q4',
             'year' => 'required|integer|min:2020|max:2099',
         ]);
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_declaration');
 
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -211,6 +215,8 @@ class SocialDeclarationController extends Controller
             'month' => 'required|integer|min:1|max:12',
             'year' => 'required|integer|min:2020|max:2099',
         ]);
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.dsn_declaration');
 
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
