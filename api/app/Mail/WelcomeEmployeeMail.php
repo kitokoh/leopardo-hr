@@ -25,7 +25,8 @@ class WelcomeEmployeeMail extends Mailable implements ShouldQueue
 
     public function build(): self
     {
-        $locale = $this->employee->company?->language ?? 'fr';
+        $locale = $this->employee->company?->language;
+        $locale = is_string($locale) && $locale !== '' ? $locale : 'fr';
 
         // S-5 (#1665) : les vues résolvent leurs chaînes via __() — il faut
         // épingler la locale applicative AVANT le rendu, sinon le corps du
