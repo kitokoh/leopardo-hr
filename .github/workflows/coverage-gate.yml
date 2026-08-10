@@ -18,7 +18,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_BACKEND_COVERAGE_MIN: "60"
+  DEFAULT_BACKEND_COVERAGE_MIN: "65"
   BACKEND_COVERAGE_TARGET: "65"
 
 concurrency:
@@ -148,7 +148,7 @@ jobs:
         with:
           script: |
             const percentage = `${{ steps.coverage.outputs.percentage }}`;
-            const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '60' }}`; // keep in sync with env.DEFAULT_BACKEND_COVERAGE_MIN
+            const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '65' }}`; // keep in sync with env.DEFAULT_BACKEND_COVERAGE_MIN
             const passed = `${{ steps.gate.outputs.passed }}` === 'true';
             const icon = passed ? ':white_check_mark:' : ':x:';
             const body = [
@@ -160,8 +160,8 @@ jobs:
               `| **Threshold** | ${threshold}% |`,
               `| **Status** | ${passed ? 'PASSED' : 'FAILED'} |`,
               '',
-              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 60; ratchet target 65).`,
-              `> Target: ratchet to 65% after the next backend coverage uplift lot is stable.`,
+              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 65; ratchet atteint — A-4, #1682).`,
+              `> Ratchet: 60 -> 65 % (2026-08-10, coverage mesure >= 68 % — A-4, #1682).`,
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
@@ -188,5 +188,5 @@ jobs:
       - name: Fail if coverage below threshold
         if: steps.gate.outputs.passed == 'false'
         run: |
-          echo "Coverage gate failed (threshold: ${COVERAGE_MIN:-60}%). Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
+          echo "Coverage gate failed (threshold: ${COVERAGE_MIN:-65}%). Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
           exit 1
