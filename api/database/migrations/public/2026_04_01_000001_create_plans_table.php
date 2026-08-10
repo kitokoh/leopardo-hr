@@ -15,8 +15,13 @@ return new class extends Migration
 
     public function up(): void
     {
-        DB::statement('SET search_path TO public');
-
+        // S-3 (#1663) : le `SET search_path TO public` a été retiré. Toutes
+        // les instructions ci-dessous sont entièrement qualifiées
+        // (`public.plans`, `public.plans_name_unique`) ou indépendantes du
+        // schéma (CREATE EXTENSION) — aucun besoin de modifier le
+        // search_path de la session, qui peut être un schéma tenant
+        // (fragilité current_schema() signalée à l'audit expert 2026-08-09,
+        // harmonisée avec DB_SEARCH_PATH de phpunit/CI).
         DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
         DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto"');
 
