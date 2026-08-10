@@ -11,6 +11,8 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 /**
  * Carte de métrique simple (titre + valeur formatée).
@@ -22,6 +24,8 @@ import { computed } from 'vue'
  *   value   — valeur numérique (ou chaîne passée telle quelle)
  *   format  — 'percent' | 'currency' | undefined  (formatage de la valeur)
  */
+const localeStore = useLocaleStore()
+
 const props = defineProps({
   title: {
     type: String,
@@ -51,7 +55,7 @@ const formattedValue = computed(() => {
 
   if (props.format === 'currency') {
     // Formatage monétaire sans devise fixe — unité définie par le contexte
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(toIntlLocale(localeStore.locale), {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(v)
@@ -59,7 +63,7 @@ const formattedValue = computed(() => {
 
   // Valeur entière ou décimale sans unité
   if (Number.isInteger(v)) {
-    return new Intl.NumberFormat('fr-FR').format(v)
+    return new Intl.NumberFormat(toIntlLocale(localeStore.locale)).format(v)
   }
   return Number(v).toFixed(2)
 })
