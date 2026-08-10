@@ -205,7 +205,7 @@ class GdprAnonymizeEmployeeTest extends TestCase
             '--force' => true,
         ]);
         $cmd->assertSuccessful();
-        $cmd->run();
+        $cmd->run(); // exécution immédiate avant assertions DB (PendingCommand lazy — convention A-1)
 
         $employee->refresh();
         $this->assertSame('Anonymisé', $employee->first_name);

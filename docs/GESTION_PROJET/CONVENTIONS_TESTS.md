@@ -36,8 +36,10 @@ $this->assertDatabaseHas('audit_logs', ['action' => 'biometric_templates_purged'
 
 ### Audit 2026-08-10 (issue A-1, #1679)
 
-- **Corrigés** : `GdprAnonymizeEmployeeTest` (5 usages), `PurgeAuditLogsCommandTest`
-  (test 3), `BiometricPurgeExpiredTest` (S-1) — `run()` explicite ajouté.
+- **Corrigés** : `GdprAnonymizeEmployeeTest` (**6 usages**, dont
+  `test_anonymize_with_company_scope` repéré en revue finale — assertions DB
+  pré-exécution), `PurgeAuditLogsCommandTest` (test 3),
+  `BiometricPurgeExpiredTest` (S-1) — `run()` explicite ajouté.
 - **Durcis** (conversion du pattern chaîné → pattern assigné + `run()` explicite,
   pour un échec immédiat et l'insensibilité au cycle de vie des temporaires PHP) :
   `AnnouncementControllerTest` (3), `EdgeSilentNodeDetectionTest` (2),
