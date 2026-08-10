@@ -56,7 +56,6 @@ class SensitiveDataAccessAuditTest extends TestCase
             'company_id' => $company->id,
             'contract_start' => '2023-07-01',
             'salary_base' => 60000,
-            'position' => 'Développeur',
         ]);
         $this->employee = $employee;
 
@@ -92,6 +91,7 @@ class SensitiveDataAccessAuditTest extends TestCase
         ]);
 
         /** @var PaySlip $slip */
+        /** @var PaySlip $slip */
         $slip = PaySlip::create([
             'payroll_run_id' => $run->id,
             'company_id' => $run->company_id,
@@ -125,7 +125,8 @@ class SensitiveDataAccessAuditTest extends TestCase
             'auditable_id' => $slip->id,
         ]);
 
-        $log = AuditLog::query()->where('action', 'hr_data.pay_slip_downloaded')->first();
+        /** @var AuditLog $log */
+        $log = AuditLog::query()->where('action', 'hr_data.pay_slip_downloaded')->firstOrFail();
         $this->assertSame('hr_data_access', $log->metadata['category']);
     }
 
@@ -229,7 +230,8 @@ class SensitiveDataAccessAuditTest extends TestCase
             'action' => 'hr_data.export',
         ]);
 
-        $log = AuditLog::query()->where('action', 'hr_data.export')->first();
+        /** @var AuditLog $log */
+        $log = AuditLog::query()->where('action', 'hr_data.export')->firstOrFail();
         $this->assertSame('pay_slips_export', $log->metadata['export']);
     }
 
@@ -282,9 +284,10 @@ class SensitiveDataAccessAuditTest extends TestCase
         $this->getJson("/api/v1/payroll-runs/{$run->id}/journal")->assertOk();
         $this->getJson("/api/v1/export/pay-slips")->assertOk();
 
-        $this->artisan('audit:sensitive-report', ['--since' => '2026-07-01'])
-            ->expectsOutputToContain('hr_data.payroll_journal_exported')
-            ->expectsOutputToContain('hr_data.export')
-            ->assertExitCode(0);
+        /** @var \Illuminate\Testing\PendingCommand $cmd */
+        $cmd = $this->artisan('audit:sensitive-report', ['--since' => '2026-07-01']);
+        $cmd->expectsOutputToContain('hr_data.payroll_journal_exported');
+        $cmd->expectsOutputToContain('hr_data.export');
+        $cmd->assertExitCode(0);
     }
 }

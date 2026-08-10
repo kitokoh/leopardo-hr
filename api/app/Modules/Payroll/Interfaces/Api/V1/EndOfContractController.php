@@ -42,7 +42,7 @@ class EndOfContractController extends Controller
         $settlement = $this->service->settlement($employee);
 
         $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.end_of_contract_viewed', $employee, [
-            'gross_amount' => $settlement['gross'] ?? null,
+            'total_amount' => $settlement['breakdown']['total'],
         ]);
 
         return response()->json([
