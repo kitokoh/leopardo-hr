@@ -252,7 +252,18 @@ class EdgeController extends Controller
     // Heartbeat Edge → Cloud
     // =========================================================================
 
-    /** POST /edge/heartbeat */
+    /**
+     * POST /edge/heartbeat
+     *
+     * Audit #1696 : endpoint public (throttle seulement), aucun appelant dans
+     * le repo (ni edge/, ni openapi.yaml). L'ancienne implémentation écrivait
+     * en base avec des valeurs contrôlées par l'attaquant, sur des colonnes
+     * (`node_id`, `pending_count`, `version`) absentes du schéma canonique
+     * `edge_nodes` — 500 non géré ou fausses métriques. Le heartbeat
+     * authentifié est `POST /api/v1/edge-node/{nodeId}/heartbeat`
+     * (EdgeNodeController, token haché). Ce endpoint legacy ne modifie plus
+     * aucun état : réponse purement informative.
+     */
     public function heartbeat(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -262,17 +273,7 @@ class EdgeController extends Controller
             'ip_address'    => ['nullable', 'ip'],
         ]);
 
-        DB::table('edge_nodes')
-            ->where('node_id', $validated['node_id'])
-            ->update([
-                'status'        => 'online',
-                'last_seen_at'  => Carbon::now(),
-                'pending_count' => $validated['pending_count'] ?? 0,
-                'version'       => $validated['version'] ?? null,
-                'ip_address'    => $validated['ip_address'] ?? $request->ip(),
-            ]);
-
-        Log::info('[Edge] Heartbeat reçu', ['node_id' => $validated['node_id']]);
+        Log::info('[Edge] Heartbeat reçu (legacy, no-op)', ['node_id' => $validated['node_id']]);
 
         return response()->json([
             'status'      => 'ok',

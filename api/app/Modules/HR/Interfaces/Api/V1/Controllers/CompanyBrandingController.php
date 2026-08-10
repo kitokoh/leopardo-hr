@@ -30,7 +30,7 @@ class CompanyBrandingController extends Controller
         $validated = $request->validate([
             'display_name' => ['sometimes', 'nullable', 'string', 'min:2', 'max:120'],
             'logo_url' => ['sometimes', 'nullable', 'url', 'max:2048'],
-            'logo' => ['sometimes', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'logo' => ['sometimes', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'primary_color' => ['sometimes', 'nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'accent_color' => ['sometimes', 'nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'brand_mode' => ['sometimes', 'nullable', 'in:default,light,dark,auto'],
