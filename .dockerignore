@@ -1,0 +1,22 @@
+# Audit #1705 : contexte de build racine (edge/publish.sh, edge/docker-compose).
+# Ne jamais embarquer le .env local (secrets) ni les artefacts inutiles.
+.env
+.env.*
+!.env.example
+!.env.testing.example
+.git
+**/.git
+node_modules
+vendor
+storage/logs/*
+storage/coverage
+storage/test-results
+front
+dev-hub
+docs
+assets
+examples
+postman
+tests
+*.md
+!README.md

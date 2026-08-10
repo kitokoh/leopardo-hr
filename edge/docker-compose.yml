@@ -11,8 +11,10 @@ services:
   edge-api:
     image: leopardo/edge-api:latest
     build:
-      context: ./api
-      dockerfile: Dockerfile.edge
+      # Audit #1711 : l'ancien `context: ./api` + `Dockerfile.edge` était
+      # cassé — le Dockerfile vit dans edge/ et COPY api/ + edge/nginx.edge.conf.
+      context: ..
+      dockerfile: edge/Dockerfile.edge
     container_name: leopardo-edge-api
     restart: unless-stopped
     environment:
@@ -43,6 +45,7 @@ services:
   edge-ui:
     image: leopardo/edge-ui:latest
     build:
+      # Audit #1711 : Dockerfile.edge créé dans front/web (image serveur prod).
       context: ./front/web
       dockerfile: Dockerfile.edge
     container_name: leopardo-edge-ui
