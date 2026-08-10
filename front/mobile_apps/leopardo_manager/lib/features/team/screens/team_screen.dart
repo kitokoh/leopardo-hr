@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';

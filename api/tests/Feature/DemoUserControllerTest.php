@@ -235,13 +235,15 @@ class DemoUserControllerTest extends TestCase
 
     public function test_demo_login_recovers_missing_lookup_from_shared_tenant_schema(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',

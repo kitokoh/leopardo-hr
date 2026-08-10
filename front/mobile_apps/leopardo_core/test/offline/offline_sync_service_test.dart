@@ -20,7 +20,7 @@ import 'package:leopardo_core/core/services/offline_sync_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
-class FakeConnectivity extends Connectivity {
+class FakeConnectivity implements Connectivity {
   @override
   Future<List<ConnectivityResult>> checkConnectivity() async =>
       <ConnectivityResult>[ConnectivityResult.wifi];
