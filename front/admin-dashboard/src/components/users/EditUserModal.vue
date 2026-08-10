@@ -38,30 +38,30 @@
                   </div>
 
                   <!-- Name -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Nom complet *
-                    </label>
+                  <FormField id="name" label="Nom complet" required :error="fieldErrors.name" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="name"
                       v-model="form.name"
                       type="text"
                       required
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
-                  </div>
+                  </FormField>
 
                   <!-- Email -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Adresse email *
-                    </label>
+                  <FormField id="email" label="Adresse email" required :error="fieldErrors.email" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="email"
                       v-model="form.email"
                       type="email"
                       required
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
-                  </div>
+                  </FormField>
 
                   <!-- Role -->
                   <div>
@@ -208,9 +208,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import FormField from '@/components/common/FormField.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
@@ -227,6 +228,20 @@ const localeStore = useLocaleStore()
 
 const isLoading = ref(false)
 const companies = ref([])
+const attempted = ref(false)
+
+// S-6 (#1666) : feedback inline par champ (aria-invalid + aria-describedby).
+const fieldErrors = computed(() => {
+  if (!attempted.value) return {}
+  const errors = {}
+  if (!form.name) errors.name = 'Le nom complet est requis.'
+  if (!form.email) {
+    errors.email = "L'adresse email est requise."
+  } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
+    errors.email = "Le format de l'adresse email est invalide."
+  }
+  return errors
+})
 
 // Form data
 const form = reactive({
@@ -270,6 +285,12 @@ function populateForm() {
 }
 
 async function handleSubmit() {
+  attempted.value = true
+  if (Object.keys(fieldErrors.value).length > 0) {
+    toast.error('Veuillez corriger les champs en rouge')
+    return
+  }
+
   isLoading.value = true
 
   try {
