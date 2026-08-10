@@ -11,22 +11,29 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Spec S-1 (#1661) — Biométrie : politique de rétention + purge automatique (RGPD, suite #1548).
  *
  * Purge (nullifie) les références de templates biométriques (visage/empreinte)
  * dont la durée de conservation est dépassée, conformément à
- * docs/security/POLITIQUE_RETENTION_DOCUMENTS.md (v2) :
+ * docs/security/POLITIQUE_RETENTION_DOCUMENTS.md (v2, §2.1) :
  *   - employé avec fin de contrat renseignée : contrat terminé depuis plus de
- *     `--months` mois (défaut 24) ;
+ *     `--months` mois (défaut : config `security.biometric.retention_months` = 24) ;
  *   - employé sans fin de contrat : consentement biométrique datant de plus de
  *     `--months` mois (proxy « dernier usage » lorsqu'aucun contrat n'existe).
  *
- * La purge est effectuée tenant par tenant, trace chaque société traitée dans
- * `audit_logs` (action `biometric_templates_purged`) et expose un mode
- * `--dry-run` sans aucune écriture.
+ * La purge est effectuée tenant par tenant :
+ *   - nullifie `biometric_*_reference_path` (employés) et
+ *     `biometric_enrollment_requests.*_reference_path` (demandes d'enrôlement) ;
+ *   - désactive les flags `*_enabled` des employés concernés ;
+ *   - supprime les fichiers physiques (`storage/app/biometrics/...`) ;
+ *   - trace chaque société traitée dans `audit_logs`
+ *     (action `biometric_templates_purged`) ;
+ *   - expose un mode `--dry-run` sans aucune écriture.
  *
  * Usage :
  *   php artisan biometric:purge-expired [--months=24] [--company=<uuid>] [--dry-run]
@@ -34,7 +41,7 @@ use Illuminate\Support\Facades\DB;
 class BiometricPurgeExpiredCommand extends Command
 {
     protected $signature = 'biometric:purge-expired
-        {--months=24 : Duree de retention des templates en mois (defaut 24)}
+        {--months= : Duree de retention des templates en mois (defaut : config security.biometric.retention_months)}
         {--company= : UUID de la societe (tenant) cible — sinon toutes les societes}
         {--dry-run : Affiche les purges prevues sans rien ecrire}';
 
@@ -42,7 +49,11 @@ class BiometricPurgeExpiredCommand extends Command
 
     public function handle(TenantManager $tenantManager): int
     {
-        $months = max(1, (int) $this->option('months'));
+        $monthsOption = $this->option('months');
+        $months = $monthsOption !== null && $monthsOption !== ''
+            ? (int) $monthsOption
+            : (int) config('security.biometric.retention_months', 24);
+        $months = max(1, $months);
         $dryRun = (bool) $this->option('dry-run');
         $companyId = (string) ($this->option('company') ?? '');
 
@@ -61,9 +72,10 @@ class BiometricPurgeExpiredCommand extends Command
         }
 
         $this->info(sprintf(
-            'Purge des references biometriques expirees avant le %s (%d mois)%s — %d societe(s) a traiter.',
+            'Purge des references biometriques expirees avant le %s (%d mois%s)%s — %d societe(s) a traiter.',
             $cutoff->toDateString(),
             $months,
+            $monthsOption === null || $monthsOption === '' ? ' [config]' : '',
             $dryRun ? ' [DRY-RUN]' : '',
             count($companies)
         ));
@@ -88,7 +100,7 @@ class BiometricPurgeExpiredCommand extends Command
     /**
      * Purge les templates expirés d'un tenant et trace l'opération.
      */
-    private function purgeTenant(Company $company, \Illuminate\Support\Carbon $cutoff, int $months, bool $dryRun): int
+    private function purgeTenant(Company $company, Carbon $cutoff, int $months, bool $dryRun): int
     {
         $expired = Employee::query()
             ->where(function (Builder $query) use ($cutoff): void {
@@ -127,49 +139,96 @@ class BiometricPurgeExpiredCommand extends Command
             ));
         }
 
+        $employeeIds = $expired->pluck('id')->all();
+
+        // Demandes d'enrôlement biométrique expirées (chemins de référence).
+        $expiredRequests = BiometricEnrollmentRequest::query()
+            ->whereIn('employee_id', $employeeIds)
+            ->where(function (Builder $query): void {
+                $query->whereNotNull('requested_face_reference_path')
+                    ->orWhereNotNull('requested_fingerprint_reference_path');
+            })
+            ->get();
+
+        // Chemins physiques à supprimer (templates kiosk/mobile en storage local).
+        $filesToDelete = [];
+        foreach ($expired as $employee) {
+            foreach (['biometric_face_reference_path', 'biometric_fingerprint_reference_path'] as $column) {
+                $path = $employee->{$column};
+                if (is_string($path) && $path !== '') {
+                    $filesToDelete[] = $path;
+                }
+            }
+        }
+        foreach ($expiredRequests as $request) {
+            foreach (['requested_face_reference_path', 'requested_fingerprint_reference_path'] as $column) {
+                $path = $request->{$column};
+                if (is_string($path) && $path !== '') {
+                    $filesToDelete[] = $path;
+                }
+            }
+        }
+        $filesToDelete = array_values(array_unique($filesToDelete));
+
         if ($dryRun) {
+            $this->line(sprintf(
+                '    (dry-run) %d fichier(s) seraient supprimes.',
+                count($filesToDelete)
+            ));
+
             return 0;
         }
 
-        DB::transaction(function () use ($company, $expired, $months, $cutoff): void {
-            foreach ($expired as $employee) {
-                $employee->update([
-                    'biometric_face_reference_path' => null,
-                    'biometric_fingerprint_reference_path' => null,
-                    'biometric_face_enabled' => false,
-                    'biometric_fingerprint_enabled' => false,
-                ]);
-
-                // Purge des demandes d'enrôlement biométrique de l'employé
-                // (chemins de référence uniquement — l'historique de demande reste).
-                BiometricEnrollmentRequest::query()
-                    ->where('company_id', $company->id)
-                    ->where('employee_id', $employee->id)
-                    ->update([
-                        'requested_face_reference_path' => null,
-                        'requested_fingerprint_reference_path' => null,
-                    ]);
-            }
-
-            AuditLog::create([
-                'company_id' => $company->id,
-                'user_id' => null,
-                'action' => 'biometric_templates_purged',
-                'auditable_type' => null,
-                'auditable_id' => null,
-                'old_values' => ['purged_employees' => $expired->count()],
-                'new_values' => ['status' => 'reference_paths_nullified'],
-                'metadata' => [
-                    'retention_months' => $months,
-                    'cutoff' => $cutoff->toDateString(),
-                    'legal_basis' => 'RGPD art. 9 / Loi 18-07 (consentement)',
-                    'policy' => 'docs/security/POLITIQUE_RETENTION_DOCUMENTS.md',
-                ],
+        DB::transaction(function () use ($employeeIds): void {
+            Employee::query()->whereIn('id', $employeeIds)->update([
+                'biometric_face_reference_path' => null,
+                'biometric_fingerprint_reference_path' => null,
+                'biometric_face_enabled' => false,
+                'biometric_fingerprint_enabled' => false,
             ]);
+
+            // Purge des demandes d'enrôlement biométrique des employés concernés
+            // (chemins de référence uniquement — l'historique de demande reste).
+            BiometricEnrollmentRequest::query()
+                ->whereIn('employee_id', $employeeIds)
+                ->update([
+                    'requested_face_reference_path' => null,
+                    'requested_fingerprint_reference_path' => null,
+                ]);
         });
 
-        $this->info(sprintf('  [%s] %d employe(s) purges — audit trace.', $company->name, $expired->count()));
+        if ($filesToDelete !== []) {
+            foreach ($filesToDelete as $path) {
+                Storage::disk('local')->delete($path);
+            }
+        }
 
-        return $expired->count();
+        AuditLog::create([
+            'company_id' => $company->id,
+            'user_id' => null,
+            'action' => 'biometric_templates_purged',
+            'auditable_type' => null,
+            'auditable_id' => null,
+            'old_values' => ['purged_employees' => count($employeeIds)],
+            'new_values' => ['status' => 'reference_paths_nullified'],
+            'metadata' => [
+                'retention_months' => $months,
+                'cutoff' => $cutoff->toDateString(),
+                'employees_purged' => count($employeeIds),
+                'requests_purged' => $expiredRequests->count(),
+                'files_deleted' => count($filesToDelete),
+                'legal_basis' => 'RGPD art. 9 / Loi 18-07 (consentement)',
+                'policy' => 'docs/security/POLITIQUE_RETENTION_DOCUMENTS.md',
+            ],
+        ]);
+
+        $this->info(sprintf(
+            '  [%s] %d employe(s) purges — %d fichier(s) supprimes — audit trace.',
+            $company->name,
+            count($employeeIds),
+            count($filesToDelete)
+        ));
+
+        return count($employeeIds);
     }
 }
