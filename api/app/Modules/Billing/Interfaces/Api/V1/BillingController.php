@@ -164,7 +164,7 @@ class BillingController extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         $filename = sprintf('facture_%s.pdf',
-            $invoice->invoice_number ?? 'LEO-'.now()->format('Y').'-'.str_pad((string) $invoice->id, 4, '0', STR_PAD_LEFT)
+            $invoice->number ?? 'LEO-'.now()->format('Y').'-'.str_pad((string) $invoice->id, 4, '0', STR_PAD_LEFT)
         );
 
         return response($pdf->output(), 200, [
