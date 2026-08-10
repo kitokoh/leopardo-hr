@@ -78,7 +78,7 @@ class PayrollAttendanceAnomalyApiTest extends TestCase
             'employee_id' => $this->employee->id,
             'date' => '2026-07-10',
             'overtime_hours' => 5,
-            'status' => 'approved',
+            'status' => 'ontime',
         ]);
 
         $run = $this->makeRun();
@@ -102,7 +102,7 @@ class PayrollAttendanceAnomalyApiTest extends TestCase
             'employee_id' => $this->employee->id,
             'date' => '2026-07-10',
             'overtime_hours' => 1,
-            'status' => 'approved',
+            'status' => 'ontime',
         ]);
 
         $run = $this->makeRun();
@@ -120,7 +120,7 @@ class PayrollAttendanceAnomalyApiTest extends TestCase
             'employee_id' => $this->employee->id,
             'date' => '2026-07-10',
             'overtime_hours' => 5,
-            'status' => 'approved',
+            'status' => 'ontime',
         ]);
 
         $run = $this->makeRun();
@@ -139,7 +139,7 @@ class PayrollAttendanceAnomalyApiTest extends TestCase
             'employee_id' => $this->employee->id,
             'date' => '2026-07-10',
             'overtime_hours' => 8,
-            'status' => 'cancelled',
+            'status' => 'incomplete',
         ]);
 
         $run = $this->makeRun();
@@ -178,7 +178,7 @@ class PayrollAttendanceAnomalyApiTest extends TestCase
             'employee_id' => $this->employee->id,
             'date' => '2026-07-10',
             'overtime_hours' => 10,
-            'status' => 'approved',
+            'status' => 'ontime',
         ]);
 
         $run = $this->makeRun();
