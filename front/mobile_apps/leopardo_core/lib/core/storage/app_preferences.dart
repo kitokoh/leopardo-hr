@@ -1,6 +1,8 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class AppPreferences {
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   static const String _boxName = 'offlineCache';
   static const String _biometricEnabledKey = 'settings_biometric_enabled';
   static const String _fingerprintEnabledKey = 'settings_fingerprint_enabled';
@@ -56,7 +58,25 @@ class AppPreferences {
 
   /// Bearer secret returned once at Edge node registration
   /// (`EdgeNodeController::store()`), distinct from [edgeNodeId].
-  String get edgeToken => (_read(_edgeTokenKey, '') as String).trim();
+  ///
+  /// Audit #1700 : le secret ne transite plus par le box Hive non chiffré —
+  /// il est conservé en mémoire et persiste dans flutter_secure_storage.
+  String get edgeToken => (_memory[_edgeTokenKey] as String? ?? '').trim();
+
+  /// Charge le secret Edge depuis flutter_secure_storage vers la mémoire.
+  /// À appeler au démarrage (avant la création du [SyncService]).
+  Future<void> hydrateEdgeToken() async {
+    try {
+      final token = await _secureStorage
+          .read(key: _edgeTokenKey)
+          .timeout(const Duration(seconds: 2));
+      if (token != null && token.isNotEmpty) {
+        _memory[_edgeTokenKey] = token.trim();
+      }
+    } catch (_) {
+      // secure storage indisponible — la session Edge repartira sans secret
+    }
+  }
 
   /// Local network base URL of the paired Edge box, e.g.
   /// `http://leopardo.local:7878`. Empty means "not configured".
@@ -68,14 +88,30 @@ class AppPreferences {
     required String edgeBaseUrl,
   }) async {
     await _write(_edgeNodeIdKey, edgeNodeId.trim());
-    await _write(_edgeTokenKey, edgeToken.trim());
     await _write(_edgeBaseUrlKey, edgeBaseUrl.trim());
+
+    // Audit #1700 : secret → secure storage + mémoire (jamais Hive).
+    _memory[_edgeTokenKey] = edgeToken.trim();
+    try {
+      await _secureStorage
+          .write(key: _edgeTokenKey, value: edgeToken.trim())
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      // ignore — le secret reste en mémoire pour la session courante
+    }
   }
 
   Future<void> clearEdgeEnrollment() async {
     await _delete(_edgeNodeIdKey);
-    await _delete(_edgeTokenKey);
     await _delete(_edgeBaseUrlKey);
+    _memory.remove(_edgeTokenKey);
+    try {
+      await _secureStorage
+          .delete(key: _edgeTokenKey)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      // ignore
+    }
   }
 
   Future<void> saveBiometricSettings({

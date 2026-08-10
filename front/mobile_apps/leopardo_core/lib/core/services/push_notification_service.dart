@@ -120,13 +120,17 @@ class PushNotificationService {
   Future<void> _getToken(FirebaseMessaging fcm) async {
     try {
       _deviceToken = await fcm.getToken().timeout(_fcmOperationTimeout);
-      debugPrint('FCM Token: $_deviceToken');
+      if (kDebugMode) {
+        debugPrint('FCM Token: $_deviceToken');
+      }
       await _syncTokenWithBackend(_deviceToken);
 
       await _tokenRefreshSubscription?.cancel();
       _tokenRefreshSubscription = fcm.onTokenRefresh.listen((newToken) {
         _deviceToken = newToken;
-        debugPrint('FCM Token refreshed: $newToken');
+        if (kDebugMode) {
+          debugPrint('FCM Token refreshed: $newToken');
+        }
         unawaited(_syncTokenWithBackend(newToken));
       });
     } catch (e) {
