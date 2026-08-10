@@ -20,10 +20,15 @@ import 'package:leopardo_core/core/services/offline_sync_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
-class FakeConnectivity extends Connectivity {
+class FakeConnectivity implements Connectivity {
   @override
   Future<List<ConnectivityResult>> checkConnectivity() async =>
-      <ConnectivityResult>[ConnectivityResult.wifi];
+      // Pas de connectivité initiale : l'auto-sync de OfflineSyncService.init()
+      // (fire-and-forget, non attendu) entrerait en course avec l'appel
+      // syncPendingPunches() explicite des tests — la file serait traitée
+      // deux fois en parallèle (CI mobile rouge 2026-08-10). Les tests
+      // déclenchent eux-mêmes la sync.
+      <ConnectivityResult>[ConnectivityResult.none];
 
   @override
   Stream<List<ConnectivityResult>> get onConnectivityChanged =>
@@ -40,7 +45,10 @@ void main() {
 
   tearDown(() async {
     if (Hive.isBoxOpen('offline_punches')) {
-      await Hive.box('offline_punches').close();
+      // Accès typé : Hive.box() non typé (Box<dynamic>) lève une HiveError
+      // si la boîte est ouverte avec un type générique différent
+      // (Box<Map<dynamic, dynamic>>) — cf. CI mobile rouge 2026-08-10.
+      await Hive.box<Map<dynamic, dynamic>>('offline_punches').close();
       await Hive.deleteBoxFromDisk('offline_punches');
     }
     await tempDir.delete(recursive: true);

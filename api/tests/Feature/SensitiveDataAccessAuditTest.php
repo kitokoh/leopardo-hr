@@ -172,6 +172,34 @@ class SensitiveDataAccessAuditTest extends TestCase
         $this->assertSame('payroll.cnas_declaration', $log->metadata['resource']);
     }
 
+    public function test_cnss_declaration_is_logged(): void
+    {
+        $this->seededRun();
+
+        $this->postJson('/api/v1/social-declarations/cnss-ma', [
+            'quarter' => 'Q3',
+            'year' => '2026',
+        ])->assertOk();
+
+        $log = $this->lastSensitiveLog();
+        $this->assertNotNull($log);
+        $this->assertSame('payroll.cnss_declaration', $log->metadata['resource']);
+    }
+
+    public function test_dsn_declaration_is_logged(): void
+    {
+        $this->seededRun();
+
+        $this->postJson('/api/v1/social-declarations/dsn-fr', [
+            'month' => 6,
+            'year' => '2026',
+        ])->assertOk();
+
+        $log = $this->lastSensitiveLog();
+        $this->assertNotNull($log);
+        $this->assertSame('payroll.dsn_declaration', $log->metadata['resource']);
+    }
+
     public function test_bank_export_download_is_logged(): void
     {
         [$run] = $this->seededRun();
@@ -249,8 +277,7 @@ class SensitiveDataAccessAuditTest extends TestCase
 
         $exitCode = Artisan::call('audit:sensitive-report', ['--days' => 30]);
         $this->assertSame(0, $exitCode);
-        // Artisan::output() DRAINE le buffer : on capture une seule fois avant
-        // les assertions (sinon le 2e appel renvoie '' et le test échoue).
+        // Artisan::output() DRAINE le buffer : capture unique avant assertions.
         $output = Artisan::output();
         $this->assertStringContainsString('pay_slip.list', $output);
         $this->assertStringContainsString('payroll.accounting_export', $output);
