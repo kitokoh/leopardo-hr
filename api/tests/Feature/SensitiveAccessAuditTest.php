@@ -78,7 +78,7 @@ class SensitiveAccessAuditTest extends TestCase
 
     public function test_pay_slip_pdf_download_is_traced(): void
     {
-        $run = $this->run();
+        $run = $this->makeRun();
         Storage::disk('local')->put('pdfs/bulletin-1.pdf', 'PDF-FAKE');
 
         $paySlip = PaySlip::create([
@@ -127,7 +127,7 @@ class SensitiveAccessAuditTest extends TestCase
 
     public function test_payroll_journal_view_is_traced(): void
     {
-        $run = $this->run();
+        $run = $this->makeRun();
 
         Sanctum::actingAs($this->manager);
 
@@ -139,7 +139,7 @@ class SensitiveAccessAuditTest extends TestCase
 
     public function test_bank_export_view_is_traced(): void
     {
-        $run = $this->run();
+        $run = $this->makeRun();
 
         $export = BankExport::create([
             'payroll_run_id' => $run->id,
@@ -183,7 +183,7 @@ class SensitiveAccessAuditTest extends TestCase
     {
         config(['audit.sensitive_access.sampling' => 0.0]);
 
-        $run = $this->run();
+        $run = $this->makeRun();
 
         Sanctum::actingAs($this->manager);
 
@@ -195,7 +195,7 @@ class SensitiveAccessAuditTest extends TestCase
 
     public function test_sensitive_report_command_lists_traces(): void
     {
-        $run = $this->run();
+        $run = $this->makeRun();
 
         Sanctum::actingAs($this->manager);
 
@@ -208,7 +208,7 @@ class SensitiveAccessAuditTest extends TestCase
             ->assertExitCode(0);
     }
 
-    private function run(): PayrollRun
+    private function makeRun(): PayrollRun
     {
         /** @var PayrollRun $run */
         $run = PayrollRun::create([
