@@ -296,10 +296,10 @@ jobs:
           # corrections de style se font sur les branches de PR) et ne doit
           # pas s'exécuter sur les forks (le token du workflow ne s'y
           # applique pas de toute façon).
-          is_pr_push = "false"
+          is_pr_push="false"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             if [[ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.repository }}" ]]; then
-              is_pr_push = "true"
+              is_pr_push="true"
             fi
           fi
 

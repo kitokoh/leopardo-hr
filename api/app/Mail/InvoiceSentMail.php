@@ -35,4 +35,3 @@ class InvoiceSentMail extends Mailable
             ->with(['locale' => $this->emailLocale]);
     }
 }
-

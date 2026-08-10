@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -131,4 +131,3 @@ class SSOController extends Controller
         }
     }
 }
-
