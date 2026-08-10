@@ -38,40 +38,20 @@ runs:
     # ubuntu-latest ne préinstalle pas platforms;android-37 : sans cette étape
     # Gradle échoue avec "Failed to find Platform SDK with path:
     # platforms;android-37" (mobile-apps-ci + mobile-distribute, cf. #1560).
-    # sdkmanager n'est pas sur PATH sur ubuntu-24.04 : on le cherche aussi
-    # sous $ANDROID_HOME/cmdline-tools/{latest,8.0,12.0}/bin.
-    - name: Install Android SDK platform 37
+    # android-actions/setup-android installe cmdline-tools + plateforme 37 de
+    # façon fiable (accepte les licences, pose ANDROID_HOME/ANDROID_SDK_ROOT
+    # dans GITHUB_ENV pour les étapes suivantes).
+    - name: Setup Android SDK (platform 37)
+      uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+      with:
+        packages: 'tools platform-tools platforms;android-37 build-tools;37.0.0'
+
+    - name: Verify Android SDK platform 37
       shell: bash
       run: |
-        export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-        SDKMANAGER=""
-        for CANDIDATE in "$(command -v sdkmanager 2>/dev/null)"           "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"           "${ANDROID_HOME}/cmdline-tools/12.0/bin/sdkmanager"           "${ANDROID_HOME}/cmdline-tools/8.0/bin/sdkmanager"; do
-          if [[ -n "${CANDIDATE}" && -x "${CANDIDATE}" ]]; then
-            SDKMANAGER="${CANDIDATE}"
-            break
-          fi
-        done
-        if [[ -n "${SDKMANAGER}" ]]; then
-          yes | "${SDKMANAGER}" --licenses >/dev/null 2>&1 || true
-          "${SDKMANAGER}" "platforms;android-37" "build-tools;37.0.0" >/dev/null 2>&1 || true
-          # Le runner n'expose pas toujours ANDROID_HOME aux étapes suivantes
-          # et Flutter/Gradle résolvent leur propre racine SDK : on localise le
-          # SDK réellement utilisé (là où android-37 a été installé) et on force
-          # le même chemin via GITHUB_ENV + local.properties (sdk.dir).
-          PLATFORM_DIR="$(find /usr/local/lib /usr/lib /opt /home/runner -type d -name "android-37" -path "*/platforms/*" 2>/dev/null | head -n 1)"
-          if [[ -n "${PLATFORM_DIR}" ]]; then
-            SDK_ROOT="$(dirname "$(dirname "${PLATFORM_DIR}")")"
-            echo "ANDROID_HOME=${SDK_ROOT}" >> "$GITHUB_ENV"
-            echo "ANDROID_SDK_ROOT=${SDK_ROOT}" >> "$GITHUB_ENV"
-            for APP in front/mobile_apps/*/; do
-              if [[ -d "${APP}android" ]]; then
-                printf 'sdk.dir=%s\n' "${SDK_ROOT}" > "${APP}android/local.properties"
-              fi
-            done
-            echo "Android SDK root: ${SDK_ROOT} (platforms;android-37 OK)."
-          else
-            echo "::warning::platforms;android-37 introuvable après installation — les builds Android peuvent échouer."
-          fi
+        echo "ANDROID_HOME=${ANDROID_HOME:-<unset>}"
+        if [[ -d "${ANDROID_HOME}/platforms/android-37" ]]; then
+          echo "platforms;android-37 OK (${ANDROID_HOME}/platforms/android-37)."
         else
-          echo "::warning::sdkmanager introuvable — plateforme android-37 non installée (builds Android pourraient échouer)."
+          echo "::warning::platforms;android-37 absent (ANDROID_HOME=${ANDROID_HOME}) — builds Android peuvent échouer."
         fi
