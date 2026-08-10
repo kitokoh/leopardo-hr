@@ -4,6 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * ⚠️ Spec S-3 (#1663) : ce fichier a été corrigé rétroactivement (F-13b,
+ * kiosk_announcements.company_id en uuid) ; les environnements déjà migrés ne
+ * rejoueront pas ce code. La migration additive de rattrapage (uuid sur
+ * zkteco_devices + kiosk_announcements) vit dans
+ * `2026_08_09_000007_kiosk_company_id_uuid_additive.php` — ne pas supprimer
+ * l'une sans l'autre.
+ */
 return new class extends Migration
 {
     public function up(): void

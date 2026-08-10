@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\DB;
 /**
  * Migration SmartAttendance 05 — Ajout de la valeur 'geo_auto' dans attendance_logs.method
  *
+ * ⚠️ Spec S-3 (#1663) : ce fichier a été complété rétroactivement (branche
+ * F-13b) ; les environnements déjà migrés ne rejoueront pas ce code. La
+ * migration additive de rattrapage vit dans
+ * `2026_08_09_000006_geo_auto_attendance_logs_method_additive.php` — ne pas
+ * supprimer l'une sans l'autre.
+ *
  * Migration ADDITIVE uniquement — ne modifie aucune donnée existante.
  * Le champ `method` était VARCHAR(20) (migré depuis ENUM).
  * On s'assure simplement que la valeur 'geo_auto' est documentée et acceptée.

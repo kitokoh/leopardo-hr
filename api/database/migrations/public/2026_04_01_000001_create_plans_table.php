@@ -15,7 +15,12 @@ return new class extends Migration
 
     public function up(): void
     {
-        DB::statement('SET search_path TO public');
+        // Spec S-3 (#1663) : le `SET search_path TO public` a été retiré — la
+        // migration s'exécute déjà dans le schéma public (le search_path est
+        // posé par le bootstrapping `leopardo:migrate` / les workflows CI), et
+        // ce SET forçait le contexte courant au niveau session, ce qui cassait
+        // les migrations tenant suivantes basées sur `current_schema()`.
+        // Les requêtes ci-dessous qualifient explicitement `public.*`.
 
         DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
         DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto"');

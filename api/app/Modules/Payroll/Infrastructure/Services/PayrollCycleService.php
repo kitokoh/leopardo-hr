@@ -273,6 +273,13 @@ class PayrollCycleService
     }
 
     /**
+     * Solde d'un employé pour la synthèse mobile.
+     *
+     * Spec S-3 (#1663) : l'erreur est PROPAGÉE (500 explicite + Log) au lieu
+     * de valeurs vides/fabriquées — un échec de calcul de paie ne doit pas
+     * être masqué au client par des zéros qui semblent réels. Le log porte le
+     * contexte complet (employé, société, exception) pour le diagnostic.
+     *
      * @return array<string, mixed>
      */
     private function safeEmployeeBalance(Employee $employee): array
@@ -280,61 +287,14 @@ class PayrollCycleService
         try {
             return $this->getEmployeeBalance($employee);
         } catch (\Throwable $exception) {
-            Log::warning('payroll.mobile_summary.employee_balance_failed', [
+            Log::error('payroll.mobile_summary.employee_balance_failed', [
                 'employee_id' => $employee->id,
                 'company_id' => $employee->company_id,
-                'error' => $exception->getMessage(),
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
             ]);
 
-            $company = $this->resolveCompany($employee);
-            $settings = [
-                'pay_cycle' => 'monthly',
-                'pay_day' => 1,
-                'week_start' => 1,
-            ];
-            $cycle = $this->monthlyPeriod(Carbon::now($company?->timezone ?: 'UTC'));
-
-            if ($company instanceof Company) {
-                try {
-                    $settings = $this->payrollSettings($company);
-                    $cycle = $this->getCurrentCycle($company);
-                } catch (\Throwable $settingsException) {
-                    Log::warning('payroll.mobile_summary.company_settings_failed', [
-                        'employee_id' => $employee->id,
-                        'company_id' => $employee->company_id,
-                        'error' => $settingsException->getMessage(),
-                    ]);
-                }
-            }
-
-            $grossDue = $this->fallbackGrossDue($employee, $settings['pay_cycle']);
-
-            return [
-                'employee_id' => $employee->id,
-                'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-                'period' => [
-                    'start' => $cycle['start']->toDateString(),
-                    'end' => $cycle['end']->toDateString(),
-                    'label' => $cycle['label'],
-                    'cycle' => $settings['pay_cycle'],
-                ],
-                'country' => $company !== null ? $company->country : '',
-                'currency' => $company?->currency ?? 'DZD',
-                'gross_due' => round($grossDue, 2),
-                'advances' => 0.0,
-                'paid' => 0.0,
-                'remaining' => round(max(0.0, $grossDue), 2),
-                'overtime_hours' => 0.0,
-                'overtime_pay' => 0.0,
-                'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
-                'pay_slip' => [
-                    'id' => null,
-                    'status' => null,
-                    'payroll_run_id' => null,
-                    'receipt_available' => false,
-                ],
-                'warning' => 'partial_balance_fallback',
-            ];
+            throw $exception;
         }
     }
 
