@@ -53,7 +53,11 @@ if ! git cat-file -e "${HEAD_SHA}^{commit}" 2>/dev/null; then
   git fetch --no-tags --depth=1 origin "${HEAD_SHA}" 2>/dev/null || true
 fi
 
-BASELINE_FILES=("phpstan-baseline.neon" "phpstan-modules-baseline.neon")
+# Audit #1702: the strict baseline (app/Core, app/Modules, app/Shared,
+# level 8, ~1450 entries) was not covered by the delta check — new
+# level-8 debt on a module was never rejected. It is now part of the same
+# one-way ratchet as the other two baselines.
+BASELINE_FILES=("phpstan-baseline.neon" "phpstan-modules-baseline.neon" "phpstan-strict-baseline.neon")
 
 get_module_counts() {
   local sha="$1"

@@ -65,32 +65,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Schéma résolu via le search_path (issue #1613).
-        $schema = resolveTableSchema('employees');
-
-        Schema::table("{$schema}.employees", function (Blueprint $table): void {
-            foreach ([
-                'middle_name',
-                'preferred_name',
-                'personal_email',
-                'place_of_birth',
-                'marital_status',
-                'address_line',
-                'postal_code',
-                'emergency_contact_name',
-                'emergency_contact_phone',
-                'emergency_contact_relation',
-                'biometric_face_enabled',
-                'biometric_fingerprint_enabled',
-                'biometric_face_reference_path',
-                'biometric_fingerprint_reference_path',
-                'biometric_consent_at',
-                'invitation_accepted_at',
-            ] as $column) {
-                if (schemaHasColumn('employees', $column)) {
-                    $table->dropColumn($column);
-                }
-            }
-        });
+        // Audit #1710: la suppression des colonnes biométriques détruit des
+        // références RGPD (consentement, empreintes) — refuser le rollback.
+        throw new RuntimeException(
+            'Rollback impossible : cette migration porte des données biométriques '
+            .'et de consentement. Effectuer une migration additive inverse manuelle.'
+        );
     }
 };
