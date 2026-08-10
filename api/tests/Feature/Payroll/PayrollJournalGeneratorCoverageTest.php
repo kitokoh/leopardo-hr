@@ -52,6 +52,7 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
 
     public function test_generates_only_header_and_total_for_empty_run(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         /** @var PayrollRun $run */
@@ -89,7 +90,9 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
         // Matricule contrôlé par l'employé : injection =1+2 neutralisée (varchar(20)).
         $employee->update(['matricule' => '=1+2']);
 
-        $csv = (new PayrollJournalGenerator)->generate($run->fresh());
+        $run->refresh();
+
+        $csv = (new PayrollJournalGenerator)->generate($run);
 
         $this->assertStringContainsString("'=1+2", $csv);
         $this->assertStringNotContainsString('",=1+2', $csv);
@@ -99,7 +102,9 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
     {
         [$run, $employee] = $this->runWithSlips('validated');
 
-        $csv = (new PayrollJournalGenerator)->generate($run->fresh());
+        $run->refresh();
+
+        $csv = (new PayrollJournalGenerator)->generate($run);
 
         $lines = array_map('str_getcsv', explode("\n", trim($csv)));
         $this->assertSame((string) $employee->id, $lines[1][0]);
@@ -110,6 +115,7 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
      */
     private function runWithSlips(string $status = 'validated'): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         /** @var Employee $employee */
