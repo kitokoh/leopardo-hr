@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Schema;
 
 class ExportController extends Controller
 {
+    public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
+
     public function employees(Request $request): JsonResponse
     {
         /** @var Employee $user */
@@ -248,6 +251,8 @@ class ExportController extends Controller
             abort(403);
         }
 
+        $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_journal']);
+
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
             'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end'
         ]);
@@ -262,6 +267,8 @@ class ExportController extends Controller
         if (! $user->isManager()) {
             abort(403);
         }
+
+        $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_ledger']);
 
         // Summary representation for ledger
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
@@ -289,6 +296,8 @@ class ExportController extends Controller
         if (! $user->isManager()) {
             abort(403);
         }
+
+        $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'accounting_od']);
 
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
             'payroll_run_id', 'gross_salary', 'net_salary', 'period_end'
