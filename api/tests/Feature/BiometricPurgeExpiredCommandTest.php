@@ -171,6 +171,7 @@ class BiometricPurgeExpiredCommandTest extends TestCase
     public function test_purges_expired_enrollment_requests(): void
     {
         $company = $this->makeCompany();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         /** @var BiometricEnrollmentRequest $request */
