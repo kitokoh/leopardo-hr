@@ -63,7 +63,7 @@ class DeviceTokenController extends Controller
             ->where('employee_id', $user->id)
             ->where('is_active', true)
             ->orderByDesc('last_used_at')
-            ->get();
+            ->paginate($request->integer('per_page', 25));
 
         return new JsonResponse(['data' => $tokens]);
     }
