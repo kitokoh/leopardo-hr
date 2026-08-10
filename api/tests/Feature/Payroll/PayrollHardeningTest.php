@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Laravel\Sanctum\Sanctum;
+use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -173,5 +174,27 @@ class PayrollHardeningTest extends TestCase
         $content = $response->json();
         $this->assertArrayNotHasKey('data', $content);
         $this->assertNotContains('partial_balance_fallback', $content);
+    }
+
+    /**
+     * Le vrai `safeEmployeeBalance()` (non court-circuité) doit propager
+     * l'échec de `getEmployeeBalance()` en `PayrollBalanceUnavailableException`
+     * — jamais renvoyer le payload de secours à zéros (S-3, #1663).
+     */
+    public function test_real_safe_employee_balance_propagates_balance_failure(): void
+    {
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+
+        /** @var PayrollCycleService&\Mockery\MockInterface $service */
+        $service = Mockery::mock(PayrollCycleService::class)->makePartial();
+        $service->shouldReceive('getEmployeeBalance')
+            ->once()
+            ->andThrow(new \RuntimeException('paie indisponible (test)'));
+
+        $this->expectException(PayrollBalanceUnavailableException::class);
+        $this->expectExceptionMessage('paie indisponible (test)');
+
+        $service->getMobileSummary($manager);
     }
 }
