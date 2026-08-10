@@ -38,15 +38,21 @@ $this->assertDatabaseHas('audit_logs', ['action' => 'biometric_templates_purged'
 
 - **Corrigés** : `GdprAnonymizeEmployeeTest` (5 usages), `PurgeAuditLogsCommandTest`
   (test 3), `BiometricPurgeExpiredTest` (S-1) — `run()` explicite ajouté.
-- **Vérifiés SÛRS** (chaînés + résultat jeté) : `MakeModuleCommandTest`,
-  `AnnouncementControllerTest`, `PrecalculatePayrollRunsCommandTest`,
-  `PublishScheduledSocialPostsCommandTest`, `PublishScheduledPostJobTest`,
-  `FeatureRegistryIntegrationTest`, `EdgeSilentNodeDetectionTest`,
+- **Durcis** (conversion du pattern chaîné → pattern assigné + `run()` explicite,
+  pour un échec immédiat et l'insensibilité au cycle de vie des temporaires PHP) :
+  `AnnouncementControllerTest` (3), `EdgeSilentNodeDetectionTest` (2),
+  `PublishScheduledSocialPostsCommandTest` (3), `PublishScheduledPostJobTest` (1),
+  `PrecalculatePayrollRunsCommandTest` (6).
+- **Vérifiés SÛRS** (aucune assertion d'état post-commande ; le chaînage
+  temporaire est détruit en fin d'instruction → exécution immédiate) :
+  `MakeModuleCommandTest`, `FeatureRegistryIntegrationTest`,
   `AccrueLeaveBalancesTest`, `HrModelSeederTest` (run() explicite),
-  `tests/RefreshTenantDatabase.php` (migrations : le résultat est jeté → la
-  commande tourne en fin d'instruction, avant `setArtisan(null)`).
+  `tests/RefreshTenantDatabase.php` (migrations : résultat jeté → exécution
+  avant `setArtisan(null)`), `QueueObservabilityApiTest` (setUp, idem).
 - **Convention** : tout NOUVEAU test qui garde un `PendingCommand` en variable
-  doit appeler `run()` avant ses assertions d'état.
+  doit appeler `run()` avant ses assertions d'état. Le pattern chaîné pur est
+  toléré sans assertions d'état post-commande, mais `run()` explicite est
+  préféré partout (lisibilité + déterminisme).
 
 ## 2. PHPStan strict (level 8) inclut les tests
 
