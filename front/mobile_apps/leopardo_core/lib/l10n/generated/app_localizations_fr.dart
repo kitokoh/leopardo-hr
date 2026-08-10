@@ -60,6 +60,51 @@ class AppLocalizationsFr extends AppLocalizations {
       'Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace.';
 
   @override
+  String get authBackTooltip => 'Retour';
+
+  @override
+  String get authEmployeeLoginSubtitle => 'Connexion employe';
+
+  @override
+  String get authManagerLoginSubtitle => 'Connexion Manager / RH';
+
+  @override
+  String get authEmailProfessionalLabel => 'Email professionnel';
+
+  @override
+  String get authEmailLabel => 'Email';
+
+  @override
+  String get authEmailRequired => 'Email obligatoire';
+
+  @override
+  String get authEmailInvalid => 'Email invalide';
+
+  @override
+  String get authPasswordLabel => 'Mot de passe';
+
+  @override
+  String get authPasswordRequired => 'Mot de passe obligatoire';
+
+  @override
+  String get authPasswordTooShort => 'Mot de passe trop court';
+
+  @override
+  String get authContinueWithGoogle => 'Continuer avec Google';
+
+  @override
+  String get authActivateInvitation => 'Activer mon invitation';
+
+  @override
+  String get authPersonalAccountLink => 'Compte perso';
+
+  @override
+  String get authActivateManagerAccess => 'Activer mon acces manager';
+
+  @override
+  String get authTryDemoAccount => 'Tester avec un compte demo';
+
+  @override
   String get commonLanguageLabel => 'Langue';
 
   @override
@@ -85,6 +130,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get commonLanguageVariantsEnGb => 'Anglais (Royaume-Uni)';
+
+  @override
+  String get commonOr => 'ou';
 
   @override
   String get modulesAttendance => 'Pointage';
@@ -254,54 +302,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Erreur : impossible de contacter l assistant.';
 
   @override
-  String get authBackTooltip => 'Retour';
-
-  @override
-  String get authEmployeeLoginSubtitle => 'Connexion employe';
-
-  @override
-  String get authManagerLoginSubtitle => 'Connexion Manager / RH';
-
-  @override
-  String get authEmailProfessionalLabel => 'Email professionnel';
-
-  @override
-  String get authEmailLabel => 'Email';
-
-  @override
-  String get authEmailRequired => 'Email obligatoire';
-
-  @override
-  String get authEmailInvalid => 'Email invalide';
-
-  @override
-  String get authPasswordLabel => 'Mot de passe';
-
-  @override
-  String get authPasswordRequired => 'Mot de passe obligatoire';
-
-  @override
-  String get authPasswordTooShort => 'Mot de passe trop court';
-
-  @override
-  String get authContinueWithGoogle => 'Continuer avec Google';
-
-  @override
-  String get authActivateInvitation => 'Activer mon invitation';
-
-  @override
-  String get authPersonalAccountLink => 'Compte perso';
-
-  @override
-  String get authActivateManagerAccess => 'Activer mon acces manager';
-
-  @override
-  String get commonOr => 'ou';
-
-  @override
-  String get authTryDemoAccount => 'Tester avec un compte demo';
-
-  @override
   String get platformLoginTitle => 'Leopardo Platform';
 
   @override
@@ -329,4 +329,295 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get platformLoginUseDemoAccount => 'Utiliser le compte demo';
+
+  @override
+  String get usersPageTitle => 'Gestion des Utilisateurs';
+
+  @override
+  String get usersPageSummary =>
+      ':count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd\'hui';
+
+  @override
+  String get usersActionsBulk => 'Actions (:count)';
+
+  @override
+  String get usersActionsExport => 'Exporter';
+
+  @override
+  String get usersActionsNew => 'Nouveau';
+
+  @override
+  String get usersFiltersSearchLabel => 'Rechercher';
+
+  @override
+  String get usersFiltersSearchPlaceholder => 'Nom, email, entreprise...';
+
+  @override
+  String get usersFiltersStatusLabel => 'Statut';
+
+  @override
+  String get usersFiltersStatusAll => 'Tous les statuts';
+
+  @override
+  String get usersFiltersStatusActive => 'Actif';
+
+  @override
+  String get usersFiltersStatusInactive => 'Inactif';
+
+  @override
+  String get usersFiltersStatusSuspended => 'Suspendu';
+
+  @override
+  String get usersFiltersStatusPending => 'En attente';
+
+  @override
+  String get usersFiltersRoleLabel => 'Role';
+
+  @override
+  String get usersFiltersRoleAll => 'Tous les roles';
+
+  @override
+  String get usersFiltersRoleAdmin => 'Administrateur';
+
+  @override
+  String get usersFiltersRoleManager => 'Manager';
+
+  @override
+  String get usersFiltersRoleEmployee => 'Employe';
+
+  @override
+  String get usersFiltersRoleHr => 'RH';
+
+  @override
+  String get usersFiltersCompanyLabel => 'Entreprise';
+
+  @override
+  String get usersFiltersCompanyAll => 'Toutes les entreprises';
+
+  @override
+  String get usersFiltersRegistrationdateLabel => 'Date d\'inscription';
+
+  @override
+  String get usersFiltersRegistrationdateAll => 'Toutes les dates';
+
+  @override
+  String get usersFiltersRegistrationdateToday => 'Aujourd\'hui';
+
+  @override
+  String get usersFiltersRegistrationdateWeek => 'Cette semaine';
+
+  @override
+  String get usersFiltersRegistrationdateMonth => 'Ce mois';
+
+  @override
+  String get usersFiltersRegistrationdateQuarter => 'Ce trimestre';
+
+  @override
+  String get usersFiltersLastloginLabel => 'Derniere connexion';
+
+  @override
+  String get usersFiltersLastloginAll => 'Toutes';
+
+  @override
+  String get usersFiltersLastloginToday => 'Aujourd\'hui';
+
+  @override
+  String get usersFiltersLastloginWeek => 'Cette semaine';
+
+  @override
+  String get usersFiltersLastloginMonth => 'Ce mois';
+
+  @override
+  String get usersFiltersLastloginNever => 'Jamais connecte';
+
+  @override
+  String get usersFiltersSegmentLabel => 'Segment';
+
+  @override
+  String get usersFiltersSegmentAll => 'Tous les segments';
+
+  @override
+  String get usersFiltersSegmentChampions => 'Champions';
+
+  @override
+  String get usersFiltersSegmentLoyal => 'Loyaux';
+
+  @override
+  String get usersFiltersSegmentPotential => 'Potentiels';
+
+  @override
+  String get usersFiltersSegmentNew => 'Nouveaux';
+
+  @override
+  String get usersFiltersSegmentAtrisk => 'A risque';
+
+  @override
+  String get usersFiltersAdvancedShow => 'Afficher les filtres avances';
+
+  @override
+  String get usersFiltersAdvancedHide => 'Masquer les filtres avances';
+
+  @override
+  String get usersBulkpanelSelectedcount => ':count selectionne(s)';
+
+  @override
+  String get usersBulkpanelActivate => 'Activer';
+
+  @override
+  String get usersBulkpanelDeactivate => 'Desactiver';
+
+  @override
+  String get usersBulkpanelSuspend => 'Suspendre';
+
+  @override
+  String get usersBulkpanelExport => 'Exporter';
+
+  @override
+  String get usersBulkpanelCancel => 'Annuler';
+
+  @override
+  String get usersToastLoaderror =>
+      'Erreur lors du chargement des utilisateurs';
+
+  @override
+  String get usersToastBulkactivated => ':count utilisateur(s) active(s)';
+
+  @override
+  String get usersToastBulkdeactivated => ':count utilisateur(s) desactive(s)';
+
+  @override
+  String get usersToastBulksuspended => ':count utilisateur(s) suspendu(s)';
+
+  @override
+  String get usersToastBulkerror => 'Erreur lors de l\'action groupee';
+
+  @override
+  String get usersToastDeleted => 'Utilisateur supprime';
+
+  @override
+  String get usersToastDeleteerror => 'Erreur lors de la suppression';
+
+  @override
+  String get usersToastImpersonating => 'Connexion en tant que :name';
+
+  @override
+  String get usersToastCreated => 'Utilisateur cree avec succes';
+
+  @override
+  String get usersToastUpdated => 'Utilisateur mis a jour';
+
+  @override
+  String get usersToastExportinprogress => 'Export en cours...';
+
+  @override
+  String get usersToastExportdone => 'Export termine';
+
+  @override
+  String get usersToastExporterror => 'Erreur lors de l\'export';
+
+  @override
+  String get usersToastSelectionexportdone => 'Export de la selection termine';
+
+  @override
+  String get usersConfirmDelete => 'Etes-vous sur de vouloir supprimer :name ?';
+
+  @override
+  String get dashboardTitle => 'Tableau de bord';
+
+  @override
+  String get dashboardCompany => 'Entreprise';
+
+  @override
+  String get dashboardActiveEmployees => 'Actifs';
+
+  @override
+  String get dashboardUpgrade => 'Upgrade';
+
+  @override
+  String get dashboardPriorityActions => 'Actions prioritaires';
+
+  @override
+  String get dashboardLaunchReadiness => 'Readiness lancement';
+
+  @override
+  String get dashboardRecentActivity => 'Activite recente';
+
+  @override
+  String get dashboardRecentActivityHint => 'Dernieres actions de votre equipe';
+
+  @override
+  String get marketingOauthNavTitle => 'Marketing OAuth';
+
+  @override
+  String get marketingOauthTitle => 'Paramètres OAuth Marketing';
+
+  @override
+  String get marketingOauthSubtitle =>
+      'Connectez vos comptes réseaux sociaux via Ayrshare';
+
+  @override
+  String get marketingOauthAyrshareInfo =>
+      'Ces paramètres sont utilisés par Ayrshare pour publier sur vos réseaux sociaux.';
+
+  @override
+  String get marketingOauthSave => 'Enregistrer';
+
+  @override
+  String marketingOauthSavedOk(Object provider) {
+    return 'Configuration $provider enregistrée';
+  }
+
+  @override
+  String get marketingOauthProvidersLinkedinLabel => 'LinkedIn';
+
+  @override
+  String get marketingOauthProvidersLinkedinDescription =>
+      'Connexion à l\'API LinkedIn Marketing';
+
+  @override
+  String get marketingOauthProvidersFacebookLabel => 'Facebook / Meta';
+
+  @override
+  String get marketingOauthProvidersFacebookDescription =>
+      'Connexion à l\'API Facebook Graph';
+
+  @override
+  String get marketingOauthProvidersTwitterLabel => 'X (Twitter)';
+
+  @override
+  String get marketingOauthProvidersTwitterDescription =>
+      'Connexion à l\'API Twitter v2';
+
+  @override
+  String get marketingOauthFieldsClientId => 'Client ID';
+
+  @override
+  String get marketingOauthFieldsClientSecret => 'Client Secret';
+
+  @override
+  String get marketingOauthFieldsRedirectUri => 'Redirect URI';
+
+  @override
+  String get marketingOauthFieldsSecretHint => '(laissez vide pour conserver)';
+
+  @override
+  String get marketingOauthFieldsPlaceholderId => 'Votre Client ID';
+
+  @override
+  String get marketingOauthFieldsPlaceholderSecret =>
+      'Nouveau secret (optionnel)';
+
+  @override
+  String get marketingOauthFieldsPlaceholderUri =>
+      'https://example.com/oauth/callback';
+
+  @override
+  String attendanceSendingToServer(Object label) {
+    return '$label vers le serveur...';
+  }
+
+  @override
+  String attendanceRetryAfterFailure(Object label) {
+    return '$label. Reessayez.';
+  }
 }
