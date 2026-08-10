@@ -11,8 +11,10 @@ import {
   getPreferredLocale,
 } from '@/lib/i18n';
 
+import { DEFAULT_BACKEND_API_URL } from '@/lib/backend-url';
+
 const LOCAL_API_BASE_URL = 'http://localhost:8000/api/v1';
-const DEPLOYED_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+const DEPLOYED_API_BASE_URL = DEFAULT_BACKEND_API_URL;
 
 /**
  * In the browser, production requests go through the Next same-origin proxy

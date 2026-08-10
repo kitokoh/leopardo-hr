@@ -69,9 +69,9 @@ class SSOService
             ...$configData,
         ]);
 
-        $existing = DB::table('company_sso_configs')
+        $existingRow = DB::table('company_sso_configs')
             ->where('company_id', $companyId)
-            ->exists();
+            ->first();
 
         $stored = $config->toArray();
 
@@ -79,6 +79,16 @@ class SSOService
         // renvoyé au client) mais DOIT être persisté — chiffré au repos.
         if ($config->clientSecret !== null) {
             $stored['client_secret'] = $config->clientSecret;
+        } elseif ($existingRow !== null) {
+            // Mise à jour sans client_secret : préserver le secret déjà
+            // stocké (une réécriture de config ne doit pas le perdre).
+            /** @var array<string, mixed> $existingData */
+            $existingData = is_string($existingRow->config)
+                ? json_decode((string) $existingRow->config, true)
+                : (array) $existingRow->config;
+            if (isset($existingData['client_secret']) && is_string($existingData['client_secret'])) {
+                $stored['client_secret'] = $this->decryptField($existingData['client_secret']);
+            }
         }
 
         // Audit #1694 : chiffrement des secrets IdP avant persistance.
@@ -99,7 +109,7 @@ class SSOService
             'updated_at' => now(),
         ];
 
-        if ($existing) {
+        if ($existingRow !== null) {
             DB::table('company_sso_configs')
                 ->where('company_id', $companyId)
                 ->update($payload);

@@ -73,7 +73,7 @@ class AutoCloseAttendanceCommand extends Command
                 $autoCheckOut = Carbon::now('UTC');
             }
 
-            $hoursWorked = round($log->check_in->diffInMinutes($autoCheckOut) / 60, 2);
+            $hoursWorked = round($checkIn->diffInMinutes($autoCheckOut) / 60, 2);
             $meta = array_merge($log->punch_meta ?? [], [
                 'auto_close' => [
                     'closed_at' => Carbon::now('UTC')->toIso8601String(),
@@ -97,7 +97,7 @@ class AutoCloseAttendanceCommand extends Command
                 'attendance_log_id' => $log->id,
                 'employee_id' => $log->employee_id,
                 'company_id' => $log->company_id,
-                'check_in' => $log->check_in->toIso8601String(),
+                'check_in' => $checkIn->toIso8601String(),
                 'auto_check_out' => $autoCheckOut->toIso8601String(),
             ]);
 
