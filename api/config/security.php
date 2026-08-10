@@ -30,14 +30,14 @@ return [
         'default_per_minute' => (int) env('RATE_LIMIT_PLAN_DEFAULT_PER_MINUTE', 100),
     ],
 
-<<<<<<< HEAD
     // S-1 (#1661) — Rétention des templates biométriques (RGPD / Loi 18-07).
     // Durée par défaut : 24 mois après la fin de contrat (ou après le
     // consentement si pas de fin de contrat). Référence :
     // docs/security/POLITIQUE_RETENTION_DOCUMENTS.md §Biométrie.
     'biometric' => [
         'retention_months' => (int) env('BIOMETRIC_RETENTION_MONTHS', 24),
-=======
+    ],
+
     // S-2 (#1662) — Journalisation des accès en lecture aux données sensibles
     // (paie, exports, bulletins). Volume borné : échantillonnage + liste
     // blanche de ressources. Référence : SPECS_AUDIT_EXPERT_2026-08-09 §S-2.
@@ -57,6 +57,5 @@ return [
             'payroll.bank_export',
             'payroll.accounting_export',
         ],
->>>>>>> origin/main
     ],
 ];
