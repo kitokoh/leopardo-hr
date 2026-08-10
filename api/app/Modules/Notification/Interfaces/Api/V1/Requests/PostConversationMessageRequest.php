@@ -20,7 +20,7 @@ class PostConversationMessageRequest extends FormRequest
     {
         return [
             'body' => ['required', 'string', 'max:2000'],
-            'attachment' => ['nullable', 'file', 'max:5120'],
+            'attachment' => ['nullable', 'file', 'max:5120', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,odt,ods,odp,txt,csv,png,jpg,jpeg,webp'],
         ];
     }
 }
