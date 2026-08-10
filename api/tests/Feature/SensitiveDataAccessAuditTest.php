@@ -249,7 +249,10 @@ class SensitiveDataAccessAuditTest extends TestCase
 
         $exitCode = Artisan::call('audit:sensitive-report', ['--days' => 30]);
         $this->assertSame(0, $exitCode);
-        $this->assertStringContainsString('pay_slip.list', Artisan::output());
-        $this->assertStringContainsString('payroll.accounting_export', Artisan::output());
+        // Artisan::output() DRAINE le buffer : on capture une seule fois avant
+        // les assertions (sinon le 2e appel renvoie '' et le test échoue).
+        $output = Artisan::output();
+        $this->assertStringContainsString('pay_slip.list', $output);
+        $this->assertStringContainsString('payroll.accounting_export', $output);
     }
 }
