@@ -20,7 +20,7 @@
           Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
         </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
-          Platform Administration â€¢ v4.16
+          Platform Administration • v4.16
         </p>
         <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
           Connectez-vous a votre espace
@@ -29,10 +29,15 @@
 
       <div class="glass-card p-1 pb-1 overflow-hidden shadow-premium">
         <div class="bg-slate-900/40 backdrop-blur-3xl p-8 rounded-[1.4rem]">
-          <form class="space-y-6" @submit.prevent="handleLogin">
+          <form novalidate class="space-y-6" @submit.prevent="handleLogin">
             <div class="space-y-5">
-              <div>
-                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Adresse email</label>
+              <FormField
+                id="email"
+                label="Adresse email"
+                required
+                :error="fieldErrors.email"
+                v-slot="{ ariaInvalid, describedBy }"
+              >
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <EnvelopeIcon class="h-5 w-5 text-slate-500" />
@@ -45,14 +50,21 @@
                     autocomplete="email"
                     required
                     autofocus
+                    :aria-invalid="ariaInvalid"
+                    :aria-describedby="describedBy"
                     class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="admin@leopardo-rh.com"
                   />
                 </div>
-              </div>
+              </FormField>
 
-              <div>
-                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Clé d'Accès</label>
+              <FormField
+                id="password"
+                label="Clé d'Accès"
+                required
+                :error="fieldErrors.password"
+                v-slot="{ ariaInvalid, describedBy }"
+              >
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <LockClosedIcon class="h-5 w-5 text-slate-500" />
@@ -64,8 +76,10 @@
                     :type="showPassword ? 'text' : 'password'"
                     autocomplete="current-password"
                     required
+                    :aria-invalid="ariaInvalid"
+                    :aria-describedby="describedBy"
                     class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
-                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    placeholder="••••••••"
                   />
                   <button
                     type="button"
@@ -77,10 +91,16 @@
                     <EyeIcon v-else class="h-5 w-5" />
                   </button>
                 </div>
-              </div>
+              </FormField>
 
-              <div v-if="requiresTwoFactor">
-                <label for="two-factor-code" class="block text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 ml-1">Code 2FA</label>
+              <FormField
+                v-if="requiresTwoFactor"
+                id="two-factor-code"
+                label="Code 2FA"
+                required
+                :error="fieldErrors.twoFactorCode"
+                v-slot="{ ariaInvalid, describedBy }"
+              >
                 <input
                   id="two-factor-code"
                   v-model="form.twoFactorCode"
@@ -88,10 +108,12 @@
                   type="text"
                   inputmode="numeric"
                   required
+                  :aria-invalid="ariaInvalid"
+                  :aria-describedby="describedBy"
                   class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
                   placeholder="000000"
                 />
-              </div>
+              </FormField>
             </div>
 
             <div class="flex items-center justify-between">
@@ -115,7 +137,7 @@
               </div>
             </div>
 
-            <div v-if="error" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4">
+            <div v-if="error" role="alert" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4">
               <div class="flex items-center gap-3">
                 <ExclamationTriangleIcon class="h-5 w-5 text-red-400 shrink-0" />
                 <div class="space-y-1">
@@ -195,7 +217,7 @@
 </template>
 
 <script setup>
-import { nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   LockClosedIcon,
@@ -206,9 +228,14 @@ import {
   SparklesIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
+import FormField from '@/components/common/FormField.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const form = reactive({
   email: '',
@@ -222,6 +249,25 @@ const error = ref('')
 const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
 const showDemoModal = ref(false)
+const attempted = ref(false)
+
+// S-6 (#1666) : feedback inline par champ (aria-invalid + aria-describedby).
+const fieldErrors = computed(() => {
+  if (!attempted.value) return {}
+  const errors = {}
+  if (!form.email) {
+    errors.email = t('auth.email_required', "L'adresse email est requise.")
+  } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
+    errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
+  }
+  if (!form.password) {
+    errors.password = t('auth.password_required', "La clé d'accès est requise.")
+  }
+  if (requiresTwoFactor.value && !form.twoFactorCode) {
+    errors.twoFactorCode = t('auth.two_factor_required', 'Le code 2FA est requis.')
+  }
+  return errors
+})
 
 /* eslint-disable no-unused-vars */
 async function selectDemoUser(email, password) {
@@ -236,6 +282,11 @@ async function handleLogin() {
   if (isLoading.value) return
 
   error.value = ''
+  attempted.value = true
+  if (Object.keys(fieldErrors.value).length > 0) {
+    isLoading.value = false
+    return
+  }
   isLoading.value = true
 
   try {

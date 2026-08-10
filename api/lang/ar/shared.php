@@ -55,6 +55,7 @@ return [
         'personal_account_link' => 'حساب شخصي',
         'activate_manager_access' => 'تفعيل صلاحية المدير',
         'try_demo_account' => 'تجربة حساب تجريبي',
+        'two_factor_required' => 'رمز التحقق الثنائي مطلوب.',
     ],
     'common' => [
         'language' => [
