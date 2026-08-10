@@ -75,6 +75,12 @@ class SSOService
 
         $stored = $config->toArray();
 
+        // Audit #1694 : le client_secret est exclu de toArray() (jamais
+        // renvoyé au client) mais DOIT être persisté — chiffré au repos.
+        if ($config->clientSecret !== null) {
+            $stored['client_secret'] = $config->clientSecret;
+        }
+
         // Audit #1694 : chiffrement des secrets IdP avant persistance.
         foreach (self::SENSITIVE_FIELDS as $field) {
             if (! empty($stored[$field]) && is_string($stored[$field])) {
