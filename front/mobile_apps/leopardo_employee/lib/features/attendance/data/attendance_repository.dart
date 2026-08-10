@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
@@ -51,9 +52,7 @@ class AttendanceRepository {
       );
       return AttendanceLog.fromJson(_dataMap(response.data));
     } catch (e) {
-      if (e is ApiException &&
-          (e.message.toLowerCase().contains('connexion') ||
-              e.message.toLowerCase().contains('internet'))) {
+      if (_isNetworkError(e)) {
         final box =
             await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
         // Règle F-21 « 1er pointage gagne » : un check-in déjà en file pour
@@ -107,9 +106,7 @@ class AttendanceRepository {
       );
       return AttendanceLog.fromJson(_dataMap(response.data));
     } catch (e) {
-      if (e is ApiException &&
-          (e.message.toLowerCase().contains('connexion') ||
-              e.message.toLowerCase().contains('internet'))) {
+      if (_isNetworkError(e)) {
         final box =
             await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
         if (!await _hasQueuedPunchToday(box, 'check-out')) {
@@ -132,6 +129,20 @@ class AttendanceRepository {
       }
       rethrow;
     }
+  }
+
+  /// Vrai pour une erreur réseau (DioException) ou une ApiException de
+  /// connexion — déclenche le mode hors-ligne (file Hive, F-21).
+  bool _isNetworkError(Object error) {
+    if (error is DioException) {
+      return error.type == DioExceptionType.connectionError ||
+          error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.sendTimeout ||
+          error.type == DioExceptionType.receiveTimeout;
+    }
+    return error is ApiException &&
+        (error.message.toLowerCase().contains('connexion') ||
+            error.message.toLowerCase().contains('internet'));
   }
 
   Future<AttendanceLog> updateAttendanceLog({

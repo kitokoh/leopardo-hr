@@ -39,10 +39,15 @@ void main() {
   });
 
   tearDown(() async {
+    // Isolation stricte entre tests (A-1/mobile) : Hive garde les boxes
+    // ouvertes en mémoire ; sans fermeture + deleteFromDisk systématiques,
+    // la boîte `offline_punches` d'un test précédent « fuit » dans le
+    // suivant (compteurs cumulés → faux échecs).
     if (Hive.isBoxOpen('offline_punches')) {
       await Hive.box('offline_punches').close();
       await Hive.deleteBoxFromDisk('offline_punches');
     }
+    await Hive.deleteFromDisk();
     await tempDir.delete(recursive: true);
   });
 
