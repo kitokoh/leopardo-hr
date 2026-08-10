@@ -22,19 +22,12 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-const DEFAULT_BACKEND_API_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 const COOKIE_NAME = 'leopardo_token';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days — matches Sanctum SANCTUM_TOKEN_EXPIRATION default (10080 min)
 const LOGIN_TIMEOUT_MS = 60_000;
 
-function resolveBackendBaseUrl(): string {
-  return (
-    process.env.API_PROXY_TARGET ||
-    process.env.BACKEND_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    DEFAULT_BACKEND_API_URL
-  ).replace(/\/$/, '');
-}
+// resolveBackendBaseUrl importé depuis @/lib/backend-url (audit #1701)
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;

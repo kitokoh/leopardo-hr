@@ -76,7 +76,7 @@ jobs:
       # no cross-job SHA propagation from a `workflow_run` event. This eliminates the
       # untrusted-checkout class entirely (no external SHA to validate).
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload mobile artifact
         if: env.MOBILE_DISTRIBUTE_READY == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ${{ matrix.app.artifact_name }}-${{ github.run_number }}
           path: ${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk

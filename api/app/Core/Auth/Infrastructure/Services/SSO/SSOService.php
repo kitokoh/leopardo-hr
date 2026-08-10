@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
-use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SSOService
 {
+    /**
+     * Champs sensibles chiffrés au repos (audit #1694).
+     *
+     * @var list<string>
+     */
+    private const SENSITIVE_FIELDS = ['certificate', 'client_secret'];
+
     /**
      * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null}
      */
@@ -28,13 +36,24 @@ class SSOService
             ];
         }
 
-        $configData = is_string($row->config) ? json_decode($row->config, true) : (array) $row->config;
+        /** @var array<string, mixed> $configData */
+        $configData = is_string($row->config) ? json_decode((string) $row->config, true) : (array) $row->config;
+
+        // Audit #1694 : déchiffrement des champs sensibles, avec repli
+        // rétrocompatible sur les anciennes valeurs stockées en clair.
+        foreach (self::SENSITIVE_FIELDS as $field) {
+            if (isset($configData[$field]) && is_string($configData[$field])) {
+                $configData[$field] = $this->decryptField($configData[$field]);
+            }
+        }
+
+        $provider = is_string($row->provider) ? $row->provider : '';
 
         return [
             'enabled' => true,
-            'provider' => $row->provider,
+            'provider' => $provider,
             'config' => SSOProviderConfig::fromArray([
-                'provider' => $row->provider,
+                'provider' => $provider,
                 ...$configData,
             ]),
         ];
@@ -50,18 +69,47 @@ class SSOService
             ...$configData,
         ]);
 
-        $existing = DB::table('company_sso_configs')
+        $existingRow = DB::table('company_sso_configs')
             ->where('company_id', $companyId)
-            ->exists();
+            ->first();
 
+        $stored = $config->toArray();
+
+        // Audit #1694 : le client_secret est exclu de toArray() (jamais
+        // renvoyé au client) mais DOIT être persisté — chiffré au repos.
+        if ($config->clientSecret !== null) {
+            $stored['client_secret'] = $config->clientSecret;
+        } elseif ($existingRow !== null) {
+            // Mise à jour sans client_secret : préserver le secret déjà
+            // stocké (une réécriture de config ne doit pas le perdre).
+            /** @var array<string, mixed> $existingData */
+            $existingData = is_string($existingRow->config)
+                ? json_decode((string) $existingRow->config, true)
+                : (array) $existingRow->config;
+            if (isset($existingData['client_secret']) && is_string($existingData['client_secret'])) {
+                $stored['client_secret'] = $this->decryptField($existingData['client_secret']);
+            }
+        }
+
+        // Audit #1694 : chiffrement des secrets IdP avant persistance.
+        foreach (self::SENSITIVE_FIELDS as $field) {
+            if (! empty($stored[$field]) && is_string($stored[$field])) {
+                $stored[$field] = Crypt::encryptString($stored[$field]);
+            }
+        }
+
+        // Audit #1694 : la validation des assertions SAML/OIDC n'est pas
+        // encore implémentée — ne JAMAIS marquer la config comme active
+        // (fausse garantie de sécurité). La config est conservée (chiffrée)
+        // pour permettre l'implémentation ultérieure.
         $payload = [
             'provider' => $provider,
-            'config' => json_encode($config->toArray()),
-            'is_active' => true,
+            'config' => json_encode($stored),
+            'is_active' => false,
             'updated_at' => now(),
         ];
 
-        if ($existing) {
+        if ($existingRow !== null) {
             DB::table('company_sso_configs')
                 ->where('company_id', $companyId)
                 ->update($payload);
@@ -73,7 +121,7 @@ class SSOService
             ]);
         }
 
-        Log::info('SSO configured', [
+        Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
             'company_id' => $companyId,
             'provider' => $provider,
         ]);
@@ -101,17 +149,12 @@ class SSOService
             throw new \RuntimeException('SAML SSO not configured for this company');
         }
 
-        // Stub: in production, decode and validate SAML assertion
-        // using the company's IdP certificate
-        Log::info('SAML response received', [
-            'company_id' => $companyId,
-            'response_length' => strlen($samlResponse),
-        ]);
-
-        return [
-            'user_email' => '',
-            'attributes' => [],
-        ];
+        // Audit #1694 : l'ancien stub retournait un succès vide sans valider
+        // l'assertion — fausse garantie de sécurité. Refus explicite tant
+        // que la validation (OneLogin/php-saml) n'est pas implémentée.
+        throw new SSOValidationNotImplementedException(
+            'La validation des assertions SAML n\'est pas encore implémentée — connexion refusée.'
+        );
     }
 
     /**
@@ -126,15 +169,12 @@ class SSOService
             throw new \RuntimeException('OIDC SSO not configured for this company');
         }
 
-        // Stub: in production, validate ID token, exchange code for tokens
-        Log::info('OIDC callback received', [
-            'company_id' => $companyId,
-        ]);
-
-        return [
-            'user_email' => '',
-            'claims' => [],
-        ];
+        // Audit #1694 : idem SAML — refus explicite (501) tant que la
+        // validation de l'ID token / l'échange de code ne sont pas
+        // implémentés.
+        throw new SSOValidationNotImplementedException(
+            'La validation OIDC n\'est pas encore implémentée — connexion refusée.'
+        );
     }
 
     /**
@@ -152,12 +192,19 @@ class SSOService
             [
                 'provider' => 'oidc',
                 'name' => 'OpenID Connect',
-                'description' => 'OAuth 2.0 + OpenID Connect — compatible Azure AD, Keycloak, Auth0, Google',
-                'protocols' => ['OAuth 2.0', 'OpenID Connect 1.0'],
+                'description' => 'OpenID Connect 1.0 — compatible Google, Microsoft Entra, Auth0, Keycloak',
+                'protocols' => ['OIDC 1.0'],
             ],
         ];
     }
+
+    private function decryptField(string $value): string
+    {
+        try {
+            return Crypt::decryptString($value);
+        } catch (Throwable) {
+            // Valeur legacy stockée en clair avant l'audit #1694.
+            return $value;
+        }
+    }
 }
-
-
-

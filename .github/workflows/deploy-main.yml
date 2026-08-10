@@ -86,7 +86,7 @@ jobs:
 
       - name: Checkout deployment SHA
         if: steps.context.outputs.should_deploy == 'pending-validation'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ steps.context.outputs.sha }}
           fetch-depth: 2
@@ -136,7 +136,7 @@ jobs:
       - name: Verify required workflow conclusions for deployment SHA
         if: steps.context.outputs.should_deploy == 'pending-validation'
         id: workflow_gate
-        uses: actions/github-script@v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             if (`${{ github.event_name }}` === 'workflow_dispatch') {
@@ -177,6 +177,22 @@ jobs:
             let shouldDeploy = testsConclusion === 'success';
             if (webChanged) {
               shouldDeploy = shouldDeploy && webConclusion === 'success';
+            }
+
+            // Audit #1705 : race « stale SHA » — si ce SHA n'est plus la tête
+            // de main (un push plus récent est arrivé pendant que nos tests
+            // tournaient), ne PAS déployer : un CI lent ne doit jamais
+            // écraser un déploiement plus récent. Re-vérification de la tête
+            // de main au moment du gate, pas au moment du trigger.
+            const { data: mainBranch } = await github.rest.repos.getBranch({
+              owner,
+              repo,
+              branch: 'main',
+            });
+            const mainHead = mainBranch.commit.sha;
+            if (mainHead !== sha) {
+              core.info(`Stale SHA: ${sha} is not main's tip (${mainHead}) — skipping deploy.`);
+              shouldDeploy = false;
             }
 
             core.setOutput('tests_conclusion', testsConclusion ?? 'missing');

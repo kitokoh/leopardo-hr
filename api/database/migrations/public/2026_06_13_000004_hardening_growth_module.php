@@ -73,18 +73,13 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('partner_payout_requests');
-
-        Schema::table('partner_clicks', function (Blueprint $table) {
-            $table->dropIndex(['partner_link_id', 'clicked_at']);
-        });
-
-        Schema::table('commissions', function (Blueprint $table) {
-            $table->dropColumn(['net_amount', 'exchange_rate', 'original_amount', 'original_currency']);
-        });
-
-        Schema::table('partners', function (Blueprint $table) {
-            $table->dropColumn(['application_status', 'payment_details', 'tax_rate', 'payout_threshold', 'payout_cycle']);
-        });
+        // Audit #1710: ce rollback supprimerait des colonnes porteuses de données
+        // (payment_details, tax_rate, commissions, partner_payout_requests).
+        // Refuser explicitement plutôt que détruire silencieusement.
+        throw new RuntimeException(
+            'Rollback impossible : cette migration porte des données métier '
+            .'(commissions, partner_payout_requests, champs de paiement). '
+            .'Effectuer une migration additive inverse manuelle.'
+        );
     }
 };
