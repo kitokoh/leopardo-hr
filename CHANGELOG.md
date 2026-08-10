@@ -5,6 +5,23 @@
 
 ## [Unreleased]
 
+### Security
+- **audit 2026-08-10 (#1694–#1712) — complétions revue :** purge ponctuelle du miroir Hive legacy du JWT au démarrage des 4 apps mobiles (#1700) ; login démo `platform_admin` gaté `kDebugMode` (aligné employee/hr/manager, #1697) ; `client_secret` SSO préservé lors d'une réécriture de config sans secret (#1694) ; URLs backend entièrement centralisées dans `src/lib/backend-url.ts` (checkout, lead-capture, signup, verify, careers, api-client, login, kiosk) (#1701).
+- **audit 2026-08-10 (#1694–#1712) — complétions revue :** `per_page` plafonné à 100 sur Growth/Cameras/Notification/CabinetShare + contrat de réponse `data` restauré (liste simple + `meta`, jamais de paginator brut) (#1703) ; `AccrueLeaveBalances` : une transaction par chunk (savepoints par employé) au lieu d'une par employé (#1703) ; follow-up exclusion iCloud iOS documenté (roadmap Edge) (#1700).
+
+
+### Security
+- **audit 2026-08-10 (#1694–#1712).** Durcissement sécurité + qualité : SSO SAML/OIDC ne marque plus la config active (validation non implémentée) et chiffre `certificate`/`client_secret` au repos ; callbacks 501 explicites ; uploads contraints (SVG retiré du logo, allow-lists MIME Cabinet/Notification, MIME détecté serveur) ; `POST /edge/heartbeat` sans écriture DB ; `DISABLE_DEMO_SEEDING=true` en production + mot de passe démo centralisé (`DEMO_PASSWORD`) ; login démo mobile gaté `kDebugMode` ; `SENTRY_TRACES_SAMPLE_RATE` 0.1 ; auth web cookie httpOnly effective (rewrite `/api/*` retiré de vercel.json, plus de token en localStorage) ; XSS kiosk éliminé (échappement + `safeImageUrl`) ; mobile : JWT hors Hive, `edge_token` en `flutter_secure_storage`, backups Android désactivés ; CI : 69 actions pinnées SHA, secrets SMTP restreints, dependency-review bloquant.
+
+### Fixed
+- **fix(ci): mobile Android builds sur canal stable (audit #1715).** `permission_handler` pinné en `^12.0.1` (implémentation Android 13.0.0, compileSdk 35) au lieu de `^13.0.0` (permission_handler_android 14 exige compileSdk 37, indisponible sur le canal stable Google) ; `compileSdk` de l'app employee revient à `flutter.compileSdkVersion` ; `setup-flutter-android` installe `platforms;android-36` + `build-tools;36.0.0` (canal stable, action pinnée #1706) — les jobs `Analyze leopardo_*` et `Build Debug` redeviennent verts.
+- **audit 2026-08-10 (bugs réels).** Numéro de facture jamais enregistré (`GenerateMonthlyInvoices` écrivait `invoice_number` non-fillable → `number`) ; null-derefs `Carbon|null` dans `AutoCloseAttendanceCommand` ; eager-load `company` inexistant dans `CheckTrialExpiring` (relation ajoutée) ; file de sync mobile bloquée à vie (encodeur JSON maison → `jsonEncode` + `FormatException` gérée) ; workers/scheduler Render ne démarraient jamais (`ENTRYPOINT` ignorait `dockerCommand`) ; `edge/docker-compose.yml` + `front/web/Dockerfile.edge` manquant (stack Edge non buildable) ; index FK `salary_advances` manquants (PostgreSQL).
+
+### Added
+- **audit 2026-08-10.** Ratchet PHPStan étendu à `phpstan-strict-baseline.neon` (rejet de toute nouvelle entrée) ; pagination sur Growth/Cameras/DeviceToken/CabinetShare ; `AccrueLeaveBalances` en `chunkById` ; `down()` des migrations porteuses de données refusent le rollback ; gate de déploiement anti « stale SHA » ; `.dockerignore` api/ + racine ; concurrency groups sur 14 workflows ; `release.yml` valide le tag `vX.Y.Z`.
+
+
+
 ### Fixed
 - **docs(process): matrice de réconciliation des PR par spec (A-3, #1681).** `docs/GESTION_PROJET/MATRICE_PR_SPEC_A3.md` : pour chaque spec S-1..S-7 + A-1..A-4, PR retenue vs PR redondantes fermées (commentaire de référence), raison du choix, branches à supprimer après fusion.
 - **fix(ci): ratchet coverage backend 60 → 65 % (A-4, #1682).** `BACKEND_COVERAGE_MIN` (variable repo + défauts tests.yml/coverage-gate.yml) passé de 40/60 à **65** — coverage global mesuré ≥ 68 % (pcov, suite complète, 2026-08-10). Gate « Backend Coverage (PHP 8.4 + PostgreSQL 16) » désormais bloquante à 65 %.

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -107,6 +108,12 @@ Future<DemoUser?> showDemoUserBottomSheet(
   BuildContext context, {
   Set<String>? allowedRoles,
 }) {
+  // Audit #1697 : l'accès démo (comptes à mot de passe connu) ne doit
+  // exister qu'en debug — jamais dans les binaires de production.
+  if (!kDebugMode) {
+    return Future.value(null);
+  }
+
   final companies =
       allowedRoles == null
           ? demoCompanies

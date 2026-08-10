@@ -45,7 +45,7 @@ use Illuminate\Support\Facades\Log;
 class EdgeController extends Controller
 {
     public function __construct(
-        private readonly SyncEngineService  $syncEngine,
+        private readonly SyncEngineService $syncEngine,
         private readonly EdgeLicenseService $licenseService,
     ) {}
 
@@ -57,7 +57,7 @@ class EdgeController extends Controller
     public function installScript(): Response
     {
         $cloudApiUrl = config('app.url');
-        $version     = config('app.version', '1.0.0');
+        $version = config('app.version', '1.0.0');
 
         $script = <<<BASH
         #!/usr/bin/env bash
@@ -127,9 +127,9 @@ class EdgeController extends Controller
         $script = preg_replace('/^        /m', '', $script) ?? $script;
 
         return response($script, 200, [
-            'Content-Type'           => 'text/x-shellscript; charset=utf-8',
-            'Content-Disposition'    => 'inline; filename="leopardo-edge-install.sh"',
-            'Cache-Control'          => 'no-cache, no-store',
+            'Content-Type' => 'text/x-shellscript; charset=utf-8',
+            'Content-Disposition' => 'inline; filename="leopardo-edge-install.sh"',
+            'Cache-Control' => 'no-cache, no-store',
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }
@@ -137,16 +137,16 @@ class EdgeController extends Controller
     /** GET /edge/download/docker-compose.yml */
     public function downloadDockerCompose(): Response
     {
-        $version     = config('app.version', '1.0.0');
+        $version = config('app.version', '1.0.0');
         $cloudApiUrl = config('app.url');
 
         $filePath = base_path('edge/docker-compose.yml');
 
         if (file_exists($filePath)) {
             return response((string) file_get_contents($filePath), 200, [
-                'Content-Type'        => 'application/yaml; charset=utf-8',
+                'Content-Type' => 'application/yaml; charset=utf-8',
                 'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
-                'Cache-Control'       => 'public, max-age=300',
+                'Cache-Control' => 'public, max-age=300',
             ]);
         }
 
@@ -167,9 +167,9 @@ class EdgeController extends Controller
         $yaml = preg_replace('/^        /m', '', $yaml) ?? $yaml;
 
         return response($yaml, 200, [
-            'Content-Type'        => 'application/yaml; charset=utf-8',
+            'Content-Type' => 'application/yaml; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
-            'Cache-Control'       => 'public, max-age=300',
+            'Cache-Control' => 'public, max-age=300',
         ]);
     }
 
@@ -192,9 +192,9 @@ class EdgeController extends Controller
         $env = preg_replace('/^        /m', '', $env) ?? $env;
 
         return response($env, 200, [
-            'Content-Type'        => 'text/plain; charset=utf-8',
+            'Content-Type' => 'text/plain; charset=utf-8',
             'Content-Disposition' => 'attachment; filename=".env.edge.example"',
-            'Cache-Control'       => 'public, max-age=300',
+            'Cache-Control' => 'public, max-age=300',
         ]);
     }
 
@@ -222,8 +222,8 @@ class EdgeController extends Controller
         $pem = str_replace('\\n', "\n", $pem);
 
         return response($pem, 200, [
-            'Content-Type'   => 'application/x-pem-file',
-            'Cache-Control'  => 'public, max-age=3600',
+            'Content-Type' => 'application/x-pem-file',
+            'Cache-Control' => 'public, max-age=3600',
             'X-Edge-Version' => config('app.version', '1.0.0'),
         ]);
     }
@@ -242,9 +242,9 @@ class EdgeController extends Controller
     public function health(): JsonResponse
     {
         return response()->json([
-            'edge'   => true,
+            'edge' => true,
             'status' => 'ok',
-            'time'   => Carbon::now()->toIso8601String(),
+            'time' => Carbon::now()->toIso8601String(),
         ]);
     }
 
@@ -252,30 +252,31 @@ class EdgeController extends Controller
     // Heartbeat Edge → Cloud
     // =========================================================================
 
-    /** POST /edge/heartbeat */
+    /**
+     * POST /edge/heartbeat
+     *
+     * Audit #1696 : endpoint public (throttle seulement), aucun appelant dans
+     * le repo (ni edge/, ni openapi.yaml). L'ancienne implémentation écrivait
+     * en base avec des valeurs contrôlées par l'attaquant, sur des colonnes
+     * (`node_id`, `pending_count`, `version`) absentes du schéma canonique
+     * `edge_nodes` — 500 non géré ou fausses métriques. Le heartbeat
+     * authentifié est `POST /api/v1/edge-node/{nodeId}/heartbeat`
+     * (EdgeNodeController, token haché). Ce endpoint legacy ne modifie plus
+     * aucun état : réponse purement informative.
+     */
     public function heartbeat(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'node_id'       => ['required', 'string', 'max:64'],
+            'node_id' => ['required', 'string', 'max:64'],
             'pending_count' => ['integer', 'min:0'],
-            'version'       => ['string', 'max:32'],
-            'ip_address'    => ['nullable', 'ip'],
+            'version' => ['string', 'max:32'],
+            'ip_address' => ['nullable', 'ip'],
         ]);
 
-        DB::table('edge_nodes')
-            ->where('node_id', $validated['node_id'])
-            ->update([
-                'status'        => 'online',
-                'last_seen_at'  => Carbon::now(),
-                'pending_count' => $validated['pending_count'] ?? 0,
-                'version'       => $validated['version'] ?? null,
-                'ip_address'    => $validated['ip_address'] ?? $request->ip(),
-            ]);
-
-        Log::info('[Edge] Heartbeat reçu', ['node_id' => $validated['node_id']]);
+        Log::info('[Edge] Heartbeat received (legacy, no-op)', ['node_id' => $validated['node_id']]);
 
         return response()->json([
-            'status'      => 'ok',
+            'status' => 'ok',
             'server_time' => Carbon::now()->toIso8601String(),
         ]);
     }
