@@ -8,6 +8,49 @@ import 'package:leopardo_employee/features/attendance/data/attendance_repository
 
 import '../../helpers/mobile_test_harness.dart';
 
+/// Intercepteur qui enregistre les requêtes et répond avec un JSON d'log.
+class _AttendanceInterceptor extends Interceptor {
+  _AttendanceInterceptor({this.failWithNetworkError = false});
+
+  final bool failWithNetworkError;
+  final requests = <RequestOptions>[];
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    requests.add(options);
+    if (failWithNetworkError) {
+      handler.reject(
+        DioException(
+          requestOptions: options,
+          type: DioExceptionType.connectionError,
+          message: 'connection refused',
+        ),
+      );
+      return;
+    }
+    handler.resolve(
+      Response(
+        requestOptions: options,
+        statusCode: 200,
+        data: {
+          'data': {
+            'id': 42,
+            'employee_id': 7,
+            'date': '2026-08-09',
+            'check_in': '2026-08-09T08:02:00Z',
+            'check_out': '2026-08-09T16:03:00Z',
+            'status': 'present',
+            'work_type': 'normal',
+            'punch_note': null,
+          },
+        },
+      ),
+    );
+  }
+}
+Map<String, dynamic> _payloadOf(RequestOptions options) =>
+    (options.data as Map).cast<String, dynamic>();
+
 /// Tests critiques (issue #1560) — repository pointage : check-in / check-out,
 /// payload GPS + note, mode hors-ligne (file Hive), corrections.
 void main() {
@@ -31,50 +74,6 @@ void main() {
     preferences = FakeAppPreferences();
     client = ApiClient(storage, preferences);
   });
-
-  /// Intercepteur qui enregistre les requêtes et répond avec un JSON d'log.
-  class _AttendanceInterceptor extends Interceptor {
-    _AttendanceInterceptor({this.failWithNetworkError = false});
-
-    final bool failWithNetworkError;
-    final requests = <RequestOptions>[];
-
-    @override
-    void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-      requests.add(options);
-      if (failWithNetworkError) {
-        handler.reject(
-          DioException(
-            requestOptions: options,
-            type: DioExceptionType.connectionError,
-            message: 'connection refused',
-          ),
-        );
-        return;
-      }
-      handler.resolve(
-        Response(
-          requestOptions: options,
-          statusCode: 200,
-          data: {
-            'data': {
-              'id': 42,
-              'employee_id': 7,
-              'date': '2026-08-09',
-              'check_in': '2026-08-09T08:02:00Z',
-              'check_out': '2026-08-09T16:03:00Z',
-              'status': 'present',
-              'work_type': 'normal',
-              'punch_note': null,
-            },
-          },
-        ),
-      );
-    }
-  }
-
-  Map<String, dynamic> _payloadOf(RequestOptions options) =>
-      (options.data as Map).cast<String, dynamic>();
 
   test('checkIn envoie work_type + device_timezone et parse la réponse', () async {
     final interceptor = _AttendanceInterceptor();
