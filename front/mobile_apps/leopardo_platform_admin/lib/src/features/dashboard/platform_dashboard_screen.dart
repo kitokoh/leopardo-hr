@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
@@ -78,6 +79,21 @@ class PlatformDashboardScreen extends ConsumerWidget {
                       value: '${data.mrr}',
                       label: 'MRR',
                       color: AppColors.success,
+                    ),
+                  ],
+                ),
+                // S-6 (#1666) : adoption des widgets partagés (LeopardoBadge)
+                // — statut plateforme lisible d'un coup d'œil.
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    LeopardoBadge.present(label: '${data.activeCompanies} actives'),
+                    LeopardoBadge.onLeave(label: '${data.trialCompanies} essais'),
+                    LeopardoBadge(
+                      label: '${data.totalCompanies} totales',
+                      color: AppColors.rh,
                     ),
                   ],
                 ),

@@ -55,7 +55,8 @@
     "activate_invitation": "تفعيل دعوتي",
     "personal_account_link": "حساب شخصي",
     "activate_manager_access": "تفعيل صلاحية المدير",
-    "try_demo_account": "تجربة حساب تجريبي"
+    "try_demo_account": "تجربة حساب تجريبي",
+    "two_factor_required": "رمز التحقق الثنائي مطلوب."
   },
   "common": {
     "language": {
@@ -244,6 +245,11 @@
     },
     "confirm": {
       "delete": "هل انت متأكد من رغبتك في حذف :name؟"
+    },
+    "errors": {
+      "name_required": "الاسم الكامل مطلوب.",
+      "password_required": "كلمة المرور مطلوبة.",
+      "fix_fields": "يرجى تصحيح الحقول المميزة"
     }
   },
   "dashboard": {
