@@ -12,6 +12,8 @@ use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Mockery\Expectation;
+use Mockery\MockInterface;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -186,11 +188,11 @@ class PayrollHardeningTest extends TestCase
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
 
-        /** @var PayrollCycleService&\Mockery\MockInterface $service */
+        /** @var PayrollCycleService&MockInterface $service */
         $service = Mockery::mock(PayrollCycleService::class)->makePartial();
-        $service->shouldReceive('getEmployeeBalance')
-            ->once()
-            ->andThrow(new \RuntimeException('paie indisponible (test)'));
+        /** @var Expectation $expectation */
+        $expectation = $service->shouldReceive('getEmployeeBalance');
+        $expectation->once()->andThrow(new \RuntimeException('paie indisponible (test)'));
 
         $this->expectException(PayrollBalanceUnavailableException::class);
         $this->expectExceptionMessage('paie indisponible (test)');
