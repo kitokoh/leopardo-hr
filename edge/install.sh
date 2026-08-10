@@ -50,7 +50,14 @@ mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
 # Download docker-compose from cloud
+# Audit #1711 : le compose vient du cloud contrôlé par Leopardo — le script
+# d'installation l'exécute en root. Vérifier son intégrité (hash fourni par
+# Leopardo) si le nœud est installé hors supervision.
 curl -fsSL "$CLOUD_URL/edge/download/docker-compose.yml" -o docker-compose.yml
+if [ ! -s docker-compose.yml ]; then
+    echo "Echec du telechargement du docker-compose depuis $CLOUD_URL" >&2
+    exit 1
+fi
 
 # Generate .env
 APP_KEY=$(openssl rand -base64 32)
@@ -61,6 +68,9 @@ EDGE_APP_KEY=base64:$APP_KEY
 CLOUD_API_URL=$CLOUD_URL
 SYNC_INTERVAL=$SYNC_INTERVAL
 FORCE_OFFLINE=false
+
+# Audit #1711 : le fichier contient le bearer EDGE_TOKEN — restreindre les permissions (root uniquement).
+chmod 600 .env
 EOF
 
 # Download license public key

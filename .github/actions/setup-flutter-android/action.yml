@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup Java ${{ inputs.java-version }}
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
       with:
         distribution: temurin
         java-version: ${{ inputs.java-version }}
@@ -34,16 +34,24 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
         cache: true
 
-    # Les apps mobiles déclarent compileSdk = 37 (AGP récent) — le runner
-    # ubuntu-latest ne préinstalle pas platforms;android-37 : sans cette étape
-    # Gradle échoue avec "Failed to find Platform SDK with path:
-    # platforms;android-37" (mobile-apps-ci + mobile-distribute, cf. #1560).
-    - name: Install Android SDK platform 37
+    # Les apps mobiles compilent en compileSdk 36 (flutter.compileSdkVersion,
+    # permission_handler pinné en ^12 — audit #1715). La plateforme
+    # platforms;android-37 n'existe PAS sur le canal stable de Google
+    # (canal preview uniquement, répertoire android-37.0 non reconnu par AGP) :
+    # on installe donc le SDK stable android-36 + build-tools 36.
+    # android-actions/setup-android (pinné, #1706) pose ANDROID_HOME/
+    # ANDROID_SDK_ROOT dans GITHUB_ENV et accepte les licences de façon fiable.
+    - name: Setup Android SDK (platform 36)
+      uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+      with:
+        packages: 'tools platform-tools platforms;android-36 build-tools;36.0.0'
+
+    - name: Verify Android SDK platform 36
       shell: bash
       run: |
-        if command -v sdkmanager >/dev/null 2>&1; then
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platforms;android-37" "build-tools;37.0.0" >/dev/null 2>&1 || true
+        echo "ANDROID_HOME=${ANDROID_HOME:-<unset>}"
+        if [[ -d "${ANDROID_HOME}/platforms/android-36" ]]; then
+          echo "platforms;android-36 OK (${ANDROID_HOME}/platforms/android-36)."
         else
-          echo "::warning::sdkmanager introuvable — plateforme android-37 non installée (builds Android pourraient échouer)."
+          echo "::warning::platforms;android-36 absent (ANDROID_HOME=${ANDROID_HOME}) — builds Android peuvent échouer."
         fi

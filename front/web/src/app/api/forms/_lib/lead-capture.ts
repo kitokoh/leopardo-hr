@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
 type MarketingLeadType = 'signup' | 'demo_request' | 'newsletter' | 'contact';
 
@@ -121,7 +122,8 @@ function createLeadId(type: MarketingLeadType): string {
   return `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL || 'https://gestionemployerbackend.onrender.com';
+const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL ||
+  resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 const LEAD_PERSIST_TIMEOUT_MS = 2500;
 
 async function persistLead(

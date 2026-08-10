@@ -21,6 +21,7 @@ import {
   Cpu,
   ArrowRight,
 } from 'lucide-react';
+import { DEFAULT_BACKEND_API_URL } from '@/lib/backend-url';
 
 type Integration = {
   icon: React.ReactNode;
@@ -217,7 +218,7 @@ export default function IntegrationsPage() {
           >
             <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-full px-6 py-3 text-slate-600 dark:text-slate-400">
               <span className="text-sm">{data.docsNote}</span>
-              <a href="https://gestionemployerbackend.onrender.com/docs" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
+              <a href={`${DEFAULT_BACKEND_API_URL.replace(/\/api\/v1$/, "")}/docs`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
                 /docs <ArrowRight className="w-3 h-3" />
               </a>
             </div>

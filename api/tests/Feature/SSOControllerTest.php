@@ -137,5 +137,86 @@ class SSOControllerTest extends TestCase
 
         $response->assertStatus(400);
     }
-}
+    // ── Audit #1694 ────────────────────────────────────────────────────────
 
+    public function test_configure_sso_encrypts_sensitive_fields_at_rest(): void
+    {
+        $this->actingAs($this->manager, 'sanctum')
+            ->postJson('/api/v1/sso/configure', [
+                'provider' => 'oidc',
+                'entity_id' => 'https://idp.example.com',
+                'sso_url' => 'https://idp.example.com/oauth2/authorize',
+                'client_id' => 'client-123',
+                'client_secret' => 'super-secret-value',
+            ])
+            ->assertOk();
+
+        $row = \Illuminate\Support\Facades\DB::table('company_sso_configs')
+            ->where('company_id', $this->company->id)
+            ->first();
+
+        $this->assertNotNull($row);
+        $config = json_decode((string) $row->config, true);
+
+        // Le secret ne doit jamais apparaître en clair au repos.
+        $this->assertIsString($config['client_secret']);
+        $this->assertStringNotContainsString('super-secret-value', (string) $row->config);
+        $this->assertStringContainsString('eyJpdiI6', (string) $row->config, 'la valeur doit être chiffrée (format Laravel Crypt)');
+
+        // La réponse configure ne doit pas renvoyer le secret.
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->postJson('/api/v1/sso/configure', [
+                'provider' => 'oidc',
+                'entity_id' => 'https://idp.example.com',
+                'sso_url' => 'https://idp.example.com/oauth2/authorize',
+                'client_id' => 'client-123',
+                'client_secret' => 'another-secret',
+            ])
+            ->assertOk();
+
+        $response->assertJsonMissing(['client_secret' => 'another-secret']);
+        $this->assertArrayNotHasKey('client_secret', $response->json('data'));
+    }
+
+    public function test_configured_sso_remains_inactive_until_validation_implemented(): void
+    {
+        $this->actingAs($this->manager, 'sanctum')
+            ->postJson('/api/v1/sso/configure', [
+                'provider' => 'saml',
+                'entity_id' => 'https://idp.example.com/metadata',
+                'sso_url' => 'https://idp.example.com/sso',
+                'certificate' => 'MIIC...base64cert...==',
+            ])
+            ->assertOk();
+
+        // Audit #1694 : jamais marqué actif tant que la validation n'existe pas.
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->getJson('/api/v1/sso/status')
+            ->assertOk();
+
+        $this->assertFalse($response->json('data.enabled'));
+    }
+
+    public function test_saml_callback_returns_501_until_validation_is_implemented(): void
+    {
+        \Illuminate\Support\Facades\DB::table('company_sso_configs')->insert([
+            'company_id' => $this->company->id,
+            'provider' => 'saml',
+            'config' => json_encode([
+                'provider' => 'saml',
+                'entity_id' => 'https://idp.example.com/metadata',
+                'sso_url' => 'https://idp.example.com/sso',
+            ]),
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->postJson("/api/v1/sso/saml/{$this->company->id}/callback", [
+            'SAMLResponse' => base64_encode('<samlp:Response>fake</samlp:Response>'),
+        ]);
+
+        // Ne jamais renvoyer un succès vide : 501 explicite.
+        $response->assertStatus(501);
+    }
+}

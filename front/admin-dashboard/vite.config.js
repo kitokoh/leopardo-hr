@@ -22,6 +22,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: true,
+    // Audit #1701 : pas de sourcemaps en production (exposition du code
+    // source + fuite de la logique métier) — dev uniquement.
+    sourcemap: process.env.NODE_ENV !== 'production',
   },
 })

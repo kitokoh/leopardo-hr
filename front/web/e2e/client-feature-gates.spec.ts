@@ -42,8 +42,21 @@ async function seedSession(page: Page, overrides: Record<string, unknown> = {}) 
         },
   };
 
+  // Audit #1699 : le token vit dans le cookie httpOnly `leopardo_token` —
+  // l'app n'attache plus de Bearer depuis localStorage. Le layout dashboard
+  // appelle /notifications au mount : sans mock, la requête part vers le
+  // backend réel sans cookie → 401 → redirection /auth/login (course flaky,
+  // cf. manager-workday-smoke qui mocke déjà notifications**).
+  await page.route('**/api/v1/notifications**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
+
   await page.evaluate((user) => {
-    window.localStorage.setItem('auth_token', 'feature-gate-token');
+    window.localStorage.removeItem('auth_token');
     window.localStorage.setItem('auth_user', JSON.stringify(user));
   }, userToStore);
 }
