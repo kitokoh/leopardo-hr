@@ -233,4 +233,101 @@ class BiometricPurgeExpiredTest extends TestCase
         $cmd = $this->artisan('biometric:purge-expired', ['--company' => '00000000-0000-0000-0000-000000000000']);
         $cmd->assertExitCode(1);
     }
+
+    public function test_active_employee_with_stale_contract_end_is_never_purged(): void
+    {
+        // Audit #1661 (revue) : un employé encore en poste (status=active)
+        // avec un contract_end obsolète ne doit PAS être purgé — ce serait
+        // le priver de son accès biométrique (renouvellement sur place,
+        // réembauche, saisie en retard).
+        /** @var Company $company */
+        $company = Company::factory()->create();
+
+        /** @var Employee $active */
+        $active = Employee::factory()->create([
+            'company_id' => $company->id,
+            'status' => 'active',
+            'contract_end' => now()->subMonths(30)->format('Y-m-d'),
+            'biometric_face_enabled' => true,
+            'biometric_face_reference_path' => 'biometrics/faces/active.jpg',
+            'biometric_fingerprint_enabled' => true,
+            'biometric_fingerprint_reference_path' => 'biometrics/fp/active.jpg',
+            'biometric_consent_at' => now()->subMonths(30),
+        ]);
+
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
+        $cmd->assertExitCode(0);
+        $cmd->run();
+
+        /** @var Employee|null $fresh */
+        $fresh = $active->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('biometrics/faces/active.jpg', $fresh->biometric_face_reference_path);
+        $this->assertSame('biometrics/fp/active.jpg', $fresh->biometric_fingerprint_reference_path);
+        $this->assertTrue((bool) $fresh->biometric_face_enabled);
+        $this->assertTrue((bool) $fresh->biometric_fingerprint_enabled);
+        Storage::disk('local')->assertExists('biometrics/faces/active.jpg');
+    }
+
+    public function test_invalid_months_option_returns_failure_without_purging(): void
+    {
+        // Audit #1661 (revue) : une valeur invalide (0, négatif, texte) doit
+        // être REFUSÉE — pas coercée en 1 mois (purge massive silencieuse).
+        /** @var Company $company */
+        $company = Company::factory()->create();
+
+        /** @var Employee $expired */
+        $expired = Employee::factory()->create([
+            'company_id' => $company->id,
+            'status' => 'archived',
+            'contract_end' => now()->subMonths(6)->format('Y-m-d'),
+            'biometric_face_reference_path' => 'biometrics/faces/kept.jpg',
+            'biometric_consent_at' => now()->subMonths(6),
+        ]);
+
+        foreach (['0', '-1', 'abc', '24.5'] as $invalid) {
+            /** @var PendingCommand $cmd */
+            $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id, '--months' => $invalid]);
+            $cmd->assertExitCode(1);
+            $cmd->run();
+        }
+
+        $this->assertSame('biometrics/faces/kept.jpg', $expired->fresh()->biometric_face_reference_path);
+        Storage::disk('local')->assertExists('biometrics/faces/kept.jpg');
+    }
+
+    public function test_unsafe_paths_outside_biometrics_are_never_deleted(): void
+    {
+        // Audit #1661 (revue) : le chemin d'empreinte peut être contrôlé par
+        // le client (BiometricEnrollmentService) — seuls les chemins serveur
+        // sous `biometrics/` sont supprimables ; un path traversal ou un
+        // chemin arbitraire doit être ignoré sans erreur.
+        Storage::disk('local')->put('biometrics/faces/legit.jpg', 'x');
+        Storage::disk('local')->put('docs/secrets/env.bak', 'y');
+
+        /** @var Company $company */
+        $company = Company::factory()->create();
+
+        /** @var Employee $expired */
+        $expired = Employee::factory()->create([
+            'company_id' => $company->id,
+            'status' => 'archived',
+            'contract_end' => now()->subMonths(30)->format('Y-m-d'),
+            'biometric_face_reference_path' => 'biometrics/faces/legit.jpg',
+            'biometric_fingerprint_reference_path' => 'docs/secrets/env.bak',
+            'biometric_consent_at' => now()->subMonths(30),
+        ]);
+
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('biometric:purge-expired', ['--company' => $company->id]);
+        $cmd->assertExitCode(0);
+        $cmd->run();
+
+        // La référence hors périmètre est nullifiée en base (elle ne pointe
+        // plus vers un template) mais le fichier arbitraire n'est PAS supprimé.
+        $this->assertNull($expired->fresh()->biometric_fingerprint_reference_path);
+        Storage::disk('local')->assertMissing('biometrics/faces/legit.jpg');
+        Storage::disk('local')->assertExists('docs/secrets/env.bak');
+    }
 }
