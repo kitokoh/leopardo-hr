@@ -84,23 +84,31 @@ jobs:
       url: ${{ vars.STAGING_API_URL }}
 
     steps:
-      - name: Verify staging environment is configured
+      - name: Check staging environment is configured
+        id: check
         shell: bash
         env:
           STAGING_API_URL: ${{ vars.STAGING_API_URL }}
           RENDER_STAGING_DEPLOY_HOOK_URL: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL }}
         run: |
           set -euo pipefail
-          if [[ -z "${STAGING_API_URL}" ]]; then
-            echo "::error::STAGING_API_URL is not set. Refusing to deploy: without it, this workflow would target the production URL (issue #1485). Configure a real staging environment first."
-            exit 1
-          fi
-          if [[ -z "${RENDER_STAGING_DEPLOY_HOOK_URL}" ]]; then
-            echo "::error::RENDER_STAGING_DEPLOY_HOOK_URL is not set. The production deploy hook is NOT used as a fallback anymore (issue #1485)."
-            exit 1
+          # Issue #1485 : un vrai environnement staging n'existe pas encore
+          # (pas d'app Render séparée, pas de branche staging). On REFUSE
+          # toujours de cibler l'URL de production, mais on saute proprement
+          # (même convention que database-backup.yml : "saute proprement si
+          # les secrets ne sont pas configurés") au lieu de faire échouer
+          # main à chaque push. Configurer un staging réel (app Render +
+          # vars.STAGING_API_URL + secrets.RENDER_STAGING_DEPLOY_HOOK_URL)
+          # réactive ce job sans autre changement.
+          if [[ -z "${STAGING_API_URL}" || -z "${RENDER_STAGING_DEPLOY_HOOK_URL}" ]]; then
+            echo "::warning::Staging non configuré (issue #1485) : STAGING_API_URL / RENDER_STAGING_DEPLOY_HOOK_URL absents. Déploiement staging ignoré — la production n'est jamais utilisée comme cible."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Trigger Render staging deploy
+        if: steps.check.outputs.configured == 'true'
         shell: bash
         env:
           RENDER_STAGING_HOOK_URL: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL }}
@@ -111,6 +119,7 @@ jobs:
           echo "Deploy hook triggered successfully."
 
       - name: Wait for staging health
+        if: steps.check.outputs.configured == 'true'
         shell: bash
         env:
           STAGING_URL: ${{ vars.STAGING_API_URL }}
