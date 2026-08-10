@@ -30,7 +30,7 @@
 | Catégorie | Durée indicative | Base légale usuelle | Mécanisme de purge |
 |---|---|---|---|
 | Logs d'audit (`audit_logs`) | **24 mois** | Matrice RGPD existante (art. 30 RGPD / Loi 18-07) | `audit:purge --older-than=24` (hebdo, implémentée issue #1474) |
-| Données biométriques (empreintes, templates) | Jusqu'à la **fin de l'emploi** + suppression à la demande (consentement art. 9 RGPD) | RGPD art. 9, Loi 18-07 | `privacy/delete` (existant) ; revue par employé désactivé |
+| Données biométriques (templates kiosk/mobile) | **24 mois après la fin du contrat** (ou 24 mois après le **consentement** si pas de fin de contrat), + suppression à la demande | RGPD art. 9 ; **Loi 18-07 (consentement)** — cf. §2bis | `biometric:purge-expired` (S-1, issue #1661 — implémentée) ; `privacy/delete` (existant) ; désactivation employé |
 | Bulletins de paie / données de paie | **10 ans** (FR : obligation employeur) ; DZ : 10 ans ; MA : 5 ans | FR : C. trav. L.3243-4 ; DZ : Loi 90-11 | Export + archivage tenant ; purge au-delà de la durée locale |
 | Contrats de travail | **5 ans** après la fin du contrat (FR) ; DZ : 2 ans après fin ; MA : 5 ans | FR : C. trav. L.1221-13 / L.1234-8 | Archivage ; purge selon durée locale |
 | Demandes de congés / absences / avances | **5 ans** | Usuel (litiges prud'hommaux 5 ans FR) | Purge tenant |
@@ -39,9 +39,33 @@
 | Marketing / clicks de suivi (`partner_clicks`) | **90 jours** | Usuel | `growth:archive-clicks --days=90` (existant, hebdo) |
 | Notifications / messages | **24 mois** | Usuel | Purge tenant |
 
+## 2bis. Biométrie — rétention des templates (S-1, issue #1661)
+
+Les templates biométriques (visage/empreinte, kiosk et mobile) sont des données
+sensibles (RGPD art. 9 ; Loi 18-07 — traitement fondé sur le **consentement**
+recueilli à l'enrôlement, `biometric_consent_at`).
+
+- **Durée de conservation** : **24 mois** après la date de référence =
+  `max(fin de contrat, date de consentement)`. Aucune donnée de « dernier
+  usage » n'étant collectée, la fin de contrat fait foi dès qu'elle est
+  renseignée (`employees.contract_end`) ; sinon c'est le consentement qui
+  démarre le compteur.
+- **Purge automatique** : `php artisan biometric:purge-expired` (implémentée,
+  S-1). Pour chaque tenant, nullifie les chemins de référence
+  (`biometric_*_reference_path`, `biometric_enrollment_requests.*_reference_path`),
+  désactive les flags d'enrôlement, supprime les fichiers physiques
+  (`storage/app/biometrics/...`) et trace l'opération dans `audit_logs`
+  (`action = biometric_templates_purged`, compteurs + base légale).
+- **Options** : `--company={id}` (tenant ciblé), `--months={N}` (durée, défaut
+  24 — config `security.biometric.retention_months`), `--dry-run` (rapport sans
+  écriture).
+- **Suppression à la demande** : conservée via `privacy/delete` /
+  `gdpr:anonymize-employee` (retrait du consentement à tout moment, RGPD art. 7.3).
+
 ## 3. Mise en œuvre technique
 
-- **Commandes existantes** : `audit:purge` (nouvelle, issue #1474), `growth:archive-clicks` (existant).
+- **Commandes existantes** : `audit:purge` (issue #1474), `growth:archive-clicks`
+  (existant), **`biometric:purge-expired` (S-1, issue #1661)**.
 - **À construire (backlog)** : commande de purge tenant par catégorie de documents
   (`documents:*`), rétention configurable par tenant (`retention_policy` — point
   G1 de la matrice), intégration avec les exports `privacy/export`.
