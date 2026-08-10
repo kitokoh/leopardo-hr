@@ -21,32 +21,32 @@
                 </h3>
                 <div class="mt-4 space-y-4">
                   <!-- Name -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Nom complet *
-                    </label>
+                  <FormField id="name" label="Nom complet" required :error="fieldErrors.name" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="name"
                       v-model="form.name"
                       type="text"
                       required
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       placeholder="Jean Dupont"
                     />
-                  </div>
+                  </FormField>
 
                   <!-- Email -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Adresse email *
-                    </label>
+                  <FormField id="email" label="Adresse email" required :error="fieldErrors.email" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="email"
                       v-model="form.email"
                       type="email"
                       required
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       placeholder="jean.dupont@example.com"
                     />
-                  </div>
+                  </FormField>
 
                   <!-- Role -->
                   <div>
@@ -122,18 +122,18 @@
                   </div>
 
                   <!-- Custom password -->
-                  <div v-if="!form.generatePassword">
-                    <label class="block text-sm font-medium text-gray-700">
-                      Mot de passe {{ form.generatePassword ? '' : '*' }}
-                    </label>
+                  <FormField v-if="!form.generatePassword" id="password" label="Mot de passe" required :error="fieldErrors.password" v-slot="{ ariaInvalid, describedBy }">
                     <input
+                      id="password"
                       v-model="form.password"
                       type="password"
                       :required="!form.generatePassword"
+                      :aria-invalid="ariaInvalid"
+                      :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       placeholder="Mot de passe sécurisé"
                     />
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </div>
@@ -172,15 +172,33 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { UserPlusIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import FormField from '@/components/common/FormField.vue'
 
 const emit = defineEmits(['close', 'created'])
 const toast = useToast()
 
 const isLoading = ref(false)
 const companies = ref([])
+const attempted = ref(false)
+
+// S-6 (#1666) : feedback inline par champ (aria-invalid + aria-describedby).
+const fieldErrors = computed(() => {
+  if (!attempted.value) return {}
+  const errors = {}
+  if (!form.name) errors.name = 'Le nom complet est requis.'
+  if (!form.email) {
+    errors.email = "L'adresse email est requise."
+  } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
+    errors.email = "Le format de l'adresse email est invalide."
+  }
+  if (!form.generatePassword && !form.password) {
+    errors.password = 'Le mot de passe est requis.'
+  }
+  return errors
+})
 
 // Form data
 const form = reactive({
@@ -211,6 +229,12 @@ async function loadCompanies() {
 }
 
 async function handleSubmit() {
+  attempted.value = true
+  if (Object.keys(fieldErrors.value).length > 0) {
+    toast.error('Veuillez corriger les champs en rouge')
+    return
+  }
+
   isLoading.value = true
 
   try {
