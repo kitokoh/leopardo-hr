@@ -34,6 +34,8 @@ return [
     'CAMERA_TOKEN_EXPIRED' => 'Bu kameraya erişim süresi doldu.',
     'CAMERA_TOKEN_REVOKED' => 'Bu erişim iptal edildi.',
 
+    // Payroll
+    'PAYROLL_BALANCE_UNAVAILABLE' => 'Çalışan bakiyesi geçici olarak kullanılamıyor. Lütfen biraz sonra tekrar deneyin.',
     // Général
     'NOT_FOUND' => 'Kaynak bulunamadı.',
     'FORBIDDEN' => 'Bu işlem için yetkiniz yok.',
