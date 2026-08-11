@@ -1,4 +1,9 @@
 name: PLAN_ACTION2 Weekly Report
+# ============================================================
+# INTERNAL GOVERNANCE WORKFLOW — ne fait pas partie de la CI publique.
+# Depend de docs/PLAN_ACTION2 (process interne multi-agents).
+# Ne pas rendre bloquant pour les contributeurs externes (issue #1731).
+# ============================================================
 
 # PA2-AUTO-005: rapport hebdomadaire d'avancement du backlog PLAN_ACTION2.
 # Genere le rapport (dev-hub/tools/plan-action2-weekly-report.sh), le publie
