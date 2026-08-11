@@ -1,9 +1,10 @@
 # RUNBOOK — Rotation des secrets exposés + purge de l'historique git (F-16 / P0 #1472)
 
 > **Programme FOCUS (F-16)** — déclinaison opérationnelle de l'issue #1472 (P0).
-> ⚠️ **Ce runbook n'a PAS encore été exécuté.** Toute exécution doit être planifiée
-> (fenêtre de maintenance), validée par le propriétaire du repo, et réalisée en
-> coordination avec les hébergeurs (Render, Upstash, Firebase).
+> ✅ **EXÉCUTÉ le 2026-08-11** : purge historique réalisée (git filter-repo --replace-text,
+> 11 valeurs réelles → placeholders, force-push main + tag v1.0-staging). Post-mortem :
+> `docs/security/POST_MORTEM_PURGE_2026-08-11.md`. Ce runbook reste la procédure de référence
+> pour toute purge future.
 
 ## Statut 2026-08-09 — Clés Google (issue #1467, partiel)
 

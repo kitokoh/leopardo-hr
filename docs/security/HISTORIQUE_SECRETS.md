@@ -14,20 +14,20 @@
 
 | Date de mise à jour | Statut |
 |---|---|
-| 2026-08-10 | 🔴 Purge historique NON effectuée — action humaine requise (#1472) |
+| 2026-08-11 | 🟢 Purge historique EFFECTUÉE (git filter-repo --replace-text + force-push) — voir POST_MORTEM_PURGE_2026-08-11.md |
 
-> ⚠️ La seule vraie résolution est la **purge de l'historique git**
-> (`git filter-repo --replace-text` ou BFG, puis `push --force --all`), à
-> coordonner avec l'équipe et les agents actifs (rebase des branches ouvertes,
-> re-clone obligatoire). Voir `docs/security/RUNBOOK_SECRET_ROTATION_PURGE.md`.
+> ✅ **Purge effectuée le 2026-08-11** : toutes les valeurs réelles de l'inventaire
+> ont été retirées de l'historique (11/11 vérifié, gitleaks 44→12 findings — les
+> 12 restants sont des exemples documentaires). Re-clone obligatoire pour toute
+> copie antérieure. Détails : `docs/security/POST_MORTEM_PURGE_2026-08-11.md`.
 
 ## Inventaire des secrets exposés
 
 | Secret | Où dans l'historique | Gravité | Statut | Issue |
 |---|---|---|---|---|
-| **Mot de passe Redis Upstash** | `docs/audits/AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/*` (+ historique git) | 🔴 Critique (repo public, Redis accessible depuis Internet) | 🔄 Rotation effectuée (2026-08-10, action humaine) — purge git restante | #1472 |
-| **URL PostgreSQL Neon** (`postgresql://neondb_owner:<pass>@ep-odd-morning-abt600ow-pooler…`) | Commit `70ca415c` (2026-04-14), `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` | 🔴 Critique (accès DB) | ⬜ Rotation à vérifier + purge git | #1601 |
-| **Clés API Google** (`google-services.json` ×4, projet Firebase `leopardo-rh`) | 4 apps Android (historique git) | 🟠 Élevé | 🔄 Clés retirées de l'arbre (stub, 2026-08-09) — rotation console + purge git restantes | #1467 |
+| **Mot de passe Redis Upstash** | `docs/audits/AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/*` (+ historique git) | 🔴 Critique (repo public, Redis accessible depuis Internet) | ✅ Rotation + purge git effectuées (2026-08-11) | #1472 |
+| **URL PostgreSQL Neon** (`postgresql://neondb_owner:<pass>@ep-odd-morning-abt600ow-pooler…`) | Commit `70ca415c` (2026-04-14), `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` | 🔴 Critique (accès DB) | ✅ Purge git effectuée (2026-08-11) — rotation à attester côté console | #1601 |
+| **Clés API Google** (`google-services.json` ×4, projet Firebase `leopardo-rh`) | 4 apps Android (historique git) | 🟠 Élevé | ✅ Stub en arbre + purge git effectuée (2026-08-11) — rotation console à attester | #1467 |
 
 ## Détection
 
@@ -36,15 +36,18 @@
 - **GitHub Secret Scanning** : alertes natives sur les patterns connus (2 alertes `google_api_key` résiduelles tant que l'historique n'est pas purgé).
 - **TruffleHog manuel** : `trufflehog git https://github.com/kitokoh/leopardo-hr --results=verified,unknown --exclude-detectors=Lob --since-commit=4b825dc642cb6eb9a060e54bf8d69288fbee4904`
 
-## Plan de purge (coordonné — action humaine)
+## Plan de purge — ✅ exécuté le 2026-08-11
 
-1. **Rotation** (faite pour Redis 2026-08-10 ; à faire/vérifier pour Neon #1601 et Google #1467).
-2. **Purge historique** : `git filter-repo --replace-text` (fichier de remplacement des valeurs réelles) ou BFG, puis `push --force --all` — fenêtre de maintenance, coordination avec les agents (voir runbook).
-3. **Rebase des branches ouvertes + re-clone** obligatoire après force-push.
-4. **Vérification** : le scan hebdomadaire A-2 ne doit plus référencer les valeurs réelles ; TruffleHog manuel idem ; les alertes GitHub Secret Scanning se résorbent.
+1. Rotation Redis faite (2026-08-10) ; Neon/Google à attester côté console par le propriétaire.
+2. **Purge historique exécutée** : `git filter-repo --replace-text` (11 valeurs réelles → placeholders `REDACTED_*`), puis force-push `main` + tag `v1.0-staging` (aucune branche ouverte).
+3. Re-clone obligatoire pour toute copie antérieure (dont `RepoBirdBot`).
+4. **Vérification faite** : 0/11 valeurs dans `git log --all -p` ; gitleaks 44→12 (résiduels = exemples doc) ; alerte Secret Scanning à résoudre ; prochain run A-2 à confirmer.
+
+Détails et risques résiduels (forks) : `docs/security/POST_MORTEM_PURGE_2026-08-11.md`.
 
 ## Évolution attendue
 
 | Date | Résultat scan A-2 | Commentaire |
 |---|---|---|
 | 2026-08-10 | Scan initial — secrets connus détectés | Inventaire créé (Spec A-2) |
+| 2026-08-11 | Purge effectuée — 0/11 valeurs réelles dans l'historique | Post-mortem + force-push (POST_MORTEM_PURGE_2026-08-11.md) |
