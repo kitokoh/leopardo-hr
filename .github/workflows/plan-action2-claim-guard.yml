@@ -1,4 +1,9 @@
 name: PLAN_ACTION2 Claim Guard
+# ============================================================
+# INTERNAL GOVERNANCE WORKFLOW — ne fait pas partie de la CI publique.
+# Depend de docs/PLAN_ACTION2 (process interne multi-agents).
+# Ne pas rendre bloquant pour les contributeurs externes (issue #1731).
+# ============================================================
 
 # PA2-AUTO-011: garde-fou GitHub-native pour eviter que deux agents
 # travaillent le meme ticket PA2-* sans le savoir (suite de
@@ -38,6 +43,9 @@ concurrency:
 jobs:
   claim-guard:
     name: Check PA2 claim collisions
+    # Interne : ne s'exécute que sur les PR du dépôt, jamais sur les forks
+    # (contributeurs externes, issue #1731).
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

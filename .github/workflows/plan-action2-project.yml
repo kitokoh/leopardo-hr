@@ -1,4 +1,9 @@
 name: PLAN_ACTION2 Project Sync
+# ============================================================
+# INTERNAL GOVERNANCE WORKFLOW — ne fait pas partie de la CI publique.
+# Depend de docs/PLAN_ACTION2 (process interne multi-agents).
+# Ne pas rendre bloquant pour les contributeurs externes (issue #1731).
+# ============================================================
 
 on:
   pull_request:
@@ -49,6 +54,9 @@ concurrency:
 jobs:
   validate:
     name: Validate PLAN_ACTION2 backlog
+    # Interne : sur PR, ne s'exécute que si la PR vient du dépôt lui-même
+    # (jamais depuis un fork externe, issue #1731). Push main + dispatch intacts.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

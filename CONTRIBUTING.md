@@ -13,6 +13,12 @@ Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for 
 
 ---
 
+## 🆘 Need help?
+
+Check [SUPPORT.md](SUPPORT.md) for the right channel (bugs, ideas, security, docs).
+
+---
+
 ## 🚀 How to Contribute
 
 1.  **Explore:** Read our [System Architecture](docs/architecture/ARCHITECTURE.md) to understand the project structure.
@@ -33,6 +39,26 @@ issue instead. The CI guard `secret-scan.yml` scans both HEAD and history; a rea
 secret in a report is a security incident (see [SECURITY.md](SECURITY.md), issue #1614).
 
 ---
+
+## 🔄 Revue croisée (mainteneur alternatif)
+
+Le dépôt est actuellement maintenu par un seul mainteneur humain (@kitokoh).
+Pour garantir une revue de qualité sur les chemins sensibles (workflows CI/CD,
+middleware, policies, configs, spec OpenAPI), la procédure suivante s'applique
+(issue #1730) :
+
+1. **Auto-revue** : suivez la checklist du [template de PR](.github/PULL_REQUEST_TEMPLATE.md).
+2. **Chemins sensibles** : une approbation est requise ; si vous êtes un
+   contributeur externe, un mainteneur qualifié (ou un reviewer communautaire
+   ayant déjà touché ce chemin) doit approuver. Les PR touchant `.github/workflows/`,
+   `/api/app/Http/Middleware/`, `/api/app/Policies/`, `/api/config/` et
+   `/api/openapi.yaml` déclenchent la revue CODEOWNERS.
+3. **Audit croisé tracé** : les modifications à fort impact (sécurité, données,
+   déploiement) doivent mentionner dans la PR l'audit effectué (issues liées,
+   scénarios de test couverts) pour permettre une revue éclairée.
+
+> Quand un second mainteneur rejoint, il sera ajouté dans [CODEOWNERS](CODEOWNERS)
+> pour répartir les révisions obligatoires sur les chemins sensibles.
 
 ## 📜 Code of Conduct
 
