@@ -109,6 +109,63 @@ jobs:
           echo "percentage=${PERCENT}" >> "$GITHUB_OUTPUT"
           echo "Backend coverage: ${PERCENT}%"
 
+      - name: Compute per-module coverage
+        id: modules
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          CLOVER_FILE="storage/coverage/clover.xml"
+          if [[ ! -f "${CLOVER_FILE}" ]]; then
+            echo "No clover file — skipping per-module coverage (issue #1726)."
+            exit 0
+          fi
+          php <<'PHP' > storage/coverage/modules.md
+          <?php
+          // Issue #1726 : couverture par module DDD (Payroll cible >= 80 %, S-4 #1602).
+          $xml = simplexml_load_file('storage/coverage/clover.xml');
+          if ($xml === false) { echo "_Aucune donnee de couverture par module._\n"; exit; }
+          $modules = [];
+          // NB : clover.xml a une structure <coverage><project><file> — il faut
+          // xpath('//file') (comme le step global) et non $xml->file (vide).
+          foreach ($xml->xpath('//file') as $file) {
+              $metrics = $file->metrics;
+              if ($metrics === null) continue;
+              $name = (string) $file['name'];
+              if (preg_match('#app/Modules/([^/]+)/#', $name, $m)) {
+                  $mod = $m[1];
+              } elseif (preg_match('#app/Core/([^/]+)/#', $name, $m)) {
+                  $mod = 'Core/'.$m[1];
+              } else {
+                  $mod = '(hors module)';
+              }
+              if (!isset($modules[$mod])) { $modules[$mod] = ['t' => 0, 'c' => 0]; }
+              $modules[$mod]['t'] += (int) $metrics['statements'];
+              $modules[$mod]['c'] += (int) $metrics['coveredstatements'];
+          }
+          uasort($modules, fn($a, $b) => $b['t'] <=> $a['t']);
+          echo "| Module | Couverture | Cible |\n";
+          echo "|---|---|---|\n";
+          foreach ($modules as $mod => $m) {
+              $pct = $m['t'] > 0 ? number_format(($m['c'] / $m['t']) * 100, 1) : 'n/a';
+              $target = (strpos($mod, 'Payroll') !== false) ? '**>= 80 %** (S-4)' : '—';
+              echo "| {$mod} | {$pct}% | {$target} |\n";
+          }
+          PHP
+          echo "modules_file=storage/coverage/modules.md" >> "$GITHUB_OUTPUT"
+          echo "### Couverture par module (issue #1726)" >> "$GITHUB_STEP_SUMMARY"
+          cat storage/coverage/modules.md >> "$GITHUB_STEP_SUMMARY"
+
+          # Warning non bloquant si Payroll < 80 % (cible S-4 #1602 / audit #1726).
+          PAYROLL_PCT=$(grep '^| Payroll ' storage/coverage/modules.md | head -1 | awk -F'|' '{print $3}' | tr -d ' %' || true)
+          if [[ -n "${PAYROLL_PCT}" ]]; then
+            if (( $(echo "${PAYROLL_PCT} < 80" | bc -l) )); then
+              echo "::warning::Couverture du module Payroll = ${PAYROLL_PCT}% (< 80% cible S-4 #1602) — non bloquant (issue #1726)."
+            else
+              echo "Payroll coverage OK: ${PAYROLL_PCT}% (>= 80%)"
+            fi
+          fi
+
       - name: Evaluate coverage gate
         id: gate
         shell: bash
@@ -139,6 +196,7 @@ jobs:
           path: |
             api/storage/coverage/clover.xml
             api/storage/coverage/summary.txt
+            api/storage/coverage/modules.md
           if-no-files-found: ignore
           retention-days: 30
 
@@ -151,6 +209,13 @@ jobs:
             const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '65' }}`; // keep in sync with env.DEFAULT_BACKEND_COVERAGE_MIN
             const passed = `${{ steps.gate.outputs.passed }}` === 'true';
             const icon = passed ? ':white_check_mark:' : ':x:';
+            let modulesTable = ''
+            try {
+              modulesTable = fs.readFileSync('api/storage/coverage/modules.md', 'utf8')
+            } catch (e) {
+              modulesTable = '_Couverture par module indisponible._'
+            }
+
             const body = [
               `## ${icon} Backend Coverage Report`,
               '',
@@ -159,6 +224,10 @@ jobs:
               `| **Lines covered** | ${percentage}% |`,
               `| **Threshold** | ${threshold}% |`,
               `| **Status** | ${passed ? 'PASSED' : 'FAILED'} |`,
+              '',
+              `### Par module (issue #1726)`,
+              '',
+              modulesTable.trim(),
               '',
               `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 65; ratchet atteint — A-4, #1682).`,
               `> Ratchet: 60 -> 65 % (2026-08-10, coverage mesure >= 68 % — A-4, #1682).`,
