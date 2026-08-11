@@ -1,46 +1,39 @@
-# Support Guide — Leopardo RH
+# Support — Leopardo RH
 
-> ⚠️ **The `leopardo-rh.com` domain, `@leopardo-rh.com` addresses, Discord invite, and X/Twitter
-> handle below are not live yet** — `leopardo-rh.com` is a recommended future domain, not yet
-> purchased (see `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md`); the Discord invite
-> code returns "Unknown Invite" and `@LeopardoRH` on X returns 404 (both verified). For real
-> support today, use GitHub Issues below.
+Besoin d'aide ? Voici les bons canaux, du plus rapide au plus structuré.
 
-We are committed to providing the best support for developers, enterprises, and contributors using the Leopardo RH platform.
+## 🐛 Bug ou anomalie
 
-## 🛠 Technical Support
+1. **Cherchez d'abord** dans les [issues existantes](https://github.com/kitokoh/leopardo-hr/issues) (ouvertes et fermées) — le problème est peut-être déjà connu.
+2. **Ouvrez une issue** avec le template [bug.yml](.github/ISSUE_TEMPLATE/bug.yml) : version, étapes de reproduction, résultat attendu vs réel, logs.
+3. Pour un bug **de sécurité**, ne créez **jamais** d'issue publique — utilisez la divulgation privée : [SECURITY.md](SECURITY.md) (réponse sous 72 h).
 
-### 1. Documentation First
-Before reaching out, please explore our **[Documentation Hub](README.md#documentation-hub)**. Most technical questions regarding architecture, multi-tenancy, and deployment are covered there.
+## 💡 Question, idée, fonctionnalité
 
-### 2. GitHub Issues
-For technical bugs, feature requests, or developer discussions, please use our [GitHub Issues](https://github.com/kitokoh/leopardo-hr/issues).
-- Use the **Bug Report** template for reproducible issues.
-- Use the **Feature Request** template for new ideas.
+- **Discussions GitHub** (si activé) pour les questions ouvertes et les idées.
+- Template [feature.yml](.github/ISSUE_TEMPLATE/feature.yml) pour une demande structurée.
+- Roadmap publique : [ROADMAP.md](ROADMAP.md) · état opérationnel réel : [PILOTAGE.md](PILOTAGE.md).
 
----
+## 📚 Documentation
 
-## 🏢 Enterprise & Commercial Support
+- **Index complet** : [docs/README.md](docs/README.md) (518 fichiers : architecture, sécurité, specs, déploiement, GTM).
+- **Architecture** : [ARCHITECTURE.md](ARCHITECTURE.md) · [docs/architecture/](docs/architecture/)
+- **API** : [docs/api/API_REFERENCE.md](docs/api/API_REFERENCE.md) · spec OpenAPI : [api/openapi.yaml](api/openapi.yaml) · collection [Postman](postman/)
+- **Mobile** : [docs/mobile/README.md](docs/mobile/README.md) · **Kiosk** : [docs/kiosk/README.md](docs/kiosk/README.md)
 
-If you are a SaaS client, an investor, or an enterprise looking for managed hosting and premium support:
+## 🤝 Contribuer
 
--   **Priority Support:** [support@leopardo-rh.com](mailto:support@leopardo-rh.com)
--   **Sales & Partnerships:** [partners@leopardo-rh.com](mailto:partners@leopardo-rh.com)
--   **Investor Relations:** [investors@leopardo-rh.com](mailto:investors@leopardo-rh.com)
+- Guide : [CONTRIBUTING.md](CONTRIBUTING.md) · Code de conduite : [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- Toute PR doit référencer une issue (`Closes #X` ou type `docs:`/`chore:`) — voir [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md).
 
----
+## ⏱ SLA de réponse
 
-## 🛡 Security Reports
-
-If you discover a security vulnerability, please do **NOT** open a public issue. Follow our [Security Policy](docs/security/SECURITY.md) and contact us at [security@leopardo-rh.com](mailto:security@leopardo-rh.com).
-
----
-
-## 💬 Community Channels
-
--   **Discord:** [Join our Developer Community](https://discord.gg/leopardo-rh)
--   **Twitter/X:** [@LeopardoRH](https://x.com/LeopardoRH)
+| Canal | Délai cible |
+|---|---|
+| Issue de bug classique | 7 jours ouvrés |
+| Issue de sécurité (privée) | 72 h accusé de réception |
+| PR avec `Closes #X` valide | 7 jours ouvrés |
 
 ---
 
-Thank you for being part of the Leopardo RH ecosystem!
+*Dépôt public — soutenez le projet avec une ⭐.*

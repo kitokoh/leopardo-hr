@@ -1,4 +1,9 @@
 name: PLAN_ACTION2 Post-Merge Audit
+# ============================================================
+# INTERNAL GOVERNANCE WORKFLOW — ne fait pas partie de la CI publique.
+# Depend de docs/PLAN_ACTION2 (process interne multi-agents).
+# Ne pas rendre bloquant pour les contributeurs externes (issue #1731).
+# ============================================================
 
 # PA2-AUTO-010: audit post-merge automatique. Verifie, apres chaque push
 # sur `main` (typiquement un merge de PR), si CHANGELOG.md, api/openapi.yaml
