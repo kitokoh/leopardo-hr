@@ -62,9 +62,23 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
 | `fix-composer-lock.yml` | Manuel | Régénère composer.lock |
-| `plan-action2-project.yml` | PR → docs/PLAN_ACTION2 | Sync GitHub Projects |
-| `plan-action2-claim-guard.yml` | PR (opened/edited/synchronize) | Garde-fou collision de claim multi-agent + signalement PR sans ID PA2-* (PA2-AUTO-011/004) |
-| `plan-action2-post-merge-audit.yml` | Push → main | Audit non bloquant CHANGELOG/openapi.yaml/i18n apres chaque merge (PA2-AUTO-010) |
+
+---
+
+### 🏢 Gouvernance interne (PLAN_ACTION2) — jamais bloquants pour les externes
+
+Ces workflows appartiennent au processus interne multi-agents `docs/PLAN_ACTION2`
+(issue #1731). Ils sont **internes** : sur une PR de fork (contributeur externe)
+ils sont **sautés** (`if: github.event.pull_request.head.repo.full_name ==
+github.repository`) — le check apparaît « skipped », aucun bruit pour l'externe.
+Ils ne font **jamais** partie des checks requis de la branche `main`.
+
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `plan-action2-claim-guard.yml` | PR du dépôt (opened/edited/synchronize) — sauté sur fork | Garde-fou collision de claim multi-agent + signalement PR sans ID PA2-* (PA2-AUTO-011/004/008) |
+| `plan-action2-project.yml` | PR du dépôt → docs/PLAN_ACTION2, push main, manuel — sauté sur fork | Validation du backlog + sync GitHub Projects |
+| `plan-action2-weekly-report.yml` | Schedule (lundi 07:00 UTC) + manuel | Rapport hebdomadaire d'avancement (PA2-AUTO-005) |
+| `plan-action2-post-merge-audit.yml` | Push → main | Audit non bloquant CHANGELOG/openapi.yaml/i18n après chaque merge (PA2-AUTO-010) |
 
 ---
 
