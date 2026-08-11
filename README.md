@@ -8,6 +8,7 @@
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/kitokoh/leopardo-hr/tests.yml?branch=main&style=for-the-badge&logo=github&label=CI%2FCD)](https://github.com/kitokoh/leopardo-hr/actions)
 [![Coverage](https://img.shields.io/badge/coverage-71%25-30a14e?style=for-the-badge&logo=php&label=Backend)](https://github.com/kitokoh/leopardo-hr/actions/workflows/coverage-gate.yml)
+[![Release](https://img.shields.io/github/v/release/kitokoh/leopardo-hr?sort=semver&style=for-the-badge&logo=github&label=Release)](https://github.com/kitokoh/leopardo-hr/releases/latest)
 [![Security](https://img.shields.io/badge/security-Enterprise--Grade-brightgreen?style=for-the-badge&logo=anchor)](docs/security/SECURITY.md)
 [![License: MIT](https://img.shields.io/github/license/kitokoh/leopardo-hr?style=for-the-badge&label=License)](LICENSE)
 
@@ -152,7 +153,7 @@ Developer guide: [DEVELOPMENT.md](DEVELOPMENT.md) · [Conventions](CONVENTIONS.m
 - [x] **Phase 3 (partial)** — OpenAPI spec + JS/Python SDKs + Postman collection
 - [ ] **Phase 4** — Public API ecosystem, billing & app marketplace
 - [ ] **Phase 5** — Global financial integrations (SEPA / SWIFT / mobile money)
-- [ ] **v1.0 release** — semantic tags + release notes ([issue #1722](https://github.com/kitokoh/leopardo-hr/issues/1722))
+- [x] **v1.0 release** — tag sémantique `v4.24.0` + release notes automatiques via `release.yml` ([issue #1722](https://github.com/kitokoh/leopardo-hr/issues/1722))
 
 Operational reality is tracked in [PILOTAGE.md](PILOTAGE.md) (source of truth, FR).
 
