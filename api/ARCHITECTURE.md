@@ -148,7 +148,7 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
   `app/Traits/`, `app/Attributes/`, `app/Enums/` sont des shims. Canonical dans `Shared/`.
 
 - [x] **`Core/Tenant/`** — `TenantManager` migré dans `App\Core\Tenant\TenantManager` (commit 807d6f09).
-  `app/Services/TenantManager.php` est un alias shim.
+  L'alias shim `app/Services/TenantManager.php` a été supprimé (issue #1494 puis #1728).
 
 - [x] **`app/Http/Requests/`** — 64 FormRequests copiés dans leurs modules respectifs.
   Shims backward-compat maintenus dans `app/Http/Requests/` pour les usages existants.
@@ -205,14 +205,14 @@ Convergence visée : `phpstan-modules` (5) et `phpstan-strict` (8) ne sont pas c
 |---|---|
 | Controllers `app/Http/Controllers/Api/V1/` supprimés | 90 |
 | Services `app/Services/` doublons supprimés | 26 |
-| Services `app/Services/` non-doublons migrés + shimmed | 13 |
+| Services `app/Services/` shims backward-compat supprimés | 17 (2026-08-11, #1728) |
 | Modèles `app/Models/` convertis en aliases | 92 (75+17) |
 | FormRequests migrés vers modules | 64 |
 | `app/Shared/` peuplé (Traits, Attributes, Enums) | ✅ |
 | `Core/Tenant/TenantManager` canonique | ✅ |
 | `app/DTOs/` supprimé | ✅ |
 
-**`app/Services/`** : reste uniquement TenantManager.php (shim) + sous-dossiers `Cache/`, `Communication/`, `Payroll/`, `SSO/`, `Security/`, `Tracking/` (services spécialisés à migrer si besoin).
+**`app/Services/`** : **répertoire supprimé (2026-08-11, #1728)** — les 17 derniers shims backward-compat ont été retirés ; tous les consommateurs référencent les canoniques (`App\Core\…` / `App\Modules\…`).
 **`app/Http/Requests/`** : shims backward-compat. Canonical dans les modules.
 
 ---
