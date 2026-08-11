@@ -52,6 +52,13 @@ La Phase 8 (Déploiement & Monitoring) complète la restructuration de la vitrin
 - Caching strategy pour images et assets
 - Redirects et rewrites
 - Régions de déploiement (CDG1 - Paris)
+- **`ignoreCommand` (corrigé 2026-08-11, issue #1724)** : saute le build quand
+  `front/web/` n'a pas changé. Sémantique des exit codes Vercel : `0` = build ignoré,
+  non-`0` = build. Logique : diff entre `$VERCEL_GIT_PREVIOUS_SHA` (dernier SHA déployé)
+  et HEAD ; si ce SHA n'existe plus (force-push, réécriture d'historique, premier
+  déploiement), **fallback sur `HEAD^`** (dernier commit) au lieu de forcer le build —
+  l'ancienne version sortait (`exit 1`) et reconstruisait systématiquement après un
+  force-push ou un déploiement échoué (quota free tier `api-deployments-free-per-day`).
 
 #### `front/web/.env.staging`
 - Variables d'environnement pour staging
