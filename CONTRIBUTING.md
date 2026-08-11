@@ -13,6 +13,12 @@ Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for 
 
 ---
 
+## 🆘 Need help?
+
+Check [SUPPORT.md](SUPPORT.md) for the right channel (bugs, ideas, security, docs).
+
+---
+
 ## 🚀 How to Contribute
 
 1.  **Explore:** Read our [System Architecture](docs/architecture/ARCHITECTURE.md) to understand the project structure.
