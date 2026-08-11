@@ -20,7 +20,7 @@ class PartnerService
      */
     public function apply(int $userId, array $details): Partner
     {
-        $encryptor = app(\App\Services\Security\SensitiveDataEncryptor::class);
+        $encryptor = app(\App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor::class);
         $encryptedDetails = isset($details['payment_details'])
             ? $encryptor->encrypt($details['payment_details'])
             : null;
@@ -198,7 +198,7 @@ class PartnerService
      */
     public function updatePaymentDetails(Partner $partner, string $details, int $adminId, string $reason): void
     {
-        $encryptor = app(\App\Services\Security\SensitiveDataEncryptor::class);
+        $encryptor = app(\App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor::class);
         $encrypted = $encryptor->encrypt($details);
 
         DB::transaction(function () use ($partner, $encrypted, $adminId, $reason) {
