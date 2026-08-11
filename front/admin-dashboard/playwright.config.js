@@ -16,6 +16,11 @@ const shouldStartLocalServer = !process.env.BASE_URL && !process.env.PLAYWRIGHT_
 export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
+  // Issue #1725 : les expect gardaient 5s par defaut alors que le cold start
+  // Render free tier peut prendre 30-60s (le warm-up du workflow e2e-staging.yml
+  // reveille l'instance avant la suite, mais un delai supplementaire absorbe
+  // les lenteurs residuelles de premier rendu).
+  expect: { timeout: 15_000 },
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI
     ? [
