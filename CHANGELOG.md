@@ -6,6 +6,7 @@
 ## [Unreleased]
 
 ### Security
+- **docs(sec): attestations rotations + plan purge forks (#1723).** Health prod vérifié (2026-08-11 18:01 UTC) : `GET /api/v1/health` → `checks.database.ok=true` sur `gestionemployerbackend.onrender.com` ; `HISTORIQUE_SECRETS.md` enrichi (tableau d'attestation Redis/Neon/Google/forks + checklist propriétaire) ; nouveau `docs/security/PLAN_PURGE_FORKS_2026-08-11.md` (inventaire des 5 forks + messages types + procédure takedown GitHub Support). Rotations console Neon/Google à attester par le propriétaire (issues #1601/#1467).
 - **audit 2026-08-10 (#1694–#1712) — complétions revue :** purge ponctuelle du miroir Hive legacy du JWT au démarrage des 4 apps mobiles (#1700) ; login démo `platform_admin` gaté `kDebugMode` (aligné employee/hr/manager, #1697) ; `client_secret` SSO préservé lors d'une réécriture de config sans secret (#1694) ; URLs backend entièrement centralisées dans `src/lib/backend-url.ts` (checkout, lead-capture, signup, verify, careers, api-client, login, kiosk) (#1701).
 - **audit 2026-08-10 (#1694–#1712) — complétions revue :** `per_page` plafonné à 100 sur Growth/Cameras/Notification/CabinetShare + contrat de réponse `data` restauré (liste simple + `meta`, jamais de paginator brut) (#1703) ; `AccrueLeaveBalances` : une transaction par chunk (savepoints par employé) au lieu d'une par employé (#1703) ; follow-up exclusion iCloud iOS documenté (roadmap Edge) (#1700).
 

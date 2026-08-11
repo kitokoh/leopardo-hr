@@ -14,6 +14,7 @@
 
 | Date de mise à jour | Statut |
 |---|---|
+| 2026-08-11 (soir) | 🟡 Purge OK + health prod vérifié (database.ok) ; rotations Neon/Google **à attester côté console** par le propriétaire ; plan de purge des 5 forks documenté (#1723) |
 | 2026-08-11 | 🟢 Purge historique EFFECTUÉE (git filter-repo --replace-text + force-push) — voir POST_MORTEM_PURGE_2026-08-11.md |
 
 > ✅ **Purge effectuée le 2026-08-11** : toutes les valeurs réelles de l'inventaire
@@ -44,6 +45,20 @@
 4. **Vérification faite** : 0/11 valeurs dans `git log --all -p` ; gitleaks 44→12 (résiduels = exemples doc) ; alerte Secret Scanning à résoudre ; prochain run A-2 à confirmer.
 
 Détails et risques résiduels (forks) : `docs/security/POST_MORTEM_PURGE_2026-08-11.md`.
+
+## Attestations de rotation (issue #1723)
+
+| Secret | Rotation | Attestation console | Preuve / action requise |
+|---|---|---|---|
+| Redis Upstash (#1472) | ✅ Fait (2026-08-10) | ✅ Attesté | Rotation attestée 2026-08-10 (issue #1472) |
+| PostgreSQL Neon (#1601) | 🔄 À attester | ⏳ **Action propriétaire** : reset du mot de passe en console Neon, MAJ `DATABASE_URL` Render (API + workers) | Health prod vérifié le 2026-08-11 18:01 UTC : `GET https://gestionemployerbackend.onrender.com/api/v1/health` → `checks.database.ok=true` (latence 39 ms) — l'URL actuelle fonctionne ; l'attestation de la rotation console reste à tracer ici |
+| Clés API Google / Firebase (#1467) | 🔄 À attester | ⏳ **Action propriétaire** : révoquer/restreindre `AIzaSyCYauGS…` et `AIzaSyAkWnXd…` en console Google Cloud/Firebase, MAJ du secret Actions `GOOGLE_SERVICES_JSON` | Historique purgé (0/11 valeurs) ; 2 alertes Secret Scanning résiduelles à résoudre après révocation |
+| 5 forks publics | 🍴 Plan documenté | ⏳ **Action propriétaire** : contacts + takedown GitHub Support si sans réponse | `docs/security/PLAN_PURGE_FORKS_2026-08-11.md` (inventaire + messages types) |
+
+> Checklist propriétaire (#1723) : ① console Neon → reset password + MAJ `DATABASE_URL` Render ;
+> ② console Google/Firebase → révocation des 2 clés + MAJ `GOOGLE_SERVICES_JSON` ;
+> ③ contact des 5 propriétaires de forks (§3 du plan) ; ④ re-vérif health + scan forks ;
+> ⑤ clôture de l'issue #1723 avec les attestations datées.
 
 ## Évolution attendue
 
