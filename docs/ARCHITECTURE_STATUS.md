@@ -103,4 +103,5 @@
 ✅ 90 controllers `app/Http/Controllers/Api/V1/` supprimés
 ✅ 26 services `app/Services/` supprimés (26 doublons Infrastructure)
 ✅ 4 couches `Infrastructure/` créées (Growth, Platform, Onboarding, Training)
+✅ 17 shims `app/Services/` supprimés (2026-08-11, #1728) — répertoire vide/supprimé, consommateurs sur les canoniques
 ✅ 51 fichiers consommateurs mis à jour (imports redirigés vers modules)
