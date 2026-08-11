@@ -213,6 +213,11 @@ $this->artisan('my:command')->assertSuccessful();
 ### 4.3 PR
 
 - **CHANGELOG.md obligatoire** pour tout changement de comportement
+- **Taille du CHANGELOG** : `CHANGELOG.md` doit rester lisible (< 150 Ko).
+  À chaque release : archiver dans `CHANGELOG_ARCHIVE.md` les sections sorties du
+  périmètre (6 mois + release courante condensée si > 50 Ko + `[Unreleased]`),
+  et nettoyer `docs/archive/` des fichiers non référencés (l'historique git
+  conserve tout) — issue #1729.
 - **CI doit etre vert** — GitHub Actions est la source de verite (pas la validation locale)
 - Workflows critiques : `backend`, `backend quality`, `mobile`, `build`, `lint`, `type-check`, `test Node 20`, `CodeQL`, `governance`
 
