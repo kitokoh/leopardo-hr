@@ -1335,3 +1335,7 @@ Réparation de la suite backend (tests.yml + payroll-ci) sur les vraies migratio
 Nouvelle commande console `biometric:purge-expired` (rétention par défaut 24 mois, options `--company` et `--dry-run`) qui nullifie les références de templates biométriques expirées (contrat terminé depuis > N mois, ou consentement datant de > N mois quand aucune fin de contrat n'est renseignée), tenant par tenant via `TenantManager::withinTenant`, tracée dans `audit_logs` (action `biometric_templates_purged`), planifiée hebdomadairement (`routes/console.php`, `onOneServer`). Aucun endpoint HTTP ajouté/modifié.
 
 - Scenario a valider : `tests/Feature/BiometricPurgeExpiredTest` (purgé après fin de contrat / non-purgé employé actif / consentement expiré sans contrat / idempotence / dry-run / demandes d'enrôlement / société inconnue) + politique de rétention v2 dans `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md`.
+
+Note 2026-08-11 (#1728) : suppression du repertoire legacy `api/app/Services/` (17 shims `class_alias` backward-compat vers les canoniques `App\Core\…` / `App\Modules\…`). Seule reference mise a jour : `PartnerService.php` (Billing) pointe desormais `App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor`. Aucun endpoint HTTP ajoute/modifie, aucun contrat de reponse change.
+
+- Scenario a valider : suite backend complete verte (PHP 8.4 + PostgreSQL 16 + Redis 7) + PHPStan + coverage — la suppression ne doit casser aucun import (grep `App\Services\` = 0 reference residuelle).
