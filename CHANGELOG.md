@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Fixed
+- _(entrées de la prochaine release — rien encore)_
+
+## [4.24.0] - 2026-08-11
+
 ### Security
 - **audit 2026-08-10 (#1694–#1712) — complétions revue :** purge ponctuelle du miroir Hive legacy du JWT au démarrage des 4 apps mobiles (#1700) ; login démo `platform_admin` gaté `kDebugMode` (aligné employee/hr/manager, #1697) ; `client_secret` SSO préservé lors d'une réécriture de config sans secret (#1694) ; URLs backend entièrement centralisées dans `src/lib/backend-url.ts` (checkout, lead-capture, signup, verify, careers, api-client, login, kiosk) (#1701).
 - **audit 2026-08-10 (#1694–#1712) — complétions revue :** `per_page` plafonné à 100 sur Growth/Cameras/Notification/CabinetShare + contrat de réponse `data` restauré (liste simple + `meta`, jamais de paginator brut) (#1703) ; `AccrueLeaveBalances` : une transaction par chunk (savepoints par employé) au lieu d'une par employé (#1703) ; follow-up exclusion iCloud iOS documenté (roadmap Edge) (#1700).
