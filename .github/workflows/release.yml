@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  checks: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -49,6 +50,62 @@ jobs:
 
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "Release tag: ${TAG}"
+
+      - name: Verify tag commit is on main
+        id: verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.tag.outputs.tag }}"
+          TAG_COMMIT=$(git rev-parse "${TAG}^{commit}")
+          echo "tag_commit=${TAG_COMMIT}" >> "$GITHUB_OUTPUT"
+
+          # Le tag doit pointer sur un commit de `main` (jamais un tag orphelin
+          # ou un tag pousse depuis un clone stale). Issue #1722.
+          git fetch origin main --quiet
+          if ! git merge-base --is-ancestor "${TAG_COMMIT}" "origin/main"; then
+            echo "::error::Le tag ${TAG} (commit ${TAG_COMMIT}) n'est pas un ancetre de origin/main — release refusee."
+            exit 1
+          fi
+          echo "Tag ${TAG} -> ${TAG_COMMIT} (sur main) : OK"
+
+      - name: Verify required checks on the release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ steps.verify.outputs.tag_commit }}"
+          REQUIRED=( \
+            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
+            "PHPStan — Strict (Core/Modules/Shared, level 8)" \
+            "Module Structure Validator" \
+            "Frontend — ESLint + TypeScript" \
+            "actionlint (+ shellcheck)" \
+          )
+          FAILED=()
+          for ctx in "${REQUIRED[@]}"; do
+            RUNS=$(curl -fsSL \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100" \
+              | jq -c --arg ctx "$ctx" '[.check_runs[] | select(.name == $ctx) | .conclusion]')
+            COUNT=$(jq 'length' <<<"$RUNS")
+            if [[ "${COUNT}" -eq 0 ]]; then
+              echo "::notice::${ctx}: aucun run sur ${SHA} (workflow non declenche sur push) — non bloquant"
+              continue
+            fi
+            CONC=$(jq -r 'unique | join(",")' <<<"$RUNS")
+            if [[ "${CONC}" == *"failure"* || "${CONC}" == *"timed_out"* || "${CONC}" == *"cancelled"* ]]; then
+              echo "::error::Check requis en echec sur ${SHA} : ${ctx} (${CONC})"
+              FAILED+=("${ctx}")
+            else
+              echo "::notice::${ctx} -> ${CONC} : OK"
+            fi
+          done
+          if [[ ${#FAILED[@]} -gt 0 ]]; then
+            echo "::error::Release bloquee — checks requis en echec : ${FAILED[*]}"
+            exit 1
+          fi
+          echo "Required checks: all green (or not run on push) : OK"
 
       - name: Extract changelog for this version
         id: changelog
