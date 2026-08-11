@@ -33,6 +33,13 @@
 /api/app/Policies/          @kitokoh
 /api/config/                @kitokoh
 
-# Audit #1712 : @kitokoh est seul propriétaire — la protection de branche
-# exige une revue approuvée ; pour les chemins sensibles (workflows,
-# middleware, configs, seeders), prévoir un second reviewer qualifié.
+# Audit #1712 + issue #1730 : @kitokoh est seul propriétaire humain aujourd'hui.
+# La protection de branche exige une revue approuvée (1 approval) pour merger sur
+# main. Procédure de revue croisée documentée (issue #1730) :
+#   1. L'auteur auto-revues sa PR avec la checklist .github/PULL_REQUEST_TEMPLATE.md ;
+#   2. Pour les chemins sensibles (workflows, middleware, configs, seeders,
+#      openapi.yaml), la revue requiert l'approbation d'un reviewer alternatif
+#      qualifié (contributeur/mainteneur avec historique sur le chemin, ou audit
+#      croisé tracé dans la PR) — cf. CONTRIBUTING.md « Revue croisée » ;
+#   3. Dès qu'un second mainteneur humain rejoint, l'ajouter ici par chemin
+#      (ex. @second-maintainer) pour répartir les révisions obligatoires.
