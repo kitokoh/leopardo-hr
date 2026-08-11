@@ -35,6 +35,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var Employee $expired */
         $expired = Employee::factory()->create([
             'company_id' => $company->id,
+            'status' => 'archived', // sorti du tenant — éligible à la purge (jamais un actif)
             'contract_end' => now()->subMonths(30)->format('Y-m-d'),
             'biometric_face_enabled' => true,
             'biometric_face_reference_path' => 'biometrics/faces/expired.jpg',
@@ -113,6 +114,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var Employee $expired */
         $expired = Employee::factory()->create([
             'company_id' => $company->id,
+            'status' => 'archived', // sorti du tenant — éligible à la purge (jamais un actif)
             'contract_end' => null,
             'biometric_consent_at' => now()->subMonths(30),
             'biometric_fingerprint_enabled' => true,
@@ -137,6 +139,7 @@ class BiometricPurgeExpiredTest extends TestCase
 
         Employee::factory()->create([
             'company_id' => $company->id,
+            'status' => 'archived', // sorti du tenant — éligible à la purge (jamais un actif)
             'contract_end' => now()->subMonths(36)->format('Y-m-d'),
             'biometric_face_reference_path' => 'biometrics/faces/x.jpg',
         ]);
@@ -171,6 +174,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var Employee $expired */
         $expired = Employee::factory()->create([
             'company_id' => $company->id,
+            'status' => 'archived', // sorti du tenant — éligible à la purge (jamais un actif)
             'contract_end' => now()->subMonths(30)->format('Y-m-d'),
             'biometric_face_reference_path' => 'biometrics/faces/dry.jpg',
         ]);
@@ -201,6 +205,7 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var Employee $expired */
         $expired = Employee::factory()->create([
             'company_id' => $company->id,
+            'status' => 'archived', // sorti du tenant — éligible à la purge (jamais un actif)
             'contract_end' => now()->subMonths(30)->format('Y-m-d'),
             'biometric_face_reference_path' => 'biometrics/faces/emp.jpg',
         ]);
@@ -243,6 +248,11 @@ class BiometricPurgeExpiredTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create();
 
+        // Fichiers présents sur le disque (template réel) — la purge ne doit
+        // ni nullifier les références ni supprimer les fichiers d'un actif.
+        Storage::disk('local')->put('biometrics/faces/active.jpg', 'fake-face');
+        Storage::disk('local')->put('biometrics/fp/active.jpg', 'fake-fp');
+
         /** @var Employee $active */
         $active = Employee::factory()->create([
             'company_id' => $company->id,
@@ -276,6 +286,8 @@ class BiometricPurgeExpiredTest extends TestCase
         // être REFUSÉE — pas coercée en 1 mois (purge massive silencieuse).
         /** @var Company $company */
         $company = Company::factory()->create();
+
+        Storage::disk('local')->put('biometrics/faces/kept.jpg', 'fake-face');
 
         /** @var Employee $expired */
         $expired = Employee::factory()->create([
