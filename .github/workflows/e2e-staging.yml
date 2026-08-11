@@ -188,6 +188,27 @@ jobs:
         run: |
                     npx playwright install --with-deps chromium
 
+      - name: Warm up staging instance (Render cold-start, issue #1725)
+        working-directory: front/admin-dashboard
+        env:
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+        run: |
+          set -euo pipefail
+          URL="${BASE_URL}/login"
+          echo "Warming up ${URL} (instance Render free tier s'endort apres ~15 min d'inactivite)..."
+          for attempt in {1..30}; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${URL}" || echo 000)
+            if [[ "${code}" != "000" ]]; then
+              echo "Warm-up OK (HTTP ${code}) apres ${attempt} tentative(s) — attente de stabilisation 20s"
+              sleep 20
+              exit 0
+            fi
+            echo "Tentative ${attempt}/30 : HTTP ${code} — nouvel essai dans 5s"
+            sleep 5
+          done
+          echo "Warm-up KO apres 30 tentatives (instance injoignable)"
+          exit 1
+
       - name: Run Playwright E2E tests
         working-directory: front/admin-dashboard
         env:
