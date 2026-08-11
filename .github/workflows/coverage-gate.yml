@@ -126,7 +126,9 @@ jobs:
           $xml = simplexml_load_file('storage/coverage/clover.xml');
           if ($xml === false) { echo "_Aucune donnee de couverture par module._\n"; exit; }
           $modules = [];
-          foreach ($xml->file as $file) {
+          // NB : clover.xml a une structure <coverage><project><file> — il faut
+          // xpath('//file') (comme le step global) et non $xml->file (vide).
+          foreach ($xml->xpath('//file') as $file) {
               $metrics = $file->metrics;
               if ($metrics === null) continue;
               $name = (string) $file['name'];
@@ -155,7 +157,7 @@ jobs:
           cat storage/coverage/modules.md >> "$GITHUB_STEP_SUMMARY"
 
           # Warning non bloquant si Payroll < 80 % (cible S-4 #1602 / audit #1726).
-          PAYROLL_PCT=$(grep '^| Payroll ' storage/coverage/modules.md | head -1 | awk -F'|' '{print $3}' | tr -d ' %')
+          PAYROLL_PCT=$(grep '^| Payroll ' storage/coverage/modules.md | head -1 | awk -F'|' '{print $3}' | tr -d ' %' || true)
           if [[ -n "${PAYROLL_PCT}" ]]; then
             if (( $(echo "${PAYROLL_PCT} < 80" | bc -l) )); then
               echo "::warning::Couverture du module Payroll = ${PAYROLL_PCT}% (< 80% cible S-4 #1602) — non bloquant (issue #1726)."
