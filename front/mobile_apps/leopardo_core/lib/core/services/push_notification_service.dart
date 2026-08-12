@@ -83,7 +83,8 @@ class PushNotificationService {
   }
 
   Future<void> _initLocalNotifications() async {
-    const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
+    const androidInit =
+        AndroidInitializationSettings('@drawable/ic_notification');
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -95,7 +96,7 @@ class PushNotificationService {
     );
 
     await _localNotifications.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: (response) {
         debugPrint('Local notification tapped: ${response.payload}');
       },
@@ -104,8 +105,7 @@ class PushNotificationService {
     if (Platform.isAndroid) {
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
+              AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(
             const AndroidNotificationChannel(
               'leopardo_hr_default',
@@ -215,10 +215,10 @@ class PushNotificationService {
     );
 
     await _localNotifications.show(
-      notification.hashCode,
-      notification.title ?? 'Leopardo HR',
-      notification.body ?? '',
-      details,
+      id: notification.hashCode,
+      title: notification.title ?? 'Leopardo HR',
+      body: notification.body ?? '',
+      notificationDetails: details,
       payload: message.data.toString(),
     );
   }
