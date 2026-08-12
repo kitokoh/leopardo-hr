@@ -39,7 +39,9 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
     public function test_settlement_resolves_rules_from_company_country(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_base' => 60000.0,
@@ -70,7 +72,9 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         // Pays inconnu du moteur (ex. 'US') : repli silencieux sur les défauts DZ
         // (1 mois/an, 0 j de préavis) — aucune exception en fin de contrat
         // (régression évitée : avant F-31 le service utilisait toujours ces défauts).
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'US']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_base' => 60000.0,

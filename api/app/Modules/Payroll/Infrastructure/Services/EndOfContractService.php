@@ -61,7 +61,7 @@ class EndOfContractService
         // (défaut DZ) et l'ancienneté de l'employé. Pays non enregistré dans le
         // moteur → repli sur les défauts DZ (comportement historique : 1 mois/an,
         // 0 jour de préavis), sans jamais lever d'exception en fin de contrat.
-        $countryCode = $employee->company?->country ?? 'DZ';
+        $countryCode = $employee->company->country ?? 'DZ';
 
         try {
             $rules = $this->calculator->getRules($countryCode);
