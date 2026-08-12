@@ -101,6 +101,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authTryDemoAccount => 'Demo hesabini dene';
 
   @override
+  String get authTwoFactorRequired => '2FA kodu gereklidir.';
+
+  @override
   String get commonLanguageLabel => 'Dil';
 
   @override
@@ -514,6 +517,15 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get usersConfirmDelete =>
       ':name kullanicisini silmek istediginizden emin misiniz?';
+
+  @override
+  String get usersErrorsNameRequired => 'Ad soyad gereklidir.';
+
+  @override
+  String get usersErrorsPasswordRequired => 'Şifre gereklidir.';
+
+  @override
+  String get usersErrorsFixFields => 'Lütfen kırmızı alanları düzeltin';
 
   @override
   String get dashboardTitle => 'Kontrol Paneli';
