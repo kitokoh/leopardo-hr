@@ -7,6 +7,7 @@
 ### Fixed
 - _(entrées de la prochaine release — rien encore)_
 ### Chore
+- **infra : migration Git LFS des assets binaires (#1727).** `*.png/jpg/jpeg/webp/webm/mp4/gif/apk/aab` trackés en LFS (`.gitattributes`) ; `lfs: true` ajouté à tous les `actions/checkout` des 34 workflows ; migration de l'historique planifiée (force-push coordonné, clone ≥ 50 % plus léger).
 - **docs(oss) : SUPPORT.md + workflows PLAN_ACTION2 internes (#1730 #1731).** SUPPORT.md créé (canaux + SLA) et référencé depuis CONTRIBUTING.md ; bannière « INTERNAL GOVERNANCE » + `if:` anti-fork sur les 4 workflows PLAN_ACTION2 ; cartographie publique/interne dans .github/workflows/README.md ; procédure de revue croisée documentée (CODEOWNERS).
 - **release : préparation v4.24.0 (#1722).** Section `## [4.24.0] - 2026-08-11` dans le CHANGELOG + `PROGRAM_VERSION = 4.24.0` (PILOTAGE.md). Après merge : tag `v4.24.0` → release.yml crée la GitHub Release (notes auto).
 - **release.yml durci (#1722) :** vérifie que le tag pointe sur `main` et que les checks requis ne sont pas en échec avant de créer la release ; badge « Release » ajouté au README.

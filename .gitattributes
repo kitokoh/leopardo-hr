@@ -14,12 +14,19 @@ CHANGELOG.md merge=union
 *.sh    text eol=lf
 *.neon  text eol=lf
 
-# Fichiers binaires
-*.png   binary
-*.jpg   binary
-*.jpeg  binary
-*.gif   binary
+# Fichiers binaires — trackés en Git LFS (issue #1727)
+# Les fichiers LFS sont stockés hors-git (GitHub LFS) ; le checkout CI doit
+# utiliser actions/checkout avec lfs: true (fait sur tous les workflows).
+*.png   filter=lfs diff=lfs merge=lfs -text
+*.jpg   filter=lfs diff=lfs merge=lfs -text
+*.jpeg  filter=lfs diff=lfs merge=lfs -text
+*.webp  filter=lfs diff=lfs merge=lfs -text
+*.webm  filter=lfs diff=lfs merge=lfs -text
+*.mp4   filter=lfs diff=lfs merge=lfs -text
+*.gif   filter=lfs diff=lfs merge=lfs -text
+*.apk   filter=lfs diff=lfs merge=lfs -text
+*.aab   filter=lfs diff=lfs merge=lfs -text
+
+# Autres binaires (hors LFS pour l'instant)
 *.ico   binary
 *.pdf   binary
-*.apk   binary
-*.aab   binary

@@ -39,6 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          lfs: true
           # fetch-depth: 0 (pas juste 2) car `github.event.before` peut etre
           # plusieurs commits en arriere si le push contient plus d'un
           # commit (ex. merge --no-ff avec des commits de la branche de
