@@ -18,9 +18,11 @@ use Carbon\Carbon;
  * salaire de base, ancienneté (contract_start), jours de congés non pris,
  * référence 12 mois, préavis.
  *
- * Régime DZ (documenté, à valider comptable) :
- *  - préavis : 0 par défaut (à renseigner selon le contrat / l'exécution) ;
- *  - indemnité d'ancienneté : 1 mois de salaire par année (Loi 90-11, plafond
+ * Régime DZ (documenté, à valider comptable — FOCUS 2 F-31, règles pays) :
+ *  - préavis : durée légale résolue via `CountryRulesInterface::noticePeriodDays`
+ *    (valeur pilote DZ : 0 — à renseigner selon le contrat / l'exécution) ;
+ *  - indemnité d'ancienneté : 1 mois de salaire par année via
+ *    `CountryRulesInterface::severanceMonthsPerYear` (Loi 90-11, plafond
  *    légal non appliqué ici — à paramétrer par entreprise).
  */
 class EndOfContractService
@@ -53,6 +55,20 @@ class EndOfContractService
         $unpaidLeaveDays = $this->unpaidLeaveDays($employee, $endDate);
         $referenceGross = $this->referenceGross12Months($employee, $endDate);
 
+        // FOCUS 2 (F-31) : préavis et indemnité de licenciement sont portés
+        // par les règles pays (CountryRulesInterface) au lieu de valeurs codées
+        // en dur — la valeur applicable est résolue selon le pays de la société
+        // (défaut DZ) et l'ancienneté de l'employé. Pays non enregistré dans le
+        // moteur → repli sur les défauts DZ (comportement historique : 1 mois/an,
+        // 0 jour de préavis), sans jamais lever d'exception en fin de contrat.
+        $countryCode = $employee->company->country ?? 'DZ';
+
+        try {
+            $rules = $this->calculator->getRules($countryCode);
+        } catch (\InvalidArgumentException) {
+            $rules = $this->calculator->getRules('DZ');
+        }
+
         $breakdown = $this->calculator->computeFinalSettlement(
             monthlyBase: $monthlyBase,
             yearsOfService: $yearsOfService,
@@ -60,8 +76,8 @@ class EndOfContractService
             workingDays: $workingDays,
             unpaidLeaveDays: $unpaidLeaveDays,
             referenceGross12Months: $referenceGross,
-            severanceMonthsPerYear: 1.0,
-            noticeDays: 0.0,
+            severanceMonthsPerYear: $rules->severanceMonthsPerYear($yearsOfService),
+            noticeDays: $rules->noticePeriodDays($yearsOfService),
         );
 
         return [

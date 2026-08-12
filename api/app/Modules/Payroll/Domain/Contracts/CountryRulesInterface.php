@@ -106,4 +106,23 @@ interface CountryRulesInterface
      * @return array<int, array{up_to_hours: float|null, multiplier: float}>
      */
     public function overtimeRateTiers(): array;
+
+    /**
+     * Legal notice period (délai de préavis / preaviso) in days, given the
+     * employee's years of service. Used to compute the compensatory notice
+     * pay when the notice is not served (indemnité compensatrice de préavis).
+     * Country rules own the legal duration; 0 means "no statutory notice pay
+     * by default — the contract/execution decides" (historic Leopardo
+     * behaviour, F-08). FOCUS 2 (F-31).
+     */
+    public function noticePeriodDays(float $yearsOfService): float;
+
+    /**
+     * Severance months of base salary per year of service (indemnité de
+     * licenciement / indemnité d'ancienneté, solde de tout compte). May be
+     * tiered by seniority in some countries — implementations must return
+     * the value applicable for the given yearsOfService. Historic default:
+     * 1.0 month per year (F-08). FOCUS 2 (F-31).
+     */
+    public function severanceMonthsPerYear(float $yearsOfService): float;
 }

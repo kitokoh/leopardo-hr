@@ -132,4 +132,31 @@ class AlgeriaPayrollRules extends AbstractCountryRules
             ['up_to_hours' => null, 'multiplier' => 1.5],
         ];
     }
+
+    /**
+     * FOCUS 2 (F-31) — Délai de préavis légal (Loi 90-11).
+     *
+     * Valeur pilote : 0 jour — le préavis réel est fixé par le contrat /
+     * son exécution (comportement historique EndOfContractService, F-08).
+     * Les durées légales candidates (Loi 90-11 art. 98 : 1 mois pour une
+     * ancienneté < 10 ans, 2 mois au-delà) sont documentées dans
+     * docs/payroll/DZ_COMPLIANCE.md §7 mais NON verrouillées tant qu'un
+     * expert comptable DZ ne les a pas validées (confidenceLevel='pilot').
+     */
+    public function noticePeriodDays(float $yearsOfService): float
+    {
+        return 0.0;
+    }
+
+    /**
+     * FOCUS 2 (F-31) — Indemnité de licenciement / d'ancienneté (Loi 90-11).
+     *
+     * 1 mois de salaire par année d'ancienneté (valeur historique F-08,
+     * dorénavant portée par les règles pays). Le plafond légal n'est pas
+     * appliqué ici — à paramétrer par entreprise / à valider comptable.
+     */
+    public function severanceMonthsPerYear(float $yearsOfService): float
+    {
+        return 1.0;
+    }
 }
