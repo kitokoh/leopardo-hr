@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
 
       - name: Lint api/openapi.yaml
         run: npx --yes @redocly/cli@1.34.5 lint api/openapi.yaml
@@ -63,6 +65,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
 
       - name: Compare routes vs openapi.yaml
         # Toute route NON documentée ET NON allowlistée fait échouer le job.
