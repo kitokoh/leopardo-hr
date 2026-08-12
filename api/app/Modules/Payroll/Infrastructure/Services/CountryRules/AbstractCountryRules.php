@@ -278,4 +278,24 @@ abstract class AbstractCountryRules implements CountryRulesInterface
 
         return $tax;
     }
+
+    /**
+     * Historic default: no statutory notice pay (the contract/execution
+     * decides). Countries with a documented legal notice period override
+     * this. FOCUS 2 (F-31).
+     */
+    public function noticePeriodDays(float $yearsOfService): float
+    {
+        return 0.0;
+    }
+
+    /**
+     * Historic default: one month of base salary per year of service
+     * (F-08). Countries may override with tiered legal formulas. FOCUS 2
+     * (F-31).
+     */
+    public function severanceMonthsPerYear(float $yearsOfService): float
+    {
+        return 1.0;
+    }
 }

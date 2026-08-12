@@ -97,13 +97,23 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 
 ## 7. À compléter (prochaine itération — besoin expert paie DZ)
 
-1. Congés payés : acquisition 2,5 j/mois, plafond, indemnité (1/10ᵉ vs maintien).
-2. Préavis : durées légales, indemnité compensatrice.
-3. Indemnité de licenciement (formule légale).
-4. Solde de tout compte + certificat de travail : mentions.
-5. Heures supplémentaires : majorations 25 %/50 %, contingent.
-6. Assurance chômage et autres cotisations éventuelles.
-7. Rétroactifs et régularisations : règles.
+**Statut au 2026-08-12 (FOCUS 2 — F-31)** : la mécanique de fin de contrat
+(préavis + indemnité de licenciement) est désormais **portée par les règles
+pays** (`CountryRulesInterface::noticePeriodDays` / `severanceMonthsPerYear`,
+consommées par `EndOfContractService` au lieu de valeurs codées en dur).
+
+| Sujet | Statut | Référence | À faire |
+|---|---|---|---|
+| Congés payés (2,5 j/mois, 1/10ᵉ vs maintien) | ✅ implémenté + golden tests | F-07 (#1537), loi 90-11 | Assiette « 12 mois » à confirmer |
+| Préavis — durées légales | ⚙️ mécanisme implémenté (règles pays) | loi 90-11 art. 98 | Valeur DZ pilot = 0 j (contrat). **Candidat non verrouillé : 1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans — à valider expert comptable DZ** |
+| Indemnité de licenciement | ⚙️ implémenté : 1 mois/an via règles pays | loi 90-11 | **Plafond légal non appliqué** (à paramétrer/valider) |
+| Solde de tout compte + certificat de travail | ✅ implémenté + golden tests | F-08 (#1538) | — |
+| Heures supplémentaires (25 %/50 %) | ⚙️ implémenté (palier unique ×1,5 pilot) | loi 90-11 art. 33 | Seuil conventionnel à confirmer |
+| Assurance chômage | 📝 **à identifier** | — | Aucune cotisation implémentée ; confirmer l'existence/l'assiette avant de coder |
+| Rétroactifs et régularisations | 📝 à documenter | — | Mécanique de bulletin rétroactif non implémentée (roadmap) |
+
+> Règle (inchangée) : toute modification de taux/durée = mise à jour
+> **simultanée** du référentiel + du golden test + du CHANGELOG.
 
 ## Procédure de mise à jour
 
