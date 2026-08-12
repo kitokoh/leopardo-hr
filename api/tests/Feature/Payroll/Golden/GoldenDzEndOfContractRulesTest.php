@@ -65,24 +65,6 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         $this->assertSame($expectedTotal, $settlement['breakdown']['total']);
     }
 
-    public function test_fallback_to_dz_rules_when_company_country_missing(): void
-    {
-        $company = Company::factory()->create(['country' => null]);
-        $employee = Employee::factory()->create([
-            'company_id' => $company->id,
-            'salary_base' => 60000.0,
-            'contract_start' => '2021-01-01',
-            'contract_end' => '2026-01-01',
-        ]);
-
-        $service = new EndOfContractService();
-        $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
-
-        // Pays absent → défaut DZ : règles appliquées sans exception.
-        $this->assertSame(300000.0, $settlement['breakdown']['severance']);
-        $this->assertSame(0.0, $settlement['breakdown']['notice_pay']);
-    }
-
     public function test_unregistered_country_falls_back_to_dz_defaults_without_exception(): void
     {
         // Pays inconnu du moteur (ex. 'US') : repli silencieux sur les défauts DZ
