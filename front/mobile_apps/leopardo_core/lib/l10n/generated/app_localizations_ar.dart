@@ -102,6 +102,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get authTryDemoAccount => 'تجربة حساب تجريبي';
 
   @override
+  String get authTwoFactorRequired => 'رمز التحقق الثنائي مطلوب.';
+
+  @override
   String get commonLanguageLabel => 'اللغة';
 
   @override
@@ -511,6 +514,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get usersConfirmDelete => 'هل انت متأكد من رغبتك في حذف :name؟';
+
+  @override
+  String get usersErrorsNameRequired => 'الاسم الكامل مطلوب.';
+
+  @override
+  String get usersErrorsPasswordRequired => 'كلمة المرور مطلوبة.';
+
+  @override
+  String get usersErrorsFixFields => 'يرجى تصحيح الحقول المميزة';
 
   @override
   String get dashboardTitle => 'لوحة التحكم';

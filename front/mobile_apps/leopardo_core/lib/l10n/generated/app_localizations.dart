@@ -276,6 +276,12 @@ abstract class AppLocalizations {
   /// **'Tester avec un compte demo'**
   String get authTryDemoAccount;
 
+  /// No description provided for @authTwoFactorRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code 2FA est requis.'**
+  String get authTwoFactorRequired;
+
   /// No description provided for @commonLanguageLabel.
   ///
   /// In fr, this message translates to:
@@ -1073,6 +1079,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Etes-vous sur de vouloir supprimer :name ?'**
   String get usersConfirmDelete;
+
+  /// No description provided for @usersErrorsNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom complet est requis.'**
+  String get usersErrorsNameRequired;
+
+  /// No description provided for @usersErrorsPasswordRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le mot de passe est requis.'**
+  String get usersErrorsPasswordRequired;
+
+  /// No description provided for @usersErrorsFixFields.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez corriger les champs en rouge'**
+  String get usersErrorsFixFields;
 
   /// No description provided for @dashboardTitle.
   ///

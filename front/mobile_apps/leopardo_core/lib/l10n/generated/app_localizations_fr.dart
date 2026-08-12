@@ -105,6 +105,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authTryDemoAccount => 'Tester avec un compte demo';
 
   @override
+  String get authTwoFactorRequired => 'Le code 2FA est requis.';
+
+  @override
   String get commonLanguageLabel => 'Langue';
 
   @override
@@ -520,6 +523,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get usersConfirmDelete => 'Etes-vous sur de vouloir supprimer :name ?';
+
+  @override
+  String get usersErrorsNameRequired => 'Le nom complet est requis.';
+
+  @override
+  String get usersErrorsPasswordRequired => 'Le mot de passe est requis.';
+
+  @override
+  String get usersErrorsFixFields => 'Veuillez corriger les champs en rouge';
 
   @override
   String get dashboardTitle => 'Tableau de bord';
