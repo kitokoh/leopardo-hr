@@ -84,7 +84,7 @@ jobs:
           FAILED=()
           for ctx in "${REQUIRED[@]}"; do
             RUNS=$(curl -fsSL \
-              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Authorization: Bearer ${{ github.token }}" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100" \
               | jq -c --arg ctx "$ctx" '[.check_runs[] | select(.name == $ctx) | .conclusion]')
@@ -147,6 +147,16 @@ jobs:
               BODY=$(git log --pretty=format:"- %s (%h)" --no-merges -20)
             fi
             BODY="## Changes\n\n${BODY}"
+          fi
+
+          # Limite API GitHub : corps de release <= 125 000 caracteres. Si la
+          # section CHANGELOG depasse (ex. v4.24.0 : 344 Ko), tronquer en gardant
+          # la partie la plus recente + pointeur vers le CHANGELOG complet.
+          MAX_BODY_CHARS=118000
+          if [[ ${#BODY} -gt ${MAX_BODY_CHARS} ]]; then
+            echo "::warning::Section CHANGELOG de ${#BODY} caracteres — tronquee a ${MAX_BODY_CHARS} (limite GitHub 125 Ko)."
+            BODY="${BODY:0:${MAX_BODY_CHARS}}"
+            BODY+=$'\n\n---\n> ⚠️ Notes tronquees (limite GitHub 125 Ko). Historique complet : CHANGELOG.md (section ['"${VERSION}"']) — https://github.com/'"${GITHUB_REPOSITORY}"'/blob/main/CHANGELOG.md'
           fi
 
           # Write to file to avoid escaping issues
