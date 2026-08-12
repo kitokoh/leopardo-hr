@@ -108,7 +108,7 @@ jobs:
         # Audit §3.3 / Plan P2: now shares .github/paths-filters.yml with
         # tests.yml's detect-changes job instead of a second hand-rolled
         # `git diff` + `grep -E` regex that could (and did) drift out of sync.
-        uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         with:
           filters: .github/paths-filters.yml
           base: ${{ steps.parent.outputs.sha }}
@@ -136,7 +136,7 @@ jobs:
       - name: Verify required workflow conclusions for deployment SHA
         if: steps.context.outputs.should_deploy == 'pending-validation'
         id: workflow_gate
-        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             if (`${{ github.event_name }}` === 'workflow_dispatch') {
