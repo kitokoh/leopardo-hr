@@ -60,6 +60,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
       - name: Validate CSV and dependencies
         shell: pwsh
         run: ./dev-hub/tools/validate-plan-action2.ps1
@@ -71,6 +73,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
       - name: Sync PLAN_ACTION2 tickets
         shell: pwsh
         env:
