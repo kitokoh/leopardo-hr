@@ -11,6 +11,7 @@
 - **release : préparation v4.24.0 (#1722).** Section `## [4.24.0] - 2026-08-11` dans le CHANGELOG + `PROGRAM_VERSION = 4.24.0` (PILOTAGE.md). Après merge : tag `v4.24.0` → release.yml crée la GitHub Release (notes auto).
 - **release.yml durci (#1722) :** vérifie que le tag pointe sur `main` et que les checks requis ne sont pas en échec avant de créer la release ; badge « Release » ajouté au README.
 - **hygiène CHANGELOG + docs/archive (#1729) :** CHANGELOG.md repassé sous 150 Ko (83 Ko), historique intégral préservé dans CHANGELOG_ARCHIVE.md (484 Ko, zéro perte) ; docs/archive réduit de 62 % (fichiers non référencés supprimés, git conserve tout) ; règle d'archivage ajoutée à CONVENTIONS.md §4.3.
+- **chore(deps): bump backend-frontend-dependencies (/api) — postcss 8.5.26 + vite 8.2.1 (#1745).** Dependabot : `postcss` ^8.5.25 → ^8.5.26 et `vite` ^8.2.0 → ^8.2.1 (api/package.json + api/package-lock.json).
 
 ## [4.24.0] - 2026-08-11
 
