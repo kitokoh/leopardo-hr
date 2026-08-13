@@ -1196,6 +1196,333 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
+
+  /admin/dashboard/stats:
+    get:
+      tags: ["Platform"]
+      summary: "Statistiques globales du cockpit super-admin"
+      description: "Agregats plateforme pour le dashboard admin (contrat SPA front/admin-dashboard, issue #1764) : utilisateurs, companies, abonnements actifs, revenu mensuel, tickets support et sante systeme."
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Statistiques du cockpit"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalUsers:
+                    type: integer
+                  totalCompanies:
+                    type: integer
+                  activeSubscriptions:
+                    type: integer
+                  monthlyRevenue:
+                    type: number
+                  newUsersToday:
+                    type: integer
+                  newCompaniesToday:
+                    type: integer
+                  supportTickets:
+                    type: integer
+                  systemHealth:
+                    type: string
+                    enum: [good, warning, error]
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /admin/dashboard/activities:
+    get:
+      tags: ["Platform"]
+      summary: "Activites recentes plateforme (cockpit super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des activites recentes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        type: { type: string }
+                        message: { type: string }
+                        entity: { type: string }
+                        created_at: { type: string, format: date-time }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/dashboard/alerts:
+    get:
+      tags: ["Platform"]
+      summary: "Alertes systeme du cockpit super-admin"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Alertes calculees (hors alertes dismissées)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        level: { type: string, enum: [critical, warning, info] }
+                        message: { type: string }
+                        created_at: { type: string, format: date-time }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/dashboard/alerts/{alertKey}/dismiss:
+    post:
+      tags: ["Platform"]
+      summary: "Masquer une alerte du cockpit (persiste le dismiss)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: alertKey
+          required: true
+          schema:
+            type: string
+            pattern: "[A-Za-z0-9_-]+"
+      responses:
+        "202":
+          description: "Alerte dismissée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: dismissed }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/edge-nodes:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les nœuds Edge de tous les tenants (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des nœuds Edge"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/edge-nodes/{nodeId}/sync:
+    post:
+      tags: ["Platform"]
+      summary: "Forcer la synchronisation d'un nœud Edge (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: nodeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: "Synchronisation déclenchée"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/edge-nodes/{nodeId}/revoke:
+    post:
+      tags: ["Platform"]
+      summary: "Révoquer un nœud Edge et sa licence (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: nodeId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: "Nœud révoqué"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/ai/conversations:
+    get:
+      tags: ["Platform"]
+      summary: "Conversations IA cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des conversations IA"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/ai/conversations/{conversation}/messages:
+    get:
+      tags: ["Platform"]
+      summary: "Messages d'une conversation IA (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: conversation
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Messages de la conversation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/fleet/alerts:
+    get:
+      tags: ["Platform"]
+      summary: "Alertes flotte cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des alertes flotte"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/hr-reports:
+    get:
+      tags: ["Platform"]
+      summary: "Rapports RH cross-tenant (super-admin)"
+      description: "Types : headcount, turnover, absenteeism, payroll_summary, training_progress. Reponse columns/rows attendue par le SPA admin."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [headcount, turnover, absenteeism, payroll_summary, training_progress]
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: "Rapport généré"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      columns:
+                        type: array
+                        items: { type: string }
+                      rows:
+                        type: array
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /admin/platform/marketing/oauth-config:
+    get:
+      tags: ["Platform"]
+      summary: "Config OAuth marketing (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Config par provider (client_secret jamais renvoyé)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Platform"]
+      summary: "Enregistrer la config OAuth d'un provider marketing"
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, client_id, redirect_uri]
+              properties:
+                provider:
+                  type: string
+                  enum: [linkedin, facebook, twitter]
+                client_id:
+                  type: string
+                redirect_uri:
+                  type: string
+                  format: uri
+                client_secret:
+                  type: string
+      responses:
+        "200":
+          description: "Config enregistrée"
+        "422":
+          $ref: "#/components/responses/Validation422"
   /pay-slips:
     get:
       tags: ["Payrolls"]

@@ -49,7 +49,7 @@ class PlatformAdminAiConversationController extends Controller
                 ->first(['messages']);
 
             if ($row === null) {
-                return response()->json(['error' => 'CONVERSATION_NOT_FOUND', 'message' => 'Conversation introuvable.'], 404);
+                return response()->json(['error' => 'CONVERSATION_NOT_FOUND', 'message' => __('platform.conversation_not_found')], 404);
             }
 
             $messages = json_decode((string) $row->messages, true);

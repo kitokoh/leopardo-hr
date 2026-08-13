@@ -191,7 +191,7 @@ class PlatformAdminDashboardController extends Controller
                 ->map(fn ($row): array => [
                     'id' => 'company-'.$row->id,
                     'type' => 'company_created',
-                    'message' => "Nouvelle entreprise : {$row->name}",
+                    'message' => __('platform.activity_company_created', ['name' => $row->name]),
                     'entity' => 'company',
                     'created_at' => $row->created_at,
                 ])
@@ -212,7 +212,7 @@ class PlatformAdminDashboardController extends Controller
                 ->map(fn ($row): array => [
                     'id' => 'ticket-'.$row->id,
                     'type' => 'support_ticket',
-                    'message' => "Ticket support : {$row->subject}",
+                    'message' => __('platform.activity_support_ticket', ['subject' => $row->subject]),
                     'entity' => 'support_ticket',
                     'created_at' => $row->created_at,
                 ])
@@ -234,7 +234,7 @@ class PlatformAdminDashboardController extends Controller
                 ->map(fn ($row): array => [
                     'id' => 'edge-'.$row->id,
                     'type' => 'edge_sync',
-                    'message' => "Sync Edge : {$row->name}",
+                    'message' => __('platform.activity_edge_sync', ['name' => $row->name]),
                     'entity' => 'edge_node',
                     'created_at' => $row->last_sync_at,
                 ])
@@ -255,7 +255,7 @@ class PlatformAdminDashboardController extends Controller
                 ->map(fn ($row): array => [
                     'id' => 'user-'.$row->id,
                     'type' => 'user_signup',
-                    'message' => "Nouvel utilisateur : {$row->first_name} {$row->last_name} ({$row->email})",
+                    'message' => __('platform.activity_user_signup', ['name' => trim("{$row->first_name} {$row->last_name}"), 'email' => $row->email]),
                     'entity' => 'employee',
                     'created_at' => $row->created_at,
                 ])
@@ -289,7 +289,7 @@ class PlatformAdminDashboardController extends Controller
 
             return null;
         } catch (\Throwable) {
-            return $this->alert('redis_unreachable', 'critical', 'Redis injoignable — cache/queue dégradés.');
+            return $this->alert('redis_unreachable', 'critical', __('platform.alert_redis_unreachable'));
         }
     }
 

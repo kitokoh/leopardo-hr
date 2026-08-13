@@ -69,7 +69,7 @@ class PlatformMarketingOAuthConfigController extends Controller
                 ]
             );
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'OAUTH_CONFIG_SAVE_FAILED', 'message' => 'Impossible d\'enregistrer la configuration.'], 500);
+            return response()->json(['error' => 'OAUTH_CONFIG_SAVE_FAILED', 'message' => __('platform.oauth_save_failed')], 500);
         }
 
         return response()->json(['status' => 'saved']);

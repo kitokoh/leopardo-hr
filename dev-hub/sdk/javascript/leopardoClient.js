@@ -120,6 +120,71 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Conversations IA cross-tenant (super-admin) */
+    getAdminAiConversations(options = {}) {
+      return request("GET", "/admin/ai/conversations", options);
+    },
+
+    /** Messages d'une conversation IA (super-admin) */
+    getAdminAiConversationsByConversationMessages(options = {}) {
+      return request("GET", "/admin/ai/conversations/{conversation}/messages", options);
+    },
+
+    /** Activites recentes plateforme (cockpit super-admin) */
+    getAdminDashboardActivities(options = {}) {
+      return request("GET", "/admin/dashboard/activities", options);
+    },
+
+    /** Alertes systeme du cockpit super-admin */
+    getAdminDashboardAlerts(options = {}) {
+      return request("GET", "/admin/dashboard/alerts", options);
+    },
+
+    /** Masquer une alerte du cockpit (persiste le dismiss) */
+    postAdminDashboardAlertsByAlertKeyDismiss(options = {}) {
+      return request("POST", "/admin/dashboard/alerts/{alertKey}/dismiss", options);
+    },
+
+    /** Statistiques globales du cockpit super-admin */
+    getAdminDashboardStats(options = {}) {
+      return request("GET", "/admin/dashboard/stats", options);
+    },
+
+    /** Lister les nœuds Edge de tous les tenants (super-admin) */
+    getAdminEdgeNodes(options = {}) {
+      return request("GET", "/admin/edge-nodes", options);
+    },
+
+    /** Révoquer un nœud Edge et sa licence (super-admin) */
+    postAdminEdgeNodesByNodeIdRevoke(options = {}) {
+      return request("POST", "/admin/edge-nodes/{nodeId}/revoke", options);
+    },
+
+    /** Forcer la synchronisation d'un nœud Edge (super-admin) */
+    postAdminEdgeNodesByNodeIdSync(options = {}) {
+      return request("POST", "/admin/edge-nodes/{nodeId}/sync", options);
+    },
+
+    /** Alertes flotte cross-tenant (super-admin) */
+    getAdminFleetAlerts(options = {}) {
+      return request("GET", "/admin/fleet/alerts", options);
+    },
+
+    /** Rapports RH cross-tenant (super-admin) */
+    getAdminHrReports(options = {}) {
+      return request("GET", "/admin/hr-reports", options);
+    },
+
+    /** Config OAuth marketing (super-admin) */
+    getAdminPlatformMarketingOauthConfig(options = {}) {
+      return request("GET", "/admin/platform/marketing/oauth-config", options);
+    },
+
+    /** Enregistrer la config OAuth d'un provider marketing */
+    putAdminPlatformMarketingOauthConfig(options = {}) {
+      return request("PUT", "/admin/platform/marketing/oauth-config", options);
+    },
+
     /** Couts IA par periode */
     getAiAnalyticsCosts(options = {}) {
       return request("GET", "/ai/analytics/costs", options);
