@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.checkout.keywords,
   ogImage: pageMetadata.checkout.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/checkout',
+  canonical: 'https://gestionemployer-backend.vercel.app/checkout',
   robots: pageMetadata.checkout.robots,
 });
 

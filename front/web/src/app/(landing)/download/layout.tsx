@@ -8,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.download.keywords,
   ogImage: pageMetadata.download.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/download',
+  canonical: 'https://gestionemployer-backend.vercel.app/download',
 });
 
 export default function DownloadLayout({

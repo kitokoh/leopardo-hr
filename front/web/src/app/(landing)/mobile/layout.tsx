@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.mobile.keywords,
   ogImage: pageMetadata.mobile.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/mobile',
+  canonical: 'https://gestionemployer-backend.vercel.app/mobile',
 });
 
 export default function MobileLayout({

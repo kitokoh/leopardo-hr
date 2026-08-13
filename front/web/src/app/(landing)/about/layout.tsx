@@ -8,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.about.keywords,
   ogImage: pageMetadata.about.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/about',
+  canonical: 'https://gestionemployer-backend.vercel.app/about',
 });
 
 export default function AboutLayout({

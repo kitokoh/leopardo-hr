@@ -8,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.changelog.keywords,
   ogImage: pageMetadata.changelog.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/changelog',
+  canonical: 'https://gestionemployer-backend.vercel.app/changelog',
 });
 
 export default function ChangelogLayout({

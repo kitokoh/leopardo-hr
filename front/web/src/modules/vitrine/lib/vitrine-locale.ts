@@ -10,6 +10,12 @@ import {
 
 const LOCALE_EVENT = 'vitrine-locale-changed'
 
+// L'espace client réellement en ligne (issue #1775 : app.leopardo-rh.com ne
+// résout pas — DNS mort). Configurable via NEXT_PUBLIC_SITE_URL.
+const DEMO_APP_URL = process.env.NEXT_PUBLIC_SITE_URL
+  ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '')}/dashboard`
+  : 'https://gestionemployer-backend.vercel.app/dashboard'
+
 type LocaleOption = {
   value: AppLocale
   label: string
@@ -229,7 +235,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         'Notifications intelligentes',
         'Compatibilite ZKTeco',
       ],
-      appUrl: 'app.leopardo-rh.com/dashboard',
+      appUrl: DEMO_APP_URL,
       miniStats: [
         { label: 'Employes', value: '247' },
         { label: 'Presents', value: '231' },
@@ -373,7 +379,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         'Smart notifications',
         'ZKTeco-ready attendance',
       ],
-      appUrl: 'app.leopardo-rh.com/dashboard',
+      appUrl: DEMO_APP_URL,
       miniStats: [
         { label: 'Employees', value: '247' },
         { label: 'Present', value: '231' },
@@ -517,7 +523,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         'Akilli bildirimler',
         'ZKTeco uyumlu takip',
       ],
-      appUrl: 'app.leopardo-rh.com/dashboard',
+      appUrl: DEMO_APP_URL,
       miniStats: [
         { label: 'Calisan', value: '247' },
         { label: 'Mevcut', value: '231' },
@@ -661,7 +667,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         'اشعارات ذكية',
         'تكامل جاهز مع ZKTeco',
       ],
-      appUrl: 'app.leopardo-rh.com/dashboard',
+      appUrl: DEMO_APP_URL,
       miniStats: [
         { label: 'الموظفون', value: '247' },
         { label: 'الحاضرون', value: '231' },

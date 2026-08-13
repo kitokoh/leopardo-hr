@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.caseStudies.keywords,
   ogImage: pageMetadata.caseStudies.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/case-studies',
+  canonical: 'https://gestionemployer-backend.vercel.app/case-studies',
 });
 
 export default function CaseStudiesLayout({

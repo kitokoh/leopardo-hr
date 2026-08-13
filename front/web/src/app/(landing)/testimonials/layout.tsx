@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.testimonials.keywords,
   ogImage: pageMetadata.testimonials.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/testimonials',
+  canonical: 'https://gestionemployer-backend.vercel.app/testimonials',
 });
 
 export default function TestimonialsLayout({
