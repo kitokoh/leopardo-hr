@@ -177,7 +177,6 @@ class WebAuthPagesTest extends TestCase
         // couvert de bout en bout par la suite E2E staging e2e-staging/).
         $response = $this->view('auth.login', ['errors' => $errors]);
 
-        $response->assertOk();
         $response->assertSee('Identifiants invalides.');
         $response->assertSee('id="email-error"', false);
         $response->assertSee('role="alert"', false);
