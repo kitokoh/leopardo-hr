@@ -17,6 +17,13 @@
 # `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
 # enforce it.
 #
+# `upgrade-insecure-requests` was removed from the policy: Chrome logs
+# « The Content Security Policy directive 'upgrade-insecure-requests' is
+# ignored when delivered in a report-only policy. » as a console *error*,
+# which the E2E smoke (error-handling.spec.js) treats as a failure. The
+# directive is a no-op in report-only mode anyway — it only makes sense in
+# an enforced policy, where it would be re-added deliberately.
+#
 # Origins referenced below come from what the admin dashboard actually
 # loads/calls today:
 #  - connect-src: VITE_API_URL (REST) and VITE_WEBSOCKET_URL (Socket.IO
@@ -34,4 +41,4 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
