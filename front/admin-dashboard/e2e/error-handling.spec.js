@@ -30,12 +30,16 @@ test.describe('Error handling smoke tests', () => {
     await page.goto('/login')
     await page.waitForLoadState('networkidle')
 
-    // Filter out expected errors (e.g., favicon 404, API connection)
+    // Filter out expected errors (e.g., favicon 404, API connection) and the
+    // known benign browser message about `upgrade-insecure-requests` in a
+    // report-only CSP (Chrome logs it as a console error even though the
+    // directive is a no-op there — see public/_headers).
     const unexpectedErrors = consoleErrors.filter(
       (msg) =>
         !msg.includes('favicon') &&
         !msg.includes('net::ERR_') &&
-        !msg.includes('Failed to load resource'),
+        !msg.includes('Failed to load resource') &&
+        !msg.includes('upgrade-insecure-requests'),
     )
     expect(unexpectedErrors).toHaveLength(0)
   })
