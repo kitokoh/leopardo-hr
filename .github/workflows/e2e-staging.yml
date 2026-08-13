@@ -232,6 +232,79 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  # Suite E2E dédiée au portail web Laravel (blade) réellement servi par le
+  # backend staging (connexion manager /login, super admin /platform/login,
+  # documentation API /docs /api-explorer /tester-guide). Le job
+  # e2e-admin-dashboard teste l'app Vue admin (leo-admin.pages.dev, #1760) ;
+  # cette suite-ci valide le portail blade + le fix a11y S-6 (labels for/id,
+  # aria-invalid/aria-describedby/role=alert) — voir issue #1763.
+  e2e-blade-portal:
+    name: Portail Blade E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: should-run
+    if: needs.should-run.outputs.run_e2e == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: front/admin-dashboard
+        run: npm ci
+
+      - name: Install Playwright
+        working-directory: front/admin-dashboard
+        run: |
+                    npx playwright install --with-deps chromium
+
+      - name: Warm up staging instance (Render cold-start, issue #1725)
+        working-directory: front/admin-dashboard
+        env:
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+        run: |
+          set -euo pipefail
+          URL="${BASE_URL}/login"
+          echo "Warming up ${URL} (instance Render free tier s'endort apres ~15 min d'inactivite)..."
+          for attempt in {1..30}; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${URL}" || echo 000)
+            if [[ "${code}" != "000" ]]; then
+              echo "Warm-up OK (HTTP ${code}) apres ${attempt} tentative(s) — attente de stabilisation 20s"
+              sleep 20
+              exit 0
+            fi
+            echo "Tentative ${attempt}/30 : HTTP ${code} — nouvel essai dans 5s"
+            sleep 5
+          done
+          echo "Warm-up KO apres 30 tentatives (instance injoignable)"
+          exit 1
+
+      - name: Run Playwright E2E tests
+        working-directory: front/admin-dashboard
+        env:
+          CI: true
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+        run: npx playwright test --config=playwright.staging.config.js
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: e2e-blade-portal-playwright-report
+          path: |
+            front/admin-dashboard/playwright-report/
+            front/admin-dashboard/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
   e2e-web-vitrine:
     name: Web Vitrine E2E (Playwright)
     runs-on: ubuntu-latest

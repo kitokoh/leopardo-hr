@@ -1,3 +1,22 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Stage 1 — Build Laravel Vite/Tailwind assets
+# ──────────────────────────────────────────────────────────────────────────────
+# Le portail blade (login manager, login super admin, /docs, /api-explorer, …)
+# charge ses assets via @vite() dans layouts/app.blade.php. Sans
+# public/build/manifest.json compilé, le portail est servi SANS aucun style en
+# production (page blanche brute). Cette étape compile app.css (Tailwind) et
+# app.js une seule fois à la construction de l'image.
+FROM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY vite.config.js postcss.config.js tailwind.config.js ./
+COPY resources ./resources
+RUN npm run build
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Stage 2 — Laravel runtime (FrankenPHP)
+# ──────────────────────────────────────────────────────────────────────────────
 # Base image with FrankenPHP and PHP 8.4
 FROM dunglas/frankenphp:php8.4-alpine
 
@@ -24,6 +43,10 @@ COPY . .
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+
+# Assets Vite/Tailwind compilés au stage 1 (public/build est gitignoré :
+# sans cette copie, le portail blade serait servi non stylé).
+COPY --from=assets /app/public/build /app/public/build
 
 # Keep config cache generation for runtime, not build-time.
 RUN chown -R www-data:www-data storage bootstrap/cache
