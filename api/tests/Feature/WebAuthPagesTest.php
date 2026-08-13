@@ -167,16 +167,22 @@ class WebAuthPagesTest extends TestCase
         $response->assertSee('id="password"', false);
     }
 
-    public function test_failed_login_state_renders_error_with_aria_wiring(): void
+    public function test_failed_login_renders_inline_error_with_aria_wiring(): void
     {
-        $errors = new \Illuminate\Support\ViewErrorBag();
-        $errors->add('email', 'Identifiants invalides.');
+        // Vrai flux HTTP (même pattern multi-requêtes que OnboardingE2ETest :
+        // le driver de session array persiste entre les requêtes du test).
+        $this->get('/login');
+        $token = session()->token();
 
-        // Rendu direct de la vue avec l'état d'erreurs (pas de dépendance au
-        // driver de session : le flux HTTP complet échec → re-render est
-        // couvert de bout en bout par la suite E2E staging e2e-staging/).
-        $response = $this->view('auth.login', ['errors' => $errors]);
+        $this->from('/login')->withSession(['_token' => $token])->post('/login', [
+            '_token' => $token,
+            'email' => 'inexistant@company.test',
+            'password' => 'mauvais-mot-de-passe',
+        ])->assertRedirect('/login');
 
+        $response = $this->get('/login');
+
+        $response->assertOk();
         $response->assertSee('Identifiants invalides.');
         $response->assertSee('id="email-error"', false);
         $response->assertSee('role="alert"', false);
