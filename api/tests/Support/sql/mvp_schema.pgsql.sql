@@ -233,7 +233,6 @@ CREATE TABLE shared_tenants.employees (
     manager_id integer NULL,
     leave_balance numeric(6, 2) NOT NULL DEFAULT 0,
     status varchar(20) NOT NULL DEFAULT 'active',
-    archived_at timestamptz NULL,
     preferred_language char(2) NULL,
     photo_path varchar(255) NULL,
     iban varchar(255) NULL,
