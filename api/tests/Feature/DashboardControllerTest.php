@@ -120,7 +120,7 @@ class DashboardControllerTest extends TestCase
         $manager->forceFill(['created_at' => now()->subMonths(2)])->save();
         Employee::factory()->count(2)->create(['company_id' => $company->id, 'status' => 'active']);
         $archived = Employee::factory()->create(['company_id' => $company->id, 'status' => 'archived']);
-        DB::table('employees')->where('id', $archived->id)->update(['archived_at' => now()]);
+        DB::table('employees')->where('id', $archived->id)->update(['updated_at' => now()]);
         $this->insertAbsence($company->id, $manager->id, 'approved');
 
         Sanctum::actingAs($manager);

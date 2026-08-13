@@ -232,7 +232,6 @@ trait CreatesMvpSchema
             $table->unsignedInteger('manager_id')->nullable();
             $table->decimal('leave_balance', 6, 2)->default(0);
             $table->string('status', 20)->default('active');
-            $table->timestampTz('archived_at')->nullable();
             $table->char('preferred_language', 2)->nullable();
             $table->string('photo_path', 255)->nullable();
             $table->string('iban', 255)->nullable();

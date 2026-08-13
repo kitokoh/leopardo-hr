@@ -145,8 +145,8 @@ class DashboardController extends Controller
 
         $turnover = DB::table('employees')
             ->where('company_id', $companyId)
-            ->whereNotNull('archived_at')
-            ->whereBetween('archived_at', [$periodStart, $periodEnd])
+            ->where('status', 'archived')
+            ->whereBetween('updated_at', [$periodStart, $periodEnd])
             ->count();
 
         $hires = DB::table('employees')
