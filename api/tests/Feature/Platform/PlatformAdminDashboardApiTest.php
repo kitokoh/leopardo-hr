@@ -36,14 +36,22 @@ class PlatformAdminDashboardApiTest extends TestCase
         // Tables du cockpit persistées entre runs : repartir d'un état propre.
         DB::table('platform_alert_dismissals')->truncate();
         DB::table('platform_oauth_configs')->truncate();
-        $this->company = Company::factory()->create();
-        $this->superAdmin = SuperAdmin::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
+
+        /** @var SuperAdmin $superAdmin */
+        $superAdmin = SuperAdmin::query()->create([
             'name' => 'Super Admin Test',
             'email' => 'sa-admin-test@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
             'role' => 'super_admin',
         ]);
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->superAdmin = $superAdmin;
+
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
     }
 
     protected function tearDown(): void
@@ -139,14 +147,18 @@ class PlatformAdminDashboardApiTest extends TestCase
         fwrite(STDERR, 'TRIAL COUNT: '.$trialCount.PHP_EOL);
         $alertsResp = $this->getJson('/api/v1/admin/dashboard/alerts');
         fwrite(STDERR, 'ALERTS BODY: '.$alertsResp->getContent().PHP_EOL);
-        $before = collect($alertsResp->json('data'))->pluck('id');
+        /** @var array<int, array<string, mixed>> $alertsData */
+        $alertsData = $alertsResp->json('data');
+        $before = collect($alertsData)->pluck('id');
         $this->assertTrue($before->contains('trials_expiring'), 'L\'alerte trials_expiring doit apparaître.');
 
         $this->postJson('/api/v1/admin/dashboard/alerts/trials_expiring/dismiss')->assertStatus(202);
 
         $this->assertDatabaseHas('platform_alert_dismissals', ['alert_key' => 'trials_expiring']);
 
-        $after = collect($this->getJson('/api/v1/admin/dashboard/alerts')->json('data'))->pluck('id');
+        /** @var array<int, array<string, mixed>> $afterData */
+        $afterData = $this->getJson('/api/v1/admin/dashboard/alerts')->json('data');
+        $after = collect($afterData)->pluck('id');
         $this->assertFalse($after->contains('trials_expiring'), 'L\'alerte dismissée ne doit plus apparaître.');
     }
 
