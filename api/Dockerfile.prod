@@ -20,7 +20,15 @@ RUN install-php-extensions \
 
 WORKDIR /app
 
-COPY . .
+# Build context is the monorepo root (render.yaml: dockerContext: .) so
+# shared/i18n can be shipped into the image. Only api/ is copied to /app
+# (the root .dockerignore excludes front/, docs/, tests/, ...).
+COPY api/ .
+
+# I18nCatalog::rootPath() reads <repo-root>/shared/i18n = /shared/i18n.
+# Without this copy, GET /api/v1/i18n/catalog/* 500s in production
+# (Locale catalog not found). See issue #1773.
+COPY shared/i18n /shared/i18n
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader
@@ -34,7 +42,7 @@ RUN cp /usr/local/bin/frankenphp /usr/local/bin/frankenphp-nocap \
 
 EXPOSE 80 443 2019 8080
 
-COPY Caddyfile /etc/caddy/Caddyfile
-COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY api/Caddyfile /etc/caddy/Caddyfile
+COPY --chmod=755 api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

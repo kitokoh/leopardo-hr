@@ -20,3 +20,17 @@ postman
 tests
 *.md
 !README.md
+
+# Exclusions héritées de l'ancien api/.dockerignore (le contexte de build est
+# désormais la racine du repo — render.yaml dockerContext: .) :
+api/tests
+api/docs
+api/dev-hub
+api/phpstan*.neon
+api/storage/logs/*
+api/storage/framework/cache/data/*
+api/storage/framework/sessions/*
+api/storage/framework/views/*.php
+api/storage/coverage
+api/storage/test-results
+api/node_modules

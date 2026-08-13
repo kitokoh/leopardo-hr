@@ -8,8 +8,8 @@ services:
   - type: web
     name: leopardo-api
     runtime: docker
-    dockerfilePath: ./api/Dockerfile.prod
-    dockerContext: ./api
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
     region: frankfurt
     plan: starter
     healthCheckPath: /api/v1/health
@@ -126,8 +126,8 @@ services:
   - type: worker
     name: leopardo-queue-worker
     runtime: docker
-    dockerfilePath: ./api/Dockerfile.prod
-    dockerContext: ./api
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
     region: frankfurt
     plan: starter
     autoDeploy: true
@@ -219,8 +219,8 @@ services:
   - type: worker
     name: leopardo-scheduler
     runtime: docker
-    dockerfilePath: ./api/Dockerfile.prod
-    dockerContext: ./api
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
     region: frankfurt
     plan: starter
     autoDeploy: true
