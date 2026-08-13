@@ -354,7 +354,7 @@ class PlatformAdminDashboardController extends Controller
                 ->count();
 
             return $count > 0
-                ? $this->alert('trials_expiring', 'warning', "{$count} essai(s) expirent sous 7 jours.")
+                ? $this->alert('trials_expiring', 'warning', __('platform.alert_trials_expiring', ['count' => $count]))
                 : null;
         } catch (\Throwable) {
             return null;

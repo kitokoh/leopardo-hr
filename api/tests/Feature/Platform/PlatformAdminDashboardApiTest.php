@@ -33,6 +33,9 @@ class PlatformAdminDashboardApiTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+        // Tables du cockpit persistées entre runs : repartir d'un état propre.
+        DB::table('platform_alert_dismissals')->truncate();
+        DB::table('platform_oauth_configs')->truncate();
         $this->company = Company::factory()->create();
         $this->superAdmin = SuperAdmin::query()->create([
             'name' => 'Super Admin Test',
@@ -127,7 +130,16 @@ class PlatformAdminDashboardApiTest extends TestCase
             'subscription_end' => now()->addDays(3)->toDateString(),
         ]);
 
-        $before = collect($this->getJson('/api/v1/admin/dashboard/alerts')->json('data'))->pluck('id');
+        $trialRow = DB::table('companies')->where('status', 'trial')->first();
+        fwrite(STDERR, 'TRIAL ROW: '.json_encode($trialRow).PHP_EOL);
+        $trialCount = DB::table('companies')->where('status', 'trial')
+            ->where('subscription_end', '>=', now()->toDateString())
+            ->where('subscription_end', '<=', now()->addDays(7)->toDateString())
+            ->count();
+        fwrite(STDERR, 'TRIAL COUNT: '.$trialCount.PHP_EOL);
+        $alertsResp = $this->getJson('/api/v1/admin/dashboard/alerts');
+        fwrite(STDERR, 'ALERTS BODY: '.$alertsResp->getContent().PHP_EOL);
+        $before = collect($alertsResp->json('data'))->pluck('id');
         $this->assertTrue($before->contains('trials_expiring'), 'L\'alerte trials_expiring doit apparaître.');
 
         $this->postJson('/api/v1/admin/dashboard/alerts/trials_expiring/dismiss')->assertStatus(202);
