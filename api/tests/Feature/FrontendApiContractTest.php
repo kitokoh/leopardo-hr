@@ -135,6 +135,19 @@ class FrontendApiContractTest extends TestCase
             'platform mobile company requests list' => ['GET', 'api/v1/platform/company-requests'],
             'platform mobile company request detail' => ['GET', 'api/v1/platform/company-requests/{id}'],
             'platform mobile company request review' => ['PATCH', 'api/v1/platform/company-requests/{id}'],
+            'admin dashboard stats' => ['GET', 'api/v1/admin/dashboard/stats'],
+            'admin dashboard activities' => ['GET', 'api/v1/admin/dashboard/activities'],
+            'admin dashboard alerts' => ['GET', 'api/v1/admin/dashboard/alerts'],
+            'admin dashboard alert dismiss' => ['POST', 'api/v1/admin/dashboard/alerts/{alertKey}/dismiss'],
+            'admin edge nodes list' => ['GET', 'api/v1/admin/edge-nodes'],
+            'admin edge node sync' => ['POST', 'api/v1/admin/edge-nodes/{nodeId}/sync'],
+            'admin edge node revoke' => ['POST', 'api/v1/admin/edge-nodes/{nodeId}/revoke'],
+            'admin ai conversations' => ['GET', 'api/v1/admin/ai/conversations'],
+            'admin ai conversation messages' => ['GET', 'api/v1/admin/ai/conversations/{conversation}/messages'],
+            'admin fleet alerts' => ['GET', 'api/v1/admin/fleet/alerts'],
+            'admin hr reports' => ['GET', 'api/v1/admin/hr-reports'],
+            'admin marketing oauth config get' => ['GET', 'api/v1/admin/platform/marketing/oauth-config'],
+            'admin marketing oauth config update' => ['PUT', 'api/v1/admin/platform/marketing/oauth-config'],
         ];
     }
 
