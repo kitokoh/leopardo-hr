@@ -5,7 +5,7 @@
 ## [Unreleased]
 
 ### Fixed
-- _(entrées de la prochaine release — rien encore)_
+- **ci(e2e) : job Admin Dashboard E2E pointé sur le SPA Vue admin (leo-admin.pages.dev) au lieu du backend Blade.** Le workflow `e2e-staging.yml` testait `gestionemployerbackend.onrender.com` (page de login Laravel) alors que la suite Playwright `front/admin-dashboard` cible le SPA Vue (label « Adresse email », `#password`, ARIA S-6). Le job n'avait jamais réellement tourné (runs antérieurs skippés par la gate `deploy-api`) ; premier vrai run après merge → échec systématique. `DEFAULT_ADMIN_STAGING_URL` ajouté (même URL que `launch-observability-smoke.yml`), warm-up et tests admin pointent désormais dessus.
 ### Chore
 - **infra : migration Git LFS des assets binaires (#1727).** `*.png/jpg/jpeg/webp/webm/mp4/gif/apk/aab` trackés en LFS (`.gitattributes`) ; `lfs: true` ajouté à tous les `actions/checkout` des 34 workflows ; migration de l'historique planifiée (force-push coordonné, clone ≥ 50 % plus léger).
 - **payroll : FOCUS 2 F-31 — règles pays de fin de contrat (#1756).** `CountryRulesInterface::noticePeriodDays()` / `severanceMonthsPerYear()` (défauts dans `AbstractCountryRules`, valeurs pilot DZ documentées) ; `EndOfContractService` résout préavis et indemnité de licenciement via les règles du pays (fini les valeurs codées en dur 1.0/0.0) ; golden tests `GoldenDzEndOfContractRulesTest` (5 ans × 60 000 × 1,0 = 300 000 DZD) ; `DZ_COMPLIANCE.md` §7 mis à jour (durées légales candidates à valider expert).

@@ -27,6 +27,7 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DEFAULT_STAGING_URL: https://gestionemployerbackend.onrender.com
+  DEFAULT_ADMIN_STAGING_URL: https://leo-admin.pages.dev
   DEFAULT_WEB_STAGING_URL: https://gestionemployer-backend.vercel.app
 
 concurrency:
@@ -192,14 +193,14 @@ jobs:
         run: |
                     npx playwright install --with-deps chromium
 
-      - name: Warm up staging instance (Render cold-start, issue #1725)
+      - name: Warm up staging instance (cold-start, issue #1725)
         working-directory: front/admin-dashboard
         env:
-          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_ADMIN_STAGING_URL }}
         run: |
           set -euo pipefail
           URL="${BASE_URL}/login"
-          echo "Warming up ${URL} (instance Render free tier s'endort apres ~15 min d'inactivite)..."
+          echo "Warming up ${URL} (instance free tier s'endort apres ~15 min d'inactivite)..."
           for attempt in {1..30}; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${URL}" || echo 000)
             if [[ "${code}" != "000" ]]; then
@@ -217,7 +218,7 @@ jobs:
         working-directory: front/admin-dashboard
         env:
           CI: true
-          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_ADMIN_STAGING_URL }}
         run: npx playwright test
 
       - name: Upload Playwright report
