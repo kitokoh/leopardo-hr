@@ -16,13 +16,14 @@
             <p class="mt-2 text-sm text-slate-400">Acces reserve au super administrateur.</p>
             <div class="mt-6 space-y-4">
                 <div>
-                    <label class="mb-2 block text-sm text-slate-300">Email</label>
-                    <input name="email" type="email" value="{{ old('email') }}" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" required>
-                    @error('email')<div class="mt-1 text-sm text-rose-400">{{ $message }}</div>@enderror
+                    <label for="email" class="mb-2 block text-sm text-slate-300">Email</label>
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" required @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
+                    @error('email')<div id="email-error" role="alert" class="mt-1 text-sm text-rose-400">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm text-slate-300">Mot de passe</label>
-                    <input name="password" type="password" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" required>
+                    <label for="password" class="mb-2 block text-sm text-slate-300">Mot de passe</label>
+                    <input id="password" name="password" type="password" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" required @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
+                    @error('password')<div id="password-error" role="alert" class="mt-1 text-sm text-rose-400">{{ $message }}</div>@enderror
                 </div>
             </div>
             <button type="submit" class="mt-6 w-full rounded-lg bg-emerald-500 px-4 py-3 font-medium text-slate-950">Se connecter</button>

@@ -15,29 +15,33 @@
             @csrf
 
             <div>
-                <label class="text-sm text-slate-300">Email</label>
+                <label for="email" class="text-sm text-slate-300">Email</label>
                 <input
+                    id="email"
                     name="email"
                     type="email"
                     value="{{ old('email') }}"
                     required
+                    @error('email') aria-invalid="true" aria-describedby="email-error" @enderror
                     class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                 />
                 @error('email')
-                    <div class="mt-1 text-sm text-red-400">{{ $message }}</div>
+                    <div id="email-error" role="alert" class="mt-1 text-sm text-red-400">{{ $message }}</div>
                 @enderror
             </div>
 
             <div>
-                <label class="text-sm text-slate-300">Mot de passe</label>
+                <label for="password" class="text-sm text-slate-300">Mot de passe</label>
                 <input
+                    id="password"
                     name="password"
                     type="password"
                     required
+                    @error('password') aria-invalid="true" aria-describedby="password-error" @enderror
                     class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                 />
                 @error('password')
-                    <div class="mt-1 text-sm text-red-400">{{ $message }}</div>
+                    <div id="password-error" role="alert" class="mt-1 text-sm text-red-400">{{ $message }}</div>
                 @enderror
             </div>
 

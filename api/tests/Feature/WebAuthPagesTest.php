@@ -137,5 +137,52 @@ class WebAuthPagesTest extends TestCase
         $response->assertSessionHasErrors(['email']);
         $this->assertGuest('web');
     }
+
+    public function test_login_page_renders_accessible_manager_form(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertOk();
+        $response->assertSee('Connexion manager');
+
+        // S-6 a11y : labels programmatiquement associés (for/id). Sans cette
+        // association, les champs sont « sans nom accessible » pour les
+        // lecteurs d'écran et les tests E2E getByLabel() échouent
+        // (régression staging 2026-08-13, run #31653999170).
+        $response->assertSee('<label for="email"', false);
+        $response->assertSee('<label for="password"', false);
+        $response->assertSee('id="email"', false);
+        $response->assertSee('id="password"', false);
+    }
+
+    public function test_platform_login_page_renders_accessible_form(): void
+    {
+        $response = $this->get('/platform/login');
+
+        $response->assertOk();
+        $response->assertSee('Connexion plateforme');
+        $response->assertSee('<label for="email"', false);
+        $response->assertSee('<label for="password"', false);
+        $response->assertSee('id="email"', false);
+        $response->assertSee('id="password"', false);
+    }
+
+    public function test_failed_login_state_renders_error_with_aria_wiring(): void
+    {
+        $errors = new \Illuminate\Support\ViewErrorBag();
+        $errors->add('email', 'Identifiants invalides.');
+
+        $response = $this->withSession([
+            'errors' => $errors,
+            '_old_input' => ['email' => 'inexistant@company.test'],
+        ])->get('/login');
+
+        $response->assertOk();
+        $response->assertSee('Identifiants invalides.');
+        $response->assertSee('id="email-error"', false);
+        $response->assertSee('role="alert"', false);
+        $response->assertSee('aria-invalid="true"', false);
+        $response->assertSee('aria-describedby="email-error"', false);
+    }
 }
 
