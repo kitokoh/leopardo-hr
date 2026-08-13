@@ -2,6 +2,12 @@ interface JsonLdProps {
   data: Record<string, unknown>;
 }
 
+// Issue #1775 : https://gestionemployer-backend.vercel.app appartient à une entreprise de
+// construction US sans rapport — ne jamais l'utiliser dans les données
+// structurées. On utilise l'URL réelle de la marque (configurable).
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+
 export function JsonLd({ data }: JsonLdProps) {
   return (
     <script
@@ -48,7 +54,7 @@ export function ArticleJsonLd({
           name: 'Leopardo RH',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://leopardo.com/logo.png',
+            url: `${SITE_URL}/logo.png`,
           },
         },
       }}
@@ -78,7 +84,7 @@ export function OrganizationJsonLd() {
         creator: {
           '@type': 'Organization',
           name: 'Leopardo RH',
-          url: 'https://leopardo.com',
+          url: SITE_URL,
         },
       }}
     />

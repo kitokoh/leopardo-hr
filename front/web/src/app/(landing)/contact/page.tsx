@@ -109,7 +109,7 @@ function ContactPageInner() {
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">Informations</h2>
                 <div className="space-y-6">
                   {[
-                    { icon: Mail, label: 'Email', value: 'contact@leopardo.com' },
+                    { icon: Mail, label: 'Email', value: 'contact@leopardo-rh.com' },
                     { icon: Phone, label: 'Téléphone', value: '+213 (0) 555 123 456' },
                     { icon: MapPin, label: 'Adresse', value: 'Alger, Algérie' },
                     { icon: Clock, label: 'Horaires', value: 'Lun-Ven 9h-18h (GMT+1)' },

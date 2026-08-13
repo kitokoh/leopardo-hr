@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.signup.keywords,
   ogImage: pageMetadata.signup.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/signup',
+  canonical: 'https://gestionemployer-backend.vercel.app/signup',
   robots: pageMetadata.signup.robots,
 });
 

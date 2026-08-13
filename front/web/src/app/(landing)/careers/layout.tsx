@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.careers.keywords,
   ogImage: pageMetadata.careers.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/careers',
+  canonical: 'https://gestionemployer-backend.vercel.app/careers',
 });
 
 export default function CareersLayout({

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
   return generateSEOMetadata({
     title: `${job.title}${company ? ` chez ${company.display_name}` : ''}`,
     description: job.description?.slice(0, 155) || `Postulez a l'offre "${job.title}".`,
-    canonical: `https://leopardo.com/${companySlug}/careers/jobs/${job.id}`,
+    canonical: `https://gestionemployer-backend.vercel.app/${companySlug}/careers/jobs/${job.id}`,
     ogType: 'article',
     ogImage: company?.logo_url ?? undefined,
   });

@@ -278,7 +278,7 @@ export const colors = {
 
 // Contact information
 export const contactInfo = {
-  email: "support@leopardo.com",
+  email: "support@leopardo-rh.com",
   phone: "+33 1 23 45 67 89",
   address: "123 Rue de la Paix, 75000 Paris, France",
   hours: "Lun-Ven: 9h-18h (CET)",

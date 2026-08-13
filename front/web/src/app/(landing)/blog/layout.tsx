@@ -10,7 +10,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.blog.keywords,
   ogImage: pageMetadata.blog.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/blog',
+  canonical: 'https://gestionemployer-backend.vercel.app/blog',
 });
 
 export default function BlogLayout({

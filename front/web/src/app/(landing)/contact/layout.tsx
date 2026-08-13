@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.contact.keywords,
   ogImage: pageMetadata.contact.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/contact',
+  canonical: 'https://gestionemployer-backend.vercel.app/contact',
 });
 
 export default function ContactLayout({

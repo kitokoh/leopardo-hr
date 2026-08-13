@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.faq.keywords,
   ogImage: pageMetadata.faq.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/faq',
+  canonical: 'https://gestionemployer-backend.vercel.app/faq',
 });
 
 export default function FaqLayout({

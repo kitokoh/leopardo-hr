@@ -28,7 +28,7 @@ export async function generateMetadata({
     keywords: post.tags,
     ogImage: post.image,
     ogType: 'article',
-    canonical: `https://leopardo.com/blog/${post.slug}`,
+    canonical: `https://gestionemployer-backend.vercel.app/blog/${post.slug}`,
     publishedTime: post.date.toISOString(),
     author: post.author.name,
   });

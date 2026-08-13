@@ -376,7 +376,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "Customer Support",
-      email: "support@leopardo.com",
+      email: "support@leopardo-rh.com",
       availableLanguage: ["fr", "en"],
     },
   };

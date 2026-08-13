@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.videos.keywords,
   ogImage: pageMetadata.videos.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/videos',
+  canonical: 'https://gestionemployer-backend.vercel.app/videos',
 });
 
 export default function VideosLayout({

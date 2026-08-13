@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.branding.keywords,
   ogImage: pageMetadata.branding.ogImage,
   ogType: 'website',
-  canonical: 'https://leopardo.com/branding',
+  canonical: 'https://gestionemployer-backend.vercel.app/branding',
 });
 
 export default function BrandingLayout({

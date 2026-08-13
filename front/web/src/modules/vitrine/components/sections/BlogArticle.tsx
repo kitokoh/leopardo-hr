@@ -94,7 +94,7 @@ export function BlogArticle({
       });
   };
 
-  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://leopardo.com';
+  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://gestionemployer-backend.vercel.app';
   const localeQuery = locale && locale !== 'fr' ? `?lang=${locale}` : '';
   const articleUrl = `${siteOrigin}/blog/${post.slug}${localeQuery}`;
   const articleImageUrl = new URL(post.image, siteOrigin).toString();
