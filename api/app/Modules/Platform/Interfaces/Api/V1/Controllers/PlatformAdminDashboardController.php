@@ -306,7 +306,7 @@ class PlatformAdminDashboardController extends Controller
                 return null;
             }
 
-            return $this->alert('queue_depth', 'warning', "File d'attente élevée : {$depth} jobs en attente.");
+            return $this->alert('queue_depth', 'warning', __('platform.alert_queue_depth', ['count' => $depth]));
         } catch (\Throwable) {
             return null;
         }
@@ -319,7 +319,7 @@ class PlatformAdminDashboardController extends Controller
             $failed = (int) DB::table('failed_jobs')->count();
 
             return $failed > 0
-                ? $this->alert('failed_jobs', 'warning', "{$failed} job(s) en échec — vérifier la file.")
+                ? $this->alert('failed_jobs', 'warning', __('platform.alert_failed_jobs', ['count' => $failed]))
                 : null;
         } catch (\Throwable) {
             return null;
@@ -371,7 +371,7 @@ class PlatformAdminDashboardController extends Controller
                 ->count();
 
             return $count > 0
-                ? $this->alert('high_priority_tickets', 'warning', "{$count} ticket(s) support haute priorité ouverts.")
+                ? $this->alert('high_priority_tickets', 'warning', __('platform.alert_high_priority_tickets', ['count' => $count]))
                 : null;
         } catch (\Throwable) {
             return null;
