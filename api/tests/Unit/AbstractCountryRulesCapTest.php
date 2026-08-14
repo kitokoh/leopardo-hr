@@ -35,26 +35,29 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = new SenegalPayrollRules;
 
-        // Brut 1 000 000 XOF > plafond 432 000 → assiette 432 000 :
-        //   salariale : 432 000 × 5,6 % = 24 192,00
-        //   patronale : 432 000 × (8,4 % + 3,0 %) = 432 000 × 11,4 % = 49 248,00
+        // #1827 : brut 1 000 000 XOF — IPRES T1 plafonné 432 000, T2 cadres
+        // sur la tranche 432 001–2 160 000 (568 000), CSS famille/AT + CFCE
+        // non plafonnés :
+        //   salariale : 432 000×5,6 % + 568 000×2,4 % = 24 192 + 13 632 = 37 824
+        //   patronale : 432 000×8,4 % + 1 000 000×(3 %+1 %+3 %) + 568 000×3,6 %
+        //              = 36 288 + 70 000 + 20 448 = 126 736
         $charges = $rules->calculateSocialCharges(1000000.0);
 
-        $this->assertSame(24192.0, $charges['employee']);
-        $this->assertSame(49248.0, $charges['employer']);
+        $this->assertSame(37824.0, $charges['employee']);
+        $this->assertSame(126736.0, $charges['employer']);
     }
 
     public function test_senegal_contribution_uncapped_when_gross_below_432k(): void
     {
         $rules = new SenegalPayrollRules;
 
-        // Brut 200 000 XOF < plafond → assiette pleine :
-        //   salariale : 200 000 × 5,6 % = 11 200,00
-        //   patronale : 200 000 × 11,4 % = 22 800,00
+        // #1827 : brut 200 000 XOF < plafond, pas de T2 (tranche non atteinte) :
+        //   salariale : 200 000 × 5,6 % = 11 200
+        //   patronale : 200 000 × (8,4 % + 3 % + 1 % + 3 %) = 200 000 × 15,4 % = 30 800
         $charges = $rules->calculateSocialCharges(200000.0);
 
         $this->assertSame(11200.0, $charges['employee']);
-        $this->assertSame(22800.0, $charges['employer']);
+        $this->assertSame(30800.0, $charges['employer']);
     }
 
     public function test_cameroon_cnps_capped_at_750k_xaf(): void
