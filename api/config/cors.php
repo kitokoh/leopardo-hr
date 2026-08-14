@@ -20,8 +20,13 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => array_filter([
-        env('FRONTEND_URL', 'http://localhost:3000'),
+        // Dev servers (Vite) — whitelistés en dur et indépendamment de
+        // FRONTEND_URL pour rester déterministes (issues #1769) :
+        //  - localhost:3000 : front web (défaut documenté de FRONTEND_URL)
+        //  - localhost:3001 : admin dashboard (ajouté dans #1785)
+        'http://localhost:3000',
         'http://localhost:3001',
+        env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),
         // Production origins
         'https://gestionemployerbackend.onrender.com',
