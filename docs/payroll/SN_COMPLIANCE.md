@@ -5,7 +5,7 @@
 > TRIMF, CFCE, régime cadres IPRES T2, plafonds, abattement frais pro.
 > ⚠️ **Toutes les valeurs sont à valider par un expert-comptable sénégalais
 > avant passage à « production »** (confidenceLevel() reste `pilot`).
-> Sources : CGI Sénégal, IPRES, CSS, Code du travail.
+> **Sources** : CGI Sénégal, IPRES, [procédure administrative CSS via eRegulations Sénégal](https://senegal.eregulations.org/procedure/103/64/step/201?l=fr), Code du travail. Le plafond de l’assiette CSS est documenté à 63 000 XOF/mois ; les taux et le statut restent à valider par un expert-comptable sénégalais.
 
 ## Statut
 
@@ -95,8 +95,8 @@ plafonnée) — `CFCE_SN_PAT`.
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
-| Prestations familiales patronale | 3,0 % | employeur | aucun |
-| Accidents du travail patronale | 1,0 % | employeur | aucun (pilote, variable) |
+| Prestations familiales patronale | 3,0 % | employeur | **63 000 XOF/mois** |
+| Accidents du travail patronale | 1,0 % | employeur | **63 000 XOF/mois** (taux selon risque à confirmer) |
 
 ## 7. Abattement frais professionnels
 
