@@ -188,6 +188,29 @@ class CountryRulesResolverTest extends TestCase
                 return '';
             }
 
+            public function complianceWarningKey(): string
+            {
+                return 'payroll.compliance_warning_placeholder';
+            }
+
+            /**
+             * @return array<int, string>
+             */
+            public function legalSources(): array
+            {
+                return [];
+            }
+
+            public function complianceVerifiedAt(): ?string
+            {
+                return null;
+            }
+
+            public function rulesVersion(): string
+            {
+                return 'test-rules-v1';
+            }
+
             public function noticePeriodDays(float $yearsOfService): float
             {
                 return 0.0;
@@ -356,6 +379,29 @@ class CountryRulesResolverTest extends TestCase
             public function complianceWarning(): string
             {
                 return '';
+            }
+
+            public function complianceWarningKey(): string
+            {
+                return 'payroll.compliance_warning_placeholder';
+            }
+
+            /**
+             * @return array<int, string>
+             */
+            public function legalSources(): array
+            {
+                return [];
+            }
+
+            public function complianceVerifiedAt(): ?string
+            {
+                return null;
+            }
+
+            public function rulesVersion(): string
+            {
+                return 'test-rules-v1';
             }
 
             public function noticePeriodDays(float $yearsOfService): float
