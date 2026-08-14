@@ -141,12 +141,22 @@ class CedeaoPayrollRules extends AbstractCountryRules
         // > 10 000 000 : 29 % (valeurs à valider par expert-comptable —
         // confidenceLevel 'pilot').
         if ($this->memberCountryCode === 'CI') {
+            // CI (#1825/#1918) : ITSAS Côte d'Ivoire (CGI CI art. 116-120) —
+            // tranches ANNUELLES : 0–600 000 XOF : 0 % · 600 001–2 000 000 :
+            // 2 % · 2 000 001–5 000 000 : 21 % · 5 000 001–10 000 000 :
+            // 24,5 % · 10 000 001–25 000 000 : 27 % · > 25 000 000 : 30 %.
+            // Fix #1918 : le 29 % initial (> 10 M) ne correspondait à aucun
+            // taux publié (CGI CI 2024) — sur-taxation 10–25 M, sous-taxation
+            // au-delà de 25 M. ⚠️ À valider expert-comptable (confidenceLevel
+            // 'pilot') ; la réforme LF 2024 (barème unifié mensuel sur brut,
+            // 0/16/21/24/28/32 %) est documentée dans CI_COMPLIANCE.md §1.
             return [
                 ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
                 ['min' => 600001, 'max' => 2000000, 'rate' => 2, 'fixed_deduction' => 0],
                 ['min' => 2000001, 'max' => 5000000, 'rate' => 21, 'fixed_deduction' => 0],
                 ['min' => 5000001, 'max' => 10000000, 'rate' => 24.5, 'fixed_deduction' => 0],
-                ['min' => 10000001, 'max' => null, 'rate' => 29, 'fixed_deduction' => 0],
+                ['min' => 10000001, 'max' => 25000000, 'rate' => 27, 'fixed_deduction' => 0],
+                ['min' => 25000001, 'max' => null, 'rate' => 30, 'fixed_deduction' => 0],
             ];
         }
 

@@ -10,7 +10,7 @@
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| ITSAS (5 tranches annuelles) | ✅ implémentée (pilot) | CGI 2024 art. 116-120 | à valider expert |
+| ITSAS (6 tranches annuelles) | ✅ implémentée (pilot) | CGI 2024 art. 116-120 | à valider expert |
 | Contribution Nationale (1,5 % > 50 000) | ✅ implémentée (pilot) | CGI 2024 art. 116-120 | à valider expert |
 | Abattement frais pro (20 %, non plafonné) | ✅ implémentée (pilot) | CGI 2024 art. 116 | à valider expert |
 | CNSS retraite 3,2 % / 4,5 % (plaf. 1 647 315) | ✅ implémentée (pilot) | CNSS | à valider expert |
@@ -35,7 +35,24 @@ pour le membre CI — CGI 2024, art. 116-120) :
 | 600 001 – 2 000 000 | 2 % |
 | 2 000 001 – 5 000 000 | 21 % |
 | 5 000 001 – 10 000 000 | 24,5 % |
-| > 10 000 000 | 29 % |
+| 10 000 001 – 25 000 000 | 27 % |
+| > 25 000 000 | 30 % |
+
+> **Fix #1918** : la tranche initiale `> 10 000 000 @ 29 %` ne correspondait à
+> aucun taux publié (CGI CI 2024) — sur-taxation de la tranche 10–25 M
+> (29 % au lieu de 27 %) et sous-taxation au-delà de 25 M (29 % au lieu de
+> 30 %). Barème réaligné sur les tranches publiées ; ⚠️ **à valider
+> expert-comptable OHADA-CI** (confidenceLevel `pilot`, suivi #1904).
+>
+> ⚠️ **Réforme LF 2024 à confirmer** : la loi de finances 2024 (note DGI
+> n° 00026/MFB/DGI/DLCD du 03/01/2024) a introduit un **barème unifié
+> MENSUEL appliqué au salaire brut** (0 % ≤ 75 000 · 16 % 75 001–150 000 ·
+> 21 % 150 001–300 000 · 24 % 300 001–600 000 · 28 % 600 001–1 000 000 ·
+> 32 % > 1 000 000, réduction RICF) qui remplacerait le système annuel
+> actuel (assiette nette + abattement 20 %). La présente implémentation
+> conserve le barème annuel art. 116-120 jusqu'à confirmation experte du
+> périmètre d'application de la réforme (date d'entrée en vigueur,
+> assiette, RICF) — décision suivie dans #1918/#1904.
 
 `calculateIncomeTax()` annualise l'assiette mensuelle (`× 12`), applique le
 barème progressif (bornes inclusives), puis ramène le résultat au mois.
