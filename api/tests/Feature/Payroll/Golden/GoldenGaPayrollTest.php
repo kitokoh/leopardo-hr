@@ -49,6 +49,20 @@ class GoldenGaPayrollTest extends TestCase
         $this->assertSame(59875.0, $this->ga()->calculateIncomeTax($taxable));
     }
 
+    /**
+     * #1939 — verrouille l'ANNUALISATION × 12 (jamais × 10, suspicion review
+     * PR #1850) et le barème officiel DGI (8 tranches annuelles) :
+     *   assiette 700 000/mois → annuel 8 400 000 :
+     *   1,5-1,92M : 420 000 × 5 % = 21 000 · 1,92-2,7M : 780 000 × 10 % = 78 000
+     *   2,7-3,6M : 900 000 × 15 % = 135 000 · 3,6-5,16M : 1 560 000 × 20 % = 312 000
+     *   5,16-7,5M : 2 340 000 × 25 % = 585 000 · 7,5-8,4M : 900 000 × 30 % = 270 000
+     *   → total 1 401 000 → mensuel 116 750,00 (si × 10 : 1 167 500 → 97 291,67)
+     */
+    public function test_golden_ga_irpp_annualized_12_not_10(): void
+    {
+        $this->assertSame(116750.0, $this->ga()->calculateIncomeTax(700000.0));
+    }
+
     public function test_golden_ga_cnss_capped_at_3m(): void
     {
         // Calcul manuel (GA_COMPLIANCE.md §3) — brut 3 500 000 :
