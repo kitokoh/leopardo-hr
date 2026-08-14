@@ -132,6 +132,13 @@ api/app/Modules/{Module}/
 | CEDEAO | BF, ML | `pilot` |
 | CEDEAO | TG, BJ, NE | `placeholder` |
 
+> **Statut RÉEL (source de vérité runtime)** : ce tableau est la **cible**
+> produit ; l'état effectif par pays vit dans
+> `docs/payroll/VALIDATION_EXPERTE.md` et dans `confidenceLevel()` du code.
+> Aucun pays ne passe `pilot` → `production` sans fiche de validation experte
+> **signée** (issue #1904) — DZ/FR sont cibles `production` mais restent
+> `pilot` dans le code tant que la fiche n'est pas signée (SN : #1912).
+
 Règle : tout PR qui fait passer un pays de `placeholder` → `pilot` doit :
 1. Créer `docs/payroll/{PAYS}_COMPLIANCE.md`
 2. Implémenter les règles dans la classe `PayrollRules`
