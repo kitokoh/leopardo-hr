@@ -14,9 +14,9 @@ use Tests\TestCase;
  * stockage du compteur échoue (épisode prod 2026-08-13 : cache Redis/Upstash
  * saturé → « Server Error » sur quasi toutes les routes throttlées).
  *
- * Le correctif vit dans `App\Support\Cache\ResilientRateLimiter` (substitué
- * au RateLimiter par défaut dans AppServiceProvider) : échec du stockage →
- * `report()` + **429 dégradé** avec Retry-After au lieu d'un 500 ; chemin
+ * Le correctif vit dans `App\Http\Middleware\ResilientThrottleRequests`
+ * (substitué à l'alias `throttle` dans bootstrap/app.php) : échec du stockage
+ * → `report()` + **429 dégradé** avec Retry-After au lieu d'un 500 ; chemin
  * nominal inchangé.
  */
 class RateLimiterResilienceTest extends TestCase

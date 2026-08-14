@@ -36,24 +36,34 @@ class ResilientThrottleRequests extends ThrottleRequests
 {
     public function handle($request, Closure $next, $maxAttempts = 60, $decayMinutes = 1, $prefix = ''): Response
     {
+        // ── Phase limiter : résolution des limites. Un échec de la résolution
+        //    (limiter nommé qui plante, ex. dépendance en panne) → 429 dégradé.
+        try {
+            $limits = $this->resolveLimits($request, $maxAttempts, (int) $decayMinutes, $prefix);
+        } catch (ThrottleRequestsException|HttpResponseException $e) {
+            // Réponse custom du limiter : comportement nominal inchangé.
+            throw $e;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return $this->degradedTooManyRequestsResponse();
+        }
+
+        if ($limits instanceof Response) {
+            // Le limiter nommé a directement retourné une réponse.
+            return $limits;
+        }
+
+        if ($limits === null) {
+            // Limit::none() : route non throttlée — pas de compteur à vérifier.
+            // $next() s'exécute HORS de tout try : une exception du pipeline en
+            // aval ne doit jamais être convertie en 429 dégradé.
+            return $next($request);
+        }
+
         // ── Phase limiter : vérification + incrément du compteur (HORS $next).
         //    Tout échec ici (stockage du compteur indisponible) → 429 dégradé.
         try {
-            $limits = $this->resolveLimits($request, $maxAttempts, (int) $decayMinutes, $prefix);
-
-            if ($limits instanceof Response) {
-                // Le limiter nommé a directement retourné une réponse.
-                return $limits;
-            }
-
-            if ($limits === null) {
-                // Limit::none() : route non throttlée.
-                /** @var Response $unthrottledResponse */
-                $unthrottledResponse = $next($request);
-
-                return $unthrottledResponse;
-            }
-
             foreach ($limits as $limit) {
                 if ($this->limiter->tooManyAttempts($limit->key, $limit->maxAttempts)) {
                     throw $this->buildException($request, $limit->key, $limit->maxAttempts, $limit->responseCallback);
@@ -75,8 +85,6 @@ class ResilientThrottleRequests extends ThrottleRequests
 
         // ── Pipeline applicatif : les exceptions du contrôleur remontent
         //    telles quelles (jamais converties en 429).
-        /** @var Response $response */
-        /** @var Response $response */
         $response = $next($request);
 
         // ── Phase headers : une panne du stockage n'invalide pas la réponse.
