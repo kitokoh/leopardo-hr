@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll\Golden;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
 use Carbon\Carbon;
@@ -70,12 +71,12 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         $this->assertSame($expectedTotal, $settlement['breakdown']['total']);
     }
 
-    public function test_unregistered_country_throws_typed_exception(): void
+    public function test_unregistered_country_throws_typed_error_instead_of_dz_fallback(): void
     {
-        // #1868 : PLUS AUCUN repli silencieux vers DZ — un pays non enregistré
-        // dans le résolveur (ex. 'US') propage UnsupportedCountryRulesException
-        // (API : 422 explicite), au lieu de calculer la fin de contrat avec les
-        // défauts d'une autre juridiction.
+        // Pays inconnu du moteur (ex. 'US') : PLUS AUCUN repli silencieux sur
+        // les défauts DZ (MULTI-PAYS #1868) — une règle indisponible produit
+        // une erreur métier typée et explicable (critère #1869 : « les erreurs
+        // expliquent quelle règle ou quel contexte manque »).
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'US']);
         /** @var Employee $employee */
@@ -88,7 +89,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
         $service = new EndOfContractService();
 
-        $this->expectException(\App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException::class);
+        $this->expectException(UnsupportedCountryRulesException::class);
         $service->settlement($employee, Carbon::parse('2026-01-01'));
     }
 }

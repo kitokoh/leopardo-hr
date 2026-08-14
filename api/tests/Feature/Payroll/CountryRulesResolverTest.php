@@ -122,6 +122,11 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
+            public function withTaxSlabs(array $slabs): static
+            {
+                return $this;
+            }
+
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
@@ -197,6 +202,11 @@ class CountryRulesResolverTest extends TestCase
                 return 0.0;
             }
 
+            public function flatPayrollTaxLabel(): string
+            {
+                return '';
+            }
+
             public function thirteenthMonthMandatory(): bool
             {
                 return false;
@@ -226,23 +236,11 @@ class CountryRulesResolverTest extends TestCase
                 return $this;
             }
 
-            /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
-             */
-            public function withTaxSlabs(array $slabs): static
-            {
-                return $this;
-            }
-
             public function withCapsEnabled(bool $enabled): static
             {
                 return $this;
             }
 
-            public function flatPayrollTaxLabel(): string
-            {
-                return '';
-            }
         };
 
         $resolver = new CountryRulesResolver([$base]);
@@ -286,6 +284,11 @@ class CountryRulesResolverTest extends TestCase
             public function taxSlabs(): array
             {
                 return [];
+            }
+
+            public function withTaxSlabs(array $slabs): static
+            {
+                return $this;
             }
 
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
@@ -363,6 +366,11 @@ class CountryRulesResolverTest extends TestCase
                 return 0.0;
             }
 
+            public function flatPayrollTaxLabel(): string
+            {
+                return '';
+            }
+
             public function thirteenthMonthMandatory(): bool
             {
                 return false;
@@ -378,19 +386,9 @@ class CountryRulesResolverTest extends TestCase
                 return 0.0;
             }
 
-            public function withTaxSlabs(array $slabs): static
-            {
-                return $this;
-            }
-
             public function withCapsEnabled(bool $enabled): static
             {
                 return $this;
-            }
-
-            public function flatPayrollTaxLabel(): string
-            {
-                return '';
             }
 
             public function forCompany(?string $companyId): static

@@ -90,7 +90,9 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_manager_can_create_payroll_run(): void
     {
-        $company = Company::factory()->create();
+        // #1905 : le pays légal du tenant doit correspondre au country_code
+        // du run — la factory tire un pays aléatoire sinon (test flaky).
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
