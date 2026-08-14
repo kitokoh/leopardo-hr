@@ -8336,7 +8336,7 @@ paths:
                             name: { type: string }
                             code: { type: string }
                             rate: { type: number }
-                            cap: { type: [number, "null"] }
+                            cap: { type: number, nullable: true }
                             amount: { type: number }
                       employer_contributions:
                         type: array
@@ -8346,7 +8346,7 @@ paths:
                             name: { type: string }
                             code: { type: string }
                             rate: { type: number }
-                            cap: { type: [number, "null"] }
+                            cap: { type: number, nullable: true }
                             amount: { type: number }
                       total_employee_deduction: { type: number }
                       total_employer_cost: { type: number }
