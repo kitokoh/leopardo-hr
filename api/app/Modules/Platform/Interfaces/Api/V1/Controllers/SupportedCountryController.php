@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +34,7 @@ class SupportedCountryController extends Controller
             try {
                 $confidence = $this->payrollCalculator->getRules($code)->confidenceLevel();
                 $available = true;
-            } catch (\InvalidArgumentException) {
+            } catch (UnsupportedCountryRulesException) {
                 // Pays référencé mais sans règles de paie dédiées (ex. GB/US) :
                 // indisponible pour un calcul, pas une erreur.
                 $confidence = 'unknown';
