@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
+use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -177,9 +178,12 @@ class PlatformCompanyRequestController extends Controller
             abort(422, 'Un email de contact est requis pour approuver cette demande.');
         }
 
-        $country = strtoupper((string) ($companyRequest->country ?: 'DZ'));
-        if (strlen($country) !== 2) {
-            $country = 'DZ';
+        // MULTI-PAYS (#1867/#1950) : pays obligatoire et supporté — aucun
+        // fallback silencieux vers DZ (invariant 10). Une demande legacy sans
+        // pays valide est rejetée explicitement.
+        $country = strtoupper(trim((string) ($companyRequest->country ?? '')));
+        if (CountryDefaults::find($country) === null) {
+            abort(422, 'Le pays de la demande est invalide ou non supporté ('.implode(', ', array_keys(CountryDefaults::all())).').');
         }
 
         $result = $this->companyProvisioningService->provisionSharedCompany([

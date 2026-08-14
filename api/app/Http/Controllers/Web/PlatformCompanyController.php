@@ -119,7 +119,24 @@ class PlatformCompanyController extends Controller
         ]);
 
         $validated['sector'] = trim((string) ($validated['sector'] ?? '')) ?: 'Non precise';
-        $countryDefaults = CountryDefaults::for($validated['country']);
+        // MULTI-PAYS (#1867/#1950) : pays obligatoire et supporté — résolution
+        // STRICTE (CountryDefaults::find), aucun fallback silencieux vers DZ
+        // (invariant 10). Le code est normalisé en majuscules avant lookup.
+        $validated['country'] = strtoupper(trim($validated['country']));
+        $countryDefaults = CountryDefaults::find($validated['country']);
+        if ($countryDefaults === null) {
+            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_keys(CountryDefaults::all())).').';
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => $message,
+                    'errors' => ['country' => [$message]],
+                ], 422);
+            }
+
+            return back()
+                ->withInput()
+                ->withErrors(['country' => $message]);
+        }
         $validated['country'] = $countryDefaults['country'];
         $validated['language'] = strtolower($validated['language'] ?? $countryDefaults['language']);
         $validated['currency'] = strtoupper($validated['currency'] ?? $countryDefaults['currency']);

@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
+use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -19,20 +20,32 @@ class ProvisionGuidedTrial
         private readonly TenantManager $tenantManager,
     ) {}
 
-    /** @return array<string, mixed> */
-    public function execute(string $email, string $companyName): array
+    /**
+     * MULTI-PAYS (#1867/#1950) : le pays légal est OBLIGATOIRE et doit être
+     * supporté (registre CountryDefaults) — aucun fallback silencieux vers DZ
+     * (invariant 10 de la spec MULTI_PAYS_RULES_ENGINE). La langue, la
+     * devise et le fuseau sont dérivés du pays validé.
+     *
+     * @return array<string, mixed>
+     */
+    public function execute(string $email, string $companyName, ?string $country = null): array
     {
         $slug = Str::slug($companyName);
         if (!$slug) {
             $slug = 'sandbox-' . Str::random(6);
         }
 
-        return DB::transaction(function () use ($email, $companyName, $slug): array {
+        $countryDefaults = CountryDefaults::find($country);
+        if ($countryDefaults === null) {
+            throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_keys(CountryDefaults::all())).').');
+        }
+
+        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
                 'sector' => 'Non précisé',
-                'country' => 'DZ',
+                'country' => $countryDefaults['country'],
                 'city' => 'Non précisé',
                 'email' => $email,
                 'plan_id' => $this->resolveTrialPlanId(),
@@ -41,9 +54,9 @@ class ProvisionGuidedTrial
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
                 'subscription_end' => now()->addDays(14)->toDateString(),
-                'language' => 'fr',
-                'timezone' => 'Africa/Algiers',
-                'currency' => 'DZD',
+                'language' => strtolower($countryDefaults['language']),
+                'timezone' => $countryDefaults['timezone'],
+                'currency' => strtoupper($countryDefaults['currency']),
                 'metadata' => [
                     'provisioned_by' => 'guided_trial',
                     'is_sandbox' => true,
