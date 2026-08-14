@@ -381,14 +381,6 @@ const HISTORY_LABEL_KEYS = {
   superseded: 'taxRates.historyActions.superseded',
 }
 
-const HISTORY_LABEL_FALLBACKS = {
-  created: 'Création',
-  submitted: 'Soumission',
-  approved: 'Approbation',
-  rejected: 'Rejet',
-  superseded: 'Remplacée',
-}
-
 function statusBadge(status) {
   return `px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_STYLES[status] || STATUS_STYLES.draft}`
 }
@@ -396,7 +388,8 @@ function statusBadge(status) {
 function statusLabel(status) {
   const key = STATUS_LABEL_KEYS[status]
   if (!key) return status
-  return t(key, STATUS_LABEL_FALLBACKS[status] || status)
+  // Fallback = clé (facilite le débogage d'un catalogue manquant).
+  return t(key, key)
 }
 
 function historyBadge() {
@@ -406,7 +399,7 @@ function historyBadge() {
 function historyLabel(action) {
   const key = HISTORY_LABEL_KEYS[action]
   if (!key) return action
-  return t(key, HISTORY_LABEL_FALLBACKS[action] || action)
+  return t(key, key)
 }
 
 onMounted(async () => {
