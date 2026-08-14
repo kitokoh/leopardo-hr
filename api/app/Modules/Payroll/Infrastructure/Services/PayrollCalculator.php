@@ -297,6 +297,11 @@ class PayrollCalculator
                 'total_employer_cost' => round($totalEmployerCost, 2),
                 'employee_count' => $run->paySlips()->count(),
                 'calculated_at' => now(),
+                // Issue #2221 : version/identifiant/période des règles EFFECTIVES
+                // persistées sur le run (promesse #1871) — pas seulement sur les bulletins.
+                'rules_version' => $rulesVersion,
+                'rules_identifier' => $rulesIdentifier,
+                'rules_period' => $rulesPeriod,
             ]);
         });
 
@@ -349,7 +354,13 @@ class PayrollCalculator
         /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
 
-        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules): void {
+        // Issue #2221 : version/identifiant/période des règles EFFECTIVES
+        // persistées aussi sur les runs de régularisation (promesse #1871).
+        $rulesVersion = $rules->rulesVersion();
+        $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
+        $rulesPeriod = $run->period_start->toDateString();
+
+        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules, $rulesVersion, $rulesIdentifier, $rulesPeriod): void {
             // Recalcul idempotent : on repart de zéro (aucune double application).
             $run->paySlips()->delete();
 
@@ -437,6 +448,11 @@ class PayrollCalculator
                 'total_employer_cost' => round($totalEmployerCost, 2),
                 'employee_count' => $run->paySlips()->count(),
                 'calculated_at' => now(),
+                // Issue #2221 : version/identifiant/période des règles EFFECTIVES
+                // persistées sur le run (promesse #1871) — pas seulement sur les bulletins.
+                'rules_version' => $rulesVersion,
+                'rules_identifier' => $rulesIdentifier,
+                'rules_period' => $rulesPeriod,
             ]);
         });
 
