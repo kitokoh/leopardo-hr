@@ -76,4 +76,44 @@ class PublicHolidayIslamicSeederTest extends TestCase
         $this->assertGreaterThan(0, PublicHoliday::count());
         $this->assertGreaterThan(0, DB::table('islamic_calendar')->count());
     }
+
+    public function test_islamic_calendar_seeder_covers_2028_plus(): void
+    {
+        // Issue #1931 : les données hardcodées ne couvraient que 2024-2027 —
+        // en 2028 la paie perdait silencieusement tous les fériés islamiques.
+        // L'algorithme hégirien tabulaire génère désormais 2024-2035.
+        (new IslamicCalendarSeeder())->run();
+
+        foreach (range(2028, 2035) as $year) {
+            $this->assertGreaterThan(
+                0,
+                DB::table('islamic_calendar')->where('year', $year)->count(),
+                "Aucune date islamique seedée pour {$year} (issue #1931)"
+            );
+        }
+    }
+
+    public function test_islamic_calendar_seeder_seeds_tahmarit_and_all_mapping_keys(): void
+    {
+        // Issue #1931 : tahmarit (Tamkharit — 10 Muharram) n'était JAMAIS
+        // seedé → le Sénégal (seul pays du mapping à le fêter) n'avait pas sa
+        // fête. Tous les holiday_key du mapping pays doivent exister en base.
+        (new IslamicCalendarSeeder())->run();
+
+        $this->assertGreaterThan(
+            0,
+            DB::table('islamic_calendar')->where('holiday_key', 'tahmarit')->count(),
+            'tahmarit jamais seedé (issue #1931)'
+        );
+
+        $mapping = require config_path('islamic_holidays_map.php');
+
+        foreach (array_keys($mapping['countries']['SN']) as $holidayKey) {
+            $this->assertGreaterThan(
+                0,
+                DB::table('islamic_calendar')->where('holiday_key', $holidayKey)->count(),
+                "holiday_key « {$holidayKey} » (mapping SN) jamais seedé"
+            );
+        }
+    }
 }
