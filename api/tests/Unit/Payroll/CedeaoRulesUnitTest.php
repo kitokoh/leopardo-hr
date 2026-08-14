@@ -48,34 +48,32 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_ci_cnss_cap_at_1647315(): void
     {
-        // Calcul manuel (docs/payroll/CI_COMPLIANCE.md §4) — brut 2 000 000 :
+        // Calcul manuel (docs/payroll/CI_COMPLIANCE.md §4 + #1913) — brut 2 000 000 :
         //   retraite salariale 3,2 % × min(2M, 1 647 315) = 52 714,08
         //   retraite patronale 4,5 % × 1 647 315 = 74 129,18
-        //   famille patronale 5,75 % × 1 647 315 = 94 720,61
-        //   AT patronale 2,0 % × 2M (non plafonné) = 40 000
-        //   → salarié 52 714,08 · patronal 208 849,79
+        //   famille patronale 5,75 % × 70 000 (plafond branche #1913) = 4 025,00
+        //   AT patronale 2,0 % × 70 000 = 1 400,00
+        //   → salarié 52 714,08 · patronal 79 554,18
         $charges = $this->ci()->calculateSocialCharges(2000000.0);
 
         $this->assertSame(52714.08, $charges['employee']);
-        $this->assertSame(208849.79, $charges['employer']);
+        $this->assertSame(79554.18, $charges['employer']);
 
-        // Brut sous plafond : 1 000 000 → salarié 32 000 · patronal 122 500.
+        // Brut 1 000 000 : famille/AT plafonnées à 70 000 → patronal
+        // 45 000 + 4 025 + 1 400 = 50 425,00.
         $chargesBelow = $this->ci()->calculateSocialCharges(1000000.0);
         $this->assertSame(32000.0, $chargesBelow['employee']);
-        $this->assertSame(122500.0, $chargesBelow['employer']);
+        $this->assertSame(50425.0, $chargesBelow['employer']);
     }
 
-    public function test_ci_abatement_20_percent(): void
+    public function test_ci_abatement_supprime_2024(): void
     {
         $abatement = $this->ci()->professionalExpensesDeduction();
 
-        // 20 % du brut, NON plafonné (docs/payroll/CI_COMPLIANCE.md §2).
-        $this->assertSame(20.0, $abatement['rate']);
+        // Réforme ITS 2024 (#1918) : plus d'abattement frais pro — l'ITS
+        // s'applique sur le BRUT (CGI art. 119 bis, ord. 2023-718/719).
+        $this->assertSame(0.0, $abatement['rate']);
         $this->assertNull($abatement['cap']);
-
-        // Sans plafond, l'abattement = 20 % du brut quel que soit le niveau.
-        $this->assertSame(40000.0, 200000.0 * 0.20);
-        $this->assertSame(200000.0, 1000000.0 * 0.20);
     }
 
     public function test_ci_thirteenth_month_mandatory(): void
