@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
@@ -183,6 +184,25 @@ class PayrollAuditTest extends TestCase
         $this->assertSame('user', $data['actor']['type']);
         $this->assertArrayHasKey('input', $data);
         $this->assertArrayHasKey('result', $data);
+    }
+
+    public function test_run_calculated_outside_http_request_is_audited_as_job(): void
+    {
+        $run = $this->seedCalculableRun($this->companyA);
+
+        // Aucun utilisateur authentifié (équivalent ProcessPayrollBatchJob /
+        // commande) : l'acteur de l'audit doit être `job`.
+        (new PayrollCalculator())->calculateRun($run);
+
+        $run->refresh();
+        $this->assertNotNull($run->correlation_id);
+
+        /** @var PayrollCalculationAudit $audit */
+        $audit = PayrollCalculationAudit::query()->where('correlation_id', $run->correlation_id)->first();
+        $this->assertNotNull($audit);
+        $this->assertSame(PayrollCalculationAudit::ACTOR_JOB, $audit->actor_type);
+        $this->assertNull($audit->actor_id);
+        $this->assertSame(PayrollCalculationAudit::STATUS_SUCCESS, $audit->status);
     }
 
     public function test_tenant_isolation_audit_of_company_a_invisible_to_company_b(): void
