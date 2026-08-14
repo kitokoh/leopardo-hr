@@ -274,7 +274,10 @@
     "priority_actions": "Priority actions",
     "launch_readiness": "Launch readiness",
     "recent_activity": "Recent activity",
-    "recent_activity_hint": "Latest actions from your team"
+    "recent_activity_hint": "Latest actions from your team",
+    "leo_ia_announcement_title": "Congratulations team",
+    "leo_ia_announcement_body": "Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!",
+    "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments."
   },
   "marketing": {
     "oauth": {

@@ -274,7 +274,10 @@
     "priority_actions": "Öncelikli Eylemler",
     "launch_readiness": "Lansman Hazırlığı",
     "recent_activity": "Son Etkinlik",
-    "recent_activity_hint": "Ekibinizin son eylemleri"
+    "recent_activity_hint": "Ekibinizin son eylemleri",
+    "leo_ia_announcement_title": "Tebrikler ekip",
+    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
+    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin."
   },
   "marketing": {
     "oauth": {
