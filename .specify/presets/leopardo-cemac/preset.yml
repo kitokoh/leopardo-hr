@@ -1,0 +1,27 @@
+schema_version: "1.0"
+preset:
+  id: "leopardo-cemac"
+  name: "Leopardo HR — CEMAC Zone (XAF)"
+  version: "1.0.0"
+  description: "Règles paie zone CEMAC (CM/GA/CG/CF/TD/GQ) : IRPP progressif, CNPS plafonds, centimes additionnels CM, abattement 30% frais pro. Niveau pilot requis avant merge."
+  author: "kitokoh"
+  repository: "https://github.com/kitokoh/leopardo-hr"
+  license: "MIT"
+requires:
+  speckit_version: ">=0.16.0"
+provides:
+  templates:
+    - type: "template"
+      name: "spec-cemac-compliance"
+      file: "templates/spec-cemac-append.md"
+      description: "Injecte les règles CEMAC dans toute spec Afrique centrale"
+      strategy: "append"
+      replaces: "spec-template"
+tags:
+  - "cemac"
+  - "cameroun"
+  - "gabon"
+  - "congo"
+  - "xaf"
+  - "cnps"
+  - "leopardo"

@@ -1,10 +1,58 @@
 # AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-07-26
+Derniere mise a jour : 2026-08-14
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
 > **NOUVEL AGENT ? Commence par lire `dev-hub/prompts/00_AGENT_QUICK_CARD.md` (2 min) pour une carte de reference rapide. Ce fichier AGENTS.md est le guide complet.**
+
+## ⚡ Spec-Driven Development — Spec Kit (NOUVEAU 2026-08-14)
+
+Leopardo HR utilise desormais **GitHub Spec Kit** pour structurer tout travail significatif.
+Lire `.specify/constitution.md` — c'est la loi fondamentale du projet.
+
+### Commandes disponibles (GitHub Copilot skills)
+
+| Commande | Role |
+|----------|------|
+| `/speckit-constitution` | Principes directeurs du projet |
+| `/speckit-specify` | Creer une spec avant de coder |
+| `/speckit-clarify` | Clarifier les ambiguites (avant plan) |
+| `/speckit-plan` | Plan technique et architecture |
+| `/speckit-tasks` | Generer les taches actionnables |
+| `/speckit-analyze` | Verifier coherence avant implementation |
+| `/speckit-implement` | Executer les taches |
+| `/speckit-converge` | Detecter le travail restant |
+
+### Presets actifs (injectes automatiquement dans toute spec)
+
+| Preset | Se declenche sur |
+|--------|-----------------|
+| `leopardo-payroll` | Toute spec touchant `api/app/Modules/Payroll/` |
+| `leopardo-multitenancy` | Toute spec ajoutant une table ou un endpoint API |
+| `leopardo-dz` | Specs paie algeriennes (IRG/CNAS) |
+| `leopardo-cemac` | Specs paie zone CEMAC (CM/GA/CG/XAF) |
+| `leopardo-cedeao` | Specs paie zone CEDEAO (CI/SN/BF/ML/XOF) |
+
+### Workflow standard (remplace la creation manuelle d'issues)
+
+```
+1. /speckit-specify  "description de ce que tu veux construire"
+2. /speckit-clarify  (si ambiguite)
+3. /speckit-plan     (architecture)
+4. /speckit-analyze  (verifier dependances manquantes)
+5. /speckit-tasks    (generer les taches)
+6. /speckit-implement (coder)
+```
+
+### Regle anti-doublon (CRITIQUE)
+
+Avant de commencer a coder, **toujours** verifier :
+```bash
+gh issue list --state open --assignee @me
+gh issue list --state open --label "payroll" --json number,title,assignees | head -20
+```
+Si une spec/issue similaire existe et est assignee → contribuer dessus, pas creer une nouvelle PR.
 
 ## Regles obligatoires
 

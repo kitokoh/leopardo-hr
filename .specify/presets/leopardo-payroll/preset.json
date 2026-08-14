@@ -1,0 +1,11 @@
+{
+  "id": "leopardo-payroll",
+  "name": "Leopardo HR — Payroll Compliance",
+  "version": "1.0.0",
+  "description": "Injecte les contraintes de conformité paie multi-pays dans toute spec Leopardo HR touchant le module Payroll.",
+  "author": "kitokoh",
+  "tags": ["payroll", "compliance", "leopardo", "africa", "dz", "cemac", "cedeao"],
+  "provides": {
+    "templates": ["spec-template.md", "tasks-template.md"]
+  }
+}

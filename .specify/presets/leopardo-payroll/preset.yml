@@ -1,0 +1,45 @@
+schema_version: "1.0"
+
+preset:
+  id: "leopardo-payroll"
+  name: "Leopardo HR — Payroll Compliance"
+  version: "1.0.0"
+  description: "Appends payroll compliance gates (golden tests, tenant isolation, legal references) to every spec and task list. Required for any work touching api/app/Modules/Payroll/."
+  author: "kitokoh"
+  repository: "https://github.com/kitokoh/leopardo-hr"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.16.0"
+
+provides:
+  templates:
+    # Append conformité checklist à chaque spec
+    - type: "template"
+      name: "spec-payroll-compliance"
+      file: "templates/spec-compliance-append.md"
+      description: "Ajoute la checklist de conformité paie à toute spec payroll"
+      strategy: "append"
+      replaces: "spec-template"
+
+    # Append tâches obligatoires payroll à chaque task list
+    - type: "template"
+      name: "tasks-payroll-required"
+      file: "templates/tasks-payroll-append.md"
+      description: "Injecte les tâches payroll obligatoires (golden tests, PHPStan, CHANGELOG)"
+      strategy: "append"
+      replaces: "tasks-template"
+
+    # Override la commande specify pour guider vers conformité paie
+    - type: "command"
+      name: "speckit.specify"
+      file: "commands/speckit.specify.md"
+      description: "Specify avec checklist conformité paie injectée automatiquement"
+      strategy: "wrap"
+
+tags:
+  - "payroll"
+  - "compliance"
+  - "leopardo"
+  - "africa"
+  - "multitenant"
