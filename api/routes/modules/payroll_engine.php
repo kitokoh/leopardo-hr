@@ -15,7 +15,9 @@ declare(strict_types=1);
 
 use App\Modules\Payroll\Interfaces\Api\V1\BankExportController;
 use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
+use App\Modules\Payroll\Interfaces\Api\V1\CnssDeclarationController;
 use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\IpresDeclarationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
@@ -95,6 +97,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
+
+        // Déclarations sociales mensuelles par pays (CSV) — CI/SN (issue #1830)
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ci', [CnssDeclarationController::class, 'download'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/declarations/ipres-sn', [IpresDeclarationController::class, 'download'])->whereNumber('payrollRun');
 
         // Social Declarations (CNAS DZ / CNSS MA / DSN FR)
         Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
