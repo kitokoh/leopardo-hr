@@ -19,6 +19,18 @@
 
 ## 1. IRPP annuel (DGI Gabon)
 
+> **Source (vérifiée 2026-08-14, issue #1939)** : barème annuel DGI Gabon
+> (K = t % × Q − N, liquéfaction des traitements et salaires — CGI,
+> barème cité à l'**art. 174** par dgi.ga ; l'issue #1939 référençait l'art. 135
+> — les deux articles sont à confirmer par l'expert-comptable local).
+> **Annualisation × 12 confirmée** (jamais × 10) — verrouillée par
+> `GoldenGaPayrollTest::test_golden_ga_irpp_annualized_12_not_10`.
+> ⚠️ **Abattement DGI non implémenté (suivi)** : la DGI applique un abattement
+> de 20 % si la base imposable annuelle < 4 166 666 XAF, sinon 833 333 XAF
+> fixe, AVANT application du barème (quotient familial exclu du périmètre
+> moteur). À valider + implémenter avec l'expert (le moteur calcule
+> actuellement IRPP = f(brut − CNSS salariale) sans abattement).
+
 | Tranche annuelle (XAF) | Taux |
 |---|---|
 | 0 – 1 500 000 | 0 % |
