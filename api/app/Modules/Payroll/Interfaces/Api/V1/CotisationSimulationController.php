@@ -66,7 +66,7 @@ class CotisationSimulationController extends Controller
             'acknowledge_placeholder' => ['nullable', 'boolean'],
         ]);
 
-        /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null} $validated */
+        /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null, acknowledge_placeholder?: bool} $validated */
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
         $rulesPeriodValue = $validated['rules_period'] ?? null;
@@ -90,7 +90,7 @@ class CotisationSimulationController extends Controller
         // confirmation explicite ; l'acceptation est AUDITÉE (tenant, pays,
         // acteur) — jamais de secrets ni de données biométriques.
         if ($rules->confidenceLevel() === 'placeholder') {
-            $acknowledged = (bool) ($validated['acknowledge_placeholder'] ?? false);
+            $acknowledged = $request->boolean('acknowledge_placeholder');
             if (! $acknowledged) {
                 return response()->json([
                     'message' => __('payroll.placeholder_acknowledge_required', ['country' => $countryCode]),

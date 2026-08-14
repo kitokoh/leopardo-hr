@@ -745,3 +745,25 @@ Procedure recommandee :
 - Sans runtime PHP/Composer disponible dans l'environnement d'audit, tout changement touchant `PayrollCalculator`/`CountryRules` doit etre revalide par l'equipe via `php artisan test --filter=Payroll` avant merge; les tests unitaires ajoutes ici (`PayrollCountryRulesTest`) couvrent seulement le fallback sans app bootstrappee et le contrat `forCompany()`, pas un vrai override DB end-to-end.
 - Main rouge 2026-08-09 (43 tests) : les causes racines étaient (1) `employees.national_id` varchar(50) vs cast `encrypted` (~230 chars) → élargi varchar(500) ; (2) `languages.updated_at` manquant (0003 créé sans, 00015 early-return) → réconcilié ; (3) tests encore calés sur le schéma manuel permissif (plan_id/first_name NOT NULL, statuts attendance_logs, PDF non compressés, PendingCommand lazy). Toute nouvelle migration touchant une table existante doit réconcilier (pattern 00015) et jamais early-return sans ALTER additif.
 - Spec S-1 (#1661) : la rétention biométrique vit dans `POLITIQUE_RETENTION_DOCUMENTS.md` (v2) et la purge dans `biometric:purge-expired` (hebdo, `--company`/`--dry-run`). Règle de purge : contrat terminé depuis > N mois, OU consentement datant de > N mois quand aucune fin de contrat n'est renseignée. Ne pas purger un employé encore en poste même si son consentement est ancien.
+
+## Lecon 2026-08-14 — Triage des branches distantes apres une vague multi-agents
+
+Apres une vague ou plusieurs agents mergent en parallele, la plupart des branches
+distantes restantes sont des **doublons** de commits deja squash-merges dans `main`
+(le diff 2-points `git diff origin/main origin/<branche>` est pollue par
+l'avancement de main et ne prouve rien). Pour trier sans rien perdre :
+
+```bash
+git fetch origin --prune
+git diff --name-only origin/main...origin/<branche>   # travail propre de la branche (3-points)
+# Pour chaque fichier divergent, verifier si main couvre deja le contenu :
+git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
+```
+
+- `DIVERGE=0` ou seul le `CHANGELOG.md` diverge → doublon → supprimer la branche.
+- Contenu de branche PLUS ANCIEN que main (main a evolué) → doublon → supprimer.
+- Fichier present sur la branche et ABSENT de main → travail potentiellement non merge
+  → analyser avant de merger ou de capturer dans une issue (ne jamais merger une base
+  perimee qui REVERTIRAIT main : verifier la direction du diff).
+- Ne jamais merger une branche dont l'approche a ete remplacee sur main (ex. barème
+  ITSAS CI annuel remplace par l'ITS 2024 unifie, art. 119 bis).
