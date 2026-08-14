@@ -7532,8 +7532,8 @@ paths:
   /cotisation-simulation:
     post:
       tags: ["Payroll Engine"]
-      summary: "Simuler les cotisations sociales employe/employeur pour un salaire brut donne, sans persister (manager)"
-      description: "Taux de cotisation en dur par pays (CNAS/CNSS/Securite Sociale/CNSS-TN/SGK/IPRES/CNPS selon le pays), pas de bareme fiscal IRG/IR/PAS applique (net_before_tax = brut - cotisations salariales uniquement)."
+      summary: "Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"
+      description: "Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782) : memes taux, caps, baremes et abattements que les vrais bulletins. Reponse complete : cotisations + impôt + net reel (income_tax, net_salary)."
       operationId: simulateCotisations
       requestBody:
         required: true
@@ -7566,6 +7566,7 @@ paths:
                           type: object
                           properties:
                             name: { type: string }
+                            code: { type: string }
                             rate: { type: number }
                             amount: { type: number }
                       employer_contributions:
@@ -7574,11 +7575,15 @@ paths:
                           type: object
                           properties:
                             name: { type: string }
+                            code: { type: string }
                             rate: { type: number }
                             amount: { type: number }
                       total_employee_deduction: { type: number }
                       total_employer_cost: { type: number }
+                      taxable_gross: { type: number }
+                      income_tax: { type: number }
                       net_before_tax: { type: number }
+                      net_salary: { type: number }
                       total_cost_employer: { type: number }
         "401":
           $ref: "#/components/responses/Error401"
