@@ -62,8 +62,36 @@ class GoldenBfPayrollTest extends TestCase
         $this->assertSame(163500.0, $charges['employer']);
 
         // Assiette IUTS = 1 200 000 − 49 500 = 1 150 500 → annuel 13 806 000
-        // → IUTS mensuel 232 843,00 (tranches 0/12,1/13,9/18,7/23,6 %)
-        $this->assertSame(232843.0, $this->bf()->calculateIncomeTax(1150500.0));
+        // → IUTS mensuel 258 212,50 (tranches 0/12,1/13,9/18,7/23,6/27,5 % —
+        // tranche 27,5 % > 6 M ajoutée par #1915 ; l'ancien barème fusionné
+        // donnait 232 843,00 → sous-imposition au-delà de ~500 k/mois).
+        //   Recalcul manuel :
+        //   0–600k : 0 · 600k–1,5M : 900 000 × 12,1 % = 108 900
+        //   1,5M–3M : 1 500 000 × 13,9 % = 208 500
+        //   3M–4,5M : 1 500 000 × 18,7 % = 280 500
+        //   4,5M–6M : 1 500 000 × 23,6 % = 354 000
+        //   > 6M : (13 806 000 − 6 000 000) × 27,5 % = 2 146 650
+        //   Total 3 098 550 / 12 = 258 212,50
+        $this->assertSame(258212.5, $this->bf()->calculateIncomeTax(1150500.0));
+    }
+
+    public function test_golden_bf_iuts_boundary_6m_annual(): void
+    {
+        // Cas frontal #1915 — assiette mensuelle 500 000 → annuel 6 000 000,
+        // exactement à la limite 23,6 % / 27,5 % :
+        //   0–600k : 0 · 600k–1,5M : 108 900 · 1,5M–3M : 208 500
+        //   3M–4,5M : 280 500 · 4,5M–6M : 354 000 · > 6M : 0
+        //   Total 951 900 / 12 = 79 325,00
+        $this->assertSame(79325.0, $this->bf()->calculateIncomeTax(500000.0));
+    }
+
+    public function test_golden_bf_iuts_above_6m_annual_applies_27_5(): void
+    {
+        // Cas frontal #1915 — assiette mensuelle 525 000 → annuel 6 300 000,
+        // au-dessus de la limite : 951 900 + 300 000 × 27,5 % = 1 034 400
+        // → mensuel 86 200,00. Sans la tranche 27,5 %, le taux marginal
+        // resterait bloqué à 23,6 % (sous-imposition).
+        $this->assertSame(86200.0, $this->bf()->calculateIncomeTax(525000.0));
     }
 
     /**
