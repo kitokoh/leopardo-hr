@@ -7,7 +7,6 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
@@ -61,16 +60,13 @@ class EndOfContractService
         // FOCUS 2 (F-31) : préavis et indemnité de licenciement sont portés
         // par les règles pays (CountryRulesInterface) au lieu de valeurs codées
         // en dur — la valeur applicable est résolue selon le pays de la société
-        // (défaut DZ) et l'ancienneté de l'employé. Pays non enregistré dans le
-        // moteur → repli sur les défauts DZ (comportement historique : 1 mois/an,
-        // 0 jour de préavis), sans jamais lever d'exception en fin de contrat.
+        // (défaut DZ) et l'ancienneté de l'employé.
+        // #1868 : PLUS AUCUN repli silencieux vers DZ — un pays non enregistré
+        // propage UnsupportedCountryRulesException (422 explicite), comme le
+        // vérifie GoldenDzEndOfContractRulesTest.
         $countryCode = $employee->company->country ?? 'DZ';
 
-        try {
-            $rules = $this->calculator->getRules($countryCode);
-        } catch (UnsupportedCountryRulesException) {
-            $rules = $this->calculator->getRules('DZ');
-        }
+        $rules = $this->calculator->getRules($countryCode);
 
         $breakdown = $this->calculator->computeFinalSettlement(
             monthlyBase: $monthlyBase,
