@@ -94,6 +94,13 @@ class CabinetService
      */
     public function updateDocument(CabinetDocument $document, array $data): CabinetDocument
     {
+        // Issue #1921 (#1817) : un document read_only (ex. bulletin archivé)
+        // est IMMUABLE — rename/déplacement/notes bloqués côté service
+        // (même garde que destroy, message via catalogue i18n errors.FORBIDDEN).
+        if ($document->read_only) {
+            abort(403, __('errors.FORBIDDEN'));
+        }
+
         $fields = [];
 
         if (array_key_exists('name', $data)) {
@@ -126,6 +133,11 @@ class CabinetService
 
     public function moveDocument(CabinetDocument $document, ?int $folderId): CabinetDocument
     {
+        // Issue #1921 (#1817) : un document read_only ne peut pas être déplacé.
+        if ($document->read_only) {
+            abort(403, __('errors.FORBIDDEN'));
+        }
+
         $document->update(['folder_id' => $folderId]);
         $document->refresh();
 
