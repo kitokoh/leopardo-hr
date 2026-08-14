@@ -351,7 +351,7 @@ function buildPhpSnippet(isPlatform) {
     const url = `${apiBase}${endpoint.value}`;
     const payload = body.value.trim();
     const lines = [
-        `<?php`,
+        `<?= '<?php' ?>`,
         ``,
         `$client = new \\GuzzleHttp\\Client();`,
         ``,
