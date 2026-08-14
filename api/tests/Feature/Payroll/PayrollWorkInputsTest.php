@@ -153,8 +153,15 @@ class PayrollWorkInputsTest extends TestCase
     {
         /** @var Company $company */
         $company = Company::factory()->create();
+        // Contrat couvrant toute la période (défaut factory aléatoire : un
+        // contract_start postérieur au 1er juillet fausserait le prorata →
+        // test flaky 20,58 au lieu de 22,0).
         /** @var Employee $employee */
-        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'contract_start' => '2026-01-01',
+            'contract_end' => '2026-12-31',
+        ]);
         $run = $this->makeRun($company);
 
         // Aucun log → fallback prorata contrat : mois complet → 22 jours.
