@@ -8,10 +8,10 @@
 # app.js une seule fois à la construction de l'image.
 FROM node:22-alpine AS assets
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY api/package.json api/package-lock.json ./
 RUN npm ci --no-audit --no-fund
-COPY vite.config.js postcss.config.js tailwind.config.js ./
-COPY resources ./resources
+COPY api/vite.config.js api/postcss.config.js api/tailwind.config.js ./
+COPY api/resources ./resources
 RUN npm run build
 
 # ──────────────────────────────────────────────────────────────────────────────

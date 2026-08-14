@@ -86,7 +86,7 @@ Assiette plafonnée : `min(brut, 750 000)` pour vieillesse et famille ; AT sur l
 
 - [ ] Barème IRPP 2024 (4 tranches) — confirmation tranche > 5 000 000 à 35 %
 - [ ] Centimes additionnels 10 %
-- [ ] Abattement frais pro 30 % plafonné 350 000/mois + base de calcul (brut vs après CNPS)
+- [x] Abattement frais pro 30 % plafonné 350 000/mois sur le brut réel (formule légale)
 - [ ] Taux CNPS 2024 (vieillesse 4,2/4,2, famille 7,0, AT 2,0) + plafond 750 000
 - [ ] SMIG 2024
 - [ ] Préavis art. 34 (4 niveaux)

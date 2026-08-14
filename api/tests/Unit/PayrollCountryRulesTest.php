@@ -23,7 +23,7 @@ class PayrollCountryRulesTest extends TestCase
             'TN' => [new TunisiaPayrollRules, 91.8, 165.7],
             'FR' => [new FrancePayrollRules, 170.3, 300.0],
             'TR' => [new TurkeyPayrollRules, 150.0, 225.0],
-            'SN' => [new SenegalPayrollRules, 56.0, 114.0],
+            'SN' => [new SenegalPayrollRules, 56.0, 154.0],
         ];
 
         foreach ($rules as $countryCode => [$countryRules, $expectedEmployeeCharge, $expectedEmployerCharge]) {
@@ -255,10 +255,16 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            // #1821 : CM passe en 'pilot' (barèmes légaux implémentés) — les
-            // autres membres restent 'placeholder' jusqu'à leurs issues.
-            self::assertSame($memberCode === 'CM' ? 'pilot' : 'placeholder', $rules->confidenceLevel());
-            if ($memberCode === 'CM') {
+            // #1821 : CM passe en 'pilot' (barèmes légaux implémentés) ;
+            // #1824 : GA et CG aussi (IRPP/CNSS spécifiques). Les autres
+            // membres restent 'placeholder' jusqu'à leurs issues.
+            $expectedConfidence = in_array($memberCode, ['CM', 'GA', 'CG'], true) ? 'pilot' : 'placeholder';
+            self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
+            if ($memberCode === 'GA') {
+                self::assertCount(8, $rules->taxSlabs()); // IRPP GA 8 tranches
+            } elseif ($memberCode === 'CG') {
+                self::assertCount(6, $rules->taxSlabs()); // IRPP CG 6 tranches
+            } elseif ($memberCode === 'CM') {
                 self::assertStringContainsString('CM fixed public holidays', $rules->publicHolidaysSource());
             } else {
                 self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
@@ -325,8 +331,21 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            self::assertSame('placeholder', $rules->confidenceLevel());
-            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            // #1825 + #1829 : CI, BF et ML sont passés au niveau 'pilot'
+            // (barèmes légaux implémentés) — les autres membres UEMOA restent
+            // 'placeholder' jusqu'à leurs issues.
+            $expectedConfidence = in_array($memberCode, ['CI', 'BF', 'ML'], true) ? 'pilot' : 'placeholder';
+            self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
+            if ($memberCode === 'CI') {
+                self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
+            } elseif ($memberCode === 'BF') {
+                self::assertCount(5, $rules->taxSlabs()); // IUTS 5 tranches
+                self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
+            } elseif ($memberCode === 'ML') {
+                self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
+            } else {
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            }
             self::assertNotEmpty($rules->socialContributions());
         }
     }

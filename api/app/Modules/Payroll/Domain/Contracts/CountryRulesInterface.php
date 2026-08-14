@@ -22,7 +22,29 @@ interface CountryRulesInterface
      */
     public function taxSlabs(): array;
 
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float;
+    /**
+     * Issue #1814 — override temporaire du barème pour simulation (dry-run).
+     *
+     * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
+     */
+    public function withTaxSlabs(array $slabs): static;
+
+    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float;
+
+    /**
+     * Returns a clone of these rules scoped to a given tenant company, so
+     * company-specific TaxSlab/SocialContribution overrides are taken into
+     * account. Pass null to reset to national/global rules. (MULTI-PAYS
+     * #1868 — scopes transmis par le CountryRulesResolver.)
+     */
+    public function forCompany(?string $companyId): static;
+
+    /**
+     * Returns a clone of these rules scoped to a specific point in time, so
+     * tax slabs/social contributions resolve the rows effective on that date
+     * instead of today (PA2-ARCH-004). Pass null to reset to now().
+     */
+    public function asOf(\DateTimeInterface|string|null $date): static;
 
     /**
      * @return array{employee: float, employer: float}
@@ -148,6 +170,15 @@ interface CountryRulesInterface
      * ZONE-INFRA (#1820).
      */
     public function calculateBracketTax(float $grossSalary): float;
+
+    /**
+     * Display label of the flat-tax deduction line injected by the payroll
+     * engine when calculateBracketTax() returns > 0. Defaults to
+     * "Taxe de minimum fiscal"; countries that use the same mechanism for a
+     * differently-named flat tax (e.g. CI's Contribution Nationale, CN)
+     * override this so the payslip line is honest. ZONE-INFRA (#1820).
+     */
+    public function flatPayrollTaxLabel(): string;
 
     /**
      * Whether the country's labour code legally mandates a 13th month

@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Jobs\ArchivePaySlipsToCabinetJob;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
@@ -105,7 +106,7 @@ class PayrollClosingService
         // Issue #1767 : interdire la clôture comptable d'un run à 0 bulletin.
         $this->assertHasPaySlips($run);
 
-        return DB::transaction(function () use ($run, $validator): PayrollRun {
+        $lockedRun = DB::transaction(function () use ($run, $validator): PayrollRun {
             $updated = PayrollRun::query()
                 ->whereKey($run->id)
                 ->where('status', PayrollRun::STATUS_VALIDATED)
@@ -137,6 +138,12 @@ class PayrollClosingService
 
             return $run;
         });
+
+        // Issue #1817 : archivage automatique des bulletins PDF dans le
+        // Cabinet employé — dispatch APRÈS commit (le job lit l'état verrouillé).
+        ArchivePaySlipsToCabinetJob::dispatch($lockedRun->id);
+
+        return $lockedRun;
     }
 
     /**
