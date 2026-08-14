@@ -83,6 +83,16 @@ class HealthController extends Controller
     }
 
     /**
+     * Issue #1768 : normalise la réponse de `ping()` quel que soit le client
+     * (PhpRedis : true / 'PONG' / '+PONG' ; Predis : objet Status __toString 'PONG').
+     */
+    private static function isPongResponse(mixed $response): bool
+    {
+        return $response === true
+            || in_array(strtoupper((string) $response), ['PONG', '+PONG'], true);
+    }
+
+    /**
      * @return array{ok: bool, status?: string, latency_ms?: int, error?: string}
      */
     private function checkRedis(): array
@@ -110,7 +120,10 @@ class HealthController extends Controller
         $start = microtime(true);
         try {
             $response = Redis::connection()->ping();
-            $ok = $response === true || $response === 'PONG' || $response === '+PONG';
+            // Issue #1768 : Predis retourne un objet Predis\Response\Status
+            // (__toString() = 'PONG') — les comparaisons strictes échouaient
+            // toujours → « unexpected » alors que Redis est sain.
+            $ok = self::isPongResponse($response);
 
             return [
                 'ok' => $ok,
