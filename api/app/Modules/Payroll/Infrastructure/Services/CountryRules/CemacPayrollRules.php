@@ -177,6 +177,21 @@ class CemacPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
+        if ($this->memberCountryCode === 'GA') {
+            // IRPP Gabon (DGI — issue #1824/#1939/#2118) : barème ANNUEL
+            // (8 tranches, GA_COMPLIANCE.md §1) appliqué APRÈS l'abattement
+            // frais professionnels DGI — 20 % si la base imposable annuelle
+            // < 4 166 666 XAF, sinon 833 333 XAF fixe (méthode dédiée
+            // gabonProfessionalExpensesAbatement(), jamais de calcul inline —
+            // constitution §III).
+            $annualTaxable = $grossTaxable * $annualBasis;
+            $abatement = $this->gabonProfessionalExpensesAbatement($annualTaxable);
+            $annualTaxable = max(0.0, $annualTaxable - $abatement);
+            $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
+
+            return round($tax / $annualBasis, 2);
+        }
+
         if ($this->memberCountryCode !== 'CM') {
             $annualTaxable = $grossTaxable * $annualBasis;
             $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
@@ -208,7 +223,9 @@ class CemacPayrollRules extends AbstractCountryRules
     /**
      * CM (#1821) : abattement frais professionnels 30 % du brut plafonné
      * 350 000 XAF/mois (CGI 2024 — 4 200 000 XAF/an). Les autres membres
-     * CEMAC n'en ont pas (défaut 0 %).
+     * CEMAC n'en ont pas (défaut 0 %). Le Gabon (GA) déroge : son abattement
+     * DGI est annuel et conditionnel — voir
+     * gabonProfessionalExpensesAbatement() (issue #2118).
      *
      * @return array{rate: float, cap: float|null}
      */
@@ -219,6 +236,23 @@ class CemacPayrollRules extends AbstractCountryRules
         }
 
         return parent::professionalExpensesDeduction();
+    }
+
+    /**
+     * GA (#2118) — abattement frais professionnels DGI (docs/payroll/
+     * GA_COMPLIANCE.md §1) : 20 % de la base imposable ANNUELLE si elle est
+     * inférieure à 4 166 666 XAF, sinon abattement FIXE de 833 333 XAF,
+     * appliqué AVANT le barème IRPP annuel. Méthode dédiée (constitution
+     * §III : jamais de calcul inline dans calculateIncomeTax()).
+     *
+     * Source : DGI Gabon (CGI art. 174 — à confirmer par l'expert-comptable
+     * local, registre VALIDATION_EXPERTE.md #1904).
+     */
+    public function gabonProfessionalExpensesAbatement(float $annualTaxableBase): float
+    {
+        return $annualTaxableBase < 4166666.0
+            ? $annualTaxableBase * 0.20
+            : 833333.0;
     }
 
     public function calculateSocialCharges(float $grossSalary): array

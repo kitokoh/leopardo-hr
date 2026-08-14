@@ -9,7 +9,7 @@
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| IRPP (8 tranches annuelles) | ✅ implémentée (pilot) | DGI Gabon | à confirmer |
+| IRPP (8 tranches annuelles + abattement DGI) | ✅ implémentée (pilot) | DGI Gabon | à confirmer |
 | CNSS retraite 2,5 % / 5,0 % (plaf. 3 000 000) | ✅ implémentée (pilot) | CNSS | à confirmer |
 | CNSS famille patronale 8,0 % (même plaf.) | ✅ implémentée (pilot) | CNSS | à confirmer |
 | CNSS AT patronale 3,0 % (non plafonné) | ✅ implémentée (pilot) | CNSS | à confirmer |
@@ -25,11 +25,14 @@
 > — les deux articles sont à confirmer par l'expert-comptable local).
 > **Annualisation × 12 confirmée** (jamais × 10) — verrouillée par
 > `GoldenGaPayrollTest::test_golden_ga_irpp_annualized_12_not_10`.
-> ⚠️ **Abattement DGI non implémenté (suivi)** : la DGI applique un abattement
+> **Abattement DGI implémenté (issue #2118)** : la DGI applique un abattement
 > de 20 % si la base imposable annuelle < 4 166 666 XAF, sinon 833 333 XAF
 > fixe, AVANT application du barème (quotient familial exclu du périmètre
-> moteur). À valider + implémenter avec l'expert (le moteur calcule
-> actuellement IRPP = f(brut − CNSS salariale) sans abattement).
+> moteur). Implémenté dans `CemacPayrollRules::gabonProfessionalExpensesAbatement()`
+> (méthode dédiée, constitution §III) et verrouillé par golden tests
+> recalculés À LA MAIN (SMIG → 0 XAF d'IRPP ; cadre 500 k → 43 111,12 ;
+> 700 k → 95 916,68 ; 3,5 M → 1 035 361,12). Taux et seuil restent à
+> confirmer par l'expert-comptable local (registre `VALIDATION_EXPERTE.md`).
 
 | Tranche annuelle (XAF) | Taux |
 |---|---|
