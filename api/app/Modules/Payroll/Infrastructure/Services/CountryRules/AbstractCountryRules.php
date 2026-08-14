@@ -381,8 +381,13 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      * Historic default: no statutory notice pay (the contract/execution
      * decides). Countries with a documented legal notice period override
      * this. FOCUS 2 (F-31).
+     *
+     * `$category` est un indicateur optionnel de catégorie professionnelle
+     * (ex. SN : 'cadre' / 'general' / 'ouvrier' via `employees.ipres_category`,
+     * issue #2123) — les pays dont la durée légale ne dépend pas de la
+     * catégorie l'ignorent.
      */
-    public function noticePeriodDays(float $yearsOfService): float
+    public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
         return 0.0;
     }

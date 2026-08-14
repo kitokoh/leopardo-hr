@@ -174,7 +174,7 @@ class AlgeriaPayrollRules extends AbstractCountryRules
      *   exact. (cf. docs/payroll/DZ_COMPLIANCE.md §7 — confidenceLevel reste
      *   'pilot', validation expert comptable DZ requise avant 'production'.)
      */
-    public function noticePeriodDays(float $yearsOfService): float
+    public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
         return $yearsOfService >= 10.0 ? 44.0 : 22.0;
     }

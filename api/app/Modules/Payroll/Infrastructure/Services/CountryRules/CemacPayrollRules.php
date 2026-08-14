@@ -322,7 +322,7 @@ class CemacPayrollRules extends AbstractCountryRules
      *   5–10 ans : 2 mois (60 j) · > 10 ans : 3 mois (90 j).
      * Les autres membres CEMAC gardent le défaut (0).
      */
-    public function noticePeriodDays(float $yearsOfService): float
+    public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
         if (in_array($this->memberCountryCode, ['GA', 'CG'], true)) {
             // Préavis OHADA (issue #1824) — niveau employé/technicien (1 mois) :
@@ -333,7 +333,7 @@ class CemacPayrollRules extends AbstractCountryRules
         }
 
         if ($this->memberCountryCode !== 'CM') {
-            return parent::noticePeriodDays($yearsOfService);
+            return parent::noticePeriodDays($yearsOfService, $category);
         }
 
         return match (true) {
