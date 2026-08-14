@@ -139,6 +139,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'site_id',
         'salary_structure_id',
         'matricule',
+        'cnps_matricule',
         'zkteco_id',
         'first_name',
         'middle_name',

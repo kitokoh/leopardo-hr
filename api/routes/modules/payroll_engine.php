@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 use App\Modules\Payroll\Interfaces\Api\V1\BankExportController;
 use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
+use App\Modules\Payroll\Interfaces\Api\V1\CnpsDeclarationController;
 use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
@@ -95,6 +96,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
+
+        // Déclaration CNPS Cameroun (DAS mensuelle, issue #1823) — CSV
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnps-cm', [CnpsDeclarationController::class, 'download'])->whereNumber('payrollRun');
 
         // Social Declarations (CNAS DZ / CNSS MA / DSN FR)
         Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
