@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\VehicleAlertResource;
 use App\Http\Resources\Api\V1\VehicleAssignmentResource;
 use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
 use App\Http\Resources\Api\V1\VehicleResource;
 use App\Http\Resources\Api\V1\VehicleTripResource;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Attendance\Infrastructure\Services\TraccarService;
+use App\Modules\Fleet\Domain\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -120,6 +120,12 @@ class VehicleController extends Controller
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
+        // Sécurité #2217 : un employé ne peut consulter la position LIVE que de
+        // SON véhicule assigné (assigned_driver_id) — pas du reste de la flotte.
+        if (! $user->isManager() && (int) $vehicle->assigned_driver_id !== (int) $user->id) {
+            abort(403, 'FORBIDDEN');
+        }
+
         if (! $vehicle->traccar_device_id) {
             return response()->json(['message' => 'No tracker linked to this vehicle.'], 404);
         }
@@ -127,6 +133,45 @@ class VehicleController extends Controller
         $position = $traccar->getLastPosition($vehicle->traccar_device_id);
 
         return response()->json(['data' => $position]);
+    }
+
+    /**
+     * Sécurité #2217 — véhicules assignés à l'employé connecté (app mobile
+     * employé). Consomme le même format que `position()`.
+     */
+    public function myVehicles(Request $request, TraccarService $traccar): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $vehicles = Vehicle::where('company_id', $user->company_id)
+            ->where('assigned_driver_id', $user->id)
+            ->where('status', 'active')
+            ->select(['id', 'plate_number', 'brand', 'model', 'type', 'traccar_device_id', 'assigned_driver_id'])
+            ->get();
+
+        $result = [];
+        foreach ($vehicles as $vehicle) {
+            $position = $vehicle->traccar_device_id !== null
+                ? $traccar->getLastPosition((int) $vehicle->traccar_device_id)
+                : null;
+
+            // Shape aplati aligné sur le modèle mobile `VehiclePosition`
+            // (leopardo_employee / leopardo_hr).
+            $result[] = [
+                'vehicle_id' => $vehicle->id,
+                'plate_number' => $vehicle->plate_number,
+                'brand' => $vehicle->brand,
+                'model' => $vehicle->model,
+                'type' => $vehicle->type,
+                'latitude' => $position['latitude'] ?? null,
+                'longitude' => $position['longitude'] ?? null,
+                'speed' => $position['speed'] ?? null,
+                'updated_at' => $position['fixTime'] ?? null,
+            ];
+        }
+
+        return response()->json(['data' => $result]);
     }
 
     public function trips(Request $request, int $id): JsonResponse
@@ -228,5 +273,3 @@ class VehicleController extends Controller
         return VehicleAssignmentResource::collection($assignments)->response();
     }
 }
-
-

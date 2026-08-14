@@ -63,6 +63,9 @@ class ScheduleController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        // Sécurité #2217 : alignement sur index/show/destroy — l'écriture des
+        // plannings est réservée aux managers.
+        abort_unless($actor->isManager(), 403);
 
         if (! empty($request->validated('is_default'))) {
             Schedule::where('company_id', $actor->company_id)->where('is_default', true)->update(['is_default' => false]);
@@ -97,6 +100,9 @@ class ScheduleController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        // Sécurité #2217 : alignement sur index/show/destroy — l'écriture des
+        // plannings est réservée aux managers.
+        abort_unless($actor->isManager(), 403);
 
         if (! empty($request->validated('is_default'))) {
             Schedule::where('company_id', $actor->company_id)->where('id', '!=', $schedule->id)->where('is_default', true)->update(['is_default' => false]);
@@ -114,6 +120,9 @@ class ScheduleController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        // Sécurité #2217 : l'affectation d'employés à un planning est une
+        // écriture réservée aux managers.
+        abort_unless($actor->isManager(), 403);
 
         if ((string) $schedule->company_id !== (string) $actor->company_id) {
             abort(404);

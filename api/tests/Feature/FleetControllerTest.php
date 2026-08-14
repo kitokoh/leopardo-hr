@@ -250,4 +250,111 @@ class FleetControllerTest extends TestCase
             }
         });
     }
+
+    /**
+     * Sécurité #2217 — RBAC du module Fleet.
+     */
+    public function test_employee_cannot_list_or_write_vehicles(): void
+    {
+        [$company] = $this->fleetActor();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $vehicle = $this->vehicle($company);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/vehicles')->assertForbidden();
+        $this->getJson('/api/v1/vehicles/'.$vehicle->id)->assertForbidden();
+        $this->postJson('/api/v1/vehicles', ['plate_number' => 'DZ-EMP-1', 'name' => 'x'])->assertForbidden();
+        $this->putJson('/api/v1/vehicles/'.$vehicle->id, ['status' => 'decommissioned'])->assertForbidden();
+        $this->deleteJson('/api/v1/vehicles/'.$vehicle->id)->assertForbidden();
+        $this->postJson('/api/v1/vehicles/'.$vehicle->id.'/assign', ['employee_id' => $employee->id])->assertForbidden();
+    }
+
+    public function test_employee_cannot_access_fleet_dashboard_or_live_map(): void
+    {
+        [$company] = $this->fleetActor();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/fleet/overview')->assertForbidden();
+        $this->getJson('/api/v1/fleet/live-map')->assertForbidden();
+        $this->getJson('/api/v1/fleet/reports/fuel')->assertForbidden();
+        $this->getJson('/api/v1/vehicle-alerts')->assertForbidden();
+        $this->getJson('/api/v1/vehicle-trips')->assertForbidden();
+        $this->getJson('/api/v1/vehicle-maintenance')->assertForbidden();
+    }
+
+    public function test_employee_cannot_read_position_of_unassigned_vehicle(): void
+    {
+        [$company] = $this->fleetActor();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $vehicle = $this->vehicle($company, ['traccar_device_id' => 42]);
+
+        $this->fakeTraccar([42 => ['latitude' => 36.7, 'longitude' => 3.0, 'speed' => 12.5]]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/vehicles/'.$vehicle->id.'/position')->assertForbidden();
+    }
+
+    public function test_employee_can_read_position_of_own_vehicle(): void
+    {
+        [$company] = $this->fleetActor();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $vehicle = $this->vehicle($company, [
+            'traccar_device_id' => 42,
+            'assigned_driver_id' => $employee->id,
+        ]);
+
+        $this->fakeTraccar([42 => ['latitude' => 36.7, 'longitude' => 3.0, 'speed' => 12.5]]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/vehicles/'.$vehicle->id.'/position')
+            ->assertOk()
+            ->assertJsonPath('data.latitude', 36.7);
+    }
+
+    public function test_my_vehicles_returns_only_assigned_vehicles(): void
+    {
+        [$company] = $this->fleetActor();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        $assigned = $this->vehicle($company, [
+            'traccar_device_id' => 42,
+            'assigned_driver_id' => $employee->id,
+        ]);
+        $this->vehicle($company, ['traccar_device_id' => 43]);
+
+        $this->fakeTraccar([42 => ['latitude' => 36.7, 'longitude' => 3.0, 'speed' => 12.5, 'fixTime' => '2026-08-14T10:00:00Z']]);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/vehicles')->assertOk();
+
+        $this->assertCount(1, $response->json('data'));
+        $this->assertSame($assigned->id, $response->json('data.0.vehicle_id'));
+        $this->assertSame(36.7, $response->json('data.0.latitude'));
+        $this->assertSame(3.0, $response->json('data.0.longitude'));
+    }
+
+    public function test_manager_keeps_full_fleet_access(): void
+    {
+        [$company, $manager] = $this->fleetActor();
+        $vehicle = $this->vehicle($company, ['traccar_device_id' => 42]);
+        $this->fakeTraccar([42 => ['latitude' => 36.7, 'longitude' => 3.0]]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/vehicles')->assertOk();
+        $this->getJson('/api/v1/fleet/overview')->assertOk();
+        $this->getJson('/api/v1/fleet/live-map')->assertOk();
+        $this->getJson('/api/v1/vehicles/'.$vehicle->id.'/position')->assertOk();
+    }
 }

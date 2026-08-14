@@ -1,14 +1,26 @@
 <?php
 
-use App\Modules\Fleet\Interfaces\Api\V1\FleetController;
 use App\Modules\Attendance\Interfaces\Api\V1\TrackingSyncController;
+use App\Modules\Fleet\Interfaces\Api\V1\FleetController;
 use App\Modules\Fleet\Interfaces\Api\V1\VehicleAlertController;
 use App\Modules\Fleet\Interfaces\Api\V1\VehicleController;
 use App\Modules\Fleet\Interfaces\Api\V1\VehicleMaintenanceController;
 use App\Modules\Fleet\Interfaces\Api\V1\VehicleTripController;
 use Illuminate\Support\Facades\Route;
 
+// Sécurité #2217 : le module Fleet est un outil de GESTION.
+// Toutes les routes (lecture et écriture) sont réservées aux managers SAUF :
+//  - GET /vehicles/{id}/position  → scopé au véhicule du demandeur s'il n'est
+//    pas manager (employé = son propre véhicule assigné uniquement)
+//  - GET /me/vehicles             → véhicules assignés à l'employé connecté
+//  (consommés par l'app mobile employé leopardo_employee)
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
+    // Employee self-service (véhicule assigné uniquement)
+    Route::get('/me/vehicles', [VehicleController::class, 'myVehicles']);
+    Route::get('/vehicles/{id}/position', [VehicleController::class, 'position'])->whereNumber('id');
+});
+
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'api.manager'])->group(function (): void {
     // Vehicles CRUD
     Route::get('/vehicles', [VehicleController::class, 'index']);
     Route::post('/vehicles', [VehicleController::class, 'store']);
@@ -17,7 +29,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::delete('/vehicles/{id}', [VehicleController::class, 'destroy'])->whereNumber('id');
 
     // Vehicle sub-resources
-    Route::get('/vehicles/{id}/position', [VehicleController::class, 'position'])->whereNumber('id');
     Route::get('/vehicles/{id}/trips', [VehicleController::class, 'trips'])->whereNumber('id');
     Route::get('/vehicles/{id}/alerts', [VehicleController::class, 'vehicleAlerts'])->whereNumber('id');
     Route::get('/vehicles/{id}/maintenance', [VehicleController::class, 'maintenance'])->whereNumber('id');
