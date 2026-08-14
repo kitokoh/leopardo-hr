@@ -193,7 +193,10 @@ class PublicHolidayController extends Controller
 
             // month_day (si fourni avec is_recurring) doit correspondre à la
             // date : férié récurrent stocké avec sa première occurrence.
-            if ($date !== null && ! empty($data['is_recurring']) && isset($data['month_day']) && $data['month_day'] !== '') {
+            // (Lecture booléenne robuste : la règle `boolean` accepte la chaîne
+            // "false"/"0" — un test sur la valeur brute serait un faux positif.)
+            $isRecurring = filter_var($data['is_recurring'] ?? false, FILTER_VALIDATE_BOOLEAN);
+            if ($date !== null && $isRecurring && isset($data['month_day']) && $data['month_day'] !== '') {
                 if ((string) $data['month_day'] !== $date->format('m-d')) {
                     $v->errors()->add('month_day', 'The month_day must match the month and day of the date.');
                 }
