@@ -41,3 +41,17 @@
 - [ ] T021 Actualiser `.specify/constitution.md` §VIII (tableau Statut cible) — ajouter un renvoi vers `docs/payroll/VALIDATION_EXPERTE.md` pour le statut RÉEL des pays (DZ/FR `pilot` dans le code vs `production` cible au tableau ; la ligne SN doit rester `pilot` jusqu'à signature #1912) (contradicts: Constitution VIII vs code)
 - [ ] T022 Miroiter la constitution réelle dans `.specify/memory/constitution.md` (actuellement template non rempli) — les runs `/speckit-converge` liront alors les principes MUST/SHOULD du projet au lieu de les ignorer (missing: Constitution I-VIII)
 - [ ] T023 Corriger la section dupliquée « Procédure de mise à jour des taux » dans `docs/payroll/SN_COMPLIANCE.md` (présente deux fois à l'identique, fin de fichier) (unrequested) — **couvert par PR #2115** (restaure §12 + dé-doublonne)
+
+## Phase 6: Convergence (2026-08-14 — agent coordinateur, /speckit-converge)
+
+**Statut Phase 5 vérifié sur main** : T021/T022 mergés (PR #2139 — issues #2137/#2138) ; T023 mergé (PR #2115) ; T015 volet admin mergé (PR #2135 — issue #2112) ; T016/T018 mergés (PRs #2121/#2136) ; T019 partiel mergé (PR #2133 — abattement GA, reste RICF CI/CNAC DZ expert #2124).
+
+- [ ] T024 [P1] US2 Web App `front/web` — afficher le bloc `compliance` (niveau + avertissement + source + verification_date) sur la simulation et la fiche de paie — issue #2116 toujours ouverte, aucun PR
+- [ ] T025 [P3] US2 Mobile (employee/manager) — afficher l'avertissement de conformité sur la fiche de paie — issue #2144 créée lors de ce converge
+- [ ] T026 [P1] US1/§IV Main « complètement vert » — vérifier les 5 required checks (dont « Backend Coverage », désormais déclenché sur push main par 651ce079) sur le prochain push direct / merge
+- [x] T027 [P2] US3 §VIII constitution — renvoi statut réel → `docs/payroll/VALIDATION_EXPERTE.md` (issue #2137 → PR #2139 mergée)
+- [x] T028 [P2] US3 Miroir constitution réelle dans `.specify/memory/constitution.md` (issue #2138 → PR #2139 mergée)
+- [x] T029 [P2] US2 Admin dashboard — bandeau conformité TaxSlabsView + clés `payroll.confidence.*` (issue #2112 → PR #2135 mergée)
+- [x] T030 [P1] US1 PHPStan Strict main vert — 9 erreurs neutralisées (issue #2132 → PR #2134 mergée)
+- [x] T031 [P1] US1 Golden BF overtime fix (issue #2114 → PR #2114 mergée)
+- [ ] T032 [P3] Process — nettoyage des branches distantes obsolètes + scratch `tmp-agent-integ` (issue #2130, analyse postée)
