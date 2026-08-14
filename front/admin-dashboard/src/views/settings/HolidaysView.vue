@@ -191,7 +191,7 @@
     </div>
 
     <!-- Modal édition fête islamique -->
-    <div v-if="islamicModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="islamicModalOpen = false">
+    <div v-if="islamicModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="closeIslamicModal">
       <div class="glass-card w-full max-w-md p-6">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Modifier {{ islamicForm.name }}</h2>
         <form class="space-y-4" @submit.prevent="saveIslamicEntry">
@@ -210,9 +210,9 @@
             </label>
           </div>
           <div class="flex justify-end gap-3 pt-2">
-            <button type="button" class="btn-secondary" @click="islamicModalOpen = false">Annuler</button>
+            <button type="button" class="btn-secondary" @click="closeIslamicModal">{{ $t('holidays.cancel') }}</button>
             <button type="submit" class="btn-primary" :disabled="saving">
-              {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+              {{ saving ? $t('holidays.saving') : $t('holidays.save') }}
             </button>
           </div>
         </form>
@@ -228,13 +228,22 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 
+const countryLabels = {
+  DZ: 'Algérie',
+  CM: 'Cameroun',
+  CI: "Côte d'Ivoire",
+  SN: 'Sénégal',
+  MA: 'Maroc',
+  TN: 'Tunisie',
+}
+
 const supportedCountries = [
-  { code: 'DZ', label: 'Algérie' },
-  { code: 'CM', label: 'Cameroun' },
-  { code: 'CI', label: "Côte d'Ivoire" },
-  { code: 'SN', label: 'Sénégal' },
-  { code: 'MA', label: 'Maroc' },
-  { code: 'TN', label: 'Tunisie' },
+  { code: 'DZ', label: countryLabels.DZ },
+  { code: 'CM', label: countryLabels.CM },
+  { code: 'CI', label: countryLabels.CI },
+  { code: 'SN', label: countryLabels.SN },
+  { code: 'MA', label: countryLabels.MA },
+  { code: 'TN', label: countryLabels.TN },
 ]
 
 const years = Array.from({ length: 8 }, (_, i) => 2024 + i)
@@ -263,6 +272,10 @@ const unconfirmedCount = computed(() => {
 // PA2-I18N-014 : expression déportée en computed.
 const hasUnconfirmed = computed(() => unconfirmedCount.value > 0)
 
+function closeIslamicModal() {
+  islamicModalOpen.value = false
+}
+
 function closeFixedModal() {
   modalOpen.value = false
 }
@@ -289,7 +302,7 @@ async function loadIslamicCalendar() {
     })
     islamicEntries.value = data.data || []
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible de charger le calendrier islamique.')
+    toast.error(err?.response?.data?.message || t('holidays.islamic.load_error'))
   } finally {
     islamicLoading.value = false
   }
@@ -373,10 +386,10 @@ async function saveIslamicEntry() {
       confirmed: islamicForm.confirmed,
     })
     islamicModalOpen.value = false
-    toast.success('Date islamique enregistrée.')
+    toast.success(t('holidays.islamic.saved'))
     await loadIslamicCalendar()
   } catch (err) {
-    toast.error(err?.response?.data?.message || "Impossible d'enregistrer la date islamique.")
+    toast.error(err?.response?.data?.message || t('holidays.islamic.save_error'))
   } finally {
     saving.value = false
   }
@@ -390,7 +403,7 @@ async function confirmYear() {
     toast.success(`${data.data?.confirmed_count ?? 0} date(s) confirmée(s).`)
     await loadIslamicCalendar()
   } catch (err) {
-    toast.error(err?.response?.data?.message || "Impossible de confirmer l'année.")
+    toast.error(err?.response?.data?.message || t('holidays.islamic.confirm_error'))
   } finally {
     saving.value = false
   }
