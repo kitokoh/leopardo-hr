@@ -52,6 +52,10 @@ class PayrollCountryConfigSeeder extends Seeder
             // les autres pays — les autres membres CEMAC restent placeholder
             // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
             (new CemacPayrollRules)->forMemberCountry('CM'),
+            // CI (#1825) : barèmes ITSAS + CNSS ivoiriens (pilot) seedés comme
+            // les autres pays — les autres membres CEDEAO restent placeholder
+            // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1829...).
+            (new CedeaoPayrollRules)->forMemberCountry('CI'),
         ];
 
         foreach ($rules as $countryRules) {

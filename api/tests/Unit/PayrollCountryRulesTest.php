@@ -331,12 +331,14 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            // Issue #1829 : BF et ML sont passés au niveau 'pilot' (IUTS/ITS +
-            // CNSS/INPS) ; les autres membres UEMOA restent 'placeholder'
-            // (CI passera au pilot via #1825).
-            $expectedConfidence = in_array($memberCode, ['BF', 'ML'], true) ? 'pilot' : 'placeholder';
+            // #1825 + #1829 : CI, BF et ML sont passés au niveau 'pilot'
+            // (barèmes légaux implémentés) — les autres membres UEMOA restent
+            // 'placeholder' jusqu'à leurs issues.
+            $expectedConfidence = in_array($memberCode, ['CI', 'BF', 'ML'], true) ? 'pilot' : 'placeholder';
             self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
-            if ($memberCode === 'BF') {
+            if ($memberCode === 'CI') {
+                self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
+            } elseif ($memberCode === 'BF') {
                 self::assertCount(5, $rules->taxSlabs()); // IUTS 5 tranches
                 self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
             } elseif ($memberCode === 'ML') {
