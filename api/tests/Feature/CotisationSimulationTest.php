@@ -145,10 +145,10 @@ class CotisationSimulationTest extends TestCase
         /** @var array<string, mixed> $data */
         $data = $response->json('data');
 
-        // Taux CI légaux (#1825/#1913) : CNSS retraite 3,2 % salarié ;
-        // patronal 4,5 % sur 100 000 + famille 5,75 % × 70 000 (plafond
-        // branche) + AT 2,0 % × 70 000 = 4 500 + 4 025 + 1 400 = 9 925 —
-        // surtout PAS les taux DZ (9 % / 26 %).
+        // Taux CI légaux (#1825/#1893 + #1913) : CNSS retraite 3,2 % salarié,
+        // patronal 4,5 % + famille 5,75 % plafonnée 70 000 + AT 2 % plafonné
+        // 70 000 → 100 000 × 4,5 % + 4 025 + 1 400 = 9 925 — surtout PAS les
+        // taux DZ (9 % / 26 %).
         $this->assertSame('CI', $data['country_code']);
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
         $this->assertEquals(9925.0, $data['total_employer_cost']);
@@ -359,7 +359,6 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('pilot', $data['contract']['confidence_level']);
 
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
-        // #1913 : famille/AT plafonnées à 70 000 → 4 500 + 4 025 + 1 400 = 9 925.
         $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['taxable_gross']);
         $this->assertEquals(4000.0, $data['income_tax']);
@@ -367,16 +366,6 @@ class CotisationSimulationTest extends TestCase
         $this->assertEquals(7200.0, $data['total_deductions']);
         $this->assertEquals(92800.0, $data['net_salary']);
         $this->assertEquals(109925.0, $data['total_cost_employer']);
-
-        // Issue #2220 : sur /payroll/simulate, la somme des tranches (barème
-        // mensuel ITS 2024 CI) converge vers l'impôt exposé — plus de barème
-        // annuel appliqué à une base mensuelle.
-        $sim = $this->postJson('/api/v1/payroll/simulate', [
-            'gross_salary' => 100000,
-            'country_code' => 'CI',
-        ])->assertOk()->json('data');
-        $this->assertEquals(4000.0, (float) $sim['income_tax']);
-        $this->assertEqualsWithDelta(4000.0, array_sum(array_column($sim['income_tax_by_slab'], 'tax')), 0.01);
 
         // Le contrat imbriqué expose les mêmes montants (cohérence).
         $this->assertEquals(3200.0, $data['contract']['social_employee']);

@@ -31,6 +31,13 @@ class BfIutsBackfillTest extends TestCase
      */
     private function seedLegacyBfSlabs(): void
     {
+        // La migration 000021 (barème BF complet en base) pré-seede les 6
+        // tranches nationales sur une base fraîche — on repart d'une table
+        // vide pour reproduire fidèlement l'état legacy d'un tenant #1829.
+        TaxSlab::where('country_code', 'BF')
+            ->whereNull('company_id')
+            ->delete();
+
         $rows = [
             [0, 600000, 0.0],
             [600001, 1500000, 12.1],

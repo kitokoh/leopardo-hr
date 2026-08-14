@@ -123,7 +123,7 @@ class TenantCountryLocksTest extends TestCase
             ->latest('id')
             ->first();
         $this->assertNotNull($audit, 'Le changement de pays doit être journalisé.');
-        // country est `char(2)` : la valeur lue en base est paddée ('  ').
+        // char(2) : une valeur vide est relue espacée ('  ') — trim avant comparaison.
         $this->assertSame('', trim((string) ($audit->old_values['country'] ?? '')));
         $this->assertSame('SN', $audit->new_values['country'] ?? null);
     }
@@ -138,7 +138,8 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'ZZ',
         ])->assertStatus(422)->assertJsonValidationErrors('country');
 
-        // country est `char(2)` : Postgres stocke '' en '  ' (padding bpchar).
+        // La colonne `country` est un char(2) : une valeur vide est relue
+        // espacée ('  ') — on compare après trim (le pays n'a pas changé).
         $this->assertSame('', trim((string) $company->refresh()->country));
     }
 

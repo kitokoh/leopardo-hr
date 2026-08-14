@@ -97,8 +97,8 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CedeaoPayrollRules)->forMemberCountry('CI');
 
-        // Brut 3 000 000 XOF > plafond 1 647 315 → retraite assise sur
-        // 1 647 315 ; famille et AT plafonnées séparément à 70 000 (#1913) :
+        // Brut 3 000 000 XOF > plafond retraite 1 647 315 ; famille et AT
+        // plafonnées séparément à 70 000 (#1913, guide CNPS) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
         //   patronale : 1 647 315 × 4,5 % = 74 129,18
         //             + 70 000 × 5,75 % = 4 025,00

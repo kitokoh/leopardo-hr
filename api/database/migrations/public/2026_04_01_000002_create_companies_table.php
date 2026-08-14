@@ -40,8 +40,8 @@ return new class extends Migration
                     $table->date('subscription_start');
                     $table->date('subscription_end');
                     $table->char('language', 2)->default('fr');
-                    $table->string('timezone', 50)->default('Africa/Algiers');
-                    $table->char('currency', 3)->default('DZD');
+                    $table->string('timezone', 50)->default('Africa/Algiers')->nullable();
+                    $table->char('currency', 3)->default('DZD')->nullable();
                     $table->text('notes')->nullable();
                     $table->timestampTz('created_at')->useCurrent();
                     $table->timestampTz('updated_at')->useCurrent();

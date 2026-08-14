@@ -91,13 +91,12 @@ class GoldenSnPayrollTest extends TestCase
 
     public function test_golden_sn_plafond_ipres_t1_432000(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §4), brut = plafond T1 432 000 :
+        // Calcul manuel (SN_COMPLIANCE.md §4 + #1913/#2014), brut = plafond
+        // T1 432 000 :
         //   IPRES salariale = 432 000 × 5,6 % = 24 192 (T1 max, pas de T2)
-        //   Patronal : IPRES T1 8,4 % × 432 000 = 36 288 · CSS 3 % + AT 1 %
-        //     plafonnées à 63 000 de base (#1913, procédure CSS eRegulations)
-        //     → min(432 000, 63 000) × 3 % = 1 890 + min(432 000, 63 000)
-        //     × 1 % = 630 · CFCE 3 % = 12 960 → 36 288 + 1 890 + 630 + 12 960
-        //     = 51 768
+        //   patronale = IPRES T1 8,4 % (36 288) + CSS famille 3 % plafonnée
+        //     63 000 (1 890) + CSS AT 1 % plafonné 63 000 (630)
+        //     + CFCE 3 % (12 960) = 51 768
         //   TRIMF tranche 350 001–700 000 → 18 000
         $rules = $this->rules();
 

@@ -39,12 +39,10 @@ class GoldenCiPayrollTest extends TestCase
 
     public function test_golden_ci_smig_75000(): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §1-3), brut = SMIG 75 000 XOF :
+        // Calcul manuel (CI_COMPLIANCE.md §1-3 + #1913), brut = SMIG 75 000 XOF :
         //   CNSS salariale = 75 000 × 3,2 % = 2 400
-        //   CNSS patronale = 75 000 × 4,5 % (retraite, plaf. 1 647 315)
-        //                    + 70 000 × 5,75 % (famille, plaf. 70 000 #1913)
-        //                    + 70 000 × 2,0 % (AT, plaf. 70 000 #1913)
-        //                  = 3 375,00 + 4 025,00 + 1 400,00 = 8 800,00
+        //   patronale = retraite 4,5 % (3 375) + famille 5,75 % plafonnée
+        //     70 000 (4 025) + AT 2 % plafonné 70 000 (1 400) = 8 800
         //   ITS 2024 = progressif MENSUEL sur le brut 75 000 → tranche
         //     0–75 000 @ 0 % → 0,00 (plus de CN ni d'abattement)
         //   Net = 75 000 − 2 400 − 0,00 = 72 600,00
@@ -53,7 +51,7 @@ class GoldenCiPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(75000.0);
 
         $this->assertSame(2400.0, $charges['employee']);
-        $this->assertSame(8800.00, $charges['employer']);
+        $this->assertSame(8800.0, $charges['employer']);
 
         $taxBase = 75000.0 - $charges['employee'];
         $its = $rules->calculateIncomeTax($taxBase, 12, 75000.0);
