@@ -483,7 +483,8 @@
     "approve_error": "Değişiklik onaylanamadı.",
     "rejected": "Değişiklik reddedildi (taslağa döndü).",
     "reject_error": "Değişiklik reddedilemedi.",
-    "history_error": "Geçmiş yüklenemedi."
+    "history_error": "Geçmiş yüklenemedi.",
+    "status_only": "Salt okuma (tenant işlemi)"
   },
   "tax_slabs": {
     "title": "Ülkeye göre vergi dilimleri",

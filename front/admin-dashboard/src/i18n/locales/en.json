@@ -483,7 +483,8 @@
     "approve_error": "Unable to approve the change.",
     "rejected": "Change rejected (back to draft).",
     "reject_error": "Unable to reject the change.",
-    "history_error": "Unable to load history."
+    "history_error": "Unable to load history.",
+    "status_only": "Read-only (tenant action)"
   },
   "tax_slabs": {
     "title": "Tax brackets by country",

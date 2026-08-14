@@ -483,7 +483,8 @@
     "approve_error": "Impossible d'approuver la modification.",
     "rejected": "Modification rejetée (retour en brouillon).",
     "reject_error": "Impossible de rejeter la modification.",
-    "history_error": "Impossible de charger l'historique."
+    "history_error": "Impossible de charger l'historique.",
+    "status_only": "Lecture seule (action tenant)"
   },
   "tax_slabs": {
     "title": "Barèmes fiscaux par pays",
