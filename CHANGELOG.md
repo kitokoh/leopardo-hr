@@ -2,7 +2,8 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
-## [Unreleased]
+### Added
+- **feat(payroll): Burkina Faso + Mali — règles paie de « placeholder » à « pilot » (Closes #1829).** `CedeaoPayrollRules` membres BF et ML : BF — IUTS 5 tranches annuelles (0/12,1/13,9/18,7/23,6 % « tout compris ») + CNSS 2024 (retraite 5,5/6,5 %, famille 7,0 % plafonnés 900 000 XOF, AT 3,5 % non plafonné) ; ML — ITS 6 tranches annuelles (0/5/10/15/20/30 %) + INPS 2024 (retraite 3,6/7,4 % plafonnés 3 000 000 XOF, famille 4,0 %, AT 2,0 % non plafonnés) ; préavis employé 30 j (matrice 8 j/1 m/3 m documentée), HS OHADA 1.15/1.35, `confidenceLevel() = pilot` pour BF/ML uniquement (BJ/TG/NE/CI inchangés). `PayrollCountryConfigSeeder` seede BF + ML (CGI 2024, `effective_from = 2024-01-01`). Référentiels `docs/payroll/BF_COMPLIANCE.md` + `docs/payroll/ML_COMPLIANCE.md` créés ; golden tests `GoldenBfPayrollTest` + `GoldenMlPayrollTest` (14 cas calculés à la main) ; `PayrollCountryRulesTest` aligné.
 
 ### Chore
 - **chore(version): défaut APP_VERSION aligné sur PILOTAGE.md (4.24.0).** `api/config/app.php` gardait le défaut `4.23.5` (commit « Version Sync » #739) alors que le repo est en 4.24.0 depuis la release préparée (#1722) — la prod affichait 4.23.5 dans `/api/v1/health` malgré le nouveau code déployé (Render n'a pas d'APP_VERSION). Le défaut passe à 4.24.0 ; l'env garde la priorité.
