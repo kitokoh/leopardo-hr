@@ -95,8 +95,17 @@ plafonnée) — `CFCE_SN_PAT`.
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
-| Prestations familiales patronale | 3,0 % | employeur | **63 000 XOF/mois** |
+| Prestations familiales patronale | 3,0 % ⚠️ | employeur | **63 000 XOF/mois** |
 | Accidents du travail patronale | 1,0 % | employeur | **63 000 XOF/mois** (taux selon risque à confirmer) |
+
+> **⚠️ Écart de taux à valider (issue #1912)** : les sources officielles
+> (CIPRES — lacipres.org ; CLEISS — « 63 000 × 7 % = 4 410 FCFA/mois »)
+> portent la prestation familiale CSS à **7 %** du salaire plafonné, et non
+> 3 % comme implémenté (`SenegalPayrollRules`/`IpresDeclarationGenerator`).
+> Le plafond serait par ailleurs passé de 63 000 à **80 000 XOF** en 2025
+> (décision CSS, contestée par le CNP — senenews 2025-01). L'implémentation
+> reste 3 % (pilot) en attendant la validation expert-comptable — cf.
+> `VALIDATION_EXPERTE.md`.
 
 ## 7. Abattement frais professionnels
 
