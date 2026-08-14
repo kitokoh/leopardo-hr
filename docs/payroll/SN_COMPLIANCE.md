@@ -171,15 +171,27 @@ eRegulations Sénégal, procédure 103/64 (« Paiement des cotisations à la
 CSS », plafond affiché 63 000 CFA incohérent avec le SMIG/IPRES — à
 ré-évaluer).
 
-## Procédure de mise à jour des taux
+## 12. Fiche de validation experte (issue #1912 — bloquant avant « production »)
 
-1. Valider les nouveaux taux avec un expert-comptable sénégalais.
-2. Modifier les valeurs par défaut dans `SenegalPayrollRules` ET/OU insérer
-   de nouvelles lignes `tax_slabs` / `social_contributions` datées
-   (`effective_from`) pour un changement de barème sans régression.
-3. Mettre à jour ce fichier + les golden tests (`GoldenSnPayrollTest`).
-4. Faire valider par l'équipe (`php artisan test --filter=Payroll`).
-5. Passer `confidenceLevel()` de `pilot` à `production` une fois validé.
+`SenegalPayrollRules::confidenceLevel()` reste `pilot` tant que chaque
+élément ci-dessous n'est pas validé par un expert-comptable sénégalais
+(template : `docs/payroll/_TEMPLATE_VALIDATION_EXPERTE.md` ; registre :
+`docs/payroll/VALIDATION_EXPERTE.md`) :
+
+| # | Règle | Valeur pilote implémentée | À valider |
+|---|---|---|---|
+| 1 | TRIMF (6 tranches forfaitaires) | 900 → 36 000 XOF/mois (barème §3) | tranches + seuils |
+| 2 | IPRES T2 cadres (2,4 % / 3,6 %) | tranche 432 001–2 160 000, déclenchée si brut > 432 000 | seuil de déclenchement (catégorie réelle) |
+| 3 | CSS AT 1 % | plafond assiette 63 000 XOF/mois | taux selon risque + canal de déclaration (mensuel vs annuel) |
+| 4 | CFCE 3 % | masse salariale brute non plafonnée | taux + canal (trimestriel DGI) + périmètre fichier IPRES/CSS |
+| 5 | Abattement frais pro 30 % | brut non plafonné (§7) | assiette exacte (plafonnée ?) |
+| 6 | Plafond CSS famille 63 000 | 3 % sur min(brut, 63 000) (§6) | 63 000 vs 80 000 (décision CSS 2025 contestée) |
+| 7 | **Taux CSS famille 7 % vs 3 %** | 3 % implémenté (pilot) | 7 % officiel (CIPRES/CLEISS — « 63 000 × 7 % = 4 410 FCFA/mois ») vs 3 % implémenté : l'expert tranche (§6, suivi #1912) |
+| 8 | Périmètre déclaration IPRES/CSS (§11) | AT + CFCE exclus par conception | confirmation expert (Q1/Q2/Q3 §11) |
+
+**Critère de sortie #1912** : fiche signée → `confidenceLevel()` → `production`
++ `verification_date`/source dans ce fichier + `complianceWarning()` levé
+(suivi #1872).
 
 ## Procédure de mise à jour des taux
 
