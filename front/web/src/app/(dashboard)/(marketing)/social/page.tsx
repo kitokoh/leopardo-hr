@@ -44,7 +44,7 @@ function toDatetimeLocalValue(date: Date): string {
 }
 
 /**
- * Module Marketing â€” Phase 4 (PA2-MKT-011).
+ * Module Marketing — Phase 4 (PA2-MKT-011).
  *
  * `/social` calendar page: month grid of scheduled/published/draft posts,
  * click a day to compose a new post pre-filled for that date via
@@ -313,7 +313,7 @@ export default function SocialCalendarPage() {
         <section className="rounded-3xl border border-app-border bg-white shadow-sm">
           <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-              Nouvelle publication â€” {composerDay.toLocaleDateString(toIntlLocale(getPreferredLocale()), { day: 'numeric', month: 'long', year: 'numeric' })}
+              Nouvelle publication — {composerDay.toLocaleDateString(toIntlLocale(getPreferredLocale()), { day: 'numeric', month: 'long', year: 'numeric' })}
             </h2>
             <button
               type="button"

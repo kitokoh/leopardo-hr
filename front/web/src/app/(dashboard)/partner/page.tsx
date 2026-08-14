@@ -151,7 +151,7 @@ export default function PartnerDashboard() {
   return (
     <ModulePageShell
       title="Dashboard Partenaire"
-      subtitle="Suivez vos conversions et vos commissions Leopardo RH â€” statut partenaire actif."
+      subtitle="Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
       accentClassName="bg-gradient-to-br from-brand-500/10 via-white to-white"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">

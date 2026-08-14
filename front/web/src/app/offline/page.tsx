@@ -1,6 +1,6 @@
 ﻿'use client';
 // ============================================================
-// Offline Page â€” Shown by service worker when offline
+// Offline Page — Shown by service worker when offline
 // ============================================================
 import { useSyncExternalStore } from 'react';
 import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
