@@ -83,6 +83,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll-runs/{payrollRun}/anomalies', [PayrollRunController::class, 'anomalies'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/export', [PayrollRunController::class, 'export'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/journal', [PayrollRunController::class, 'journal'])->whereNumber('payrollRun');
+        // Déclarations sociales par pays (CEMAC/CM #1823 : CNPS DAS mensuelle CSV).
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnps-cm', [PayrollRunController::class, 'declarationCnpsCm'])->whereNumber('payrollRun');
 
         // Pay Slips (manager view)
         Route::get('/pay-slips', [PaySlipController::class, 'index']);

@@ -13,6 +13,7 @@ use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
+use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
@@ -288,6 +289,34 @@ class PayrollRunController extends Controller
 
         return response()->streamDownload(function () use ($payrollRun): void {
             echo (new PayrollJournalGenerator)->generate($payrollRun);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * CEMAC/CM (#1823) — déclaration CNPS mensuelle camerounaise, format DAS
+     * (CSV), une ligne par bulletin validé du run + ligne TOTAUX. Réservé
+     * aux managers principal/comptable ; 404 cross-tenant (scope
+     * BelongsToCompany + garde explicite).
+     */
+    public function declarationCnpsCm(Request $request, PayrollRun $payrollRun): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isPrincipal() && ! $actor->isComptable()) {
+            abort(403);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnps_declaration', $payrollRun);
+
+        $filename = 'cnps_cm_das_'.$payrollRun->period_start->toDateString().'_'.$payrollRun->period_end->toDateString().'.csv';
+
+        return response()->streamDownload(function () use ($payrollRun): void {
+            echo (new CnpsDeclarationGenerator)->generate($payrollRun);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
