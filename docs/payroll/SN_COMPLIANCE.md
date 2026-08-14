@@ -91,23 +91,12 @@ T1, hypothèse pilote : brut > 432 000 ⇒ régime cadres) :
 **3 % sur la masse salariale brute** (charge patronale uniquement, non
 plafonnée) — `CFCE_SN_PAT`.
 
-> **Périmètre de déclaration (#2014)** : la CFCE ne figure PAS dans la
-> déclaration mensuelle IPRES/CSS (CSV `IpresDeclarationGenerator`) — elle est
-> déclarée via son propre canal (déclaration CFCE). Le patronal du bulletin
-> l'inclut ; le CSV ne la déclare pas : divergence attendue, documentée §11.
-
 ## 6. CSS — Caisse de Sécurité Sociale
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
 | Prestations familiales patronale | 3,0 % | employeur | **63 000 XOF/mois** |
 | Accidents du travail patronale | 1,0 % | employeur | **63 000 XOF/mois** (taux selon risque à confirmer) |
-
-> **Périmètre de déclaration (#2014)** : CSS AT (1 %, variable selon le
-> secteur) n'est pas inclus dans la déclaration mensuelle IPRES/CSS (CSV) —
-> elle fait l'objet d'une déclaration CSS dédiée (taux selon l'activité
-> principale). CSS famille : le générateur CSV la plafonne au plafond T1
-> (432 000) alors que le moteur ne la plafonne pas (Q3 — voir §11).
 
 ## 7. Abattement frais professionnels
 
@@ -147,8 +136,8 @@ et documenté :
 |---|---|---|---|
 | IPRES T1 (8,4 % patronal, plaf. 432 000) | ✅ | ✅ | déclaration IPRES |
 | IPRES T2 cadres (3,6 %, tranche 432 k–2 160 k) | ✅ | ✅ | déclaration IPRES |
-| CSS famille (3,0 %) | ✅ plafonné 63 000 (#1913) | ✅ plafonné 432 000 (t1Base) | Q3 — écart de plafond 63 k vs 432 k, à trancher expert |
-| CSS AT (1,0 %) | ✅ plafonné 63 000 (#1913) | ❌ | déclaration CSS dédiée (taux selon risque) |
+| CSS famille (3,0 %) | ✅ **plafonné 63 000** (#1913) | ✅ **plafonné 63 000** (aligné) | ✓ aligné moteur/CSV |
+| CSS AT (1,0 %) | ✅ | ❌ | déclaration CSS dédiée (taux selon risque) |
 | CFCE (3,0 %) | ✅ | ❌ | déclaration CFCE dédiée |
 
 **Conséquence** : `total_patronal` du CSV < `employer_contributions` du
@@ -156,44 +145,32 @@ bulletin **par conception** — le bulletin porte toutes les charges
 patronales, le CSV uniquement le périmètre de cette déclaration. La
 réconciliation exacte est verrouillée par
 `BulletinDeclarationReconciliationTest` (test SN cadre) :
-`employer_contributions = périmètre déclaré (T1+T2+fam CSV) + écart famille
-(63 k moteur vs 432 k CSV) + CSS AT 1 % @63 k + CFCE 3 %`.
+`employer_contributions = périmètre déclaré (T1/T2/CSS famille) + CSS AT 1 % + CFCE 3 %`
+(le plafond CSS famille est désormais IDENTIQUE moteur et CSV — 63 000).
 
 **Questions ouvertes expert-comptable (#1912, bloquant avant production)** :
 
 1. **Q1 — CSS AT** : doit-elle figurer dans la déclaration mensuelle ou
    reste-t-elle séparée (annuelle/trimestrielle selon le risque) ?
 2. **Q2 — CFCE** : ce fichier ou la déclaration CFCE dédiée (trimestrielle) ?
-3. **Q3 — CSS famille** : plafonnée au plafond IPRES T1 (432 000, comportement
-   CSV) ou non plafonnée (comportement moteur) ? Les deux restent en l'état
-   tant que la source officielle (CSS, art. 139 Code de la sécurité sociale)
-   n'a pas confirmé — l'écart est documenté et verrouillé par le test.
+3. **Q3 — CSS famille** : plafond **63 000 XOF/mois** appliqué par le moteur
+   et le CSV (#1913, procédure CSS / CLEISS barème 2026) — à confirmer par
+   l'expert-comptable (art. 139 Code de la sécurité sociale, suivi #1912).
 
 Source consultée (non concluante, page en cours d'édition) :
 eRegulations Sénégal, procédure 103/64 (« Paiement des cotisations à la
 CSS », plafond affiché 63 000 CFA incohérent avec le SMIG/IPRES — à
 ré-évaluer).
 
-## 12. Fiche de validation experte (issue #1912 — bloquant avant « production »)
+## Procédure de mise à jour des taux
 
-`SenegalPayrollRules::confidenceLevel()` reste `pilot` tant que chaque
-élément ci-dessous n'est pas validé par un expert-comptable sénégalais
-(template : `docs/payroll/_TEMPLATE_VALIDATION_EXPERTE.md` ; registre :
-`docs/payroll/VALIDATION_EXPERTE.md`) :
-
-| # | Règle | Valeur pilote implémentée | À valider |
-|---|---|---|---|
-| 1 | TRIMF (6 tranches forfaitaires) | 900 → 18 000 XOF/mois (barème §3) | tranches + seuils |
-| 2 | IPRES T2 cadres (2,4 % / 3,6 %) | tranche 432 001–2 160 000, déclenchée si brut > 432 000 | seuil de déclenchement (catégorie réelle) |
-| 3 | CSS AT 1 % | plafond assiette 63 000 XOF/mois | taux selon risque + canal de déclaration (mensuel vs annuel) |
-| 4 | CFCE 3 % | masse salariale brute non plafonnée | taux + canal (trimestriel DGI) + périmètre fichier IPRES/CSS |
-| 5 | Abattement frais pro 30 % | brut non plafonné (§7) | assiette exacte (plafonnée ?) |
-| 6 | Plafond CSS famille 63 000 | 3 % sur min(brut, 63 000) (§6) | 63 000 vs 80 000 (décision CSS 2025 contestée) |
-| 7 | Périmètre déclaration IPRES/CSS (§11) | AT + CFCE exclus par conception | confirmation expert |
-
-**Critère de sortie #1912** : fiche signée → `confidenceLevel()` → `production`
-+ `verification_date`/source dans ce fichier + `complianceWarning()` levé
-(suivi #1872).
+1. Valider les nouveaux taux avec un expert-comptable sénégalais.
+2. Modifier les valeurs par défaut dans `SenegalPayrollRules` ET/OU insérer
+   de nouvelles lignes `tax_slabs` / `social_contributions` datées
+   (`effective_from`) pour un changement de barème sans régression.
+3. Mettre à jour ce fichier + les golden tests (`GoldenSnPayrollTest`).
+4. Faire valider par l'équipe (`php artisan test --filter=Payroll`).
+5. Passer `confidenceLevel()` de `pilot` à `production` une fois validé.
 
 ## Procédure de mise à jour des taux
 

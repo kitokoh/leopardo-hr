@@ -19,7 +19,10 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
  */
 class CnssDeclarationGenerator
 {
-    public const CNSS_CI_CAP = 1647315.0;
+    public const CNSS_CI_RETIREMENT_CAP = 1647315.0;
+
+    /** #1913 : prestations familiales et AT/MP plafonnées séparément (CNPS). */
+    public const CNSS_CI_FAMILY_AT_CAP = 70000.0;
 
     public const RATE_RETRAITE_EMP = 3.2;
 
@@ -150,21 +153,21 @@ class CnssDeclarationGenerator
     private function contributionFor(PaySlip $slip): array
     {
         $gross = (float) $slip->gross_salary;
-        $cappedBase = min($gross, self::CNSS_CI_CAP);
+        $retirementBase = min($gross, self::CNSS_CI_RETIREMENT_CAP);
+        $familyAtBase = min($gross, self::CNSS_CI_FAMILY_AT_CAP);
 
-        $retraiteEmp = round($cappedBase * self::RATE_RETRAITE_EMP / 100, 2);
-        $retraitePat = round($cappedBase * self::RATE_RETRAITE_PAT / 100, 2);
-        $famillePat = round($cappedBase * self::RATE_FAMILLE_PAT / 100, 2);
-        // BUG #1898 : l'AT patronal (2,0 %) est NON plafonné (comme le moteur
-        // calculateSocialCharges — cap => null) — la déclaration le plafonnait
-        // à tort, faussant le total patronal au-delà de 1 647 315 XOF.
-        $atPat = round($gross * self::RATE_AT_PAT / 100, 2);
+        $retraiteEmp = round($retirementBase * self::RATE_RETRAITE_EMP / 100, 2);
+        $retraitePat = round($retirementBase * self::RATE_RETRAITE_PAT / 100, 2);
+        // #1913 : famille et AT/MP plafonnées séparément à 70 000 XOF/mois
+        // (guide CNPS) — aligné sur CedeaoPayrollRules::calculateSocialCharges.
+        $famillePat = round($familyAtBase * self::RATE_FAMILLE_PAT / 100, 2);
+        $atPat = round($familyAtBase * self::RATE_AT_PAT / 100, 2);
         $totalEmp = round($retraiteEmp, 2);
         $totalPat = round($retraitePat + $famillePat + $atPat, 2);
 
         return [
             'gross' => $gross,
-            'capped_base' => $cappedBase,
+            'capped_base' => $retirementBase,
             'retraite_emp' => $retraiteEmp,
             'retraite_pat' => $retraitePat,
             'famille_pat' => $famillePat,

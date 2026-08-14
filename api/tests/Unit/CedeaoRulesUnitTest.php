@@ -117,7 +117,8 @@ class CedeaoRulesUnitTest extends TestCase
             array_column($contributions, 'code')
         );
         $this->assertSame([3.2, 4.5, 5.75, 2.0], array_column($contributions, 'rate'));
-        $this->assertSame([1647315.0, 1647315.0, 1647315.0, null], array_column($contributions, 'cap'));
+        // #1913 : plafonds par branche (retraite 1 647 315 ; famille/AT 70 000).
+        $this->assertSame([1647315.0, 1647315.0, 70000.0, 70000.0], array_column($contributions, 'cap'));
     }
 
     public function test_ci_thirteenth_month_mandatory(): void

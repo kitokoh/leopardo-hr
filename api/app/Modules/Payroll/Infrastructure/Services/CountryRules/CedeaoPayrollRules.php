@@ -96,8 +96,11 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return [
                 ['name' => 'CNSS Retraite Salariale (CI)', 'code' => 'CNSS_CI_RET_EMP', 'type' => 'employee', 'rate' => 3.2, 'cap' => 1647315.0],
                 ['name' => 'CNSS Retraite Patronale (CI)', 'code' => 'CNSS_CI_RET_PAT', 'type' => 'employer', 'rate' => 4.5, 'cap' => 1647315.0],
-                ['name' => 'CNSS Famille Patronale (CI)', 'code' => 'CNSS_CI_FAM_PAT', 'type' => 'employer', 'rate' => 5.75, 'cap' => 1647315.0],
-                ['name' => 'CNSS AT Patronale (CI)', 'code' => 'CNSS_CI_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
+                // #1913 : la CNPS distingue les plafonds par branche — retraite
+                // 1 647 315, prestations familiales et AT/MP 70 000 XOF/mois
+                // (aligné sur calculateSocialCharges, guide officiel CNPS).
+                ['name' => 'CNSS Famille Patronale (CI)', 'code' => 'CNSS_CI_FAM_PAT', 'type' => 'employer', 'rate' => 5.75, 'cap' => 70000.0],
+                ['name' => 'CNSS AT Patronale (CI)', 'code' => 'CNSS_CI_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => 70000.0],
             ];
         }
 

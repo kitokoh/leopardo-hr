@@ -31,9 +31,11 @@ class SenegalPayrollRules extends AbstractCountryRules
             // (issue #1827, docs/payroll/SN_COMPLIANCE.md §4bis).
             ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null],
             ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null],
-            // CSS — prestations familiales 3 % (non plafonnées) + AT 1 % pilote.
-            ['name' => 'CSS Prestations Familiales Patronale', 'code' => 'CSS_SN_PAT_FAM', 'type' => 'employer', 'rate' => 3.0, 'cap' => null],
-            ['name' => 'CSS Accidents du Travail Patronale', 'code' => 'CSS_SN_PAT_AT', 'type' => 'employer', 'rate' => 1.0, 'cap' => null],
+            // CSS — prestations familiales 3 % + AT 1 %, plafonnées à
+            // 63 000 XOF/mois (#1913, procédure administrative CSS /
+            // eRegulations — aligné sur calculateSocialCharges).
+            ['name' => 'CSS Prestations Familiales Patronale', 'code' => 'CSS_SN_PAT_FAM', 'type' => 'employer', 'rate' => 3.0, 'cap' => 63000.0],
+            ['name' => 'CSS Accidents du Travail Patronale', 'code' => 'CSS_SN_PAT_AT', 'type' => 'employer', 'rate' => 1.0, 'cap' => 63000.0],
             // CFCE — Contribution Forfaitaire à la Charge de l'Employeur 3 %
             // (issue #1827, docs/payroll/SN_COMPLIANCE.md §5).
             ['name' => 'CFCE Patronale', 'code' => 'CFCE_SN_PAT', 'type' => 'employer', 'rate' => 3.0, 'cap' => null],
