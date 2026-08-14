@@ -6229,6 +6229,35 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /supported-countries:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Registre des pays supportes"
+      description: "Source unique de verite (MULTI-PAYS #1867) : pour chaque pays du referentiel — code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite (regles resolubles ou non)."
+      operationId: listSupportedCountries
+      responses:
+        "200":
+          description: "Registre des pays"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        country: { type: string }
+                        label: { type: string }
+                        language: { type: string }
+                        currency: { type: string }
+                        timezone: { type: string }
+                        confidence: { type: string, enum: [production, pilot, placeholder, unknown] }
+                        available: { type: boolean }
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /me/pay-slips:
     get:
       tags: ["Me"]
@@ -6307,9 +6336,9 @@ paths:
   /me/pay-slips/{paySlip}/document:
     get:
       tags: ["Me"]
-      summary: "Telecharger le document d'un de mes bulletins (PDF)"
-      description: "Retourne le fichier du bulletin (pdf_path) s'il a ete genere. 404 si le document n'existe pas encore (generation asynchrone) — le client peut reinterroger."
-      operationId: downloadMyPaySlipDocument
+      summary: "URL de telechargement de mon bulletin archive dans le Cabinet"
+      description: "Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne l'URL de telechargement securise de ce document."
+      operationId: archivedMyPaySlipDocument
       parameters:
         - name: paySlip
           in: path
@@ -6317,12 +6346,17 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "Fichier PDF"
+          description: "URL du document archive"
           content:
-            application/pdf:
+            application/json:
               schema:
-                type: string
-                format: binary
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      document_id: { type: integer }
+                      url: { type: string }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -7093,13 +7127,14 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
         "422":
+          description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
   /payroll-runs/{payrollRun}/regularize:
     post:
       tags: ["Payroll Engine"]
       summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
-      description: "Crée un run type=regularization lié à un run verrouillé ou payé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seuls les runs `locked`/`paid` sont régularisables ; une seule régularisation active par original (422 sinon, #1942)."
+      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
       operationId: regularizePayrollRun
       parameters:
         - name: payrollRun
@@ -8336,7 +8371,7 @@ paths:
     post:
       tags: ["Payroll Engine"]
       summary: "Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"
-      description: "Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782) : memes taux, caps, baremes et abattements que les vrais bulletins. Reponse complete : cotisations + impôt + net reel (income_tax, net_salary)."
+      description: "Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782). Issue #1869 : la simulation et le bulletin passent par le meme noyau de calcul (computeNetBreakdown) — resultats identiques pour un meme brut ; reponse complete et explicable : cotisations + assiette + impot + taxe de minimum fiscal + net + cout employeur, avec pays, devise, identifiant des regles et politique d'arrondi (docs/payroll/CALCULATION_CONTRACT.md)."
       operationId: simulateCotisations
       requestBody:
         required: true
@@ -8352,7 +8387,7 @@ paths:
                 gross_salary: { type: number, minimum: 0 }
       responses:
         "200":
-          description: "Simulation des cotisations et net estime"
+          description: "Simulation des cotisations et net estime (contrat complet issue #1869)"
           content:
             application/json:
               schema:
@@ -8371,6 +8406,7 @@ paths:
                             name: { type: string }
                             code: { type: string }
                             rate: { type: number }
+                            cap: { type: number, nullable: true }
                             amount: { type: number }
                       employer_contributions:
                         type: array
@@ -8380,11 +8416,14 @@ paths:
                             name: { type: string }
                             code: { type: string }
                             rate: { type: number }
+                            cap: { type: number, nullable: true }
                             amount: { type: number }
                       total_employee_deduction: { type: number }
                       total_employer_cost: { type: number }
                       taxable_gross: { type: number }
                       income_tax: { type: number }
+                      bracket_tax: { type: number }
+                      total_deductions: { type: number }
                       net_before_tax: { type: number }
                       net_salary: { type: number }
                       total_cost_employer: { type: number }
@@ -8394,16 +8433,20 @@ paths:
                         properties:
                           country_code: { type: string }
                           currency: { type: string }
+                          rules_identifier: { type: string }
+                          rules_period: { type: string, format: date }
+                          slab_version: { type: string }
+                          confidence_level: { type: string, enum: [production, pilot, placeholder] }
+                          rounding_policy: { type: string }
                           gross: { type: number }
                           social_employee: { type: number }
                           tax_base: { type: number }
                           income_tax: { type: number }
+                          bracket_tax: { type: number }
                           other_deductions: { type: number }
                           net_salary: { type: number }
                           social_employer: { type: number }
                           total_cost: { type: number }
-                          rules_period: { type: string, format: date }
-                          slab_version: { type: string }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -16354,7 +16397,7 @@ components:
           nullable: true
         status:
           type: string
-          enum: [draft, calculating, processing, calculated, validated, paid, locked, cancelled, error]
+          enum: [draft, calculating, validated, cancelled, locked, paid, error]
         type:
           type: string
           enum: [standard, regularization]

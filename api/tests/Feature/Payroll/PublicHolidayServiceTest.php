@@ -200,9 +200,8 @@ class PublicHolidayServiceTest extends TestCase
         // date islamique, les clés tenant-scopées restaient périmées 24 h.
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
-        // « Autre tenant » : un vrai UUID (la colonne company_id est de type
-        // uuid en base — la valeur factice 'some-other-tenant' provoquait
-        // SQLSTATE[22P02] invalid input syntax for type uuid sur PostgreSQL).
+        // « Autre tenant » : un vrai UUID (colonne company_id type uuid en
+        // base — 'some-other-tenant' → SQLSTATE[22P02] sur PostgreSQL, #1968).
         /** @var Company $otherCountryCompany */
         $otherCountryCompany = Company::factory()->create(['country' => 'CM']);
         $otherTenantId = (string) $otherCountryCompany->id;
