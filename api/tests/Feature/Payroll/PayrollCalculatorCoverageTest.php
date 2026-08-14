@@ -208,17 +208,17 @@ class PayrollCalculatorCoverageTest extends TestCase
             unpaidLeaveDays: 10.0,
             referenceGross12Months: 720000.0,
             severanceMonthsPerYear: 1.0,
-            noticeDays: 30.0,
+            noticeDays: 22.0, // #1943 : préavis en jours OUVRÉS (1 mois = 22)
         );
 
         $this->assertSame(60000.0, $result['prorated_pay']);
         // Maintien 60000×10/22 = 27272,73 vs 1/10ᵉ 720000/10×10/30 = 24000
         $this->assertSame(27272.73, $result['leave_indemnity']);
-        // Préavis 30 j : 60000 × 30/22 = 81818,18
-        $this->assertSame(81818.18, $result['notice_pay']);
+        // Préavis 22 j ouvrés (#1943) : 60000 × 22/22 = 60000 = 1 mois exact
+        $this->assertSame(60000.0, $result['notice_pay']);
         // Ancienneté 3 ans × 1 mois/an
         $this->assertSame(180000.0, $result['severance']);
-        $this->assertSame(349090.91, $result['total']);
+        $this->assertSame(327272.73, $result['total']);
     }
 
     public function test_final_settlement_zero_years_and_notice(): void

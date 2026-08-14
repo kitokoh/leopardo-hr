@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property bool $has_attendance_data
  * @property string $status
  * @property string|null $pdf_path
+ * @property int|null $original_slip_id
  * @property Carbon|null $sent_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -52,6 +53,7 @@ class PaySlip extends Model
         'working_days', 'actual_days_worked', 'overtime_hours',
         'has_attendance_data',
         'status', 'pdf_path', 'sent_at',
+        'original_slip_id',
     ];
 
     protected $casts = [
@@ -86,6 +88,17 @@ class PaySlip extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(PaySlipLine::class, 'pay_slip_id')->orderBy('order');
+    }
+
+    /**
+     * Issue #1983 — bulletin ORIGINAL corrigé par ce bulletin de
+     * régularisation (null pour un bulletin standard).
+     *
+     * @return BelongsTo<PaySlip, $this>
+     */
+    public function originalSlip(): BelongsTo
+    {
+        return $this->belongsTo(PaySlip::class, 'original_slip_id');
     }
 
     /**

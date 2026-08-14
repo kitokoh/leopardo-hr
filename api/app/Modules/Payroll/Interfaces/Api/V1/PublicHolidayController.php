@@ -170,6 +170,11 @@ class PublicHolidayController extends Controller
     {
         // Issue #1937 : pays allowlisté (registre #1867) + normalisé, year
         // recoupé avec date, month_day requis si récurrent et cohérent.
+        // Normalisation AVANT validation : `Rule::in` est sensible à la casse,
+        // un payload 'dz' serait rejeté 422 alors que la lecture uppercasse
+        // (une ligne 'dz' serait invisible à la relecture sinon).
+        $request->merge(['country_code' => strtoupper(trim((string) $request->input('country_code', '')))]);
+
         $validator = Validator::make($request->all(), [
             'country_code' => ['required', 'string', 'size:2', Rule::in(array_column(CountryDefaults::all(), 'country'))],
             'name' => ['required', 'string', 'max:120'],
@@ -181,6 +186,12 @@ class PublicHolidayController extends Controller
         ]);
 
         $validator->after(function (\Illuminate\Validation\Validator $v): void {
+            // Si 'date' a déjà échoué, Carbon::parse lèverait une exception
+            // (500) au lieu d'un 422 propre.
+            if ($v->errors()->has('date')) {
+                return;
+            }
+
             $data = $v->getData();
             $date = isset($data['date']) ? Carbon::parse((string) $data['date']) : null;
             $year = (int) ($data['year'] ?? 0);

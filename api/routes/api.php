@@ -228,6 +228,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index']);
         Route::get('/companies/{company}/health', PlatformCompanyHealthController::class);
+        // MULTI-PAYS (#1952) : réparation/choix du pays d'un tenant legacy
+        // (refusé si données de paie — invariant 9).
+        Route::patch('/companies/{company}/country', [PlatformCompanyController::class, 'updateCountry']);
         Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show']);
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
