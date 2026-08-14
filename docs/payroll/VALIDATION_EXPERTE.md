@@ -17,8 +17,12 @@ bloquantes ouvertes.
 
 | Pays | Règles | `confidenceLevel()` | Fiche compliance | Validation experte | Bloqué sur |
 |---|---|---|---|---|---|
-| DZ (Algérie) | `AlgeriaPayrollRules` | production | `DZ_COMPLIANCE.md` | ✅ (historique) | — |
-| FR | `FrancePayrollRules` | production | — | ✅ (historique) | — |
+| DZ (Algérie) | `AlgeriaPayrollRules` | pilot* | `DZ_COMPLIANCE.md` | ❌ à valider | barèmes IRG/CNAS à confirmer |
+| FR | `FrancePayrollRules` | pilot* | — | ❌ à valider | barème IR/charges à confirmer |
+
+> \* DZ/FR sont **pilot dans le code** (`confidenceLevel()`), pas production —
+> aucun pays n'a de validation experte signée à ce jour ; la colonne
+> « production » était une erreur de cette fiche (corrigée 2026-08-14).
 | CM (Cameroun) | `CemacPayrollRules` | pilot | `CM_COMPLIANCE.md` | ❌ à valider | IRPP art. 68, CNPS plafonds |
 | BF (Burkina) | `CedeaoPayrollRules` | pilot | `BF_COMPLIANCE.md` | ❌ à valider | IUTS 27,5 % CGI 2024, CNSS 2024 |
 | ML (Mali) | `CedeaoPayrollRules` | pilot | `ML_COMPLIANCE.md` | ❌ à valider | ITS 6 tranches, INPS 2024 |
