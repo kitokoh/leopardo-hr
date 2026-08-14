@@ -144,12 +144,14 @@ class CotisationSimulationTest extends TestCase
         /** @var array<string, mixed> $data */
         $data = $response->json('data');
 
-        // Taux CI légaux (#1825/#1893) : CNSS retraite 3,2 % salarié,
-        // patronal 4,5 + 5,75 + 2,0 = 12,25 % — surtout PAS les taux DZ
-        // (9 % / 26 %).
+        // Taux CI légaux (#1825/#1893 + plafonds par branche #1913) : CNSS
+        // retraite 3,2 % salarié ; patronal retraite 4,5 % sur le brut +
+        // famille 5,75 % et AT 2,0 % plafonnés séparément à 70 000 XOF/mois
+        // (100 000 × 4,5 % + 70 000 × 5,75 % + 70 000 × 2 % = 9 925) —
+        // surtout PAS les taux DZ (9 % / 26 %).
         $this->assertSame('CI', $data['country_code']);
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
-        $this->assertEquals(12250.0, $data['total_employer_cost']);
+        $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['net_before_tax']);
     }
 
@@ -357,13 +359,15 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('pilot', $data['contract']['confidence_level']);
 
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
-        $this->assertEquals(12250.0, $data['total_employer_cost']);
+        // Plafonds par branche #1913 : retraite 4,5 % brut + famille/AT
+        // plafonnés à 70 000 → 9 925 ; coût employeur = 100 000 + 9 925.
+        $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['taxable_gross']);
         $this->assertEquals(4000.0, $data['income_tax']);
         $this->assertEquals(0.0, $data['bracket_tax']);
         $this->assertEquals(7200.0, $data['total_deductions']);
         $this->assertEquals(92800.0, $data['net_salary']);
-        $this->assertEquals(112250.0, $data['total_cost_employer']);
+        $this->assertEquals(109925.0, $data['total_cost_employer']);
 
         // Le contrat imbriqué expose les mêmes montants (cohérence).
         $this->assertEquals(3200.0, $data['contract']['social_employee']);
