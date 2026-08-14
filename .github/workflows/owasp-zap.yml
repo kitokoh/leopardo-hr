@@ -66,9 +66,20 @@ jobs:
             });
 
             const deployApiJob = jobs.find((job) => job.name === 'Deploy API + Web to Render');
+
+            // Issue #1833 (même mécanique que e2e-staging.yml) : un deploy-api
+            // en échec ne doit jamais produire un scan « vert » à 0 requête.
+            if (deployApiJob && deployApiJob.conclusion === 'failure') {
+              core.setFailed(`deploy-api a échoué (conclusion=${deployApiJob.conclusion}) — scan ZAP marqué en échec explicite, aucun faux vert.`);
+              return;
+            }
+
             const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
 
             core.info(`deploy-api job conclusion: ${deployApiConclusion}`);
+            if (deployApiConclusion !== 'success') {
+              core.warning('Scan ZAP non exécuté : aucune étape de déploiement n\'a abouti (deploy-api absent ou skippé). Rien à scanner — run volontairement vide, voir issue #1833.');
+            }
             core.setOutput('run_scan', deployApiConclusion === 'success' ? 'true' : 'false');
 
   zap-baseline:

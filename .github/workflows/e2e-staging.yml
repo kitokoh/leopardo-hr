@@ -77,9 +77,28 @@ jobs:
             });
 
             const deployApiJob = jobs.find((job) => job.name === 'Deploy API + Web to Render');
-            const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
 
+            // Issue #1833 — faux verts : quand `deploy-api` était skippé (gate
+            // should_deploy=false, SHA stale), tous les jobs E2E étaient skippés
+            // et le run concluait en « success » à 0 test — plus aucune
+            // protection E2E visible depuis le 13/08. Trois cas désormais :
+            //   1. deploy-api SUCCESS  → on exécute les E2E (comportement nominal) ;
+            //   2. deploy-api FAILURE  → un déploiement a été tenté et a échoué :
+            //      l'E2E conclut en échec explicite (jamais de faux vert) ;
+            //   3. deploy-api absent/skippé → rien n'a été déployé, rien à
+            //      tester : warning explicite + skip (vert assumé et annoté).
+            if (deployApiJob && deployApiJob.conclusion === 'failure') {
+              // Issue #1833 : un déploiement tenté et échoué ne doit JAMAIS
+              // produire un E2E « vert » à 0 test — on fait échouer le run.
+              core.setFailed(`deploy-api a échoué (conclusion=${deployApiJob.conclusion}) — E2E marqué en échec explicite, aucun faux vert.`);
+              return;
+            }
+
+            const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
             core.info(`deploy-api job conclusion: ${deployApiConclusion}`);
+            if (deployApiConclusion !== 'success') {
+              core.warning('E2E non exécuté : aucune étape de déploiement n\'a abouti (deploy-api absent ou skippé). Rien à tester — run volontairement vide, voir issue #1833.');
+            }
             core.setOutput('run_e2e', deployApiConclusion === 'success' ? 'true' : 'false');
 
   e2e-api-smoke:
