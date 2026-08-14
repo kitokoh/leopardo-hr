@@ -109,14 +109,17 @@ class PublicHolidayIslamicSeederTest extends TestCase
             ->get();
 
         $this->assertGreaterThan(0, $sn->count(), 'Aucune date tahmarit seedée');
-        $this->assertSame('2025-07-06', $sn->first()->gregorian_date);
+        $this->assertSame('2025-07-06', $sn->first()?->gregorian_date);
     }
 
     public function test_all_country_mapping_keys_have_seeded_dates(): void
     {
         (new IslamicCalendarSeeder)->run();
 
-        $mappingKeys = collect(config('islamic_holidays_map.countries'))
+        /** @var array<string, array<string, mixed>> $countriesConfig */
+        $countriesConfig = config('islamic_holidays_map.countries');
+
+        $mappingKeys = collect($countriesConfig)
             ->flatMap(fn (array $holidays): array => array_keys($holidays))
             ->unique()
             ->values();

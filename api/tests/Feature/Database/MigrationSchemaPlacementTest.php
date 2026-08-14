@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Database;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -96,9 +97,14 @@ class MigrationSchemaPlacementTest extends TestCase
 
     public function test_artisan_migrate_is_idempotent(): void
     {
-        // PHPStan Strict : artisan() retourne PendingCommand|int — assertExitCode
-        // est la forme typée compatible (pattern MakeModuleCommandTest).
-        $this->artisan('migrate', ['--path' => 'database/migrations/public'])->assertExitCode(0);
-        $this->artisan('migrate', ['--path' => 'database/migrations/tenant'])->assertExitCode(0);
+        // PHPStan Strict : artisan() retourne PendingCommand|int — typer via
+        // PendingCommand puis assertExitCode (pattern EdgeSilentNodeDetectionTest).
+        /** @var PendingCommand $publicMigrate */
+        $publicMigrate = $this->artisan('migrate', ['--path' => 'database/migrations/public']);
+        $publicMigrate->assertExitCode(0);
+
+        /** @var PendingCommand $tenantMigrate */
+        $tenantMigrate = $this->artisan('migrate', ['--path' => 'database/migrations/tenant']);
+        $tenantMigrate->assertExitCode(0);
     }
 }

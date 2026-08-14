@@ -44,11 +44,11 @@ class TenantCountryRequiredTest extends TestCase
 
         $response = $this->getJson('/api/v1/supported-countries')->assertOk();
 
-        /** @var array<int, array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string}> $registry */
+        /** @var array<int, array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array<string, mixed>}> $registry */
         $registry = $response->json('data');
         $countries = collect($registry)->keyBy('country');
 
-        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string}|null $dz */
+        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array<string, mixed>}|null $dz */
         $dz = $countries->get('DZ');
         $this->assertNotNull($dz);
         $this->assertNotNull($countries->get('CI'));
@@ -59,7 +59,6 @@ class TenantCountryRequiredTest extends TestCase
         $this->assertContains($dz['confidence'], ['pilot', 'placeholder', 'production', 'unknown']);
 
         // Issue #2127 — bloc compliance structuré par pays (contrat #1872).
-        $this->assertIsArray($dz['compliance']);
         $this->assertContains($dz['compliance']['level'], ['production', 'pilot', 'placeholder', 'unknown']);
         $this->assertSame($dz['compliance']['level'], $dz['confidence']);
         $this->assertNotEmpty($dz['compliance']['warning']);

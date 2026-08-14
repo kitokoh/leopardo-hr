@@ -27,7 +27,13 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 
 class EventServiceProvider extends ServiceProvider
 {
-    /** @var array<class-string, array<int, class-string>> */
+    /**
+     * Listeners enregistrés explicitement (event discovery désactivée).
+     * Les valeurs peuvent être des class-string de listeners ou des chaînes
+     * `Class@method` (notation #1923) — d'où le type élargi.
+     *
+     * @var array<class-string, array<int, class-string|string>>
+     */
     protected $listen = [
         EmployeeCreated::class => [AuditLogger::class, WebhookListener::class],
         EmployeeArchived::class => [AuditLogger::class, WebhookListener::class],

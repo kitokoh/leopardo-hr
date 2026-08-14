@@ -110,7 +110,6 @@ class NotifyTaxRateValidation
         if ($submittedBy === null || $model->getAttribute('company_id') === null) {
             return;
         }
-
         // Issue #1923 — le contexte admin n'a pas de TenantMiddleware pour
         // restaurer le search_path : on sauvegarde l'état AVANT le lookup
         // public + le scope tenant, et on le restaure dans tous les cas
@@ -122,10 +121,10 @@ class NotifyTaxRateValidation
 
         try {
             try {
-                $company = PlatformCompanyLookup::findOrFail((string) $model->company_id);
+                $company = PlatformCompanyLookup::findOrFail((string) $model->getAttribute('company_id'));
             } catch (\Throwable $e) {
                 Log::warning('tax-rate.submitter-company-lookup-failed', [
-                    'company_id' => $model->company_id,
+                    'company_id' => $model->getAttribute('company_id'),
                     'error' => $e->getMessage(),
                 ]);
 
@@ -157,7 +156,7 @@ class NotifyTaxRateValidation
             });
         } catch (\Throwable $e) {
             Log::warning('tax-rate.notification-tenant-failed', [
-                'company_id' => $model->company_id,
+                'company_id' => $model->getAttribute('company_id'),
                 'error' => $e->getMessage(),
             ]);
         } finally {

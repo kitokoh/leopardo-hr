@@ -77,11 +77,11 @@ class BfIutsBackfillTest extends TestCase
         // 6 tranches désormais (borne 6 M + tranche 27,5 %).
         $this->assertCount(6, $slabs);
 
-        $this->assertSame(6_000_000.0, (float) $slabs[4]->max_amount, 'tranche 4 500 001 bornée à 6 000 000');
-        $this->assertSame(6_000_001.0, (float) $slabs[5]->min_amount);
-        $this->assertNull($slabs[5]->max_amount);
-        $this->assertSame(27.5, (float) $slabs[5]->rate);
-        $this->assertSame(TaxSlab::STATUS_ACTIVE, $slabs[5]->status);
+        $this->assertSame(6_000_000.0, (float) $slabs[4]?->max_amount, 'tranche 4 500 001 bornée à 6 000 000');
+        $this->assertSame(6_000_001.0, (float) $slabs[5]?->min_amount);
+        $this->assertNull($slabs[5]?->max_amount);
+        $this->assertSame(27.5, (float) $slabs[5]?->rate);
+        $this->assertSame(TaxSlab::STATUS_ACTIVE, $slabs[5]?->status);
         $this->assertSame('2024-01-01', $slabs[5]->effective_from->toDateString());
     }
 
@@ -133,7 +133,7 @@ class BfIutsBackfillTest extends TestCase
             ->get();
 
         $this->assertCount(6, $slabs, 'le re-seed doit rétablir les 6 tranches IUTS');
-        $this->assertSame(27.5, (float) $slabs->last()->rate);
+        $this->assertSame(27.5, (float) $slabs->last()?->rate);
     }
 
     public function test_non_bf_countries_unaffected(): void
@@ -156,6 +156,6 @@ class BfIutsBackfillTest extends TestCase
 
         $ci = TaxSlab::where('country_code', 'CI')->get();
         $this->assertCount(1, $ci, 'CI ne doit pas être modifié');
-        $this->assertNull($ci->first()->max_amount);
+        $this->assertNull($ci->first()?->max_amount);
     }
 }

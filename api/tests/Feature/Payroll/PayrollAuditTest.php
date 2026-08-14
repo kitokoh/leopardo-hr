@@ -102,9 +102,7 @@ class PayrollAuditTest extends TestCase
         $run->refresh();
         $this->assertNotNull($run->correlation_id, 'Le run doit porter un correlation_id.');
 
-        /** @var PayrollCalculationAudit $audit */
-        $audit = PayrollCalculationAudit::query()->where('correlation_id', $run->correlation_id)->first();
-        $this->assertNotNull($audit, 'Un enregistrement d\'audit doit être créé à chaque run.');
+        $audit = PayrollCalculationAudit::query()->where('correlation_id', $run->correlation_id)->firstOrFail();
 
         // Contexte conservé pour reproduction : pays, période, version de règles.
         $this->assertSame('DZ', $audit->country_code);
@@ -140,9 +138,7 @@ class PayrollAuditTest extends TestCase
         $this->assertIsString($correlationId);
         $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $correlationId);
 
-        /** @var PayrollCalculationAudit $audit */
-        $audit = PayrollCalculationAudit::query()->where('correlation_id', $correlationId)->first();
-        $this->assertNotNull($audit, 'La simulation doit créer un enregistrement d\'audit.');
+        $audit = PayrollCalculationAudit::query()->where('correlation_id', $correlationId)->firstOrFail();
         $this->assertSame(PayrollCalculationAudit::STATUS_SUCCESS, $audit->status);
         $this->assertSame('DZ', $audit->country_code);
         $this->assertSame(60000.0, (float) ($audit->input_snapshot['gross_salary'] ?? 0.0));
@@ -197,9 +193,7 @@ class PayrollAuditTest extends TestCase
         $run->refresh();
         $this->assertNotNull($run->correlation_id);
 
-        /** @var PayrollCalculationAudit $audit */
-        $audit = PayrollCalculationAudit::query()->where('correlation_id', $run->correlation_id)->first();
-        $this->assertNotNull($audit);
+        $audit = PayrollCalculationAudit::query()->where('correlation_id', $run->correlation_id)->firstOrFail();
         $this->assertSame(PayrollCalculationAudit::ACTOR_JOB, $audit->actor_type);
         $this->assertNull($audit->actor_id);
         $this->assertSame(PayrollCalculationAudit::STATUS_SUCCESS, $audit->status);
@@ -286,7 +280,10 @@ class PayrollAuditTest extends TestCase
         // (y compris Log::withContext) est vérifié — aucun secret ne doit
         // apparaître dans les messages ni les contextes.
         $log = Log::spy();
-        $log->allows('channel')->andReturn($log);
+
+        /** @var \Mockery\Expectation $channelExpectation */
+        $channelExpectation = $log->shouldReceive('channel');
+        $channelExpectation->andReturn($log);
 
         // Données sensibles présentes en base : mot de passe + références
         // biométriques marquées — elles ne doivent JAMAIS fuiter dans les

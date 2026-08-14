@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Carbon\CarbonImmutable;
