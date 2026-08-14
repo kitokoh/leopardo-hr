@@ -1,0 +1,50 @@
+name: Country Catalog Check
+
+# Issue #1875 — playbook d'onboarding pays : la garde vérifie que le
+# catalogue multi-pays reste complet et sans doublon (script
+# dev-hub/tools/check-country-catalog.sh) :
+#   1. pas de doublon ISO entre classes dédiées et listes de membres de zone ;
+#   2. registre CountryDefaults complet ;
+#   3. fiche docs/payroll/<CC>_COMPLIANCE.md obligatoire pour pilot/production ;
+#   4. golden pays obligatoire (issue #1938).
+# Tout NOUVEAU pays incomplet échoue ici dans la même PR.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Payroll/**'
+      - 'api/app/Support/CountryDefaults.php'
+      - 'docs/payroll/**'
+      - 'api/tests/Feature/Payroll/Golden/**'
+      - 'dev-hub/tools/check-country-catalog.sh'
+      - '.github/workflows/country-catalog-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Payroll/**'
+      - 'api/app/Support/CountryDefaults.php'
+      - 'docs/payroll/**'
+      - 'api/tests/Feature/Payroll/Golden/**'
+      - 'dev-hub/tools/check-country-catalog.sh'
+      - '.github/workflows/country-catalog-check.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: country-catalog-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check country catalog completeness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Run country catalog check
+        run: bash dev-hub/tools/check-country-catalog.sh
