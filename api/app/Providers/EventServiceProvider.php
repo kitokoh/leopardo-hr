@@ -27,7 +27,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 
 class EventServiceProvider extends ServiceProvider
 {
-    /** @var array<class-string, array<int, class-string>> */
+    /** @var array<class-string, array<int, class-string|string>> */
     protected $listen = [
         EmployeeCreated::class => [AuditLogger::class, WebhookListener::class],
         EmployeeArchived::class => [AuditLogger::class, WebhookListener::class],

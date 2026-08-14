@@ -211,11 +211,6 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function complianceVerifiedAt(): ?string
-            {
-                return null;
-            }
-
             public function rulesVersion(): string
             {
                 return 'test-rules-v1';
@@ -412,11 +407,6 @@ class CountryRulesResolverTest extends TestCase
             public function legalSources(): array
             {
                 return [];
-            }
-
-            public function complianceVerifiedAt(): ?string
-            {
-                return null;
             }
 
             public function rulesVersion(): string
