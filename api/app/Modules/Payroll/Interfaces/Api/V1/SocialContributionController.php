@@ -192,7 +192,7 @@ class SocialContributionController extends Controller
                     'previous_value' => $log->previous_value,
                     'new_value' => $log->new_value,
                     'reason' => $log->reason,
-                    'created_at' => $log->created_at?->toIso8601String(),
+                    'created_at' => $log->created_at->toIso8601String(),
                 ]),
         ]);
     }

@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use Carbon\Carbon;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -70,12 +71,11 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         $this->assertSame($expectedTotal, $settlement['breakdown']['total']);
     }
 
-    public function test_unregistered_country_falls_back_to_dz_defaults_without_exception(): void
+    public function test_unregistered_country_throws_no_silent_fallback(): void
     {
-        // Pays inconnu du moteur (ex. 'US') : repli silencieux sur les défauts DZ
-        // (1 mois/an, préavis 1 mois — issue #1819) — aucune exception en fin de
-        // contrat (régression évitée : avant F-31 le service utilisait toujours
-        // ces défauts).
+        // Résolveur unique #1868 : AUCUN repli silencieux vers DZ — un pays non
+        // enregistré (ex. 'US') lève UnsupportedCountryRulesException (422
+        // explicite en fin de contrat) au lieu d'appliquer des défauts DZ.
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'US']);
         /** @var Employee $employee */
@@ -87,10 +87,8 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         ]);
 
         $service = new EndOfContractService();
-        $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
 
-        $this->assertSame(300000.0, $settlement['breakdown']['severance']);
-        // Fallback DZ (issue #1819) : préavis 1 mois → 60 000 × 30/22 = 81 818,18.
-        $this->assertSame(81818.18, $settlement['breakdown']['notice_pay']);
+        $this->expectException(UnsupportedCountryRulesException::class);
+        $service->settlement($employee, Carbon::parse('2026-01-01'));
     }
 }

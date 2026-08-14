@@ -67,7 +67,9 @@ class CountryIsolationMatrixTest extends TestCase
     {
         // Tenant DZ et tenant CM calculent en parallèle, même brut nominal
         // (200 000 en monnaie locale) → taux DIFFÉRENTS et corrects par pays.
+        /** @var Company $dzCompany */
         $dzCompany = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $cmCompany */
         $cmCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
 
         $dzRun = $this->makeCountryRun($dzCompany, 'DZ', 200000.0);
@@ -120,9 +122,15 @@ class CountryIsolationMatrixTest extends TestCase
     {
         // Un barème spécifique au tenant A (tax_slabs.company_id = A) ne doit
         // pas être résolu pour le tenant B.
+        /** @var Company $companyA */
         $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
+        // Le workflow #1813 : les lignes nouvellement créées sont draft par
+        // défaut (migration 2026_08_14_000001 ALTER ... SET DEFAULT 'draft')
+        // — la résolution paie n'utilise que les lignes ACTIVES, donc le test
+        // d'isolation doit créer une ligne active explicitement.
         TaxSlab::create([
             'company_id' => $companyA->id,
             'country_code' => 'DZ',
@@ -132,6 +140,7 @@ class CountryIsolationMatrixTest extends TestCase
             'rate' => 5,
             'fixed_deduction' => 0,
             'effective_from' => '2026-01-01',
+            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         $calculator = new PayrollCalculator;
@@ -175,7 +184,9 @@ class CountryIsolationMatrixTest extends TestCase
     {
         // La simulation indépendante (sans donnée tenant) répond avec les taux
         // du pays demandé — DZ vs CM, même brut → résultats distincts.
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
             'manager_role' => 'principal',
