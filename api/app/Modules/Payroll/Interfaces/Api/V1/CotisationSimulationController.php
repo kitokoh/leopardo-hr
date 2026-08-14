@@ -56,7 +56,13 @@ class CotisationSimulationController extends Controller
 
         // Pays inconnu → 422 explicite (UnsupportedCountryRulesException,
         // rendue par le handler d'exceptions avec un message métier clair).
-        $rules = $this->payrollCalculator->getRules($countryCode);
+        //
+        // Issue #1924 — la simulation TENANT résout les règles avec le
+        // company_id du manager connecté : les overrides de cotisations
+        // entreprise (SocialContribution company-scoped) s'appliquent comme
+        // sur le bulletin réel (repli pays si aucune ligne entreprise).
+        $companyId = (string) $actor->company_id;
+        $rules = $this->payrollCalculator->rulesResolver()->resolve($countryCode, $companyId);
 
         // Issue #1869 — mêmes appels métier que PayrollCalculator::calculateSlip().
         $breakdown = $this->payrollCalculator->computeNetBreakdown($gross, $rules);
@@ -104,7 +110,9 @@ class CotisationSimulationController extends Controller
                 'net_salary' => $breakdown['net_salary'],
                 'total_cost_employer' => $breakdown['total_cost'],
                 // ── Contrat complet et explicable (issue #1869) ──────────────
-                'contract' => $this->presenter->present($countryCode, $gross),
+                // Issue #1924 — company_id du tenant transmis : le bloc
+                // contract reflète les overrides entreprise (comme le bulletin).
+                'contract' => $this->presenter->present($countryCode, $gross, $companyId),
             ],
         ]);
     }
