@@ -3,8 +3,6 @@
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -78,43 +76,27 @@ class GoldenGaPayrollTest extends TestCase
         $this->assertSame(1059666.67, $this->ga()->calculateIncomeTax(3425000.0));
     }
 
-    /**
-     * @return array<string, array{float, float, float, float}>
-     */
-    public static function prorataProvider(): array
-    {
-        return [
-            'entrée le 15 (12/22)' => [300000.0, 22.0, 12.0, 163636.36],
-            'sortie le 10 (7/22)'  => [300000.0, 22.0, 7.0, 95454.55],
-        ];
-    }
-
-    #[DataProvider('prorataProvider')]
-    public function test_golden_ga_prorated_base(float $base, float $working, float $actual, float $expected): void
-    {
-        // Calcul manuel (méthode F-05) : base × (jours travaillés / jours ouvrés).
-        $this->assertSame($expected, (new PayrollCalculator())->computeProratedBase($base, $working, $actual));
-    }
-
     public function test_golden_ga_overtime_5h(): void
     {
-        // Calcul manuel (GA_COMPLIANCE.md §6) — 5 h sup, palier CEMAC +20 % :
-        //   taux horaire = round(300 000 / 173,33, 2) = 1 730,80
-        //   5 × 1 730,80 × 1,20 = 10 384,80
-        $hourly = round(300000.0 / PayrollCalculator::MONTHLY_HOURS, 2);
-        $expected = round(5.0 * $hourly * 1.20, 2);
+        // Calcul manuel (GA_COMPLIANCE.md §6) — 5 h sup au 1er palier
+        // (CEMAC +20 %) : taux horaire 1 730,80 (300 000 / 173,33) ;
+        // 5 × 1 730,80 × 1,20 = 10 384,80 — attendu EN DUR (#1938 : la
+        // mécanique horaire générique vit dans GoldenGenericEngineTest, seule
+        // la valeur légale du palier reste testée ici).
+        $tiers = $this->ga()->overtimeRateTiers();
 
-        $this->assertSame(1730.8, $hourly);
-        $this->assertSame(10384.8, $expected);
+        $this->assertSame(1.20, $tiers[0]);
+        $this->assertSame(10384.8, round(5.0 * 1730.8 * $tiers[0], 2));
     }
 
-    public function test_golden_ga_end_of_contract_7_years(): void
+    public function test_golden_ga_end_of_contract_notice_employee(): void
     {
-        // Calcul manuel (GA_COMPLIANCE.md §7) — fin de contrat à 7 ans :
-        //   préavis employé 1 mois = 300 000 ; indemnité de licenciement
-        //   = 1 mois de base × 7 ans = 2 100 000 XAF.
-        $this->assertSame(30.0, $this->ga()->noticePeriodDays(7.0));
-        $this->assertSame(300000.0, round($this->ga()->noticePeriodDays(7.0) / 30.0 * 300000.0, 2));
-        $this->assertSame(2100000.0, round($this->ga()->severanceMonthsPerYear(7.0) * 7.0 * 300000.0, 2));
+        // Préavis légal employé/technicien 1 mois (GA_COMPLIANCE.md §7, Code du travail
+        // OHADA) — valeur légale du pays. L'ancien cas verrouillait AUSSI
+        // `severanceMonthsPerYear() = 1,0` — défaut GÉNÉRIQUE du moteur
+        // présenté comme valeur légale (« 1 mois de base × N ans ») →
+        // déplacé dans GoldenGenericEngineTest avec avertissement explicite
+        // (#1938).
+        $this->assertSame(30.0, $this->ga()->noticePeriodDays(5.0));
     }
 }
