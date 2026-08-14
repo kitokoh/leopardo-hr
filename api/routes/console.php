@@ -191,3 +191,8 @@ Artisan::command('super-admin:reset-password {email} {password}', function (stri
 
     return 0;
 })->purpose('Reset a super admin password safely');
+
+// Issue #1812 — rappel annuel : fêtes islamiques de l'année suivante à
+// confirmer avant la clôture (novembre).
+Schedule::command('islamic:check-unconfirmed')
+    ->yearlyOn(11, 15, '09:00');

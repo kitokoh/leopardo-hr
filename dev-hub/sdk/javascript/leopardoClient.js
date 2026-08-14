@@ -175,6 +175,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/hr-reports", options);
     },
 
+    /** Lister les fêtes islamiques d'une année (super-admin) */
+    listIslamicCalendar(options = {}) {
+      return request("GET", "/admin/islamic-calendar", options);
+    },
+
+    /** Modifier/confirmer une fête islamique (super-admin) */
+    updateIslamicCalendarHoliday(options = {}) {
+      return request("PUT", "/admin/islamic-calendar/{holidayKey}/{year}", options);
+    },
+
+    /** Confirmer toutes les dates islamiques d'une année (super-admin) */
+    confirmIslamicCalendarYear(options = {}) {
+      return request("POST", "/admin/islamic-calendar/confirm-year/{year}", options);
     /** Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814 */
     simulatePayrollAdmin(options = {}) {
       return request("POST", "/admin/payroll/simulate", options);
@@ -190,6 +203,24 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/admin/platform/marketing/oauth-config", options);
     },
 
+    /** Lister les jours fériés d'un pays/année (super-admin : national + entreprise) */
+    listPublicHolidaysAdmin(options = {}) {
+      return request("GET", "/admin/public-holidays", options);
+    },
+
+    /** Créer un jour férié national (super-admin) */
+    storePublicHolidayAdmin(options = {}) {
+      return request("POST", "/admin/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié (super-admin) */
+    destroyPublicHolidayAdmin(options = {}) {
+      return request("DELETE", "/admin/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié (super-admin) */
+    updatePublicHolidayAdmin(options = {}) {
+      return request("PUT", "/admin/public-holidays/{publicHoliday}", options);
     /** Approuver une modification de taux (platform_admin) — issue #1813 */
     approveRateValidation(options = {}) {
       return request("PUT", "/admin/rate-validation/{table}/{id}/approve", options);
@@ -1673,6 +1704,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre a jour un projet */
     putProjectsByProject(options = {}) {
       return request("PUT", "/projects/{project}", options);
+    },
+
+    /** Lister les jours fériés du pays (manager principal : nationaux + entreprise) */
+    listPublicHolidays(options = {}) {
+      return request("GET", "/public-holidays", options);
+    },
+
+    /** Créer un jour férié d'entreprise (manager principal) */
+    storePublicHoliday(options = {}) {
+      return request("POST", "/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié d'entreprise (manager principal) */
+    destroyPublicHoliday(options = {}) {
+      return request("DELETE", "/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié d'entreprise (manager principal) */
+    updatePublicHoliday(options = {}) {
+      return request("PUT", "/public-holidays/{publicHoliday}", options);
     },
 
     /** Envoyer une notification push de test a un employe */
