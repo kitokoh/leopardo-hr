@@ -3,9 +3,12 @@
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -16,10 +19,13 @@ use Tests\TestCase;
  * docs/payroll/DZ_COMPLIANCE.md §5. Méthode de prorata : jours travaillés
  * (actual_days_worked / 22), recoupe contrat ↔ période du run.
  *
- * Pas de base de données : modèles non persistés (casts date/Carbon).
+ * Depuis F-20 (#1816) : computeWorkedDays interroge AttendanceLog (jours
+ * distincts pointés) avec fallback prorata contrat — les tests liés au
+ * pointage utilisent la base (RefreshTenantDatabase).
  */
 class GoldenDzProrataOvertimeTest extends TestCase
 {
+    use RefreshTenantDatabase;
     public static function prorataProvider(): array
     {
         return [
@@ -86,5 +92,58 @@ class GoldenDzProrataOvertimeTest extends TestCase
         $this->assertSame(22.0, $worked['working_days']);
         $this->assertSame($expectedActual, $worked['actual_days_worked']);
         $this->assertSame(0.0, $worked['overtime_hours']);
+        $this->assertFalse($worked['has_attendance_data']);
+    }
+
+    public function test_actual_days_from_18_attendance_logs(): void
+    {
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'contract_start' => '2026-06-01',
+            'contract_end' => null,
+        ]);
+        $run = new PayrollRun([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+        ]);
+
+        // 18 jours distincts pointés (statuts valides) dans la période.
+        foreach (range(1, 18) as $day) {
+            AttendanceLog::create([
+                'company_id' => $company->id,
+                'employee_id' => $employee->id,
+                'date' => sprintf('2026-07-%02d', $day),
+                'status' => 'ontime',
+            ]);
+        }
+
+        $worked = (new PayrollCalculator())->computeWorkedDays($run, $employee);
+
+        $this->assertSame(18.0, $worked['actual_days_worked']);
+        $this->assertTrue($worked['has_attendance_data']);
+        $this->assertSame(22.0, $worked['working_days']);
+    }
+
+    public function test_actual_days_fallback_no_logs(): void
+    {
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'contract_start' => '2026-06-01',
+            'contract_end' => null,
+        ]);
+        $run = new PayrollRun([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+        ]);
+
+        // Aucun log : fallback prorata contrat — plein mois → 22.0.
+        $worked = (new PayrollCalculator())->computeWorkedDays($run, $employee);
+
+        $this->assertSame(22.0, $worked['actual_days_worked']);
+        $this->assertFalse($worked['has_attendance_data']);
     }
 }

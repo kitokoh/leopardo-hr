@@ -6,11 +6,13 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -189,5 +191,52 @@ class PayrollTenantIsolationTest extends TestCase
         $response = $this->getJson('/api/v1/me/pay-slips')->assertOk();
         $ids = collect(data_get($response->json('data'), '*.id'));
         $this->assertTrue($ids->contains($dataA['slip']->id) === false);
+    }
+
+    public function test_compute_worked_days_ignores_other_tenant_attendance_logs(): void
+    {
+        $employeeA = Employee::factory()->create([
+            'company_id' => $this->companyA->id,
+            'contract_start' => '2026-01-01',
+            'contract_end' => null,
+        ]);
+        $employeeB = Employee::factory()->create([
+            'company_id' => $this->companyB->id,
+            'contract_start' => '2026-01-01',
+            'contract_end' => null,
+        ]);
+
+        $runA = PayrollRun::create([
+            'company_id' => $this->companyA->id,
+            'country_code' => 'DZ',
+            'period_start' => '2026-06-01',
+            'period_end' => '2026-06-30',
+            'status' => 'draft',
+        ]);
+
+        // 10 jours pointés pour l'employé A (tenant A).
+        foreach (range(1, 10) as $day) {
+            AttendanceLog::create([
+                'company_id' => $this->companyA->id,
+                'employee_id' => $employeeA->id,
+                'date' => sprintf('2026-06-%02d', $day),
+                'status' => 'ontime',
+            ]);
+        }
+        // 15 jours pointés pour l'employé B (tenant B) : ne doivent PAS fuiter
+        // dans le décompte du run A (F-20, #1816).
+        foreach (range(1, 15) as $day) {
+            AttendanceLog::create([
+                'company_id' => $this->companyB->id,
+                'employee_id' => $employeeB->id,
+                'date' => sprintf('2026-06-%02d', $day),
+                'status' => 'ontime',
+            ]);
+        }
+
+        $worked = (new PayrollCalculator())->computeWorkedDays($runA, $employeeA);
+
+        $this->assertSame(10.0, $worked['actual_days_worked']);
+        $this->assertTrue($worked['has_attendance_data']);
     }
 }

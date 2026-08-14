@@ -81,4 +81,49 @@ class PayrollWorkInputsTest extends TestCase
         $this->assertSame(0.0, $inputs['paid_leave_days']);
         $this->assertSame(0.0, $inputs['unpaid_leave_days']);
     }
+
+    public function test_compute_worked_days_from_attendance_logs_db(): void
+    {
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'contract_start' => '2026-01-01',
+            'contract_end' => null,
+        ]);
+        $run = $this->makeRun($company);
+
+        // 5 jours distincts pointés (un log par jour) — un 2e log split-shift
+        // sur le même jour ne doit pas compter deux fois.
+        foreach ([5, 6, 7, 10, 12] as $day) {
+            AttendanceLog::create(['company_id' => $company->id, 'employee_id' => $employee->id, 'date' => "2026-07-{$day}", 'status' => 'ontime']);
+        }
+        AttendanceLog::create(['company_id' => $company->id, 'employee_id' => $employee->id, 'date' => '2026-07-12', 'session_number' => 2, 'status' => 'late']);
+
+        $worked = (new PayrollCalculator())->computeWorkedDays($run, $employee);
+
+        $this->assertSame(5.0, $worked['actual_days_worked']);
+        $this->assertTrue($worked['has_attendance_data']);
+    }
+
+    public function test_compute_worked_days_excludes_invalid_statuses(): void
+    {
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'contract_start' => '2026-01-01',
+            'contract_end' => null,
+        ]);
+        $run = $this->makeRun($company);
+
+        AttendanceLog::create(['company_id' => $company->id, 'employee_id' => $employee->id, 'date' => '2026-07-06', 'status' => 'ontime']);
+        AttendanceLog::create(['company_id' => $company->id, 'employee_id' => $employee->id, 'date' => '2026-07-07', 'status' => 'incomplete']);
+        // Hors période : exclu aussi.
+        AttendanceLog::create(['company_id' => $company->id, 'employee_id' => $employee->id, 'date' => '2026-08-01', 'status' => 'ontime']);
+
+        $worked = (new PayrollCalculator())->computeWorkedDays($run, $employee);
+
+        // 1 seul jour valide dans la période → les statuts invalides sont exclus.
+        $this->assertSame(1.0, $worked['actual_days_worked']);
+        $this->assertTrue($worked['has_attendance_data']);
+    }
 }

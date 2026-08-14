@@ -65,10 +65,16 @@
 
 - Salaire minimum mensuel implémenté : **20 000 DZD** (`minimumWage()`).
 
-## 5. Prorata, heures supplémentaires, absences (F-05 — implémenté 2026-08-08)
+## 5. Prorata, heures supplémentaires, absences (F-05/F-20 — implémenté 2026-08-14)
 
 **Méthode de prorata** : jours travaillés (actual_days_worked / 22 jours ouvrés standards),
 recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculator::computeWorkedDays).
+
+**Source des jours travaillés (F-20, #1816)** : dès qu'au moins 1 log de présence valide
+(`AttendanceLog`, statuts hors `cancelled`/`rejected`/`incomplete`) existe sur la période,
+`actual_days_worked` = **nombre de jours distincts pointés**. Sans aucun log, **fallback
+prorata contrat** (tableau ci-dessous). Le bulletin stocke `has_attendance_data` pour tracer
+la source utilisée.
 
 | Cas | Calcul | Résultat |
 |---|---|---|
@@ -77,10 +83,12 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 | Absence 1 jour (21/22) | 60 000 × 21/22 | 57 272,73 (retenue **2 727,27**) |
 | Congés sans solde 5 j (17/22) | 60 000 × 17/22 | 46 363,64 (retenue **13 636,36**) |
 | Heures sup 10 h @25 % + 5 h @50 % | taux horaire 346,16 (60 000/173,33) → 10×346,16×1,25 + 5×346,16×1,50 | **6 923,20** |
+| 18 jours pointés (logs valides) | 18 logs distincts → actual_days_worked = 18,0 (has_attendance_data=true) | **prorata sur 18/22** |
 
 ⚠️ Majorations HS (25 % jusqu'à 10 h/mois, 50 % au-delà) : seuil conventionnel **à confirmer** par la convention collective applicable.
 
-**Source des heures sup** : non branchée (0) — le lien pointage → paie (F-20) alimentera `overtime_hours`.
+**Source des heures sup** : implémentée (F-20) — somme des `overtime_hours` des logs de
+présence valides de la période (`collectWorkInputs`), 0 si aucun log.
 
 ## 6. Congés payés (F-07 — implémenté 2026-08-08)
 
