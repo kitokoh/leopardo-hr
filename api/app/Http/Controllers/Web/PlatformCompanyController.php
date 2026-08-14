@@ -125,7 +125,7 @@ class PlatformCompanyController extends Controller
         $validated['country'] = strtoupper(trim($validated['country']));
         $countryDefaults = CountryDefaults::find($validated['country']);
         if ($countryDefaults === null) {
-            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_keys(CountryDefaults::all())).').';
+            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
             if ($request->expectsJson()) {
                 return new JsonResponse([
                     'message' => $message,

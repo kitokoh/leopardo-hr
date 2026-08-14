@@ -37,7 +37,7 @@ class ProvisionGuidedTrial
 
         $countryDefaults = CountryDefaults::find($country);
         if ($countryDefaults === null) {
-            throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_keys(CountryDefaults::all())).').');
+            throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').');
         }
 
         return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults): array {
