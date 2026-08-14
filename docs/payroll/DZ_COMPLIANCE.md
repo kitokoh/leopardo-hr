@@ -80,7 +80,9 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 
 ⚠️ Majorations HS (25 % jusqu'à 10 h/mois, 50 % au-delà) : seuil conventionnel **à confirmer** par la convention collective applicable.
 
-**Source des heures sup** : non branchée (0) — le lien pointage → paie (F-20) alimentera `overtime_hours`.
+**Source des jours travaillés** (F-20, #1816) : **AttendanceLog** — jours DISTINCTS avec au moins un log valide sur la période (statuts `cancelled`/`rejected`/`incomplete` exclus), scoped au tenant. Fallback = **prorata contrat** (tableau ci-dessus) quand aucun log valide n'existe. Le bulletin expose la source via `pay_slips.has_attendance_data`.
+
+**Source des heures sup** : implémentée (F-20) — somme des `AttendanceLog.overtime_hours` valides (collectWorkInputs).
 
 ## 6. Congés payés (F-07 — implémenté 2026-08-08)
 
