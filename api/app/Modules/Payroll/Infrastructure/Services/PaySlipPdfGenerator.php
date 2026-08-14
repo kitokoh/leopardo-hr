@@ -61,6 +61,9 @@ class PaySlipPdfGenerator
             // tête de bulletin quand le run est une régularisation.
             'isRegularization' => $paySlip->payrollRun?->type === PayrollRun::TYPE_REGULARIZATION,
             'originalRunId' => $paySlip->payrollRun?->original_run_id,
+            // Issue #1983 : référence au bulletin ORIGINAL corrigé (plus
+            // précise que le run quand le delta est par bulletin).
+            'originalSlipId' => $paySlip->original_slip_id,
         ]);
 
         $pdf->setPaper('A4', 'portrait');

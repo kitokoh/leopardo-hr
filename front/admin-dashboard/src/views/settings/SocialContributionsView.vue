@@ -15,7 +15,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="sc-country">{{ $t('social_contrib.th_country') }}</label>
           <select id="sc-country" v-model="countryCode" class="form-input min-w-40" @change="load">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
           </select>
         </div>
         <div>
@@ -82,13 +82,13 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="simc-country">{{ $t('social_contrib.th_country') }}</label>
           <select id="simc-country" v-model="simCountry" class="form-input" @change="runSimulate">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
           </select>
         </div>
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="simc-compare">{{ $t('social_contrib.compare_country') }}</label>
           <select id="simc-compare" v-model="compareCountry" class="form-input" @change="runSimulate">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
           </select>
         </div>
         <div class="flex items-end">
@@ -183,20 +183,32 @@
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
+const localeStore = useLocaleStore()
+
+/** Traduction avec interpolation {var} — convention catalogue i18n (#1916). */
+function t(key, vars = {}) {
+  let msg = translate(localeStore.current, key, key)
+  for (const [k, v] of Object.entries(vars)) {
+    msg = msg.replace(`{${k}}`, String(v))
+  }
+  return msg
+}
 
 const supportedCountries = [
-  { code: 'DZ', flag: '🇩🇿', label: 'Algérie' },
-  { code: 'CM', flag: '🇨🇲', label: 'Cameroun' },
-  { code: 'CI', flag: '🇨🇮', label: "Côte d'Ivoire" },
-  { code: 'SN', flag: '🇸🇳', label: 'Sénégal' },
-  { code: 'MA', flag: '🇲🇦', label: 'Maroc' },
-  { code: 'TN', flag: '🇹🇳', label: 'Tunisie' },
-  { code: 'CG', flag: '🇨🇬', label: 'Congo' },
-  { code: 'GA', flag: '🇬🇦', label: 'Gabon' },
-  { code: 'BF', flag: '🇧🇫', label: 'Burkina Faso' },
-  { code: 'ML', flag: '🇲🇱', label: 'Mali' },
+  { code: 'DZ', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
+  { code: 'CM', flag: '🇨🇲', labelKey: 'common.countries.CM' },
+  { code: 'CI', flag: '🇨🇮', labelKey: 'common.countries.CI' },
+  { code: 'SN', flag: '🇸🇳', labelKey: 'common.countries.SN' },
+  { code: 'MA', flag: '🇲🇦', labelKey: 'common.countries.MA' },
+  { code: 'TN', flag: '🇹🇳', labelKey: 'common.countries.TN' },
+  { code: 'CG', flag: '🇨🇬', labelKey: 'common.countries.CG' },
+  { code: 'GA', flag: '🇬🇦', labelKey: 'common.countries.GA' },
+  { code: 'BF', flag: '🇧🇫', labelKey: 'common.countries.BF' },
+  { code: 'ML', flag: '🇲🇱', labelKey: 'common.countries.ML' },
 ]
 
 const countryCode = ref('DZ')
@@ -223,7 +235,7 @@ async function load() {
     })
     items.value = data.data || []
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible de charger les cotisations.')
+    toast.error(err?.response?.data?.message || t('social_contrib.load_error'))
   } finally {
     busy.value = false
   }
@@ -266,29 +278,29 @@ async function save() {
     }
     if (editing.value) {
       await api.put(`/admin/social-contributions/${editing.value.id}`, payload)
-      toast.success('Cotisation mise à jour.')
+      toast.success(t('social_contrib.saved'))
     } else {
       await api.post('/admin/social-contributions', payload)
-      toast.success('Cotisation créée.')
+      toast.success(t('social_contrib.created'))
     }
     formOpen.value = false
     await load()
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible d’enregistrer la cotisation.')
+    toast.error(err?.response?.data?.message || t('social_contrib.save_error'))
   } finally {
     busy.value = false
   }
 }
 
 async function removeItem(item) {
-  if (!window.confirm(`Supprimer « ${item.name} » ?`)) return
+  if (!window.confirm(t('social_contrib.delete_confirm', { name: item.name }))) return
   busy.value = true
   try {
     await api.delete(`/admin/social-contributions/${item.id}`)
-    toast.success('Cotisation supprimée.')
+    toast.success(t('social_contrib.deleted'))
     await load()
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Suppression impossible.')
+    toast.error(err?.response?.data?.message || t('social_contrib.delete_error'))
   } finally {
     busy.value = false
   }

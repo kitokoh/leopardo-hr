@@ -108,9 +108,6 @@ class SenegalPayrollRules extends AbstractCountryRules
      * (CGI Sénégal) : taxe forfaitaire mensuelle retenue sur le salarié par
      * tranche de brut (docs/payroll/SN_COMPLIANCE.md §3). Portée dans le
      * bulletin par PayrollCalculator (ligne « Taxe de minimum fiscal »).
-     * NB : le mécanisme légal « max(IR, TRIMF) » (le salarié paie le plus
-     * élevé des deux) est un raffinement à valider avec l'expert SN — ici
-     * les deux lignes coexistent conformément au périmètre de l'issue.
      */
     public function calculateBracketTax(float $grossSalary): float
     {
@@ -212,5 +209,17 @@ class SenegalPayrollRules extends AbstractCountryRules
             ['up_to_hours' => 8.0, 'multiplier' => 1.15],
             ['up_to_hours' => null, 'multiplier' => 1.40],
         ];
+    }
+
+    /**
+     * Issue #1934 — mécanisme légal SN : le salarié paie le PLUS ÉLEVÉ de
+     * IR / TRIMF (le TRIMF est un minimum représentatif de l'impôt,
+     * docs/payroll/SN_COMPLIANCE.md §3). Le moteur utilise cette combinaison
+     * pour la base de déductions (computeNetBreakdown) et n'affiche que la
+     * ligne gagnante sur le bulletin.
+     */
+    public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
+    {
+        return max($incomeTax, $bracketTax);
     }
 }

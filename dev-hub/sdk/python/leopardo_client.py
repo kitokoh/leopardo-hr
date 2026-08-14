@@ -1284,6 +1284,10 @@ class LeopardoClient:
         """Creer une societe shared"""
         return self.request("POST", "/platform/companies", **kwargs)
 
+    def patch_platform_companies_by_company_country(self, **kwargs):
+        """Reformer/choisir le pays legal d'un tenant (invariant 9)"""
+        return self.request("PATCH", "/platform/companies/{company}/country", **kwargs)
+
     def get_platform_companies_by_company_features(self, **kwargs):
         """Lire les feature flags d'une societe"""
         return self.request("GET", "/platform/companies/{company}/features", **kwargs)
