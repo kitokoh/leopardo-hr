@@ -1540,6 +1540,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payroll-runs/{payrollRun}/validate", options);
     },
 
+    /** Audit des calculs de paie (issue #1874) */
+    getPayrollCalculations(options = {}) {
+      return request("GET", "/payroll/calculations", options);
+    },
+
     /** Previsualiser un cycle de paie candidat */
     getPayrollCyclesPreview(options = {}) {
       return request("GET", "/payroll/cycles/preview", options);

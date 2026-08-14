@@ -1252,6 +1252,10 @@ class LeopardoClient:
         """Valider la session de paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/validate", **kwargs)
 
+    def get_payroll_calculations(self, **kwargs):
+        """Audit des calculs de paie (issue #1874)"""
+        return self.request("GET", "/payroll/calculations", **kwargs)
+
     def get_payroll_cycles_preview(self, **kwargs):
         """Previsualiser un cycle de paie candidat"""
         return self.request("GET", "/payroll/cycles/preview", **kwargs)

@@ -6,6 +6,8 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationAuditor;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
@@ -36,6 +38,7 @@ class CotisationSimulationController extends Controller
     public function __construct(
         private readonly PayrollCalculator $payrollCalculator,
         private readonly PayrollCalculationPresenter $presenter,
+        private readonly PayrollCalculationAuditor $auditor,
     ) {}
 
     public function simulate(Request $request): JsonResponse
@@ -100,8 +103,30 @@ class CotisationSimulationController extends Controller
             }
         }
 
+        // Issue #1874 — audit & observabilité : identifiant de corrélation
+        // par simulation + ligne d'audit (contexte pays, version/période des
+        // règles, entrées non sensibles, résultats agrégés, acteur).
+        $correlationId = PayrollCalculationAuditor::newCorrelationId();
+        $contract = $this->presenter->present($countryCode, $gross, $companyId, $rulesPeriod);
+        $this->auditor->record([
+            'company_id' => $companyId,
+            'actor_id' => $actor->id,
+            'actor_role' => $actor->role ?? 'employee',
+            'country_code' => $countryCode,
+            'rules_version' => $rules->rulesVersion(),
+            'rules_period' => $rulesPeriod?->toDateString(),
+            'correlation_id' => $correlationId,
+            'input_gross' => $gross,
+            'result_net' => $breakdown['net_salary'],
+            'result_total_cost' => $breakdown['total_cost'],
+            'result_income_tax' => $breakdown['income_tax'],
+            'status' => PayrollCalculationAudit::STATUS_OK,
+        ]);
+
         return response()->json([
             'data' => [
+                // Issue #1874 — identifiant de corrélation (audit).
+                'correlation_id' => $correlationId,
                 // ── Champs historiques (rétro-compatibles) ───────────────────
                 'country_code' => $countryCode,
                 'gross_salary' => $gross,
@@ -121,12 +146,7 @@ class CotisationSimulationController extends Controller
                 // ── Contrat complet et explicable (issue #1869) ──────────────
                 // Le contrat reflète les overrides entreprise et la période
                 // effective, comme le bulletin réel.
-                'contract' => $this->presenter->present(
-                    $countryCode,
-                    $gross,
-                    $companyId,
-                    $rulesPeriod
-                ),
+                'contract' => $contract,
             ],
         ]);
     }

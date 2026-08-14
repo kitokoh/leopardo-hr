@@ -7976,6 +7976,51 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /payroll/calculations:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Audit des calculs de paie (issue #1874)"
+      description: "Liste paginée des calculs (simulations + runs) — contexte pays, version des règles, entrées non sensibles, résultats agrégés, identifiant de corrélation, statut. RBAC : manager = sa société (isolation tenant) ; super-admin plateforme = tout (filtre ?company_id). Aucune donnée sensible (table whitelistée)."
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20, maximum: 100 }
+        - name: company_id
+          in: query
+          schema: { type: integer, description: "Super-admin uniquement — filtre par entreprise" }
+      responses:
+        "200":
+          description: "Calculs audités"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string, format: uuid }
+                        company_id: { type: integer }
+                        actor_id: { type: [integer, "null"] }
+                        actor_role: { type: [string, "null"] }
+                        country_code: { type: string }
+                        rules_version: { type: [string, "null"] }
+                        rules_period: { type: [string, "null"], format: date }
+                        correlation_id: { type: string, format: uuid }
+                        input_gross: { type: number }
+                        result_net: { type: [number, "null"] }
+                        result_total_cost: { type: [number, "null"] }
+                        result_income_tax: { type: [number, "null"] }
+                        status: { type: string, enum: [ok, error] }
+                        error_class: { type: [string, "null"] }
+                        created_at: { type: string, format: date-time }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
   /payroll/simulate:
     post:
       tags: ["Payroll Engine"]
@@ -8452,6 +8497,7 @@ paths:
                     type: object
                     properties:
                       country_code: { type: string }
+                      correlation_id: { type: string, description: "Identifiant de corrélation (audit #1874)" }
                       gross_salary: { type: number }
                       employee_contributions:
                         type: array

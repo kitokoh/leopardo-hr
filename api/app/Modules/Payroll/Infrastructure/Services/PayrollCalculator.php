@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesCo
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -231,7 +232,34 @@ class PayrollCalculator
             ]);
         });
 
+        // Issue #1874 — audit & observabilité : une ligne par run (pays,
+        // version des règles, période, totaux agrégés, corrélation).
+        $this->auditRun($run, $rulesVersion ?? null, $rulesPeriod ?? null);
+
         return $run->refresh();
+    }
+
+    /**
+     * Issue #1874 — enregistre l'audit d'un run de paie (une ligne par
+     * calcul). Entrées non sensibles uniquement (totaux agrégés) — aucun
+     * secret ni biométrie.
+     */
+    private function auditRun(PayrollRun $run, ?string $rulesVersion, ?string $rulesPeriod): void
+    {
+        app(PayrollCalculationAuditor::class)->record([
+            'company_id' => $run->company_id,
+            'actor_id' => null,
+            'actor_role' => 'system',
+            'country_code' => $run->country_code,
+            'rules_version' => $rulesVersion ?? $run->rules_version,
+            'rules_period' => $rulesPeriod ?? $run->period_start?->toDateString(),
+            'correlation_id' => PayrollCalculationAuditor::newCorrelationId(),
+            'input_gross' => (float) ($run->total_gross ?? 0.0),
+            'result_net' => (float) ($run->total_net ?? 0.0),
+            'result_total_cost' => (float) ($run->total_employer_cost ?? 0.0),
+            'result_income_tax' => null,
+            'status' => PayrollCalculationAudit::STATUS_OK,
+        ]);
     }
 
     /**
@@ -370,6 +398,10 @@ class PayrollCalculator
                 'calculated_at' => now(),
             ]);
         });
+
+        // Issue #1874 — audit & observabilité : une ligne par run (pays,
+        // version des règles, période, totaux agrégés, corrélation).
+        $this->auditRun($run, $rulesVersion ?? null, $rulesPeriod ?? null);
 
         return $run->refresh();
     }

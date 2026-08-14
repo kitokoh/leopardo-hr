@@ -331,6 +331,9 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab');
         Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults']);
         Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+        // Issue #1874 — audit & observabilité des calculs de paie (RBAC +
+        // isolation tenant via Policy).
+        Route::get('/payroll/calculations', [PayrollCalculationAuditController::class, 'index']);
 
         // Issue #1815 — cotisations sociales nationales (CRUD admin).
         Route::get('/social-contributions', [SocialContributionAdminController::class, 'index']);

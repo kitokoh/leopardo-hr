@@ -29,6 +29,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Recruitment\Domain\Models\Applicant;
@@ -48,6 +49,7 @@ use App\Policies\FeatureFlagPolicy;
 use App\Policies\InvoicePolicy;
 use App\Policies\LoanPolicy;
 use App\Policies\OnboardingPolicy;
+use App\Policies\PayrollCalculationAuditPolicy;
 use App\Policies\PayrollPolicy;
 use App\Policies\PublicHolidayPolicy;
 use App\Policies\RateValidationPolicy;
@@ -101,6 +103,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // Taux légaux & jours fériés (issue #1917 — Policies Laravel)
         Gate::policy(TaxSlab::class, TaxSlabPolicy::class);
+        Gate::policy(PayrollCalculationAudit::class, PayrollCalculationAuditPolicy::class);
         Gate::policy(SocialContribution::class, SocialContributionPolicy::class);
         Gate::policy(PublicHoliday::class, PublicHolidayPolicy::class);
         Gate::policy(TaxRateChangeLog::class, RateValidationPolicy::class);
