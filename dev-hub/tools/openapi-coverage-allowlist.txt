@@ -25,7 +25,14 @@ POST ai/voice/synthesize
 POST ai/voice/transcribe
 POST ai/workflows/prepare-payroll
 
-## api.php — 91 route(s)
+## api.php — 97 route(s)
+# Issue #1813 — workflow validation taux légaux : approbation/rejet platform admin (routes /platform/payroll/*)
+GET v1platformpayroll/social-contributions/pending
+GET v1platformpayroll/tax-slabs/pending
+PUT v1platformpayroll/social-contributions/{param}/approve
+PUT v1platformpayroll/social-contributions/{param}/reject
+PUT v1platformpayroll/tax-slabs/{param}/approve
+PUT v1platformpayroll/tax-slabs/{param}/reject
 # Auth/Core : webhooks fournisseurs entrants (stripe/chargily), endpoints onboarding/trial/i18n/health internes — exclusions documentées dans le gap doc
 DELETE v1platform/announcements/{param}
 DELETE v1platform/impersonations/{param}
@@ -283,8 +290,12 @@ POST /social-accounts/disconnect
 POST /social-posts
 POST /social-posts/{param}/publish
 
-## modules/payroll_engine.php — 10 route(s)
+## modules/payroll_engine.php — 14 route(s)
 # Payroll Engine : endpoints paie avancée — documentation prioritaire F-12/F-10
+GET /social-contributions/{param}/history
+PUT /social-contributions/{param}/submit
+GET /tax-slabs/{param}/history
+PUT /tax-slabs/{param}/submit
 GET /bank-exports/{param}
 GET /payroll-runs/{param}/bulk-pay/status
 GET /payroll-runs/{param}/export
