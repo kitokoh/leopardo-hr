@@ -94,7 +94,9 @@ class QueueObservabilityService
 
         try {
             $response = Redis::connection()->ping();
-            $ok = $response === true || $response === 'PONG' || $response === '+PONG';
+            // Issue #1768 : Predis retourne un objet Status (__toString 'PONG').
+            $ok = $response === true
+                || in_array(strtoupper((string) $response), ['PONG', '+PONG'], true);
 
             return [
                 'ok' => $ok,
