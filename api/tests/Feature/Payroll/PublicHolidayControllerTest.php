@@ -233,4 +233,118 @@ class PublicHolidayControllerTest extends TestCase
         $this->assertSame(20.0, $companyA); // 21 - pont du 09/11
         $this->assertSame(21.0, $companyB); // sans le pont
     }
+
+    // ── Issue #1937 : validation CRUD jours fériés ──────────────────────────
+
+    public function test_lowercase_country_code_is_normalized_to_uppercase(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $response = $this->postJson('/api/v1/admin/public-holidays', [
+            'country_code' => 'dz',
+            'name' => 'Fete nationale',
+            'date' => '2026-07-05',
+            'year' => 2026,
+            'is_recurring' => false,
+            'holiday_type' => 'fixed',
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertSame('DZ', $response->json('data.country_code'));
+    }
+
+    public function test_unsupported_country_code_rejected(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $this->postJson('/api/v1/admin/public-holidays', [
+            'country_code' => 'ZZ',
+            'name' => 'Jour inconnu',
+            'date' => '2026-05-01',
+            'year' => 2026,
+            'is_recurring' => false,
+            'holiday_type' => 'fixed',
+        ])->assertStatus(422);
+    }
+
+    public function test_year_mismatch_with_date_rejected(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $this->postJson('/api/v1/admin/public-holidays', [
+            'country_code' => 'DZ',
+            'name' => 'Mauvaise annee',
+            'date' => '2026-05-01',
+            'year' => 2025,
+            'is_recurring' => false,
+            'holiday_type' => 'fixed',
+        ])->assertStatus(422);
+    }
+
+    public function test_recurring_holiday_requires_month_day(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $this->postJson('/api/v1/admin/public-holidays', [
+            'country_code' => 'DZ',
+            'name' => 'Fete du travail',
+            'date' => '2026-05-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'holiday_type' => 'fixed',
+        ])->assertStatus(422);
+    }
+
+    public function test_recurring_month_day_must_match_date(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $this->postJson('/api/v1/admin/public-holidays', [
+            'country_code' => 'DZ',
+            'name' => 'Fete du travail',
+            'date' => '2026-05-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => '01-06',
+            'holiday_type' => 'fixed',
+        ])->assertStatus(422);
+    }
+
+    public function test_duplicate_holiday_rejected(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $payload = [
+            'country_code' => 'DZ',
+            'name' => 'Jour de l\'an',
+            'date' => '2026-01-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => '01-01',
+            'holiday_type' => 'fixed',
+        ];
+
+        $this->postJson('/api/v1/admin/public-holidays', $payload)->assertStatus(201);
+        $this->postJson('/api/v1/admin/public-holidays', $payload)->assertStatus(422);
+    }
+
+    public function test_duplicate_company_holiday_allowed_for_different_company(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $payload = [
+            'country_code' => 'DZ',
+            'name' => 'Jour special',
+            'date' => '2026-03-15',
+            'year' => 2026,
+            'is_recurring' => false,
+            'holiday_type' => 'custom',
+        ];
+
+        $this->postJson('/api/v1/admin/public-holidays', $payload)->assertStatus(201);
+
+        // Même jour pour la société A : autorisé (scope company différent).
+        Sanctum::actingAs($this->principalA);
+        $this->postJson('/api/v1/public-holidays', $payload)->assertStatus(201);
+    }
 }
