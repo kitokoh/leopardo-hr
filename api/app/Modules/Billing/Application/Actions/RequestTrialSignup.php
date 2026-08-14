@@ -142,7 +142,7 @@ class RequestTrialSignup
             CompanyRequest::query()->create([
                 'company_name' => trim($validated['company']),
                 'sector' => $this->mapRoleToSector($validated['role'] ?? null),
-                'country' => strtoupper(trim($validated['country'] ?? 'DZ')),
+                'country' => strtoupper(trim($validated['country'])),
                 'city' => 'Non précisé',
                 'manager_name' => $this->managerNameForCompanyRequest($validated, $email),
                 'manager_phone' => $validated['phone'] ?? null,
