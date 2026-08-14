@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
-use Illuminate\Support\Facades\Artisan;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\IslamicCalendarSeeder;
 use Database\Seeders\PublicHolidaySeeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -28,7 +28,7 @@ class PublicHolidayIslamicSeederTest extends TestCase
 
     public function test_public_holiday_seeder_populates_fixed_holidays_and_is_idempotent(): void
     {
-        (new PublicHolidaySeeder())->run();
+        (new PublicHolidaySeeder)->run();
 
         foreach (['DZ', 'CM', 'CI', 'SN'] as $countryCode) {
             $this->assertGreaterThan(
@@ -41,13 +41,13 @@ class PublicHolidayIslamicSeederTest extends TestCase
         $dzCount = PublicHoliday::where('country_code', 'DZ')->count();
 
         // Idempotence : un second run ne duplique rien.
-        (new PublicHolidaySeeder())->run();
+        (new PublicHolidaySeeder)->run();
         $this->assertSame($dzCount, PublicHoliday::where('country_code', 'DZ')->count());
     }
 
     public function test_islamic_calendar_seeder_populates_dates_and_is_idempotent(): void
     {
-        (new IslamicCalendarSeeder())->run();
+        (new IslamicCalendarSeeder)->run();
 
         $this->assertGreaterThan(
             0,
@@ -61,7 +61,7 @@ class PublicHolidayIslamicSeederTest extends TestCase
 
         $total = DB::table('islamic_calendar')->count();
 
-        (new IslamicCalendarSeeder())->run();
+        (new IslamicCalendarSeeder)->run();
         $this->assertSame($total, DB::table('islamic_calendar')->count());
     }
 
@@ -75,5 +75,61 @@ class PublicHolidayIslamicSeederTest extends TestCase
         // Après le seed de prod, les fériés et dates islamiques existent.
         $this->assertGreaterThan(0, PublicHoliday::count());
         $this->assertGreaterThan(0, DB::table('islamic_calendar')->count());
+    }
+
+    // ── Issue #1931 : pérennité des données islamiques 2028+ ──────────────
+
+    public function test_islamic_calendar_seeder_covers_2028_plus_with_all_keys(): void
+    {
+        (new IslamicCalendarSeeder)->run();
+
+        // 2028+ : aucune perte silencieuse des fériés islamiques (fallback
+        // working_days redevient actif sans ces lignes).
+        foreach ([2028, 2029, 2030, 2031, 2032, 2033] as $year) {
+            $keys = DB::table('islamic_calendar')
+                ->where('year', $year)
+                ->pluck('holiday_key')
+                ->all();
+
+            $this->assertContains('eid_al_fitr', $keys, "eid_al_fitr manquant en {$year}");
+            $this->assertContains('eid_al_adha', $keys, "eid_al_adha manquant en {$year}");
+            $this->assertContains('mawlid', $keys, "mawlid manquant en {$year}");
+        }
+    }
+
+    public function test_tahmarit_is_seeded_for_senegal_mapping(): void
+    {
+        (new IslamicCalendarSeeder)->run();
+
+        // Tahmarit (Tamkharit — 10 Muharram) est requis par le mapping SN
+        // (`config/islamic_holidays_map.php`) mais n'était jamais seedé.
+        $sn = DB::table('islamic_calendar')
+            ->where('holiday_key', 'tahmarit')
+            ->orderBy('year')
+            ->get();
+
+        $this->assertGreaterThan(0, $sn->count(), 'Aucune date tahmarit seedée');
+        $this->assertSame('2025-07-06', $sn->first()->gregorian_date);
+    }
+
+    public function test_all_country_mapping_keys_have_seeded_dates(): void
+    {
+        (new IslamicCalendarSeeder)->run();
+
+        $mappingKeys = collect(config('islamic_holidays_map.countries'))
+            ->flatMap(fn (array $holidays): array => array_keys($holidays))
+            ->unique()
+            ->values();
+
+        $seededKeys = DB::table('islamic_calendar')
+            ->distinct()
+            ->pluck('holiday_key');
+
+        foreach ($mappingKeys as $key) {
+            $this->assertTrue(
+                $seededKeys->contains($key),
+                "Aucune date seedée pour la fête du mapping pays : {$key}"
+            );
+        }
     }
 }
