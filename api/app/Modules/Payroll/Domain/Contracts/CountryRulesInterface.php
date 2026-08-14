@@ -29,7 +29,7 @@ interface CountryRulesInterface
      */
     public function withTaxSlabs(array $slabs): static;
 
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float;
+    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float;
 
     /**
      * Returns a clone of these rules scoped to a given tenant company, so

@@ -104,7 +104,7 @@ class PayrollSimulationController extends Controller
         }
 
         // L'impôt réel du pays (abattements DZ, etc.) prime sur la somme brute.
-        $incomeTax = $rules->calculateIncomeTax($taxBase);
+        $incomeTax = $rules->calculateIncomeTax($taxBase, 12, $gross);
         $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
         $totalCost = round($gross + $social['employer'], 2);
 
