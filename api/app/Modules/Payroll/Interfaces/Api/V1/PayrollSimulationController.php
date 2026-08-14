@@ -191,6 +191,17 @@ class PayrollSimulationController extends Controller
                 'correlation_id' => $correlationId,
                 'gross' => $gross,
                 'country_code' => $countryCode,
+                // Issue #1872 — conformité : niveau de confiance des règles
+                // pays + avertissement localisé + source légale + date de
+                // vérification experte (même structure que le contrat du
+                // PayrollCalculationPresenter, consommée par TaxSlabsView).
+                'compliance' => [
+                    'level' => $rules->confidenceLevel(),
+                    'warning' => $rules->complianceWarning(),
+                    'warning_key' => 'payroll.compliance_warning_'.$rules->confidenceLevel(),
+                    'source' => $rules->complianceSource(),
+                    'verification_date' => $rules->verificationDate(),
+                ],
                 'social_employee' => $social['employee'],
                 'social_employer' => $social['employer'],
                 'tax_base' => $taxBase,

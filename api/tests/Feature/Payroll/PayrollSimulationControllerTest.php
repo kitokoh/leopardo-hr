@@ -120,4 +120,26 @@ class PayrollSimulationControllerTest extends TestCase
             'gross_salary' => 60000,
         ])->assertStatus(401);
     }
+
+    public function test_simulate_exposes_compliance_contract(): void
+    {
+        // Issue #1872/#2112 — le contrat de simulation expose le bloc
+        // `compliance` (niveau de confiance, avertissement localisé, source,
+        // date de vérification experte) pour l'affichage admin TaxSlabsView.
+        Sanctum::actingAs($this->manager);
+
+        $this->postJson('/api/v1/payroll/simulate', [
+            'country_code' => 'DZ',
+            'gross_salary' => 60000,
+        ])->assertOk()
+            ->assertJsonPath('data.compliance.level', 'pilot')
+            ->assertJsonPath('data.compliance.warning_key', 'payroll.compliance_warning_pilot')
+            ->assertJsonStructure([
+                'data' => [
+                    'compliance' => [
+                        'level', 'warning', 'warning_key', 'source', 'verification_date',
+                    ],
+                ],
+            ]);
+    }
 }

@@ -52,8 +52,23 @@ class CotisationSimulationTest extends TestCase
                 'net_before_tax',
                 'net_salary',
                 'total_cost_employer',
+                'contract' => [
+                    'compliance' => [
+                        'level', 'warning', 'warning_key', 'source', 'verification_date',
+                    ],
+                ],
             ],
         ]);
+
+        // Issue #1872/#2112 — le contrat complet expose le bloc conformité
+        // (niveau de confiance + avertissement localisé + source + date de
+        // vérification experte), consommé par l'admin TaxSlabsView.
+        $this->assertSame('pilot', $response->json('data.contract.compliance.level'));
+        $this->assertSame(
+            'payroll.compliance_warning_pilot',
+            $response->json('data.contract.compliance.warning_key')
+        );
+        $this->assertNotEmpty($response->json('data.contract.compliance.warning'));
 
         /** @var array<string, mixed> $data */
         $data = $response->json('data');

@@ -421,5 +421,14 @@
   "socialContribCreated": "Contribution created.",
   "socialContribDeleted": "Contribution deleted.",
   "socialContribDeleteError": "Failed to delete.",
-  "socialContribDeleteConfirm": "Delete contribution \"{name}\"?"
+  "socialContribDeleteConfirm": "Delete contribution \"{name}\"?",
+  "payrollConfidenceLabel": "Payroll rules confidence",
+  "payrollConfidenceLevelProduction": "Production",
+  "payrollConfidenceLevelPilot": "Pilot",
+  "payrollConfidenceLevelPlaceholder": "Placeholder",
+  "payrollConfidenceLevelUnknown": "Unknown",
+  "payrollConfidenceProductionMessage": "Rules validated and used in production for {country}. Always confirm current rates with a local advisor before relying on these amounts for statutory filings.",
+  "payrollConfidencePilotMessage": "Pilot rules for {country}: amounts based on general public references (labor code) but not yet legally validated locally. Confirm with a local legal or tax advisor before relying on these figures (tax brackets, social contributions, overtime thresholds) for your statutory obligations.",
+  "payrollConfidencePlaceholderMessage": "Placeholder without values for {country}: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced.",
+  "payrollConfidenceUnknownMessage": "No payroll rules are available for {country}: payroll calculation is not available for this country."
 }
