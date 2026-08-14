@@ -31,10 +31,31 @@ use Illuminate\Support\Facades\Schema;
  */
 return new class extends Migration
 {
+    /**
+     * Idempotence (issue #1962) : le fichier a été RENOMMÉ
+     * (2026_07_23_000003 → 000006) après avoir été exécuté sur les
+     * environnements existants. Laravel indexe les migrations par basename :
+     * au prochain déploiement, ce nouveau nom sera re-joué. Sans garde, le
+     * `dropUnique('social_contributions_code_unique')` échoue en 42704
+     * (contrainte déjà supprimée au 1er run) et le conteneur ne boote pas
+     * (docker-entrypoint.sh). On court-circuite si l'index cible existe déjà.
+     */
+    private function targetIndexExists(string $schema, string $indexName): bool
+    {
+        return \Illuminate\Support\Facades\DB::selectOne(
+            'SELECT 1 FROM pg_indexes WHERE schemaname = ? AND tablename = ? AND indexname = ?',
+            [$schema, 'social_contributions', $indexName]
+        ) !== null;
+    }
+
     public function up(): void
     {
         $schema = resolveTableSchema('social_contributions');
         if ($schema === null) {
+            return;
+        }
+
+        if ($this->targetIndexExists($schema, 'social_contributions_company_code_effective_unique')) {
             return;
         }
 
@@ -48,6 +69,10 @@ return new class extends Migration
     {
         $schema = resolveTableSchema('social_contributions');
         if ($schema === null) {
+            return;
+        }
+
+        if ($this->targetIndexExists($schema, 'social_contributions_code_unique')) {
             return;
         }
 
