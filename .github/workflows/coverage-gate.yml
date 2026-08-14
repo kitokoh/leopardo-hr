@@ -16,8 +16,7 @@ on:
   # Push main : ce check est REQUIS par la protection de branche — sans ce
   # trigger, les pushes directs sur main (pattern admin merge lead) ne font
   # jamais tourner « Backend Coverage (PHP 8.4 + PostgreSQL 16) » → GitHub
-  # traite le check requis comme pending à vie (même piège que PA2-OPS-003
-  # sur les paths filters) et main n'est jamais « vert ».
+  # traite le check requis comme pending à vie et main n'est jamais « vert ».
   push:
     branches: [main]
   merge_group:
