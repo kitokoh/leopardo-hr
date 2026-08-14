@@ -581,7 +581,7 @@ class LeopardoClient:
         return self.request("GET", "/contracts/expiring", **kwargs)
 
     def simulatecotisations(self, **kwargs):
-        """Simuler les cotisations sociales employe/employeur pour un salaire brut donne, sans persister (manager)"""
+        """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
 
     def get_dashboard_kpi(self, **kwargs):

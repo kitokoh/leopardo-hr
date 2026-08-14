@@ -22,7 +22,7 @@ interface CountryRulesInterface
      */
     public function taxSlabs(): array;
 
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis): float;
+    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float;
 
     /**
      * @return array{employee: float, employer: float}

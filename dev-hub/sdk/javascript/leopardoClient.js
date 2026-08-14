@@ -700,7 +700,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/contracts/expiring", options);
     },
 
-    /** Simuler les cotisations sociales employe/employeur pour un salaire brut donne, sans persister (manager) */
+    /** Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager) */
     simulateCotisations(options = {}) {
       return request("POST", "/cotisation-simulation", options);
     },
