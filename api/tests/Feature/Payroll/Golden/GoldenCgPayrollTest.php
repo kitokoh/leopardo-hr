@@ -63,6 +63,9 @@ class GoldenCgPayrollTest extends TestCase
         $this->assertSame(1105446.67, $this->cg()->calculateIncomeTax(2900000.0));
     }
 
+    /**
+     * @return array<string, array{float, float, float, float}>
+     */
     public static function prorataProvider(): array
     {
         return [

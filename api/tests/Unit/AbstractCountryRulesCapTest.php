@@ -61,13 +61,15 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CemacPayrollRules)->forMemberCountry('CM');
 
-        // Brut 2 000 000 XAF > plafond 750 000 → assiette 750 000 :
+        // Brut 2 000 000 XAF > plafond 750 000 → vieillesse/famille assises
+        // sur 750 000 ; AT (2 %) non plafonné sur le brut complet (#1821) :
         //   salariale : 750 000 × 4,2 % = 31 500,00
-        //   patronale : 750 000 × 16,2 % = 121 500,00
+        //   patronale : 750 000 × (4,2 % + 7,0 %) + 2 000 000 × 2,0 %
+        //             = 84 000,00 + 40 000,00 = 124 000,00
         $charges = $rules->calculateSocialCharges(2000000.0);
 
         $this->assertSame(31500.0, $charges['employee']);
-        $this->assertSame(121500.0, $charges['employer']);
+        $this->assertSame(124000.0, $charges['employer']);
     }
 
     public function test_other_cemac_members_keep_uncapped_placeholder(): void

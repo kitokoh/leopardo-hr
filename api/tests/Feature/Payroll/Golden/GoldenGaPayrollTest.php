@@ -64,6 +64,9 @@ class GoldenGaPayrollTest extends TestCase
         $this->assertSame(1059666.67, $this->ga()->calculateIncomeTax(3425000.0));
     }
 
+    /**
+     * @return array<string, array{float, float, float, float}>
+     */
     public static function prorataProvider(): array
     {
         return [
