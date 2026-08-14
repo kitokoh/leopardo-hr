@@ -33,6 +33,9 @@ class PublicHolidayControllerTest extends TestCase
     {
         parent::setUp();
 
+        // Purge du cache entre les tests (le service cache par pays/année).
+        Cache::flush();
+
         /** @var Company $companyA */
         $companyA = Company::factory()->create();
         $this->companyA = $companyA;

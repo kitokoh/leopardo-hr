@@ -31,6 +31,11 @@ class PayrollCalculatorCoverageTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Purge du cache jours fériés entre les tests (service caché par
+        // pays/année ; sans flush, un test polluerait les suivants).
+        Cache::flush();
+
         $this->calculator = new PayrollCalculator;
     }
 

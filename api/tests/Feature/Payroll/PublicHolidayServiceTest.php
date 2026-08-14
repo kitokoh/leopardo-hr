@@ -19,6 +19,16 @@ class PublicHolidayServiceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Le service cache par pays/année (Redis en CI) : purger le cache
+        // entre les tests pour éviter qu'un jeu de fériés d'un test ne
+        // pollue les assertions du suivant (clés identiques DZ/2026).
+        Cache::flush();
+    }
+
     private function service(): PublicHolidayService
     {
         return new PublicHolidayService(Cache::store());
