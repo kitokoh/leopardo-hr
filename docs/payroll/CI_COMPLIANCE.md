@@ -48,10 +48,27 @@ pour le membre CI — CGI art. 119 bis, ord. 2023-718/719) :
 
 `calculateIncomeTax()` applique le barème progressif mensuel directement sur
 le **brut** (bornes inclusives, même mécanique que le moteur). La **RICF**
-(réduction d'impôt pour charges de famille, art. 120 : 5 500–44 000 XOF/mois
-selon le nombre de parts) n'est **pas encore appliquée** — les données
-familiales (parts) ne sont pas portées par le moteur ; défaut 0
-(célibataire, 1 part). À compléter quand les données employé le permettront.
+(réduction d'impôt pour charges de famille, art. 120) est **appliquée** depuis
+#2117 : imputable sur l'ITS brut, barème mensuel par **parts fiscales**
+(`withFamilyParts()`, défaut 1 = célibataire sans enfant, max 5 parts) :
+
+| Parts | Réduction mensuelle (XOF) |
+|---|---|
+| 1 | 0 |
+| 1,5 | 5 500 |
+| 2 | 11 000 |
+| 2,5 | 16 500 |
+| 3 | 22 000 |
+| 3,5 | 27 500 |
+| 4 | 33 000 |
+| 4,5 | 38 500 |
+| 5 | 44 000 |
+
+Nombre de parts (art. 120, 2°) : 1 part célibataire/divorcé/veuf sans enfant ·
+2 parts marié sans enfant ou célibataire avec 1 enfant · +0,5 part par enfant
+à charge (marié/veuf) · max 5 parts. La réduction ne peut pas rendre l'ITS
+négatif (plancher 0). Défaut moteur : 1 part → aucune réduction →
+comportement historique inchangé.
 ⚠️ Pour CI, `calculateIncomeTax()` retourne **l'ITS seul** ; la CN n'existe
 plus (abolie, §3).
 

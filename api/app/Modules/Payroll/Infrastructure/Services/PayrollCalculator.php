@@ -488,7 +488,12 @@ class PayrollCalculator
         string $rulesIdentifier,
         string $rulesPeriod
     ): PaySlip {
-        $values = $this->computeSlipValues($run, $employee, $structure, $rules);
+        // Issue #2117 — parts fiscales / charges de famille portées par
+        // l'employé (colonnes `family_parts`, défaut 1). Appliquées aux
+        // règles pays pour les réductions d'impôt familiales (CI — RICF
+        // art. 120 CGI). Sans effet sur les pays qui n'en ont pas.
+        $familyParts = $employee->family_parts !== null ? (float) $employee->family_parts : 1.0;
+        $values = $this->computeSlipValues($run, $employee, $structure, $rules->withFamilyParts($familyParts));
 
         /** @var PaySlip $slip */
         $slip = PaySlip::create([

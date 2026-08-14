@@ -217,8 +217,27 @@ class CedeaoPayrollRules extends AbstractCountryRules
         // Le moteur passe $grossForAbatement = brut réel (défaut :
         // $grossTaxable) ; le barème mensuel s'applique tel quel.
         $monthlyBase = max(0.0, $grossForAbatement ?? $grossTaxable);
+        $its = round($this->calculateProgressiveTax($monthlyBase, $this->taxSlabs()), 2);
 
-        return round($this->calculateProgressiveTax($monthlyBase, $this->taxSlabs()), 2);
+        // CI (#2117, CGI art. 120) : RICF — réduction d'impôt pour charges
+        // de famille, imputable sur l'ITS brut. Barème mensuel par parts
+        // (max 5 parts légales) :
+        //   1 part → 0 · 1,5 → 5 500 · 2 → 11 000 · 2,5 → 16 500 ·
+        //   3 → 22 000 · 3,5 → 27 500 · 4 → 33 000 · 4,5 → 38 500 ·
+        //   5 → 44 000 (XOF/mois)
+        // La réduction ne peut pas rendre l'impôt négatif (plancher 0).
+        // Défaut : 1 part (célibataire) → aucune réduction → comportement
+        // historique inchangé.
+        if ($this->familyParts() > 1.0) {
+            $parts = min(5.0, $this->familyParts());
+            // Chaque demi-part au-delà de 1 = 5 500 XOF/mois →
+            // réduction = (parts − 1) × 11 000 (bornes 0 / 44 000).
+            $ricf = ($parts - 1.0) * 11000.0;
+
+            return round(max(0.0, $its - $ricf), 2);
+        }
+
+        return $its;
     }
 
     /**

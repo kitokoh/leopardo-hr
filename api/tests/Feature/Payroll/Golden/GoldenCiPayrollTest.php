@@ -303,6 +303,66 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertNull($abatement['cap']);
     }
 
+    public function test_golden_ci_ricf_2_parts_200000(): void
+    {
+        // Calcul manuel (CI_COMPLIANCE.md §1, RICF art. 120) — brut 200 000,
+        // 2 parts (marié sans enfant) :
+        //   ITS brut = progressif mensuel sur 200 000 :
+        //     0–75 000 : 0 · 75 001–240 000 : 125 000 × 16 % = 20 000
+        //   RICF 2 parts = 11 000 XOF/mois
+        //   ITS net = 20 000 − 11 000 = 9 000,00
+        $rules = $this->rules()->withFamilyParts(2.0);
+
+        $this->assertSame(2.0, $rules->familyParts());
+        $this->assertSame(9000.0, $rules->calculateIncomeTax(200000.0, 12, 200000.0));
+    }
+
+    public function test_golden_ci_ricf_3_parts_300000(): void
+    {
+        // Calcul manuel (CI_COMPLIANCE.md §1, RICF art. 120) — brut 300 000,
+        // 3 parts (marié, 2 enfants) :
+        //   ITS brut = 0 · 165 000 × 16 % = 26 400 · 60 000 × 21 % = 12 600
+        //     → 39 000,00
+        //   RICF 3 parts = 22 000 XOF/mois
+        //   ITS net = 39 000 − 22 000 = 17 000,00
+        $rules = $this->rules()->withFamilyParts(3.0);
+
+        $this->assertSame(17000.0, $rules->calculateIncomeTax(300000.0, 12, 300000.0));
+    }
+
+    public function test_golden_ci_ricf_5_parts_300000(): void
+    {
+        // Calcul manuel (CI_COMPLIANCE.md §1, RICF art. 120) — brut 300 000,
+        // 5 parts (maximum légal) :
+        //   ITS brut = 39 000,00 · RICF 5 parts = 44 000 XOF/mois
+        //   ITS net = max(0, 39 000 − 44 000) = 0,00 (plancher 0)
+        $rules = $this->rules()->withFamilyParts(5.0);
+
+        $this->assertSame(0.0, $rules->calculateIncomeTax(300000.0, 12, 300000.0));
+    }
+
+    public function test_golden_ci_ricf_default_1_part_unchanged(): void
+    {
+        // Calcul manuel (CI_COMPLIANCE.md §1) — défaut moteur 1 part
+        // (célibataire) : aucune réduction → comportement historique.
+        // Brut 300 000 → ITS brut = 39 000,00 (sans RICF).
+        $rules = $this->rules();
+
+        $this->assertSame(1.0, $rules->familyParts());
+        $this->assertSame(39000.0, $rules->calculateIncomeTax(300000.0, 12, 300000.0));
+    }
+
+    public function test_golden_ci_ricf_does_not_apply_to_other_members(): void
+    {
+        // La RICF est spécifique CI (art. 120 CGI CI) — les autres membres
+        // CEDEAO ne l'appliquent pas (familyParts() reste disponible mais
+        // sans effet sur calculateIncomeTax, comportement inchangé).
+        $bf = (new CedeaoPayrollRules)->forMemberCountry('BF')->withFamilyParts(3.0);
+
+        $this->assertSame(3.0, $bf->familyParts());
+        $this->assertSame(0.0, $bf->calculateIncomeTax(600000 / 12)); // BF : tranche 0 % sur 50 000 mensuel
+    }
+
     public function test_golden_ci_flat_tax_label(): void
     {
         // Calcul manuel (#1918) : la CN abolie → la CI n'a plus de libellé
@@ -311,7 +371,6 @@ class GoldenCiPayrollTest extends TestCase
 
         $this->assertSame('Taxe de minimum fiscal', $rules->flatPayrollTaxLabel());
     }
-
     public function test_golden_ci_minimum_wage_smig(): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §3) : SMIG 75 000 XOF/mois.

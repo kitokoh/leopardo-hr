@@ -25,6 +25,13 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     private bool $capsEnabled = true;
 
     /**
+     * Issue #2117 — parts fiscales / charges de famille (défaut 1 part =
+     * célibataire sans enfant). Utilisées par les pays qui appliquent une
+     * réduction d'impôt familiale (CI — RICF art. 120 CGI, SN — art. 73).
+     */
+    private float $familyParts = 1.0;
+
+    /**
      * Point in time used to resolve which TaxSlab/SocialContribution rows are
      * "effective" (PA2-ARCH-004: country rates/tables are associated with an
      * effective date so a past payroll run can be recalculated for audit
@@ -140,6 +147,23 @@ abstract class AbstractCountryRules implements CountryRulesInterface
         $this->capsEnabled = $enabled;
 
         return $this;
+    }
+
+    /**
+     * Issue #2117 — setter fluide des parts fiscales (défaut 1.0). Le
+     * plafonnement légal par pays est appliqué dans la règle pays (ex.
+     * RICF CI : max 5 parts), pas ici — le moteur stocke la valeur brute.
+     */
+    public function withFamilyParts(float $parts): static
+    {
+        $this->familyParts = max(1.0, $parts);
+
+        return $this;
+    }
+
+    public function familyParts(): float
+    {
+        return $this->familyParts;
     }
 
     public function withTaxSlabs(array $slabs): static

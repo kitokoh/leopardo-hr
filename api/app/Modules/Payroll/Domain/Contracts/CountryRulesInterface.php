@@ -36,6 +36,23 @@ interface CountryRulesInterface
      */
     public function withCapsEnabled(bool $enabled): static;
 
+    /**
+     * Issue #2117 — parts fiscales / charges de famille portées par le
+     * moteur (défaut : 1 part = célibataire sans enfant). Certains pays
+     * (CI — RICF art. 120 CGI) appliquent une réduction d'impôt calculée
+     * sur le nombre de parts ; d'autres (SN — charges de famille art. 73
+     * CGI) pourront l'utiliser pour la même mécanique. Setter fluide
+     * (même pattern que withTaxSlabs/withCapsEnabled), non persistant.
+     */
+    public function withFamilyParts(float $parts): static;
+
+    /**
+     * Issue #2117 — nombre de parts fiscales effectif de l'employé
+     * (défaut 1.0). Plafonné à la valeur légale du pays lors de
+     * l'application de la réduction (ex. 5 parts max pour la RICF CI).
+     */
+    public function familyParts(): float;
+
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float;
 
     /**
