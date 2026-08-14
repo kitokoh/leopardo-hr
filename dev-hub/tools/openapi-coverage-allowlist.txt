@@ -376,3 +376,17 @@ GET v1admin/public-holidays
 POST v1admin/public-holidays
 PUT v1admin/public-holidays/{param}
 DELETE v1admin/public-holidays/{param}
+GET v1admin/rate-validation/pending
+PUT v1admin/rate-validation/{param}/{param}/approve
+PUT v1admin/rate-validation/{param}/{param}/reject
+GET v1admin/tax-slabs
+POST v1admin/tax-slabs
+PUT v1admin/tax-slabs/{param}
+DELETE v1admin/tax-slabs/{param}
+POST v1admin/tax-slabs/reset-defaults
+POST v1admin/payroll/simulate
+POST v1payroll/simulate
+GET v1admin/social-contributions
+POST v1admin/social-contributions
+PUT v1admin/social-contributions/{param}
+DELETE v1admin/social-contributions/{param}

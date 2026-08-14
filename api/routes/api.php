@@ -19,6 +19,10 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
@@ -302,5 +306,27 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
         Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
         Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
+
+        // Issue #1814 — barèmes fiscaux nationaux (CRUD admin) + simulation.
+        Route::get('/tax-slabs', [TaxSlabAdminController::class, 'index']);
+        Route::post('/tax-slabs', [TaxSlabAdminController::class, 'store']);
+        Route::put('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'update'])->whereNumber('taxSlab');
+        Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab');
+        Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults']);
+        Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+
+        // Issue #1815 — cotisations sociales nationales (CRUD admin).
+        Route::get('/social-contributions', [SocialContributionAdminController::class, 'index']);
+        Route::post('/social-contributions', [SocialContributionAdminController::class, 'store']);
+        Route::put('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'update'])->whereNumber('socialContribution');
+        Route::delete('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'destroy'])->whereNumber('socialContribution');
+
+        // Issue #1813 — validation des modifications de taux légaux
+        // (approbation/rejet réservés au platform_admin).
+        Route::get('/rate-validation/pending', [RateValidationAdminController::class, 'pending']);
+        Route::put('/rate-validation/{table}/{id}/approve', [RateValidationAdminController::class, 'approve'])
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
+        Route::put('/rate-validation/{table}/{id}/reject', [RateValidationAdminController::class, 'reject'])
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
     });
 });
