@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PayrollCalculator
 {
@@ -824,13 +825,29 @@ class PayrollCalculator
                     ->whereNotIn('status', ['absent', 'leave', 'holiday', 'incomplete'])
                     ->distinct('date')
                     ->count('date');
-            } catch (QueryException) {
+            } catch (QueryException $e) {
                 // Garde défensive : table partiellement migrée ou supprimée
                 // entre la vérification et la requête → repli sur le prorata
                 // (comportement historique pour les environnements sans
-                // migration tenant, ex. golden tests purs).
+                // migration tenant, ex. golden tests purs). #2025 : le repli
+                // n'est plus silencieux — journalisé pour observabilité.
+                Log::warning('computeWorkedDays: repli prorata — requête attendance_logs en échec', [
+                    'company_id' => $run->company_id,
+                    'employee_id' => $employee->id,
+                    'period_start' => $run->period_start->toDateString(),
+                    'period_end' => $run->period_end->toDateString(),
+                    'error' => $e->getMessage(),
+                ]);
                 $distinctDays = 0;
             }
+        } else {
+            // #2025 : table absente du search_path (CI : shared_tenants,public
+            // vs local : public,shared_tenants — CONVENTIONS §2.6/#1613) →
+            // repli prorata historique, désormais journalisé.
+            Log::warning('computeWorkedDays: repli prorata — table attendance_logs absente du search_path', [
+                'company_id' => $run->company_id,
+                'employee_id' => $employee->id,
+            ]);
         }
 
         $hasAttendanceData = $distinctDays > 0;
