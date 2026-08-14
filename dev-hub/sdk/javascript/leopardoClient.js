@@ -188,6 +188,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Confirmer toutes les dates islamiques d'une année (super-admin) */
     confirmIslamicCalendarYear(options = {}) {
       return request("POST", "/admin/islamic-calendar/confirm-year/{year}", options);
+    },
+
     /** Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814 */
     simulatePayrollAdmin(options = {}) {
       return request("POST", "/admin/payroll/simulate", options);
@@ -221,6 +223,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un jour férié (super-admin) */
     updatePublicHolidayAdmin(options = {}) {
       return request("PUT", "/admin/public-holidays/{publicHoliday}", options);
+    },
+
     /** Approuver une modification de taux (platform_admin) — issue #1813 */
     approveRateValidation(options = {}) {
       return request("PUT", "/admin/rate-validation/{table}/{id}/approve", options);
@@ -1276,6 +1280,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/me/pay-slips/{paySlip}", options);
     },
 
+    /** URL de telechargement de mon bulletin archive dans le Cabinet */
+    archivedMyPaySlipDocument(options = {}) {
+      return request("GET", "/me/pay-slips/{paySlip}/document", options);
+    },
+
     /** Telecharger un de mes bulletins de paie en PDF */
     downloadMyPaySlipPdf(options = {}) {
       return request("GET", "/me/pay-slips/{paySlip}/pdf", options);
@@ -1471,6 +1480,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payroll-runs/{payrollRun}/cancel", options);
     },
 
+    /** Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823) */
+    downloadCnpsCmDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", options);
+    },
+
+    /** Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830) */
+    downloadCnssCiDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", options);
+    },
+
+    /** Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830) */
+    downloadIpresSnDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/ipres-sn", options);
+    },
+
     /** Journal de paie mensuel CSV (F-10) */
     getPayrollRunsByPayrollRunJournal(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/journal", options);
@@ -1489,6 +1513,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Documents de paiement d'un cycle paie */
     getPayrollRunsByPayrollRunPaymentDocuments(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/payment-documents", options);
+    },
+
+    /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
+    listPayrollRunRegularizations(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/regularizations", options);
+    },
+
+    /** Créer un run de régularisation (DZ-DEPTH #1818) */
+    regularizePayrollRun(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/regularize", options);
     },
 
     /** Resume de la session de paie */
@@ -2064,6 +2098,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Statut SSO de l'entreprise */
     getSsoStatus(options = {}) {
       return request("GET", "/sso/status", options);
+    },
+
+    /** Registre des pays supportes */
+    listSupportedCountries(options = {}) {
+      return request("GET", "/supported-countries", options);
     },
 
     /** Lister les taches */

@@ -6,10 +6,10 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
-use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -63,6 +63,54 @@ class PayrollCalculator
     public function rulesResolver(): CountryRulesResolver
     {
         return $this->resolver;
+    }
+
+    /**
+     * Issue #1869 — noyau de calcul commun à la simulation et au bulletin.
+     *
+     * C'est l'UNIQUE endroit qui assemble cotisations salariales, assiette
+     * imposable, impôt sur le revenu, taxe de minimum fiscal (TRIMF/minimum
+     * fiscal), net et coût employeur à partir des règles pays. La simulation
+     * (CotisationSimulationController) et PayrollCalculator::calculateSlip()
+     * passent par cette méthode : mêmes appels métier → mêmes montants pour
+     * un même brut et un même contexte de règles (critère « la simulation et
+     * le bulletin produisent les mêmes résultats pour un cas identique »).
+     *
+     * Politique d'arrondi (documentée docs/payroll/CALCULATION_CONTRACT.md) :
+     * l'impôt est calculé sur l'assiette NON arrondie (brut − cotisations,
+     * comme le bulletin) ; seuls les montants exposés sont arrondis à 2
+     * décimales (demi au plus proche) ; le net a un plancher à 0.
+     *
+     * @return array{
+     *     social: array{employee: float, employer: float},
+     *     taxable_gross: float,
+     *     income_tax: float,
+     *     bracket_tax: float,
+     *     base_deductions: float,
+     *     net_salary: float,
+     *     total_cost: float,
+     * }
+     */
+    public function computeNetBreakdown(float $grossEarnings, CountryRulesContract $rules): array
+    {
+        $social = $rules->calculateSocialCharges($grossEarnings);
+        $taxableGross = $grossEarnings - $social['employee'];
+        // Même appel que calculateSlip() : le 3e argument (grossForAbatement)
+        // porte le brut réel aux règles qui en ont besoin (CM #1821).
+        $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
+        $bracketTax = $rules->calculateBracketTax($grossEarnings);
+
+        $baseDeductions = $social['employee'] + $incomeTax + $bracketTax;
+
+        return [
+            'social' => $social,
+            'taxable_gross' => $taxableGross,
+            'income_tax' => $incomeTax,
+            'bracket_tax' => $bracketTax,
+            'base_deductions' => $baseDeductions,
+            'net_salary' => round(max(0.0, $grossEarnings - $baseDeductions), 2),
+            'total_cost' => round($grossEarnings + $social['employer'], 2),
+        ];
     }
 
     public function calculateRun(PayrollRun $run): PayrollRun
@@ -298,8 +346,13 @@ class PayrollCalculator
             ];
         }
 
-        /** @var array{employee: float, employer: float} $social */
-        $social = $rules->calculateSocialCharges($grossEarnings);
+        // Issue #1869 — noyau de calcul commun simulation/bulletin : les
+        // mêmes appels métier (calculateSocialCharges, calculateIncomeTax,
+        // calculateBracketTax) servent la simulation ET le bulletin, garantie
+        // que les deux produisent exactement les mêmes montants pour un même
+        // brut et un même contexte de règles.
+        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules);
+        $social = $breakdown['social'];
 
         $lines[] = [
             'name' => 'Cotisations salariales',
@@ -310,15 +363,12 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
-        $taxableGross = $grossEarnings - $social['employee'];
-        $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
-
         $lines[] = [
             'name' => 'Impot sur le revenu',
             'type' => 'deduction',
-            'base_amount' => $taxableGross,
+            'base_amount' => $breakdown['taxable_gross'],
             'rate' => null,
-            'amount' => $incomeTax,
+            'amount' => $breakdown['income_tax'],
             'order' => $order++,
         ];
 
@@ -328,10 +378,11 @@ class PayrollCalculator
         // déductions totales via la boucle générique ci-dessous. Le libellé
         // de ligne est fourni par la règle pays (CI #1825 : « Contribution
         // Nationale (CN) » au lieu de « Taxe de minimum fiscal »).
-        $bracketTax = $rules->calculateBracketTax($grossEarnings);
+        $bracketTax = $breakdown['bracket_tax'];
+        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
         if ($bracketTax > 0.0) {
             $lines[] = [
-                'name' => $rules->flatPayrollTaxLabel(),
+                'name' => $bracketTaxLabel,
                 'type' => 'deduction',
                 'base_amount' => $grossEarnings,
                 'rate' => null,
@@ -366,15 +417,24 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
-        $totalDeductions = $social['employee'] + $incomeTax;
+        // Déductions totales = base commune (cotisations salariales + impôt +
+        // taxe de minimum fiscal) + composants de déduction personnalisés.
+        // La boucle exclut les lignes déjà comptées dans la base (la taxe
+        // forfaitaire par son libellé RÉEL — « Taxe de minimum fiscal » ou
+        // « Contribution Nationale (CN) » pour CI #1825 — sinon double
+        // déduction sur les bulletins CI).
+        $totalDeductions = $breakdown['base_deductions'];
         foreach ($lines as $line) {
-            if ($line['type'] === 'deduction' && $line['name'] !== 'Cotisations salariales' && $line['name'] !== 'Impot sur le revenu') {
+            if ($line['type'] === 'deduction'
+                && $line['name'] !== 'Cotisations salariales'
+                && $line['name'] !== 'Impot sur le revenu'
+                && $line['name'] !== $bracketTaxLabel) {
                 $totalDeductions += $line['amount'];
             }
         }
 
         $netSalary = round(max(0, $grossEarnings - $totalDeductions), 2);
-        $totalCost = round($grossEarnings + $social['employer'], 2);
+        $totalCost = $breakdown['total_cost'];
 
         /** @var PaySlip $slip */
         $slip = PaySlip::create([
