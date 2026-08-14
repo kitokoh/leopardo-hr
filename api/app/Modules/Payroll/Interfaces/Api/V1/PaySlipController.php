@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -205,6 +206,47 @@ class PaySlipController extends Controller
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    /**
+     * F-09/#1548 (#1817) — URL de téléchargement du bulletin archivé dans le
+     * Cabinet employé (document_type='payslip', lecture seule). Retourne le
+     * lien vers la route Cabinet canonique de l'employé, qui vérifie
+     * l'ownership (employee_id) avant de servir le fichier.
+     */
+    public function archivedDocument(Request $request, PaySlip $paySlip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($paySlip->employee_id !== $actor->id || $paySlip->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        /** @var CabinetDocument|null $document */
+        $document = CabinetDocument::query()
+            ->where('pay_slip_id', $paySlip->id)
+            ->where('document_type', 'payslip')
+            ->where('employee_id', $actor->id)
+            ->first();
+
+        if ($document === null) {
+            abort(404);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.archived_document', $paySlip, [
+            'scope' => 'self_service',
+            'cabinet_document_id' => $document->id,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'document_id' => $document->id,
+                'name' => $document->name,
+                'read_only' => $document->read_only,
+                'download_url' => '/api/v1/cabinet/documents/'.$document->id.'/download',
+            ],
         ]);
     }
 

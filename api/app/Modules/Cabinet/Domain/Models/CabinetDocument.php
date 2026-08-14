@@ -22,6 +22,9 @@ use Illuminate\Support\Carbon;
  * @property string $disk
  * @property string $path
  * @property string|null $notes
+ * @property bool $read_only
+ * @property string|null $document_type
+ * @property int|null $pay_slip_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
@@ -41,12 +44,17 @@ class CabinetDocument extends Model
         'disk',
         'path',
         'notes',
+        'read_only',
+        'document_type',
+        'pay_slip_id',
     ];
 
     protected $casts = [
         'company_id' => 'integer',
         'employee_id' => 'integer',
         'size' => 'integer',
+        'read_only' => 'boolean',
+        'pay_slip_id' => 'integer',
     ];
 
     /**
@@ -63,6 +71,16 @@ class CabinetDocument extends Model
     public function folder(): BelongsTo
     {
         return $this->belongsTo(CabinetFolder::class, 'folder_id');
+    }
+
+    /**
+     * Bulletin de paie source de l'archivage (document_type = 'payslip').
+     *
+     * @return BelongsTo<\App\Modules\Payroll\Domain\Models\PaySlip, $this>
+     */
+    public function paySlip(): BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Payroll\Domain\Models\PaySlip::class, 'pay_slip_id');
     }
 
     /**

@@ -9,7 +9,9 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Jobs\ArchivePaySlipsToCabinetJob;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Programme FOCUS — F-11 : clôture de paie en 2 étapes + verrouillage + audit.
@@ -105,7 +107,7 @@ class PayrollClosingService
         // Issue #1767 : interdire la clôture comptable d'un run à 0 bulletin.
         $this->assertHasPaySlips($run);
 
-        return DB::transaction(function () use ($run, $validator): PayrollRun {
+        $locked = DB::transaction(function () use ($run, $validator): PayrollRun {
             $updated = PayrollRun::query()
                 ->whereKey($run->id)
                 ->where('status', PayrollRun::STATUS_VALIDATED)
@@ -137,6 +139,27 @@ class PayrollClosingService
 
             return $run;
         });
+
+        // F-09/#1548 (#1817) : archivage Cabinet des bulletins, après commit.
+        $this->dispatchCabinetArchive($locked);
+
+        return $locked;
+    }
+
+    /**
+     * F-09/#1548 (#1817) — archive automatiquement les bulletins PDF du run
+     * dans le Cabinet de chaque employé. Dispatched APRÈS le commit de la
+     * transaction de verrouillage (le job doit voir le run `locked`), et en
+     * mode non bloquant : un échec de dispatch (queue indisponible) ne doit
+     * jamais faire échouer la clôture comptable.
+     */
+    private function dispatchCabinetArchive(PayrollRun $run): void
+    {
+        try {
+            ArchivePaySlipsToCabinetJob::dispatch($run->id);
+        } catch (\Throwable $e) {
+            Log::warning("payroll lock ok, archive dispatch failed for run #{$run->id}: {$e->getMessage()}");
+        }
     }
 
     /**

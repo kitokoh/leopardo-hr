@@ -95,6 +95,12 @@ class CabinetDocumentController extends Controller
     {
         $this->authorizeOwnership($request, $cabinetDocument);
 
+        // F-09/#1548 (#1817) : un document archivé en lecture seule (ex.
+        // bulletin de paie) ne peut pas être supprimé par l'employé.
+        if ($cabinetDocument->read_only) {
+            abort(403, 'Ce document est en lecture seule (archivé) et ne peut pas être supprimé.');
+        }
+
         $this->cabinetService->deleteDocument($cabinetDocument);
 
         return response()->json(null, 204);
