@@ -372,3 +372,6 @@ GET v1admin/fleet/alerts
 GET v1admin/hr-reports
 GET v1admin/platform/marketing/oauth-config
 PUT v1admin/platform/marketing/oauth-config
+GET v1admin/rate-validation/pending
+PUT v1admin/rate-validation/{param}/{param}/approve
+PUT v1admin/rate-validation/{param}/{param}/reject

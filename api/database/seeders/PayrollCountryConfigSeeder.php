@@ -49,6 +49,10 @@ class PayrollCountryConfigSeeder extends Seeder
                         'cap' => $contribution['cap'],
                         'effective_from' => '2026-01-01',
                         'effective_to' => null,
+                        // Issue #1813 : la config nationale de référence est
+                        // officielle → active (contourne le workflow de
+                        // validation réservé aux modifications runtime).
+                        'status' => SocialContribution::STATUS_ACTIVE,
                     ]
                 );
             }
@@ -67,11 +71,11 @@ class PayrollCountryConfigSeeder extends Seeder
                         'fixed_deduction' => $slab['fixed_deduction'],
                         'effective_from' => '2026-01-01',
                         'effective_to' => null,
+                        // Issue #1813 : config nationale officielle → active.
+                        'status' => TaxSlab::STATUS_ACTIVE,
                     ]
                 );
             }
         }
     }
 }
-
-

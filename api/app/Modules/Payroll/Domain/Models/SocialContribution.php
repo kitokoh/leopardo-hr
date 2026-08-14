@@ -20,6 +20,11 @@ use Illuminate\Support\Carbon;
  * @property float $cap
  * @property Carbon $effective_from
  * @property Carbon|null $effective_to
+ * @property string $status draft|pending_validation|active|superseded
+ * @property int|null $submitted_by
+ * @property int|null $validated_by
+ * @property Carbon|null $validated_at
+ * @property string|null $rejection_reason
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -29,9 +34,25 @@ class SocialContribution extends Model
 {
     use BelongsToCompany;
 
+    public const STATUS_DRAFT = 'draft';
+
+    public const STATUS_PENDING = 'pending_validation';
+
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_SUPERSEDED = 'superseded';
+
+    public const STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_PENDING,
+        self::STATUS_ACTIVE,
+        self::STATUS_SUPERSEDED,
+    ];
+
     protected $fillable = [
         'company_id', 'country_code', 'name', 'code', 'type',
         'rate', 'cap', 'effective_from', 'effective_to',
+        'status', 'submitted_by', 'validated_by', 'validated_at', 'rejection_reason',
     ];
 
     protected $casts = [
@@ -39,7 +60,28 @@ class SocialContribution extends Model
         'cap' => 'float',
         'effective_from' => 'date',
         'effective_to' => 'date',
+        'validated_at' => 'datetime',
     ];
+
+    /**
+     * Issue #1813 — seules les lignes actives sont utilisées dans les calculs.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    /**
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopePendingValidation(Builder $query): Builder
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
 
     /**
      * @param  Builder<static>  $q

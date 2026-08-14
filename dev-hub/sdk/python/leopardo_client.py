@@ -168,6 +168,18 @@ class LeopardoClient:
         """Enregistrer la config OAuth d'un provider marketing"""
         return self.request("PUT", "/admin/platform/marketing/oauth-config", **kwargs)
 
+    def approveratevalidation(self, **kwargs):
+        """Approuver une modification de taux (platform_admin) — issue #1813"""
+        return self.request("PUT", "/admin/rate-validation/{table}/{id}/approve", **kwargs)
+
+    def rejectratevalidation(self, **kwargs):
+        """Rejeter une modification de taux avec motif (platform_admin) — issue #1813"""
+        return self.request("PUT", "/admin/rate-validation/{table}/{id}/reject", **kwargs)
+
+    def listpendingratevalidation(self, **kwargs):
+        """Lister les modifications de taux en attente de validation — issue #1813"""
+        return self.request("GET", "/admin/rate-validation/pending", **kwargs)
+
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
         return self.request("GET", "/ai/analytics/costs", **kwargs)
@@ -1548,6 +1560,14 @@ class LeopardoClient:
         """Modifier une regle de cotisation sociale (manager)"""
         return self.request("PUT", "/social-contributions/{socialContribution}", **kwargs)
 
+    def socialcontributionhistory(self, **kwargs):
+        """Historique immuable des modifications d'une cotisation (manager) — issue #1813"""
+        return self.request("GET", "/social-contributions/{socialContribution}/history", **kwargs)
+
+    def submitsocialcontribution(self, **kwargs):
+        """Soumettre une regle de cotisation pour validation (manager) — issue #1813"""
+        return self.request("PUT", "/social-contributions/{socialContribution}/submit", **kwargs)
+
     def generatecnasdzdeclaration(self, **kwargs):
         """Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs"""
         return self.request("POST", "/social-declarations/cnas-dz", **kwargs)
@@ -1631,6 +1651,14 @@ class LeopardoClient:
     def updatetaxslab(self, **kwargs):
         """Modifier une tranche d'impot (manager)"""
         return self.request("PUT", "/tax-slabs/{taxSlab}", **kwargs)
+
+    def taxslabhistory(self, **kwargs):
+        """Historique immuable des modifications d'une tranche (manager) — issue #1813"""
+        return self.request("GET", "/tax-slabs/{taxSlab}/history", **kwargs)
+
+    def submittaxslab(self, **kwargs):
+        """Soumettre une tranche d'impot pour validation (manager) — issue #1813"""
+        return self.request("PUT", "/tax-slabs/{taxSlab}/submit", **kwargs)
 
     def post_tracking_sync_devices(self, **kwargs):
         """Synchroniser les devices Traccar"""

@@ -8,12 +8,16 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SocialContributionResource;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
+use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class SocialContributionController extends Controller
 {
+    public function __construct(private readonly TaxRateValidationService $validation) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -78,7 +82,11 @@ class SocialContributionController extends Controller
             'cap' => $validated['cap'] ?? null,
             'effective_from' => $validated['effective_from'],
             'effective_to' => $validated['effective_to'] ?? null,
+            // Issue #1813 : toute création passe par le workflow de validation.
+            'status' => SocialContribution::STATUS_DRAFT,
         ]);
+
+        $this->validation->logCreated($contribution, $actor);
 
         return (new SocialContributionResource($contribution))
             ->response()
@@ -91,6 +99,11 @@ class SocialContributionController extends Controller
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
+        }
+
+        // Issue #1813 : une ligne soumise/active ne se modifie plus directement.
+        if ($socialContribution->status !== SocialContribution::STATUS_DRAFT) {
+            abort(409, 'Une ligne soumise, active ou remplacée ne peut plus être modifiée — proposez une nouvelle modification.');
         }
 
         $validated = $request->validate([
@@ -122,8 +135,65 @@ class SocialContributionController extends Controller
             abort(403);
         }
 
+        // Issue #1813 : seules les lignes draft peuvent être supprimées.
+        if ($socialContribution->status !== SocialContribution::STATUS_DRAFT) {
+            abort(409, 'Seule une ligne en brouillon peut être supprimée.');
+        }
+
         $socialContribution->delete();
 
         return response()->json(['message' => 'Social contribution deleted successfully.']);
+    }
+
+    /**
+     * Soumet une ligne draft pour validation par un platform_admin.
+     */
+    public function submit(Request $request, SocialContribution $socialContribution): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        try {
+            $this->validation->submit($socialContribution, $actor);
+        } catch (\DomainException $e) {
+            abort(422, $e->getMessage());
+        }
+
+        return (new SocialContributionResource($socialContribution->refresh()))->response();
+    }
+
+    /**
+     * Historique immuable des modifications d'une ligne (audit trail).
+     */
+    public function history(Request $request, SocialContribution $socialContribution): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => $this->validation->history($socialContribution)
+                ->map(fn (TaxRateChangeLog $log): array => [
+                    'id' => $log->id,
+                    'action' => $log->action,
+                    'actor_id' => $log->actor_id,
+                    'actor_role' => $log->actor_role,
+                    'previous_value' => $log->previous_value,
+                    'new_value' => $log->new_value,
+                    'reason' => $log->reason,
+                    'created_at' => $log->created_at?->toIso8601String(),
+                ]),
+        ]);
     }
 }

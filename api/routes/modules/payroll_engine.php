@@ -63,12 +63,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/tax-slabs', [TaxSlabController::class, 'store']);
         Route::put('/tax-slabs/{taxSlab}', [TaxSlabController::class, 'update'])->whereNumber('taxSlab');
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabController::class, 'destroy'])->whereNumber('taxSlab');
+        // Issue #1813 — workflow de validation des taux légaux.
+        Route::put('/tax-slabs/{taxSlab}/submit', [TaxSlabController::class, 'submit'])->whereNumber('taxSlab');
+        Route::get('/tax-slabs/{taxSlab}/history', [TaxSlabController::class, 'history'])->whereNumber('taxSlab');
 
         // Social Contributions
         Route::get('/social-contributions', [SocialContributionController::class, 'index']);
         Route::post('/social-contributions', [SocialContributionController::class, 'store']);
         Route::put('/social-contributions/{socialContribution}', [SocialContributionController::class, 'update'])->whereNumber('socialContribution');
         Route::delete('/social-contributions/{socialContribution}', [SocialContributionController::class, 'destroy'])->whereNumber('socialContribution');
+        // Issue #1813 — workflow de validation des taux légaux.
+        Route::put('/social-contributions/{socialContribution}/submit', [SocialContributionController::class, 'submit'])->whereNumber('socialContribution');
+        Route::get('/social-contributions/{socialContribution}/history', [SocialContributionController::class, 'history'])->whereNumber('socialContribution');
 
         // Payroll Runs
         Route::get('/payroll-runs', [PayrollRunController::class, 'index']);

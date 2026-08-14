@@ -185,6 +185,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/admin/platform/marketing/oauth-config", options);
     },
 
+    /** Approuver une modification de taux (platform_admin) — issue #1813 */
+    approveRateValidation(options = {}) {
+      return request("PUT", "/admin/rate-validation/{table}/{id}/approve", options);
+    },
+
+    /** Rejeter une modification de taux avec motif (platform_admin) — issue #1813 */
+    rejectRateValidation(options = {}) {
+      return request("PUT", "/admin/rate-validation/{table}/{id}/reject", options);
+    },
+
+    /** Lister les modifications de taux en attente de validation — issue #1813 */
+    listPendingRateValidation(options = {}) {
+      return request("GET", "/admin/rate-validation/pending", options);
+    },
+
     /** Couts IA par periode */
     getAiAnalyticsCosts(options = {}) {
       return request("GET", "/ai/analytics/costs", options);
@@ -1910,6 +1925,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/social-contributions/{socialContribution}", options);
     },
 
+    /** Historique immuable des modifications d'une cotisation (manager) — issue #1813 */
+    socialContributionHistory(options = {}) {
+      return request("GET", "/social-contributions/{socialContribution}/history", options);
+    },
+
+    /** Soumettre une regle de cotisation pour validation (manager) — issue #1813 */
+    submitSocialContribution(options = {}) {
+      return request("PUT", "/social-contributions/{socialContribution}/submit", options);
+    },
+
     /** Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs */
     generateCnasDzDeclaration(options = {}) {
       return request("POST", "/social-declarations/cnas-dz", options);
@@ -2013,6 +2038,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier une tranche d'impot (manager) */
     updateTaxSlab(options = {}) {
       return request("PUT", "/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Historique immuable des modifications d'une tranche (manager) — issue #1813 */
+    taxSlabHistory(options = {}) {
+      return request("GET", "/tax-slabs/{taxSlab}/history", options);
+    },
+
+    /** Soumettre une tranche d'impot pour validation (manager) — issue #1813 */
+    submitTaxSlab(options = {}) {
+      return request("PUT", "/tax-slabs/{taxSlab}/submit", options);
     },
 
     /** Synchroniser les devices Traccar */
