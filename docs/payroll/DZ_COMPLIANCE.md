@@ -105,12 +105,30 @@ consommées par `EndOfContractService` au lieu de valeurs codées en dur).
 | Sujet | Statut | Référence | À faire |
 |---|---|---|---|
 | Congés payés (2,5 j/mois, 1/10ᵉ vs maintien) | ✅ implémenté + golden tests | F-07 (#1537), loi 90-11 | Assiette « 12 mois » à confirmer |
-| Préavis — durées légales | ⚙️ mécanisme implémenté (règles pays) | loi 90-11 art. 98 | Valeur DZ pilot = 0 j (contrat). **Candidat non verrouillé : 1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans — à valider expert comptable DZ** |
+| Préavis — durées légales | ✅ implémenté (pilot, #1819) : **1 mois < 10 ans, 2 mois ≥ 10 ans** | loi 90-11 art. 73-5 (ordo 96-21) + conventions collectives | Valider expert comptable DZ |
 | Indemnité de licenciement | ⚙️ implémenté : 1 mois/an via règles pays | loi 90-11 | **Plafond légal non appliqué** (à paramétrer/valider) |
 | Solde de tout compte + certificat de travail | ✅ implémenté + golden tests | F-08 (#1538) | — |
 | Heures supplémentaires (25 %/50 %) | ⚙️ implémenté (palier unique ×1,5 pilot) | loi 90-11 art. 33 | Seuil conventionnel à confirmer |
-| Assurance chômage | 📝 **à identifier** | — | Aucune cotisation implémentée ; confirmer l'existence/l'assiette avant de coder |
+| Assurance chômage | ✅ documenté (#1819) : **incluse dans la CNAS 9 %/26 %** (0,5 pt de la part salariale) | loi 90-11 art. 97, décret exécutif 94-189 (CNAC) | Aucune cotisation séparée à ajouter |
 | Rétroactifs et régularisations | 📝 à documenter | — | Mécanique de bulletin rétroactif non implémentée (roadmap) |
+
+### 7bis. Assurance chômage (DZ-DEPTH #1819)
+
+- **Applicable au secteur privé** : la loi 90-11 (art. 97) couvre le risque chômage ; la **CNAC** (Caisse Nationale d'Assurance Chômage) a été instituée par le décret exécutif **94-189** du 26/07/1994 et perçoit sa quote-part via le recouvrement CNAS.
+- **Aucune cotisation séparée à ajouter** : la part « assurance chômage » est comprise dans les taux CNAS existants — **0,5 point de la part salariale de 9 %** (décomposition : assurances sociales 1,5 % + retraite 6,75 % + **chômage 0,5 %** + retraite anticipée 0,25 %). Ajouter une ligne `AC_DZ_EMP`/`AC_DZ_PAT` double compterait la cotisation.
+- **Implémentation** : `AlgeriaPayrollRules::socialContributions()` conserve `CNAS_EMP 9 %` / `CNAS_PAT 26 %` (validés expert 2026-08-08) ; la ventilation est documentée dans ce référentiel.
+
+### 7ter. Préavis (DZ-DEPTH #1819)
+
+- **Base légale** : loi 90-11 modifiée par ordonnance 96-21 — **art. 73-5** : « Le licenciement ouvre droit, pour le travailleur qui n'a pas commis de faute grave, à un délai-congé dont la durée minimale est fixée dans les accords ou conventions collectives » ; **art. 68** (démission) renvoie aussi aux conventions collectives. L'employeur peut s'acquitter du délai-congé en versant **la rémunération totale que le travailleur aurait perçue pendant ce délai** (indemnité compensatrice — `PayrollCalculator::computeFinalSettlement`, `notice_pay`).
+- **Durées implémentées (pilot)** — règle conventionnelle la plus répandue (CCN nationale / conventions de secteur) :
+
+| Ancienneté | Préavis | Indemnité (base 60 000 DZD, 22 j ouvrés) |
+|---|---|---|
+| < 10 ans | 1 mois (30 j) | 60 000 × 30/22 = **81 818,18 DZD** |
+| ≥ 10 ans | 2 mois (60 j) | 60 000 × 60/22 = **163 636,36 DZD** |
+
+- ⚠️ Les conventions collectives peuvent prévoir des durées plus longues selon la catégorie (ouvriers/maîtrise/cadres) — à valider par expert comptable DZ avant passage en 'production'.
 
 > Règle (inchangée) : toute modification de taux/durée = mise à jour
 > **simultanée** du référentiel + du golden test + du CHANGELOG.

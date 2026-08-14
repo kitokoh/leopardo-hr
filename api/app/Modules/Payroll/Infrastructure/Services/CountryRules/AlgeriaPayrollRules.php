@@ -23,6 +23,13 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
+        // CNAS 9 % salarié / 26 % patronal (validé expert DZ 2026-08-08).
+        // DZ-DEPTH (#1819) : l'assurance chômage (CNAC, décret exécutif
+        // 94-189 ; loi 90-11 art. 97) EST applicable au secteur privé mais
+        // est comprise dans ces taux — 0,5 point de la part salariale de 9 %
+        // (assurances sociales 1,5 % + retraite 6,75 % + chômage 0,5 % +
+        // retraite anticipée 0,25 %). Aucune cotisation AC_DZ_* séparée à
+        // ajouter (double comptage sinon) — voir DZ_COMPLIANCE.md §7.
         return [
             ['name' => 'CNAS Salariale', 'code' => 'CNAS_EMP', 'type' => 'employee', 'rate' => 9.0, 'cap' => null],
             ['name' => 'CNAS Patronale', 'code' => 'CNAS_PAT', 'type' => 'employer', 'rate' => 26.0, 'cap' => null],
@@ -134,18 +141,22 @@ class AlgeriaPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * FOCUS 2 (F-31) — Délai de préavis légal (Loi 90-11).
+     * FOCUS 2 (F-31) + DZ-DEPTH (#1819) — Délai de préavis légal DZ.
      *
-     * Valeur pilote : 0 jour — le préavis réel est fixé par le contrat /
-     * son exécution (comportement historique EndOfContractService, F-08).
-     * Les durées légales candidates (Loi 90-11 art. 98 : 1 mois pour une
-     * ancienneté < 10 ans, 2 mois au-delà) sont documentées dans
-     * docs/payroll/DZ_COMPLIANCE.md §7 mais NON verrouillées tant qu'un
-     * expert comptable DZ ne les a pas validées (confidenceLevel='pilot').
+     * Loi 90-11 (modifiée par l'ordonnance 96-21) :
+     *   - art. 68 (démission) et art. 73-5 (licenciement sans faute grave) :
+     *     la durée minimale du délai-congé est fixée par les conventions ou
+     *     accords collectifs ; l'employeur peut s'en acquitter en versant au
+     *     travailleur la rémunération qu'il aurait perçue pendant le délai
+     *     (indemnité compensatrice — mécanisme EndOfContractService).
+     *   - Règle conventionnelle la plus répandue (CCN et conventions de
+     *     secteur) : 1 mois pour une ancienneté < 10 ans, 2 mois à partir
+     *     de 10 ans. Valeur pilote implémentée ici, à confirmer par expert
+     *     comptable DZ avant passage en 'production' (DZ_COMPLIANCE.md §7).
      */
     public function noticePeriodDays(float $yearsOfService): float
     {
-        return 0.0;
+        return $yearsOfService < 10.0 ? 30.0 : 60.0;
     }
 
     /**
