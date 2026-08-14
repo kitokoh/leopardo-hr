@@ -216,6 +216,18 @@ jobs:
 
           dev-hub/tools/check-phpstan-baseline-delta.sh "${base_sha}" "${head_sha}" api
 
+  migration-collision-check:
+    name: Migration Basename Collision Guard (#1962)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Check migration basename collisions (issue #1962)
+        run: dev-hub/tools/check-migration-collisions.sh api/database/migrations
+
   frontend-lint:
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
