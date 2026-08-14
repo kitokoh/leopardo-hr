@@ -122,15 +122,6 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function withTaxSlabs(array $slabs): static
-            {
-                return $this;
-            }
-
-            public function flatPayrollTaxLabel(): string
-            {
-                return '';
-            }
 
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
