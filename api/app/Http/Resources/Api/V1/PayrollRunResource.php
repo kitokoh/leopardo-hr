@@ -22,6 +22,11 @@ class PayrollRunResource extends JsonResource
             'period_start' => $this->period_start?->toDateString(),
             'period_end' => $this->period_end?->toDateString(),
             'status' => $this->status,
+            // DZ-DEPTH (#1818) : type (standard|regularization) + lien vers le
+            // run original pour les bulletins rétroactifs.
+            'type' => $this->type,
+            'original_run_id' => $this->original_run_id,
+            'reason' => $this->reason,
             'total_gross' => $this->total_gross,
             'total_deductions' => $this->total_deductions,
             'total_net' => $this->total_net,

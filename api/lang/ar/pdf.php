@@ -169,4 +169,6 @@ return [
     'cert_made_in' => 'أنجز في',
     'cert_on_date' => '، في',
     'cert_position_fallback' => 'موظف',
+
+    'payslip_regularization_banner' => 'قسيمة تسوية — تصحيح الدفعة رقم :run',
 ];

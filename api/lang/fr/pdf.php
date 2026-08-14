@@ -169,4 +169,6 @@ return [
     'cert_made_in' => 'Fait à',
     'cert_on_date' => ', le',
     'cert_position_fallback' => 'Employé',
+
+    'payslip_regularization_banner' => 'BULLETIN DE RÉGULARISATION — corrige le run #:run',
 ];

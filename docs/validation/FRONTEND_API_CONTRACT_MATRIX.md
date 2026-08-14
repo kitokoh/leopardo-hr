@@ -129,3 +129,5 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 - `front/zkteco-kiosk` accepte une base API avec ou sans `/api/v1`.
 - Les exports admin passent par Axios authentifie afin de conserver le bearer token sur Cloudflare Pages.
 - Une route critique supprimee ou renommee doit mettre a jour cette matrice, les appels frontend, la spec OpenAPI si exposee et le test contractuel.
+| Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
+| Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |

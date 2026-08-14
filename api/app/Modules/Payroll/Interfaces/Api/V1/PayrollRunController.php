@@ -9,8 +9,10 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
+use App\Modules\Payroll\Application\Services\PayrollRegularizationService;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
+use App\Modules\Payroll\Domain\Exceptions\PayrollRunNotLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
@@ -28,6 +30,7 @@ class PayrollRunController extends Controller
     public function __construct(
         private readonly PayrollCalculator $calculator,
         private readonly PayrollClosingService $closing,
+        private readonly PayrollRegularizationService $regularization,
         private readonly DataAccessAuditLogger $auditLogger,
     ) {}
 
@@ -227,6 +230,60 @@ class PayrollRunController extends Controller
         }
 
         return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
+    }
+
+    /**
+     * DZ-DEPTH (#1818) — crée un run de régularisation pour un run verrouillé.
+     * Le run original n'est jamais modifié ; le motif est obligatoire et tracé.
+     */
+    public function regularize(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'min:5', 'max:2000'],
+        ]);
+
+        try {
+            /** @var PayrollRun $regularization */
+            $regularization = $this->regularization->createRegularization(
+                $payrollRun,
+                $actor,
+                (string) $validated['reason'],
+            );
+        } catch (PayrollRunNotLockedException|\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return (new PayrollRunResource($regularization->loadCount('paySlips')))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * DZ-DEPTH (#1818) — liste les régularisations liées à un run.
+     */
+    public function regularizations(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $runs = $this->regularization->regularizations($payrollRun);
+
+        return PayrollRunResource::collection($runs)->response();
     }
 
     public function summary(Request $request, PayrollRun $payrollRun): JsonResponse

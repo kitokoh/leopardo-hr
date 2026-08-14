@@ -6759,6 +6759,77 @@ paths:
         "422":
           description: "Validated runs cannot be cancelled"
 
+  /payroll-runs/{payrollRun}/regularize:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
+      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
+      operationId: regularizePayrollRun
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 2000
+      responses:
+        "201":
+          description: "Run de régularisation créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularizations:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les régularisations d'un run (DZ-DEPTH #1818)"
+      operationId: listPayrollRunRegularizations
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Runs de régularisation liés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /payroll-runs/{payrollRun}/summary:
     get:
       tags: ["Payroll"]
@@ -15523,6 +15594,15 @@ components:
           type: string
           nullable: true
         status:
+        type:
+          type: string
+          enum: [standard, regularization]
+        original_run_id:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          nullable: true
           type: string
           enum: [draft, calculating, validated, cancelled]
         total_gross:
