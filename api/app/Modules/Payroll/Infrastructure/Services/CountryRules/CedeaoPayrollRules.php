@@ -135,18 +135,24 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
-        // CI (#1825) : ITSAS Côte d'Ivoire (CGI CI art. 116-120) — tranches
-        // ANNUELLES : 0–600 000 XOF : 0 % · 600 001–2 000 000 : 2 % ·
-        // 2 000 001–5 000 000 : 21 % · 5 000 001–10 000 000 : 24,5 % ·
-        // > 10 000 000 : 29 % (valeurs à valider par expert-comptable —
-        // confidenceLevel 'pilot').
+        // CI (#1918) : ITS unifié (réforme 2024 — ordonnance 2023-718/719,
+        // effet 01/01/2024, CGI art. 119 bis) — tranches MENSUELLES sur le
+        // BRUT : 0–75 000 XOF : 0 % · 75 001–240 000 : 16 % ·
+        // 240 001–800 000 : 21 % · 800 001–2 400 000 : 24 % ·
+        // 2 400 001–8 000 000 : 28 % · > 8 000 000 : 32 %. L'ancien ITSAS
+        // annuel (0/2/21/24,5/29 % — CGI art. 116-120 pré-réforme) et la
+        // Contribution Nationale (1,5 %) sont supprimés/fusionnés. RICF
+        // (réduction pour charges de famille, art. 120) non appliquée : les
+        // données familiales (parts) ne sont pas encore portées par le
+        // moteur — défaut 0 (célibataire 1 part). À valider expert (#1904).
         if ($this->memberCountryCode === 'CI') {
             return [
-                ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
-                ['min' => 600001, 'max' => 2000000, 'rate' => 2, 'fixed_deduction' => 0],
-                ['min' => 2000001, 'max' => 5000000, 'rate' => 21, 'fixed_deduction' => 0],
-                ['min' => 5000001, 'max' => 10000000, 'rate' => 24.5, 'fixed_deduction' => 0],
-                ['min' => 10000001, 'max' => null, 'rate' => 29, 'fixed_deduction' => 0],
+                ['min' => 0, 'max' => 75000, 'rate' => 0, 'fixed_deduction' => 0],
+                ['min' => 75001, 'max' => 240000, 'rate' => 16, 'fixed_deduction' => 0],
+                ['min' => 240001, 'max' => 800000, 'rate' => 21, 'fixed_deduction' => 0],
+                ['min' => 800001, 'max' => 2400000, 'rate' => 24, 'fixed_deduction' => 0],
+                ['min' => 2400001, 'max' => 8000000, 'rate' => 28, 'fixed_deduction' => 0],
+                ['min' => 8000001, 'max' => null, 'rate' => 32, 'fixed_deduction' => 0],
             ];
         }
 
@@ -202,70 +208,51 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return round($tax / $annualBasis, 2);
         }
 
-        // CI (#1825, CGI CI art. 116-120) :
-        //   1. Assiette = brut − CNSS salariale − abattement frais pro
-        //      (20 % du BRUT, non plafonné — formule légale, fix #1893).
-        //      Le moteur passe $grossTaxable = brut − CNSS salariale et
-        //      $grossForAbatement = brut réel ; l'abattement s'applique sur
-        //      le brut réel (défaut : $grossTaxable si non fourni).
-        //   2. ITSAS progressif annuel / 12 (5 tranches).
-        // La Contribution Nationale (CN, 1,5 % sur la part du brut mensuel
-        // > 50 000 XOF) est calculée séparément dans calculateBracketTax() ;
-        // les deux sont sommées sur le bulletin (impôt total mensuel).
-        $abatement = $this->professionalExpensesDeduction();
-        $abatementBase = $grossForAbatement ?? $grossTaxable;
-        $monthlyDeduction = min(
-            $abatementBase * ($abatement['rate'] / 100),
-            $abatement['cap'] ?? PHP_FLOAT_MAX
-        );
+        // CI (#1918 — réforme 2024, ordonnance 2023-718/719, effet
+        // 01/01/2024) : ITS UNIQUE mensuel sur le BRUT (art. 119 bis) — plus
+        // d'abattement frais pro, plus d'annualisation, plus de CN séparée.
+        // Le moteur passe $grossForAbatement = brut réel (défaut :
+        // $grossTaxable) ; le barème mensuel s'applique tel quel.
+        $monthlyBase = max(0.0, $grossForAbatement ?? $grossTaxable);
 
-        $annualTaxable = max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
-        $monthlyTax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs()) / $annualBasis;
-
-        return round($monthlyTax, 2);
+        return round($this->calculateProgressiveTax($monthlyBase, $this->taxSlabs()), 2);
     }
 
     /**
-     * CI (#1825) : Contribution Nationale (CN, CGI CI) — 1,5 % sur la part
-     * du brut mensuel supérieure à 50 000 XOF (seuil annuel 600 000 XOF).
-     * Implémentée via le mécanisme « taxe forfaitaire » du moteur
-     * (calculateBracketTax + ligne de déduction dédiée) car elle est assise
-     * sur le BRUT, pas sur l'assiette ITSAS ; le libellé de ligne est
-     * surchargé via flatPayrollTaxLabel().
+     * CI (#1918) : la Contribution Nationale (1,5 %) est supprimée depuis la
+     * réforme 2024 (fusionnée dans l'ITS unique, ordonnance 2023-718/719) →
+     * aucune taxe forfaitaire CI (0). Les autres membres CEDEAO conservent
+     * leur comportement (TRIMF/placeholder).
      */
     public function calculateBracketTax(float $grossSalary): float
     {
         if ($this->memberCountryCode === 'CI') {
-            return round(max(0.0, $grossSalary - 50000.0) * 1.5 / 100, 2);
+            return 0.0;
         }
 
         return parent::calculateBracketTax($grossSalary);
     }
 
     /**
-     * CI (#1825) : la ligne de déduction forfaitaire du moteur porte le
-     * libellé « Contribution Nationale (CN) » pour la Côte d'Ivoire (les
-     * autres pays gardent « Taxe de minimum fiscal », ex. TRIMF SN).
+     * CI (#1918) : la CN étant abolie (calculateBracketTax() → 0), la CI
+     * n'a plus de libellé de taxe forfaitaire dédié — libellé moteur par
+     * défaut (« Taxe de minimum fiscal », non affiché car montant nul).
      */
     public function flatPayrollTaxLabel(): string
     {
-        return $this->memberCountryCode === 'CI'
-            ? 'Contribution Nationale (CN)'
-            : parent::flatPayrollTaxLabel();
+        return parent::flatPayrollTaxLabel();
     }
 
     /**
-     * CI (#1825) : abattement frais professionnels 20 % du brut, non
-     * plafonné (CGI CI). Les autres membres CEDEAO n'en ont pas (défaut 0 %).
+     * CI (#1918) : l'abattement frais professionnels (20 %) appartenait à
+     * l'assiette ITSAS pré-réforme — l'ITS 2024 s'applique sur le BRUT sans
+     * abattement (art. 119 bis) → taux 0 %. Les autres membres CEDEAO n'en
+     * ont pas non plus (défaut 0 %).
      *
      * @return array{rate: float, cap: float|null}
      */
     public function professionalExpensesDeduction(): array
     {
-        if ($this->memberCountryCode === 'CI') {
-            return ['rate' => 20.0, 'cap' => null];
-        }
-
         return parent::professionalExpensesDeduction();
     }
 
@@ -404,7 +391,7 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function confidenceLevel(): string
     {
-        // CI (#1825) : barèmes ITSAS CGI 2024 + CNSS + CN + préavis
+        // CI (#1918) : barème ITS 2024 (ord. 2023-718/719) + CNSS + préavis
         // implémentés, à valider expert-comptable avant 'production'.
         // BF/ML (#1829) : IUTS/ITS + CNSS/INPS depuis sources légales
         // publiques (CGI 2024) — niveau 'pilot' tant qu'un expert local

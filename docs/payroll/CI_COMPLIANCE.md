@@ -10,9 +10,9 @@
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| ITSAS (5 tranches annuelles) | ✅ implémentée (pilot) | CGI 2024 art. 116-120 | à valider expert |
-| Contribution Nationale (1,5 % > 50 000) | ✅ implémentée (pilot) | CGI 2024 art. 116-120 | à valider expert |
-| Abattement frais pro (20 %, non plafonné) | ✅ implémentée (pilot) | CGI 2024 art. 116 | à valider expert |
+| ITS unifié (6 tranches mensuelles, réforme 2024) | ✅ implémentée (pilot) | ord. 2023-718/719, CGI art. 119 bis | à valider expert |
+| Contribution Nationale (1,5 %) | ❌ abolie (fusionnée ITS, #1918) | ord. 2023-718/719 | — |
+| Abattement frais pro (20 %) | ❌ supprimé de la base ITS (réforme 2024, #1918) | ord. 2023-718/719 | — |
 | CNSS retraite 3,2 % / 4,5 % (plaf. 1 647 315) | ✅ implémentée (pilot) | CNSS | à valider expert |
 | CNSS famille patronale 5,75 % (plaf. 70 000) | ✅ implémentée (pilot) | Guide officiel CNPS Employeur | à valider expert |
 | CNSS AT patronale 2,0 % (plaf. 70 000, taux sectoriel à confirmer) | ✅ implémentée (pilot) | Guide officiel CNPS Employeur | à valider expert |
@@ -24,40 +24,54 @@
 | Jours fériés fixes CI | 📝 via CRUD jours fériés (#1811) | loi | — |
 | Jours fériés islamiques mobiles | 📝 via calendrier islamique (#1812) | table `islamic_calendar` | — |
 
-## 1. ITSAS — Impôt sur Traitements, Salaires et Assimilés
+## 1. ITS — Impôt sur le Traitement et les Salaires (réforme 2024, #1918)
 
-**Barème ANNUEL** (implémenté dans `CedeaoPayrollRules::defaultTaxSlabs()`
-pour le membre CI — CGI 2024, art. 116-120) :
+> ⚠️ **Réforme 2024 (ordonnance 2023-718/719, effet 01/01/2024)** : l'ancien
+> système « ITSAS annuel + CN » (CGI art. 116-120 pré-réforme) est
+> **supprimé et fusionné dans un ITS unique** calculé sur le **salaire brut
+> mensuel**, sans abattement frais pro ni division par parts (CGI art.
+> 119 bis). Le moteur CI implémentait l'ancien barème (0/2/21/24,5/29 %
+> annuels, tranche > 10 M @ 29 % — taux ne correspondant à aucun barème
+> publié) ; la migration #1918 remplace ce barème par l'ITS 2024.
 
-| Tranche annuelle (XOF) | Taux |
+**Barème MENSUEL** (implémenté dans `CedeaoPayrollRules::defaultTaxSlabs()`
+pour le membre CI — CGI art. 119 bis, ord. 2023-718/719) :
+
+| Tranche mensuelle (XOF) | Taux |
 |---|---|
-| 0 – 600 000 | 0 % |
-| 600 001 – 2 000 000 | 2 % |
-| 2 000 001 – 5 000 000 | 21 % |
-| 5 000 001 – 10 000 000 | 24,5 % |
-| > 10 000 000 | 29 % |
+| 0 – 75 000 | 0 % |
+| 75 001 – 240 000 | 16 % |
+| 240 001 – 800 000 | 21 % |
+| 800 001 – 2 400 000 | 24 % |
+| 2 400 001 – 8 000 000 | 28 % |
+| > 8 000 000 | 32 % |
 
-`calculateIncomeTax()` annualise l'assiette mensuelle (`× 12`), applique le
-barème progressif (bornes inclusives), puis ramène le résultat au mois.
-⚠️ Pour CI, `calculateIncomeTax()` retourne **l'ITSAS seul** ; la
-Contribution Nationale est calculée séparément (§3) et additionnée dans le
-bulletin (ligne « Taxe de minimum fiscal »).
+`calculateIncomeTax()` applique le barème progressif mensuel directement sur
+le **brut** (bornes inclusives, même mécanique que le moteur). La **RICF**
+(réduction d'impôt pour charges de famille, art. 120 : 5 500–44 000 XOF/mois
+selon le nombre de parts) n'est **pas encore appliquée** — les données
+familiales (parts) ne sont pas portées par le moteur ; défaut 0
+(célibataire, 1 part). À compléter quand les données employé le permettront.
+⚠️ Pour CI, `calculateIncomeTax()` retourne **l'ITS seul** ; la CN n'existe
+plus (abolie, §3).
 
-## 2. Assiette ITSAS
+## 2. Assiette ITS
 
 ```
-assiette ITSAS mensuelle = brut − CNSS salariale − min(brut × 20 %, ∞)
-                          = brut − CNSS salariale − brut × 20 %
+assiette ITS mensuelle = BRUT (salaires bruts versés — art. 119 bis)
 ```
 
-Abattement frais professionnels : **20 % du brut, non plafonné**
-(`professionalExpensesDeduction() = ['rate' => 20.0, 'cap' => null]`),
-appliqué par `PayrollCalculator::calculateSlip()`.
+Plus d'abattement frais professionnels depuis la réforme 2024
+(`professionalExpensesDeduction() = ['rate' => 0.0, 'cap' => null]`) et plus
+de déduction de la CNSS salariale de la base ITS. La CNSS reste une
+cotisation sociale distincte (§4).
 
-## 3. Contribution Nationale (CN)
+## 3. Contribution Nationale (CN) — ABOLIE (réforme 2024, #1918)
 
-**1,5 % sur la part du BRUT mensuel excédant 50 000 XOF** (seuil annuel
-600 000 XOF) :
+**1,5 % sur la part du BRUT mensuel excédant 50 000 XOF** — **supprimée** :
+l'ordonnance 2023-718/719 (effet 01/01/2024) la fusionne dans l'ITS unique.
+`CedeaoPayrollRules::calculateBracketTax()` retourne **0** pour la CI
+(aucune ligne « CN » au bulletin). Conservation de la référence historique :
 
 ```
 CN mensuelle = max(0, brut − 50 000) × 0,015
@@ -66,7 +80,7 @@ CN mensuelle = max(0, brut − 50 000) × 0,015
 Calculée sur le brut réel via `CedeaoPayrollRules::calculateBracketTax()`
 (portée par PayrollCalculator sur la ligne « Taxe de minimum fiscal »).
 
-**Impôt total mensuel = ITSAS mensuel + CN mensuelle.**
+**Avant réforme : impôt total mensuel = ITSAS annuel / 12 + CN mensuelle — remplacé depuis 2024 par l'ITS unique mensuel (aucune CN).**
 
 ## 4. CNSS — Cotisations sécurité sociale
 
