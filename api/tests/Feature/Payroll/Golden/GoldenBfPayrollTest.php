@@ -66,6 +66,9 @@ class GoldenBfPayrollTest extends TestCase
         $this->assertSame(232843.0, $this->bf()->calculateIncomeTax(1150500.0));
     }
 
+    /**
+     * @return array<string, array{float, float, float, float}>
+     */
     public static function prorataProvider(): array
     {
         return [

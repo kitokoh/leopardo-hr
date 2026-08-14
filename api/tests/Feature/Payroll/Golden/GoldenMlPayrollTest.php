@@ -66,6 +66,9 @@ class GoldenMlPayrollTest extends TestCase
         $this->assertSame(933850.0, $this->ml()->calculateIncomeTax(3392000.0));
     }
 
+    /**
+     * @return array<string, array{float, float, float, float}>
+     */
     public static function prorataProvider(): array
     {
         return [
