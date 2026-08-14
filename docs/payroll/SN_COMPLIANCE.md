@@ -126,6 +126,52 @@ Fixes : 1ᵉʳ janvier, 4 avril, 1ᵉʳ mai, 15 août, 1ᵉʳ novembre, 25 déce
 fêtes islamiques mobiles (Korité, Tabaski, Gamou, Taamhrit) via table
 `islamic_calendar` (#1812). Gestion dynamique via #1811.
 
+## 11. Déclarations mensuelles — périmètre du CSV IPRES/CSS (décision #2014)
+
+Le CSV généré par `IpresDeclarationGenerator` est la déclaration **mensuelle
+IPRES/CSS** (retraite T1/T2 + prestations familiales CSS). Périmètre décidé
+et documenté :
+
+| Composante | Bulletin (moteur) | CSV IPRES/CSS | Raison |
+|---|---|---|---|
+| IPRES T1 (8,4 % patronal, plaf. 432 000) | ✅ | ✅ | déclaration IPRES |
+| IPRES T2 cadres (3,6 %, tranche 432 k–2 160 k) | ✅ | ✅ | déclaration IPRES |
+| CSS famille (3,0 %) | ✅ **plafonné 63 000** (#1913) | ✅ **plafonné 63 000** (aligné) | ✓ aligné moteur/CSV |
+| CSS AT (1,0 %) | ✅ | ❌ | déclaration CSS dédiée (taux selon risque) |
+| CFCE (3,0 %) | ✅ | ❌ | déclaration CFCE dédiée |
+
+**Conséquence** : `total_patronal` du CSV < `employer_contributions` du
+bulletin **par conception** — le bulletin porte toutes les charges
+patronales, le CSV uniquement le périmètre de cette déclaration. La
+réconciliation exacte est verrouillée par
+`BulletinDeclarationReconciliationTest` (test SN cadre) :
+`employer_contributions = périmètre déclaré (T1/T2/CSS famille) + CSS AT 1 % + CFCE 3 %`
+(le plafond CSS famille est désormais IDENTIQUE moteur et CSV — 63 000).
+
+**Questions ouvertes expert-comptable (#1912, bloquant avant production)** :
+
+1. **Q1 — CSS AT** : doit-elle figurer dans la déclaration mensuelle ou
+   reste-t-elle séparée (annuelle/trimestrielle selon le risque) ?
+2. **Q2 — CFCE** : ce fichier ou la déclaration CFCE dédiée (trimestrielle) ?
+3. **Q3 — CSS famille** : plafond **63 000 XOF/mois** appliqué par le moteur
+   et le CSV (#1913, procédure CSS / CLEISS barème 2026) — à confirmer par
+   l'expert-comptable (art. 139 Code de la sécurité sociale, suivi #1912).
+
+Source consultée (non concluante, page en cours d'édition) :
+eRegulations Sénégal, procédure 103/64 (« Paiement des cotisations à la
+CSS », plafond affiché 63 000 CFA incohérent avec le SMIG/IPRES — à
+ré-évaluer).
+
+## Procédure de mise à jour des taux
+
+1. Valider les nouveaux taux avec un expert-comptable sénégalais.
+2. Modifier les valeurs par défaut dans `SenegalPayrollRules` ET/OU insérer
+   de nouvelles lignes `tax_slabs` / `social_contributions` datées
+   (`effective_from`) pour un changement de barème sans régression.
+3. Mettre à jour ce fichier + les golden tests (`GoldenSnPayrollTest`).
+4. Faire valider par l'équipe (`php artisan test --filter=Payroll`).
+5. Passer `confidenceLevel()` de `pilot` à `production` une fois validé.
+
 ## Procédure de mise à jour des taux
 
 1. Valider les nouveaux taux avec un expert-comptable sénégalais.

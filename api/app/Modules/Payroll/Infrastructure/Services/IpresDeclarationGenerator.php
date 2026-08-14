@@ -14,8 +14,8 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
  * (general/cadre), brut, assiette T1 (min(brut, 432 000 XOF)), cotisation
  * T1 salariale (5,6 %) / patronale (8,4 %), assiette T2 (cadres
  * uniquement : min(brut, 2 160 000) − 432 000), cotisation T2 salariale
- * (2,4 %) / patronale (3,6 %), CSS famille patronale (3,0 %) + ligne
- * TOTAUX.
+ * (2,4 %) / patronale (3,6 %), CSS famille patronale (3,0 % plafonnée à
+ * 63 000 XOF/mois — alignée moteur, #1913) + ligne TOTAUX.
  *
  * ⚠️ Format interne documenté — à valider avec un comptable sénégalais.
  */
@@ -34,6 +34,9 @@ class IpresDeclarationGenerator
     public const RATE_T2_PAT = 3.6;
 
     public const RATE_CSS_FAMILLE_PAT = 3.0;
+
+    /** #1913 : plafond CSS famille (63 000 XOF/mois) — aligné sur le moteur. */
+    public const CSS_FAMILLE_CAP = 63000.0;
 
     public function generate(PayrollRun $run): string
     {
@@ -181,7 +184,7 @@ class IpresDeclarationGenerator
         $t1Pat = round($t1Base * self::RATE_T1_PAT / 100, 2);
         $t2Emp = round($t2Base * self::RATE_T2_EMP / 100, 2);
         $t2Pat = round($t2Base * self::RATE_T2_PAT / 100, 2);
-        $cssFamillePat = round($t1Base * self::RATE_CSS_FAMILLE_PAT / 100, 2);
+        $cssFamillePat = round(min($gross, self::CSS_FAMILLE_CAP) * self::RATE_CSS_FAMILLE_PAT / 100, 2);
         $totalPatronal = round($t1Pat + $t2Pat + $cssFamillePat, 2);
 
         return [

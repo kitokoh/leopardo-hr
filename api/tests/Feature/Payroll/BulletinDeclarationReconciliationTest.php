@@ -145,8 +145,8 @@ class BulletinDeclarationReconciliationTest extends TestCase
 
     public function test_ci_bulletin_reconciles_with_cnss_declaration_above_cap(): void
     {
-        // Brut 2 000 000 XOF (AU-DESSUS du plafond CNSS 1 647 315) :
-        // assiette plafonnée et AT non plafonné (2 % sur le brut entier).
+        // Brut 2 000 000 XOF (AU-DESSUS des plafonds) : assiette retraite
+        // plafonnée à 1 647 315, famille et AT plafonnées à 70 000 (#1913).
         $run = $this->engineRun('CI', 'XOF', 2000000.0, [
             'first_name' => 'Moussa', 'last_name' => 'Traore', 'cnss_ci_matricule' => 'CNSS-CI-002',
         ]);
@@ -162,8 +162,9 @@ class BulletinDeclarationReconciliationTest extends TestCase
         $gross = (float) $slip->gross_salary;
         $expected = $this->expectedPerCode('CI', $gross);
 
-        $this->assertSame('1647315.00', $row[4]); // assiette plafonnée
+        $this->assertSame('1647315.00', $row[4]); // assiette retraite plafonnée
         $this->assertSame(number_format($expected['CNSS_CI_RET_EMP'], 2, '.', ''), $row[5]);
+        $this->assertSame(number_format($expected['CNSS_CI_FAM_PAT'], 2, '.', ''), $row[7]);
         $this->assertSame(number_format($expected['CNSS_CI_AT_PAT'], 2, '.', ''), $row[8]);
 
         $rules = new CedeaoPayrollRules('CI');
@@ -178,8 +179,8 @@ class BulletinDeclarationReconciliationTest extends TestCase
     public function test_sn_bulletin_reconciles_with_ipres_declaration_t1(): void
     {
         // Salarié régime général (T1), brut 400 000 XOF (sous le plafond
-        // T1 432 000) : pas de tranche T2, pas de divergence AT/CFCE (le
-        // patronal déclaré = T1 8,4 % + CSS famille 3 % sur la même base).
+        // T1 432 000) : pas de tranche T2. CSS famille plafonnée à 63 000
+        // (#1913) — la base CSS n'est plus celle du T1.
         $run = $this->engineRun('SN', 'XOF', 400000.0, [
             'first_name' => 'Fatou', 'last_name' => 'Diop', 'ipres_matricule' => 'IPRES-SN-001',
             'ipres_category' => 'general',
@@ -213,9 +214,15 @@ class BulletinDeclarationReconciliationTest extends TestCase
         // total_patronal déclaré = T1 + CSS famille (le CSV n'inclut ni CSS AT
         // 1 % ni CFCE 3 % — périmètre déclaration IPRES/CSS, suivi #1920).
         $this->assertEquals($charges['employee'], $expected['IPRES_SN_EMP']);
+        // total_patronal CSV = T1 8,4 % + CSS famille (plaf. 63 000 #1913) —
+        // AT 1 % et CFCE 3 % restent hors périmètre CSV (déclarations dédiées).
         $this->assertEquals(
             $expected['IPRES_SN_PAT'] + $expected['CSS_SN_PAT_FAM'],
             (float) $row[12],
+        );
+        $this->assertEquals(
+            $charges['employee'],
+            $expected['IPRES_SN_EMP'],
         );
     }
 
@@ -259,14 +266,17 @@ class BulletinDeclarationReconciliationTest extends TestCase
             round($t1Base * 5.6 / 100 + $t2Base * 2.4 / 100, 2),
             $charges['employee'],
         );
-        // total_patronal déclaré (T1 + T2 + CSS famille) — cohérent avec le moteur
-        // sur les mêmes composantes (AT 1 % + CFCE 3 % hors périmètre CSV).
+        // total_patronal déclaré (T1 + T2 + CSS famille plafonnée 63 000) —
+        // cohérent avec le moteur sur les mêmes composantes (AT 1 % + CFCE 3 %
+        // hors périmètre CSV — déclarations dédiées, décision #2014 §11).
         $declaredPatronal = (float) $row[12];
+        $cssCap = min($gross, 63000.0);
         $enginePatronalDeclaredScope = round(
-            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $t1Base * 3.0 / 100,
+            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 3.0 / 100,
             2,
         );
         $this->assertEquals($enginePatronalDeclaredScope, $declaredPatronal);
-        $this->assertLessThan($charges['employer'], $declaredPatronal); // AT+CFCE exclus
+        // Écart bulletin ↔ CSV = AT 1 % + CFCE 3 % (hors périmètre, documenté).
+        $this->assertLessThan($charges['employer'], $declaredPatronal);
     }
 }
