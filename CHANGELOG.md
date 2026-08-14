@@ -3,6 +3,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ### Added
+- **fix(payroll): fatal PHP — `noticePeriodDays(float, ?string $category = null)` aligné sur l'interface (régression #2136, main rouge).** Le merge de #2136 (SN préavis par catégorie) a ajouté `$category` à `CountryRulesInterface::noticePeriodDays()` sans aligner les implémentations → `PHP Fatal error: Declaration of ...::noticePeriodDays(float $yearsOfService): float must be compatible with ...` au chargement de `AbstractCountryRules` → toutes les règles pays + tests (Backend Jobs CI, coverage < 65 % en cascade). Signature ajoutée dans `AbstractCountryRules`, `AlgeriaPayrollRules`, `CemacPayrollRules`, `CedeaoPayrollRules` et les classes anonymes de `CountryRulesResolverTest`. Aucun changement de comportement.
 
 - **fix(ci): deploy-admin-dashboard — action `cloudflare/wrangler-action` ré-épinglée sur un SHA résolvable (main rouge préexistant).** Le SHA `daa9d868…` épinglé dans `deploy-admin-dashboard.yml` (livré par #1834) n'existe pas dans le dépôt upstream (`422` au moment du checkout de l'action) → le job « Build & deploy admin-dashboard to Cloudflare Pages » échouait sur CHAQUE push main depuis le 2026-08-14 17:12Z (y compris les vagues `fix/main-*`), même si le check n'est pas requis par la protection. Ré-épinglage sur le SHA réel du tag `v3.14.1` (`da0e0dfe58b7a431659754fdf3f186c529afbe65`, vérifié par l'API GitHub). Aucun changement de comportement du build/deploy.
 
