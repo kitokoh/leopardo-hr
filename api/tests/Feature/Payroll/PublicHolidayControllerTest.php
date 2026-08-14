@@ -8,6 +8,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -211,18 +213,18 @@ class PublicHolidayControllerTest extends TestCase
 
         Cache::flush();
 
-        $service = app(\App\Modules\Payroll\Infrastructure\Services\PublicHolidayService::class);
+        $service = app(PublicHolidayService::class);
 
         $companyA = $service->workingDaysBetween(
-            \Illuminate\Support\Carbon::parse('2026-11-01'),
-            \Illuminate\Support\Carbon::parse('2026-11-30'),
+            Carbon::parse('2026-11-01'),
+            Carbon::parse('2026-11-30'),
             'DZ',
             companyId: (string) $this->companyA->id,
             restDays: [5, 6],
         );
         $companyB = $service->workingDaysBetween(
-            \Illuminate\Support\Carbon::parse('2026-11-01'),
-            \Illuminate\Support\Carbon::parse('2026-11-30'),
+            Carbon::parse('2026-11-01'),
+            Carbon::parse('2026-11-30'),
             'DZ',
             companyId: (string) $this->companyB->id,
             restDays: [5, 6],

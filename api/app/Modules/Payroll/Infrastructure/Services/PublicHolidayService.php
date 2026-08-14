@@ -30,18 +30,22 @@ class PublicHolidayService
 {
     private const CACHE_TTL_SECONDS = 86_400; // 24 h
 
-    public function __construct(private readonly CacheRepository $cache)
-    {
-    }
+    public function __construct(
+        private readonly CacheRepository $cache,
+        private readonly ?IslamicCalendarService $islamicCalendarService = null,
+    ) {}
 
     /**
      * Fériés pour un pays + année, avec override entreprise.
+     * Les fêtes islamiques mobiles (issue #1812) sont fusionnées avec les
+     * fériés fixes de la table — les dates de `islamic_calendar` enrichissent
+     * le calendrier au runtime.
      *
      * @return array<int, array{date: string, name: string, holiday_type: string, company_id: string|null}>
      */
     public function getHolidays(string $countryCode, int $year, ?string $companyId = null): array
     {
-        $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) $companyId);
+        $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) ($companyId ?? 'null'));
 
         return $this->cache->remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($countryCode, $year, $companyId): array {
             $query = PublicHoliday::query()
@@ -56,7 +60,7 @@ class PublicHolidayService
                 }
             });
 
-            return $query
+            $fixed = $query
                 ->orderBy('date')
                 ->get()
                 ->map(fn (PublicHoliday $h): array => [
@@ -66,7 +70,43 @@ class PublicHolidayService
                     'company_id' => $h->company_id,
                 ])
                 ->all();
+
+            // Fusion des fêtes islamiques mobiles (nationales, lecture seule
+            // pour tous les tenants).
+            $islamic = $this->islamicCalendarService?->resolveForPayroll(
+                $countryCode,
+                $year,
+                $companyId,
+            ) ?? [];
+
+            return $this->mergeHolidays($fixed, $islamic);
         });
+    }
+
+    /**
+     * Fusionne deux listes de fériés (fixes + islamiques) en dédupliquant par
+     * date (le férié fixe/entreprise prime sur l'islamique le cas échéant) et
+     * en triant par date.
+     *
+     * @param  array<int, array{date: string, name: string, holiday_type: string, company_id: string|null}>  $fixed
+     * @param  array<int, array{date: string, name: string, holiday_type: string, company_id: null}>  $islamic
+     * @return array<int, array{date: string, name: string, holiday_type: string, company_id: string|null}>
+     */
+    private function mergeHolidays(array $fixed, array $islamic): array
+    {
+        $byDate = [];
+        foreach ($fixed as $holiday) {
+            $byDate[$holiday['date']] = $holiday;
+        }
+        foreach ($islamic as $holiday) {
+            // L'islamique ne remplace jamais un férié déjà enregistré.
+            $byDate[$holiday['date']] ??= $holiday;
+        }
+
+        $merged = array_values($byDate);
+        usort($merged, fn (array $a, array $b): int => strcmp((string) $a['date'], (string) $b['date']));
+
+        return $merged;
     }
 
     /**
@@ -75,8 +115,8 @@ class PublicHolidayService
      * override entreprise).
      *
      * @param  Carbon  $start  début inclus
-     * @param  Carbon  $end    fin inclusive
-     * @param  array<int, array{date: string, name: string, holiday_type: string, company_id: string|null}>|null  $holidays  liste préchargée (optionnel)
+     * @param  Carbon  $end  fin inclusive
+     * @param  array<int, array{date: string, name: string, holiday_type: string, company_id: string|int|null}>|null  $holidays  liste préchargée (optionnel)
      * @param  array<int, int>  $restDays  jours de repos ISO (1=lundi..7=dimanche) ; défaut samedi+dimanche
      */
     public function workingDaysBetween(
@@ -107,9 +147,7 @@ class PublicHolidayService
 
         $holidayDates = [];
         foreach ($holidays as $holiday) {
-            /** @var string $date */
-            $date = $holiday['date'];
-            $holidayDates[$date] = true;
+            $holidayDates[(string) $holiday['date']] = true;
         }
 
         $workingDays = 0.0;
@@ -151,7 +189,7 @@ class PublicHolidayService
      */
     public function forget(string $countryCode, int $year, ?string $companyId = null): void
     {
-        $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) $companyId);
+        $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) ($companyId ?? 'null'));
         $this->cache->forget($cacheKey);
     }
 }

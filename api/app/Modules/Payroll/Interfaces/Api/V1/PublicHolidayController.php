@@ -25,14 +25,12 @@ use Illuminate\Validation\Rule;
  */
 class PublicHolidayController extends Controller
 {
-    public function __construct(private readonly PublicHolidayService $holidays)
-    {
-    }
+    public function __construct(private readonly PublicHolidayService $holidays) {}
 
     public function index(Request $request): JsonResponse
     {
-        $countryCode = strtoupper((string) $request->input('country_code', 'DZ'));
-        $year = (int) $request->input('year', (int) now()->year);
+        $countryCode = strtoupper((string) $request->string('country_code', 'DZ'));
+        $year = $request->integer('year', (int) now()->year);
 
         $companyId = $this->companyScope($request);
 
@@ -84,9 +82,10 @@ class PublicHolidayController extends Controller
         $data['company_id'] = $holiday->company_id; // inchangé : le scope est verrouillé
 
         $holiday->update($data);
-        $holiday->refresh();
 
         $this->holidays->forget($holiday->country_code, (int) $holiday->year, $holiday->company_id);
+
+        $holiday->refresh();
 
         return response()->json(['data' => $this->serialize($holiday)]);
     }
@@ -109,7 +108,7 @@ class PublicHolidayController extends Controller
     }
 
     /**
-     * Super-admin → NULL (national) ; principal → sa société (uuid).
+     * Super-admin → NULL (national) ; principal → sa société.
      */
     private function companyScope(Request $request): ?string
     {
@@ -123,7 +122,7 @@ class PublicHolidayController extends Controller
             return $user->company_id;
         }
 
-        abort(403, __('payroll.public_holidays_admin_only'));
+        abort(403, 'Seul un super-admin ou un manager principal peut gérer les jours fériés.');
     }
 
     private function authorizeWrite(Request $request, PublicHoliday $holiday): void
@@ -142,7 +141,7 @@ class PublicHolidayController extends Controller
             return;
         }
 
-        abort(403, __('payroll.public_holidays_company_only'));
+        abort(403, 'Un manager principal ne peut modifier que les jours fériés de sa propre entreprise.');
     }
 
     /**
@@ -150,7 +149,7 @@ class PublicHolidayController extends Controller
      */
     private function validatePayload(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'country_code' => ['required', 'string', 'size:2'],
             'name' => ['required', 'string', 'max:120'],
             'date' => ['required', 'date'],
@@ -159,6 +158,9 @@ class PublicHolidayController extends Controller
             'month_day' => ['nullable', 'string', 'max:5', 'regex:/^\d{2}-\d{2}$/'],
             'holiday_type' => ['required', Rule::in(['fixed', 'islamic', 'christian', 'custom'])],
         ]);
+
+        /** @var array{country_code: string, name: string, date: string, year: int, is_recurring: bool, month_day: string|null, holiday_type: string} $validated */
+        return $validated;
     }
 
     /**

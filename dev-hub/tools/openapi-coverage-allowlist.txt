@@ -376,3 +376,6 @@ GET v1admin/public-holidays
 POST v1admin/public-holidays
 PUT v1admin/public-holidays/{param}
 DELETE v1admin/public-holidays/{param}
+GET v1admin/islamic-calendar
+POST v1admin/islamic-calendar/confirm-year/{param}
+PUT v1admin/islamic-calendar/{param}/{param}

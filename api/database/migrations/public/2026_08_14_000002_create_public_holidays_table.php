@@ -28,6 +28,7 @@ return new class extends Migration
 
         Schema::create('public_holidays', function (Blueprint $table): void {
             $table->id();
+            // Convention du codebase : company_id est un UUID (clé de `companies`).
             $table->uuid('company_id')->nullable()->index();
             $table->string('country_code', 2);
             $table->string('name', 120);

@@ -160,6 +160,18 @@ class LeopardoClient:
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
 
+    def listislamiccalendar(self, **kwargs):
+        """Lister les fêtes islamiques d'une année (super-admin)"""
+        return self.request("GET", "/admin/islamic-calendar", **kwargs)
+
+    def updateislamiccalendarholiday(self, **kwargs):
+        """Modifier/confirmer une fête islamique (super-admin)"""
+        return self.request("PUT", "/admin/islamic-calendar/{holidayKey}/{year}", **kwargs)
+
+    def confirmislamiccalendaryear(self, **kwargs):
+        """Confirmer toutes les dates islamiques d'une année (super-admin)"""
+        return self.request("POST", "/admin/islamic-calendar/confirm-year/{year}", **kwargs)
+
     def get_admin_platform_marketing_oauth_config(self, **kwargs):
         """Config OAuth marketing (super-admin)"""
         return self.request("GET", "/admin/platform/marketing/oauth-config", **kwargs)

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Payroll;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Models\IslamicCalendar;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -19,19 +21,11 @@ class PublicHolidayServiceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Le service cache par pays/année (Redis en CI) : purger le cache
-        // entre les tests pour éviter qu'un jeu de fériés d'un test ne
-        // pollue les assertions du suivant (clés identiques DZ/2026).
-        Cache::flush();
-    }
-
     private function service(): PublicHolidayService
     {
-        return new PublicHolidayService(Cache::store());
+        // Issue #1812 : le service jours fériés fusionne les fêtes islamiques
+        // mobiles avec les fériés fixes (test_islamic_holidays_merged_with_fixed).
+        return new PublicHolidayService(Cache::store(), new IslamicCalendarService(Cache::store()));
     }
 
     public function test_working_days_excludes_holidays_and_weekends(): void
@@ -102,12 +96,10 @@ class PublicHolidayServiceTest extends TestCase
             restDays: [5, 6],
         );
 
-        // Semaine du 13/07/2026 : lun 13, mar 14, mer 15, jeu 16, ven 17
-        // (repos), sam 18 (repos), dim 19 → 5 jours ouvrés sans férié dans la
-        // période ; le férié national du 05/07 est hors période.
+        // Semaine du 13/07/2026 : lun 13, mar 14, mer 15, jeu 16, ven 17 (repos),
+        // sam 18 (repos), dim 19 (ouvré en DZ — week-end = vendredi/samedi).
         $this->assertSame(5.0, $national);
-        // Avec l'override entreprise, le pont du 15/07 retire un jour ouvré.
-        $this->assertSame(4.0, $withCompany);
+        $this->assertSame(4.0, $withCompany); // le pont du 15 retire un jour ouvré
     }
 
     public function test_fallback_when_no_holidays_configured(): void
@@ -153,5 +145,51 @@ class PublicHolidayServiceTest extends TestCase
 
         $this->assertCount(1, $national);
         $this->assertCount(2, $withCompany);
+    }
+
+    public function test_islamic_holidays_merged_with_fixed(): void
+    {
+        // Issue #1812 — les fêtes islamiques mobiles (table islamic_calendar)
+        // enrichissent le calendrier des fériés fixes au runtime.
+        IslamicCalendar::create([
+            'holiday_key' => 'eid_al_adha',
+            'year' => 2026,
+            'gregorian_date' => '2026-05-27',
+            'duration_days' => 2,
+            'source' => 'computed',
+            'confirmed' => false,
+        ]);
+
+        PublicHoliday::create([
+            'company_id' => null,
+            'country_code' => 'CM',
+            'name' => 'Fête nationale',
+            'date' => '2026-05-20',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => '05-20',
+            'holiday_type' => 'fixed',
+        ]);
+
+        // CM fête l'Aïd el-Adha 2 jours (config islamic_holidays_map).
+        $holidays = $this->service()->getHolidays('CM', 2026);
+
+        $dates = array_column($holidays, 'date');
+        $this->assertContains('2026-05-20', $dates); // fixe
+        $this->assertContains('2026-05-27', $dates); // islamique jour 1
+        $this->assertContains('2026-05-28', $dates); // islamique jour 2
+
+        $islamic = collect($holidays)->firstWhere('date', '2026-05-27');
+        $this->assertSame('islamic', $islamic['holiday_type']);
+
+        // workingDaysBetween intègre les deux fériés islamiques.
+        $days = $this->service()->workingDaysBetween(
+            Carbon::parse('2026-05-25'),
+            Carbon::parse('2026-05-29'),
+            'CM',
+            holidays: $holidays,
+            restDays: [6, 7],
+        );
+        $this->assertSame(3.0, $days); // lun 25, mar 26, jeu 28 chômé… → mer 27 & jeu 28 chômés → 25,26,29
     }
 }

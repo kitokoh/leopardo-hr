@@ -7142,6 +7142,98 @@ paths:
           description: "Supprimé"
         "401": { $ref: "#/components/responses/Error401" }
         "403": { $ref: "#/components/responses/Error403" }
+  /admin/islamic-calendar:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les fêtes islamiques d'une année (super-admin)"
+      description: "Issue #1812 — Calendrier islamique dynamique : dates mobiles des fêtes islamiques (Aïd el-Fitr, Aïd el-Adha/Tabaski, Maouloud, Tamkharit, Nouvel an hégirien) saisies par année. Uniquement accessible au super-admin (guard super_admin_api)."
+      operationId: listIslamicCalendar
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fêtes islamiques de l'année + compteur de dates non confirmées"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/IslamicCalendarHoliday"
+                  meta:
+                    type: object
+                    properties:
+                      year: { type: integer }
+                      unconfirmed_count: { type: integer }
+                      unconfirmed:
+                        type: array
+                        items: { type: object }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/islamic-calendar/confirm-year/{year}:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Confirmer toutes les dates islamiques d'une année (super-admin)"
+      operationId: confirmIslamicCalendarYear
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Année confirmée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      year: { type: integer }
+                      confirmed_count: { type: integer }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /admin/islamic-calendar/{holidayKey}/{year}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier/confirmer une fête islamique (super-admin)"
+      operationId: updateIslamicCalendarHoliday
+      parameters:
+        - name: holidayKey
+          in: path
+          required: true
+          schema: { type: string, enum: [eid_al_fitr, eid_al_adha, mawlid, tahmarit, muharram] }
+        - name: year
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IslamicCalendarHolidayInput"
+      responses:
+        "200":
+          description: "Fête islamique mise à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/IslamicCalendarHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
   /public-holidays:
     get:
       tags: ["Payroll Engine"]
@@ -16420,7 +16512,7 @@ components:
       type: object
       properties:
         id: { type: integer }
-        company_id: { type: string, format: uuid, nullable: true }
+        company_id: { type: string, nullable: true }
         country_code: { type: string }
         name: { type: string }
         date: { type: string, format: date }
@@ -16439,3 +16531,27 @@ components:
         is_recurring: { type: boolean, default: false }
         month_day: { type: string, nullable: true }
         holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }
+
+    IslamicCalendarHoliday:
+      type: object
+      properties:
+        id: { type: integer }
+        holiday_key: { type: string, enum: [eid_al_fitr, eid_al_adha, mawlid, tahmarit, muharram] }
+        name: { type: string }
+        year: { type: integer }
+        gregorian_date: { type: string, format: date }
+        duration_days: { type: integer }
+        source: { type: string, enum: [manual, api, computed] }
+        confirmed: { type: boolean }
+        confirmed_by: { type: integer, nullable: true }
+        countries:
+          type: array
+          items: { type: string }
+    IslamicCalendarHolidayInput:
+      type: object
+      required: [gregorian_date, duration_days]
+      properties:
+        gregorian_date: { type: string, format: date }
+        duration_days: { type: integer, minimum: 1, maximum: 5 }
+        confirmed: { type: boolean, default: true }
+        source: { type: string, enum: [manual, api, computed], default: manual }

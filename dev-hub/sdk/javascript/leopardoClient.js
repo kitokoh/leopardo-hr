@@ -175,6 +175,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/hr-reports", options);
     },
 
+    /** Lister les fêtes islamiques d'une année (super-admin) */
+    listIslamicCalendar(options = {}) {
+      return request("GET", "/admin/islamic-calendar", options);
+    },
+
+    /** Modifier/confirmer une fête islamique (super-admin) */
+    updateIslamicCalendarHoliday(options = {}) {
+      return request("PUT", "/admin/islamic-calendar/{holidayKey}/{year}", options);
+    },
+
+    /** Confirmer toutes les dates islamiques d'une année (super-admin) */
+    confirmIslamicCalendarYear(options = {}) {
+      return request("POST", "/admin/islamic-calendar/confirm-year/{year}", options);
+    },
+
     /** Config OAuth marketing (super-admin) */
     getAdminPlatformMarketingOauthConfig(options = {}) {
       return request("GET", "/admin/platform/marketing/oauth-config", options);
