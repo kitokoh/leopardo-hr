@@ -21,8 +21,8 @@ use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class PayrollCalculator
 {
@@ -472,18 +472,30 @@ class PayrollCalculator
         }
 
         // F-20 (#1816) — compter les jours distincts avec au moins 1 log
-        // valide (source réelle de présence). Garde défensive sur la table :
-        // sans elle, les golden tests purs et environnements sans migration
-        // tenant retomberaient sur une QueryException au lieu du fallback.
+        // valide (source réelle de présence). #1925 : garde résolue via le
+        // search_path (`schemaTableExists`, CONVENTIONS §2.6/#1613) au lieu
+        // de `Schema::hasTable()` qui ne voit que `current_schema()` — en
+        // contexte multi-schéma (CI : shared_tenants,public / local :
+        // public,shared_tenants) le garde nu répondait faux à tort → repli
+        // silencieux sur le prorata du contrat et `actual_days_worked` faux
+        // sans aucun signal (revue lead #1862).
         $distinctDays = 0;
-        if (Schema::hasTable('attendance_logs')) {
-            $distinctDays = (int) AttendanceLog::query()
-                ->where('company_id', $run->company_id)
-                ->where('employee_id', $employee->id)
-                ->whereBetween('date', [$run->period_start, $run->period_end])
-                ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
-                ->distinct('date')
-                ->count('date');
+        if (schemaTableExists('attendance_logs')) {
+            try {
+                $distinctDays = (int) AttendanceLog::query()
+                    ->where('company_id', $run->company_id)
+                    ->where('employee_id', $employee->id)
+                    ->whereBetween('date', [$run->period_start, $run->period_end])
+                    ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+                    ->distinct('date')
+                    ->count('date');
+            } catch (QueryException) {
+                // Garde défensive : table partiellement migrée ou supprimée
+                // entre la vérification et la requête → repli sur le prorata
+                // (comportement historique pour les environnements sans
+                // migration tenant, ex. golden tests purs).
+                $distinctDays = 0;
+            }
         }
 
         $hasAttendanceData = $distinctDays > 0;
