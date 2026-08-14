@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
+use Tests\Support\ProductionConfidenceRules;
 use Tests\TestCase;
 
 /**
@@ -151,5 +152,34 @@ class PayrollCalculationContractTest extends TestCase
         $this->assertEquals($contract['gross'], 60000.0);
         $this->assertEquals($contract['net_salary'], 60000.0 - $contract['social_employee'] - $contract['income_tax']);
         $this->assertEquals($contract['total_cost'], $contract['gross'] + $contract['social_employer']);
+    }
+
+    /**
+     * Issue #1872 — le contrat de calcul expose le niveau de confiance ET
+     * l'avertissement de conformité localisé pour les trois niveaux
+     * (production / pilot / placeholder) : un client ne doit jamais
+     * confondre une règle pilote/placeholder avec une paie certifiée.
+     */
+    public function test_contract_exposes_confidence_level_and_compliance_warning_for_all_levels(): void
+    {
+        // Registre réel : CI = pilot (barèmes CGI 2024 à valider), CA = placeholder.
+        $pilot = $this->presenter()->present('CI', 500000.0);
+        $this->assertSame('pilot', $pilot['confidence_level']);
+        $this->assertStringContainsString('pilot', strtolower($pilot['compliance_warning']));
+        $this->assertNotSame('', $pilot['compliance_warning']);
+
+        $placeholder = $this->presenter()->present('CA', 5000.0);
+        $this->assertSame('placeholder', $placeholder['confidence_level']);
+        $this->assertStringContainsString('placeholder', strtolower($placeholder['compliance_warning']));
+        $this->assertNotSame('', $placeholder['compliance_warning']);
+
+        // Aucune juridiction réelle n'est 'production' : stub dédié (#1872).
+        $production = (new PayrollCalculationPresenter(
+            new CountryRulesResolver([new ProductionConfidenceRules]),
+        ))->present('ZZ', 1000.0);
+
+        $this->assertSame('production', $production['confidence_level']);
+        $this->assertStringContainsString('production', strtolower($production['compliance_warning']));
+        $this->assertNotSame('', $production['compliance_warning']);
     }
 }

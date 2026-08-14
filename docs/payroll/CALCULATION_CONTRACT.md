@@ -75,6 +75,7 @@ composants, les deux chemins retournent rigoureusement le même net.
       "rules_period": "2026-08-14",       // date d'effet des règles résolues
       "slab_version": "a1b2c3d4e5f6",     // empreinte sha256 des barèmes (tranches + cotisations)
       "confidence_level": "pilot",        // production | pilot | placeholder (expert-comptable requis pour « production »)
+      "compliance_warning": "…",          // avertissement de conformité localisé (issue #1872) — langue de la requête
       "rounding_policy": "…",             // politique d'arrondi (résumé)
 
       "gross": 60000.0,

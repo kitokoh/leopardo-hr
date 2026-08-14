@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-14T14:30:00Z",
+  "_updated_at": "2026-08-14T18:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -306,6 +306,27 @@
         "placeholder_id": "Your Client ID",
         "placeholder_secret": "New secret (optional)",
         "placeholder_uri": "https://example.com/oauth/callback"
+      }
+    }
+  },
+  "payroll": {
+    "confidence": {
+      "label": "Payroll rules confidence",
+      "level_production": "Production",
+      "level_pilot": "Pilot",
+      "level_placeholder": "Placeholder",
+      "level_unknown": "Unknown",
+      "production": {
+        "message": "Legally validated and in production use for {country}, but always confirm current rates with local counsel before relying on these amounts for statutory filings."
+      },
+      "pilot": {
+        "message": "Pilot ruleset for {country}: figures are sourced from general public labor-code references but not yet legally validated locally. Confirm with local legal/tax counsel before relying on these figures (tax slabs, social contributions, overtime thresholds) for statutory compliance."
+      },
+      "placeholder": {
+        "message": "Structure-only placeholder for {country}: tax/social-contribution figures are not yet researched and must not be used for real payroll runs without replacing them first."
+      },
+      "unknown": {
+        "message": "No payroll rules are available for {country} yet: payroll calculation is not available for this country."
       }
     }
   },

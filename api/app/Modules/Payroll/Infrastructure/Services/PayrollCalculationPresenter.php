@@ -20,7 +20,7 @@ use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
  *   gross · social_employee · tax_base · income_tax · bracket_tax ·
  *   other_deductions · net_salary · social_employer · total_cost
  *   + country_code · currency · rules_identifier · rules_period ·
- *     slab_version · confidence_level · rounding_policy
+ *     slab_version · confidence_level · compliance_warning · rounding_policy
  *
  * Politique d'arrondi (uniforme, docs/payroll/CALCULATION_CONTRACT.md) :
  * l'impôt est calculé sur l'assiette NON arrondie (brut − cotisations,
@@ -42,6 +42,7 @@ class PayrollCalculationPresenter
      *   slab_version: string,
      *   rules_version: string,
      *   confidence_level: string,
+     *   compliance_warning: string,
      *   rounding_policy: string,
      *   gross: float,
      *   social_employee: float,
@@ -71,6 +72,7 @@ class PayrollCalculationPresenter
             'slab_version' => $this->slabVersion($rules),
             'rules_version' => $rules->rulesVersion(),
             'confidence_level' => $rules->confidenceLevel(),
+            'compliance_warning' => ComplianceWarningLocalizer::for($rules),
             'rounding_policy' => self::ROUNDING_POLICY,
             'gross' => round($gross, 2),
             'social_employee' => $breakdown['social']['employee'],

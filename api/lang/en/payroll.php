@@ -8,4 +8,22 @@ return [
     'rate_delete_draft_only' => "Only a draft row can be deleted.",
     'rate_country_unsupported' => "Unsupported country.",
     'tax_scale_default_name' => ":country legal tax scale :year",
+    // Issue #1872 — payroll rules confidence level: localized messages
+    // consumed via Lang::get('payroll.confidence.*') at the API boundary
+    // (presenter, simulation, supported-countries registry).
+    'confidence' => [
+        'label' => 'Payroll rules confidence',
+        'production' => [
+            'message' => 'Legally validated and in production use for :country, but always confirm current rates with local counsel before relying on this for statutory filings.',
+        ],
+        'pilot' => [
+            'message' => 'Pilot ruleset for :country, sourced from general public labor-code references but not yet legally validated locally. Confirm with local legal/tax counsel before relying on these figures (tax slabs, social contributions, overtime thresholds) for statutory compliance.',
+        ],
+        'placeholder' => [
+            'message' => 'Structure-only placeholder for :country: tax/social-contribution figures are not yet researched and must not be used for real payroll runs without replacing them first.',
+        ],
+        'unknown' => [
+            'message' => 'No payroll rules are available for :country yet: payroll calculation is not available for this country.',
+        ],
+    ],
 ];

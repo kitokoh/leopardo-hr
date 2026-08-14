@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Infrastructure\Services\ComplianceWarningLocalizer;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
@@ -116,6 +117,11 @@ class PayrollSimulationController extends Controller
             'data' => [
                 'gross' => $gross,
                 'country_code' => $countryCode,
+                // Issue #1872 — niveau de confiance + avertissement de
+                // conformité localisé : une simulation pilote/placeholder ne
+                // doit jamais être prise pour une paie certifiée.
+                'confidence_level' => $rules->confidenceLevel(),
+                'compliance_warning' => ComplianceWarningLocalizer::for($rules),
                 'social_employee' => $social['employee'],
                 'social_employer' => $social['employer'],
                 'tax_base' => $taxBase,

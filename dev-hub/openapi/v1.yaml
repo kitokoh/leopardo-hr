@@ -6310,6 +6310,7 @@ paths:
                         currency: { type: string }
                         timezone: { type: string }
                         confidence: { type: string, enum: [production, pilot, placeholder, unknown] }
+                        compliance_warning: { type: string }
                         available: { type: boolean }
         "401":
           $ref: "#/components/responses/Error401"
@@ -8486,6 +8487,7 @@ paths:
                           rules_period: { type: string, format: date }
                           slab_version: { type: string }
                           confidence_level: { type: string, enum: [production, pilot, placeholder] }
+                          compliance_warning: { type: string }
                           rounding_policy: { type: string }
                           gross: { type: number }
                           social_employee: { type: number }
@@ -16593,6 +16595,8 @@ components:
       properties:
         gross: { type: number }
         country_code: { type: string }
+        confidence_level: { type: string, enum: [production, pilot, placeholder, unknown] }
+        compliance_warning: { type: string }
         social_employee: { type: number }
         social_employer: { type: number }
         tax_base: { type: number }

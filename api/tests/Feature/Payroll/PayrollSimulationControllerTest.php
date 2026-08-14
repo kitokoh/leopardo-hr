@@ -8,8 +8,11 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use Illuminate\Support\Facades\Lang;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
+use Tests\Support\ProductionConfidenceRules;
 use Tests\TestCase;
 
 /**
@@ -119,5 +122,63 @@ class PayrollSimulationControllerTest extends TestCase
             'country_code' => 'DZ',
             'gross_salary' => 60000,
         ])->assertStatus(401);
+    }
+
+    /**
+     * Issue #1872 — la simulation expose le niveau de confiance ET
+     * l'avertissement de conformité localisé (catalogue payroll.confidence.*) :
+     * une simulation sur une règle pilote ne doit jamais passer pour une
+     * paie légalement certifiée.
+     */
+    public function test_simulate_exposes_confidence_level_and_localized_compliance_warning(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $data = $this->postJson('/api/v1/payroll/simulate', [
+            'country_code' => 'DZ',
+            'gross_salary' => 60000,
+        ])->assertOk()->json('data');
+
+        $this->assertSame('pilot', $data['confidence_level']);
+        $this->assertSame(
+            Lang::get('payroll.confidence.pilot.message', ['country' => 'DZ']),
+            $data['compliance_warning'],
+        );
+    }
+
+    public function test_simulate_exposes_placeholder_confidence_for_placeholder_rules(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $data = $this->postJson('/api/v1/payroll/simulate', [
+            'country_code' => 'CA',
+            'gross_salary' => 5000,
+        ])->assertOk()->json('data');
+
+        $this->assertSame('placeholder', $data['confidence_level']);
+        $this->assertSame(
+            Lang::get('payroll.confidence.placeholder.message', ['country' => 'CA']),
+            $data['compliance_warning'],
+        );
+    }
+
+    public function test_simulate_exposes_production_confidence_for_production_rules(): void
+    {
+        // Aucune juridiction réelle n'est 'production' : stub dédié (#1872),
+        // injecté via le conteneur (mêmes règles que le registre par défaut).
+        $this->app->instance(PayrollCalculator::class, new PayrollCalculator([new ProductionConfidenceRules]));
+
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $data = $this->postJson('/api/v1/admin/payroll/simulate', [
+            'country_code' => 'ZZ',
+            'gross_salary' => 100000,
+        ])->assertOk()->json('data');
+
+        $this->assertSame('production', $data['confidence_level']);
+        $this->assertSame(
+            Lang::get('payroll.confidence.production.message', ['country' => 'ZZ']),
+            $data['compliance_warning'],
+        );
     }
 }
