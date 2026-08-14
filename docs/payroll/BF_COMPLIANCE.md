@@ -89,3 +89,14 @@ OHADA) — paliers `1.15` / `1.35`, seuil légal 40 h/semaine.
 Fixes : 1ᵉʳ janvier, 3 janvier (Fête de la Révolution), 8 mars, 1ᵉʳ mai,
 11 décembre (Fête Nationale), 25 décembre + fêtes islamiques mobiles (via
 table `islamic_calendar`, #1812). Gestion dynamique via #1811.
+
+## 11. Déclaration CNSS (CSV)
+
+Déclaration mensuelle CNSS Burkina Faso via `CedeaoCnsDeclarationGenerator`
+(#2158) — endpoint `GET /payroll-runs/{run}/declarations/cedeao-cns`
+(RBAC manager, 404 cross-tenant, 422 hors BF/ML). Une ligne par bulletin
+validé : matricule, nom, prénom, brut, assiette plafonnée
+(min(brut, 900 000 XOF)), retraite salariale 5,5 %, retraite patronale
+6,5 %, famille patronale 7,0 % (plafond 900 000), AT patronale 3,5 %
+(non plafonné, pilote) + ligne TOTAUX. Format interne documenté — à valider
+avec un comptable CNSS local.

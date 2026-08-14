@@ -85,3 +85,14 @@ Fixes : 1ᵉʳ janvier, 20 janvier (Fête de l'Armée), 26 mars, 1ᵉʳ mai,
 25 mai (Fête Nationale), 22 septembre (Fête de l'Indépendance),
 25 décembre + fêtes islamiques mobiles (via table `islamic_calendar`,
 #1812). Gestion dynamique via #1811.
+
+## 11. Déclaration INPS (CSV)
+
+Déclaration mensuelle INPS Mali via `CedeaoCnsDeclarationGenerator`
+(#2158) — endpoint `GET /payroll-runs/{run}/declarations/cedeao-cns`
+(RBAC manager, 404 cross-tenant, 422 hors BF/ML). Une ligne par bulletin
+validé : matricule, nom, prénom, brut, assiette plafonnée
+(min(brut, 3 000 000 XOF)), retraite salariale 3,6 %, retraite patronale
+7,4 % (plafond 3 000 000), famille patronale 4,0 % (non plafonné, pilote),
+AT patronale 2,0 % (non plafonné, pilote) + ligne TOTAUX. Format interne
+documenté — à valider avec un comptable INPS local.

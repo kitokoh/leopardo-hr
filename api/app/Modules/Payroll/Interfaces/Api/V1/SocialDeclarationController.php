@@ -9,6 +9,7 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
@@ -393,8 +394,42 @@ class SocialDeclarationController extends Controller
         ]);
     }
 
-    private function companyRegistrationNumber(?Company $company): string
+    /**
+     * CEDEAO (#2158) — déclaration CNSS mensuelle Burkina Faso (CSV) /
+     * INPS mensuelle Mali (CSV) : une ligne par bulletin validé + totaux.
+     * 422 si le run n'est pas BF/ML.
+     */
+    public function generateCedeaoCnsDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+        if (! in_array($payrollRun->country_code, ['BF', 'ML'], true)) {
+            return response()->json(['message' => 'Ce run ne concerne ni le Burkina Faso (CNSS BF) ni le Mali (INPS ML).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cedeao_cns_declaration');
+
+        $generator = new CedeaoCnsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $scheme = $payrollRun->country_code === 'BF' ? 'CNSS_BF' : 'INPS_ML';
+        $filename = sprintf('%s_%d_%s.csv', $scheme, $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    private function companyRegistrationNumber(?Company $company): string    {
         if ($company === null) {
             return '';
         }

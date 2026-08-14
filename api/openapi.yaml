@@ -7277,6 +7277,33 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cedeao-cns:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS BF / INPS ML mensuelle — CSV (CEDEAO #2158)"
+      description: "CSV Burkina Faso (CNSS) ou Mali (INPS) : une ligne par bulletin validé (matricule CNSS/INPS, nom, prénom, brut, assiette plafonnée, retraite salariale/patronale, famille patronale, AT patronale, totaux) + TOTAUX. Assiettes alignées sur CedeaoPayrollRules::calculateSocialCharges() (BF : plafond 900 000 XOF, retraite 5,5 %/6,5 %, famille 7 %, AT 3,5 % non plafonné ; ML : plafond 3 000 000 XOF, retraite 3,6 %/7,4 %, famille 4 % + AT 2 % non plafonnés). 422 si le run n'est ni BF ni ML. RBAC manager ; 404 cross-tenant."
+      operationId: downloadCedeaoCnsDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS BF / INPS ML"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/declarations/cnps-cm:
     get:
       tags: ["Payroll Engine"]
