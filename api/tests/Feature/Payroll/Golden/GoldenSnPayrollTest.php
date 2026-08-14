@@ -24,6 +24,7 @@ use Tests\TestCase;
  *                        / × 3,6 % (pat.), si brut > 432 000
  *   CSS familiale 3 % + AT 1 % + CFCE 3 % (patronal, non plafonnés)
  *   IR      = progressif annuel / 12 sur assiette = (brut − IPRES sal.) × 0,70
+ *   (abattement 30 % appliqué par SenegalPayrollRules::calculateIncomeTax)
  *   TRIMF   = forfait mensuel par tranche de brut (6 tranches)
  */
 class GoldenSnPayrollTest extends TestCase
@@ -51,8 +52,8 @@ class GoldenSnPayrollTest extends TestCase
     public function test_golden_sn_ouvrier_100000(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §1-3), brut 100 000 :
-        //   IPRES salariale = 5 600 · Assiette IR = (100 000 − 5 600) × 0,70
-        //   = 66 080 → annuel 792 960 → 20 % sur 162 960 = 32 592 → IR 2 716,00
+        //   IPRES salariale = 5 600 · Assiette IR = (100 000 − 5 600) = 94 400,
+        //   abattement 30 % appliqué par calculateIncomeTax → 66 080 → annuel 792 960
         //   TRIMF tranche 75 001–150 000 → 5 400
         $rules = $this->rules();
 
@@ -61,7 +62,7 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame(5600.0, $charges['employee']);
         $this->assertSame(15400.0, $charges['employer']);
 
-        $base = (100000.0 - $charges['employee']) * 0.70;
+        $base = 100000.0 - $charges['employee'];
         $this->assertSame(2716.0, $rules->calculateIncomeTax($base));
         $this->assertSame(5400.0, $rules->calculateBracketTax(100000.0));
     }
@@ -69,7 +70,7 @@ class GoldenSnPayrollTest extends TestCase
     public function test_golden_sn_employe_250000(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §1-3), brut 250 000 :
-        //   IPRES salariale = 14 000 · Assiette IR = 236 000 × 0,70 = 165 200
+        //   IPRES salariale = 14 000 · Assiette IR = 236 000 (abattement 30 %
         //   → annuel 1 982 400 → 20 % sur 870 000 = 174 000
         //     + 30 % sur 482 400 = 144 720 → 318 720 → IR 26 560,00
         //   TRIMF tranche 150 001–350 000 → 9 000 · CFCE = 250 000 × 3 % = 7 500
@@ -80,7 +81,7 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame(14000.0, $charges['employee']);
         $this->assertSame(38500.0, $charges['employer']);
 
-        $base = (250000.0 - $charges['employee']) * 0.70;
+        $base = 250000.0 - $charges['employee'];
         $this->assertSame(26560.0, $rules->calculateIncomeTax($base));
         $this->assertSame(9000.0, $rules->calculateBracketTax(250000.0));
     }
@@ -201,12 +202,12 @@ class GoldenSnPayrollTest extends TestCase
     public function test_golden_sn_ir_tranche_40_pct(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §1), brut 3 000 000 :
-        //   IPRES salariale 65 664 → assiette = (3 000 000 − 65 664) × 0,70
+        //   IPRES salariale 65 664 → assiette = 3 000 000 − 65 664 (abattement 30 %
         //   = 2 054 035,20 → annuel 24 648 422,40 → 40 % au-delà de 13 500 000.
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(3000000.0);
-        $base = (3000000.0 - $charges['employee']) * 0.70;
+        $base = 3000000.0 - $charges['employee'];
 
         $this->assertSame(734864.08, $rules->calculateIncomeTax($base));
     }
@@ -271,11 +272,11 @@ class GoldenSnPayrollTest extends TestCase
     public function test_golden_sn_ir_progressive(float $gross, float $expectedIr): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §1-2) : IR progressif annuel / 12
-        // sur assiette = (brut − IPRES salariale) × 0,70.
+        // sur assiette = (brut − IPRES salariale) ; l'abattement 30 % est appliqué
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges($gross);
-        $base = ($gross - $charges['employee']) * 0.70;
+        $base = $gross - $charges['employee'];
 
         $this->assertSame($expectedIr, $rules->calculateIncomeTax($base));
     }
@@ -283,12 +284,12 @@ class GoldenSnPayrollTest extends TestCase
     public static function irProvider(): array
     {
         return [
-            'tranche 0 % (annuel ≤ 630k)'  => [100000.0, 2716.0],
-            'tranche 20 %'                 => [250000.0, 26560.0],
-            'tranche 30 %'                 => [600000.0, 100418.45],
-            'tranche 35 %'                 => [1000000.0, 196203.58],
-            'tranche 37 %'                 => [2160000.0, 499664.08],
-            'tranche 40 %'                 => [3000000.0, 734864.08],
+            'tranche 20 % (annuel 792 960)' => [100000.0, 2716.0],
+            'tranche 30 % (annuel 1 982 400)' => [250000.0, 26560.0],
+            'tranche 35 % (annuel 4 802 918,40)' => [600000.0, 100418.45],
+            'tranche 37 % (annuel 8 082 278,40)' => [1000000.0, 196203.58],
+            'tranche 40 % (annuel 17 592 422,40)' => [2160000.0, 499664.08],
+            'tranche 40 % (annuel 24 648 422,40)' => [3000000.0, 734864.08],
         ];
     }
 }

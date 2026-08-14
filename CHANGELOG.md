@@ -2,6 +2,11 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [Unreleased]
+
+### Added
+- **test(payroll): golden tests paie Sénégal — 28 cas calculés à la main (Closes #1828).** `GoldenSnPayrollTest` : SMIG (58 900), ouvrier (100 000), employé (250 000), plafond IPRES T1 (432 000), T2 cadres (1 000 000), tranche 40 % (3 000 000), provider IR progressif 6 tranches (abrégé 792 960 → 24 648 422,40 annuels), CNSS/IPRES salariales et patronales, TRIMF 6 tranches, CFCE, préavis, prorata. Chaque valeur est recalculée à la main dans les commentaires (méthodologie golden F-03/F-13) ; les cas IR verrouillent désormais l'assiette réelle du moteur (brut − cotisations), l'abattement 30 % étant appliqué par `SenegalPayrollRules::calculateIncomeTax` (suivi review #1847).
+
 ### Added
 - **feat(payroll): Sénégal (SN) — pilot vers prêt pour production : TRIMF + CFCE + IPRES cadres T2 + plafonds (Closes #1827).** `SenegalPayrollRules` : TRIMF 6 tranches forfaitaires via `calculateBracketTax()` (900 → 36 000 XOF, portée dans le bulletin), CFCE 3 % patronal sur masse brute (`CFCE_SN_PAT`), IPRES T1 plafonné à 432 000 XOF/mois (5,6 %/8,4 %) + régime cadres T2 sur tranche 432 001-2 160 000 (2,4 %/3,6 %, hypothèse pilote brut > 432 k), CSS famille 3 % + AT 1 %, abattement frais professionnels 30 % non plafonné, préavis niveau employé (30 j — matrice 8 j/1 m/3 m documentée), `confidenceLevel()` reste `pilot` (validation expert SN requise). Référentiel `docs/payroll/SN_COMPLIANCE.md` créé ; tests unitaires `SenegalRulesUnitTest` (5 cas : TRIMF 6 tranches, CFCE, plafond T1, T2 cadres, abattement) + `PayrollCountryRulesTest` aligné (SN : 56/154).
 
