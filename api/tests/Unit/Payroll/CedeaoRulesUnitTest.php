@@ -86,11 +86,12 @@ class CedeaoRulesUnitTest extends TestCase
     public function test_ci_notice_period_employee_level(): void
     {
         // Code du travail CI art. 18 — niveau employé/technicien
-        // (CI_COMPLIANCE.md §8) : < 5 ans → 30 j ; ≥ 5 ans → 60 j.
-        $this->assertSame(30.0, $this->ci()->noticePeriodDays(3.0));
-        $this->assertSame(30.0, $this->ci()->noticePeriodDays(4.9));
-        $this->assertSame(60.0, $this->ci()->noticePeriodDays(5.0));
-        $this->assertSame(60.0, $this->ci()->noticePeriodDays(12.0));
+        // (CI_COMPLIANCE.md §8) : < 5 ans → 22 j ouvrés ; ≥ 5 ans → 44
+        // (issue #2219 — jours OUVRÉS, alignement DZ #1943).
+        $this->assertSame(22.0, $this->ci()->noticePeriodDays(3.0));
+        $this->assertSame(22.0, $this->ci()->noticePeriodDays(4.9));
+        $this->assertSame(44.0, $this->ci()->noticePeriodDays(5.0));
+        $this->assertSame(44.0, $this->ci()->noticePeriodDays(12.0));
     }
 
     public function test_ci_exposes_pilot_metadata(): void

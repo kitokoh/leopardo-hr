@@ -329,18 +329,24 @@ class CemacPayrollRules extends AbstractCountryRules
             // ouvriers (8 jours) et cadres (3 mois) documentés dans
             // GA_COMPLIANCE.md §7 / CG_COMPLIANCE.md §7 — la catégorie du
             // contrat sera prise en compte dans un suivi.
-            return 30.0;
+            // Issue #2219 : JOURS OUVRÉS (1 mois = 22 j ouvrés) — le moteur
+            // divise par le nombre de jours ouvrés du mois (22) ; renvoyer
+            // 30 (calendaires) surpaierait 30/22 = 1,36×.
+            return 22.0;
         }
 
         if ($this->memberCountryCode !== 'CM') {
             return parent::noticePeriodDays($yearsOfService);
         }
 
+        // Issue #2219 : JOURS OUVRÉS — préavis CM (art. 34 loi 92/007) :
+        // < 6 mois : 15 j calendaires = 11 j ouvrés · < 5 ans : 1 mois = 22 ·
+        // < 10 ans : 2 mois = 44 · ≥ 10 ans : 3 mois = 66.
         return match (true) {
-            $yearsOfService < 0.5 => 15.0,
-            $yearsOfService < 5.0 => 30.0,
-            $yearsOfService < 10.0 => 60.0,
-            default => 90.0,
+            $yearsOfService < 0.5 => 11.0,
+            $yearsOfService < 5.0 => 22.0,
+            $yearsOfService < 10.0 => 44.0,
+            default => 66.0,
         };
     }
 

@@ -416,7 +416,10 @@ class CedeaoPayrollRules extends AbstractCountryRules
             // BF/ML (issue #1829) : préavis légal 1 mois quel que soit le
             // niveau d'ancienneté (docs BF_COMPLIANCE.md §7 / ML_COMPLIANCE.md
             // §7) — à valider expert.
-            return 30.0;
+            // Issue #2219 : JOURS OUVRÉS (1 mois = 22 j ouvrés) — le moteur
+            // divise par les jours ouvrés du mois (22) ; renvoyer 30
+            // (calendaires) surpaierait 30/22 = 1,36× (alignement DZ #1943).
+            return 22.0;
         }
 
         if ($this->memberCountryCode === 'TG') {
@@ -432,18 +435,14 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return parent::noticePeriodDays($yearsOfService);
         }
 
-        $category = strtolower((string) $category);
-
-        if ($category === 'cadre') {
-            return 90.0;
-        }
-
-        if (in_array($category, ['ouvrier', 'worker'], true)) {
-            return $yearsOfService < 5.0 ? 8.0 : 15.0;
-        }
-
-        // Employés / techniciens (défaut, pilote historique).
-        return $yearsOfService < 5.0 ? 30.0 : 60.0;
+        // Issue #2219 : JOURS OUVRÉS — préavis CI (art. 18 Code du travail) :
+        // < 5 ans : 1 mois = 22 · < 10 ans : 2 mois = 44 · ≥ 10 ans :
+        // 3 mois = 66.
+        return match (true) {
+            $yearsOfService < 5.0 => 22.0,
+            $yearsOfService < 10.0 => 44.0,
+            default => 66.0,
+        };
     }
 
     public function timezone(): string

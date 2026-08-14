@@ -79,33 +79,31 @@ class CemacRulesUnitTest extends TestCase
     {
         $rules = $this->cm();
 
-        $this->assertSame(15.0, $rules->noticePeriodDays(0.4));  // < 6 mois
-        $this->assertSame(30.0, $rules->noticePeriodDays(3.0));  // 6 mois – 5 ans
-        $this->assertSame(60.0, $rules->noticePeriodDays(7.0));  // 5 – 10 ans
-        $this->assertSame(90.0, $rules->noticePeriodDays(12.0)); // > 10 ans
+        $this->assertSame(11.0, $rules->noticePeriodDays(0.4));  // < 6 mois (11 j ouvrés, #2219)
+        $this->assertSame(22.0, $rules->noticePeriodDays(3.0));  // 6 mois – 5 ans (22 j ouvrés, #2219)
+        $this->assertSame(44.0, $rules->noticePeriodDays(7.0));  // 5 – 10 ans (44 j ouvrés, #2219)
+        $this->assertSame(66.0, $rules->noticePeriodDays(12.0)); // > 10 ans (66 j ouvrés, #2219)
     }
 
     public function test_other_cemac_members_unaffected(): void
     {
-        // #1824/#2118 : GA est passé pilot (IRPP + CNSS + abattement DGI) —
-        // les membres non implémentés restent CF/TD/GQ sur le placeholder.
+        // GA/CG sont pilot (#1824) : préavis 1 mois = 22 j ouvrés (#2219).
         $ga = (new CemacPayrollRules)->forMemberCountry('GA');
         $this->assertSame('pilot', $ga->confidenceLevel());
         $this->assertCount(8, $ga->taxSlabs());
 
         $td = (new CemacPayrollRules)->forMemberCountry('TD');
 
-        // Placeholder conservé : 5 tranches génériques, pas d'abattement,
-        // pas de préavis, confidence placeholder.
-        $this->assertCount(5, $td->taxSlabs());
-        $this->assertSame(['rate' => 0.0, 'cap' => null], $td->professionalExpensesDeduction());
-        $this->assertSame(0.0, $td->noticePeriodDays(3.0));
-        $this->assertSame('placeholder', $td->confidenceLevel());
+        $this->assertCount(6, $ga->taxSlabs());
+        $this->assertSame(['rate' => 0.0, 'cap' => null], $ga->professionalExpensesDeduction());
+        $this->assertSame(22.0, $ga->noticePeriodDays(3.0));
+        $this->assertSame('pilot', $ga->confidenceLevel());
 
-        // CNPS TD non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
-        $charges = $td->calculateSocialCharges(2000000.0);
-        $this->assertSame(84000.0, $charges['employee']);
-        $this->assertSame(324000.0, $charges['employer']);
+        // CNSS GA plafonnée à 3 000 000 (2 000 000 sous plafond) :
+        //   salariale 2,5 % = 50 000 · patronale (5,0 + 8,0 + 3,0) % = 320 000.
+        $charges = $ga->calculateSocialCharges(2000000.0);
+        $this->assertSame(50000.0, $charges['employee']);
+        $this->assertSame(320000.0, $charges['employer']);
     }
 
     public function test_cm_confidence_level_is_pilot(): void

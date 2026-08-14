@@ -81,6 +81,7 @@
 | Jours ouvrés réels per-pays | ✅ | #1811 | PublicHolidayService::workingDaysBetween |
 | Audit | Jours ouvrés réels per-pays | ✅ | #1811 | PublicHolidayService::workingDaysBetween | observabilité calculs paie | ✅ | #1874 | payroll_calculation_audits + corrélation UUID |
 | Conformité par niveau de confiance (API) | ✅ | #1872 | bloc compliance + garde placeholder auditée |
+| Préavis fin de contrat — jours ouvrés | ✅ | #2219 | noticePeriodDays() = jours OUVRÉS (7 pays pilot, alignement DZ) |
 | ITS unifié CI 2024 | ✅ | #1918 | réforme art. 119 bis (ordonnance 2023-718/719) |
 | Merge queue GitHub | ✅ | #2032 | triggers merge_group sur les 5 checks requis |
 | Garde anti-collision migrations | ✅ | #1962 | basenames dupliqués détectés en CI |

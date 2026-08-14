@@ -78,11 +78,11 @@ au-delà (à confirmer pour GA).
 
 ## 7. Préavis
 
-| Catégorie | Préavis |
+| Catégorie | Préavis (jours OUVRÉS, #2219) |
 |---|---|
-| Ouvriers | 8 jours |
-| Employés / Techniciens | 1 mois |
-| Cadres | 3 mois |
+| Ouvriers | 6 j (8 j calendaires) |
+| Employés / Techniciens | 22 j (1 mois) |
+| Cadres | 66 j (3 mois) |
 
 ⚠️ L'interface n'expose que l'ancienneté : implémentation pilote au niveau
 **employé/technicien** (30 jours) — catégorie du contrat = suivi.

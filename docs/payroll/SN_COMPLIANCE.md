@@ -114,20 +114,22 @@ plafonnée) — `CFCE_SN_PAT`.
 
 ## 8. Préavis
 
-| Catégorie | Préavis |
+| Catégorie | Préavis (jours OUVRÉS, #2219) |
 |---|---|
-| Ouvriers | 8 jours |
-| Employés / Techniciens | 1 mois |
-| Cadres | 3 mois |
+| Ouvriers | 6 j (8 j calendaires) |
+| Employés / Techniciens | 22 j (1 mois) |
+| Cadres | 66 j (3 mois) |
 
-**Implémentation (issue #2123)** : la durée est résolue par catégorie via
-`employees.ipres_category` (`SenegalPayrollRules::noticePeriodDays($years, $category)` +
-`EndOfContractService`) : `cadre` → 90 j, `ouvrier`/`worker` → 8 j, tout
-autre/null → 30 j (employés/techniciens). Verrouillé par
-`GoldenSnPayrollTest::test_golden_sn_preavis_par_categorie`. À valider par
-l'expert-comptable local (#1904) ; la valeur `ouvrier` reste à alimenter
-par les données (le champ `ipres_category` ne porte aujourd'hui que
-`cadre`/`general`).
+**Implémentation (issue #2123 + #2219)** : la durée est résolue par catégorie
+via `employees.ipres_category` (`SenegalPayrollRules::noticePeriodDays($years, $category)` +
+`EndOfContractService`) : `cadre` → 66 j, `ouvrier`/`worker` → 6 j, tout
+autre/null → 22 j (employés/techniciens). Issue #2219 : `noticePeriodDays()`
+renvoie des **jours ouvrés** (le moteur divise par les jours ouvrés du mois,
+~22) — les durées calendaires (8/30/90) surpaiement 1,33–1,36× (alignement
+DZ #1943). Verrouillé par `GoldenSnPayrollTest::test_golden_sn_preavis_par_categorie`.
+À valider par l'expert-comptable local (#1904) ; la valeur `ouvrier` reste
+à alimenter par les données (le champ `ipres_category` ne porte aujourd'hui
+que `cadre`/`general`).
 
 ## 9. Congés payés
 
