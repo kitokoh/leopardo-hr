@@ -5,33 +5,45 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Rules\SupportedCountry;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Support\Facades\Validator;
+use Tests\TestCase;
 
 /**
  * Issue #1951 — la règle « pays supporté » valide le registre d'affichage
  * ET la disponibilité des règles de paie (plus de divergence : GB/US étaient
  * acceptés à la validation puis échouaient au calcul).
+ *
+ * Testé via `Validator::make` (chemin d'invocation réel de Laravel) :
+ * la règle chaîne `$fail('clé')->translate([...])` — un test unitaire nu
+ * appelant `validate()` avec une closure maison ne reproduit pas le
+ * `PotentiallyTranslatedString` fourni par le framework.
  */
 class SupportedCountryRuleTest extends TestCase
 {
     private function assertFails(string $value): void
     {
-        $failed = false;
-        (new SupportedCountry)->validate('country_code', $value, function (string $message) use (&$failed): void {
-            $failed = true;
-        });
+        $validator = Validator::make(
+            ['country_code' => $value],
+            ['country_code' => [new SupportedCountry]],
+        );
 
-        $this->assertTrue($failed, "Expected '{$value}' to be rejected.");
+        $this->assertTrue(
+            $validator->fails(),
+            "Expected '{$value}' to be rejected.",
+        );
     }
 
     private function assertPasses(string $value): void
     {
-        $failed = false;
-        (new SupportedCountry)->validate('country_code', $value, function (string $message) use (&$failed): void {
-            $failed = true;
-        });
+        $validator = Validator::make(
+            ['country_code' => $value],
+            ['country_code' => [new SupportedCountry]],
+        );
 
-        $this->assertFalse($failed, "Expected '{$value}' to be accepted.");
+        $this->assertFalse(
+            $validator->fails(),
+            "Expected '{$value}' to be accepted.",
+        );
     }
 
     public function test_country_with_payroll_rules_is_accepted(): void
@@ -52,7 +64,8 @@ class SupportedCountryRuleTest extends TestCase
 
     public function test_unknown_country_is_rejected(): void
     {
-        foreach (['XX', 'ZZ', ''] as $code) {
+        // (La chaîne vide relève de `required`, pas de la règle pays.)
+        foreach (['XX', 'ZZ'] as $code) {
             $this->assertFails($code);
         }
     }
