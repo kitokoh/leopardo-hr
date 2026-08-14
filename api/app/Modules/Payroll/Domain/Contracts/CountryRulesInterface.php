@@ -125,4 +125,50 @@ interface CountryRulesInterface
      * 1.0 month per year (F-08). FOCUS 2 (F-31).
      */
     public function severanceMonthsPerYear(float $yearsOfService): float;
+
+    /**
+     * Professional-expenses deduction (abattement frais professionnels)
+     * applied on top of employee social contributions when computing the
+     * income-tax base, where the country's tax code provides one.
+     *
+     * @return array{rate: float, cap: float|null} rate in percentage points
+     *                                             (e.g. 30.0 = 30 % of gross), cap as an absolute monthly ceiling
+     *                                             in the country currency (null = no ceiling). Default: no
+     *                                             deduction (rate 0.0) — countries with a legal abatement
+     *                                             override this (CM 30 % capped, CI, SN...). ZONE-INFRA (#1820).
+     */
+    public function professionalExpensesDeduction(): array;
+
+    /**
+     * Flat/minimum bracket tax (taxe de minimum fiscal, e.g. TRIMF in SN /
+     * minimum fiscal in CI) computed on gross salary when the country's tax
+     * code mandates a minimum contribution even for low incomes. 0.0 means
+     * the country has no such tax. The payroll engine injects a
+     * "Taxe de minimum fiscal" deduction line when this returns > 0.
+     * ZONE-INFRA (#1820).
+     */
+    public function calculateBracketTax(float $grossSalary): float;
+
+    /**
+     * Whether the country's labour code legally mandates a 13th month
+     * (13ème mois / prima) paid in December (or the configured month).
+     * Default: false (contractual practice only). ZONE-INFRA (#1820).
+     */
+    public function thirteenthMonthMandatory(): bool;
+
+    /**
+     * Tax treatment of the mandatory 13th month for income-tax purposes:
+     * 'fully_taxable' (default — the 13th month is added to the December
+     * gross and taxed like ordinary pay) or 'spread' (taxed over the whole
+     * year as if received monthly). ZONE-INFRA (#1820).
+     */
+    public function thirteenthMonthTaxTreatment(): string;
+
+    /**
+     * Family-allowance amount per dependent child (allocations familiales),
+     * in the country currency, per month. 0.0 means the country has no
+     * employer-funded family allowance (or the scheme is not yet wired into
+     * the payroll engine). ZONE-INFRA (#1820).
+     */
+    public function familyAllowancePerChild(): float;
 }

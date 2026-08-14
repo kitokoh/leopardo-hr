@@ -108,12 +108,15 @@ class CemacPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        $employeeRate = $this->resolveContributionRate('CNPS_CEMAC_EMP', 4.2);
-        $employerRate = $this->resolveContributionRate('CNPS_CEMAC_PAT', 16.2);
+        // ZONE-INFRA (#1820): Cameroon (CM) statutory CNPS ceiling
+        // 750 000 XAF/month is applied via computeContribution(); the other
+        // five CEMAC members stay on the placeholder (uncapped) rates until
+        // their own member-state issues land (GA/CG: #1824).
+        $cap = $this->memberCountryCode === 'CM' ? 750000.0 : null;
 
         return [
-            'employee' => round($grossSalary * $employeeRate / 100, 2),
-            'employer' => round($grossSalary * $employerRate / 100, 2),
+            'employee' => $this->computeContribution($grossSalary, 'CNPS_CEMAC_EMP', 4.2, $cap),
+            'employer' => $this->computeContribution($grossSalary, 'CNPS_CEMAC_PAT', 16.2, $cap),
         ];
     }
 
