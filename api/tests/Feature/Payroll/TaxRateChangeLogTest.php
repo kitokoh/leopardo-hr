@@ -107,7 +107,9 @@ class TaxRateChangeLogTest extends TestCase
         );
 
         // previous_value/new_value sont bien remplis (avant/après).
+        /** @var TaxRateChangeLog|null $submitted */
         $submitted = $entries->firstWhere('action', TaxRateChangeLog::ACTION_SUBMITTED);
+        $this->assertNotNull($submitted);
         $this->assertSame(TaxSlab::STATUS_DRAFT, $submitted['previous_value']['status']);
         $this->assertSame(TaxSlab::STATUS_PENDING, $submitted['new_value']['status']);
 
@@ -126,13 +128,14 @@ class TaxRateChangeLogTest extends TestCase
         ]);
         $service->reject($draft, $admin, 'Taux hors plafond.');
 
+        /** @var TaxRateChangeLog $rejected */
         $rejected = TaxRateChangeLog::query()
             ->where('record_id', $draft->id)
             ->where('action', TaxRateChangeLog::ACTION_REJECTED)
             ->firstOrFail();
 
         $this->assertSame('Taux hors plafond.', $rejected->reason);
-        $this->assertSame(TaxSlab::STATUS_PENDING, $rejected->previous_value['status']);
-        $this->assertSame(TaxSlab::STATUS_DRAFT, $rejected->new_value['status']);
+        $this->assertSame(TaxSlab::STATUS_PENDING, $rejected['previous_value']['status']);
+        $this->assertSame(TaxSlab::STATUS_DRAFT, $rejected['new_value']['status']);
     }
 }

@@ -134,6 +134,7 @@ class TaxSlabValidationWorkflowTest extends TestCase
 
         /** @var TaxSlab $old */
         $old = TaxSlab::query()->where('status', TaxSlab::STATUS_SUPERSEDED)->firstOrFail();
+
         $this->assertSame(23.0, (float) $old->rate);
 
         // 4. La ligne approuvée est maintenant utilisée dans les calculs.
@@ -200,7 +201,9 @@ class TaxSlabValidationWorkflowTest extends TestCase
             ->assertJsonPath('data.rejection_reason', 'Taux supérieur au plafond légal DZ (35 %).');
 
         // La ligne rejetée n'est toujours pas utilisée dans les calculs.
-        $this->assertSame(TaxSlab::STATUS_DRAFT, $slab->fresh()->status);
+        /** @var TaxSlab $freshSlab */
+        $freshSlab = $slab->fresh();
+        $this->assertSame(TaxSlab::STATUS_DRAFT, $freshSlab->status);
     }
 
     public function test_social_contribution_workflow(): void

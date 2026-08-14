@@ -103,7 +103,7 @@ class SocialContributionController extends Controller
 
         // Issue #1813 : une ligne soumise/active ne se modifie plus directement.
         if ($socialContribution->status !== SocialContribution::STATUS_DRAFT) {
-            abort(409, 'Une ligne soumise, active ou remplacée ne peut plus être modifiée — proposez une nouvelle modification.');
+            abort(409, __('payroll.rate_edit_locked'));
         }
 
         $validated = $request->validate([
@@ -137,7 +137,7 @@ class SocialContributionController extends Controller
 
         // Issue #1813 : seules les lignes draft peuvent être supprimées.
         if ($socialContribution->status !== SocialContribution::STATUS_DRAFT) {
-            abort(409, 'Seule une ligne en brouillon peut être supprimée.');
+            abort(409, __('payroll.rate_delete_draft_only'));
         }
 
         $socialContribution->delete();
