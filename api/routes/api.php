@@ -47,6 +47,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
@@ -139,6 +140,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/communication/analytics', CommunicationAnalyticsController::class)->middleware('throttle:platform-sensitive');
         Route::get('/launch-readiness', LaunchReadinessController::class);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
+        // MULTI-PAYS (#1867) — registre unique des pays supportés (pays, devise,
+        // fuseau, langue, confiance des règles, disponibilité). Source de vérité
+        // pour les formulaires de provisioning et les écrans de calcul.
+        Route::get('/supported-countries', [SupportedCountryController::class, 'index']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {
             Route::get('/privacy/export', [PrivacyController::class, 'export']);

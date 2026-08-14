@@ -105,4 +105,5 @@ return [
     'unique' => ':attribute zaten kullanılıyor.',
     'url' => ':attribute geçerli bir URL olmalıdır.',
     'uuid' => ':attribute geçerli bir UUID olmalıdır.',
+    'supported_country' => ':attribute alanı desteklenen bir ülke olmalıdır (:value).',
 ];

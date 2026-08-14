@@ -46,7 +46,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/cotisation-simulation', [CotisationSimulationController::class, 'simulate']);
 
     // ── Manager-only payroll routes (principal, comptable) ───────────────
-    Route::middleware('api.manager:principal,comptable')->group(function (): void {
+    // MULTI-PAYS (#1867) : tenant.country — le pays légal du tenant doit être
+    // présent et supporté avant toute écriture paie (runs, structures, barèmes).
+    Route::middleware(['api.manager:principal,comptable', 'tenant.country'])->group(function (): void {
 
         // Salary Structures
         Route::get('/salary-structures', [SalaryStructureController::class, 'index']);

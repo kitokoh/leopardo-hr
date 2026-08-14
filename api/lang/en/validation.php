@@ -105,4 +105,5 @@ return [
     'unique' => 'The :attribute has already been taken.',
     'url' => 'The :attribute field must be a valid URL.',
     'uuid' => 'The :attribute field must be a valid UUID.',
+    'supported_country' => 'The :attribute field must be a supported country (:value).',
 ];

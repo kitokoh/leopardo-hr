@@ -105,4 +105,5 @@ return [
     'unique' => 'قيمة :attribute مستخدمة بالفعل.',
     'url' => 'صيغة رابط :attribute غير صالحة.',
     'uuid' => 'يجب أن يكون :attribute معرّف UUID صالحاً.',
+    'supported_country' => 'يجب أن يكون حقل :attribute دولة مدعومة (:value).',
 ];

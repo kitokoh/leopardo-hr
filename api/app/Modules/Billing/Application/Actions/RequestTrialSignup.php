@@ -31,8 +31,10 @@ class RequestTrialSignup
 
         [$firstName, $lastName] = $this->managerNameParts($validated, $email);
         $managerName = trim($firstName.' '.$lastName);
-        $country = strtoupper(trim($validated['country'] ?? 'DZ'));
-        $countryDefaults = CountryDefaults::for($country);
+        // MULTI-PAYS (#1867) : le pays est validé en amont (obligatoire +
+        // supporté) — aucun fallback silencieux vers DZ.
+        $country = strtoupper(trim((string) ($validated['country'] ?? '')));
+        $countryDefaults = CountryDefaults::find($country) ?? throw new \InvalidArgumentException('Pays de signup invalide.');
 
         try {
             Mail::to($email)->send(

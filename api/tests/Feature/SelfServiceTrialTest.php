@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Core\Tenant\TenantManager;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
-use App\Core\Tenant\TenantManager;
-use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Mail;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class SelfServiceTrialTest extends TestCase
@@ -129,9 +129,11 @@ class SelfServiceTrialTest extends TestCase
         Mail::fake();
 
         // Step 1: signup
+        // MULTI-PAYS (#1867) : le pays est désormais requis — payload valide.
         $this->postJson('/api/v1/trial/signup', [
             'email' => 'founder@invalid.com',
             'company' => 'Invalid Test',
+            'country' => 'DZ',
         ])->assertStatus(200);
 
         // Step 2: wrong OTP
@@ -155,6 +157,7 @@ class SelfServiceTrialTest extends TestCase
         $this->postJson('/api/v1/trial/signup', [
             'email' => 'founder@existing.com',
             'company' => 'First Company',
+            'country' => 'DZ',
         ])->assertStatus(200);
 
         $otp = CompanyRequest::where('email', 'founder@existing.com')
@@ -169,6 +172,7 @@ class SelfServiceTrialTest extends TestCase
         $response = $this->postJson('/api/v1/trial/signup', [
             'email' => 'founder@existing.com',
             'company' => 'Second Company',
+            'country' => 'DZ',
         ]);
 
         $response->assertStatus(409)
@@ -186,5 +190,3 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonValidationErrors(['email', 'company']);
     }
 }
-
-

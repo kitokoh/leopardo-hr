@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Infrastructure\Services;
 
-use App\Core\Tenant\TenantManager;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Core\Tenant\TenantManager;
 use App\Modules\HR\Infrastructure\Services\SectorTemplateService;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CompanyProvisioningService
 {
@@ -28,7 +29,15 @@ class CompanyProvisioningService
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
-        $countryDefaults = CountryDefaults::for($payload['country'] ?? null);
+        // MULTI-PAYS (#1867) : le pays légal est OBLIGATOIRE et doit être un
+        // pays supporté — aucun fallback silencieux vers DZ.
+        $countryDefaults = CountryDefaults::find($payload['country'] ?? null);
+        if ($countryDefaults === null) {
+            throw ValidationException::withMessages([
+                'country' => ['Le pays légal du tenant est obligatoire et doit être supporté ('.implode(', ', array_keys(CountryDefaults::all())).').'],
+            ]);
+        }
+
         $payload['country'] = $countryDefaults['country'];
         $payload['language'] = strtolower((string) ($payload['language'] ?? $countryDefaults['language']));
         $payload['currency'] = strtoupper((string) ($payload['currency'] ?? $countryDefaults['currency']));
@@ -123,4 +132,3 @@ class CompanyProvisioningService
         return $candidate;
     }
 }
-
