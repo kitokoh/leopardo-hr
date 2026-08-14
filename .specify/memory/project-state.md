@@ -14,7 +14,7 @@
 |------|------|--------|-------------|-------------|---------|
 | Algérie | DZ | 🟡 `pilot`* (à valider expert) | ✅ 20+ cas | ✅ CNAS CSV | Wedge commercial — priorité absolue |
 | Maroc | MA | 🟡 `pilot` | ❌ manquants | ❌ | |
-| Tunisie | TN | 🟡 `pilot` | ❌ manquants | ❌ | |
+| Tunisie | TN | 🟡 `pilot` | ✅ 5 cas (#2119/#2261) | ❌ | abattement IRPP 10 % art. 39 (#2261) |
 
 > \* `pilot`* = pilot dans le code, validation experte non signée (registre `docs/payroll/VALIDATION_EXPERTE.md`).
 
