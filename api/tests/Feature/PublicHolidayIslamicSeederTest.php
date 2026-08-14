@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use Illuminate\Support\Facades\Artisan;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\IslamicCalendarSeeder;
 use Database\Seeders\PublicHolidaySeeder;
@@ -68,8 +69,8 @@ class PublicHolidayIslamicSeederTest extends TestCase
     {
         // Reproduit la commande de production :
         //   php artisan db:seed --class=DatabaseSeeder --force
-        $seed = $this->artisan('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true]);
-        $seed->assertExitCode(0);
+        $exitCode = Artisan::call('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true]);
+        $this->assertSame(0, $exitCode);
 
         // Après le seed de prod, les fériés et dates islamiques existent.
         $this->assertGreaterThan(0, PublicHoliday::count());
