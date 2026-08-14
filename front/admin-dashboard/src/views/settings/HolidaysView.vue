@@ -1,11 +1,9 @@
 <template>
   <div class="space-y-8 animate-fade-in max-w-5xl">
     <div>
-      <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Jours fériés par pays</h1>
+      <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ $t('holidays.page_title') }}</h1>
       <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-        Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés
-        réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812)
-        alimentent automatiquement les bulletins de paie de tous les pays concernés.
+        {{ $t('holidays.page_subtitle') }}
       </p>
     </div>
 
@@ -13,20 +11,20 @@
     <div class="glass-card p-6">
       <div class="flex flex-wrap items-end gap-4">
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-country">Pays</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-country">{{ $t('holidays.country') }}</label>
           <select id="holiday-country" v-model="countryCode" class="form-input min-w-40" @change="loadHolidays">
             <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.label }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-year">Année</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-year">{{ $t('holidays.year') }}</label>
           <select id="holiday-year" v-model="year" class="form-input min-w-32" @change="loadHolidays">
             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
           </select>
         </div>
         <div class="ml-auto">
           <button class="btn-primary" :disabled="saving" @click="openCreate">
-            Ajouter un jour férié
+            {{ $t('holidays.add') }}
           </button>
         </div>
       </div>
@@ -35,11 +33,11 @@
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500 dark:text-slate-400">
-              <th class="py-2 pr-4 font-semibold">Date</th>
-              <th class="py-2 pr-4 font-semibold">Nom</th>
-              <th class="py-2 pr-4 font-semibold">Type</th>
-              <th class="py-2 pr-4 font-semibold">Portée</th>
-              <th class="py-2 font-semibold text-right">Actions</th>
+              <th class="py-2 pr-4 font-semibold">{{ $t('holidays.th_date') }}</th>
+              <th class="py-2 pr-4 font-semibold">{{ $t('holidays.th_name') }}</th>
+              <th class="py-2 pr-4 font-semibold">{{ $t('holidays.th_type') }}</th>
+              <th class="py-2 pr-4 font-semibold">{{ $t('holidays.th_scope') }}</th>
+              <th class="py-2 font-semibold text-right">{{ $t('holidays.th_actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -53,24 +51,24 @@
               </td>
               <td class="py-2.5 pr-4">
                 <span v-if="h.company_id === null" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                  National
+                  {{ $t('holidays.scope_national') }}
                 </span>
                 <span v-else class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
-                  Entreprise
+                  {{ $t('holidays.scope_company') }}
                 </span>
               </td>
               <td class="py-2.5 text-right">
                 <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="h.company_id === null || saving" @click="openEdit(h)">
-                  Modifier
+                  {{ $t('holidays.edit') }}
                 </button>
                 <button class="btn-danger py-1 px-2.5" :disabled="h.company_id === null || saving" @click="removeHoliday(h)">
-                  Supprimer
+                  {{ $t('holidays.delete') }}
                 </button>
               </td>
             </tr>
             <tr v-if="!loading && holidays.length === 0">
               <td colspan="5" class="py-8 text-center text-slate-400">
-                Aucun jour férié pour {{ countryCode }} / {{ year }}.
+                {{ $t('holidays.empty', { country: countryCode, year: String(year) }) }}
               </td>
             </tr>
           </tbody>
@@ -99,7 +97,7 @@
       </div>
 
       <!-- Banner d'alerte -->
-      <div v-if="unconfirmedCount > 0" class="mt-4 rounded-lg border border-amber-300/60 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+      <div v-if="hasUnconfirmed" class="mt-4 rounded-lg border border-amber-300/60 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
         ⚠️ {{ unconfirmedCount }} fête(s) islamique(s) non confirmée(s) pour {{ islamicYear }} —
         vérifiez les dates avant la clôture de paie.
       </div>
@@ -151,41 +149,41 @@
     </div>
 
     <!-- Modal création/édition férié fixe -->
-    <div v-if="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="modalOpen = false">
+    <div v-if="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="closeFixedModal">
       <div class="glass-card w-full max-w-md p-6">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
-          {{ editing ? 'Modifier le jour férié' : 'Nouveau jour férié' }}
+          {{ editing ? $t('holidays.edit_title') : $t('holidays.add_title') }}
         </h2>
         <form class="space-y-4" @submit.prevent="saveHoliday">
           <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-name">Nom</label>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-name">{{ $t('holidays.th_name') }}</label>
             <input id="holiday-name" v-model="form.name" type="text" class="form-input" maxlength="120" required>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-date">Date</label>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-date">{{ $t('holidays.th_date') }}</label>
               <input id="holiday-date" v-model="form.date" type="date" class="form-input" required>
             </div>
             <div>
-              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-type">Type</label>
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-type">{{ $t('holidays.th_type') }}</label>
               <select id="holiday-type" v-model="form.holiday_type" class="form-input">
-                <option value="fixed">Fixe</option>
-                <option value="islamic">Islamique</option>
-                <option value="christian">Chrétien</option>
-                <option value="custom">Personnalisé</option>
+                <option value="fixed">{{ $t('holidays.type_fixed') }}</option>
+                <option value="islamic">{{ $t('holidays.type_islamic') }}</option>
+                <option value="christian">{{ $t('holidays.type_christian') }}</option>
+                <option value="custom">{{ $t('holidays.type_custom') }}</option>
               </select>
             </div>
           </div>
           <div class="flex items-center gap-2">
             <input id="holiday-recurring" v-model="form.is_recurring" type="checkbox" class="h-4 w-4">
             <label for="holiday-recurring" class="text-sm font-medium text-slate-700 dark:text-slate-300">
-              Récurent chaque année
+              {{ $t('holidays.recurring') }}
             </label>
           </div>
           <div class="flex justify-end gap-3 pt-2">
-            <button type="button" class="btn-secondary" @click="modalOpen = false">Annuler</button>
+            <button type="button" class="btn-secondary" @click="closeFixedModal">{{ $t('holidays.cancel') }}</button>
             <button type="submit" class="btn-primary" :disabled="saving">
-              {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
+              {{ saving ? $t('holidays.saving') : $t('holidays.save') }}
             </button>
           </div>
         </form>
@@ -262,6 +260,13 @@ const unconfirmedCount = computed(() => {
   return islamicEntries.value.filter((f) => !f.confirmed).length
 })
 
+// PA2-I18N-014 : expression déportée en computed.
+const hasUnconfirmed = computed(() => unconfirmedCount.value > 0)
+
+function closeFixedModal() {
+  modalOpen.value = false
+}
+
 async function loadHolidays() {
   loading.value = true
   try {
@@ -270,7 +275,7 @@ async function loadHolidays() {
     })
     holidays.value = data.data || []
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible de charger les jours fériés.')
+    toast.error(err?.response?.data?.message || t('holidays.load_error'))
   } finally {
     loading.value = false
   }
@@ -324,10 +329,10 @@ async function saveHoliday() {
       await api.post('/admin/public-holidays', payload)
     }
     modalOpen.value = false
-    toast.success('Jour férié enregistré.')
+    toast.success(t('holidays.saved'))
     await loadHolidays()
   } catch (err) {
-    toast.error(err?.response?.data?.message || "Impossible d'enregistrer le jour férié.")
+    toast.error(err?.response?.data?.message || t('holidays.save_error'))
   } finally {
     saving.value = false
   }
@@ -338,10 +343,10 @@ async function removeHoliday(h) {
   saving.value = true
   try {
     await api.delete(`/admin/public-holidays/${h.id}`)
-    toast.success('Jour férié supprimé.')
+    toast.success(t('holidays.deleted'))
     await loadHolidays()
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible de supprimer.')
+    toast.error(err?.response?.data?.message || t('holidays.delete_error'))
   } finally {
     saving.value = false
   }

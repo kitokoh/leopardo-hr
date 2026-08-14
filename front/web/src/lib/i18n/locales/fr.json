@@ -304,18 +304,8 @@
       "title": "Jours fériés par pays",
       "subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels (issue #1811). Les fériés nationaux sont partagés ; les fériés d'entreprise restent propres à votre société."
     },
-    "country": {
-      "label": "Pays",
-      "DZ": "Algérie",
-      "CM": "Cameroun",
-      "CI": "Côte d'Ivoire",
-      "SN": "Sénégal",
-      "MA": "Maroc",
-      "TN": "Tunisie"
-    },
-    "year": {
-      "label": "Année"
-    },
+    "country": "Pays",
+    "year": "Année",
     "add": "Ajouter un jour férié",
     "th": {
       "date": "Date",
@@ -330,7 +320,7 @@
     },
     "edit": "Modifier",
     "delete": "Supprimer",
-    "empty": "Aucun jour férié pour :country / :year.",
+    "empty": "Aucun jour férié pour {country} / {year}.",
     "modal": {
       "editTitle": "Modifier le jour férié",
       "newTitle": "Nouveau jour férié"
@@ -348,9 +338,7 @@
       "christian": "Chrétien",
       "custom": "Personnalisé"
     },
-    "recurring": {
-      "label": "Récurent chaque année"
-    },
+    "recurring": "Récurent chaque année",
     "cancel": "Annuler",
     "saving": "Enregistrement…",
     "save": "Enregistrer",
@@ -368,6 +356,26 @@
     },
     "nav": {
       "title": "Jours fériés"
-    }
+    },
+    "page_title": "Jours fériés par pays",
+    "page_subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812) alimentent automatiquement les bulletins de paie de tous les pays concernés.",
+    "th_date": "Date",
+    "th_name": "Nom",
+    "th_type": "Type",
+    "th_scope": "Portée",
+    "th_actions": "Actions",
+    "scope_national": "National",
+    "scope_company": "Entreprise",
+    "edit_title": "Modifier le jour férié",
+    "add_title": "Nouveau jour férié",
+    "type_fixed": "Fixe",
+    "type_islamic": "Islamique",
+    "type_christian": "Chrétien",
+    "type_custom": "Personnalisé",
+    "load_error": "Impossible de charger les jours fériés.",
+    "saved": "Jour férié enregistré.",
+    "save_error": "Impossible d'enregistrer le jour férié.",
+    "deleted": "Jour férié supprimé.",
+    "delete_error": "Impossible de supprimer."
   }
 }

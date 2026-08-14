@@ -304,19 +304,9 @@
       "title": "Public holidays by country",
       "subtitle": "Calendar of public holidays used by the payroll engine to compute actual working days (issue #1811). National holidays are shared; company holidays remain specific to your company."
     },
-    "country": {
-      "label": "Country",
-      "DZ": "Algeria",
-      "CM": "Cameroon",
-      "CI": "Ivory Coast",
-      "SN": "Senegal",
-      "MA": "Morocco",
-      "TN": "Tunisia"
-    },
-    "year": {
-      "label": "Year"
-    },
-    "add": "Add a public holiday",
+    "country": "Country",
+    "year": "Year",
+    "add": "Add public holiday",
     "th": {
       "date": "Date",
       "name": "Name",
@@ -330,7 +320,7 @@
     },
     "edit": "Edit",
     "delete": "Delete",
-    "empty": "No public holidays for :country / :year.",
+    "empty": "No public holiday for {country} / {year}.",
     "modal": {
       "editTitle": "Edit public holiday",
       "newTitle": "New public holiday"
@@ -348,9 +338,7 @@
       "christian": "Christian",
       "custom": "Custom"
     },
-    "recurring": {
-      "label": "Recurs every year"
-    },
+    "recurring": "Recurs every year",
     "cancel": "Cancel",
     "saving": "Saving…",
     "save": "Save",
@@ -368,6 +356,26 @@
     },
     "nav": {
       "title": "Public holidays"
-    }
+    },
+    "page_title": "Public holidays by country",
+    "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
+    "th_date": "Date",
+    "th_name": "Name",
+    "th_type": "Type",
+    "th_scope": "Scope",
+    "th_actions": "Actions",
+    "scope_national": "National",
+    "scope_company": "Company",
+    "edit_title": "Edit public holiday",
+    "add_title": "New public holiday",
+    "type_fixed": "Fixed",
+    "type_islamic": "Islamic",
+    "type_christian": "Christian",
+    "type_custom": "Custom",
+    "load_error": "Unable to load public holidays.",
+    "saved": "Public holiday saved.",
+    "save_error": "Unable to save the public holiday.",
+    "deleted": "Public holiday deleted.",
+    "delete_error": "Unable to delete."
   }
 }

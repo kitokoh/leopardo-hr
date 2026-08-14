@@ -304,19 +304,9 @@
       "title": "Ülkelere göre resmi tatiller",
       "subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı resmi tatil takvimi (issue #1811). Ulusal tatiller paylaşılır; şirket tatilleri yalnızca şirketinize özeldir."
     },
-    "country": {
-      "label": "Ülke",
-      "DZ": "Cezayir",
-      "CM": "Kamerun",
-      "CI": "Fildişi Sahili",
-      "SN": "Senegal",
-      "MA": "Fas",
-      "TN": "Tunus"
-    },
-    "year": {
-      "label": "Yıl"
-    },
-    "add": "Resmi tatil ekle",
+    "country": "Ülke",
+    "year": "Yıl",
+    "add": "Resmî tatil ekle",
     "th": {
       "date": "Tarih",
       "name": "Ad",
@@ -330,7 +320,7 @@
     },
     "edit": "Düzenle",
     "delete": "Sil",
-    "empty": ":country / :year için resmi tatil yok.",
+    "empty": "{country} / {year} için resmî tatil yok.",
     "modal": {
       "editTitle": "Resmi tatili düzenle",
       "newTitle": "Yeni resmi tatil"
@@ -348,9 +338,7 @@
       "christian": "Hristiyan",
       "custom": "Özel"
     },
-    "recurring": {
-      "label": "Her yıl tekrarlanır"
-    },
+    "recurring": "Her yıl tekrarlanır",
     "cancel": "İptal",
     "saving": "Kaydediliyor…",
     "save": "Kaydet",
@@ -368,6 +356,26 @@
     },
     "nav": {
       "title": "Resmi tatiller"
-    }
+    },
+    "page_title": "Ülkeye göre resmî tatiller",
+    "page_subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.",
+    "th_date": "Tarih",
+    "th_name": "Ad",
+    "th_type": "Tür",
+    "th_scope": "Kapsam",
+    "th_actions": "İşlemler",
+    "scope_national": "Ulusal",
+    "scope_company": "Şirket",
+    "edit_title": "Resmî tatili düzenle",
+    "add_title": "Yeni resmî tatil",
+    "type_fixed": "Sabit",
+    "type_islamic": "İslami",
+    "type_christian": "Hristiyan",
+    "type_custom": "Özel",
+    "load_error": "Resmî tatiller yüklenemedi.",
+    "saved": "Resmî tatil kaydedildi.",
+    "save_error": "Resmî tatil kaydedilemedi.",
+    "deleted": "Resmî tatil silindi.",
+    "delete_error": "Silinemedi."
   }
 }
