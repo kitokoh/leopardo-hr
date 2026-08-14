@@ -144,12 +144,15 @@ class CotisationSimulationTest extends TestCase
         /** @var array<string, mixed> $data */
         $data = $response->json('data');
 
-        // Taux CI légaux (#1825/#1893) : CNSS retraite 3,2 % salarié,
-        // patronal 4,5 + 5,75 + 2,0 = 12,25 % — surtout PAS les taux DZ
-        // (9 % / 26 %).
+        // Taux CI légaux (#1825/#1893 + caps #1913) : CNSS retraite 3,2 %
+        // salarié, patronal 4,5 % (retraite) + 5,75 % (famille) + 2,0 % (AT)
+        // avec famille/AT plafonnées à 70 000 XOF/mois (guide CNPS) — surtout
+        // PAS les taux DZ (9 % / 26 %). Brut 100 000 > plafond branche 70 000 :
+        //   salarié 100 000 × 3,2 % = 3 200
+        //   patronal 4 500 + 70 000 × 5,75 % + 70 000 × 2,0 % = 9 925
         $this->assertSame('CI', $data['country_code']);
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
-        $this->assertEquals(12250.0, $data['total_employer_cost']);
+        $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['net_before_tax']);
     }
 
@@ -356,14 +359,15 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('CedeaoPayrollRules', $data['contract']['rules_identifier']);
         $this->assertSame('pilot', $data['contract']['confidence_level']);
 
+        // Caps #1913 (famille/AT 70 000 XOF) : patronal 9 925 sur 100 000.
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
-        $this->assertEquals(12250.0, $data['total_employer_cost']);
+        $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['taxable_gross']);
         $this->assertEquals(4000.0, $data['income_tax']);
         $this->assertEquals(0.0, $data['bracket_tax']);
         $this->assertEquals(7200.0, $data['total_deductions']);
         $this->assertEquals(92800.0, $data['net_salary']);
-        $this->assertEquals(112250.0, $data['total_cost_employer']);
+        $this->assertEquals(109925.0, $data['total_cost_employer']);
 
         // Le contrat imbriqué expose les mêmes montants (cohérence).
         $this->assertEquals(3200.0, $data['contract']['social_employee']);
