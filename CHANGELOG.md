@@ -3,6 +3,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ### Added
+- **fix(payroll): déclarations CSV CI/SN — protection injection formule + totaux mono-passe (Closes #1922).** `CnssDeclarationGenerator` et `IpresDeclarationGenerator` : (1) toute cellule CSV commençant par `=`, `+`, `-`, `@`, tab ou saut de ligne est neutralisée (préfixe `'`) contre la CSV injection (Excel/DDE) ; (2) refactor en source unique de vérité `contributionFor()` — les lignes ET la ligne TOTAUX sont calculées dans la même passe, ce qui corrige une dérive réelle : `totals()` plafonnait l'AT patronal CI (2,0 % non plafonné, cf. #1898) alors que les lignes utilisaient le brut réel (TOTAUX ≠ somme des lignes au-delà de 1 647 315 XOF). Tests : +2 (totaux alignés au-dessus du plafond, injection neutralisée CI + SN).
 ### Added
 
 - **fix(payroll): déclarations CNSS CI / IPRES SN — `employees.cnss_ci_matricule`, `ipres_matricule`, `ipres_category` ajoutés au `$fillable` et au PHPDoc de `Employee` (suivi review #1830).** Les colonnes existaient en base (migration `000007`) mais le modèle ne les remplissait pas : la protection de mass-assignment ignorait silencieusement ces attributs, les matricules des CSV CNSS CI et IPRES/CSS SN étaient donc toujours vides en production. `CiSnDeclarationTest` redevient vert (les valeurs de matricules sont enfin persistées).
