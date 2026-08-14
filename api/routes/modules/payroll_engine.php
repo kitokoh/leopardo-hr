@@ -20,6 +20,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryStructureController;
@@ -34,6 +35,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/pay-slips', [PaySlipController::class, 'myPaySlips']);
     Route::get('/me/pay-slips/{paySlip}', [PaySlipController::class, 'myPaySlipDetail'])->whereNumber('paySlip');
     Route::get('/me/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
+    // Issue #1817 — bulletin archivé dans le Cabinet employé (après clôture).
+    Route::get('/me/pay-slips/{paySlip}/document', [PaySlipController::class, 'document'])->whereNumber('paySlip');
     Route::get('/me/payment-documents', [PaymentDocumentController::class, 'myDocuments']);
     Route::get('/me/payment-documents/{paymentDocument}/download', [PaymentDocumentController::class, 'download'])->whereNumber('paymentDocument');
     Route::post('/payment-confirmations/{paymentItem}/confirm', [PaymentBatchController::class, 'confirm'])->whereNumber('paymentItem');
@@ -58,17 +61,26 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::put('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'update'])->whereNumber('salaryComponent');
         Route::delete('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'destroy'])->whereNumber('salaryComponent');
 
+        // Issue #1814 — simulation d'impact (dry-run, manager).
+        Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+
         // Tax Slabs
         Route::get('/tax-slabs', [TaxSlabController::class, 'index']);
         Route::post('/tax-slabs', [TaxSlabController::class, 'store']);
         Route::put('/tax-slabs/{taxSlab}', [TaxSlabController::class, 'update'])->whereNumber('taxSlab');
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabController::class, 'destroy'])->whereNumber('taxSlab');
+        // Issue #1813 — workflow de validation des taux légaux.
+        Route::put('/tax-slabs/{taxSlab}/submit', [TaxSlabController::class, 'submit'])->whereNumber('taxSlab');
+        Route::get('/tax-slabs/{taxSlab}/history', [TaxSlabController::class, 'history'])->whereNumber('taxSlab');
 
         // Social Contributions
         Route::get('/social-contributions', [SocialContributionController::class, 'index']);
         Route::post('/social-contributions', [SocialContributionController::class, 'store']);
         Route::put('/social-contributions/{socialContribution}', [SocialContributionController::class, 'update'])->whereNumber('socialContribution');
         Route::delete('/social-contributions/{socialContribution}', [SocialContributionController::class, 'destroy'])->whereNumber('socialContribution');
+        // Issue #1813 — workflow de validation des taux légaux.
+        Route::put('/social-contributions/{socialContribution}/submit', [SocialContributionController::class, 'submit'])->whereNumber('socialContribution');
+        Route::get('/social-contributions/{socialContribution}/history', [SocialContributionController::class, 'history'])->whereNumber('socialContribution');
 
         // Payroll Runs
         Route::get('/payroll-runs', [PayrollRunController::class, 'index']);
@@ -79,6 +91,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payroll-runs/{payrollRun}/lock', [PayrollRunController::class, 'lock'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/unlock', [PayrollRunController::class, 'unlock'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/cancel', [PayrollRunController::class, 'cancel'])->whereNumber('payrollRun');
+        // DZ-DEPTH (#1818) — bulletins rétroactifs et régularisations.
+        Route::post('/payroll-runs/{payrollRun}/regularize', [PayrollRunController::class, 'regularize'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/regularizations', [PayrollRunController::class, 'regularizations'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/summary', [PayrollRunController::class, 'summary'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/anomalies', [PayrollRunController::class, 'anomalies'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/export', [PayrollRunController::class, 'export'])->whereNumber('payrollRun');

@@ -149,6 +149,8 @@ class FrontendApiContractTest extends TestCase
             'admin marketing oauth config get' => ['GET', 'api/v1/admin/platform/marketing/oauth-config'],
             'admin marketing oauth config update' => ['PUT', 'api/v1/admin/platform/marketing/oauth-config'],
             'manager cnps cm declaration' => ['GET', 'api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm'],
+            'manager payroll run regularize' => ['POST', 'api/v1/payroll-runs/{payrollRun}/regularize'],
+            'manager payroll run regularizations' => ['GET', 'api/v1/payroll-runs/{payrollRun}/regularizations'],
         ];
     }
 
