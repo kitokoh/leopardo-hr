@@ -205,11 +205,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/rate-validation/pending", options);
     },
 
-    /** Supprimer une tranche nationale (platform_admin) — issue #1814 */
-    destroyAdminTaxSlab(options = {}) {
-      return request("DELETE", "/admin/tax-slabs", options);
-    },
-
     /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
     listAdminTaxSlabs(options = {}) {
       return request("GET", "/admin/tax-slabs", options);
@@ -220,9 +215,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs", options);
     },
 
+    /** Supprimer une tranche nationale (platform_admin) — issue #1814 */
+    destroyAdminTaxSlab(options = {}) {
+      return request("DELETE", "/admin/tax-slabs/{taxSlab}", options);
+    },
+
     /** Modifier une tranche nationale (platform_admin) — issue #1814 */
     updateAdminTaxSlab(options = {}) {
-      return request("PUT", "/admin/tax-slabs", options);
+      return request("PUT", "/admin/tax-slabs/{taxSlab}", options);
     },
 
     /** Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814 */

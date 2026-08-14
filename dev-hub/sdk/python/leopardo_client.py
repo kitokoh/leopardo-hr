@@ -184,10 +184,6 @@ class LeopardoClient:
         """Lister les modifications de taux en attente de validation — issue #1813"""
         return self.request("GET", "/admin/rate-validation/pending", **kwargs)
 
-    def destroyadmintaxslab(self, **kwargs):
-        """Supprimer une tranche nationale (platform_admin) — issue #1814"""
-        return self.request("DELETE", "/admin/tax-slabs", **kwargs)
-
     def listadmintaxslabs(self, **kwargs):
         """Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"""
         return self.request("GET", "/admin/tax-slabs", **kwargs)
@@ -196,9 +192,13 @@ class LeopardoClient:
         """Créer une tranche nationale (platform_admin) — issue #1814"""
         return self.request("POST", "/admin/tax-slabs", **kwargs)
 
+    def destroyadmintaxslab(self, **kwargs):
+        """Supprimer une tranche nationale (platform_admin) — issue #1814"""
+        return self.request("DELETE", "/admin/tax-slabs/{taxSlab}", **kwargs)
+
     def updateadmintaxslab(self, **kwargs):
         """Modifier une tranche nationale (platform_admin) — issue #1814"""
-        return self.request("PUT", "/admin/tax-slabs", **kwargs)
+        return self.request("PUT", "/admin/tax-slabs/{taxSlab}", **kwargs)
 
     def resetadmintaxslabs(self, **kwargs):
         """Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"""

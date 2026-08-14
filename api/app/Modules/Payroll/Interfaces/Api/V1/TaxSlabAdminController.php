@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 /**
@@ -110,7 +111,7 @@ class TaxSlabAdminController extends Controller
             TaxSlab::create([
                 'company_id' => null,
                 'country_code' => $countryCode,
-                'name' => sprintf('%s barème légal %s', $countryCode, now()->year),
+                'name' => __('payroll.tax_scale_default_name', ['country' => $countryCode, 'year' => (string) now()->year]),
                 'min_amount' => $slab['min'],
                 'max_amount' => $slab['max'],
                 'rate' => $slab['rate'],
@@ -156,7 +157,7 @@ class TaxSlabAdminController extends Controller
     private function assertCountry(string $countryCode): void
     {
         if (! in_array($countryCode, ['DZ', 'MA', 'TN', 'FR', 'TR', 'SN', 'CM', 'CF', 'TD', 'CG', 'GA', 'GQ', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CA'], true)) {
-            abort(422, 'Pays non supporté.');
+            abort(422, __('payroll.rate_country_unsupported'));
         }
     }
 
@@ -172,7 +173,7 @@ class TaxSlabAdminController extends Controller
      */
     private function serialize(TaxSlab $slab): array
     {
-        /** @var \Illuminate\Support\Carbon|null $effectiveTo */
+        /** @var Carbon|null $effectiveTo */
         $effectiveTo = $slab->effective_to;
 
         return [

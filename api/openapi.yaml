@@ -1244,6 +1244,7 @@ paths:
         "401": { $ref: "#/components/responses/Error401" }
         "403": { $ref: "#/components/responses/Error403" }
         "422": { $ref: "#/components/responses/Validation422" }
+  /admin/tax-slabs/{taxSlab}:
     put:
       tags: ["Platform Admin"]
       summary: "Modifier une tranche nationale (platform_admin) — issue #1814"
@@ -1286,6 +1287,7 @@ paths:
         "401": { $ref: "#/components/responses/Error401" }
         "403": { $ref: "#/components/responses/Error403" }
         "404": { $ref: "#/components/responses/Error404" }
+
   /admin/tax-slabs/reset-defaults:
     post:
       tags: ["Platform Admin"]
