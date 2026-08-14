@@ -21,12 +21,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Render peut rejouer les migrations (entrypoint) : idempotence.
-        if (Schema::hasTable('public_holidays')) {
+        // F-17 (#1595/#1933) : la garde d'existence est résolue via le
+        // search_path courant (`current_schemas(false)`), pas
+        // `Schema::hasTable()` nu qui ne voit que `current_schema()` — le
+        // search_path diffère entre CI et local (shared_tenants,public vs
+        // public,shared_tenants) : un garde au nom nu peut répondre faux à
+        // tort et faire sauter silencieusement la migration (bug F-17).
+        if (schemaTableExists('public_holidays')) {
             return;
         }
 
-        Schema::create('public_holidays', function (Blueprint $table): void {
+        // Création QUALIFIÉE dans le schéma `public` : table partagée entre
+        // tous les tenants — son schéma ne doit pas dépendre du search_path.
+        Schema::create('public.public_holidays', function (Blueprint $table): void {
             $table->id();
             // Convention du codebase : company_id est un UUID (clé de `companies`).
             $table->uuid('company_id')->nullable()->index();
@@ -47,6 +54,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('public_holidays');
+        Schema::dropIfExists('public.public_holidays');
     }
 };
