@@ -18,7 +18,9 @@ permissions:
 
 concurrency:
   group: web-marketing-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : sur main, ne jamais annuler le run du commit précédent
+  # (annulation en cascade des builds/bundles utiles). Runs PR annulés.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

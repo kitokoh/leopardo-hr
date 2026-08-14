@@ -36,7 +36,10 @@ permissions:
 
 concurrency:
   group: actionlint-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : check REQUIS « actionlint (+ shellcheck) » — sur main, un
+  # push ne doit jamais annuler le run du commit précédent (sinon le dernier
+  # commit de main reste pending 20+ min). Les runs PR gardent l'annulation.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
