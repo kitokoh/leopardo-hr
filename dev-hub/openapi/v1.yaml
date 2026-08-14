@@ -1397,6 +1397,12 @@ paths:
       tags: ["Platform Admin"]
       summary: "Lister les modifications de taux en attente de validation — issue #1813"
       operationId: listPendingRateValidation
+      parameters:
+        - name: table
+          in: query
+          required: false
+          description: "Filtrer par table (défaut : all)"
+          schema: { type: string, enum: [all, tax_slabs, social_contributions], default: all }
       responses:
         "200":
           description: "Barèmes + cotisations en pending_validation"
@@ -6386,8 +6392,8 @@ paths:
   /me/pay-slips/{paySlip}/document:
     get:
       tags: ["Me"]
-      summary: "URL de telechargement de mon bulletin archive dans le Cabinet"
-      description: "Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne l'URL de telechargement securise de ce document."
+      summary: "Telecharger mon bulletin archive dans le Cabinet (PDF)"
+      description: "Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne le PDF lui-meme : document archive si present, sinon repli sur le bulletin standard."
       operationId: archivedMyPaySlipDocument
       parameters:
         - name: paySlip
@@ -6396,21 +6402,14 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "URL du document archive"
+          description: "Fichier PDF du bulletin (archive Cabinet ou standard)"
           content:
-            application/json:
+            application/pdf:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      document_id: { type: integer }
-                      url: { type: string }
+                type: string
+                format: binary
         "401":
           $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
         "404":
           $ref: "#/components/responses/Error404"
 
@@ -16547,10 +16546,9 @@ components:
 
     TaxRateChangeLog:
       type: object
+      description: "Entrée de l'audit trail immuable (tax_rate_change_log) retournée par GET /tax-slabs/{id}/history et /social-contributions/{id}/history — aligné sur la réponse réelle des contrôleurs (issue #1926)."
       properties:
         id: { type: integer }
-        table_name: { type: string, enum: [tax_slabs, social_contributions] }
-        record_id: { type: integer }
         action: { type: string, enum: [created, submitted, approved, rejected, superseded] }
         actor_id: { type: integer }
         actor_role: { type: string }

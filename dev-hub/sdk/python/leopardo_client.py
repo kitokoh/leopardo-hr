@@ -1045,7 +1045,7 @@ class LeopardoClient:
         return self.request("GET", "/me/pay-slips/{paySlip}", **kwargs)
 
     def archivedmypayslipdocument(self, **kwargs):
-        """URL de telechargement de mon bulletin archive dans le Cabinet"""
+        """Telecharger mon bulletin archive dans le Cabinet (PDF)"""
         return self.request("GET", "/me/pay-slips/{paySlip}/document", **kwargs)
 
     def downloadmypayslippdf(self, **kwargs):

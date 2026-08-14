@@ -25,81 +25,38 @@ POST ai/voice/synthesize
 POST ai/voice/transcribe
 POST ai/workflows/prepare-payroll
 
-## api.php — 91 route(s)
+## api.php — 47 route(s)
 # Auth/Core : webhooks fournisseurs entrants (stripe/chargily), endpoints onboarding/trial/i18n/health internes — exclusions documentées dans le gap doc
 DELETE v1platform/announcements/{param}
 DELETE v1platform/impersonations/{param}
 DELETE v1platformedge/nodes/{param}
-GET v1/auth/biometric-enrollment
 GET v1/auth/google
 GET v1/auth/google/callback
-GET v1/auth/me
-GET v1/communication/analytics
 GET v1/company-requests
-GET v1/company/branding
-# Documentee dans le spec sans le prefixe v1 (limitation du parser) — voir /supported-countries
-GET v1/supported-countries
-GET v1/health
 GET v1/health/live
 GET v1/health/ready
 GET v1/i18n/catalog
 GET v1/i18n/catalog/{param}
-GET v1/launch-readiness
 GET v1/metrics
-GET v1/notification-preferences
 GET v1/onboarding/checklist
-GET v1/privacy/export
 GET v1/support-tickets
 GET v1/support-tickets/{param}
-GET v1features/admin/statistics
-GET v1features/compatible/{param}
-GET v1features/manifest
-GET v1features/{param}
 GET v1onboarding/invitation/{param}
 GET v1platform/announcements
 GET v1platform/announcements/{param}
-GET v1platform/auth/me
-GET v1platform/companies
-GET v1platform/companies/health
-GET v1platform/companies/{param}/features
-GET v1platform/companies/{param}/health
-GET v1platform/companies/{param}/subscription
-GET v1platform/company-requests
-GET v1platform/company-requests/{param}
-GET v1platform/country-defaults
 GET v1platform/crm/pipeline
 GET v1platform/impersonations
-GET v1platform/metrics/overview
 GET v1platform/observability/notifications
 GET v1platform/observability/queues
-GET v1platform/plans
 GET v1platform/support-tickets
 GET v1platform/support-tickets/{param}
 GET v1platformedge/nodes
 GET v1public/careers/{param}
 GET v1public/careers/{param}/feed.xml
 GET v1public/careers/{param}/jobs/{param}
-PATCH v1/auth/language
-PATCH v1/auth/profile
-PATCH v1/company/branding
-PATCH v1/notification-preferences
-PATCH v1/privacy/biometric-consent
 PATCH v1platform/auth/profile
-PATCH v1platform/companies/{param}/features
-PATCH v1platform/companies/{param}/subscription
-PATCH v1platform/company-requests/{param}
 PATCH v1platform/support-tickets/{param}/triage
-POST v1/auth/biometric-enrollment
-POST v1/auth/change-password
-POST v1/auth/google/token
-POST v1/auth/login
-POST v1/auth/logout
-POST v1/auth/refresh-token
-POST v1/auth/register
-POST v1/client-events
 POST v1/company-requests
-POST v1/platform/auth/login
-POST v1/privacy/deletion-request
 POST v1/support-tickets
 POST v1/support-tickets/{param}/reply
 POST v1/trial/signup
@@ -107,15 +64,12 @@ POST v1/trial/verify
 POST v1/webhooks/chargily
 POST v1/webhooks/email-bounce
 POST v1/webhooks/stripe
-POST v1features/admin/synchronize
 POST v1onboarding/invitation/{param}/activate
 POST v1platform/announcements
 POST v1platform/auth/2fa/disable
 POST v1platform/auth/2fa/enable
 POST v1platform/auth/2fa/setup
 POST v1platform/auth/change-password
-POST v1platform/auth/logout
-POST v1platform/companies
 POST v1platform/impersonations
 POST v1platform/support-tickets/{param}/reply
 POST v1platformedge/nodes/{param}/sync
@@ -356,45 +310,13 @@ POST user/login
 POST user/logout
 POST user/register
 
-# MULTI-PAYS #1867 : GET /supported-countries documenté dans openapi.yaml
-# (registre des pays supportés) ; le parseur préfixe v1 → entrée allowlist requise
-GET v1/supported-countries
-
-## api.php — cockpit super-admin /admin/* (issue #1764) — 13 route(s)
-## Documentées dans api/openapi.yaml (contract SPA front/admin-dashboard) ;
-## allowlistées car le parseur statique concatène les préfixes imbriqués
-## sans séparateur (`v1`+`admin` → `v1admin/...`) et ne peut donc pas
-## matcher les chemins `/admin/*` documentés (même quirk que v1platform/*).
-GET v1admin/dashboard/stats
-GET v1admin/dashboard/activities
-GET v1admin/dashboard/alerts
-POST v1admin/dashboard/alerts/{param}/dismiss
-GET v1admin/edge-nodes
-POST v1admin/edge-nodes/{param}/sync
-POST v1admin/edge-nodes/{param}/revoke
-GET v1admin/ai/conversations
-GET v1admin/ai/conversations/{param}/messages
-GET v1admin/fleet/alerts
-GET v1admin/hr-reports
-GET v1admin/platform/marketing/oauth-config
-PUT v1admin/platform/marketing/oauth-config
-GET v1admin/public-holidays
-POST v1admin/public-holidays
-PUT v1admin/public-holidays/{param}
-DELETE v1admin/public-holidays/{param}
-GET v1admin/islamic-calendar
-POST v1admin/islamic-calendar/confirm-year/{param}
-PUT v1admin/islamic-calendar/{param}/{param}
-GET v1admin/rate-validation/pending
-PUT v1admin/rate-validation/{param}/{param}/approve
-PUT v1admin/rate-validation/{param}/{param}/reject
-GET v1admin/tax-slabs
-POST v1admin/tax-slabs
-PUT v1admin/tax-slabs/{param}
-DELETE v1admin/tax-slabs/{param}
-POST v1admin/tax-slabs/reset-defaults
-POST v1admin/payroll/simulate
-POST v1payroll/simulate
+## api.php — cockpit super-admin /admin/* (issue #1764) — 4 route(s)
+# Issue #1926 : les routes /admin/* documentées (rate-validation #1813,
+# tax-slabs #1814, public-holidays #1811, dashboard #1764…) sont désormais
+# matchées par la garde (canonical_spec_path : le spec omet le préfixe de
+# version v1, porté par l'URL serveur) et ont été retirées de l'allowlist.
+# Restent ici des GAPS réels : le CRUD admin des cotisations sociales (#1815)
+# n'est pas encore documenté dans api/openapi.yaml.
 GET v1admin/social-contributions
 POST v1admin/social-contributions
 PUT v1admin/social-contributions/{param}
