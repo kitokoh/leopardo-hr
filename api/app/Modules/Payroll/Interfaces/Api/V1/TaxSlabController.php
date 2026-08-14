@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\TaxSlabResource;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
+use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -46,7 +47,7 @@ class TaxSlabController extends Controller
         }
 
         $validated = $request->validate([
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            'country_code' => ['required', 'string', 'size:2', new SupportedCountry], // #1951 contrat partagé
             'name' => 'required|string|max:150',
             'min_amount' => 'required|numeric|min:0',
             'max_amount' => 'nullable|numeric|min:0',
