@@ -20,6 +20,9 @@ use Illuminate\Support\Carbon;
  * @property int|null $contract_id
  * @property Carbon $period_start
  * @property Carbon $period_end
+ * @property string|null $rules_version
+ * @property Carbon|null $rules_period
+ * @property string|null $rules_identifier
  * @property float $gross_salary
  * @property float $total_deductions
  * @property float $net_salary
@@ -43,7 +46,8 @@ class PaySlip extends Model
 
     protected $fillable = [
         'payroll_run_id', 'company_id', 'employee_id', 'contract_id',
-        'period_start', 'period_end', 'gross_salary', 'total_deductions',
+        'period_start', 'period_end', 'rules_version', 'rules_period',
+        'rules_identifier', 'gross_salary', 'total_deductions',
         'net_salary', 'employer_contributions', 'total_cost',
         'working_days', 'actual_days_worked', 'overtime_hours',
         'has_attendance_data',
@@ -53,6 +57,7 @@ class PaySlip extends Model
     protected $casts = [
         'period_start' => 'date',
         'period_end' => 'date',
+        'rules_period' => 'date',
         'gross_salary' => 'float',
         'total_deductions' => 'float',
         'net_salary' => 'float',

@@ -139,6 +139,9 @@ class PayrollCalculator
         if ($rules instanceof AbstractCountryRules) {
             $rules = $rules->forCompany($companyId)->asOf($run->period_start);
         }
+        $rulesVersion = $rules->rulesVersion();
+        $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
+        $rulesPeriod = $run->period_start->toDateString();
 
         /** @var Collection<int, Employee> $employees */
         $employees = Employee::where('company_id', $companyId)
@@ -158,7 +161,16 @@ class PayrollCalculator
         /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
 
-        DB::transaction(function () use ($run, $employees, $structures, $defaultStructure, $rules) {
+        DB::transaction(function () use (
+            $run,
+            $employees,
+            $structures,
+            $defaultStructure,
+            $rules,
+            $rulesVersion,
+            $rulesIdentifier,
+            $rulesPeriod
+        ) {
             $run->paySlips()->delete();
 
             $totalGross = 0.0;
@@ -180,7 +192,15 @@ class PayrollCalculator
                     continue;
                 }
 
-                $slip = $this->calculateSlip($run, $employee, $structure, $rules);
+                $slip = $this->calculateSlip(
+                    $run,
+                    $employee,
+                    $structure,
+                    $rules,
+                    $rulesVersion,
+                    $rulesIdentifier,
+                    $rulesPeriod
+                );
 
                 $totalGross += (float) $slip->gross_salary;
                 $totalDeductions += (float) $slip->total_deductions;
@@ -190,6 +210,9 @@ class PayrollCalculator
 
             $run->update([
                 'status' => 'calculated',
+                'rules_version' => $rulesVersion,
+                'rules_period' => $rulesPeriod,
+                'rules_identifier' => $rulesIdentifier,
                 'total_gross' => round($totalGross, 2),
                 'total_deductions' => round($totalDeductions, 2),
                 'total_net' => round($totalNet, 2),
@@ -206,7 +229,10 @@ class PayrollCalculator
         PayrollRun $run,
         Employee $employee,
         SalaryStructure $structure,
-        CountryRulesContract $rules
+        CountryRulesContract $rules,
+        string $rulesVersion,
+        string $rulesIdentifier,
+        string $rulesPeriod
     ): PaySlip {
         $baseSalary = $structure->base_salary;
         $worked = $this->computeWorkedDays($run, $employee);
@@ -443,6 +469,9 @@ class PayrollCalculator
             'employee_id' => $employee->id,
             'period_start' => $run->period_start,
             'period_end' => $run->period_end,
+            'rules_version' => $rulesVersion,
+            'rules_period' => $rulesPeriod,
+            'rules_identifier' => $rulesIdentifier,
             'gross_salary' => round($grossEarnings, 2),
             'total_deductions' => round($totalDeductions, 2),
             'net_salary' => $netSalary,
