@@ -145,20 +145,20 @@ class CiSnDeclarationTest extends TestCase
         $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
         $row = str_getcsv($lines[1]);
 
-        // Calcul manuel (issue #1830 + BUG #1898) — assiette plafonnée pour
-        // retraite/famille = min(2 000 000, 1 647 315), mais AT 2,0 % NON
-        // plafonné (comme le moteur calculateSocialCharges et le golden CI) :
+        // Calcul manuel (issue #1830 + #1913) — plafonds par branche :
+        //   retraite = min(2 000 000, 1 647 315) ; famille et AT plafonnées
+        //   à 70 000 (guide CNPS employeur, #1913) :
         //   retraite salariale = 1 647 315 × 3,2 % = 52 714,08
         //   retraite patronale = 1 647 315 × 4,5 % = 74 129,18
-        //   famille = 1 647 315 × 5,75 % = 94 720,61 · AT = 2 000 000 × 2 % = 40 000,00
-        //   total patronal = 208 849,79
+        //   famille = 70 000 × 5,75 % = 4 025,00 · AT = 70 000 × 2 % = 1 400,00
+        //   total patronal = 79 554,18
         $this->assertSame('2000000.00', $row[3]);
         $this->assertSame('1647315.00', $row[4]);
         $this->assertSame('52714.08', $row[5]);
         $this->assertSame('74129.18', $row[6]);
-        $this->assertSame('94720.61', $row[7]);
-        $this->assertSame('40000.00', $row[8]);
-        $this->assertSame('208849.79', $row[10]);
+        $this->assertSame('4025.00', $row[7]);
+        $this->assertSame('1400.00', $row[8]);
+        $this->assertSame('79554.18', $row[10]);
     }
 
     public function test_ci_totals_row_matches_line_sums_above_cap(): void
@@ -190,20 +190,21 @@ class CiSnDeclarationTest extends TestCase
         $csv = (new CnssDeclarationGenerator)->generate($run);
         $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
 
-        // Lignes : AT = 2 000 000 × 2 % = 40 000,00 · 400 000 × 2 % = 8 000,00
-        $this->assertSame('40000.00', str_getcsv($lines[1])[8]);
+        // Lignes : AT = 70 000 × 2 % = 1 400,00 (plafonné #1913) · 400 000 × 2 % = 8 000,00
+        $this->assertSame('1400.00', str_getcsv($lines[1])[8]);
         $this->assertSame('8000.00', str_getcsv($lines[2])[8]);
 
-        // TOTAUX : AT = 48 000,00 (somme des lignes, PAS min(brut, cap) × 2 %).
+        // TOTAUX : AT = 9 400,00 (somme des lignes — le plafond 70 000 est
+        // appliqué PAR LIGNE, pas sur l'agrégat).
         $totalsRow = str_getcsv($lines[3]);
         $this->assertSame('TOTAL', $totalsRow[0]);
-        $this->assertSame('48000.00', $totalsRow[8]);
-        $this->assertSame('257849.79', $totalsRow[10]); // 208 849,79 + 49 000,00
+        $this->assertSame('9400.00', $totalsRow[8]);
+        $this->assertSame('128554.18', $totalsRow[10]); // 79 554,18 + 49 000,00
 
         // totals() doit être aligné sur les lignes.
         $totals = (new CnssDeclarationGenerator)->totals($run);
-        $this->assertSame(48000.0, $totals['at_pat']);
-        $this->assertSame(257849.79, $totals['total_pat']);
+        $this->assertSame(9400.0, $totals['at_pat']);
+        $this->assertSame(128554.18, $totals['total_pat']);
         $this->assertSame(2, $totals['slip_count']);
     }
 
@@ -263,11 +264,12 @@ class CiSnDeclarationTest extends TestCase
         $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
         $row = str_getcsv($lines[1]);
 
-        // Calcul manuel (issue #1830) — employé général, brut 300 000 XOF :
+        // Calcul manuel (issue #1830 + #1913) — employé général, brut 300 000 XOF :
         //   T1 = min(300 000, 432 000) = 300 000 · T2 = 0 (non cadre)
         //   T1 salariale 5,6 % = 16 800 · T1 patronale 8,4 % = 25 200
-        //   T2 salariale 0 · T2 patronale 0 · CSS famille 3 % = 9 000
-        //   total patronal = 25 200 + 0 + 9 000 = 34 200
+        //   T2 salariale 0 · T2 patronale 0 · CSS famille = min(300 000, 63 000)
+        //     × 3 % = 1 890 (plafond CSS #1913)
+        //   total patronal = 25 200 + 0 + 1 890 = 27 090
         $this->assertSame('IPRES-SN-001', $row[0]);
         $this->assertSame('Diop', $row[1]);
         $this->assertSame('Fatou', $row[2]);
@@ -279,8 +281,8 @@ class CiSnDeclarationTest extends TestCase
         $this->assertSame('0.00', $row[8]);
         $this->assertSame('0.00', $row[9]);
         $this->assertSame('0.00', $row[10]);
-        $this->assertSame('9000.00', $row[11]);
-        $this->assertSame('34200.00', $row[12]);
+        $this->assertSame('1890.00', $row[11]);
+        $this->assertSame('27090.00', $row[12]);
     }
 
     public function test_sn_csv_cadre_with_t2(): void
@@ -305,8 +307,8 @@ class CiSnDeclarationTest extends TestCase
         //   T1 = 432 000 → salariale 5,6 % = 24 192 · patronale 8,4 % = 36 288
         //   T2 = 1 000 000 − 432 000 = 568 000 → salariale 2,4 % = 13 632
         //        patronale 3,6 % = 20 448
-        //   CSS famille 3 % sur T1 = 12 960
-        //   total patronal = 36 288 + 20 448 + 12 960 = 69 696
+        //   CSS famille = min(1 000 000, 63 000) × 3 % = 1 890 (plafond CSS #1913)
+        //   total patronal = 36 288 + 20 448 + 1 890 = 58 626
         $this->assertSame('cadre', $row[3]);
         $this->assertSame('432000.00', $row[5]);
         $this->assertSame('24192.00', $row[6]);
@@ -314,8 +316,8 @@ class CiSnDeclarationTest extends TestCase
         $this->assertSame('568000.00', $row[8]);
         $this->assertSame('13632.00', $row[9]);
         $this->assertSame('20448.00', $row[10]);
-        $this->assertSame('12960.00', $row[11]);
-        $this->assertSame('69696.00', $row[12]);
+        $this->assertSame('1890.00', $row[11]);
+        $this->assertSame('58626.00', $row[12]);
     }
 
     // ── Endpoints + RBAC ────────────────────────────────────────────────

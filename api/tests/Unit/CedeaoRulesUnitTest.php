@@ -83,17 +83,17 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_ci_cnss_cap_at_1647315(): void
     {
-        // Brut 2 000 000 XOF > plafond 1 647 315 → retraite/famille assises
-        // sur le plafond, AT non plafonné (CI_COMPLIANCE.md §3) :
+        // Brut 2 000 000 XOF > plafond retraite 1 647 315 ; famille et AT
+        // plafonnées à 70 000 par branche (#1913) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
         //   patronale : 1 647 315 × 4,5 % = 74 129,18
-        //             + 1 647 315 × 5,75 % = 94 720,61
-        //             + 2 000 000 × 2,0 % = 40 000,00
-        //             = 208 849,79
+        //             + 70 000 × 5,75 % = 4 025,00
+        //             + 70 000 × 2,0 % = 1 400,00
+        //             = 79 554,18
         $charges = $this->rules()->calculateSocialCharges(2000000.0);
 
         $this->assertSame(52714.08, $charges['employee']);
-        $this->assertSame(208849.79, $charges['employer']);
+        $this->assertSame(79554.18, $charges['employer']);
     }
 
     public function test_ci_cnss_below_cap_uses_full_gross(): void
