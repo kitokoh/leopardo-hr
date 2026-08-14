@@ -8397,11 +8397,6 @@ paths:
                     type: object
                     properties:
                       country_code: { type: string }
-                      currency: { type: string }
-                      rules_identifier: { type: string }
-                      rules_as_of: { type: string, format: date }
-                      confidence_level: { type: string, enum: [production, pilot, placeholder] }
-                      rounding_policy: { type: string }
                       gross_salary: { type: number }
                       employee_contributions:
                         type: array
@@ -8438,16 +8433,20 @@ paths:
                         properties:
                           country_code: { type: string }
                           currency: { type: string }
+                          rules_identifier: { type: string }
+                          rules_period: { type: string, format: date }
+                          slab_version: { type: string }
+                          confidence_level: { type: string, enum: [production, pilot, placeholder] }
+                          rounding_policy: { type: string }
                           gross: { type: number }
                           social_employee: { type: number }
                           tax_base: { type: number }
                           income_tax: { type: number }
+                          bracket_tax: { type: number }
                           other_deductions: { type: number }
                           net_salary: { type: number }
                           social_employer: { type: number }
                           total_cost: { type: number }
-                          rules_period: { type: string, format: date }
-                          slab_version: { type: string }
         "401":
           $ref: "#/components/responses/Error401"
         "403":

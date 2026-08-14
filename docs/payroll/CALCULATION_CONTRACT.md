@@ -48,15 +48,8 @@ composants, les deux chemins retournent rigoureusement le même net.
 ```jsonc
 {
   "data": {
-    // Contexte (issue #1869)
-    "country_code": "DZ",            // pays demandé = pays des règles appliquées
-    "currency": "DZD",               // devise des règles pays (CountryDefaults)
-    "rules_identifier": "AlgeriaPayrollRules", // classe de règles appliquée
-    "rules_as_of": "2026-08-14",     // date d'effet des règles résolues
-    "confidence_level": "production",// production | pilot | placeholder
-    "rounding_policy": "…",          // politique d'arrondi (résumé)
-
-    // Entrée
+    // Entrée (rétro-compatible)
+    "country_code": "DZ",
     "gross_salary": 60000.0,
 
     // Cotisations
@@ -72,7 +65,28 @@ composants, les deux chemins retournent rigoureusement le même net.
     "total_deductions": 12442.0,          // = salariales + income_tax + bracket_tax
     "net_before_tax": 54600.0,            // clé rétro-compatible (brut − salariales, sans impôt)
     "net_salary": 47558.0,                // = max(0, brut − total_deductions)
-    "total_cost_employer": 75600.0        // = brut + cotisations patronales
+    "total_cost_employer": 75600.0,       // = brut + cotisations patronales
+
+    // Contrat complet et explicable (issue #1869) — contexte + détail du calcul
+    "contract": {
+      "country_code": "DZ",               // pays des règles appliquées
+      "currency": "DZD",                  // devise des règles pays (CountryDefaults)
+      "rules_identifier": "AlgeriaPayrollRules", // classe de règles appliquée
+      "rules_period": "2026-08-14",       // date d'effet des règles résolues
+      "slab_version": "a1b2c3d4e5f6",     // empreinte sha256 des barèmes (tranches + cotisations)
+      "confidence_level": "pilot",        // production | pilot | placeholder (expert-comptable requis pour « production »)
+      "rounding_policy": "…",             // politique d'arrondi (résumé)
+
+      "gross": 60000.0,
+      "social_employee": 5400.0,
+      "tax_base": 54600.0,                // assiette d'impôt (non arrondie au calcul)
+      "income_tax": 7042.0,
+      "bracket_tax": 0.0,                 // TRIMF / minimum fiscal
+      "other_deductions": 0.0,            // taxe de minimum fiscal (rétro-compatible)
+      "net_salary": 47558.0,
+      "social_employer": 15600.0,
+      "total_cost": 75600.0
+    }
   }
 }
 ```
