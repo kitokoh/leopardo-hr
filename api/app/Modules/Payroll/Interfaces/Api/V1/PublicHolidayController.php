@@ -67,7 +67,12 @@ class PublicHolidayController extends Controller
 
         $holiday = PublicHoliday::create($data);
 
-        $this->holidays->forget($data['country_code'], (int) $data['year'], $data['company_id']);
+        if (($data['company_id'] ?? null) === null) {
+            // Férié NATIONAL : tous les tenants le voient → invalider tous les scopes (BUG #1897).
+            $this->holidays->forgetAllScopes($data['country_code'], (int) $data['year']);
+        } else {
+            $this->holidays->forget($data['country_code'], (int) $data['year'], $data['company_id']);
+        }
 
         return response()->json(['data' => $this->serialize($holiday)], 201);
     }
@@ -83,7 +88,11 @@ class PublicHolidayController extends Controller
 
         $holiday->update($data);
 
-        $this->holidays->forget($holiday->country_code, (int) $holiday->year, $holiday->company_id);
+        if ($holiday->company_id === null) {
+            $this->holidays->forgetAllScopes($holiday->country_code, (int) $holiday->year);
+        } else {
+            $this->holidays->forget($holiday->country_code, (int) $holiday->year, (string) $holiday->company_id);
+        }
 
         $holiday->refresh();
 
@@ -102,7 +111,11 @@ class PublicHolidayController extends Controller
 
         $holiday->delete();
 
-        $this->holidays->forget($countryCode, $year, $companyId);
+        if ($companyId === null) {
+            $this->holidays->forgetAllScopes($countryCode, $year);
+        } else {
+            $this->holidays->forget($countryCode, $year, $companyId);
+        }
 
         return response()->json(null, 204);
     }

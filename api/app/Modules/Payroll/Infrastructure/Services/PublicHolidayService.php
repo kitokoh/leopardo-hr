@@ -192,4 +192,25 @@ class PublicHolidayService
         $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) ($companyId ?? 'null'));
         $this->cache->forget($cacheKey);
     }
+
+    /**
+     * BUG #1897 — invalide TOUTES les clés d'un pays/année : la clé nationale
+     * (company_id = null) ET chaque clé tenant-scopée (les tenants qui ont
+     * déjà calculé gardaient un cache périmé jusqu'à 24 h après une
+     * confirmation de date islamique ou une édition de férié national).
+     */
+    public function forgetAllScopes(string $countryCode, int $year): void
+    {
+        $countryCode = strtoupper(trim($countryCode));
+
+        $this->forget($countryCode, $year, null);
+
+        $tenantIds = \App\Core\Tenant\Domain\Models\Company::query()
+            ->where('country', $countryCode)
+            ->pluck('id');
+
+        foreach ($tenantIds as $companyId) {
+            $this->forget($countryCode, $year, (string) $companyId);
+        }
+    }
 }

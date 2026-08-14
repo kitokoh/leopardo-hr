@@ -145,18 +145,20 @@ class CiSnDeclarationTest extends TestCase
         $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
         $row = str_getcsv($lines[1]);
 
-        // Calcul manuel (issue #1830) — assiette = min(2 000 000, 1 647 315) :
+        // Calcul manuel (issue #1830 + BUG #1898) — assiette plafonnée pour
+        // retraite/famille = min(2 000 000, 1 647 315), mais AT 2,0 % NON
+        // plafonné (comme le moteur calculateSocialCharges et le golden CI) :
         //   retraite salariale = 1 647 315 × 3,2 % = 52 714,08
         //   retraite patronale = 1 647 315 × 4,5 % = 74 129,18
-        //   famille = 1 647 315 × 5,75 % = 94 720,61 · AT = 32 946,30
-        //   total patronal = 201 796,09
+        //   famille = 1 647 315 × 5,75 % = 94 720,61 · AT = 2 000 000 × 2 % = 40 000,00
+        //   total patronal = 208 849,79
         $this->assertSame('2000000.00', $row[3]);
         $this->assertSame('1647315.00', $row[4]);
         $this->assertSame('52714.08', $row[5]);
         $this->assertSame('74129.18', $row[6]);
         $this->assertSame('94720.61', $row[7]);
-        $this->assertSame('32946.30', $row[8]);
-        $this->assertSame('201796.09', $row[10]);
+        $this->assertSame('40000.00', $row[8]);
+        $this->assertSame('208849.79', $row[10]);
     }
 
     // ── IPRES/CSS Sénégal ───────────────────────────────────────────────

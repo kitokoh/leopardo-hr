@@ -82,8 +82,9 @@ class IslamicCalendarController extends Controller
 
         // Les fériés islamiques alimentent le calendrier de tous les pays :
         // invalidation large pour la paie (sécurité > micro-optimisation).
+        // BUG #1897 : inclut les clés tenant-scopées (pas seulement nationale).
         foreach (array_keys((array) config('islamic_holidays_map.countries', [])) as $countryCode) {
-            $this->publicHolidays->forget((string) $countryCode, $year);
+            $this->publicHolidays->forgetAllScopes((string) $countryCode, $year);
         }
 
         return response()->json(['data' => $this->serialize($holiday)]);
@@ -99,8 +100,9 @@ class IslamicCalendarController extends Controller
         $confirmed = $this->calendar->confirmYear($year, (int) $request->user()?->id);
 
         // Invalidation paie large (mêmes raisons que update()).
+        // BUG #1897 : inclut les clés tenant-scopées (pas seulement nationale).
         foreach (array_keys((array) config('islamic_holidays_map.countries', [])) as $countryCode) {
-            $this->publicHolidays->forget((string) $countryCode, $year);
+            $this->publicHolidays->forgetAllScopes((string) $countryCode, $year);
         }
 
         return response()->json([

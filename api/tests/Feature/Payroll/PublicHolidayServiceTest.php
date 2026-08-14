@@ -193,3 +193,29 @@ class PublicHolidayServiceTest extends TestCase
         $this->assertSame(3.0, $days); // lun 25, mar 26, jeu 28 chômé… → mer 27 & jeu 28 chômés → 25,26,29
     }
 }
+
+    public function test_forget_all_scopes_invalidates_tenant_keys(): void
+    {
+        // BUG #1897 — après édition d'un férié NATIONAL ou confirmation d'une
+        // date islamique, les clés tenant-scopées restaient périmées 24 h.
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $service = $this->service();
+
+        // Chauffe les 3 clés (nationale + 2 scopes tenant).
+        $service->getHolidays('DZ', 2026);
+        $service->getHolidays('DZ', 2026, (string) $company->id);
+        $service->getHolidays('DZ', 2026, 'some-other-tenant');
+
+        // Vérifie que les 3 clés sont bien en cache.
+        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:null'));
+        $this->assertNotNull(Cache::store()->get(sprintf('public-holidays:DZ:2026:%s', $company->id)));
+        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
+
+        $service->forgetAllScopes('DZ', 2026);
+
+        $this->assertNull(Cache::store()->get('public-holidays:DZ:2026:null'));
+        $this->assertNull(Cache::store()->get(sprintf('public-holidays:DZ:2026:%s', $company->id)));
+        // Les tenants d'autres pays gardent leur cache (pas d'invalidation croisée).
+        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
+    }
