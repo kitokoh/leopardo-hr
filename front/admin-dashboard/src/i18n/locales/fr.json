@@ -376,6 +376,14 @@
     "saved": "Jour férié enregistré.",
     "save_error": "Impossible d'enregistrer le jour férié.",
     "deleted": "Jour férié supprimé.",
-    "delete_error": "Impossible de supprimer."
+    "delete_error": "Impossible de supprimer.",
+    "countries": {
+      "DZ": "Algérie",
+      "CM": "Cameroun",
+      "CI": "Côte d'Ivoire",
+      "SN": "Sénégal",
+      "MA": "Maroc",
+      "TN": "Tunisie"
+    }
   }
 }

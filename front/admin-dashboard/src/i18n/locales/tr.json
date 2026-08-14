@@ -376,6 +376,14 @@
     "saved": "Resmî tatil kaydedildi.",
     "save_error": "Resmî tatil kaydedilemedi.",
     "deleted": "Resmî tatil silindi.",
-    "delete_error": "Silinemedi."
+    "delete_error": "Silinemedi.",
+    "countries": {
+      "DZ": "Cezayir",
+      "CM": "Kamerun",
+      "CI": "Fildişi Sahili",
+      "SN": "Senegal",
+      "MA": "Fas",
+      "TN": "Tunus"
+    }
   }
 }

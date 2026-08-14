@@ -13,7 +13,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-country">{{ $t('holidays.country') }}</label>
           <select id="holiday-country" v-model="countryCode" class="form-input min-w-40" @change="loadHolidays">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.label }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t(cc.labelKey) }}</option>
           </select>
         </div>
         <div>
@@ -228,22 +228,13 @@ import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 
-const countryLabels = {
-  DZ: 'Algérie',
-  CM: 'Cameroun',
-  CI: "Côte d'Ivoire",
-  SN: 'Sénégal',
-  MA: 'Maroc',
-  TN: 'Tunisie',
-}
-
 const supportedCountries = [
-  { code: 'DZ', label: countryLabels.DZ },
-  { code: 'CM', label: countryLabels.CM },
-  { code: 'CI', label: countryLabels.CI },
-  { code: 'SN', label: countryLabels.SN },
-  { code: 'MA', label: countryLabels.MA },
-  { code: 'TN', label: countryLabels.TN },
+  { code: 'DZ', labelKey: 'holidays.countries.DZ' },
+  { code: 'CM', labelKey: 'holidays.countries.CM' },
+  { code: 'CI', labelKey: 'holidays.countries.CI' },
+  { code: 'SN', labelKey: 'holidays.countries.SN' },
+  { code: 'MA', labelKey: 'holidays.countries.MA' },
+  { code: 'TN', labelKey: 'holidays.countries.TN' },
 ]
 
 const years = Array.from({ length: 8 }, (_, i) => 2024 + i)

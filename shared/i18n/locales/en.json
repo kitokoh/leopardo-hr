@@ -376,6 +376,14 @@
     "saved": "Public holiday saved.",
     "save_error": "Unable to save the public holiday.",
     "deleted": "Public holiday deleted.",
-    "delete_error": "Unable to delete."
+    "delete_error": "Unable to delete.",
+    "countries": {
+      "DZ": "Algeria",
+      "CM": "Cameroon",
+      "CI": "Côte d'Ivoire",
+      "SN": "Senegal",
+      "MA": "Morocco",
+      "TN": "Tunisia"
+    }
   }
 }
