@@ -30,4 +30,6 @@ return [
     'compliance_warning_placeholder' => "Règles de structure uniquement pour :country : les taux et cotisations ne sont pas encore sourcés — ne pas utiliser pour une paie réelle.",
     'compliance_warning_pilot' => "Règles pilotes pour :country, issues de références publiques mais non validées localement — confirmez avec un conseil local avant tout usage réglementaire.",
     'compliance_warning_production' => "Règles validées pour la paie :country — confirmez toujours les taux courants auprès d'un conseil local avant une déclaration.",
+
+    'compliance_warning_unknown' => "Pays sans règles de paie implémentées — aucune valeur légale disponible.",
 ];

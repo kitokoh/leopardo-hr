@@ -32,13 +32,37 @@ class SupportedCountryController extends Controller
             $code = $country['country'];
 
             try {
-                $confidence = $this->payrollCalculator->getRules($code)->confidenceLevel();
+                $rules = $this->payrollCalculator->getRules($code);
+                $confidence = $rules->confidenceLevel();
                 $available = true;
             } catch (UnsupportedCountryRulesException) {
                 // Pays référencé mais sans règles de paie dédiées (ex. GB/US) :
                 // indisponible pour un calcul, pas une erreur.
+                $rules = null;
                 $confidence = 'unknown';
                 $available = false;
+            }
+
+            // Issue #2127 — bloc conformité structuré (contrat #1872), même
+            // vocabulaire que PayrollCalculationPresenter : niveau de
+            // confiance, avertissement, message localisé, source légale et
+            // date de vérification experte (nullable).
+            if ($rules !== null) {
+                $compliance = [
+                    'level' => $rules->confidenceLevel(),
+                    'warning' => $rules->complianceWarning(),
+                    'warning_localized' => __('payroll.compliance_warning_'.$rules->confidenceLevel()),
+                    'source' => $rules->complianceSource(),
+                    'verified_at' => $rules->verificationDate(),
+                ];
+            } else {
+                $compliance = [
+                    'level' => 'unknown',
+                    'warning' => __('payroll.compliance_warning_unknown'),
+                    'warning_localized' => __('payroll.compliance_warning_unknown'),
+                    'source' => null,
+                    'verified_at' => null,
+                ];
             }
 
             $registry[] = [
@@ -49,6 +73,7 @@ class SupportedCountryController extends Controller
                 'timezone' => $country['timezone'],
                 'confidence' => $confidence,
                 'available' => $available,
+                'compliance' => $compliance,
             ];
         }
 
