@@ -227,4 +227,75 @@ class PublicHolidayServiceTest extends TestCase
         $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:'.$otherTenantId));
     }
 
+    // ── #1936 : fériés récurrents appliqués à toutes les années ─────────────
+
+    public function test_recurring_holiday_applies_to_later_years(): void
+    {
+        Cache::flush();
+
+        // Férié national RÉCURRENT créé pour 2026 (date = première occurrence).
+        PublicHoliday::create([
+            'country_code' => 'DZ',
+            'name' => 'Fete du travail',
+            'date' => '2026-05-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => '05-01',
+            'holiday_type' => 'fixed',
+        ]);
+
+        $service = $this->service();
+
+        // 2026 : date stockée.
+        $h2026 = $service->getHolidays('DZ', 2026);
+        $this->assertContains('2026-05-01', array_column($h2026, 'date'));
+
+        // 2028 : le récurrent s'applique avec l'année demandée.
+        $h2028 = $service->getHolidays('DZ', 2028);
+        $this->assertContains('2028-05-01', array_column($h2028, 'date'));
+    }
+
+    public function test_non_recurring_holiday_stays_scoped_to_its_year(): void
+    {
+        Cache::flush();
+
+        PublicHoliday::create([
+            'country_code' => 'DZ',
+            'name' => 'Evenement unique',
+            'date' => '2026-09-15',
+            'year' => 2026,
+            'is_recurring' => false,
+            'holiday_type' => 'custom',
+        ]);
+
+        $service = $this->service();
+
+        $this->assertContains('2026-09-15', array_column($service->getHolidays('DZ', 2026), 'date'));
+        $this->assertNotContains('2027-09-15', array_column($service->getHolidays('DZ', 2027), 'date'));
+    }
+
+    public function test_recurring_legacy_without_month_day_applies_to_later_years(): void
+    {
+        Cache::flush();
+
+        // Ligne récurrente legacy : créée avant que l'UI n'envoie month_day
+        // (#1936) — la date stockée est la première occurrence.
+        PublicHoliday::create([
+            'country_code' => 'DZ',
+            'name' => 'Fete du travail (legacy)',
+            'date' => '2026-05-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => null,
+            'holiday_type' => 'fixed',
+        ]);
+
+        $service = $this->service();
+
+        // 2026 : la date stockée est renvoyée.
+        $this->assertContains('2026-05-01', array_column($service->getHolidays('DZ', 2026), 'date'));
+
+        // 2028 : month_day est dérivé de la date stockée → le férié s'applique.
+        $this->assertContains('2028-05-01', array_column($service->getHolidays('DZ', 2028), 'date'));
+    }
 }
