@@ -28,10 +28,10 @@ return new class extends Migration
     public function up(): void
     {
         // F-17 (#1595/#1933) : les gardes `Schema::hasTable()` nus ne voient
-        // que `current_schema()` et diffèrent entre CI et local (search_path
-        // shared_tenants,public vs public,shared_tenants) — une table peut
-        // exister dans un autre schéma du search_path et la migration être
-        // silencieusement sautée. Tous les accès sont résolus via
+        // que `current_schema()` et diffèrent entre environnements (phpunit/CI :
+        // search_path `public,shared_tenants` vs local/Render : `shared_tenants,public`)
+        // — une table peut exister dans un autre schéma du search_path et la
+        // migration être silencieusement sautée. Tous les accès sont résolus via
         // `current_schemas(false)` et QUALIFIÉS par le schéma réel.
         $rateSchema = null;
 
@@ -44,17 +44,43 @@ return new class extends Migration
 
             $qualified = $rateSchema.'.'.$table;
 
-            Schema::table($qualified, function (Blueprint $blueprint): void {
-                $blueprint->string('status', 20)->default('active')->index();
-                $blueprint->unsignedBigInteger('submitted_by')->nullable();
-                $blueprint->unsignedBigInteger('validated_by')->nullable();
-                $blueprint->timestamp('validated_at')->nullable();
-                $blueprint->text('rejection_reason')->nullable();
-            });
+            // Revue lead (#1933) : gardes PAR COLONNE — un re-run (retry Render,
+            // rattrapage entrée d'API) ne doit pas relancer ADD COLUMN sur des
+            // colonnes déjà présentes (SQLSTATE 42701 duplicate_column).
+            if (! schemaHasColumn($table, 'status')) {
+                Schema::table($qualified, function (Blueprint $blueprint): void {
+                    $blueprint->string('status', 20)->default('active')->index();
+                });
+            }
+
+            if (! schemaHasColumn($table, 'submitted_by')) {
+                Schema::table($qualified, function (Blueprint $blueprint): void {
+                    $blueprint->unsignedBigInteger('submitted_by')->nullable();
+                });
+            }
+
+            if (! schemaHasColumn($table, 'validated_by')) {
+                Schema::table($qualified, function (Blueprint $blueprint): void {
+                    $blueprint->unsignedBigInteger('validated_by')->nullable();
+                });
+            }
+
+            if (! schemaHasColumn($table, 'validated_at')) {
+                Schema::table($qualified, function (Blueprint $blueprint): void {
+                    $blueprint->timestamp('validated_at')->nullable();
+                });
+            }
+
+            if (! schemaHasColumn($table, 'rejection_reason')) {
+                Schema::table($qualified, function (Blueprint $blueprint): void {
+                    $blueprint->text('rejection_reason')->nullable();
+                });
+            }
 
             // Rétrocompat : les lignes EXISTANTES restent 'active' (défaut posé
             // ci-dessus), mais toute NOUVELLE ligne créée sans statut explicite
             // doit passer par le workflow → défaut 'draft' désormais.
+            // (`ALTER COLUMN ... SET DEFAULT` est idempotent.)
             DB::statement(sprintf('ALTER TABLE %s ALTER COLUMN status SET DEFAULT \'draft\'', $qualified));
         }
 
@@ -99,11 +125,17 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($schema.'.'.$table, function (Blueprint $blueprint): void {
-                $blueprint->dropColumn([
-                    'status', 'submitted_by', 'validated_by', 'validated_at', 'rejection_reason',
-                ]);
-            });
+            // Gardes par colonne : un rollback partiel/re-run ne doit pas
+            // tenter de dropper une colonne absente (42703).
+            foreach (['status', 'submitted_by', 'validated_by', 'validated_at', 'rejection_reason'] as $column) {
+                if (! schemaHasColumn($table, $column)) {
+                    continue;
+                }
+
+                Schema::table($schema.'.'.$table, function (Blueprint $blueprint) use ($column): void {
+                    $blueprint->dropColumn($column);
+                });
+            }
         }
     }
 };
