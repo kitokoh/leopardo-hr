@@ -191,15 +191,6 @@
             "lib/features/company_branding/data/company_branding_repository.dart"
           ],
           "sourceTokens": ["CompanyBrandingScreen", "Identite entreprise", ".update(", "/company/branding"]
-        },
-        {
-          "name": "manager_dashboard_placeholder",
-          "routes": ["/manager/dashboard"],
-          "endpoints": [],
-          "screenFiles": [
-            "lib/features/manager/screens/manager_placeholder_screen.dart"
-          ],
-          "sourceTokens": ["ManagerPlaceholderScreen"]
         }
       ]
     },
@@ -361,6 +352,27 @@
           "sourceTokens": ["context.push('/platform/company-requests')", "reviewCompanyRequest", "Approuver", "Refuser"]
         }
       ]
+    },
+    {
+      "name": "hr",
+      "root": "front/mobile_apps/leopardo_hr",
+      "requiredBackendExperienceRoutes": [
+        "/attendance",
+        "/absences",
+        "/salary-advances",
+        "/payrolls",
+        "/evaluations",
+        "/notifications",
+        "/cabinet",
+        "/team",
+        "/organigramme",
+        "/schedules",
+        "/me/monthly",
+        "/history",
+        "/modules",
+        "/settings"
+      ],
+      "workflows": []
     }
   ]
 }
