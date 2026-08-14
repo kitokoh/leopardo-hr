@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
@@ -337,12 +338,41 @@ class PlatformCompanyController extends Controller
             return back()->withInput()->withErrors(['country' => $message]);
         }
 
+        // Issue #1873 — toute modification du pays d'un tenant est journalisée
+        // (audit trail : avant/après, acteur, IP) pour traçabilité complète.
+        $oldCountry = $company->country;
+        $oldCurrency = $company->currency;
+        $oldTimezone = $company->timezone;
+        $oldLanguage = $company->language;
+
         $company->country = $countryDefaults['country'];
         // La devise/fuseau/langue suivent le pays (réparation cohérente).
         $company->currency = strtoupper($countryDefaults['currency']);
         $company->timezone = $countryDefaults['timezone'];
         $company->language = strtolower($countryDefaults['language']);
         $company->save();
+
+        AuditLog::create([
+            'company_id' => $company->id,
+            'user_id' => $request->user()?->id,
+            'action' => 'tenant_country_changed',
+            'auditable_type' => $company->getMorphClass(),
+            'auditable_id' => $company->id,
+            'old_values' => [
+                'country' => $oldCountry,
+                'currency' => $oldCurrency,
+                'timezone' => $oldTimezone,
+                'language' => $oldLanguage,
+            ],
+            'new_values' => [
+                'country' => $company->country,
+                'currency' => $company->currency,
+                'timezone' => $company->timezone,
+                'language' => $company->language,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
         if ($request->expectsJson()) {
             return new JsonResponse([

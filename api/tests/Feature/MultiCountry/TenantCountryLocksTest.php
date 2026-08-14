@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\MultiCountry;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
@@ -110,6 +111,16 @@ class TenantCountryLocksTest extends TestCase
         $this->assertSame('SN', $company->country);
         $this->assertSame('XOF', $company->currency);
         $this->assertSame('Africa/Dakar', $company->timezone);
+
+        // #1873 — toute modification du pays est tracée dans l'audit.
+        $audit = AuditLog::query()
+            ->where('company_id', $company->id)
+            ->where('action', 'tenant_country_changed')
+            ->latest('id')
+            ->first();
+        $this->assertNotNull($audit, 'Le changement de pays doit être journalisé.');
+        $this->assertSame('', $audit->old_values['country'] ?? '');
+        $this->assertSame('SN', $audit->new_values['country'] ?? null);
     }
 
     public function test_admin_country_repair_rejects_unknown_country(): void
