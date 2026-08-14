@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -34,6 +35,10 @@ class PayrollCountryConfigSeeder extends Seeder
             // les autres pays — les autres membres CEMAC restent placeholder
             // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
             (new CemacPayrollRules)->forMemberCountry('CM'),
+            // CI (#1825) : barèmes ITSAS + CNSS ivoiriens (pilot) seedés comme
+            // les autres pays — les autres membres CEDEAO restent placeholder
+            // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1829...).
+            (new CedeaoPayrollRules)->forMemberCountry('CI'),
         ];
 
         foreach ($rules as $countryRules) {

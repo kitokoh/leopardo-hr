@@ -330,11 +330,13 @@ class PayrollCalculator
         // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
         // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
         // ajoutée quand la règle pays la définit (> 0). Elle s'ajoute aux
-        // déductions totales via la boucle générique ci-dessous.
+        // déductions totales via la boucle générique ci-dessous. Le libellé
+        // de ligne est fourni par la règle pays (CI #1825 : « Contribution
+        // Nationale (CN) » au lieu de « Taxe de minimum fiscal »).
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
         if ($bracketTax > 0.0) {
             $lines[] = [
-                'name' => 'Taxe de minimum fiscal',
+                'name' => $rules->flatPayrollTaxLabel(),
                 'type' => 'deduction',
                 'base_amount' => $grossEarnings,
                 'rate' => null,

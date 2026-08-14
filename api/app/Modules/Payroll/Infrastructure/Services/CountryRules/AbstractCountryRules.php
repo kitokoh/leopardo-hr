@@ -343,6 +343,17 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * ZONE-INFRA (#1820): default label of the flat-tax deduction line —
+     * "Taxe de minimum fiscal". Countries using the same mechanism for a
+     * differently-named flat tax (CI's Contribution Nationale, #1825)
+     * override this.
+     */
+    public function flatPayrollTaxLabel(): string
+    {
+        return 'Taxe de minimum fiscal';
+    }
+
+    /**
      * ZONE-INFRA (#1820): default = 13th month not legally mandatory
      * (contractual practice only, matching historic behaviour).
      */
