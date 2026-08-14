@@ -39,7 +39,6 @@ import 'package:leopardo_hr/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_hr/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_hr/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_hr/features/manager/screens/manager_attendance_monitoring_screen.dart';
-import 'package:leopardo_hr/features/manager/screens/manager_placeholder_screen.dart';
 import 'package:leopardo_hr/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_hr/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_hr/features/company_branding/screens/company_branding_screen.dart';
@@ -221,14 +220,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company/branding',
         builder: (context, state) => const CompanyBrandingScreen(),
-      ),
-      GoRoute(
-        path: '/manager/dashboard',
-        builder: (context, state) => const ManagerPlaceholderScreen(
-          title: 'Tableau de bord manager',
-          description:
-              'Emplacement reserve au cockpit equipe, KPI RH et priorites du jour.',
-        ),
       ),
       GoRoute(
         path: '/manager/attendance',

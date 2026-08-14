@@ -25,7 +25,7 @@ $apps = @(
         AndroidLabel = "Leopardo Manager"
         IosBundleId = "com.leopardo.manager"
         IosDisplayName = "Leopardo Manager"
-        MustHaveRoutes = @("/attendance", "/absences", "/salary-advances", "/team", "/approvals", "/manager/dashboard", "/manager/attendance", "/manager/anomalies", "/manager/corrections", "/settings")
+        MustHaveRoutes = @("/attendance", "/absences", "/salary-advances", "/team", "/approvals", "/manager/attendance", "/manager/anomalies", "/manager/corrections", "/settings")
         MustHaveEndpoints = @("/auth/login", "/auth/me", "/attendance/check-in", "/attendance/check-out", "/absences", "/salary-advances", "/employees", "/approvals/pending", "/notifications")
     },
     @{
