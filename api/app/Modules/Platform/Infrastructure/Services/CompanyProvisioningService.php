@@ -34,7 +34,7 @@ class CompanyProvisioningService
         $countryDefaults = CountryDefaults::find($payload['country'] ?? null);
         if ($countryDefaults === null) {
             throw ValidationException::withMessages([
-                'country' => ['Le pays légal du tenant est obligatoire et doit être supporté ('.implode(', ', array_keys(CountryDefaults::all())).').'],
+                'country' => ['Le pays légal du tenant est obligatoire et doit être supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').'],
             ]);
         }
 

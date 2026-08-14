@@ -179,6 +179,18 @@ interface CountryRulesInterface
     public function calculateBracketTax(float $grossSalary): float;
 
     /**
+     * Issue #1934 — combine l'impôt sur le revenu et la taxe de minimum
+     * fiscal (TRIMF/CN) pour la base de déductions du bulletin.
+     *
+     * Défaut : ADDITIF (incomeTax + bracketTax) — mécanique de la plupart
+     * des pays (CI : IR + CN).
+     * Sénégal : override → max(incomeTax, bracketTax) — le salarié paie le
+     * plus élevé des deux (CGI Sénégal, le TRIMF est un minimum
+     * représentatif ; docs/payroll/SN_COMPLIANCE.md §3).
+     */
+    public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float;
+
+    /**
      * Display label of the flat-tax deduction line injected by the payroll
      * engine when calculateBracketTax() returns > 0. Defaults to
      * "Taxe de minimum fiscal"; countries that use the same mechanism for a

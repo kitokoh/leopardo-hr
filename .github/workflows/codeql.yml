@@ -1,10 +1,21 @@
 name: CodeQL - Leopardo RH
 
 on:
+  # Issue #1903 — saturation de la file GitHub Actions : CodeQL (Actions +
+  # Semgrep PHP sur api/) ne tourne que quand le code analysable change.
+  # Le scan complet hebdo (schedule) et le push main couvrent le reste.
   pull_request:
     branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/**'
+      - '.github/**/actions/**'
   push:
     branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/**'
+      - '.github/**/actions/**'
   schedule:
     - cron: "0 4 * * 1"
 
