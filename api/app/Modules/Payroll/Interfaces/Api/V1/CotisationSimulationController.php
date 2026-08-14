@@ -57,9 +57,8 @@ class CotisationSimulationController extends Controller
         /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null} $validated */
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
-        $rulesPeriod = isset($validated['rules_period']) && $validated['rules_period'] !== null
-            ? Carbon::parse($validated['rules_period'])
-            : null;
+        $rulesPeriodValue = $validated['rules_period'] ?? null;
+        $rulesPeriod = $rulesPeriodValue !== null ? Carbon::parse($rulesPeriodValue) : null;
 
         // Pays inconnu → 422 explicite (UnsupportedCountryRulesException,
         // rendue par le handler d'exceptions avec un message métier clair).
