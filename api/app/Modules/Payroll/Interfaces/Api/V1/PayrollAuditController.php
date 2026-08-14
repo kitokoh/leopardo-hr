@@ -51,10 +51,14 @@ class PayrollAuditController extends Controller
             $query->where('country_code', strtoupper((string) $request->string('country_code')));
         }
 
+        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, PayrollCalculationAudit> $audits */
         $audits = $query->orderByDesc('id')->paginate($request->integer('per_page', 15));
 
         return response()->json([
-            'data' => $audits->map(fn (PayrollCalculationAudit $audit): array => $this->serialize($audit)),
+            'data' => array_map(
+                fn (PayrollCalculationAudit $audit): array => $this->serialize($audit),
+                $audits->items()
+            ),
             'meta' => [
                 'current_page' => $audits->currentPage(),
                 'last_page' => $audits->lastPage(),
