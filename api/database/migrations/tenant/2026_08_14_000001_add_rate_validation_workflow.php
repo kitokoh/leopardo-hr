@@ -27,12 +27,24 @@ return new class extends Migration
 
     public function up(): void
     {
+        // F-17 (#1595/#1933) : les gardes `Schema::hasTable()` nus ne voient
+        // que `current_schema()` et diffèrent entre CI et local (search_path
+        // shared_tenants,public vs public,shared_tenants) — une table peut
+        // exister dans un autre schéma du search_path et la migration être
+        // silencieusement sautée. Tous les accès sont résolus via
+        // `current_schemas(false)` et QUALIFIÉS par le schéma réel.
+        $rateSchema = null;
+
         foreach (self::TABLES as $table) {
-            if (! Schema::hasTable($table)) {
-                continue;
+            $rateSchema = resolveTableSchema($table);
+
+            if ($rateSchema === null) {
+                continue; // Table absente dans ce contexte — rien à migrer.
             }
 
-            Schema::table($table, function (Blueprint $blueprint): void {
+            $qualified = $rateSchema.'.'.$table;
+
+            Schema::table($qualified, function (Blueprint $blueprint): void {
                 $blueprint->string('status', 20)->default('active')->index();
                 $blueprint->unsignedBigInteger('submitted_by')->nullable();
                 $blueprint->unsignedBigInteger('validated_by')->nullable();
@@ -43,11 +55,15 @@ return new class extends Migration
             // Rétrocompat : les lignes EXISTANTES restent 'active' (défaut posé
             // ci-dessus), mais toute NOUVELLE ligne créée sans statut explicite
             // doit passer par le workflow → défaut 'draft' désormais.
-            DB::statement(sprintf('ALTER TABLE %s ALTER COLUMN status SET DEFAULT \'draft\'', $table));
+            DB::statement(sprintf('ALTER TABLE %s ALTER COLUMN status SET DEFAULT \'draft\'', $qualified));
         }
 
-        if (! Schema::hasTable('tax_rate_change_log')) {
-            Schema::create('tax_rate_change_log', function (Blueprint $table): void {
+        // `tax_rate_change_log` : audit trail créé dans le MÊME schéma que les
+        // tables de taux (résolu ci-dessus), nom qualifié (F-17).
+        if ($rateSchema !== null && resolveTableSchema('tax_rate_change_log') === null) {
+            $qualifiedLog = $rateSchema.'.tax_rate_change_log';
+
+            Schema::create($qualifiedLog, function (Blueprint $table): void {
                 $table->id();
                 $table->string('table_name', 50); // 'tax_slabs' | 'social_contributions'
                 $table->unsignedBigInteger('record_id');
@@ -64,20 +80,26 @@ return new class extends Migration
             });
 
             // Append-only : aucun UPDATE/DELETE possible pour le rôle applicatif.
-            DB::statement('REVOKE UPDATE, DELETE ON TABLE tax_rate_change_log FROM PUBLIC');
+            DB::statement(sprintf('REVOKE UPDATE, DELETE ON TABLE %s FROM PUBLIC', $qualifiedLog));
         }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('tax_rate_change_log');
+        $logSchema = resolveTableSchema('tax_rate_change_log');
+
+        if ($logSchema !== null) {
+            Schema::dropIfExists($logSchema.'.tax_rate_change_log');
+        }
 
         foreach (self::TABLES as $table) {
-            if (! Schema::hasTable($table)) {
+            $schema = resolveTableSchema($table);
+
+            if ($schema === null) {
                 continue;
             }
 
-            Schema::table($table, function (Blueprint $blueprint): void {
+            Schema::table($schema.'.'.$table, function (Blueprint $blueprint): void {
                 $blueprint->dropColumn([
                     'status', 'submitted_by', 'validated_by', 'validated_at', 'rejection_reason',
                 ]);
