@@ -66,7 +66,7 @@ class CotisationSimulationController extends Controller
             'acknowledge_placeholder' => ['nullable', 'boolean'],
         ]);
 
-        /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null} $validated */
+        /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null, acknowledge_placeholder?: bool} $validated */
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
         $rulesPeriodValue = $validated['rules_period'] ?? null;
