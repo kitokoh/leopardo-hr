@@ -42,6 +42,7 @@ class PayrollCalculationPresenter
      *   slab_version: string,
      *   rules_version: string,
      *   confidence_level: string,
+     *   compliance: array{level: string, warning: string, source: string, verification_date: string|null},
      *   rounding_policy: string,
      *   gross: float,
      *   social_employee: float,
@@ -71,6 +72,15 @@ class PayrollCalculationPresenter
             'slab_version' => $this->slabVersion($rules),
             'rules_version' => $rules->rulesVersion(),
             'confidence_level' => $rules->confidenceLevel(),
+            // Issue #1872 — avertissement de conformité structuré (niveau,
+            // message localisé, source légale, date de vérification experte).
+            'compliance' => [
+                'level' => $rules->confidenceLevel(),
+                'warning' => $rules->complianceWarning(),
+                'warning_key' => 'payroll.compliance_warning_'.$rules->confidenceLevel(),
+                'source' => $rules->complianceSource(),
+                'verification_date' => $rules->verificationDate(),
+            ],
             'rounding_policy' => self::ROUNDING_POLICY,
             'gross' => round($gross, 2),
             'social_employee' => $breakdown['social']['employee'],

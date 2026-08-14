@@ -8423,6 +8423,7 @@ paths:
                   type: string
                   enum: [DZ, MA, FR, TN, TR, SN, CM, CF, TD, CG, GA, GQ, CI, ML, BF, BJ, TG, NE, CA]
                 gross_salary: { type: number, minimum: 0 }
+                acknowledge_placeholder: { type: boolean, description: "Confirmation explicite requise pour les pays en règle placeholder (issue #1872)" }
       responses:
         "200":
           description: "Simulation des cotisations et net estime (contrat complet issue #1869)"
@@ -8475,6 +8476,15 @@ paths:
                           rules_period: { type: string, format: date }
                           slab_version: { type: string }
                           confidence_level: { type: string, enum: [production, pilot, placeholder] }
+                          compliance:
+                            type: object
+                            description: "Avertissement de conformité structuré (MULTI-PAYS #1872) — niveau, message localisé (clé i18n), source légale, date de vérification experte."
+                            properties:
+                              level: { type: string, enum: [production, pilot, placeholder] }
+                              warning: { type: string }
+                              warning_key: { type: string }
+                              source: { type: string }
+                              verification_date: { type: [string, "null"], format: date }
                           rounding_policy: { type: string }
                           gross: { type: number }
                           social_employee: { type: number }
@@ -16567,6 +16577,7 @@ components:
       properties:
         country_code: { type: string }
         gross_salary: { type: number, minimum: 0 }
+        acknowledge_placeholder: { type: boolean, description: "Confirmation explicite requise pour les pays en règle placeholder (issue #1872)" }
         slabs_override:
           type: array
           items:
