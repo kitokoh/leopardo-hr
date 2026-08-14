@@ -229,15 +229,6 @@ class CountryRulesResolverTest extends TestCase
             /**
              * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
              */
-            /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
-             */
-            /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
-             */
-            /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
-             */
             public function withTaxSlabs(array $slabs): static
             {
                 return $this;
@@ -250,7 +241,7 @@ class CountryRulesResolverTest extends TestCase
 
             public function flatPayrollTaxLabel(): string
             {
-                return 'IR';
+                return '';
             }
         };
 
@@ -387,19 +378,6 @@ class CountryRulesResolverTest extends TestCase
                 return 0.0;
             }
 
-            public function forCompany(?string $companyId): static
-            {
-                return $this;
-            }
-
-            public function asOf(\DateTimeInterface|string|null $date): static
-            {
-                return $this;
-            }
-
-            /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
-             */
             public function withTaxSlabs(array $slabs): static
             {
                 return $this;
@@ -412,8 +390,19 @@ class CountryRulesResolverTest extends TestCase
 
             public function flatPayrollTaxLabel(): string
             {
-                return 'IR';
+                return '';
             }
+
+            public function forCompany(?string $companyId): static
+            {
+                return $this;
+            }
+
+            public function asOf(\DateTimeInterface|string|null $date): static
+            {
+                return $this;
+            }
+
         };
 
         $resolver = new CountryRulesResolver([$rogue]);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\DB;
@@ -68,8 +69,8 @@ class SectorTemplateService
             $rules = $this->payrollCalculator->getRules($countryCode);
             $restDays = $this->normalizeRestDays($rules);
             $overtimeThresholdWeekly = $rules->overtimeThresholdWeeklyHours();
-        } catch (\InvalidArgumentException) {
-            // Country not registered in PayrollCalculator's rules map yet:
+        } catch (UnsupportedCountryRulesException) {
+            // Country not registered in the resolver's rules map yet (#1868) :
             // keep the generic Sunday-rest/40h fallback above rather than
             // failing company provisioning over a missing country ruleset.
         }

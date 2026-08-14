@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -50,7 +51,7 @@ class PayrollCalculator
      *
      * @throws UnsupportedCountryRulesException si le pays n'est pas enregistré
      */
-    public function getRules(string $countryCode): CountryRulesInterface
+    public function getRules(string $countryCode): CountryRulesContract
     {
         return $this->resolver->resolve($countryCode);
     }
@@ -157,7 +158,7 @@ class PayrollCalculator
         PayrollRun $run,
         Employee $employee,
         SalaryStructure $structure,
-        CountryRulesInterface $rules
+        CountryRulesContract $rules
     ): PaySlip {
         $baseSalary = $structure->base_salary;
         $worked = $this->computeWorkedDays($run, $employee);
