@@ -16,9 +16,11 @@ use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PayrollCalculator
 {
@@ -359,6 +361,7 @@ class PayrollCalculator
             'working_days' => $worked['working_days'],
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
+            'has_attendance_data' => $worked['has_attendance_data'],
             'status' => 'calculated',
         ]);
 
@@ -411,15 +414,21 @@ class PayrollCalculator
     }
 
     /**
-     * Programme FOCUS (F-05) — jours travaillés sur la période du run.
+     * Programme FOCUS (F-05/F-20) — jours travaillés sur la période du run.
      *
      * Recoupe le contrat de l'employé (contract_start / contract_end) avec la
      * période du run : prorata d'entrée/sortie en cours de mois.
      *
-     * overtime_hours : source future = pointage/attendance (F-20) ; 0 tant que
-     * le lien présence → paie n'est pas branché.
+     * overtime_hours : implémenté — alimenté par le pointage (F-20) via
+     * AttendanceLog.overtime_hours dans collectWorkInputs().
      *
-     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float}
+     * actual_days_worked (F-20, #1816) : source réelle = jours DISTINCTS
+     * pointés avec au moins un log valide sur la période (AttendanceLog,
+     * statuts cancelled/rejected/incomplete exclus) ; fallback = prorata
+     * contrat quand aucun log valide n'existe (comportement historique).
+     * has_attendance_data indique quelle source a été utilisée.
+     *
+     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee): array
     {
@@ -437,17 +446,52 @@ class PayrollCalculator
             $overlapEnd = $employee->contract_end->copy()->startOfDay();
         }
 
-        $periodDays = $periodStart->diffInDays($periodEnd) + 1;
-        $overlapDays = max(0, $overlapStart->diffInDays($overlapEnd) + 1);
+        // F-20 (#1816) — compter les jours distincts avec au moins 1 log
+        // valide (source réelle de présence). Garde défensive sur la table :
+        // sans elle, les golden tests purs et environnements sans migration
+        // tenant retomberaient sur une QueryException au lieu du fallback.
+        $distinctDays = 0;
+        if (Schema::hasTable('attendance_logs')) {
+            $distinctDays = (int) AttendanceLog::query()
+                ->where('company_id', $run->company_id)
+                ->where('employee_id', $employee->id)
+                ->whereBetween('date', [$run->period_start, $run->period_end])
+                ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+                ->distinct('date')
+                ->count('date');
+        }
 
-        $ratio = $periodDays > 0 ? min(1.0, $overlapDays / $periodDays) : 0.0;
-        $actualDays = round($workingDays * $ratio, 2);
+        $hasAttendanceData = $distinctDays > 0;
+        $actualDays = $hasAttendanceData
+            ? (float) $distinctDays
+            : $this->contractProrata($periodStart, $periodEnd, $overlapStart, $overlapEnd, $workingDays);
 
         return [
             'working_days' => $workingDays,
             'actual_days_worked' => $actualDays,
             'overtime_hours' => 0.0,
+            'has_attendance_data' => $hasAttendanceData,
         ];
+    }
+
+    /**
+     * F-20 (#1816) — prorata calendaire de repli (fallback) quand aucun log
+     * de pointage valide n'existe sur la période : ratio de chevauchement
+     * contrat ↔ période appliqué aux jours ouvrés standards.
+     */
+    private function contractProrata(
+        Carbon $periodStart,
+        Carbon $periodEnd,
+        Carbon $overlapStart,
+        Carbon $overlapEnd,
+        float $workingDays
+    ): float {
+        $periodDays = $periodStart->diffInDays($periodEnd) + 1;
+        $overlapDays = max(0, $overlapStart->diffInDays($overlapEnd) + 1);
+
+        $ratio = $periodDays > 0 ? min(1.0, $overlapDays / $periodDays) : 0.0;
+
+        return round($workingDays * $ratio, 2);
     }
 
     /**
