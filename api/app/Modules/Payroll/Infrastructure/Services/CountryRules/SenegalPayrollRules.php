@@ -54,7 +54,18 @@ class SenegalPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
-        $annualTaxable = $grossTaxable * $annualBasis;
+        // Issue #1827 (docs/payroll/SN_COMPLIANCE.md §1/§6) : l'abattement frais
+        // professionnels 30 % (non plafonné) s'applique sur le BRUT réel
+        // ($grossForAbatement, passé par PayrollCalculator::calculateSlip()).
+        // Sans lui, on retombe sur l'assiette passée (brut − cotisations) —
+        // approximation pilot documentée. Suivi review #1847/#1828 : le moteur
+        // ne l'appliquait pas du tout (IR sur-assiette, ex. SMIG 58 900 →
+        // 620,32 d'IR au lieu de 0).
+        $grossForAbatement ??= $grossTaxable;
+        $abatement = $this->professionalExpensesDeduction();
+        $monthlyDeduction = $grossForAbatement * ($abatement['rate'] / 100);
+
+        $annualTaxable = max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
         return round($tax / $annualBasis, 2);
