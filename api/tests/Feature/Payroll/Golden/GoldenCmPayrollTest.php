@@ -17,8 +17,9 @@ use Tests\TestCase;
  *
  * Règles CM implémentées par #1821 : IRPP CGI 2024 art. 68 (4 tranches
  * annuelles 10/15/25/35 % + centimes ×1,10), abattement frais pro 30 %
- * plafonné 350 000 XAF/mois, CNPS 2024 (4,2/4,2/7,0 % plaf. 750 000 +
- * 2,0 % AT non plafonné), préavis loi 92/007 art. 34.
+ * du BRUT plafonné 350 000 XAF/mois (formule légale — fix moteur #1893),
+ * CNPS 2024 (4,2/4,2/7,0 % plaf. 750 000 + 2,0 % AT non plafonné),
+ * préavis loi 92/007 art. 34.
  */
 class GoldenCmPayrollTest extends TestCase
 {
@@ -29,17 +30,17 @@ class GoldenCmPayrollTest extends TestCase
 
     /**
      * Base IRPP transmise par PayrollCalculator::calculateSlip() :
-     * brut − CNPS salariale. L'abattement frais professionnels est appliqué
-     * DANS calculateIncomeTax() (implémentation CM mergée #1845 — 30 % de la
-     * base reçue, plafond 350 000, approximation pilot documentée
-     * CM_COMPLIANCE.md §1). Les golden verrouillent CE comportement.
+     * brut − CNPS salariale. L'abattement frais professionnels (30 % du
+     * BRUT, plafond 350 000 — CGI 2024 art. 68, fix #1893) est appliqué
+     * DANS calculateIncomeTax() sur le brut réel transmis en 3e argument.
+     * Les golden verrouillent CE comportement légal.
      */
     private function cmTaxBase(float $gross): array
     {
         $charges = $this->cm()->calculateSocialCharges($gross);
         $deduction = $this->cm()->professionalExpensesDeduction();
         $abatement = min(
-            ($gross - $charges['employee']) * $deduction['rate'] / 100,
+            $gross * $deduction['rate'] / 100,
             $deduction['cap'] ?? PHP_FLOAT_MAX
         );
 
@@ -51,30 +52,38 @@ class GoldenCmPayrollTest extends TestCase
         ];
     }
 
+    /** IRPP légal CM : calculateIncomeTax(base après CNPS, 12, brut). */
+    private function cmIrpp(float $gross): float
+    {
+        return $this->cm()->calculateIncomeTax($gross - $this->cmTaxBase($gross)['employee_charge'], 12, $gross);
+    }
+
     public static function irppProvider(): array
     {
-        // [base mensuelle reçue par calculateIncomeTax (brut − CNPS), IRPP
-        // mensuel attendu avec centimes] — valeurs calculées à la main avec
-        // l'implémentation mergée #1845 (abattement 30 % appliqué sur la base
-        // reçue, plafonné 350 000).
+        // [brut, base taxable (brut − CNPS), IRPP mensuel légal avec
+        // centimes] — valeurs calculées à la main depuis les sources légales
+        // (CGI 2024 art. 68 + CM_COMPLIANCE.md §1-§2, fix #1893) :
+        //   CNPS = 4,2 % × min(brut, 750k) ; abattement = 30 % du BRUT
+        //   (plaf. 350 000) ; annuel = (brut − CNPS − abattement) × 12 ;
+        //   barème progressif 10/15/25/35 % → mensuel → ×1,10.
         return [
-            'SMIG 41 875 (40 116,25)'        => [40116.25, 3088.95],
-            'junior 100 000 (95 800)'         => [95800.0, 7376.6],
-            'cadre bas 200 000 (191 600)'     => [191600.0, 14753.2],
-            'cadre moyen 400 000 (383 200)'   => [383200.0, 37099.33],
-            'cadre senior 600 000 (574 800)'  => [574800.0, 73982.33],
-            'haut salaire 750 000 (718 500)'  => [718500.0, 111135.75],
-            '1 000 000 brut (968 500)'        => [968500.0, 178510.75],
+            'SMIG 41 875 (40 116,25)'        => [41875.0, 40116.25, 3030.91],
+            'junior 100 000 (95 800)'         => [100000.0, 95800.0, 7238.0],
+            'cadre bas 200 000 (191 600)'     => [200000.0, 191600.0, 14476.0],
+            'cadre moyen 400 000 (383 200)'   => [400000.0, 383200.0, 35713.33],
+            'cadre senior 600 000 (574 800)'  => [600000.0, 574800.0, 71903.33],
+            'haut salaire 750 000 (718 500)'  => [750000.0, 718500.0, 107497.5],
+            '1 000 000 brut (968 500)'        => [1000000.0, 968500.0, 174872.5],
         ];
     }
 
     #[DataProvider('irppProvider')]
-    public function test_golden_cm_irpp_annual_brackets(float $monthlyTaxable, float $expectedIrpp): void
+    public function test_golden_cm_irpp_annual_brackets(float $gross, float $monthlyTaxable, float $expectedIrpp): void
     {
         // Calcul manuel (CM_COMPLIANCE.md §1-§2) :
         //   annuel = mensuel × 12 → barème progressif 10/15/25/35 % →
         //   mensuel = annuel / 12 → centimes additionnels ×1,10.
-        $this->assertSame($expectedIrpp, $this->cm()->calculateIncomeTax($monthlyTaxable));
+        $this->assertSame($expectedIrpp, $this->cm()->calculateIncomeTax($monthlyTaxable, 12, $gross));
     }
 
     public static function cnpsProvider(): array
@@ -102,46 +111,47 @@ class GoldenCmPayrollTest extends TestCase
 
     public function test_golden_cm_full_slip_at_200000(): void
     {
-        // Calcul manuel (CM_COMPLIANCE.md §1-§5) — cas de référence #1822,
-        // comportement mergé #1845 :
+        // Calcul manuel (CM_COMPLIANCE.md §1-§5) — cas de référence #1822
+        // (exemple de l'issue : brut 200 000 → abattement 60 000 → IRPP
+        // 14 476, net 177 124) — formule légale (fix #1893) :
         //   CNPS salariale 4,2 % × 200 000 = 8 400 (plaf. 750k non atteint)
         //   Base reçue par calculateIncomeTax = 200 000 − 8 400 = 191 600
-        //   Abattement 30 % × 191 600 = 57 480 (< 350 000)
-        //   Assiette annuelle = (191 600 − 57 480) × 12 = 1 609 440
-        //   IRPP annuel = 1 609 440 × 10 % = 160 944 → mensuel 13 412
-        //   Centimes ×1,10 → 14 753,20
-        //   Net = 200 000 − 8 400 − 14 753,20 = 176 846,80 XAF
+        //   Abattement 30 % × BRUT 200 000 = 60 000 (< 350 000)
+        //   Assiette annuelle = (191 600 − 60 000) × 12 = 1 579 200
+        //   IRPP annuel = 1 579 200 × 10 % = 157 920 → mensuel 13 160
+        //   Centimes ×1,10 → 14 476
+        //   Net = 200 000 − 8 400 − 14 476 = 177 124 XAF
         $flow = $this->cmTaxBase(200000.0);
 
         $this->assertSame(8400.0, $flow['employee_charge']);
-        $this->assertSame(57480.0, $flow['abatement']);
+        $this->assertSame(60000.0, $flow['abatement']);
         $this->assertSame(191600.0, $flow['taxable']);
-        $this->assertSame(14753.2, $this->cm()->calculateIncomeTax($flow['taxable']));
-        $this->assertSame(176846.8, round(200000.0 - $flow['employee_charge'] - $this->cm()->calculateIncomeTax($flow['taxable']), 2));
+        $this->assertSame(14476.0, $this->cmIrpp(200000.0));
+        $this->assertSame(177124.0, round(200000.0 - $flow['employee_charge'] - $this->cmIrpp(200000.0), 2));
     }
 
     public function test_golden_cm_smig_minimum_wage(): void
     {
         // Calcul manuel (CM_COMPLIANCE.md §6) — SMIG 41 875 XAF/mois :
         //   CNPS salariale = 1 758,75 · base reçue = 40 116,25
-        //   Abattement 30 % × 40 116,25 = 12 034,875
-        //   Annuel = (40 116,25 − 12 034,875) × 12 = 336 976,50 → 10 %
-        //     = 33 697,65 → mensuel 2 808,1375 → ×1,10 = 3 088,95
-        //   Net = 41 875 − 1 758,75 − 3 088,95 = 37 027,30
+        //   Abattement 30 % × BRUT 41 875 = 12 562,50
+        //   Annuel = (40 116,25 − 12 562,50) × 12 = 330 645 → 10 %
+        //     = 33 064,50 → mensuel 2 755,375 → ×1,10 = 3 030,91
+        //   Net = 41 875 − 1 758,75 − 3 030,91 = 37 085,34
         // NB : le CGI 2024 n'a pas de tranche à 0 % — le SMIG reste imposé.
         $flow = $this->cmTaxBase(41875.0);
 
         $this->assertSame(1758.75, $flow['employee_charge']);
-        $this->assertSame(3088.95, $this->cm()->calculateIncomeTax($flow['taxable']));
-        $this->assertSame(37027.3, round(41875.0 - $flow['employee_charge'] - $this->cm()->calculateIncomeTax($flow['taxable']), 2));
+        $this->assertSame(3030.91, $this->cmIrpp(41875.0));
+        $this->assertSame(37085.34, round(41875.0 - $flow['employee_charge'] - $this->cmIrpp(41875.0), 2));
     }
 
     public function test_golden_cm_pro_expenses_abatement_capped(): void
     {
-        // Calcul manuel (CM_COMPLIANCE.md §4, comportement mergé #1845) :
+        // Calcul manuel (CM_COMPLIANCE.md §4, formule légale fix #1893) :
         //   Base reçue = 1 500 000 − 31 500 (CNPS plafonnée) = 1 468 500
-        //   Abattement 30 % × 1 468 500 = 440 550 > plafond 350 000
-        //     → abattement = 350 000 (plafonné, pas 30 % de la base)
+        //   Abattement 30 % × BRUT 1 500 000 = 450 000 > plafond 350 000
+        //     → abattement = 350 000 (plafonné)
         //   Annuel = (1 468 500 − 350 000) × 12 = 13 422 000
         //   IRPP : 200 000 + 150 000 + 500 000 + 8 422 000 × 35 %
         //     = 3 797 700 → mensuel 316 475 → ×1,10 = 348 122,50
@@ -150,19 +160,19 @@ class GoldenCmPayrollTest extends TestCase
         $this->assertSame(350000.0, $flow['abatement']);
         $this->assertSame(31500.0, $flow['employee_charge']);
         $this->assertSame(1468500.0, $flow['taxable']);
-        $this->assertSame(348122.5, $this->cm()->calculateIncomeTax($flow['taxable']));
+        $this->assertSame(348122.5, $this->cmIrpp(1500000.0));
     }
 
     public function test_golden_cm_irpp_max_bracket_above_5m_annual(): void
     {
-        // Calcul manuel (CM_COMPLIANCE.md §1) — base 679 000 (brut 700 000
-        // − CNPS 29 400) :
-        //   Abattement 30 % × 679 000 = 203 700 → annuel
-        //   = (679 000 − 203 700) × 12 = 5 703 600
+        // Calcul manuel (CM_COMPLIANCE.md §1, formule légale fix #1893) —
+        // brut 700 000 (CNPS 29 400) → base 670 600 :
+        //   Abattement 30 % × BRUT 700 000 = 210 000 → annuel
+        //   = (670 600 − 210 000) × 12 = 5 527 200
         //   2 000 000×10 % + 1 000 000×15 % + 2 000 000×25 %
-        //   + 703 600×35 % = 200 000 + 150 000 + 500 000 + 246 260
-        //   = 1 096 260 → mensuel 91 355 → ×1,10 = 100 490,50
-        $this->assertSame(100490.5, $this->cm()->calculateIncomeTax(679000.0));
+        //   + 527 200×35 % = 200 000 + 150 000 + 500 000 + 184 520
+        //   = 1 034 520 → mensuel 86 210 → ×1,10 = 94 831
+        $this->assertSame(94831.0, $this->cm()->calculateIncomeTax(670600.0, 12, 700000.0));
     }
 
     public static function prorataProvider(): array
