@@ -10,7 +10,7 @@
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| IUTS (5 tranches annuelles) | ✅ implémentée (pilot) | CGI 2024 | à valider expert |
+| IUTS (6 tranches annuelles) | ✅ implémentée (pilot) | CGI 2024 | à valider expert |
 | CNSS retraite 5,5 % / 6,5 % (plaf. 900 000) | ✅ implémentée (pilot) | CNSS | à valider expert |
 | CNSS famille patronale 7,0 % (même plaf.) | ✅ implémentée (pilot) | CNSS | à valider expert |
 | CNSS AT patronale 3,5 % (non plafonné) | ✅ implémentée (pilot) | CNSS — variable selon risque | à valider expert |
@@ -32,10 +32,15 @@ CGI Burkina 2024) :
 | 600 001 – 1 500 000 | 12,1 % |
 | 1 500 001 – 3 000 000 | 13,9 % |
 | 3 000 001 – 4 500 000 | 18,7 % |
-| > 4 500 000 | 23,6 % |
+| 4 500 001 – 6 000 000 | 23,6 % |
+| > 6 000 000 | 27,5 % |
 
 ⚠️ Les taux IUTS burkinabè sont « tout compris » (contribution communale
-incluse). À valider sur le site de la DGI Burkina.
+incluse). À valider sur le site de la DGI Burkina. Issue #1915 : la tranche
+`> 6 000 000 @ 27,5 %` (CGI BF) manquait — l'ancien barème fusionnait les
+deux dernières tranches à 23,6 % (sous-imposition au-delà de ~500 000
+FCFA/mois) ; corrigé et verrouillé par `GoldenBfPayrollTest` (cas 1 150 500
+→ 258 212,50 et frontière 6 M annuel).
 
 ## 2. Assiette IUTS
 

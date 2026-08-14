@@ -6,6 +6,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
@@ -170,5 +172,80 @@ class PayrollWorkInputsTest extends TestCase
         $this->assertSame(22.0, $worked['working_days']);
         $this->assertSame(22.0, $worked['actual_days_worked']);
         $this->assertFalse($worked['has_attendance_data']);
+    }
+
+    // ── #1919 : congés + présence réelle → PAS de double déduction ─────────
+
+    public function test_17_presence_days_plus_5_paid_leave_pays_full_month(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'salary_type' => 'fixed',
+            'salary_base' => 60000,
+        ]);
+        $run = $this->makeRun($company);
+
+        SalaryStructure::create([
+            'company_id' => $company->id,
+            'name' => 'Grille test',
+            'base_salary' => 60000,
+            'currency' => 'DZD',
+            'country_code' => 'DZ',
+            'frequency' => 'monthly',
+            'active' => true,
+        ]);
+
+        // 17 jours distincts réellement pointés (présence).
+        for ($day = 1; $day <= 17; $day++) {
+            AttendanceLog::create([
+                'company_id' => $company->id,
+                'employee_id' => $employee->id,
+                'date' => sprintf('2026-07-%02d', $day),
+                'status' => 'ontime',
+            ]);
+        }
+
+        // 5 jours de congé PAYÉ approuvés (18 → 22 juillet).
+        $paidType = AbsenceType::create(['company_id' => $company->id, 'name' => 'Congé payé', 'code' => 'PAID', 'is_paid' => true]);
+        Absence::create(['company_id' => $company->id, 'employee_id' => $employee->id, 'absence_type_id' => $paidType->id, 'start_date' => '2026-07-18', 'end_date' => '2026-07-22', 'days_count' => 5, 'status' => 'approved']);
+
+        (new PayrollCalculator)->calculateRun($run);
+
+        /** @var PaySlip $slip */
+        $slip = $run->paySlips()->firstOrFail();
+
+        // Pas de double déduction : 17 présents + 5 congés payés (indemnité
+        // F-07) = 22/22 payés. actual_days_worked reste les jours RÉELLEMENT
+        // présents (17) — les congés payés passent par l'indemnité.
+        $this->assertSame(17.0, (float) $slip->actual_days_worked);
+        $this->assertSame(60000.0, (float) $slip->gross_salary);
+    }
+
+    public function test_attendance_days_capped_at_standard_working_days(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $run = $this->makeRun($company);
+
+        // 24 logs valides (dont week-ends/heures sup) : la base ne doit pas
+        // dépasser les jours ouvrés standards (22) — l'HS est payée à part.
+        for ($day = 1; $day <= 24; $day++) {
+            AttendanceLog::create([
+                'company_id' => $company->id,
+                'employee_id' => $employee->id,
+                'date' => sprintf('2026-07-%02d', $day),
+                'status' => 'ontime',
+            ]);
+        }
+
+        $worked = (new PayrollCalculator)->computeWorkedDays($run, $employee);
+
+        $this->assertSame(22.0, $worked['actual_days_worked']);
+        $this->assertTrue($worked['has_attendance_data']);
     }
 }
