@@ -49,24 +49,25 @@ class PayrollCalculationContractTest extends TestCase
 
     public function test_golden_ci_contract(): void
     {
-        // Calcul manuel (CedeaoPayrollRules placeholder, #1820) — brut 500 000 XOF :
-        //   CNSS salariale 3,6 % = 18 000 · patronale 16,4 % = 82 000
-        //   Assiette = 482 000 · annuel 5 784 000
-        //   Tranches annuelles : 0-600k × 0 % = 0 · 600k-1,2M × 12 % = 72 000
-        //     1,2M-3M × 22 % = 396 000 · 3M-5,784M × 32 % = 890 880
-        //   Impôt mensuel = 1 358 880 / 12 = 113 240
-        //   Net = 500 000 − 18 000 − 113 240 = 368 760
-        //   Coût employeur = 500 000 + 82 000 = 582 000
+        // Calcul manuel (CedeaoPayrollRules pilot CI, #1825) — brut 500 000 XOF :
+        //   CNSS salariale 3,2 % = 16 000 · patronale 4,5 + 5,75 + 2,0 % = 61 250
+        //   Assiette = 484 000 · abattement frais pro 20 % sur assiette = 96 800
+        //     (le présentateur ne transmet pas encore le brut réel — suivi
+        //     #1924/#1891) · annuel 4 646 400
+        //   Tranches annuelles ITSAS : 0-600k × 0 % = 0 · 600k-2M × 2 % = 28 000
+        //     2M-4,6464M × 21 % = 555 744 → impôt mensuel 583 744 / 12 = 48 645,33
+        //   Net = 500 000 − 16 000 − 48 645,33 = 435 354,67
+        //   Coût employeur = 500 000 + 61 250 = 561 250
         $contract = $this->presenter()->present('CI', 500000.0);
 
         $this->assertSame('CI', $contract['country_code']);
         $this->assertSame('XOF', $contract['currency']);
-        $this->assertEquals(18000.0, $contract['social_employee']);
-        $this->assertEquals(482000.0, $contract['tax_base']);
-        $this->assertEquals(113240.0, $contract['income_tax']);
-        $this->assertEquals(368760.0, $contract['net_salary']);
-        $this->assertEquals(82000.0, $contract['social_employer']);
-        $this->assertEquals(582000.0, $contract['total_cost']);
+        $this->assertEquals(16000.0, $contract['social_employee']);
+        $this->assertEquals(484000.0, $contract['tax_base']);
+        $this->assertEquals(48645.33, $contract['income_tax']);
+        $this->assertEquals(435354.67, $contract['net_salary']);
+        $this->assertEquals(61250.0, $contract['social_employer']);
+        $this->assertEquals(561250.0, $contract['total_cost']);
     }
 
     public function test_golden_fr_contract(): void
