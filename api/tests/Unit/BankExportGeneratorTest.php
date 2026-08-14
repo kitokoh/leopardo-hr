@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
@@ -13,6 +14,20 @@ use ReflectionMethod;
 
 class BankExportGeneratorTest extends TestCase
 {
+    private function attachCompanyBank(PayrollRun $run): void
+    {
+        $company = new Company;
+        $company->id = 'company-uuid-1';
+        // L'assignation via propriété passe par le cast jsonb (encodage/décodage).
+        $company->metadata = [
+            'bank' => [
+                'iban' => 'FR7630006000011234567890189',
+                'bic' => 'AGRIFRPP882',
+            ],
+        ];
+        $run->setRelation('company', $company);
+    }
+
     public function test_virement_ma_uses_csv_extension_and_mime_type(): void
     {
         $generator = new BankExportGenerator;
@@ -67,6 +82,7 @@ class BankExportGeneratorTest extends TestCase
             'id' => 77,
             'period_start' => Carbon::parse('2026-05-01'),
         ]);
+        $this->attachCompanyBank($run);
 
         $slip = new PaySlip;
         $slip->setRawAttributes([
@@ -107,6 +123,7 @@ class BankExportGeneratorTest extends TestCase
             'id' => 78,
             'period_start' => Carbon::parse('2026-05-01'),
         ]);
+        $this->attachCompanyBank($run);
 
         $slip = new PaySlip;
         $slip->setRawAttributes([
@@ -190,5 +207,108 @@ class BankExportGeneratorTest extends TestCase
         self::assertSame('MAD', CountryDefaults::for('MA')['currency']);
         // Unknown/empty country code technical fallback only, per ticket.
         self::assertSame('DZD', CountryDefaults::for(null)['currency']);
+    }
+
+    /**
+     * Issue #2223 — fail-closed : plus jamais de placeholders ni d'IBAN
+     * fabriqués dans les fichiers de paiement.
+     */
+    public function test_sepa_rejects_missing_company_bank_details(): void
+    {
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateSepaXml');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes([
+            'id' => 79,
+            'period_start' => Carbon::parse('2026-05-01'),
+        ]);
+
+        // Société chargée mais sans coordonnées bancaires configurées.
+        $company = new Company;
+        $company->id = 'company-uuid-empty';
+        $company->metadata = [];
+        $run->setRelation('company', $company);
+
+        $slip = new PaySlip;
+        $slip->setRawAttributes(['employee_id' => 1, 'net_salary' => 1000]);
+        $slip->setRelation('employee', (object) ['first_name' => 'A', 'last_name' => 'B', 'iban' => 'FR7630006000011234567890189']);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('SEPA export requires the company bank details');
+
+        $method->invoke($generator, $run, new Collection([$slip]), 'EUR');
+    }
+
+    public function test_sepa_rejects_employee_without_iban(): void
+    {
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateSepaXml');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes([
+            'id' => 80,
+            'period_start' => Carbon::parse('2026-05-01'),
+        ]);
+        $this->attachCompanyBank($run);
+
+        $slip = new PaySlip;
+        $slip->setRawAttributes(['employee_id' => 2, 'net_salary' => 1000]);
+        $slip->setRelation('employee', (object) ['first_name' => 'No', 'last_name' => 'Iban', 'iban' => null]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('requires an IBAN for every employee');
+
+        $method->invoke($generator, $run, new Collection([$slip]), 'EUR');
+    }
+
+    public function test_sepa_uses_company_iban_and_bic(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-20 10:00:00'));
+
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateSepaXml');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes([
+            'id' => 81,
+            'period_start' => Carbon::parse('2026-05-01'),
+        ]);
+        $this->attachCompanyBank($run);
+
+        $slip = new PaySlip;
+        $slip->setRawAttributes(['employee_id' => 3, 'net_salary' => 1200]);
+        $slip->setRelation('employee', (object) ['first_name' => 'Jean', 'last_name' => 'Dupont', 'iban' => 'FR7630006000011234567890189']);
+
+        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'EUR');
+
+        self::assertStringContainsString('<DbtrAcct><Id><IBAN>FR7630006000011234567890189</IBAN></Id></DbtrAcct>', $xml);
+        self::assertStringContainsString('<DbtrAgt><FinInstnId><BIC>AGRIFRPP882</BIC></FinInstnId></DbtrAgt>', $xml);
+        self::assertStringNotContainsString('PLACEHOLDER', $xml);
+        self::assertStringNotContainsString('UNKNOWN', $xml);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_algerian_ccp_rejects_missing_bank_account(): void
+    {
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateCcpAlgerie');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes(['id' => 82, 'period_start' => Carbon::parse('2026-05-01')]);
+
+        $slip = new PaySlip;
+        $slip->setRawAttributes(['employee_id' => 4, 'net_salary' => 50000]);
+        $slip->setRelation('employee', (object) ['first_name' => 'A', 'last_name' => 'B', 'bank_account' => null, 'iban' => null]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('requires a bank account');
+
+        $method->invoke($generator, $run, new Collection([$slip]));
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Collection;
@@ -71,6 +72,26 @@ class BankExportGenerator
 
     private function generateSepaXml(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
     {
+        // Issue #2223 : les coordonnées bancaires de l'entreprise ne peuvent
+        // plus être des placeholders littéraux — fail-closed.
+        $bank = $this->companyBankDetails($run);
+
+        // Un fichier bancaire incomplet est pire qu'aucun fichier : un virement
+        // vers un IBAN inconnu ('UNKNOWN') serait rejeté ou mal routé.
+        $missingIban = $slips->filter(static fn ($slip): bool => empty($slip->employee->iban));
+        if ($missingIban->isNotEmpty()) {
+            $names = $missingIban->take(3)
+                ->map(static fn ($slip): string => trim(($slip->employee->first_name ?? '').' '.($slip->employee->last_name ?? '')))
+                ->implode(', ');
+
+            throw new \RuntimeException(sprintf(
+                'SEPA export requires an IBAN for every employee (%d missing: %s%s).',
+                $missingIban->count(),
+                $names,
+                $missingIban->count() > 3 ? ', …' : ''
+            ));
+        }
+
         $msgId = 'LEO-'.now()->format('YmdHis').'-'.$run->id;
         $nbTransactions = $slips->count();
         $totalAmount = $slips->sum('net_salary');
@@ -93,20 +114,20 @@ class BankExportGenerator
         $xml .= '      <CtrlSum>'.number_format($totalAmount, 2, '.', '').'</CtrlSum>'."\n";
         $xml .= '      <ReqdExctnDt>'.now()->addWeekdays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
         $xml .= '      <Dbtr><Nm>Leopardo RH</Nm></Dbtr>'."\n";
-        $xml .= '      <DbtrAcct><Id><IBAN>PLACEHOLDER_COMPANY_IBAN</IBAN></Id></DbtrAcct>'."\n";
-        $xml .= '      <DbtrAgt><FinInstnId><BIC>PLACEHOLDER_BIC</BIC></FinInstnId></DbtrAgt>'."\n";
+        $xml .= '      <DbtrAcct><Id><IBAN>'.$this->xmlEscape($bank['iban']).'</IBAN></Id></DbtrAcct>'."\n";
+        $xml .= '      <DbtrAgt><FinInstnId><BIC>'.$this->xmlEscape($bank['bic']).'</BIC></FinInstnId></DbtrAgt>'."\n";
 
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = trim(($employee->first_name ?? '').' '.($employee->last_name ?? ''));
-            $iban = $employee->iban ?? 'UNKNOWN';
+            $iban = $employee->iban;
 
             $xml .= '      <CdtTrfTxInf>'."\n";
             $xml .= '        <PmtId><EndToEndId>SAL-'.$run->id.'-'.$slip->employee_id.'</EndToEndId></PmtId>'."\n";
             $xml .= '        <Amt><InstdAmt Ccy="'.$this->xmlEscape($currency).'">'.number_format($slip->net_salary, 2, '.', '').'</InstdAmt></Amt>'."\n";
             $xml .= '        <CdtrAgt><FinInstnId><BIC>NOTPROVIDED</BIC></FinInstnId></CdtrAgt>'."\n";
             $xml .= '        <Cdtr><Nm>'.$this->xmlEscape($name).'</Nm></Cdtr>'."\n";
-            $xml .= '        <CdtrAcct><Id><IBAN>'.$this->xmlEscape($iban).'</IBAN></Id></CdtrAcct>'."\n";
+            $xml .= '        <CdtrAcct><Id><IBAN>'.$this->xmlEscape((string) $iban).'</IBAN></Id></CdtrAcct>'."\n";
             $xml .= '        <RmtInf><Ustrd>Salaire '.$run->period_start->format('m/Y').'</Ustrd></RmtInf>'."\n";
             $xml .= '      </CdtTrfTxInf>'."\n";
         }
@@ -116,6 +137,34 @@ class BankExportGenerator
         $xml .= '</Document>'."\n";
 
         return $xml;
+    }
+
+    /**
+     * Issue #2223 — coordonnées bancaires de l'entreprise pour le SEPA.
+     * Lues depuis `companies.metadata.bank.{iban,bic}` (jsonb) ; absent →
+     * exception claire (fail-closed, plus jamais de placeholder littéral
+     * dans un fichier de paiement).
+     *
+     * @return array{iban: string, bic: string}
+     */
+    private function companyBankDetails(PayrollRun $run): array
+    {
+        /** @var Company|null $company */
+        $company = $run->relationLoaded('company')
+            ? $run->getRelation('company')
+            : Company::query()->where('id', $run->company_id)->first();
+
+        $metadata = is_object($company) ? ($company->metadata ?? []) : [];
+        $iban = $metadata['bank']['iban'] ?? null;
+        $bic = $metadata['bank']['bic'] ?? null;
+
+        if (! is_string($iban) || $iban === '' || ! is_string($bic) || $bic === '') {
+            throw new \RuntimeException(
+                'SEPA export requires the company bank details (companies.metadata.bank.iban / .bic).'
+            );
+        }
+
+        return ['iban' => $iban, 'bic' => $bic];
     }
 
     private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string
@@ -128,7 +177,18 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $ccp = $employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT);
+            // Issue #2223 : plus jamais de CCP fabriqué (str_pad de l'id) —
+            // fail-closed si le compte est absent.
+            $ccp = $employee->bank_account ?? $employee->iban;
+
+            if (! is_string($ccp) || $ccp === '') {
+                throw new \RuntimeException(sprintf(
+                    'CCP export requires a bank account (CCP or IBAN) for employee #%d (%s).',
+                    $slip->employee_id,
+                    $name
+                ));
+            }
+
             $amount = str_pad(number_format($slip->net_salary, 2, '', ''), 12, '0', STR_PAD_LEFT);
 
             $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad($ccp, 20).str_pad($name, 30).$amount;
@@ -186,7 +246,17 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $account = $employee->bank_account ?? $employee->iban ?? '';
+            // Issue #2223 : fail-closed si le compte bancaire est absent.
+            $account = $employee->bank_account ?? $employee->iban;
+
+            if (! is_string($account) || $account === '') {
+                throw new \RuntimeException(sprintf(
+                    '%s export requires a bank account (CCP or IBAN) for employee #%d (%s).',
+                    $bank,
+                    $slip->employee_id,
+                    $name
+                ));
+            }
 
             $lines[] = implode('|', [
                 'DETAIL',
