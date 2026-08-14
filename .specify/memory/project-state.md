@@ -100,6 +100,7 @@
 | Fonctionnalité | État | Remarque |
 |----------------|------|---------|
 | Rotation secrets Redis (#1472) | 🔴 Action humaine | Runbook prêt, force-push = décision humaine |
+| Auth ZKTeco (X-Device-Token) | ✅ | #2216 — sync/pointage authentifiés par device |
 | Chiffrement données paie au repos | ✅ | F-17 |
 | RGPD anonymisation (gdpr:anonymize-employee) | ✅ | F-18 |
 | Biométrie rétention/purge (RGPD) | ✅ | S-1 |

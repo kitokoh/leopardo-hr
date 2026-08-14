@@ -10,6 +10,9 @@ use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ZktecoController extends Controller
 {
@@ -51,9 +54,18 @@ class ZktecoController extends Controller
         ]);
 
         $company = currentCompany();
+        $validated['sync_token_hash'] = Hash::make($plainToken = Str::random(48));
         $device = $this->zktecoService->registerDevice($company->id, $validated);
 
-        return new JsonResponse(['data' => $device], 201);
+        // Issue #2216 — le token brut n'est renvoyé QU'UNE SEULE fois, à la
+        // création du device (seul le hash est persisté). Le client ZKTeco
+        // doit le conserver pour les appels heartbeat/sync-attendance
+        // (en-tête X-Device-Token).
+        return new JsonResponse([
+            'data' => $device->toArray() + [
+                'sync_token' => $plainToken,
+            ],
+        ], 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -118,9 +130,7 @@ class ZktecoController extends Controller
 
     public function heartbeat(Request $request, string $serialNumber): JsonResponse
     {
-        $device = ZktecoDevice::query()
-            ->where('serial_number', $serialNumber)
-            ->firstOrFail();
+        $device = $this->authenticatedDevice($request, $serialNumber);
 
         $this->zktecoService->heartbeat($device);
 
@@ -143,9 +153,7 @@ class ZktecoController extends Controller
             'records.*.badge_number' => ['nullable', 'string'],
         ]);
 
-        $device = ZktecoDevice::query()
-            ->where('serial_number', $serialNumber)
-            ->firstOrFail();
+        $device = $this->authenticatedDevice($request, $serialNumber);
 
         $syncLog = $this->zktecoService->pullAttendance($device, $validated['records']);
 
@@ -157,6 +165,33 @@ class ZktecoController extends Controller
                 'status' => $syncLog->status,
             ],
         ], 201);
+    }
+
+    /**
+     * Issue #2216 — résout le device par serial ET vérifie le token
+     * d'authentification (en-tête X-Device-Token, Hash::check sur
+     * sync_token_hash). Sans token valide → 401 ; l'échec est journalisé
+     * sur le canal audit (anti brute-force, même pattern que les kiosques
+     * #1716). Aucun appel à pullAttendance() sans authentification.
+     */
+    private function authenticatedDevice(Request $request, string $serialNumber): ZktecoDevice
+    {
+        $device = ZktecoDevice::query()
+            ->where('serial_number', $serialNumber)
+            ->firstOrFail();
+
+        $token = (string) $request->header('X-Device-Token', '');
+        if ($token === '' || $device->sync_token_hash === null || ! Hash::check($token, (string) $device->sync_token_hash)) {
+            Log::channel('audit')->warning('zkteco_auth.failed', [
+                'serial_number' => $serialNumber,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            abort(401, 'INVALID_DEVICE_TOKEN');
+        }
+
+        return $device;
     }
 
     public function pushUsers(Request $request, string $serialNumber): JsonResponse

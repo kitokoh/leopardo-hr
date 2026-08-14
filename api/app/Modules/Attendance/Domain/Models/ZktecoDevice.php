@@ -14,6 +14,7 @@ class ZktecoDevice extends Model
     protected $fillable = [
         'company_id',
         'serial_number',
+        'sync_token_hash',
         'name',
         'ip_address',
         'port',
@@ -28,6 +29,17 @@ class ZktecoDevice extends Model
         'capabilities',
         'last_heartbeat_at',
         'last_sync_at',
+    ];
+
+    /**
+     * Issue #2216 — le hash du token ne doit JAMAIS être exposé par l'API
+     * (index/show/update) : seul le client device le connaît (token brut
+     * renvoyé une seule fois à la création).
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'sync_token_hash',
     ];
 }
 

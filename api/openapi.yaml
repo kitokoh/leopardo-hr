@@ -11987,12 +11987,17 @@ paths:
     post:
       tags: ["ZKTeco"]
       summary: "Signal de vie envoye par la pointeuse elle-meme (pas d'authentification employe)"
-      description: "Appele directement par le firmware de l'appareil, pas par l'app mobile/web. Marque l'appareil online et met a jour last_seen_at."
+      description: "Appele directement par le firmware de l'appareil, pas par l'app mobile/web. Marque l'appareil online et met a jour last_seen_at. Authentifie par en-tete X-Device-Token (issue #2216) : 401 sans token valide."
       operationId: zktecoHeartbeat
       parameters:
         - name: serialNumber
           in: path
           required: true
+          schema: { type: string }
+        - name: X-Device-Token
+          in: header
+          required: true
+          description: "Token d'authentification du device (genere a la creation, Hash::check)"
           schema: { type: string }
       responses:
         "200":
@@ -12008,6 +12013,8 @@ paths:
                       device_id: { type: integer }
                       status: { type: string, enum: [online] }
                       server_time: { type: string, format: date-time }
+        "401":
+          description: "Token absent ou invalide (issue #2216)"
         "404":
           description: "Aucune pointeuse enregistree avec ce numero de serie"
 
@@ -12015,11 +12022,17 @@ paths:
     post:
       tags: ["ZKTeco"]
       summary: "Pousser des pointages bruts depuis l'appareil vers le serveur (appele par l'appareil)"
+      description: "Authentifie par en-tete X-Device-Token (issue #2216) : 401 sans token valide, aucune entree attendance_logs creee sans authentification."
       operationId: zktecoSyncAttendance
       parameters:
         - name: serialNumber
           in: path
           required: true
+          schema: { type: string }
+        - name: X-Device-Token
+          in: header
+          required: true
+          description: "Token d'authentification du device (genere a la creation, Hash::check)"
           schema: { type: string }
       requestBody:
         required: true

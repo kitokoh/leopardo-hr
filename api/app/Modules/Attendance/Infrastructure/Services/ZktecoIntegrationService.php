@@ -18,6 +18,10 @@ class ZktecoIntegrationService
         return ZktecoDevice::query()->create([
             'company_id' => $companyId,
             'serial_number' => $data['serial_number'],
+            // Issue #2216 — hash du token d'authentification du device
+            // (jamais le token brut, généré par le contrôleur et renvoyé
+            // une seule fois à la création).
+            'sync_token_hash' => $data['sync_token_hash'] ?? null,
             'name' => $data['name'],
             'ip_address' => $data['ip_address'] ?? null,
             'port' => $data['port'] ?? 4370,
