@@ -84,10 +84,11 @@ class PublicHolidayController extends Controller
         $data['company_id'] = $holiday->company_id; // inchangé : le scope est verrouillé
 
         $holiday->update($data);
+        $holiday->refresh();
 
         $this->holidays->forget($holiday->country_code, (int) $holiday->year, $holiday->company_id);
 
-        return response()->json(['data' => $this->serialize($holiday->fresh())]);
+        return response()->json(['data' => $this->serialize($holiday)]);
     }
 
     public function destroy(Request $request, int $publicHoliday): JsonResponse
@@ -108,9 +109,9 @@ class PublicHolidayController extends Controller
     }
 
     /**
-     * Super-admin → NULL (national) ; principal → sa société.
+     * Super-admin → NULL (national) ; principal → sa société (uuid).
      */
-    private function companyScope(Request $request): ?int
+    private function companyScope(Request $request): ?string
     {
         $user = $request->user();
 
@@ -119,7 +120,7 @@ class PublicHolidayController extends Controller
         }
 
         if ($user instanceof Employee && $user->isPrincipal()) {
-            return (int) $user->company_id;
+            return $user->company_id;
         }
 
         abort(403, __('payroll.public_holidays_admin_only'));
@@ -137,7 +138,7 @@ class PublicHolidayController extends Controller
         if ($user instanceof Employee
             && $user->isPrincipal()
             && $holiday->company_id !== null
-            && (int) $holiday->company_id === (int) $user->company_id) {
+            && $holiday->company_id === $user->company_id) {
             return;
         }
 

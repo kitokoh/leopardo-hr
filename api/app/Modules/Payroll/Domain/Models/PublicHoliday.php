@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
  * - `holiday_type` → 'fixed' | 'islamic' | 'christian' | 'custom'
  *
  * @property int $id
- * @property int|null $company_id
+ * @property string|null $company_id  (uuid de public.companies)
  * @property string $country_code
  * @property string $name
  * @property Carbon $date

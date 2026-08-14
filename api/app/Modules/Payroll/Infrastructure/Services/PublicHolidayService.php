@@ -37,11 +37,11 @@ class PublicHolidayService
     /**
      * Fériés pour un pays + année, avec override entreprise.
      *
-     * @return array<int, array{date: string, name: string, holiday_type: string, company_id: int|null}>
+     * @return array<int, array{date: string, name: string, holiday_type: string, company_id: string|null}>
      */
-    public function getHolidays(string $countryCode, int $year, ?int $companyId = null): array
+    public function getHolidays(string $countryCode, int $year, ?string $companyId = null): array
     {
-        $cacheKey = sprintf('public-holidays:%s:%d:%d', strtoupper($countryCode), $year, (int) $companyId);
+        $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) $companyId);
 
         return $this->cache->remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($countryCode, $year, $companyId): array {
             $query = PublicHoliday::query()
@@ -76,7 +76,7 @@ class PublicHolidayService
      *
      * @param  Carbon  $start  début inclus
      * @param  Carbon  $end    fin inclusive
-     * @param  array<int, array{date: string, name: string, holiday_type: string, company_id: int|null}>|null  $holidays  liste préchargée (optionnel)
+     * @param  array<int, array{date: string, name: string, holiday_type: string, company_id: string|null}>|null  $holidays  liste préchargée (optionnel)
      * @param  array<int, int>  $restDays  jours de repos ISO (1=lundi..7=dimanche) ; défaut samedi+dimanche
      */
     public function workingDaysBetween(
@@ -84,7 +84,7 @@ class PublicHolidayService
         Carbon $end,
         string $countryCode,
         ?array $holidays = null,
-        ?int $companyId = null,
+        ?string $companyId = null,
         array $restDays = [6, 7],
     ): float {
         $start = $start->copy()->startOfDay();
@@ -149,9 +149,9 @@ class PublicHolidayService
     /**
      * Invalide le cache d'un pays/année (après CRUD admin).
      */
-    public function forget(string $countryCode, int $year, ?int $companyId = null): void
+    public function forget(string $countryCode, int $year, ?string $companyId = null): void
     {
-        $cacheKey = sprintf('public-holidays:%s:%d:%d', strtoupper($countryCode), $year, (int) $companyId);
+        $cacheKey = sprintf('public-holidays:%s:%d:%s', strtoupper($countryCode), $year, (string) $companyId);
         $this->cache->forget($cacheKey);
     }
 }

@@ -34,7 +34,7 @@
           <!-- Page header -->
           <div class="mb-8 animate-fade-in" v-if="$route.meta.title">
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {{ $route.meta.title }}
+              {{ $t($route.meta.title, $route.meta.title) }}
             </h1>
             <nav class="mt-2" v-if="breadcrumbs.length > 1">
               <ol class="flex items-center space-x-2 text-sm text-slate-500">
@@ -45,10 +45,10 @@
                       :to="crumb.path"
                       class="hover:text-brand-600 transition-colors"
                     >
-                      {{ crumb.title }}
+                      {{ $t(crumb.title, crumb.title) }}
                     </router-link>
                     <span v-else class="font-medium text-slate-900 dark:text-slate-200">
-                      {{ crumb.title }}
+                      {{ $t(crumb.title, crumb.title) }}
                     </span>
                     <ChevronRightIcon
                       v-if="index < breadcrumbs.length - 1"

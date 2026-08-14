@@ -16409,7 +16409,7 @@ components:
       type: object
       properties:
         id: { type: integer }
-        company_id: { type: integer, nullable: true }
+        company_id: { type: string, format: uuid, nullable: true }
         country_code: { type: string }
         name: { type: string }
         date: { type: string, format: date }

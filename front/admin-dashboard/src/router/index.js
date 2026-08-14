@@ -292,7 +292,7 @@ const routes = [
         name: 'payroll-holidays',
         component: () => import('@/views/settings/HolidaysView.vue'),
         meta: {
-          title: 'Jours fériés',
+          title: 'holidays.nav.title',
           icon: 'CalendarIcon'
         }
       }

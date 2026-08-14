@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-05-07T20:45:00Z",
+  "_updated_at": "2026-08-14T10:30:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -298,5 +298,76 @@
   "attendance": {
     "sending_to_server": "Sending {label} to the server...",
     "retry_after_failure": "{label}. Please try again."
+  },
+  "holidays": {
+    "page": {
+      "title": "Public holidays by country",
+      "subtitle": "Calendar of public holidays used by the payroll engine to compute actual working days (issue #1811). National holidays are shared; company holidays remain specific to your company."
+    },
+    "country": {
+      "label": "Country",
+      "DZ": "Algeria",
+      "CM": "Cameroon",
+      "CI": "Ivory Coast",
+      "SN": "Senegal",
+      "MA": "Morocco",
+      "TN": "Tunisia"
+    },
+    "year": {
+      "label": "Year"
+    },
+    "add": "Add a public holiday",
+    "th": {
+      "date": "Date",
+      "name": "Name",
+      "type": "Type",
+      "scope": "Scope",
+      "actions": "Actions"
+    },
+    "scope": {
+      "national": "National",
+      "company": "Company"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "empty": "No public holidays for :country / :year.",
+    "modal": {
+      "editTitle": "Edit public holiday",
+      "newTitle": "New public holiday"
+    },
+    "name": {
+      "label": "Name"
+    },
+    "date": {
+      "label": "Date"
+    },
+    "type": {
+      "label": "Type",
+      "fixed": "Fixed",
+      "islamic": "Islamic",
+      "christian": "Christian",
+      "custom": "Custom"
+    },
+    "recurring": {
+      "label": "Recurs every year"
+    },
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save",
+    "errors": {
+      "load": "Unable to load public holidays.",
+      "save": "Unable to save the public holiday.",
+      "delete": "Unable to delete."
+    },
+    "success": {
+      "saved": "Public holiday saved.",
+      "deleted": "Public holiday deleted."
+    },
+    "confirm": {
+      "delete": "Delete « :name »?"
+    },
+    "nav": {
+      "title": "Public holidays"
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-05-07T20:45:00Z",
+  "_updated_at": "2026-08-14T10:30:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -298,5 +298,76 @@
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
     "retry_after_failure": "{label}. Reessayez."
+  },
+  "holidays": {
+    "page": {
+      "title": "Jours fériés par pays",
+      "subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels (issue #1811). Les fériés nationaux sont partagés ; les fériés d'entreprise restent propres à votre société."
+    },
+    "country": {
+      "label": "Pays",
+      "DZ": "Algérie",
+      "CM": "Cameroun",
+      "CI": "Côte d'Ivoire",
+      "SN": "Sénégal",
+      "MA": "Maroc",
+      "TN": "Tunisie"
+    },
+    "year": {
+      "label": "Année"
+    },
+    "add": "Ajouter un jour férié",
+    "th": {
+      "date": "Date",
+      "name": "Nom",
+      "type": "Type",
+      "scope": "Portée",
+      "actions": "Actions"
+    },
+    "scope": {
+      "national": "National",
+      "company": "Entreprise"
+    },
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "empty": "Aucun jour férié pour :country / :year.",
+    "modal": {
+      "editTitle": "Modifier le jour férié",
+      "newTitle": "Nouveau jour férié"
+    },
+    "name": {
+      "label": "Nom"
+    },
+    "date": {
+      "label": "Date"
+    },
+    "type": {
+      "label": "Type",
+      "fixed": "Fixe",
+      "islamic": "Islamique",
+      "christian": "Chrétien",
+      "custom": "Personnalisé"
+    },
+    "recurring": {
+      "label": "Récurent chaque année"
+    },
+    "cancel": "Annuler",
+    "saving": "Enregistrement…",
+    "save": "Enregistrer",
+    "errors": {
+      "load": "Impossible de charger les jours fériés.",
+      "save": "Impossible d'enregistrer le jour férié.",
+      "delete": "Impossible de supprimer."
+    },
+    "success": {
+      "saved": "Jour férié enregistré.",
+      "deleted": "Jour férié supprimé."
+    },
+    "confirm": {
+      "delete": "Supprimer « :name » ?"
+    },
+    "nav": {
+      "title": "Jours fériés"
+    }
   }
 }

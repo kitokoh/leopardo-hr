@@ -422,7 +422,7 @@ class PayrollCalculator
                 $periodEnd,
                 (string) $run->country_code,
                 holidays: null,
-                companyId: $run->company_id !== null ? (int) $run->company_id : null,
+                companyId: $run->company_id,
                 restDays: $this->weeklyRestDaysFor((string) $run->country_code),
             )
             : (float) self::STANDARD_WORKING_DAYS;

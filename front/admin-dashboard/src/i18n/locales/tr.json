@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-05-07T20:45:00Z",
+  "_updated_at": "2026-08-14T10:30:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -298,5 +298,76 @@
   "attendance": {
     "sending_to_server": "{label} sunucuya gönderiliyor...",
     "retry_after_failure": "{label}. Lütfen tekrar deneyin."
+  },
+  "holidays": {
+    "page": {
+      "title": "Ülkelere göre resmi tatiller",
+      "subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı resmi tatil takvimi (issue #1811). Ulusal tatiller paylaşılır; şirket tatilleri yalnızca şirketinize özeldir."
+    },
+    "country": {
+      "label": "Ülke",
+      "DZ": "Cezayir",
+      "CM": "Kamerun",
+      "CI": "Fildişi Sahili",
+      "SN": "Senegal",
+      "MA": "Fas",
+      "TN": "Tunus"
+    },
+    "year": {
+      "label": "Yıl"
+    },
+    "add": "Resmi tatil ekle",
+    "th": {
+      "date": "Tarih",
+      "name": "Ad",
+      "type": "Tür",
+      "scope": "Kapsam",
+      "actions": "İşlemler"
+    },
+    "scope": {
+      "national": "Ulusal",
+      "company": "Şirkete özel"
+    },
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "empty": ":country / :year için resmi tatil yok.",
+    "modal": {
+      "editTitle": "Resmi tatili düzenle",
+      "newTitle": "Yeni resmi tatil"
+    },
+    "name": {
+      "label": "Ad"
+    },
+    "date": {
+      "label": "Tarih"
+    },
+    "type": {
+      "label": "Tür",
+      "fixed": "Sabit",
+      "islamic": "İslami",
+      "christian": "Hristiyan",
+      "custom": "Özel"
+    },
+    "recurring": {
+      "label": "Her yıl tekrarlanır"
+    },
+    "cancel": "İptal",
+    "saving": "Kaydediliyor…",
+    "save": "Kaydet",
+    "errors": {
+      "load": "Resmi tatiller yüklenemedi.",
+      "save": "Resmi tatil kaydedilemedi.",
+      "delete": "Silinemedi."
+    },
+    "success": {
+      "saved": "Resmi tatil kaydedildi.",
+      "deleted": "Resmi tatil silindi."
+    },
+    "confirm": {
+      "delete": "« :name » silinsin mi?"
+    },
+    "nav": {
+      "title": "Resmi tatiller"
+    }
   }
 }
