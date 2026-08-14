@@ -7,7 +7,10 @@ use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
+use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
+use App\Http\Middleware\ResilientThrottleRequests;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
@@ -79,11 +82,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
         $middleware->web(append: [
-            \App\Http\Middleware\PartnerLinkMiddleware::class,
+            PartnerLinkMiddleware::class,
         ]);
 
         // Defence-in-depth security headers on every response (issue #1469).
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->append(SecurityHeaders::class);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
@@ -95,6 +98,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
             'token.refresh' => TokenAutoRefreshMiddleware::class,
+            // Issue #1774 : variante résiliente du middleware de throttling —
+            // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
+            // 500) et les exceptions du pipeline en aval ne sont jamais masquées.
+            'throttle' => ResilientThrottleRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -185,9 +192,19 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 404);
             }
 
-            return new JsonResponse([
+            $response = new JsonResponse([
                 'error' => $exception->getMessage() ?: 'HTTP_ERROR',
                 'message' => $exception->getMessage() ?: 'HTTP_ERROR',
             ], $exception->getStatusCode());
+
+            // Issue #1774 : préserver les headers du throttling
+            // (Retry-After, X-RateLimit-*) posés par ThrottleRequestsException —
+            // sans eux, le 429 dégradé/limite est inexploitable côté client.
+            foreach ($exception->getHeaders() as $headerName => $headerValue) {
+                /** @var array<string>|string|null $headerValue */
+                $response->headers->set($headerName, $headerValue);
+            }
+
+            return $response;
         });
     })->create();
