@@ -329,4 +329,55 @@ class GoldenCiPayrollTest extends TestCase
         // Patronale : 74 129,18 + 94 720,61 + 60 000 (AT 2 % non plafonné).
         $this->assertSame(228849.79, $charges['employer']);
     }
+
+    /**
+     * #1869 — régression resp : le bulletin CI complet (pipeline calculateRun)
+     * doit déduire la Contribution Nationale UNE fois.
+     * Net = 100 000 − CNSS 3 200 − ITSAS 536 − CN 750 = 95 514 (voir
+     * test_golden_ci_ouvrier_100000). Un libellé de taxe forfaitaire
+     * personnalisé (« Contribution Nationale (CN) » ≠ « Taxe de minimum
+     * fiscal ») ne doit pas faire re-compter la ligne dans total_deductions.
+     */
+    public function test_golden_ci_full_run_does_not_double_count_cn(): void
+    {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = \App\Core\Tenant\Domain\Models\Company::factory()->create([
+            'country' => 'CI',
+            'currency' => 'XOF',
+        ]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+            'company_id' => $company->id,
+            'salary_type' => 'fixed',
+            'salary_base' => 100000,
+        ]);
+
+        \App\Modules\Payroll\Domain\Models\SalaryStructure::create([
+            'company_id' => $company->id,
+            'name' => 'Grille CI test',
+            'base_salary' => 100000,
+            'currency' => 'XOF',
+            'country_code' => 'CI',
+            'frequency' => 'monthly',
+            'active' => true,
+        ]);
+
+        /** @var \App\Modules\Payroll\Domain\Models\PayrollRun $run */
+        $run = \App\Modules\Payroll\Domain\Models\PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'CI',
+            'status' => 'draft',
+        ]);
+
+        (new \App\Modules\Payroll\Infrastructure\Services\PayrollCalculator)->calculateRun($run);
+
+        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $slip */
+        $slip = $run->paySlips()->firstOrFail();
+
+        $this->assertSame(100000.0, (float) $slip->gross_salary);
+        $this->assertSame(4486.0, (float) $slip->total_deductions);
+        $this->assertSame(95514.0, (float) $slip->net_salary);
+    }
 }

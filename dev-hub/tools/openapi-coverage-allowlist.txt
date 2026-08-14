@@ -354,6 +354,10 @@ POST user/login
 POST user/logout
 POST user/register
 
+# MULTI-PAYS #1867 : GET /supported-countries documenté dans openapi.yaml
+# (registre des pays supportés) ; le parseur préfixe v1 → entrée allowlist requise
+GET v1/supported-countries
+
 ## api.php — cockpit super-admin /admin/* (issue #1764) — 13 route(s)
 ## Documentées dans api/openapi.yaml (contract SPA front/admin-dashboard) ;
 ## allowlistées car le parseur statique concatène les préfixes imbriqués
