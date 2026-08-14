@@ -94,12 +94,14 @@ class PublicHolidayService
      * #1936 — date effective d'un férié pour une année donnée : pour un férié
      * récurrent, l'année demandée remplace l'année stockée (la date stockée
      * est la première occurrence ; month_day porte mois-jour). Les lignes
-     * récurrentes legacy sans month_day retombent sur la date stockée.
+     * récurrentes legacy sans month_day (créées avant que l'UI n'envoie le
+     * champ) dérivent month_day de la date stockée — sans quoi le férié
+     * n'est jamais appliqué hors de son année de création.
      */
     private function effectiveDate(PublicHoliday $holiday, int $year): string
     {
-        if ($holiday->is_recurring && $holiday->month_day !== null) {
-            return sprintf('%04d-%s', $year, $holiday->month_day);
+        if ($holiday->is_recurring) {
+            return sprintf('%04d-%s', $year, $holiday->month_day ?? $holiday->date->format('m-d'));
         }
 
         return $holiday->date->toDateString();

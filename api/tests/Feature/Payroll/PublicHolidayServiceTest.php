@@ -271,4 +271,29 @@ class PublicHolidayServiceTest extends TestCase
         $this->assertContains('2026-09-15', array_column($service->getHolidays('DZ', 2026), 'date'));
         $this->assertNotContains('2027-09-15', array_column($service->getHolidays('DZ', 2027), 'date'));
     }
+
+    public function test_recurring_legacy_without_month_day_applies_to_later_years(): void
+    {
+        Cache::flush();
+
+        // Ligne récurrente legacy : créée avant que l'UI n'envoie month_day
+        // (#1936) — la date stockée est la première occurrence.
+        PublicHoliday::create([
+            'country_code' => 'DZ',
+            'name' => 'Fete du travail (legacy)',
+            'date' => '2026-05-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => null,
+            'holiday_type' => 'fixed',
+        ]);
+
+        $service = $this->service();
+
+        // 2026 : la date stockée est renvoyée.
+        $this->assertContains('2026-05-01', array_column($service->getHolidays('DZ', 2026), 'date'));
+
+        // 2028 : month_day est dérivé de la date stockée → le férié s'applique.
+        $this->assertContains('2028-05-01', array_column($service->getHolidays('DZ', 2028), 'date'));
+    }
 }
