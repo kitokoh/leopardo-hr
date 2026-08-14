@@ -141,3 +141,4 @@ New `api.manager` middleware (`EnsureApiManagerMiddleware`) enforces route-level
 | HR extended self-service `/me/*` | none (auth+tenant) | R | R | R | R | R | R | Own contracts/trainings/loans. |
 | Contracts/Recruitment/Training/Loans CRUD | `api.manager` | RW | RW | RW | RW | RW | - | Any manager. |
 | Reports/Webhooks/Audit/Predictions | `api.manager` + controller policies where present | R | R | R | R | R | - | Any tenant manager can access report surfaces covered by existing feature tests. |
+| Payroll engine `/payroll-runs/{run}/regularize` + `/regularizations` (#1818) | W/R | R | - | W/R | - | - | DZ-DEPTH #1818 : seul un run `locked` est régularisable (422 sinon) ; création d'un run `type=regularization` lié par `original_run_id`, motif obligatoire tracé (`payroll_run_regularization_created`) ; le run original n'est jamais modifié. Tests : `PayrollRegularizationTest`. |
