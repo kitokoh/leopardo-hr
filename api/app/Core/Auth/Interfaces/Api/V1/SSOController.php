@@ -40,6 +40,8 @@ class SSOController extends Controller
             'data' => [
                 'enabled' => $sso['enabled'],
                 'provider' => $sso['provider'],
+                // Audit #1694 : validation SAML/OIDC non implémentée — toujours false.
+                'validation_available' => $sso['validation_available'],
             ],
         ]);
     }

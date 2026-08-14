@@ -10845,6 +10845,12 @@ paths:
           description: "SAMLResponse manquant"
         "422":
           description: "Erreur de traitement de l'assertion"
+        "501":
+          description: "Validation des assertions SAML non implementee (audit #1694) — refus explicite"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /sso/oidc/{companyId}/authorize:
     get:
@@ -10924,13 +10930,13 @@ paths:
         "400":
           description: "Code ou id_token manquant"
         "422":
-          description: "State invalide, id_token invalide, employe inconnu ou autre entreprise"
+          description: "Erreur d'echange de token"
+        "501":
+          description: "Validation OIDC non implementee (audit #1694) — refus explicite"
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error: { type: string }
+                $ref: "#/components/schemas/ErrorResponse"
 
   /sso/status:
     get:
@@ -10950,6 +10956,9 @@ paths:
                     properties:
                       enabled: { type: boolean }
                       provider: { type: string, nullable: true }
+                      validation_available:
+                        type: boolean
+                        description: "Validation des assertions SAML/OIDC disponible — toujours false tant que le moteur de validation n'est pas implemente (audit #1694)."
         "401":
           $ref: "#/components/responses/Error401"
         "403":
