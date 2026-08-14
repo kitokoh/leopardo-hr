@@ -175,7 +175,7 @@ class CemacPayrollRules extends AbstractCountryRules
         ];
     }
 
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
+    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
         if ($this->memberCountryCode !== 'CM') {
             $annualTaxable = $grossTaxable * $annualBasis;
@@ -186,15 +186,16 @@ class CemacPayrollRules extends AbstractCountryRules
 
         // CM (#1821, CGI 2024 art. 68) :
         //   1. Assiette = brut − CNPS salariale − abattement frais pro
-        //      (30 % du brut, plafonné 350 000 XAF/mois). Le moteur passe déjà
-        //      brut − CNPS salariale ; l'abattement est appliqué sur cette base
-        //      (≈ 28,7 % du brut — approximation pilot documentée
-        //      CM_COMPLIANCE.md §1, à valider par expert-comptable).
+        //      (30 % du BRUT, plafonné 350 000 XAF/mois — formule légale).
+        //      Le moteur passe $grossTaxable = brut − CNPS salariale et
+        //      $grossForAbatement = brut réel ; l'abattement s'applique sur
+        //      le brut réel (défaut : $grossTaxable si non fourni).
         //   2. IRPP progressif annuel / 12 (tranches art. 68).
         //   3. Centimes additionnels (10 % de l'IRPP) : IRPP × 1,10.
         $abatement = $this->professionalExpensesDeduction();
+        $abatementBase = $grossForAbatement ?? $grossTaxable;
         $monthlyDeduction = min(
-            $grossTaxable * ($abatement['rate'] / 100),
+            $abatementBase * ($abatement['rate'] / 100),
             $abatement['cap'] ?? PHP_FLOAT_MAX
         );
 

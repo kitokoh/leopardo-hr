@@ -106,7 +106,7 @@ class CanadaPayrollRules extends AbstractCountryRules
         ];
     }
 
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
+    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
         $annualTaxable = $grossTaxable * $annualBasis;
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());

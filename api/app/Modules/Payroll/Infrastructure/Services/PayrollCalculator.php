@@ -286,7 +286,7 @@ class PayrollCalculator
         ];
 
         $taxableGross = $grossEarnings - $social['employee'];
-        $incomeTax = $rules->calculateIncomeTax($taxableGross);
+        $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
 
         $lines[] = [
             'name' => 'Impot sur le revenu',
