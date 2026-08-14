@@ -166,11 +166,11 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        foreach (['ML', 'BF', 'BJ', 'TG', 'NE'] as $memberCode) {
+        // BJ/TG/NE restent placeholder : pas de barème légal, pas de CN, pas
+        // de 13ème mois, pas d'abattement frais pro.
+        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
-            // Placeholder intact : pas de barème légal, pas de CN, pas de
-            // 13ème mois, pas d'abattement frais pro.
             $this->assertSame('placeholder', $rules->confidenceLevel(), $memberCode);
             $this->assertStringContainsString('placeholder', $rules->publicHolidaysSource(), $memberCode);
             $this->assertSame(0.0, $rules->calculateBracketTax(200000.0), $memberCode);
@@ -182,6 +182,16 @@ class CedeaoRulesUnitTest extends TestCase
             $charges = $rules->calculateSocialCharges(1000.0);
             $this->assertSame(36.0, $charges['employee'], $memberCode);
             $this->assertSame(164.0, $charges['employer'], $memberCode);
+        }
+
+        // BF et ML sont passés 'pilot' (#1829) : barèmes légaux implémentés,
+        // préavis 30 j — mais calendrier férié toujours placeholder.
+        foreach (['BF', 'ML'] as $memberCode) {
+            $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
+
+            $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
+            $this->assertStringContainsString('placeholder', $rules->publicHolidaysSource(), $memberCode);
+            $this->assertSame(30.0, $rules->noticePeriodDays(3.0), $memberCode);
         }
     }
 }

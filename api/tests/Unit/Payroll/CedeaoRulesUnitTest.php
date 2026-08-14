@@ -22,28 +22,28 @@ class CedeaoRulesUnitTest extends TestCase
         return new CedeaoPayrollRules('CI');
     }
 
-    public function test_ci_itsas_and_cn_calculated_separately(): void
+    public function test_ci_its_2024_unique_monthly_and_cn_abolished(): void
     {
         $rules = $this->ci();
 
-        // Calcul manuel (docs/payroll/CI_COMPLIANCE.md §1-§3) — assiette
-        // mensuelle 200 000 → annuelle 2 400 000 :
-        //   tranche 0 % (0-600k) = 0 · tranche 2 % (600k-2M) = 28 000
-        //   tranche 21 % (2M-2,4M) = 84 000 → ITSAS annuel 112 000 → mensuel 9 333,33
-        $itsas = $rules->calculateIncomeTax(200000.0);
-        $this->assertSame(9333.33, $itsas);
+        // Réforme 2024 (#1918, art. 119 bis) : ITS UNIQUE mensuel sur le
+        // brut (docs/payroll/CI_COMPLIANCE.md §1) — plus d'ITSAS annuel,
+        // plus de CN séparée. Brut 200 000 :
+        //   tranche 0 % (0-75k) = 0 · tranche 16 % (75k-240k) = 125 000 × 16 %
+        //   → 20 000,00
+        $its = $rules->calculateIncomeTax(200000.0);
+        $this->assertSame(20000.0, $its);
 
-        // CN sur BRUT 300 000 : max(0, 300 000 − 50 000) × 1,5 % = 3 750
-        $cn = $rules->calculateBracketTax(300000.0);
-        $this->assertSame(3750.0, $cn);
+        // CN supprimée (fusionnée dans l'ITS) → 0 quelle que soit l'assiette.
+        $this->assertSame(0.0, $rules->calculateBracketTax(300000.0));
 
-        // Impôt total mensuel = ITSAS + CN = 13 083,33
-        $this->assertSame(13083.33, round($itsas + $cn, 2));
+        // Impôt total mensuel = ITS seul = 20 000,00.
+        $this->assertSame(20000.0, round($its + $rules->calculateBracketTax(300000.0), 2));
 
-        // Tranche 0 % : assiette 100 000 → ITSAS mensuel 1 000 ; SMIG
-        // (brut 75 000) → CN 375.
-        $this->assertSame(1000.0, $rules->calculateIncomeTax(100000.0));
-        $this->assertSame(375.0, $rules->calculateBracketTax(75000.0));
+        // Tranche 0 % : brut 100 000 → (100 000 − 75 000) × 16 % = 4 000 ;
+        // SMIG (brut 75 000) → 0.
+        $this->assertSame(4000.0, $rules->calculateIncomeTax(100000.0));
+        $this->assertSame(0.0, $rules->calculateBracketTax(75000.0));
     }
 
     public function test_ci_cnss_cap_at_1647315(): void
@@ -87,10 +87,12 @@ class CedeaoRulesUnitTest extends TestCase
     {
         // Code du travail CI art. 18 — niveau employé/technicien
         // (CI_COMPLIANCE.md §8) : < 5 ans → 30 j ; ≥ 5 ans → 60 j.
+        // ⚠️ Le moteur expose un palier ≥ 10 ans → 90 j (matrice cadres
+        // documentée §8, à valider expert — voir issue #2258).
         $this->assertSame(30.0, $this->ci()->noticePeriodDays(3.0));
         $this->assertSame(30.0, $this->ci()->noticePeriodDays(4.9));
         $this->assertSame(60.0, $this->ci()->noticePeriodDays(5.0));
-        $this->assertSame(60.0, $this->ci()->noticePeriodDays(12.0));
+        $this->assertSame(90.0, $this->ci()->noticePeriodDays(12.0));
     }
 
     public function test_ci_exposes_pilot_metadata(): void
@@ -100,7 +102,8 @@ class CedeaoRulesUnitTest extends TestCase
         $this->assertSame('CI', $rules->countryCode());
         $this->assertSame('pilot', $rules->confidenceLevel());
         $this->assertSame(75000.0, $rules->minimumWage());
-        $this->assertCount(5, $rules->taxSlabs());
+        // ITS 2024 (#1918) : 6 tranches mensuelles (0/16/21/24/28/32 %).
+        $this->assertCount(6, $rules->taxSlabs());
 
         // Palier HS CI (art. 21) : 1.15 / 1.35 / 1.50.
         $tiers = $rules->overtimeRateTiers();

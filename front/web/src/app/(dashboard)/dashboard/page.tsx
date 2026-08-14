@@ -113,6 +113,21 @@ export default function DashboardPage() {
   const [readiness, setReadiness] = useState<LaunchReadiness | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [showAllActivities, setShowAllActivities] = useState(false);
+  const [leoState, setLeoState] = useState<'idle' | 'sending' | 'sent' | 'dismissed'>(() => {
+    if (typeof window === 'undefined') {
+      return 'idle';
+    }
+
+    try {
+      return sessionStorage.getItem('leo_ia_dismissed') === '1' ? 'dismissed' : 'idle';
+    } catch {
+      return 'idle';
+    }
+  });
+  const [leoError, setLeoError] = useState<string | null>(null);
   const dashboardStartRef = useRef<number>(0);
   const dashboardTrackedRef = useRef(false);
   const role = user?.role?.toLowerCase() ?? null;
@@ -171,7 +186,7 @@ export default function DashboardPage() {
       try {
         const [summaryResponse, activityResponse, readinessPayload] = await Promise.all([
           apiFetch('/dashboard/summary'),
-          apiFetch('/dashboard/recent-activity?limit=5'),
+          apiFetch(`/dashboard/recent-activity?limit=${showAllActivities ? 50 : 5}`),
           apiFetch('/launch-readiness')
             .then((response) => response.json() as Promise<{ data?: LaunchReadiness }>)
             .catch(() => null),
@@ -216,7 +231,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isEmployee, isSuperAdmin, trackDashboardLoaded, userLoaded]);
+  }, [isEmployee, isSuperAdmin, showAllActivities, trackDashboardLoaded, userLoaded]);
 
   const stats: DashboardStat[] = [
     {
@@ -265,9 +280,64 @@ export default function DashboardPage() {
         name: activity.auditable_type?.split('\\').pop() ?? 'Systeme',
         action: activity.action,
         time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString(toIntlLocale(locale), { hour: '2-digit', minute: '2-digit' }) : '--:--',
+        createdAt: activity.created_at ?? null,
         avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
       }))
     : [];
+
+  const query = searchQuery.trim().toLowerCase();
+  const filteredActivityRows = activityRows.filter((row) => {
+    if (!query) {
+      return true;
+    }
+
+    return row.name.toLowerCase().includes(query) || row.action.toLowerCase().includes(query);
+  });
+
+  const visibleActivityRows = filteredActivityRows.filter((row) => {
+    if (activeTab === 'week' || !row.createdAt) {
+      return true;
+    }
+
+    return new Date(row.createdAt).toDateString() === new Date().toDateString();
+  });
+
+  async function sendCongratsMessage() {
+    setLeoState('sending');
+    setLeoError(null);
+
+    try {
+      const response = await apiFetch('/announcements', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: 'Felicitations de l equipe',
+          body: 'Bravo a toute l equipe : vos retards sont en baisse de 15% cette semaine. Continuons sur cette dynamique !',
+          audience_type: 'company',
+          priority: 'normal',
+          status: 'published',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new ApiError('Impossible d envoyer le message.', response.status);
+      }
+
+      setLeoState('sent');
+    } catch (error) {
+      setLeoError(error instanceof ApiError ? error.message : 'Impossible d envoyer le message.');
+      setLeoState('idle');
+    }
+  }
+
+  function dismissLeo() {
+    try {
+      sessionStorage.setItem('leo_ia_dismissed', '1');
+    } catch {
+      // sessionStorage indisponible (privacy/SSR) — on ignore silencieusement.
+    }
+
+    setLeoState('dismissed');
+  }
 
   if (!userLoaded) {
     return null;
@@ -305,14 +375,53 @@ export default function DashboardPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Rechercher..."
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Rechercher dans l activite..."
+              aria-label="Rechercher"
               className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
-          <button className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-transparent">
-            <Bell className="h-5 w-5 text-slate-600" />
-            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setNotifOpen((open) => !open)}
+              className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-transparent"
+              aria-label="Notifications"
+              aria-expanded={notifOpen}
+            >
+              <Bell className="h-5 w-5 text-slate-600" />
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
+            </button>
+            {notifOpen ? (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} aria-hidden="true" />
+                <div className="absolute right-0 z-50 mt-2 w-80 rounded-2xl border border-app-border bg-white p-4 shadow-xl">
+                  <p className="mb-3 text-sm font-bold text-slate-950">Notifications</p>
+                  {filteredActivityRows.length === 0 ? (
+                    <p className="text-sm text-slate-500">Aucune activite recente.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {filteredActivityRows.slice(0, 5).map((activity) => (
+                        <li key={activity.key} className="rounded-lg bg-slate-50 px-3 py-2">
+                          <p className="text-sm font-bold text-slate-900">{activity.name}</p>
+                          <p className="text-xs text-slate-500">
+                            {activity.action} • {activity.time}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <Link
+                    href="/settings/notifications"
+                    onClick={() => setNotifOpen(false)}
+                    className="mt-3 block text-center text-sm font-bold text-emerald-700 hover:underline"
+                  >
+                    Gerer les notifications
+                  </Link>
+                </div>
+              </>
+            ) : null}
+          </div>
         </div>
       </motion.div>
 
@@ -439,11 +548,11 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {activityRows.length === 0 ? (
+              {visibleActivityRows.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
-                  Aucune activite recente a afficher pour ce tenant.
+                  {query ? 'Aucune activite ne correspond a votre recherche.' : 'Aucune activite recente a afficher pour ce tenant.'}
                 </div>
-              ) : activityRows.map((activity, index) => (
+              ) : visibleActivityRows.map((activity, index) => (
                 <motion.div
                   key={activity.key}
                   initial={{ opacity: 0, x: -20 }}
@@ -467,40 +576,65 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <button className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent">
-              Voir toute l&apos;activite
+            <button
+              onClick={() => setShowAllActivities((current) => !current)}
+              className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
+            >
+              {showAllActivities ? 'Replier l activite' : 'Voir toute l activite'}
             </button>
           </div>
         </GlassCard>
 
         <div className="space-y-6">
           <GlassCard delay={0.5}>
-            <div className="bg-gradient-to-br from-ia/5 to-ia-light p-6">
-              <div className="mb-4 flex items-start gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ia to-ia-dark shadow-lg shadow-ia/30">
-                  <Sparkles className="h-6 w-6 text-white" />
+            {leoState === 'dismissed' ? null : (
+              <div className="bg-gradient-to-br from-ia/5 to-ia-light p-6">
+                <div className="mb-4 flex items-start gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ia to-ia-dark shadow-lg shadow-ia/30">
+                    <Sparkles className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-950">Leo IA</h4>
+                    <p className="text-xs text-slate-500">Assistant intelligent</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-950">Leo IA</h4>
-                  <p className="text-xs text-slate-500">Assistant intelligent</p>
-                </div>
-              </div>
 
-              <div className="mb-4 rounded-xl bg-white/50 p-4">
-                <p className="text-sm leading-relaxed text-slate-700">
-                  &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
-                </p>
-              </div>
+                {leoState === 'sent' ? (
+                  <div className="mb-4 flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                    <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+                    Message de felicitations envoye a l equipe.
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-4 rounded-xl bg-white/50 p-4">
+                      <p className="text-sm leading-relaxed text-slate-700">
+                        &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
+                      </p>
+                    </div>
 
-              <div className="flex gap-2">
-                <button className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30">
-                  Oui, envoyer
-                </button>
-                <button className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent">
-                  Plus tard
-                </button>
+                    {leoError ? (
+                      <p className="mb-3 text-sm font-bold text-red-600" role="alert">{leoError}</p>
+                    ) : null}
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => void sendCongratsMessage()}
+                        disabled={leoState === 'sending'}
+                        className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30 disabled:opacity-60"
+                      >
+                        {leoState === 'sending' ? 'Envoi en cours...' : 'Oui, envoyer'}
+                      </button>
+                      <button
+                        onClick={dismissLeo}
+                        className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent"
+                      >
+                        Plus tard
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
+            )}
           </GlassCard>
 
           <GlassCard delay={0.6}>
@@ -508,20 +642,21 @@ export default function DashboardPage() {
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-security' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-rh' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia' },
-                  { icon: Download, label: 'Export', color: 'bg-finance' },
+                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/employees' },
+                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/absences' },
+                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
+                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
                 ].map((action) => (
-                  <button
+                  <Link
                     key={action.label}
+                    href={action.href}
                     className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-transparent"
                   >
                     <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.color} transition-transform group-hover:scale-110`}>
                       <action.icon className="h-5 w-5 text-white" />
                     </div>
                     <span className="text-xs font-bold text-slate-600">{action.label}</span>
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>

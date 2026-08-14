@@ -97,15 +97,15 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CedeaoPayrollRules)->forMemberCountry('CI');
 
-        // Brut 3 000 000 XOF > plafond 1 647 315 → retraite/famille assises
-        // sur 1 647 315 ; AT (2 %) non plafonné sur le brut complet (#1825) :
+        // Brut 3 000 000 XOF > plafond retraite 1 647 315 ; famille/AT
+        // plafonnées séparément à 70 000 (#1913, guide officiel CNPS) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
-        //   patronale : 1 647 315 × (4,5 % + 5,75 %) + 3 000 000 × 2,0 %
-        //             = 74 129,18 + 94 720,61 + 60 000,00 = 228 849,79
+        //   patronale : 1 647 315 × 4,5 % + 70 000 × 5,75 % + 70 000 × 2,0 %
+        //             = 74 129,18 + 4 025,00 + 1 400,00 = 79 554,18
         $charges = $rules->calculateSocialCharges(3000000.0);
 
         $this->assertSame(52714.08, $charges['employee']);
-        $this->assertSame(228849.79, $charges['employer']);
+        $this->assertSame(79554.18, $charges['employer']);
     }
 
     public function test_other_cedeao_members_keep_uncapped_placeholder(): void

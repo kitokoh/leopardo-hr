@@ -100,6 +100,85 @@ class GenerateBankExportJobTest extends TestCase
         $this->assertNull($export->file_path);
     }
 
+    public function test_job_generates_sepa_xml_with_company_bank_details_from_metadata(): void
+    {
+        [$company, $employee] = $this->companyAndEmployee();
+
+        $company->forceFill([
+            'metadata' => [
+                'bank' => [
+                    'iban' => 'FR7630006000011234567890189',
+                    'bic' => 'AGRIFRPP',
+                ],
+            ],
+        ])->save();
+
+        [$run, $slip] = $this->payrollSlip($company, $employee);
+        $slip->forceFill(['status' => 'validated'])->save();
+
+        $export = BankExport::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'format' => 'sepa_xml',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
+
+        $export->refresh();
+
+        $this->assertSame(BankExport::STATUS_GENERATED, $export->status);
+        $this->assertNull($export->error_message);
+
+        $content = Storage::disk('local')->get($export->file_path);
+        $this->assertIsString($content);
+        $this->assertStringContainsString(
+            '<DbtrAcct><Id><IBAN>FR7630006000011234567890189</IBAN></Id></DbtrAcct>',
+            $content
+        );
+        $this->assertStringContainsString(
+            '<DbtrAgt><FinInstnId><BIC>AGRIFRPP</BIC></FinInstnId></DbtrAgt>',
+            $content
+        );
+        $this->assertStringNotContainsString('PLACEHOLDER', $content);
+    }
+
+    public function test_job_marks_sepa_export_failed_when_company_bank_details_are_missing(): void
+    {
+        [$company, $employee] = $this->companyAndEmployee();
+        [$run, $slip] = $this->payrollSlip($company, $employee);
+        $slip->forceFill(['status' => 'validated'])->save();
+
+        $export = BankExport::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'format' => 'sepa_xml',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        $thrown = null;
+
+        try {
+            (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
+        } catch (\Throwable $e) {
+            $thrown = $e;
+        }
+
+        $this->assertNotNull($thrown, 'Expected the job to rethrow the missing bank details failure.');
+
+        $export->refresh();
+
+        $this->assertSame(BankExport::STATUS_FAILED, $export->status);
+        $this->assertStringContainsString('Configuration bancaire entreprise manquante', (string) $export->error_message);
+        $this->assertNull($export->file_path);
+    }
+
     /**
      * @return array{0: Company, 1: Employee}
      */

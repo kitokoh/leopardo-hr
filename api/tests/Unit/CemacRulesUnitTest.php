@@ -87,7 +87,9 @@ class CemacRulesUnitTest extends TestCase
 
     public function test_other_cemac_members_unaffected(): void
     {
-        $ga = (new CemacPayrollRules)->forMemberCountry('GA');
+        // GA est passé 'pilot' (#1824) — on vérifie le placeholder sur un
+        // membre non encore implémenté (CF/TD/GQ).
+        $ga = (new CemacPayrollRules)->forMemberCountry('CF');
 
         // Placeholder conservé : 5 tranches génériques, pas d'abattement,
         // pas de préavis, confidence placeholder.
@@ -96,7 +98,7 @@ class CemacRulesUnitTest extends TestCase
         $this->assertSame(0.0, $ga->noticePeriodDays(3.0));
         $this->assertSame('placeholder', $ga->confidenceLevel());
 
-        // CNPS GA non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
+        // CNPS placeholder non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
         $charges = $ga->calculateSocialCharges(2000000.0);
         $this->assertSame(84000.0, $charges['employee']);
         $this->assertSame(324000.0, $charges['employer']);

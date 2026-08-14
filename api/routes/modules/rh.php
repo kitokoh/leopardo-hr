@@ -168,6 +168,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // PA2-ARCH-011 : GET /notifications est deja source unique dans
     // routes/modules/dashboard.php (meme controller NotificationController::index).
     // Voir issue #1414.
+    // Convention CANONIQUE de marquage (consommee par web + mobile) :
+    //   PUT /notifications/read-all        — tout marquer lu
+    //   PUT /notifications/{notification}/read — marquer une notification lue
+    // Les alias dashboard.php (POST /mark-all-read, PATCH /{id}/read) restent
+    // actifs en compat (testes par NotificationControllerTest), mais sont deprecies.
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');

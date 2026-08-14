@@ -104,6 +104,9 @@ type CopyTree = {
     downloadPdf: string;
     viewDetail: string;
     resultsCount: string;
+    detailDeductions: string;
+    detailEmployerCost: string;
+    detailError: string;
   };
   smartAttendancePage: {
     title: string;
@@ -417,6 +420,9 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'Telecharger PDF',
       viewDetail: 'Voir detail',
       resultsCount: 'resultats',
+      detailDeductions: 'Retenues',
+      detailEmployerCost: 'Cout employeur',
+      detailError: 'Impossible de charger le detail du bulletin.',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
@@ -728,6 +734,9 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'تحميل PDF',
       viewDetail: 'عرض التفاصيل',
       resultsCount: 'نتائج',
+      detailDeductions: 'الخصومات',
+      detailEmployerCost: 'تكلفة صاحب العمل',
+      detailError: 'تعذر تحميل تفاصيل كشف الراتب.',
     },
     smartAttendancePage: {
       title: 'الحضور الذكي',
@@ -1039,6 +1048,9 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'PDF indir',
       viewDetail: 'Detayi gor',
       resultsCount: 'sonuc',
+      detailDeductions: 'Kesintiler',
+      detailEmployerCost: 'Isveren maliyeti',
+      detailError: 'Bordro detayi yuklenemedi.',
     },
     smartAttendancePage: {
       title: 'Akilli Devam',
@@ -1350,6 +1362,9 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'Download PDF',
       viewDetail: 'View detail',
       resultsCount: 'results',
+      detailDeductions: 'Deductions',
+      detailEmployerCost: 'Employer cost',
+      detailError: 'Unable to load pay slip details.',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',

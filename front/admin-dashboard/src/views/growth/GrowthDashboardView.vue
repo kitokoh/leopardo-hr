@@ -63,7 +63,10 @@
                   >
                     Approuver
                   </button>
-                  <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">Gérer</button>
+                  <button
+                    @click="managePartner(partner)"
+                    class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase"
+                  >Gérer</button>
                 </td>
               </tr>
               <tr v-if="partners.length === 0">
@@ -175,6 +178,28 @@ const updatePayout = async (payout, status) => {
     await api.patch(`/platform/growth/payouts/${payout.id}`, { status, notes: reason });
     loadData();
   } catch (e) { alert("Erreur: " + e.message); }
+};
+
+const managePartner = async (partner) => {
+  const label = partner.user?.email || `#${partner.id}`;
+  const rawRate = prompt(`Taux de commission (points de base, 0-10000) pour ${label} :`, String(partner.rate ?? 15));
+  if (rawRate === null) return;
+
+  const rate = Number(rawRate);
+  if (!Number.isInteger(rate) || rate < 0 || rate > 10000) {
+    alert("Taux invalide : entier entre 0 et 10000.");
+    return;
+  }
+
+  const reason = prompt("Motif de la modification (audit, min 5 caracteres) :");
+  if (!reason) return;
+
+  try {
+    await api.patch(`/platform/growth/partners/${partner.id}/rate`, { rate, reason });
+    await loadData();
+  } catch (e) {
+    alert("Erreur: " + (e.response?.data?.message || e.message));
+  }
 };
 
 const getStatusClass = (status) => {

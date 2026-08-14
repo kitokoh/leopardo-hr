@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Collection;
+use Throwable;
 
 /**
  * PA2-I18N-003 — Bank export currency must follow the payroll run's own
@@ -33,7 +35,7 @@ class BankExportGenerator
         $currency = CountryDefaults::for($run->country_code)['currency'];
 
         return match ($format) {
-            'sepa_xml' => $this->generateSepaXml($run, $slips, $currency),
+            'sepa_xml' => $this->generateSepaExport($run, $slips, $currency),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
             'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
             'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
@@ -41,6 +43,58 @@ class BankExportGenerator
             'csv_generic' => $this->generateCsvGeneric($run, $slips, $currency),
             default => throw new \InvalidArgumentException("Unsupported bank export format: {$format}"),
         };
+    }
+
+    /**
+     * Point d'entrée SEPA : résout les coordonnées bancaires DE L'ENTREPRISE
+     * (débiteur) depuis la configuration tenant et refuse explicitement
+     * l'export si elles sont absentes — plus aucun placeholder dans le fichier.
+     *
+     * @return array{iban: string|null, bic: string|null}
+     */
+    private function companyBankDetails(PayrollRun $run): array
+    {
+        $company = null;
+
+        try {
+            if (app()->bound('current_company')) {
+                $company = currentCompany();
+            }
+        } catch (Throwable) {
+            // Pas de contexte tenant actif — on tente la resolution directe.
+        }
+
+        if (! $company instanceof Company) {
+            /** @var Company|null $company */
+            $company = Company::query()
+                ->withoutGlobalScopes()
+                ->whereKey($run->company_id)
+                ->first();
+        }
+
+        $metadata = $company?->metadata ?? [];
+
+        return [
+            'iban' => is_string($metadata['bank']['iban'] ?? null) && $metadata['bank']['iban'] !== ''
+                ? $metadata['bank']['iban']
+                : null,
+            'bic' => is_string($metadata['bank']['bic'] ?? null) && $metadata['bank']['bic'] !== ''
+                ? $metadata['bank']['bic']
+                : null,
+        ];
+    }
+
+    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency): string
+    {
+        $bank = $this->companyBankDetails($run);
+
+        if (! is_string($bank['iban']) || ! is_string($bank['bic'])) {
+            throw new \RuntimeException(
+                'Configuration bancaire entreprise manquante (metadata.bank.iban / metadata.bank.bic) — export SEPA impossible.'
+            );
+        }
+
+        return $this->generateSepaXml($run, $slips, $currency, $bank['iban'], $bank['bic']);
     }
 
     public function fileExtension(string $format): string
@@ -69,8 +123,20 @@ class BankExportGenerator
         };
     }
 
-    private function generateSepaXml(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
+    private function generateSepaXml(
+        PayrollRun $run,
+        Collection $slips,
+        string $currency = 'EUR',
+        ?string $companyIban = null,
+        ?string $companyBic = null,
+    ): string
     {
+        if (! is_string($companyIban) || ! is_string($companyBic) || $companyIban === '' || $companyBic === '') {
+            throw new \RuntimeException(
+                'Configuration bancaire entreprise manquante (metadata.bank.iban / metadata.bank.bic) — export SEPA impossible.'
+            );
+        }
+
         $msgId = 'LEO-'.now()->format('YmdHis').'-'.$run->id;
         $nbTransactions = $slips->count();
         $totalAmount = $slips->sum('net_salary');
@@ -92,9 +158,9 @@ class BankExportGenerator
         $xml .= '      <NbOfTxs>'.$nbTransactions.'</NbOfTxs>'."\n";
         $xml .= '      <CtrlSum>'.number_format($totalAmount, 2, '.', '').'</CtrlSum>'."\n";
         $xml .= '      <ReqdExctnDt>'.now()->addWeekdays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
-        $xml .= '      <Dbtr><Nm>Leopardo RH</Nm></Dbtr>'."\n";
-        $xml .= '      <DbtrAcct><Id><IBAN>PLACEHOLDER_COMPANY_IBAN</IBAN></Id></DbtrAcct>'."\n";
-        $xml .= '      <DbtrAgt><FinInstnId><BIC>PLACEHOLDER_BIC</BIC></FinInstnId></DbtrAgt>'."\n";
+        $xml .= '      <Dbtr><Nm>'.$this->xmlEscape($run->company?->name ?? 'Leopardo RH').'</Nm></Dbtr>'."\n";
+        $xml .= '      <DbtrAcct><Id><IBAN>'.$this->xmlEscape($companyIban).'</IBAN></Id></DbtrAcct>'."\n";
+        $xml .= '      <DbtrAgt><FinInstnId><BIC>'.$this->xmlEscape($companyBic).'</BIC></FinInstnId></DbtrAgt>'."\n";
 
         foreach ($slips as $slip) {
             $employee = $slip->employee;

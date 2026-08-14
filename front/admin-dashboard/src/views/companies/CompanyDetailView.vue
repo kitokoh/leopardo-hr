@@ -314,7 +314,10 @@
                 </div>
               </dl>
 
-              <button class="mt-8 w-full inline-flex items-center justify-center rounded-xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 transition-colors border border-white/10">
+              <button
+                @click="router.push('/system')"
+                class="mt-8 w-full inline-flex items-center justify-center rounded-xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 transition-colors border border-white/10"
+              >
                 <CommandLineIcon class="mr-2 h-4 w-4" />
                 Accès Super-Console
               </button>
@@ -328,7 +331,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { Switch } from '@headlessui/vue'
 import {
@@ -359,6 +362,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const localeStore = useLocaleStore()
 

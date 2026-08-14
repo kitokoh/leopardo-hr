@@ -23,14 +23,24 @@
                   <!-- Avatar -->
                   <div class="flex items-center space-x-4">
                     <img
-                      :src="user?.avatar"
+                      :src="form.avatar || user?.avatar"
                       :alt="user?.name"
                       class="h-16 w-16 rounded-full"
                     />
                     <div>
+                      <input
+                        ref="avatarInput"
+                        type="file"
+                        accept="image/*"
+                        class="hidden"
+                        aria-hidden="true"
+                        tabindex="-1"
+                        @change="onAvatarSelected"
+                      />
                       <button
                         type="button"
                         class="text-sm text-indigo-600 hover:text-indigo-500"
+                        @click="pickAvatar"
                       >
                         Changer l'avatar
                       </button>
@@ -251,8 +261,11 @@ const form = reactive({
   role: '',
   companyId: '',
   status: '',
-  segment: ''
+  segment: '',
+  avatar: ''
 })
+
+const avatarInput = ref(null)
 
 onMounted(async () => {
   await loadCompanies()
@@ -282,7 +295,34 @@ function populateForm() {
     form.companyId = props.user.company?.id || ''
     form.status = props.user.status
     form.segment = props.user.segment
+    form.avatar = props.user.avatar || ''
   }
+}
+
+function pickAvatar() {
+  if (avatarInput.value) {
+    avatarInput.value.click()
+  }
+}
+
+function onAvatarSelected(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    toast.error(t('users.errors.avatar_format', 'Le fichier doit etre une image.'))
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    form.avatar = String(reader.result || '')
+    toast.success(t('users.toast.avatar_selected', 'Avatar selectionne — enregistrez pour appliquer.'))
+  }
+  reader.onerror = () => {
+    toast.error(t('users.errors.avatar_read', 'Impossible de lire le fichier image.'))
+  }
+  reader.readAsDataURL(file)
 }
 
 async function handleSubmit() {
@@ -312,6 +352,7 @@ async function handleSubmit() {
       role: form.role,
       status: form.status,
       segment: form.segment,
+      avatar: form.avatar || props.user.avatar,
       company: companies.value.find(c => c.id === parseInt(form.companyId)) || null,
       updatedAt: new Date()
     }

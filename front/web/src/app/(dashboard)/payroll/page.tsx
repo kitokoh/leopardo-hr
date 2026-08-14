@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  X,
 } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
@@ -39,6 +40,27 @@ interface PayrollRun {
   created_at: string;
 }
 
+interface PaySlipLine {
+  id: number;
+  name: string;
+  type: string;
+  base_amount?: number | null;
+  rate?: number | null;
+  amount: number;
+}
+
+interface PaySlipDetail extends PaySlip {
+  period_start?: string | null;
+  period_end?: string | null;
+  total_deductions?: number | null;
+  employer_contributions?: number | null;
+  total_cost?: number | null;
+  working_days?: number | null;
+  actual_days_worked?: number | null;
+  overtime_hours?: number | null;
+  lines?: PaySlipLine[];
+}
+
 export default function PayrollPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const labels = getCopy(locale).payrollPage;
@@ -48,6 +70,10 @@ export default function PayrollPage() {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [tab, setTab] = useState<'slips' | 'runs'>('slips');
+  const [selectedSlip, setSelectedSlip] = useState<PaySlip | null>(null);
+  const [slipDetail, setSlipDetail] = useState<PaySlipDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
   const itemsPerPage = 10;
 
   const loadData = useCallback(async () => {
@@ -67,6 +93,28 @@ export default function PayrollPage() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const openDetail = useCallback(async (slip: PaySlip) => {
+    setSelectedSlip(slip);
+    setSlipDetail(null);
+    setDetailError(null);
+    setDetailLoading(true);
+
+    try {
+      const res = await apiFetch(`/pay-slips/${slip.id}`);
+
+      if (!res.ok) {
+        throw new Error('PAYSLIP_DETAIL_FAILED');
+      }
+
+      const payload = await res.json() as { data?: PaySlipDetail };
+      setSlipDetail(payload.data ?? null);
+    } catch {
+      setDetailError(labels.detailError ?? 'Impossible de charger le detail du bulletin.');
+    } finally {
+      setDetailLoading(false);
+    }
+  }, [labels]);
 
   const filtered = useMemo(() =>
     payslips.filter(p =>
@@ -189,7 +237,7 @@ export default function PayrollPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.downloadPdf}><Download className="h-4 w-4" /></button>
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.viewDetail}><Eye className="h-4 w-4" /></button>
+                          <button onClick={() => void openDetail(slip)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.viewDetail}><Eye className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -247,6 +295,99 @@ export default function PayrollPage() {
           </div>
         </section>
       )}
+
+      {selectedSlip ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" onClick={() => setSelectedSlip(null)} aria-hidden="true" />
+          <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-app-border bg-white p-6 shadow-2xl" role="dialog" aria-modal="true" aria-label={labels.viewDetail}>
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{labels.columnPeriod}</p>
+                <h3 className="mt-1 text-2xl font-black text-slate-950">{selectedSlip.employee_name}</h3>
+                <p className="mt-1 text-sm text-slate-500">{selectedSlip.period}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${selectedSlip.status === 'validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                  {selectedSlip.status === 'validated' ? labels.statusValidated : labels.statusDraft}
+                </span>
+                <button onClick={() => setSelectedSlip(null)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Fermer">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {detailError ? (
+              <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-bold text-red-700" role="alert">{detailError}</div>
+            ) : null}
+
+            {detailLoading ? (
+              <div className="rounded-xl border border-dashed border-app-border p-10 text-center text-sm text-slate-500">{labels.loading}</div>
+            ) : slipDetail ? (
+              <>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="rounded-2xl border border-app-border bg-transparent/50 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{labels.columnGross}</p>
+                    <p className="mt-1 text-lg font-black text-slate-950">{formatCurrency(slipDetail.gross_salary)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-app-border bg-transparent/50 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{labels.detailDeductions}</p>
+                    <p className="mt-1 text-lg font-black text-red-600">{formatCurrency(slipDetail.total_deductions ?? 0)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{labels.columnNet}</p>
+                    <p className="mt-1 text-lg font-black text-emerald-700">{formatCurrency(slipDetail.net_salary)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-app-border bg-transparent/50 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{labels.detailEmployerCost}</p>
+                    <p className="mt-1 text-lg font-black text-slate-950">{formatCurrency(slipDetail.total_cost ?? slipDetail.employer_contributions ?? 0)}</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-500">
+                  {slipDetail.period_start ? <span>Du {slipDetail.period_start} au {slipDetail.period_end ?? '—'}</span> : null}
+                  {typeof slipDetail.working_days === 'number' ? <span>Jours travailles : {slipDetail.working_days}</span> : null}
+                  {typeof slipDetail.actual_days_worked === 'number' ? <span>Jours reels : {slipDetail.actual_days_worked}</span> : null}
+                  {typeof slipDetail.overtime_hours === 'number' ? <span>Heures supp. : {slipDetail.overtime_hours}</span> : null}
+                </div>
+
+                {Array.isArray(slipDetail.lines) && slipDetail.lines.length > 0 ? (
+                  <div className="mt-5 overflow-hidden rounded-2xl border border-app-border">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-app-border bg-transparent/50">
+                          <th className="px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ligne</th>
+                          <th className="px-4 py-2.5 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-app-border">
+                        {slipDetail.lines.map((line) => (
+                          <tr key={line.id}>
+                            <td className="px-4 py-2.5 text-slate-700">
+                              {line.name}
+                              <span className="ml-2 text-xs uppercase text-slate-400">{line.type}</span>
+                            </td>
+                            <td className="px-4 py-2.5 text-right tabular-nums text-slate-900">{formatCurrency(line.amount)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
+
+                <div className="mt-6 flex justify-end">
+                  <button
+                    onClick={() => downloadPdf(selectedSlip.id)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
+                  >
+                    <Download className="h-4 w-4" />
+                    {labels.downloadPdf}
+                  </button>
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </ModulePageShell>
   );
 }

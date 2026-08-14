@@ -129,7 +129,12 @@
             {{ analytics.churnPrediction.riskUsers }} Ã  risque
           </span>
         </div>
-        <ChurnPredictionWidget :data="analytics.churnPrediction" />
+        <ChurnPredictionWidget
+          :data="analytics.churnPrediction"
+          @view-users="goToUsers"
+          @create-campaign="goToCrmCampaign"
+          @export-list="exportRiskList"
+        />
       </div>
 
       <!-- Revenue Forecast -->
@@ -138,18 +143,29 @@
           <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prévision Revenus</h3>
           <span class="text-xs font-bold text-slate-500 dark:text-slate-400">3 PROCHAINS MOIS</span>
         </div>
-        <RevenueForecastWidget :data="analytics.revenueForecast" />
+        <RevenueForecastWidget
+          :data="analytics.revenueForecast"
+          @view-details="goToForecastDetails"
+          @export-forecast="exportForecast"
+        />
       </div>
 
       <!-- Feature Adoption -->
       <div class="card p-8 border-t-4 border-t-cyan-500">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-xl font-bold text-slate-900 dark:text-white">Adoption Fonctionnalités</h3>
-          <button class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors">
+          <button
+            @click="goToFeatureAnalysis"
+            class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors"
+          >
             Voir détails
           </button>
         </div>
-        <FeatureAdoptionWidget :data="analytics.featureAdoption" />
+        <FeatureAdoptionWidget
+          :data="analytics.featureAdoption"
+          @analyze-features="goToFeatureAnalysis"
+          @create-campaign="goToCrmCampaign"
+        />
       </div>
     </div>
 
@@ -214,6 +230,7 @@ import {
   InformationCircleIcon,
   ArrowPathIcon
 } from '@heroicons/vue/24/outline'
+import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 // Components
@@ -228,6 +245,7 @@ import BenchmarkChart from '@/components/analytics/BenchmarkChart.vue'
 import InsightCard from '@/components/analytics/InsightCard.vue'
 
 const toast = useToast()
+const router = useRouter()
 
 // Reactive state
 const selectedPeriod = ref('30d')
@@ -420,6 +438,65 @@ async function exportReport() {
 function handleInsightAction(insight) {
   toast.info(`Action: ${insight.action}`)
   // Implement specific actions based on insight type
+}
+
+/** Telecharge un CSV cote client a partir de lignes de valeurs. */
+function downloadCsv(filename, rows) {
+  const csv = rows
+    .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
+    .join('\n')
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
+function goToUsers() {
+  router.push('/users')
+}
+
+function goToCrmCampaign() {
+  toast.info('Creation de campagne : redirection vers le CRM')
+  router.push('/crm/pipeline')
+}
+
+function goToForecastDetails() {
+  router.push('/predictions')
+}
+
+function goToFeatureAnalysis() {
+  router.push('/reports')
+}
+
+function exportRiskList() {
+  const factors = Array.isArray(analytics.churnPrediction.factors) ? analytics.churnPrediction.factors : []
+  downloadCsv(`churn-risk-users-${Date.now()}.csv`, [
+    ['indicateur', 'valeur'],
+    ['utilisateurs_a_risque', analytics.churnPrediction.riskUsers ?? 0],
+    ['probabilite', analytics.churnPrediction.probability ?? 0],
+    ...factors.map((factor) => ['facteur_de_risque', factor]),
+  ])
+  toast.success('Liste des risques exportee')
+}
+
+function exportForecast() {
+  const forecast = analytics.revenueForecast
+  const min = Math.round((forecast.nextMonth ?? 0) * 0.85)
+  const max = Math.round((forecast.nextMonth ?? 0) * 1.15)
+  downloadCsv(`revenue-forecast-${Date.now()}.csv`, [
+    ['indicateur', 'valeur'],
+    ['prochain_mois', forecast.nextMonth ?? 0],
+    ['intervalle_min', min],
+    ['intervalle_max', max],
+    ['confiance', forecast.confidence ?? 0],
+    ['tendance', forecast.trend ?? ''],
+  ])
+  toast.success('Prevision exportee')
 }
 </script>
 

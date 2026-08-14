@@ -79,7 +79,7 @@ class BankExportGeneratorTest extends TestCase
             'iban' => 'FR7630006000011234567890189',
         ]);
 
-        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'MAD');
+        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'MAD', 'FR76123450001', 'AGRIFRPP');
 
         self::assertStringContainsString('<MsgId>LEO-20260520100000-77</MsgId>', $xml);
         self::assertStringContainsString('<NbOfTxs>1</NbOfTxs>', $xml);
@@ -90,6 +90,12 @@ class BankExportGeneratorTest extends TestCase
         // PA2-I18N-003: the SEPA transfer currency must follow the payroll
         // run's own country instead of a hardcoded EUR literal.
         self::assertStringContainsString('<InstdAmt Ccy="MAD">8750.25</InstdAmt>', $xml);
+
+        // Le debit est porte par les coordonnees bancaires de l'entreprise
+        // (config tenant) — aucun placeholder ne doit subsister.
+        self::assertStringContainsString('<DbtrAcct><Id><IBAN>FR76123450001</IBAN></Id></DbtrAcct>', $xml);
+        self::assertStringContainsString('<DbtrAgt><FinInstnId><BIC>AGRIFRPP</BIC></FinInstnId></DbtrAgt>', $xml);
+        self::assertStringNotContainsString('PLACEHOLDER', $xml);
 
         Carbon::setTestNow();
     }
@@ -119,9 +125,41 @@ class BankExportGeneratorTest extends TestCase
             'iban' => 'FR7630006000011234567890189',
         ]);
 
-        $xml = $method->invoke($generator, $run, new Collection([$slip]));
+        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'EUR', 'FR76123450002', 'BNPAFRPP');
 
         self::assertStringContainsString('<InstdAmt Ccy="EUR">1200.00</InstdAmt>', $xml);
+        self::assertStringNotContainsString('PLACEHOLDER', $xml);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_sepa_export_refuses_missing_company_bank_details(): void
+    {
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateSepaXml');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes([
+            'id' => 79,
+            'period_start' => Carbon::parse('2026-05-01'),
+        ]);
+
+        $slip = new PaySlip;
+        $slip->setRawAttributes([
+            'employee_id' => 44,
+            'net_salary' => 1500,
+        ]);
+        $slip->setRelation('employee', (object) [
+            'first_name' => 'Awa',
+            'last_name' => 'Diallo',
+            'iban' => 'SN1301501000123456789012345',
+        ]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Configuration bancaire entreprise manquante');
+
+        $method->invoke($generator, $run, new Collection([$slip]), 'EUR', null, null);
 
         Carbon::setTestNow();
     }
