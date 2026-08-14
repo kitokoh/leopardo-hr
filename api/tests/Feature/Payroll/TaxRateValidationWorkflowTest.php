@@ -210,8 +210,10 @@ class TaxRateValidationWorkflowTest extends TestCase
         $slab = $this->createDraftSlab();
 
         /** @var Company $otherCompany */
+        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
         $otherCompany = Company::factory()->create();
         /** @var Employee $otherManager */
+        /** @var \App\Core\Auth\Domain\Models\Employee $otherManager */
         $otherManager = Employee::factory()->manager()->create(['company_id' => $otherCompany->id]);
 
         Sanctum::actingAs($otherManager);
