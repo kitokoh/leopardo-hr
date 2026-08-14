@@ -6,6 +6,7 @@ namespace Tests\Feature\Cabinet;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -128,5 +129,79 @@ class CabinetDocumentControllerTest extends TestCase
             'Cross-tenant document leak detected in cabinet listing'
         );
     }
-}
 
+    // ── Issue #1921 : immutabilité read_only (bulletins archivés #1817) ─────
+
+    private function makeDocument(bool $readOnly, ?int $folderId = null): CabinetDocument
+    {
+        return CabinetDocument::create([
+            'company_id' => $this->company->id,
+            'employee_id' => $this->manager->id,
+            'folder_id' => $folderId,
+            'name' => $readOnly ? 'Bulletin mars 2026.pdf' : 'CV.pdf',
+            'original_name' => 'original.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 1024,
+            'disk' => 'local',
+            'path' => 'documents/' . ($readOnly ? 'readonly' : 'normal') . '-' . uniqid('', true) . '.pdf',
+            'read_only' => $readOnly,
+            'document_type' => $readOnly ? 'payslip' : 'document',
+        ]);
+    }
+
+    public function test_read_only_document_cannot_be_renamed(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $document = $this->makeDocument(readOnly: true);
+
+        $response = $this->putJson('/api/v1/cabinet/documents/' . $document->id, [
+            'name' => 'Renommé.pdf',
+        ]);
+
+        $response->assertForbidden();
+        $this->assertSame('Bulletin mars 2026.pdf', $document->fresh()->name);
+    }
+
+    public function test_read_only_document_cannot_be_moved(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $document = $this->makeDocument(readOnly: true);
+
+        $response = $this->patchJson('/api/v1/cabinet/documents/' . $document->id . '/move', [
+            'folder_id' => 1,
+        ]);
+
+        $response->assertForbidden();
+        $this->assertNull($document->fresh()->folder_id);
+    }
+
+    public function test_read_only_document_cannot_have_notes_updated(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $document = $this->makeDocument(readOnly: true);
+
+        $response = $this->putJson('/api/v1/cabinet/documents/' . $document->id, [
+            'notes' => 'tentative de modification',
+        ]);
+
+        $response->assertForbidden();
+        $this->assertNull($document->fresh()->notes);
+    }
+
+    public function test_normal_document_can_be_renamed_and_moved(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $document = $this->makeDocument(readOnly: false);
+
+        $response = $this->putJson('/api/v1/cabinet/documents/' . $document->id, [
+            'name' => 'Nouveau nom.pdf',
+        ]);
+
+        $response->assertOk();
+        $this->assertSame('Nouveau nom.pdf', $document->fresh()->name);
+    }
+}

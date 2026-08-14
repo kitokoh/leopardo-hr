@@ -111,8 +111,10 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // Les membres ML/BF/BJ/TG/NE ne doivent PAS hériter des règles CI.
-        foreach (['ML', 'BF', 'BJ', 'TG', 'NE'] as $memberCode) {
+        // Les membres BJ/TG/NE ne doivent PAS hériter des règles CI. BF et ML
+        // ont leurs propres barèmes pilot (#1829) — testés dans
+        // test_cedeao_members_pilot_metadata (PayrollCountryRulesTest).
+        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             $this->assertSame('placeholder', $rules->confidenceLevel(), "{$memberCode} doit rester placeholder");
