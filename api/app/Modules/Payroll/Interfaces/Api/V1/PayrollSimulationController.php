@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,9 +44,7 @@ class PayrollSimulationController extends Controller
 
         $validated = $request->validate([
             'gross_salary' => ['required', 'numeric', 'min:0'],
-            'country_code' => ['required', 'string', Rule::in([
-                'DZ', 'MA', 'FR', 'TN', 'TR', 'SN', 'CM', 'CF', 'TD', 'CG', 'GA', 'GQ', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CA',
-            ])],
+'country_code' => ['required', 'string', Rule::in(CountryRulesResolver::payrollCountryCodes())],
             'slabs_override' => ['sometimes', 'array', 'min:1'],
             'slabs_override.*.min' => ['required_with:slabs_override', 'numeric', 'min:0'],
             'slabs_override.*.max' => ['nullable', 'numeric', 'min:0'],

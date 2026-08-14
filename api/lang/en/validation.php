@@ -106,4 +106,5 @@ return [
     'url' => 'The :attribute field must be a valid URL.',
     'uuid' => 'The :attribute field must be a valid UUID.',
     'supported_country' => 'The :attribute field must be a supported country (:value).',
+    'supported_country_payroll' => 'The :attribute field must have payroll rules for country :value (invariant 3).',
 ];

@@ -104,6 +104,22 @@ class CountryRulesResolver
     }
 
     /**
+     * MULTI-PAYS (#1951) — liste partagée des pays disposant de règles de
+     * paie. Source unique pour les validations `Rule::in(...)` des
+     * contrôleurs (fin des listes hardcodées divergentes : 3 définitions du
+     * « pays supporté » coexistantes avant #1951).
+     *
+     * @return list<string>
+     */
+    public static function payrollCountryCodes(): array
+    {
+        $codes = array_keys(self::defaultRulesMap());
+        sort($codes);
+
+        return $codes;
+    }
+
+    /**
      * Résout les règles de paie d'un pays, scopes entreprise/période inclus.
      *
      * @throws UnsupportedCountryRulesException si le pays n'est pas enregistré

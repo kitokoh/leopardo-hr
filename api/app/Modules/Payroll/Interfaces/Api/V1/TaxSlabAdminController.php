@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -132,9 +133,7 @@ class TaxSlabAdminController extends Controller
     private function validatePayload(Request $request, bool $partial = false): array
     {
         $rules = [
-            'country_code' => ['required', 'string', 'size:2', Rule::in([
-                'DZ', 'MA', 'TN', 'FR', 'TR', 'SN', 'CM', 'CF', 'TD', 'CG', 'GA', 'GQ', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CA',
-            ])],
+'country_code' => ['required', 'string', 'size:2', Rule::in(CountryRulesResolver::payrollCountryCodes())],
             'name' => ['required', 'string', 'max:150'],
             'min_amount' => ['required', 'numeric', 'min:0'],
             'max_amount' => ['nullable', 'numeric', 'min:0'],
@@ -156,7 +155,7 @@ class TaxSlabAdminController extends Controller
 
     private function assertCountry(string $countryCode): void
     {
-        if (! in_array($countryCode, ['DZ', 'MA', 'TN', 'FR', 'TR', 'SN', 'CM', 'CF', 'TD', 'CG', 'GA', 'GQ', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CA'], true)) {
+        if (! in_array($countryCode, CountryRulesResolver::payrollCountryCodes(), true)) {
             abort(422, __('payroll.rate_country_unsupported'));
         }
     }

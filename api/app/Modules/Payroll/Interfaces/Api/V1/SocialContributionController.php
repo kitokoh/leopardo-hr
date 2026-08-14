@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\SocialContributionResource;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -55,7 +56,7 @@ class SocialContributionController extends Controller
         // make_social_contributions_code_unique_per_effective_period
         // migration.
         $validated = $request->validate([
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            'country_code' => ['required', 'string', 'size:2', Rule::in(CountryRulesResolver::payrollCountryCodes())],
             'name' => 'required|string|max:150',
             'code' => [
                 'required',

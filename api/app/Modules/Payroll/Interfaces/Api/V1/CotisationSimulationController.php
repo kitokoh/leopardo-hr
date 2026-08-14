@@ -7,9 +7,11 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * Simulation de cotisations sociales et d'impôt sur le revenu.
@@ -47,7 +49,7 @@ class CotisationSimulationController extends Controller
 
         $validated = $request->validate([
             'gross_salary' => 'required|numeric|min:0',
-            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            'country_code' => ['required', 'string', Rule::in(CountryRulesResolver::payrollCountryCodes())],
         ]);
 
         /** @var array{gross_salary: float|string, country_code: string} $validated */

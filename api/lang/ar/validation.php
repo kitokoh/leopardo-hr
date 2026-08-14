@@ -106,4 +106,5 @@ return [
     'url' => 'صيغة رابط :attribute غير صالحة.',
     'uuid' => 'يجب أن يكون :attribute معرّف UUID صالحاً.',
     'supported_country' => 'يجب أن يكون حقل :attribute دولة مدعومة (:value).',
+    'supported_country_payroll' => 'يجب أن يتوفر لحقل :attribute قواعد رواتب للدولة :value (الثابت 3).',
 ];

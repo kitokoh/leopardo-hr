@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use Illuminate\Validation\Rule;
 
 /**
@@ -95,9 +96,7 @@ class SocialContributionAdminController extends Controller
     private function validatePayload(Request $request, bool $partial = false): array
     {
         $rules = [
-            'country_code' => ['required', 'string', 'size:2', Rule::in([
-                'DZ', 'MA', 'TN', 'FR', 'TR', 'SN', 'CM', 'CF', 'TD', 'CG', 'GA', 'GQ', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CA',
-            ])],
+'country_code' => ['required', 'string', 'size:2', Rule::in(CountryRulesResolver::payrollCountryCodes())],
             'name' => ['required', 'string', 'max:150'],
             'code' => ['required', 'string', 'max:50'],
             'type' => ['required', Rule::in(['employee', 'employer'])],

@@ -106,4 +106,5 @@ return [
     'url' => ':attribute geçerli bir URL olmalıdır.',
     'uuid' => ':attribute geçerli bir UUID olmalıdır.',
     'supported_country' => ':attribute alanı desteklenen bir ülke olmalıdır (:value).',
+    'supported_country_payroll' => ':attribute alanı :value ülkesi için bordro kurallarına sahip olmalıdır (değişmez 3).',
 ];
