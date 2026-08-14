@@ -85,7 +85,13 @@ class PayrollCountryConfigSeeder extends Seeder
                 );
             }
 
-            foreach ($countryRules->taxSlabs() as $slab) {
+            // Issue #2003 : seeder depuis la source LÉGALE (`legalTaxSlabs()` =
+            // `defaultTaxSlabs()` du code), PAS depuis `taxSlabs()` qui résout
+            // la base d'abord → re-seed no-op silencieux (les tenants BF seedés
+            // avant #1972 gardaient 5 tranches IUTS, sous-imposition au-delà de
+            // ~500 000 FCFA/mois). updateOrCreate rafraîchit ensuite les lignes
+            // existantes (max_amount/rate) et insère les nouvelles.
+            foreach ($countryRules->legalTaxSlabs() as $slab) {
                 TaxSlab::updateOrCreate(
                     [
                         'company_id' => null,
