@@ -7059,13 +7059,6 @@ paths:
           in: path
           required: true
           schema: { type: integer }
-      responses:
-        "200":
-          description: "Fichier CSV DAS"
-          content:
-            text/csv:
-              schema:
-                type: string
       requestBody:
         required: true
         content:
@@ -16322,6 +16315,8 @@ components:
           type: string
           nullable: true
         status:
+          type: string
+          enum: [draft, calculating, validated, cancelled, locked, paid, error]
         type:
           type: string
           enum: [standard, regularization]
@@ -16331,8 +16326,6 @@ components:
         reason:
           type: string
           nullable: true
-          type: string
-          enum: [draft, calculating, validated, cancelled]
         total_gross:
           type: number
           nullable: true
