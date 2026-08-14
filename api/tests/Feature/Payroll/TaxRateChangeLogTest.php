@@ -203,7 +203,6 @@ class TaxRateChangeLogTest extends TestCase
             TaxRateChangeLog::query()->find($id),
         );
     }
-}
 
     public function test_db_level_truncate_is_blocked_by_trigger(): void
     {
