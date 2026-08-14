@@ -144,7 +144,15 @@ export const useRealtimeStore = defineStore('realtime', () => {
     pollInFlight = true
     const isBaselinePoll = knownNotificationIds.size === 0 && notifications.value.length === 0
     try {
-      const { data } = await api.get('/notifications', { params: { per_page: 20 } })
+      // Le token super-admin (guard super_admin_api) ne s'authentifie pas sur
+      // `/notifications` (route tenant) : le backend répond 401. Ce n'est pas
+      // une session expirée — c'est un endpoint inexistant pour ce profil.
+      // `_skipAuthRedirect` empêche l'intercepteur global de détruire la
+      // session (issue #2310) ; sur 401 on désactive simplement le polling.
+      const { data } = await api.get('/notifications', {
+        params: { per_page: 20 },
+        _skipAuthRedirect: true,
+      })
       const items = Array.isArray(data?.data) ? data.data : []
 
       // Present newest first, and only surface items we haven't already
@@ -173,7 +181,16 @@ export const useRealtimeStore = defineStore('realtime', () => {
         })
       }
     } catch (error) {
-      console.error('Fallback polling notifications a échoué:', error)
+      // 401 = pas d'inbox notifications pour le super-admin (route tenant) :
+      // le polling ne sert à rien, on le désactive proprement sans toucher à
+      // la session (issue #2310). Les autres erreurs réseau restent
+      // silencieuses (retentées au prochain tick).
+      if (error?.response?.status === 401) {
+        console.warn('Notifications super-admin indisponibles (401) — polling désactivé')
+        stopPolling()
+      } else {
+        console.error('Fallback polling notifications a échoué:', error)
+      }
     } finally {
       pollInFlight = false
     }

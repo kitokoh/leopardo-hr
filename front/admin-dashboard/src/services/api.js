@@ -171,7 +171,11 @@ api.interceptors.response.use(
 
       switch (status) {
         case 401:
-          if (!originalRequest?._retry) {
+          // Certaines requêtes non critiques (ex. polling notifications du
+          // super-admin, dont le token ne s'authentifie pas sur les routes
+          // tenant) ne doivent PAS détruire la session : elles portent
+          // `_skipAuthRedirect` et laissent l'appelant gérer l'erreur.
+          if (!originalRequest?._retry && !originalRequest?._skipAuthRedirect) {
             originalRequest._retry = true
             removeAuthToken()
             delete api.defaults.headers.common.Authorization
