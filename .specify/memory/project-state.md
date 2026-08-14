@@ -75,6 +75,7 @@
 | Calendrier islamique | ✅ | #1812 | IslamicCalendarService |
 | Workflow validation taux légaux | ✅ | #1813 | Double signature + audit trail |
 | Admin barèmes fiscaux (Vue) | ✅ | #1814 | TaxRatesView.vue + simulateur |
+| Parité simulateur ↔ bulletin | ✅ | #2220 | pipeline unique computeNetBreakdown + TRIMF + by_slab annualisé |
 | Admin cotisations sociales (Vue) | ✅ | #1815 | SocialContributionsView.vue |
 | Assurance chômage DZ | 🟡 Partiel | #1819 | Documenté "à identifier" — besoin expert |
 | Régularisation delta (diff bulletin) | ✅ | #1983 | PayrollRegularizationService — DELTA par employé |

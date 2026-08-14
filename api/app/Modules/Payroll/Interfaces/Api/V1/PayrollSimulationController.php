@@ -130,39 +130,86 @@ class PayrollSimulationController extends Controller
             $rules->withCapsEnabled(! (bool) ($validated['ignore_caps'] ?? false));
         }
 
-        /** @var array{employee: float, employer: float} $social */
-        $social = $rules->calculateSocialCharges($gross);
+        // Issue #1869 invariant : la simulation et le bulletin produisent les
+        // MÊMES résultats — on réutilise le pipeline de calcul unique
+        // computeNetBreakdown() (cotisations, assiette, impôt, taxe de
+        // minimum fiscal, net, coût employeur) au lieu de recalculer ici.
+        // Issue #2220 : corrige TRIMF SN omise + barèmes annuels appliqués
+        // à une base mensuelle (income_tax_by_slab annualisé).
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown($gross, $rules);
 
-        $taxBase = round($gross - $social['employee'], 2);
+        $social = $breakdown['social'];
+        $taxBase = round($breakdown['taxable_gross'], 2);
+        $incomeTax = $breakdown['income_tax'];
+        $bracketTax = $breakdown['bracket_tax'];
+        $netSalary = $breakdown['net_salary'];
+        $totalCost = $breakdown['total_cost'];
 
-        // Impôt par tranche (même logique que calculateProgressiveTax).
+        // Impôt par tranche — même mécanique que le pays (issue #2220).
+        // Barèmes ANNUELS (MA/TN/FR/CA/TR/BF/ML/CG/GA/CM/SN) : la base est
+        // annualisée puis ramenée au mois, la somme converge vers income_tax.
+        // Barèmes MENSUELS (DZ, CI — ITS 2024) : base mensuelle directe.
+        // Deux mécaniques :
+        //  - progressive (FR/BF/ML/CG/GA/TN/TR/CA/CM/CI…) : chaque tranche
+        //    paie son taux marginal sur sa fraction de revenu ;
+        //  - MA (déduction forfaitaire) : le taux de la tranche contenant le
+        //    revenu s'applique à TOUT le revenu, moins la déduction.
+        $monthlySlabCountries = ['DZ', 'CI'];
+        $annualize = ! in_array($countryCode, $monthlySlabCountries, true);
+        $slabBase = $annualize ? $taxBase * 12 : $taxBase;
         $bySlab = [];
-        $tax = 0.0;
+        $hasFixedDeduction = false;
         foreach ($rules->taxSlabs() as $slab) {
-            $lowerBound = (float) $slab['min'];
-            if ($lowerBound > 0) {
-                $lowerBound -= 1;
+            if ((float) ($slab['fixed_deduction'] ?? 0) > 0.0) {
+                $hasFixedDeduction = true;
+                break;
             }
-            $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
-            $taxableInSlab = min($taxBase, $upperBound) - $lowerBound;
-            if ($taxableInSlab <= 0) {
-                continue;
-            }
-            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
-            $tax += $slabTax;
-            $bySlab[] = [
-                'min' => (float) $slab['min'],
-                'max' => $slab['max'],
-                'rate' => (float) $slab['rate'],
-                'taxable_amount' => round($taxableInSlab, 2),
-                'tax' => $slabTax,
-            ];
         }
 
-        // L'impôt réel du pays (abattements DZ, etc.) prime sur la somme brute.
-        $incomeTax = $rules->calculateIncomeTax($taxBase, 12, $gross);
-        $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
-        $totalCost = round($gross + $social['employer'], 2);
+        if ($hasFixedDeduction) {
+            // Mécanique MA : une seule tranche (celle qui contient le revenu).
+            foreach ($rules->taxSlabs() as $slab) {
+                $max = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
+                if ($slabBase >= (float) $slab['min'] && $slabBase <= $max) {
+                    $slabTax = max(
+                        0.0,
+                        $slabBase * ((float) $slab['rate'] / 100) - (float) $slab['fixed_deduction']
+                    );
+                    $bySlab[] = [
+                        'min' => (float) $slab['min'],
+                        'max' => $slab['max'],
+                        'rate' => (float) $slab['rate'],
+                        'taxable_amount' => round($slabBase / ($annualize ? 12 : 1), 2),
+                        'tax' => round($slabTax / ($annualize ? 12 : 1), 2),
+                    ];
+                    break;
+                }
+            }
+        } else {
+            // Mécanique progressive : chaque tranche sur sa fraction.
+            foreach ($rules->taxSlabs() as $slab) {
+                $lowerBound = (float) $slab['min'];
+                if ($lowerBound > 0) {
+                    $lowerBound -= 1;
+                }
+                $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
+                if ($slabBase <= $lowerBound) {
+                    continue;
+                }
+                $taxableInSlab = min($slabBase, $upperBound) - $lowerBound;
+                if ($taxableInSlab <= 0) {
+                    continue;
+                }
+                $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100) / ($annualize ? 12 : 1), 2);
+                $bySlab[] = [
+                    'min' => (float) $slab['min'],
+                    'max' => $slab['max'],
+                    'rate' => (float) $slab['rate'],
+                    'taxable_amount' => round($taxableInSlab / ($annualize ? 12 : 1), 2),
+                    'tax' => $slabTax,
+                ];
+            }
+        }
 
         // Issue #1874 — audit de la simulation (résultats agrégés uniquement).
         $this->auditRecorder->recordSimulation(

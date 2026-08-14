@@ -124,10 +124,21 @@ class CotisationSimulationController extends Controller
         $employeeContributions = [];
         $employerContributions = [];
         foreach ($rules->socialContributions() as $contribution) {
-            // Base plafonnée quand la règle déclare un cap (sinon brut entier).
-            $base = $contribution['cap'] === null
-                ? $gross
-                : min($gross, (float) $contribution['cap']);
+            // Issue #2220 — assiette réelle de la cotisation :
+            //  1. base_pct (FR CSG/CRDS) : assiette légale = % du brut (98,25) ;
+            //  2. cap (SN T1, CI…) : min(brut, cap) ;
+            //  3. floor (SN T2 cadres) : tranche 432 001–2 160 000 →
+            //     max(0, min(brut, cap) − floor).
+            $base = $gross;
+            if (isset($contribution['base_pct'])) {
+                $base = $gross * ((float) $contribution['base_pct'] / 100);
+            }
+            if ($contribution['cap'] !== null) {
+                $base = min($base, (float) $contribution['cap']);
+            }
+            if (isset($contribution['floor'])) {
+                $base = max(0.0, $base - (float) $contribution['floor']);
+            }
 
             $item = [
                 'name' => $contribution['name'],

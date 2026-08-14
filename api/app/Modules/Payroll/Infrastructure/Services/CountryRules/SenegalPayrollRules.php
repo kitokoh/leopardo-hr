@@ -28,9 +28,11 @@ class SenegalPayrollRules extends AbstractCountryRules
             ['name' => 'IPRES Salariale', 'code' => 'IPRES_SN_EMP', 'type' => 'employee', 'rate' => 5.6, 'cap' => 432000.0],
             ['name' => 'IPRES Patronale', 'code' => 'IPRES_SN_PAT', 'type' => 'employer', 'rate' => 8.4, 'cap' => 432000.0],
             // IPRES régime cadres T2 — tranche 432 001 – 2 160 000 XOF
-            // (issue #1827, docs/payroll/SN_COMPLIANCE.md §4bis).
-            ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null],
-            ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null],
+            // (issue #1827, docs/payroll/SN_COMPLIANCE.md §4bis). `floor` :
+            // assiette = min(brut, cap) − floor (issue #2220 — la métadonnée
+            // cap seul affichait brut × 2,4 % au lieu de la tranche réelle).
+            ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => 2160000.0, 'floor' => 432000.0],
+            ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => 2160000.0, 'floor' => 432000.0],
             // CSS — prestations familiales 3 % + AT 1 %, plafonnées à
             // 63 000 XOF/mois (#1913, procédure administrative CSS /
             // eRegulations — aligné sur calculateSocialCharges).
