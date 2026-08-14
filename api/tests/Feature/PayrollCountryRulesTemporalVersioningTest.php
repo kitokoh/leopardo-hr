@@ -96,6 +96,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2025-01-01',
             'effective_to' => '2025-12-31',
+            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         SocialContribution::create([
@@ -108,6 +109,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2026-01-01',
             'effective_to' => null,
+            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = new AlgeriaPayrollRules;
@@ -136,6 +138,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'fixed_deduction' => 0,
             'effective_from' => '2025-01-01',
             'effective_to' => '2025-12-31',
+            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         TaxSlab::create([
@@ -148,6 +151,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'fixed_deduction' => 0,
             'effective_from' => '2026-01-01',
             'effective_to' => null,
+            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         $rules = new AlgeriaPayrollRules;
@@ -177,6 +181,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => now()->subYear()->toDateString(),
             'effective_to' => null,
+            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = new AlgeriaPayrollRules;
@@ -202,6 +207,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => now()->subYear()->toDateString(),
             'effective_to' => null,
+            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = (new AlgeriaPayrollRules)->asOf('2099-01-01')->asOf(null);
@@ -230,6 +236,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2025-01-01',
             'effective_to' => null,
+            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         SocialContribution::create([
@@ -242,6 +249,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2025-01-01',
             'effective_to' => null,
+            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = (new AlgeriaPayrollRules)->forCompany($companyId)->asOf('2025-06-15');
