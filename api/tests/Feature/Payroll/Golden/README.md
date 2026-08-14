@@ -5,9 +5,22 @@ Les **golden tests** sont la référence de conformité du moteur de paie : chaq
 ## Règles d'or
 
 1. **Jamais de calcul dupliqué** : la valeur attendue est un nombre en dur, pas une reformulation de l'algorithme.
-2. **Référence légale** : chaque test cite la section de `DZ_COMPLIANCE.md` (et donc la loi/décret).
+2. **Référence légale** : chaque test cite la section du référentiel pays `docs/payroll/*_COMPLIANCE.md` (et donc la loi/décret).
 3. **Un cas par famille** : IRG, CNAS, prorata, heures sup, absences, congés, avances, fins de contrat, régularisations.
-4. **Toute modification de taux** = mise à jour simultanée du référentiel + du golden test + du CHANGELOG (procédure `DZ_COMPLIANCE.md`).
+4. **Toute modification de taux** = mise à jour simultanée du référentiel + du golden test + du CHANGELOG (procédure `*_COMPLIANCE.md`).
+
+## Deux niveaux (issue #1938)
+
+- **`GoldenEngineGenericTest.php`** — MÉCANIQUES MOTEUR génériques (prorata,
+  taux horaire/majoration HS, mécanique fin de contrat). Ces valeurs ne sont
+  PAS des valeurs légales ; elles ne doivent PAS apparaître dans les suites
+  pays (elles y étaient dupliquées et verrouillaient des défauts génériques
+  comme `severanceMonthsPerYear() = 1.0`).
+- **Suites pays (`Golden{Bf,Ml,Ga,Cg,Ci,Cm,Sn,Dz,...}PayrollTest`)** — UNIQUEMENT
+  des cas **calculés à la main + source légale citée** (art./décret,
+  référentiel pays). Toute valeur légale (taux, plafond, tranche, préavis,
+  seuil HS, majoration) se verrouille ici ; toute mécanique moteur va dans la
+  suite générique.
 
 ## Cas couverts
 

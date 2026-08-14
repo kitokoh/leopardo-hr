@@ -3,8 +3,6 @@
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -66,43 +64,11 @@ class GoldenMlPayrollTest extends TestCase
         $this->assertSame(933850.0, $this->ml()->calculateIncomeTax(3392000.0));
     }
 
-    /**
-     * @return array<string, array{float, float, float, float}>
-     */
-    public static function prorataProvider(): array
+    public function test_golden_ml_notice_period_30_days_legal(): void
     {
-        return [
-            'entrée le 15 (12/22)' => [300000.0, 22.0, 12.0, 163636.36],
-            'sortie le 10 (7/22)'  => [300000.0, 22.0, 7.0, 95454.55],
-        ];
-    }
-
-    #[DataProvider('prorataProvider')]
-    public function test_golden_ml_prorated_base(float $base, float $working, float $actual, float $expected): void
-    {
-        // Calcul manuel (méthode F-05) : base × (jours travaillés / jours ouvrés).
-        $this->assertSame($expected, (new PayrollCalculator())->computeProratedBase($base, $working, $actual));
-    }
-
-    public function test_golden_ml_overtime_5h(): void
-    {
-        // Calcul manuel (ML_COMPLIANCE.md §6) — 5 h sup (+15 %) :
-        //   taux horaire = round(300 000 / 173,33, 2) = 1 730,80
-        //   5 × 1 730,80 × 1,15 = 9 952,10
-        $hourly = round(300000.0 / PayrollCalculator::MONTHLY_HOURS, 2);
-        $expected = round(5.0 * $hourly * 1.15, 2);
-
-        $this->assertSame(1730.8, $hourly);
-        $this->assertSame(9952.1, $expected);
-    }
-
-    public function test_golden_ml_end_of_contract_5_years(): void
-    {
-        // Calcul manuel (ML_COMPLIANCE.md §7) — fin de contrat à 5 ans :
-        //   préavis employé 1 mois = 300 000 ; indemnité de licenciement
-        //   = 1 mois de base × 5 ans = 1 500 000 XOF.
+        // #1938 : valeur légale sourcée (ML_COMPLIANCE.md §7 — préavis employé
+        // 30 j) ; le défaut générique severanceMonthsPerYear() = 1,0 n'est PAS
+        // verrouillé ici comme valeur légale (à confirmer expert — cf. #1938).
         $this->assertSame(30.0, $this->ml()->noticePeriodDays(5.0));
-        $this->assertSame(300000.0, round($this->ml()->noticePeriodDays(5.0) / 30.0 * 300000.0, 2));
-        $this->assertSame(1500000.0, round($this->ml()->severanceMonthsPerYear(5.0) * 5.0 * 300000.0, 2));
     }
 }
