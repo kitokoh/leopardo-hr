@@ -40,7 +40,10 @@ return [
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
-            'url' => env('MAIL_URL'),
+            // #1766 : une chaîne vide ne doit jamais être traitée comme un DSN par
+            // MailManager (isset($config['url']) est vrai même pour '' → le DSN vide
+            // écrase `transport` par null → « Unsupported mail transport [] »).
+            'url' => env('MAIL_URL') ?: null,
             'host' => env('MAIL_HOST', '127.0.0.1'),
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),

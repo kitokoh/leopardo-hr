@@ -52,6 +52,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // #1766 — MAIL_URL vide (clé présente dans .env.example) → normalisée à
+        // null avant toute résolution du MailManager (même config pré-cachée).
+        self::normalizeEmptyMailerUrls();
+
         // PA2-ARCH-008 : point d'enregistrement unique. Tous les Gate::policy(...)
         // vivent desormais exclusivement dans AuthServiceProvider::boot() ; ce
         // provider ne garde que les Gate::define(...) qui n'y sont pas dupliques.
@@ -212,6 +216,22 @@ class AppServiceProvider extends ServiceProvider
             'trial' => (int) config('security.plan_rate_limits.trial_per_minute', 60),
             default => (int) config('security.plan_rate_limits.default_per_minute', 100),
         };
+    }
+
+    /**
+     * #1766 — Une MAIL_URL vide (clé présente dans .env.example) ne doit pas être
+     * traitée comme un DSN par Illuminate\Mail\MailManager : isset($config['url'])
+     * est vrai même pour '' et le DSN vide écrase `transport` par null
+     * (« Unsupported mail transport [] »). On normalise à null au boot, y compris
+     * quand la config a été pré-cachée (config:cache) avec l'ancienne valeur.
+     */
+    public static function normalizeEmptyMailerUrls(): void
+    {
+        foreach (config('mail.mailers', []) as $name => $settings) {
+            if (is_array($settings) && array_key_exists('url', $settings) && $settings['url'] === '') {
+                config()->set("mail.mailers.{$name}.url", null);
+            }
+        }
     }
 
     private function resolveCompanyPlan(string $companyId): string
