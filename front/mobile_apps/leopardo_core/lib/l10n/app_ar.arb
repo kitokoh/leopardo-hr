@@ -324,6 +324,7 @@
   "taxRatesRejected": "تم رفض التعديل (عودة إلى المسودة).",
   "taxRatesRejectError": "تعذر رفض التعديل.",
   "taxRatesHistoryError": "تعذر تحميل السجل.",
+  "taxRatesStatusOnly": "قراءة فقط (إجراء المستأجر)",
   "taxSlabsTitle": "شرائح الضرائب حسب البلد",
   "taxSlabsSubtitle": "شرائح IRG/IRPP/ITSAS المستخدمة في محرك الرواتب. إدارة وطنية (مسؤول المنصة) ومحاكاة أثر فورية — دون حفظ أي شيء.",
   "taxSlabsThCountry": "البلد",

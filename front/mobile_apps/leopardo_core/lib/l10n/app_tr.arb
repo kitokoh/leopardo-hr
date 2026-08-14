@@ -324,6 +324,7 @@
   "taxRatesRejected": "Değişiklik reddedildi (taslağa döndü).",
   "taxRatesRejectError": "Değişiklik reddedilemedi.",
   "taxRatesHistoryError": "Geçmiş yüklenemedi.",
+  "taxRatesStatusOnly": "Salt okuma (tenant işlemi)",
   "taxSlabsTitle": "Ülkeye göre vergi dilimleri",
   "taxSlabsSubtitle": "Maaş motorunun kullandığı IRG/IRPP/ITSAS dilimleri. Ulusal yönetim (platform yöneticisi), gerçek zamanlı etki simülatörü — hiçbir şey kaydedilmez.",
   "taxSlabsThCountry": "Ülke",

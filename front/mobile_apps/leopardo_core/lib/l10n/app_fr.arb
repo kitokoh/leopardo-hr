@@ -324,6 +324,7 @@
   "taxRatesRejected": "Modification rejetée (retour en brouillon).",
   "taxRatesRejectError": "Impossible de rejeter la modification.",
   "taxRatesHistoryError": "Impossible de charger l'historique.",
+  "taxRatesStatusOnly": "Lecture seule (action tenant)",
   "taxSlabsTitle": "Barèmes fiscaux par pays",
   "taxSlabsSubtitle": "Barèmes IRG/IRPP/ITSAS utilisés par le moteur de paie. Gestion nationale (platform admin), simulateur d'impact en temps réel, sans persistance.",
   "taxSlabsThCountry": "Pays",
