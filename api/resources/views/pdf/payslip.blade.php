@@ -38,6 +38,11 @@
     @endif
 
     <div class="title">{{ __('pdf.payslip_title') }}</div>
+    @if (! empty($isRegularization))
+        <div class="period" style="font-weight:bold; color:#b91c1c;">
+            BULLETIN DE RÉGULARISATION — corrige le run #{{ $originalRunId ?? '' }}
+        </div>
+    @endif
     <div class="period">{{ __('pdf.period') }} : {{ $slip->period_start->format('d/m/Y') }} — {{ $slip->period_end->format('d/m/Y') }}</div>
 
     <div class="info-grid">

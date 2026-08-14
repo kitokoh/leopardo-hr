@@ -46,6 +46,11 @@ class PayrollRun extends Model
     public const STATUS_LOCKED = 'locked';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_ERROR = 'error'; // async batch job failed
+
+    // Issue #1818 — type de run (standard vs régularisation d'un run clôturé).
+    public const TYPE_STANDARD = 'standard';
+    public const TYPE_REGULARIZATION = 'regularization';
+
     use BelongsToCompany;
 
     protected $fillable = [
@@ -53,6 +58,7 @@ class PayrollRun extends Model
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',
         'employee_count', 'calculated_at', 'validated_by', 'validated_at',
         'paid_at', 'locked_by', 'locked_at', 'notes',
+        'type', 'original_run_id', 'reason',
     ];
 
     protected $casts = [
@@ -73,6 +79,16 @@ class PayrollRun extends Model
     public function paySlips(): HasMany
     {
         return $this->hasMany(PaySlip::class, 'payroll_run_id');
+    }
+
+    /**
+     * Run clôturé corrigé par cette régularisation (issue #1818).
+     *
+     * @return BelongsTo<PayrollRun, $this>
+     */
+    public function originalRun(): BelongsTo
+    {
+        return $this->belongsTo(PayrollRun::class, 'original_run_id');
     }
 
     /** @return BelongsTo<Employee, $this> */

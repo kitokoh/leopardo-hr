@@ -79,6 +79,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payroll-runs/{payrollRun}/lock', [PayrollRunController::class, 'lock'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/unlock', [PayrollRunController::class, 'unlock'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/cancel', [PayrollRunController::class, 'cancel'])->whereNumber('payrollRun');
+        // Issue #1818 — bulletins rétroactifs / régularisations.
+        Route::post('/payroll-runs/{payrollRun}/regularize', [PayrollRunController::class, 'regularize'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/regularizations', [PayrollRunController::class, 'regularizations'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/summary', [PayrollRunController::class, 'summary'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/anomalies', [PayrollRunController::class, 'anomalies'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/export', [PayrollRunController::class, 'export'])->whereNumber('payrollRun');

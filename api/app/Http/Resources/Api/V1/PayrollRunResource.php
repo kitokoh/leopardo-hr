@@ -22,6 +22,10 @@ class PayrollRunResource extends JsonResource
             'period_start' => $this->period_start?->toDateString(),
             'period_end' => $this->period_end?->toDateString(),
             'status' => $this->status,
+            // Issue #1818 — régularisation (type + run original + motif).
+            'type' => $this->type,
+            'original_run_id' => $this->original_run_id,
+            'reason' => $this->reason,
             'total_gross' => $this->total_gross,
             'total_deductions' => $this->total_deductions,
             'total_net' => $this->total_net,

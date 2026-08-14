@@ -17,10 +17,12 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
+use App\Modules\Payroll\Infrastructure\Services\PayrollRegularizationService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PayrollRunController extends Controller
@@ -227,6 +229,58 @@ class PayrollRunController extends Controller
         }
 
         return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
+    }
+
+    /**
+     * DZ-DEPTH (#1818) — régulariser un run clôturé : crée un run
+     * `type=regularization` (draft) sur la même période, lié à l'original.
+     * Le motif est obligatoire et tracé (audit). Le run original n'est
+     * JAMAIS modifié.
+     */
+    public function regularize(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:1000'],
+        ]);
+
+        try {
+            $regularization = app(PayrollRegularizationService::class)
+                ->createRegularization($payrollRun, $actor, $validated['reason']);
+        } catch (RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return (new PayrollRunResource($regularization))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * DZ-DEPTH (#1818) — liste les régularisations liées à un run.
+     */
+    public function regularizations(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        return PayrollRunResource::collection(
+            app(PayrollRegularizationService::class)->regularizationsFor($payrollRun)
+        )->response();
     }
 
     public function summary(Request $request, PayrollRun $payrollRun): JsonResponse
