@@ -72,7 +72,7 @@ class BankExportGenerator
                 ->first();
         }
 
-        $metadata = $company?->metadata ?? [];
+        $metadata = $company->metadata ?? [];
 
         return [
             'iban' => is_string($metadata['bank']['iban'] ?? null) && $metadata['bank']['iban'] !== ''
@@ -84,6 +84,7 @@ class BankExportGenerator
         ];
     }
 
+    /** @param Collection<int, \App\Modules\Payroll\Domain\Models\PaySlip> $slips */
     private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency): string
     {
         $bank = $this->companyBankDetails($run);
@@ -158,7 +159,7 @@ class BankExportGenerator
         $xml .= '      <NbOfTxs>'.$nbTransactions.'</NbOfTxs>'."\n";
         $xml .= '      <CtrlSum>'.number_format($totalAmount, 2, '.', '').'</CtrlSum>'."\n";
         $xml .= '      <ReqdExctnDt>'.now()->addWeekdays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
-        $xml .= '      <Dbtr><Nm>'.$this->xmlEscape($run->company?->name ?? 'Leopardo RH').'</Nm></Dbtr>'."\n";
+        $xml .= '      <Dbtr><Nm>'.$this->xmlEscape($run->company->name ?? 'Leopardo RH').'</Nm></Dbtr>'."\n";
         $xml .= '      <DbtrAcct><Id><IBAN>'.$this->xmlEscape($companyIban).'</IBAN></Id></DbtrAcct>'."\n";
         $xml .= '      <DbtrAgt><FinInstnId><BIC>'.$this->xmlEscape($companyBic).'</BIC></FinInstnId></DbtrAgt>'."\n";
 

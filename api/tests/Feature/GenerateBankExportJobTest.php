@@ -133,6 +133,7 @@ class GenerateBankExportJobTest extends TestCase
         $this->assertSame(BankExport::STATUS_GENERATED, $export->status);
         $this->assertNull($export->error_message);
 
+        $this->assertNotNull($export->file_path, 'Expected a generated file path.');
         $content = Storage::disk('local')->get($export->file_path);
         $this->assertIsString($content);
         $this->assertStringContainsString(

@@ -165,7 +165,7 @@ class UserAuthTest extends TestCase
             ->assertOk()
             ->assertJsonPath('status', 'ok');
 
-        $this->assertTrue(Hash::check('new-pass-123', $user->fresh()->password_hash));
+        $this->assertTrue(Hash::check('new-pass-123', (string) $user->fresh()?->password_hash));
     }
 
     public function test_logout_revokes_current_token(): void
