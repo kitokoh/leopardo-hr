@@ -91,4 +91,61 @@ class SenegalRulesUnitTest extends TestCase
 
         self::assertSame(90000.0, 300000.0 * 0.30);
     }
+
+    /**
+     * Issue #1934 — mécanisme légal « max(IR, TRIMF) » : le salarié SN paie
+     * le plus élevé des deux (le TRIMF est un minimum représentatif de
+     * l'impôt, docs/payroll/SN_COMPLIANCE.md §3). La règle SN override
+     * combineMinimumFiscalTax() ; les autres pays restent additifs (CI :
+     * IR + CN).
+     */
+    public function test_combine_minimum_fiscal_tax_max_not_cumulative(): void
+    {
+        // Sous le seuil TRIMF : TRIMF gagne (brut 100 000 → IR 2 380 < TRIMF 5 400).
+        self::assertSame(5400.0, $this->sn()->combineMinimumFiscalTax(2380.0, 5400.0));
+        // Au-dessus : IR gagne (brut 250 000 → IR 25 300 > TRIMF 9 000).
+        self::assertSame(25300.0, $this->sn()->combineMinimumFiscalTax(25300.0, 9000.0));
+        // Égalité : IR conservé (>=).
+        self::assertSame(2700.0, $this->sn()->combineMinimumFiscalTax(2700.0, 2700.0));
+    }
+
+    /**
+     * Issue #1934 — golden : net du bulletin SN via le noyau commun
+     * (computeNetBreakdown) avec le mécanisme max(IR, TRIMF).
+     * Cas « sous le seuil » (TRIMF > IR) et « au-dessus du seuil » (IR > TRIMF).
+     */
+    public function test_golden_sn_net_with_max_ir_trimf(): void
+    {
+        $calculator = new \App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+
+        // Brut 60 000 — IPRES salariale 5,6 % = 3 360 ; IR = 0 (annuel
+        // 463 680 < 630 000, abattement 30 % du brut) ; TRIMF 2 700 →
+        // déductions = 3 360 + max(0, 2 700) = 6 060 → net 53 940.
+        $b60 = $calculator->computeNetBreakdown(60000.0, $this->sn());
+        self::assertSame(6060.0, $b60['base_deductions']);
+        self::assertSame(53940.0, $b60['net_salary']);
+
+        // Brut 100 000 — IPRES 5 600 ; IR 2 380 < TRIMF 5 400 →
+        // déductions = 5 600 + 5 400 = 11 000 → net 89 000.
+        $b100 = $calculator->computeNetBreakdown(100000.0, $this->sn());
+        self::assertSame(11000.0, $b100['base_deductions']);
+        self::assertSame(89000.0, $b100['net_salary']);
+
+        // Brut 250 000 — IPRES 14 000 ; IR 25 300 > TRIMF 9 000 →
+        // déductions = 14 000 + 25 300 = 39 300 → net 210 700.
+        $b250 = $calculator->computeNetBreakdown(250000.0, $this->sn());
+        self::assertSame(39300.0, $b250['base_deductions']);
+        self::assertSame(210700.0, $b250['net_salary']);
+    }
+
+    /**
+     * Issue #1934 — les autres pays restent ADDITIFS (pas de changement de
+     * comportement hors SN) : CI → IR + CN.
+     */
+    public function test_other_countries_remain_additive(): void
+    {
+        $ci = new \App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules('CI');
+
+        self::assertSame(4000.0, $ci->combineMinimumFiscalTax(3000.0, 1000.0));
+    }
 }

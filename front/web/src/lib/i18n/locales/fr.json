@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-05-07T20:45:00Z",
+  "_updated_at": "2026-08-14T14:30:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -72,7 +72,21 @@
         "en-GB": "Anglais (Royaume-Uni)"
       }
     },
-    "or": "ou"
+    "or": "ou",
+    "countries": {
+      "DZ": "Algérie",
+      "CM": "Cameroun",
+      "CI": "Côte d'Ivoire",
+      "SN": "Sénégal",
+      "MA": "Maroc",
+      "TN": "Tunisie",
+      "FR": "France",
+      "TR": "Turquie",
+      "CG": "Congo",
+      "GA": "Gabon",
+      "BF": "Burkina Faso",
+      "ML": "Mali"
+    }
   },
   "modules": {
     "attendance": "Pointage",
@@ -469,7 +483,8 @@
     "approve_error": "Impossible d'approuver la modification.",
     "rejected": "Modification rejetée (retour en brouillon).",
     "reject_error": "Impossible de rejeter la modification.",
-    "history_error": "Impossible de charger l'historique."
+    "history_error": "Impossible de charger l'historique.",
+    "status_only": "Lecture seule (action tenant)"
   },
   "tax_slabs": {
     "title": "Barèmes fiscaux par pays",
@@ -506,7 +521,19 @@
     "sim_tax": "Impôt",
     "sim_net": "Net",
     "sim_base": "Assiette",
-    "sim_slab_tax": "Impôt tranche"
+    "sim_slab_tax": "Impôt tranche",
+    "load_error": "Impossible de charger le barème.",
+    "save_error": "Impossible d'enregistrer la tranche.",
+    "saved": "Tranche mise à jour.",
+    "created": "Tranche créée.",
+    "deleted": "Tranche supprimée.",
+    "delete_error": "Impossible de supprimer.",
+    "delete_confirm": "Supprimer la tranche « {name} » ?",
+    "reset_confirm": "Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.",
+    "reset_done": "Barème réinitialisé.",
+    "reset_error": "Réinitialisation impossible.",
+    "default_name": "{country} tranche légale",
+    "sim_error": "Simulation impossible."
   },
   "social_contrib": {
     "title": "Cotisations sociales par pays",
@@ -539,6 +566,13 @@
     "sim_employee": "Cotisations salariales",
     "sim_employer": "Cotisations patronales",
     "sim_tax": "Impôt",
-    "total_cost": "Coût total employeur"
+    "total_cost": "Coût total employeur",
+    "load_error": "Impossible de charger les cotisations.",
+    "save_error": "Impossible d'enregistrer la cotisation.",
+    "saved": "Cotisation mise à jour.",
+    "created": "Cotisation créée.",
+    "deleted": "Cotisation supprimée.",
+    "delete_error": "Suppression impossible.",
+    "delete_confirm": "Supprimer « {name} » ?"
   }
 }
