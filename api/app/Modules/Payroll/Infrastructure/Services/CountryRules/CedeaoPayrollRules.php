@@ -271,31 +271,29 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        // CI (#1825) : CNSS avec plafond statutaire 1 647 315 XOF/mois sur la
-        // retraite et la famille ; l'AT (2 %) n'est pas plafonné. Les autres
-        // cinq membres CEDEAO restent sur le placeholder (non plafonné)
-        // jusqu'à leurs propres issues (BF/ML : #1829).
+        // CI (#1825/#1913) : la CNPS distingue les plafonds par branche.
+        // Retraite : 1 647 315 XOF/mois ; prestations familiales et AT/MP :
+        // 70 000 XOF/mois. Les trois assiettes ne doivent donc pas partager
+        // le plafond retraite. Source : guide officiel CNPS, page Employeur.
         if ($this->memberCountryCode === 'CI') {
-            $cap = 1647315.0;
+            $retirementCap = 1647315.0;
+            $familyAndAtCap = 70000.0;
 
             return [
-                'employee' => $this->computeContribution($grossSalary, 'CNSS_CI_RET_EMP', 3.2, $cap),
-                // Somme arrondie à 2 décimales : chaque cotisation est déjà
-                // arrondie individuellement et l'addition de flottants peut
-                // dériver (ex. 74 129,18 + 94 720,61 + 60 000 → ...9799).
+                'employee' => $this->computeContribution($grossSalary, 'CNSS_CI_RET_EMP', 3.2, $retirementCap),
+                // Chaque contribution est arrondie avant addition afin de
+                // conserver la stabilité des goldens et des exports CSV.
                 'employer' => round(
-                    $this->computeContribution($grossSalary, 'CNSS_CI_RET_PAT', 4.5, $cap)
-                        + $this->computeContribution($grossSalary, 'CNSS_CI_FAM_PAT', 5.75, $cap)
-                        + $this->computeContribution($grossSalary, 'CNSS_CI_AT_PAT', 2.0, null),
+                    $this->computeContribution($grossSalary, 'CNSS_CI_RET_PAT', 4.5, $retirementCap)
+                        + $this->computeContribution($grossSalary, 'CNSS_CI_FAM_PAT', 5.75, $familyAndAtCap)
+                        + $this->computeContribution($grossSalary, 'CNSS_CI_AT_PAT', 2.0, $familyAndAtCap),
                     2
                 ),
             ];
         }
 
-        // ZONE-INFRA (#1820): Côte d'Ivoire (CI) statutory CNSS ceiling
-        // 1 647 315 XOF/month is applied via computeContribution(); the
-        // other five CEDEAO members stay on the placeholder (uncapped)
-        // rates until their own member-state issues land (BF/ML: #1829).
+        // ZONE-INFRA (#1820): les autres membres CEDEAO conservent leurs
+        // assiettes propres jusqu'à leur validation réglementaire dédiée.
         if ($this->memberCountryCode === 'BF') {
             // CNSS Burkina Faso (issue #1829) : retraite salariale 5,5 % +
             // patronale 6,5 % + famille 7,0 % plafonnées à 900 000 XOF/mois,

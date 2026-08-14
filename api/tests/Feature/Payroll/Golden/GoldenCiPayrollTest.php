@@ -133,28 +133,41 @@ class GoldenCiPayrollTest extends TestCase
 
     public function test_golden_ci_plafond_cnss_1647315(): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §2), brut = plafond CNSS 1 647 315 :
+        // Calcul manuel (CI_COMPLIANCE.md §4), brut = plafond retraite
+        // 1 647 315 : famille et AT restent plafonnées séparément à 70 000.
         //   CNSS salariale = 1 647 315 × 3,2 % = 52 714,08
-        //   Patronale = 74 129,18 + 94 720,61 + 32 946,30 (AT 2 %) = 201 796,09
+        //   Patronale = 74 129,18 + 4 025,00 + 1 400,00 = 79 554,18
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(1647315.0);
 
         $this->assertSame(52714.08, $charges['employee']);
-        $this->assertSame(201796.09, $charges['employer']);
+        $this->assertSame(79554.18, $charges['employer']);
     }
 
     public function test_golden_ci_au_dela_du_plafond_2000000(): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §2 — exemple documenté), brut 2 000 000 :
+        // Calcul manuel (CI_COMPLIANCE.md §4), brut 2 000 000 :
         //   salariale = 1 647 315 × 3,2 % = 52 714,08 (plafonné)
-        //   patronale = 74 129,18 + 94 720,61 + 2 000 000 × 2 % = 208 849,79
+        //   patronale = 74 129,18 + 4 025,00 + 1 400,00 = 79 554,18
+        //   Les branches famille/AT ne dérivent plus avec le brut.
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(2000000.0);
 
         $this->assertSame(52714.08, $charges['employee']);
-        $this->assertSame(208849.79, $charges['employer']);
+        $this->assertSame(79554.18, $charges['employer']);
+    }
+
+    public function test_golden_ci_family_and_at_caps_are_independent_from_retirement_cap(): void
+    {
+        $rules = $this->rules();
+
+        $atRetirementCap = $rules->calculateSocialCharges(1647315.0);
+        $aboveAllCaps = $rules->calculateSocialCharges(3000000.0);
+
+        self::assertSame($atRetirementCap['employer'], $aboveAllCaps['employer']);
+        self::assertSame(79554.18, $aboveAllCaps['employer']);
     }
 
     public function test_golden_ci_cn_sous_seuil_49000(): void

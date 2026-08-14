@@ -22,7 +22,7 @@ use Tests\TestCase;
  *   IPRES T1 patronale  = min(brut, 432 000) × 8,4 %
  *   IPRES T2 cadres     = (min(brut, 2 160 000) − 432 000) × 2,4 % (sal.)
  *                        / × 3,6 % (pat.), si brut > 432 000
- *   CSS familiale 3 % + AT 1 % + CFCE 3 % (patronal, non plafonnés)
+ *   CSS familiale 3 % + AT 1 % plafonnées à 63 000 XOF + CFCE 3 %
  *   IR      = progressif annuel / 12 sur assiette = (brut − IPRES sal.)
  *            − abattement 30 % du BRUT (non plafonné), appliqué par
  *            SenegalPayrollRules::calculateIncomeTax (SN_COMPLIANCE §1/§6)
@@ -62,7 +62,7 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(100000.0);
 
         $this->assertSame(5600.0, $charges['employee']);
-        $this->assertSame(15400.0, $charges['employer']);
+        $this->assertSame(13920.0, $charges['employer']);
 
         $base = 100000.0 - $charges['employee'];
         $this->assertSame(2380.0, $rules->calculateIncomeTax($base, 12, 100000.0));
@@ -82,7 +82,7 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(250000.0);
 
         $this->assertSame(14000.0, $charges['employee']);
-        $this->assertSame(38500.0, $charges['employer']);
+        $this->assertSame(31020.0, $charges['employer']);
 
         $base = 250000.0 - $charges['employee'];
         $this->assertSame(25300.0, $rules->calculateIncomeTax($base, 12, 250000.0));
@@ -108,13 +108,13 @@ class GoldenSnPayrollTest extends TestCase
         // Calcul manuel (SN_COMPLIANCE.md §4/§4bis), brut 600 000 :
         //   T1 = 24 192 · T2 = (600 000 − 432 000) × 2,4 % = 4 032
         //   → salariale 28 224 · Patronal : 36 288 (T1) + 6 048 (T2)
-        //     + 18 000 + 6 000 + 18 000 (CSS/AT/CFCE) = 84 336
+        //     + 1 890 + 630 + 18 000 (CSS/AT/CFCE) = 62 856
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(600000.0);
 
         $this->assertSame(28224.0, $charges['employee']);
-        $this->assertSame(84336.0, $charges['employer']);
+        $this->assertSame(62856.0, $charges['employer']);
     }
 
     public function test_golden_sn_cadre_moyen_t2_1000000(): void
@@ -127,7 +127,7 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(1000000.0);
 
         $this->assertSame(37824.0, $charges['employee']);
-        $this->assertSame(126736.0, $charges['employer']);
+        $this->assertSame(89256.0, $charges['employer']);
         $this->assertSame(36000.0, $rules->calculateBracketTax(1000000.0));
     }
 
@@ -140,20 +140,39 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(2160000.0);
 
         $this->assertSame(65664.0, $charges['employee']);
-        $this->assertSame(249696.0, $charges['employer']);
+        $this->assertSame(165816.0, $charges['employer']);
     }
 
     public function test_golden_sn_haut_salaire_t2_plafonne_3000000(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §4bis), brut 3 000 000 :
         //   T2 plafonné à 2 160 000 → salariale identique à 2 160 000 (65 664)
-        //   Patronal : 36 288 + 62 208 (T2) + 90 000 + 30 000 + 90 000 = 308 496
+        //   Patronal : 36 288 + 62 208 (T2) + 1 890 + 630 + 90 000 = 191 016
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(3000000.0);
 
         $this->assertSame(65664.0, $charges['employee']);
-        $this->assertSame(308496.0, $charges['employer']);
+        $this->assertSame(191016.0, $charges['employer']);
+    }
+
+    public function test_golden_sn_css_family_and_at_caps_are_independent_from_ipres_t2(): void
+    {
+        $rules = $this->rules();
+
+        $atT2Ceiling = $rules->calculateSocialCharges(2160000.0);
+        $aboveAllCaps = $rules->calculateSocialCharges(3000000.0);
+
+        self::assertSame(165816.0, $atT2Ceiling['employer']);
+        self::assertSame(191016.0, $aboveAllCaps['employer']);
+        self::assertSame(
+            101016.0,
+            $atT2Ceiling['employer'] - (2160000.0 * 3.0 / 100),
+        );
+        self::assertSame(
+            101016.0,
+            $aboveAllCaps['employer'] - (3000000.0 * 3.0 / 100),
+        );
     }
 
     #[DataProvider('trimfProvider')]
@@ -189,8 +208,8 @@ class GoldenSnPayrollTest extends TestCase
 
         $charges = $rules->calculateSocialCharges(250000.0);
 
-        // Patronal = T1 21 000 + CSS 7 500 + AT 2 500 + CFCE 7 500 = 38 500.
-        $this->assertSame(38500.0, $charges['employer']);
+        //   Patronal = T1 21 000 + CSS 1 890 + AT 630 + CFCE 7 500 = 31 020.
+        $this->assertSame(31020.0, $charges['employer']);
     }
 
     public function test_golden_sn_abattement_30_pct(): void
