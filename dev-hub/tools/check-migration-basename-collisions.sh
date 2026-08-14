@@ -53,6 +53,18 @@ for DIR in "${MIGRATIONS_DIR}"/*/; do
   fi
 done
 
+# --- 3. Basenames identiques À TRAVERS l'arbre (idée #1974 : ensemble
+# fusionnable par un futur `migrate --path` multiple ou un changement de
+# chargement — la garde reste verte aujourd'hui, aucun doublon) ---
+CROSS_DUPES="$(find "${MIGRATIONS_DIR}" -name '*.php' -printf '%f\n' | sort | uniq -d || true)"
+if [[ -n "${CROSS_DUPES}" ]]; then
+  echo "::error::Basenames dupliqués à travers l'arbre des migrations :"
+  echo "${CROSS_DUPES}" | sed 's/^/  /'
+  echo "  → deux répertoires portent le même fichier de migration : si ces chemins"
+  echo "    sont migrés ensemble (migrate --path multiple), Laravel en ignorera un."
+  FAIL=1
+fi
+
 if [[ "${FAIL}" -eq 1 ]]; then
   echo ""
   echo "Laravel indexe les migrations par basename (getMigrationFiles → keyBy) :"
