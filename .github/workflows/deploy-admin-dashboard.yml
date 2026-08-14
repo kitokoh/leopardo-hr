@@ -68,7 +68,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages (leo-admin)
         if: ${{ env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != '' }}
-        uses: cloudflare/wrangler-action@daa9d8682aeee1cc1db0c836b85cec21c2f0d58a # v3.14.1
+        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
         with:
           apiToken: ${{ env.CF_API_TOKEN }}
           accountId: ${{ env.CF_ACCOUNT_ID }}
