@@ -145,7 +145,6 @@ class CountryIsolationMatrixTest extends TestCase
             // barème est ignoré et le test échouait (rate 0.0 au lieu de 5.0).
             'status' => TaxSlab::STATUS_ACTIVE,
             'effective_from' => '2026-01-01',
-            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         $calculator = new PayrollCalculator;
