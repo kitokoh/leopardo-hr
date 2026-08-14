@@ -35,7 +35,8 @@ return new class extends Migration
             $table->uuid('correlation_id')->unique();
             // Tenant : NULL pour les calculs plateforme (simulation super-admin
             // sur règles nationales) ; sinon UUID du tenant propriétaire.
-            $table->uuid('company_id')->nullable()->index();
+            // (l'index (company_id, created_at) couvre les requêtes par tenant)
+            $table->uuid('company_id')->nullable();
             // Acteur : 'user' (employé manager ou super-admin) ou 'job'
             // (calcul asynchrone ProcessPayrollBatchJob / commande).
             $table->string('actor_type', 20)->default('user');
