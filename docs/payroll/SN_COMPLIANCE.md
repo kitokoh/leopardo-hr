@@ -126,6 +126,27 @@ Fixes : 1ᵉʳ janvier, 4 avril, 1ᵉʳ mai, 15 août, 1ᵉʳ novembre, 25 déce
 fêtes islamiques mobiles (Korité, Tabaski, Gamou, Taamhrit) via table
 `islamic_calendar` (#1812). Gestion dynamique via #1811.
 
+## 12. Fiche de validation experte (issue #1912 — bloquant avant « production »)
+
+`SenegalPayrollRules::confidenceLevel()` reste `pilot` tant que chaque
+élément ci-dessous n'est pas validé par un expert-comptable sénégalais
+(template : `docs/payroll/_TEMPLATE_VALIDATION_EXPERTE.md` ; registre :
+`docs/payroll/VALIDATION_EXPERTE.md`) :
+
+| # | Règle | Valeur pilote implémentée | À valider |
+|---|---|---|---|
+| 1 | TRIMF (6 tranches forfaitaires) | 900 → 18 000 XOF/mois (barème §3) | tranches + seuils |
+| 2 | IPRES T2 cadres (2,4 % / 3,6 %) | tranche 432 001–2 160 000, déclenchée si brut > 432 000 | seuil de déclenchement (catégorie réelle) |
+| 3 | CSS AT 1 % | plafond assiette 63 000 XOF/mois | taux selon risque + canal de déclaration (mensuel vs annuel) |
+| 4 | CFCE 3 % | masse salariale brute non plafonnée | taux + canal (trimestriel DGI) + périmètre fichier IPRES/CSS |
+| 5 | Abattement frais pro 30 % | brut non plafonné (§7) | assiette exacte (plafonnée ?) |
+| 6 | Plafond CSS famille 63 000 | 3 % sur min(brut, 63 000) (§6) | 63 000 vs 80 000 (décision CSS 2025 contestée) |
+| 7 | Périmètre déclaration IPRES/CSS (§11) | AT + CFCE exclus par conception | confirmation expert |
+
+**Critère de sortie #1912** : fiche signée → `confidenceLevel()` → `production`
++ `verification_date`/source dans ce fichier + `complianceWarning()` levé
+(suivi #1872).
+
 ## Procédure de mise à jour des taux
 
 1. Valider les nouveaux taux avec un expert-comptable sénégalais.
