@@ -185,20 +185,21 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame($expectedItsas, $rules->calculateIncomeTax($gross - $cnss, 12, $gross));
     }
 
+    /** @return array<string, array<int, mixed>> */
     public static function itsasProvider(): array
     {
         return [
-            'tranche 0 % (annuel ≤ 600k)'     => [50000.0, 1600.0, 0.0],
+            'tranche 0 % (annuel ≤ 600k)' => [50000.0, 1600.0, 0.0],
             // 150 000 − 4 800 − 30 000 (20 % du brut) = 115 200 → annuel 1 382 400
             // → 2 % sur 782 400 = 15 648 → mensuel 1 304,00
-            'tranche 2 % (600k–2M)'           => [150000.0, 4800.0, 1304.00],
+            'tranche 2 % (600k–2M)' => [150000.0, 4800.0, 1304.00],
             // 300 000 − 9 600 − 60 000 = 230 400 → annuel 2 764 800 → 28 000 (2 %)
             // + 764 800 × 21 % = 160 608 → 188 608 → mensuel 15 717,33
-            'tranche 21 % (2M–5M)'            => [300000.0, 9600.0, 15717.33],
-            'tranche 24,5 % (5M–10M)'         => [700000.0, 22400.0, 84462.00],
+            'tranche 21 % (2M–5M)' => [300000.0, 9600.0, 15717.33],
+            'tranche 24,5 % (5M–10M)' => [700000.0, 22400.0, 84462.00],
             // 1 200 000 − 38 400 − 240 000 = 921 600 → annuel 11 059 200 → 28 000
             // + 630 000 + 1 225 000 + 1 059 200 × 29 % = 2 190 168 → mensuel 182 514,00
-            'tranche 29 % (> 10M)'            => [1200000.0, 38400.0, 182514.00],
+            'tranche 29 % (> 10M)' => [1200000.0, 38400.0, 182514.00],
         ];
     }
 
@@ -239,12 +240,13 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
     }
 
+    /** @return array<string, array<int, mixed>> */
     public static function preavisProvider(): array
     {
         return [
-            'moins de 5 ans'  => [2.0, 30.0],
-            '5 à 10 ans'      => [7.0, 60.0],
-            '10 ans et plus'  => [12.0, 90.0],
+            'moins de 5 ans' => [2.0, 30.0],
+            '5 à 10 ans' => [7.0, 60.0],
+            '10 ans et plus' => [12.0, 90.0],
         ];
     }
 
@@ -252,13 +254,13 @@ class GoldenCiPayrollTest extends TestCase
     {
         // Calcul manuel (CI_COMPLIANCE.md) : prorata entrée le 15 → 12,06 j/22
         // (même mécanique F-05 que DZ) : 22 × 17/31 = 12,06.
-        $this->assertSame(32890.91, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 12.06));
+        $this->assertSame(32890.91, (new PayrollCalculator)->computeProratedBase(60000.0, 22.0, 12.06));
     }
 
     public function test_golden_ci_prorata_sortie_10(): void
     {
         // Calcul manuel : sortie le 10 → 7,10 j/22 : 22 × 10/31 = 7,10.
-        $this->assertSame(19363.64, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 7.10));
+        $this->assertSame(19363.64, (new PayrollCalculator)->computeProratedBase(60000.0, 22.0, 7.10));
     }
 
     public function test_golden_ci_cnss_employee_zero_on_zero_salary(): void

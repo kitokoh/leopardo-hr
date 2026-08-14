@@ -166,15 +166,18 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame($expectedTrimf, $rules->calculateBracketTax($gross));
     }
 
+    /**
+     * @return array<string, array{0: float, 1: float}>
+     */
     public static function trimfProvider(): array
     {
         return [
-            'tranche 1 (≤ 25k)'     => [25000.0, 900.0],
-            'tranche 2 (25k-75k)'   => [75000.0, 2700.0],
-            'tranche 3 (75k-150k)'  => [150000.0, 5400.0],
+            'tranche 1 (≤ 25k)' => [25000.0, 900.0],
+            'tranche 2 (25k-75k)' => [75000.0, 2700.0],
+            'tranche 3 (75k-150k)' => [150000.0, 5400.0],
             'tranche 4 (150k-350k)' => [350000.0, 9000.0],
             'tranche 5 (350k-700k)' => [700000.0, 18000.0],
-            'tranche 6 (> 700k)'    => [800000.0, 36000.0],
+            'tranche 6 (> 700k)' => [800000.0, 36000.0],
         ];
     }
 
@@ -220,7 +223,7 @@ class GoldenSnPayrollTest extends TestCase
     {
         // Calcul manuel (SN_COMPLIANCE.md) : prorata entrée le 10 → 22 × 22/31
         // = 15,61 j (mécanique F-05). Base 250 000 × 15,61/22 = 177 386,36.
-        $this->assertSame(177386.36, (new PayrollCalculator())->computeProratedBase(250000.0, 22.0, 15.61));
+        $this->assertSame(177386.36, (new PayrollCalculator)->computeProratedBase(250000.0, 22.0, 15.61));
     }
 
     public function test_golden_sn_hs_tiers(): void
@@ -285,6 +288,9 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame($expectedIr, $rules->calculateIncomeTax($base, 12, $gross));
     }
 
+    /**
+     * @return array<string, array{0: float, 1: float}>
+     */
     public static function irProvider(): array
     {
         return [

@@ -180,6 +180,7 @@ class PublicHolidayServiceTest extends TestCase
         $this->assertContains('2026-05-28', $dates); // islamique jour 2
 
         $islamic = collect($holidays)->firstWhere('date', '2026-05-27');
+        $this->assertNotNull($islamic);
         $this->assertSame('islamic', $islamic['holiday_type']);
 
         // workingDaysBetween intègre les deux fériés islamiques.
@@ -218,5 +219,8 @@ class PublicHolidayServiceTest extends TestCase
         // Les tenants d'autres pays gardent leur cache (pas d'invalidation croisée).
         $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
     }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 }
