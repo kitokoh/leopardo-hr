@@ -6304,6 +6304,32 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/pay-slips/{paySlip}/document:
+    get:
+      tags: ["Me"]
+      summary: "Telecharger le document d'un de mes bulletins (PDF)"
+      description: "Retourne le fichier du bulletin (pdf_path) s'il a ete genere. 404 si le document n'existe pas encore (generation asynchrone) — le client peut reinterroger."
+      operationId: downloadMyPaySlipDocument
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier PDF"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/balance:
     get:
       tags: ["Me"]
@@ -7048,12 +7074,6 @@ paths:
       summary: "Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"
       description: "Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CM."
       operationId: downloadCnpsCmDeclaration
-  /payroll-runs/{payrollRun}/regularize:
-    post:
-      tags: ["Payroll Engine"]
-      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
-      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
-      operationId: regularizePayrollRun
       parameters:
         - name: payrollRun
           in: path
@@ -7066,6 +7086,26 @@ paths:
             text/csv:
               schema:
                 type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularize:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
+      description: "Crée un run type=regularization lié à un run verrouillé ou payé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seuls les runs `locked`/`paid` sont régularisables ; une seule régularisation active par original (422 sinon, #1942)."
+      operationId: regularizePayrollRun
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
       requestBody:
         required: true
         content:
@@ -16313,6 +16353,8 @@ components:
           type: string
           nullable: true
         status:
+          type: string
+          enum: [draft, calculating, processing, calculated, validated, paid, locked, cancelled, error]
         type:
           type: string
           enum: [standard, regularization]
@@ -16322,8 +16364,6 @@ components:
         reason:
           type: string
           nullable: true
-          type: string
-          enum: [draft, calculating, validated, cancelled]
         total_gross:
           type: number
           nullable: true

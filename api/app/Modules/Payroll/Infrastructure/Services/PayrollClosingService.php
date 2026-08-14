@@ -8,6 +8,8 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\ArchivePaySlipsToCabinetJob;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
+use App\Modules\Payroll\Application\Services\PayrollRegularizationService;
+use App\Modules\Payroll\Domain\Exceptions\PayrollRunHasRegularizationsException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Facades\DB;
@@ -159,6 +161,14 @@ class PayrollClosingService
         }
         if (trim($reason) === '') {
             throw new \RuntimeException('Une raison de déverrouillage est obligatoire (audit trail).');
+        }
+
+        // Issue #1942 : un original avec des régularisations actives ne peut
+        // PAS être déverrouillé — l'invariant « l'original n'est jamais
+        // modifié » (#1818) tomberait (le delta serait calculé sur un
+        // original en cours de mutation).
+        if ((new PayrollRegularizationService)->hasActiveRegularizations($run)) {
+            throw new PayrollRunHasRegularizationsException;
         }
 
         return DB::transaction(function () use ($run, $actor, $reason): PayrollRun {
