@@ -127,7 +127,7 @@ class PlatformCompanyController extends Controller
         $validated['country'] = strtoupper(trim($validated['country']));
         $countryDefaults = CountryDefaults::find($validated['country']);
         if ($countryDefaults === null) {
-            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_keys(CountryDefaults::all())).').';
+            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
             if ($request->expectsJson()) {
                 return new JsonResponse([
                     'message' => $message,
@@ -294,7 +294,7 @@ class PlatformCompanyController extends Controller
 
         $countryDefaults = CountryDefaults::find($validated['country']);
         if ($countryDefaults === null) {
-            $message = 'Le pays est invalide ou non supporte ('.implode(', ', array_keys(CountryDefaults::all())).').';
+            $message = 'Le pays est invalide ou non supporte ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
             if ($request->expectsJson()) {
                 return new JsonResponse([
                     'message' => $message,
@@ -306,8 +306,24 @@ class PlatformCompanyController extends Controller
         }
 
         // INVARIANT 9 : verrouillage du pays après création de données de paie.
-        $hasPayrollData = PayrollRun::query()->where('company_id', $company->id)->exists()
-            || SalaryStructure::query()->where('company_id', $company->id)->exists();
+        // Les tables `payroll_runs`/`salary_structures` vivent dans le schéma
+        // du TENANT (pas dans public) : bascule sur le search_path du tenant
+        // pour le check, puis RESTAURATION en `finally` (une session restée
+        // sur le schéma tenant fuirait vers les requêtes suivantes — même
+        // garde que `withTenantSearchPath()` de PlatformCompanyHealthService).
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $previousSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
+        $hasPayrollData = false;
+        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+        try {
+            $hasPayrollData = PayrollRun::query()->where('company_id', $company->id)->exists()
+                || SalaryStructure::query()->where('company_id', $company->id)->exists();
+        } finally {
+            DB::statement('SET search_path TO '.$previousSearchPath);
+        }
 
         if ($hasPayrollData) {
             $message = 'Le pays d'un tenant avec des donnees de paie (runs ou structures salariales) ne peut pas etre modifie (invariant 9). Purge/export prealable requis.';

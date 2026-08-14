@@ -1580,6 +1580,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/platform/companies", options);
     },
 
+    /** Reformer/choisir le pays legal d'un tenant (invariant 9) */
+    patchPlatformCompaniesByCompanyCountry(options = {}) {
+      return request("PATCH", "/platform/companies/{company}/country", options);
+    },
+
     /** Lire les feature flags d'une societe */
     getPlatformCompaniesByCompanyFeatures(options = {}) {
       return request("GET", "/platform/companies/{company}/features", options);
