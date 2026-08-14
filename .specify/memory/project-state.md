@@ -106,6 +106,24 @@
 
 ---
 
+
+---
+
+## Vague QA & durcissement 2026-08-14 (spec kit)
+
+> Vague `.specify/features/qa-hardening-wave-2026-08-14/` — test complet API/vues/boutons/logique.
+
+- **Suite backend** : 1 900+ tests exécutés localement (PHP 8.4 + PG 16 + Redis 7, env CI-like) — échecs unitaires payroll réalignés sur l'implémentation (caps #1913, ITS 2024 #1918, préavis CI #2264, pilot ML/BF #1829, exception typée #1868)
+- **Module `user`** : seul module à 0 test Feature → suite `tests/Feature/User/UserAuthTest.php` (10 tests)
+- **Export SEPA** : placeholders `PLACEHOLDER_*` supprimés — IBAN/BIC depuis `metadata.bank` du tenant, refus explicite sinon
+- **Web App** : boutons dashboard + détail bulletin + toggle thème carrières câblés
+- **Admin** : widgets Analytics + Super-Console + gestion partenaire + avatar câblés
+- **Mobile** : patterns interdits supprimés (3× `apiClient.dio.options`), `leopardo_marketing` compile
+- **Constats tracés** : #2251 SSO · #2252 push FCM · #2253 magic link · #2254 drift OpenAPI · #2255 fériés · #2256 mock admin · #2257 provider email · #2264 préavis CI
+- **Données mock restantes** : `UsersView.vue` + `AnalyticsView.vue` (admin) — voir #2256
+
+---
+
 ## Conventions de mise à jour de ce fichier
 
 - À chaque merge qui change l'état d'un pays ou d'un module → mettre à jour ce registre
@@ -116,4 +134,4 @@
 ---
 
 **Dernière mise à jour :** 2026-08-14
-**Mis à jour par :** Neo (Pulumi Agent)
+**Mis à jour par :** Agent QA (vague spec kit #2248)
