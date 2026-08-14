@@ -50,6 +50,7 @@ class SenegalRulesUnitTest extends TestCase
         self::assertContains('CFCE_SN_PAT', $codes);
 
         $cfce = collect($this->sn()->socialContributions())->firstWhere('code', 'CFCE_SN_PAT');
+        self::assertNotNull($cfce);
         self::assertSame('employer', $cfce['type']);
         self::assertSame(3.0, $cfce['rate']);
         self::assertNull($cfce['cap']);
