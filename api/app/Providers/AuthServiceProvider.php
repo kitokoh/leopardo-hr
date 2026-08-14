@@ -26,6 +26,9 @@ use App\Modules\Marketing\Domain\Models\SocialPost;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
@@ -45,6 +48,8 @@ use App\Policies\InvoicePolicy;
 use App\Policies\LoanPolicy;
 use App\Policies\OnboardingPolicy;
 use App\Policies\PayrollPolicy;
+use App\Policies\PublicHolidayPolicy;
+use App\Policies\TaxRatePolicy;
 use App\Policies\PositionPolicy;
 use App\Policies\RecruitmentPolicy;
 use App\Policies\SchedulePolicy;
@@ -90,6 +95,12 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(ExpenseClaim::class, ExpenseClaimPolicy::class);
         Gate::policy(PayrollRun::class, PayrollPolicy::class);
         Gate::policy(PaySlip::class, PayrollPolicy::class);
+        // Issue #1917 — taux légaux/barèmes + jours fériés : les contrôleurs
+        // admin/tenant passent désormais par des Policies Laravel (voir
+        // docs/security/RBAC_ROUTE_MATRIX.md, section Model Policies).
+        Gate::policy(TaxSlab::class, TaxRatePolicy::class);
+        Gate::policy(SocialContribution::class, TaxRatePolicy::class);
+        Gate::policy(PublicHoliday::class, PublicHolidayPolicy::class);
         Gate::policy(FeaturePlanMatrix::class, FeatureFlagPolicy::class);
         Gate::policy(OnboardingStep::class, OnboardingPolicy::class);
 

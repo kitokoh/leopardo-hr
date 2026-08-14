@@ -33,6 +33,10 @@ class PublicHolidayController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via PublicHolidayPolicy (SuperAdmin ou manager
+        // principal ; le scope company est résolu ci-dessous).
+        $this->authorize('viewAny', PublicHoliday::class);
+
         $countryCode = strtoupper((string) $request->string('country_code', 'DZ'));
         $year = $request->integer('year', (int) now()->year);
 
@@ -65,6 +69,10 @@ class PublicHolidayController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via PublicHolidayPolicy (SuperAdmin ou manager
+        // principal ; le scope company est résolu ci-dessous).
+        $this->authorize('create', PublicHoliday::class);
+
         $data = $this->validatePayload($request);
         $data['company_id'] = $this->companyScope($request);
         $this->assertUnique($data);
@@ -86,7 +94,9 @@ class PublicHolidayController extends Controller
     {
         /** @var PublicHoliday $holiday */
         $holiday = PublicHoliday::query()->findOrFail($publicHoliday);
-        $this->authorizeWrite($request, $holiday);
+        // Issue #1917 — authz via PublicHolidayPolicy (SuperAdmin : tous les
+        // fériés ; principal : uniquement les fériés d'entreprise de sa société).
+        $this->authorize('update', $holiday);
 
         $data = $this->validatePayload($request);
         $data['company_id'] = $holiday->company_id; // inchangé : le scope est verrouillé
@@ -109,7 +119,8 @@ class PublicHolidayController extends Controller
     {
         /** @var PublicHoliday $holiday */
         $holiday = PublicHoliday::query()->findOrFail($publicHoliday);
-        $this->authorizeWrite($request, $holiday);
+        // Issue #1917 — authz via PublicHolidayPolicy.
+        $this->authorize('delete', $holiday);
 
         $countryCode = $holiday->country_code;
         $year = (int) $holiday->year;
@@ -128,6 +139,11 @@ class PublicHolidayController extends Controller
 
     /**
      * Super-admin → NULL (national) ; principal → sa société.
+     *
+     * L'autorisation elle-même est portée par `PublicHolidayPolicy` (issue
+     * #1917) : cette méthode ne fait que résoudre le scope company ; le garde
+     * `abort(403)` ci-dessous est défensif (inatteignable une fois la policy
+     * passée) et préserve le comportement historique.
      */
     private function companyScope(Request $request): ?string
     {
@@ -139,25 +155,6 @@ class PublicHolidayController extends Controller
 
         if ($user instanceof Employee && $user->isPrincipal()) {
             return $user->company_id;
-        }
-
-        abort(403, __('errors.FORBIDDEN'));
-    }
-
-    private function authorizeWrite(Request $request, PublicHoliday $holiday): void
-    {
-        $user = $request->user();
-
-        if ($user instanceof SuperAdmin) {
-            return;
-        }
-
-        // principal : uniquement ses fériés d'entreprise ; jamais un national.
-        if ($user instanceof Employee
-            && $user->isPrincipal()
-            && $holiday->company_id !== null
-            && $holiday->company_id === $user->company_id) {
-            return;
         }
 
         abort(403, __('errors.FORBIDDEN'));

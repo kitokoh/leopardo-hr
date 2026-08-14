@@ -29,6 +29,9 @@ class RateValidationAdminController extends Controller
      */
     public function pending(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (réservé au SuperAdmin).
+        $this->authorize('viewAny', TaxSlab::class);
+
         $table = (string) $request->input('table', 'all');
 
         $items = [];
@@ -50,11 +53,12 @@ class RateValidationAdminController extends Controller
 
     public function approve(Request $request, string $table, int $id): JsonResponse
     {
-        $this->assertPlatformAdmin($request);
+        $model = $this->resolveModel($table, $id);
+        // Issue #1917 — authz via TaxRatePolicy (réservé au SuperAdmin).
+        $this->authorize('approve', $model);
 
         /** @var SuperAdmin $admin */
         $admin = $request->user();
-        $model = $this->resolveModel($table, $id);
 
         try {
             $this->validation->approve($model, $admin);
@@ -67,14 +71,14 @@ class RateValidationAdminController extends Controller
 
     public function reject(Request $request, string $table, int $id): JsonResponse
     {
-        $this->assertPlatformAdmin($request);
-
         $reason = (string) $request->input('reason', '');
         if (trim($reason) === '') {
             abort(422, 'Un motif de rejet est obligatoire.');
         }
 
         $model = $this->resolveModel($table, $id);
+        // Issue #1917 — authz via TaxRatePolicy (réservé au SuperAdmin).
+        $this->authorize('reject', $model);
 
         /** @var SuperAdmin $admin */
         $admin = $request->user();
@@ -99,13 +103,6 @@ class RateValidationAdminController extends Controller
         }
 
         abort(404, 'Table inconnue.');
-    }
-
-    private function assertPlatformAdmin(Request $request): void
-    {
-        if (! $request->user() instanceof SuperAdmin) {
-            abort(403, __('errors.FORBIDDEN'));
-        }
     }
 
     /**

@@ -21,11 +21,11 @@ class SocialContributionController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('viewAny', SocialContribution::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
         $query = SocialContribution::where('company_id', $actor->company_id);
 
@@ -42,11 +42,11 @@ class SocialContributionController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('create', SocialContribution::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
         // PA2-ARCH-004: uniqueness is scoped to (company_id, code,
         // effective_from) rather than a bare global code, so a new dated
@@ -96,11 +96,8 @@ class SocialContributionController extends Controller
 
     public function update(Request $request, SocialContribution $socialContribution): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('update', $socialContribution);
 
         // Issue #1813 : une ligne soumise/active ne se modifie plus directement.
         if ($socialContribution->status !== SocialContribution::STATUS_DRAFT) {
@@ -130,11 +127,8 @@ class SocialContributionController extends Controller
 
     public function destroy(Request $request, SocialContribution $socialContribution): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('delete', $socialContribution);
 
         // Issue #1813 : seules les lignes draft peuvent être supprimées.
         if ($socialContribution->status !== SocialContribution::STATUS_DRAFT) {
@@ -151,11 +145,12 @@ class SocialContributionController extends Controller
      */
     public function submit(Request $request, SocialContribution $socialContribution): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis ; l'isolation
+        // tenant 404 cross-company reste ci-dessous, comportement inchangé).
+        $this->authorize('submit', $socialContribution);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
         if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
             abort(404);
         }
@@ -174,11 +169,11 @@ class SocialContributionController extends Controller
      */
     public function history(Request $request, SocialContribution $socialContribution): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('history', $socialContribution);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
         if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
             abort(404);
         }

@@ -21,11 +21,11 @@ class TaxSlabController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('viewAny', TaxSlab::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
         // Scope to the authenticated employee's company for tenant isolation.
         // Without this filter, slabs from other tenants leak across companies.
@@ -40,11 +40,11 @@ class TaxSlabController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('create', TaxSlab::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
         $validated = $request->validate([
             'country_code' => ['required', 'string', 'size:2', new SupportedCountry], // #1951 contrat partagé
@@ -82,11 +82,12 @@ class TaxSlabController extends Controller
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis ; l'isolation
+        // tenant 404 cross-company reste ci-dessous, comportement inchangé).
+        $this->authorize('update', $taxSlab);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
         // Tenant isolation: reject cross-company access.
         if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
             abort(404);
@@ -122,11 +123,11 @@ class TaxSlabController extends Controller
 
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('delete', $taxSlab);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
         // Tenant isolation: reject cross-company access.
         if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
             abort(404);
@@ -147,11 +148,12 @@ class TaxSlabController extends Controller
      */
     public function submit(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis ; l'isolation
+        // tenant 404 cross-company reste ci-dessous, comportement inchangé).
+        $this->authorize('submit', $taxSlab);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
         if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
             abort(404);
         }
@@ -170,11 +172,11 @@ class TaxSlabController extends Controller
      */
     public function history(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Issue #1917 — authz via TaxRatePolicy (manager requis).
+        $this->authorize('history', $taxSlab);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
         if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
             abort(404);
         }
