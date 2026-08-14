@@ -219,8 +219,5 @@ class PublicHolidayServiceTest extends TestCase
         // Les tenants d'autres pays gardent leur cache (pas d'invalidation croisée).
         $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
     }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 }

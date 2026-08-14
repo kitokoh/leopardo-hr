@@ -6,7 +6,6 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
@@ -67,15 +66,7 @@ class EndOfContractService
         // vérifie GoldenDzEndOfContractRulesTest.
         $countryCode = $employee->company->country ?? 'DZ';
 
-<<<<<<< Updated upstream
         $rules = $this->calculator->getRules($countryCode);
-=======
-        try {
-            $rules = $this->calculator->getRules($countryCode);
-        } catch (UnsupportedCountryRulesException) {
-            $rules = $this->calculator->getRules('DZ');
-        }
->>>>>>> Stashed changes
 
         $breakdown = $this->calculator->computeFinalSettlement(
             monthlyBase: $monthlyBase,
