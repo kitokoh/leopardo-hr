@@ -9,7 +9,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
-use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
@@ -83,7 +82,7 @@ class PayrollSimulationController extends Controller
         // interdite sans confirmation explicite (jamais de présentation
         // comme bulletin certifié) ; l'acceptation est AUDITÉE.
         if ($rules->confidenceLevel() === 'placeholder') {
-            $acknowledged = (bool) ($validated['acknowledge_placeholder'] ?? false);
+            $acknowledged = $request->boolean('acknowledge_placeholder');
             if (! $acknowledged) {
                 return response()->json([
                     'message' => __('payroll.placeholder_acknowledge_required', ['country' => $countryCode]),
@@ -226,17 +225,6 @@ class PayrollSimulationController extends Controller
                 $input,
                 null,
                 PayrollCalculationAudit::STATUS_RULE_MISSING
-            );
-
-            throw $exception;
-        } catch (CountryRulesContextMismatchException $exception) {
-            $this->auditRecorder->recordSimulation(
-                $correlationId,
-                $companyId,
-                $countryCode,
-                $input,
-                null,
-                PayrollCalculationAudit::STATUS_VALIDATION_ERROR
             );
 
             throw $exception;

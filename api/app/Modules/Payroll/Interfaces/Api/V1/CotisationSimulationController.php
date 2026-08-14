@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationAuditRecorder;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
@@ -89,7 +90,7 @@ class CotisationSimulationController extends Controller
         // confirmation explicite ; l'acceptation est AUDITÉE (tenant, pays,
         // acteur) — jamais de secrets ni de données biométriques.
         if ($rules->confidenceLevel() === 'placeholder') {
-            $acknowledged = (bool) ($validated['acknowledge_placeholder'] ?? false);
+            $acknowledged = $request->boolean('acknowledge_placeholder');
             if (! $acknowledged) {
                 return response()->json([
                     'message' => __('payroll.placeholder_acknowledge_required', ['country' => $countryCode]),
