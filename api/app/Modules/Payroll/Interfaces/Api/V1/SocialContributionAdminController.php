@@ -72,9 +72,7 @@ class SocialContributionAdminController extends Controller
 
         $countryCode = strtoupper($validated['country_code']);
         $effectiveFrom = (string) $validated['effective_from'];
-        $effectiveTo = isset($validated['effective_to']) && $validated['effective_to'] !== null
-            ? (string) $validated['effective_to']
-            : null;
+        $effectiveTo = isset($validated['effective_to']) ? (string) $validated['effective_to'] : null;
 
         // Issue #1923 — garde d'unicité avant création (doublon actif).
         $this->assertNoOverlappingActiveContribution(
@@ -118,11 +116,6 @@ class SocialContributionAdminController extends Controller
 
         $validated = $this->validatePayload($request, partial: true);
 
-        // Normalisation pays (le guard d'unicité compare en majuscules).
-        if (isset($validated['country_code'])) {
-            $validated['country_code'] = strtoupper((string) $validated['country_code']);
-        }
-
         // Issue #1923 — la garde d'unicité porte sur l'identité/window APRÈS
         // fusion (update partiel : les champs absents gardent leur valeur).
         $merged = array_merge([
@@ -132,11 +125,16 @@ class SocialContributionAdminController extends Controller
             'effective_to' => $contribution->effective_to?->toDateString(),
         ], $validated);
 
+        // Normalisation pays (le guard d'unicité compare en majuscules) —
+        // APRÈS fusion : country_code est toujours défini (défaut : valeur
+        // courante de la contribution), pas de lecture d'une clé absente.
+        $merged['country_code'] = strtoupper((string) $merged['country_code']);
+
         $this->assertNoOverlappingActiveContribution(
             strtoupper((string) $merged['country_code']),
             (string) $merged['code'],
             (string) $merged['effective_from'],
-            isset($merged['effective_to']) && $merged['effective_to'] !== null ? (string) $merged['effective_to'] : null,
+            $merged['effective_to'] !== null ? (string) $merged['effective_to'] : null,
             exceptId: (int) $contribution->id,
         );
 

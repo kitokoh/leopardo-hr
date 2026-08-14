@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string $code
  * @property string $type
  * @property float $rate
- * @property float $cap
+ * @property float|null $cap
  * @property Carbon $effective_from
  * @property Carbon|null $effective_to
  * @property string $status draft|pending_validation|active|superseded

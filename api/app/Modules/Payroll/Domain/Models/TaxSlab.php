@@ -15,11 +15,11 @@ use Illuminate\Support\Carbon;
  * @property string $country_code
  * @property string $name
  * @property float $min_amount
- * @property float $max_amount
+ * @property float|null $max_amount
  * @property float $rate
  * @property float $fixed_deduction
  * @property Carbon $effective_from
- * @property Carbon $effective_to
+ * @property Carbon|null $effective_to
  * @property string $status draft|pending_validation|active|superseded
  * @property int|null $submitted_by
  * @property int|null $validated_by

@@ -132,7 +132,7 @@ class PayrollAuditController extends Controller
             'result' => $audit->result_snapshot,
             'status' => $audit->status,
             'error_message' => $audit->error_message,
-            'created_at' => $audit->created_at?->toIso8601String(),
+            'created_at' => $audit->created_at->toIso8601String(),
         ];
     }
 }
