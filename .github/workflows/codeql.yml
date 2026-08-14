@@ -8,14 +8,13 @@ on:
     branches: [main]
     paths:
       - 'api/**'
-      - '.github/workflows/codeql.yml'
-      - '.github/workflows/actionlint.yml'
+      - '.github/workflows/**'
       - '.github/**/actions/**'
   push:
     branches: [main]
     paths:
       - 'api/**'
-      - '.github/workflows/codeql.yml'
+      - '.github/workflows/**'
       - '.github/**/actions/**'
   schedule:
     - cron: "0 4 * * 1"
