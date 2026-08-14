@@ -1,0 +1,26 @@
+schema_version: "1.0"
+preset:
+  id: "leopardo-dz"
+  name: "Leopardo HR — DZ Algérie Conformité"
+  version: "1.0.0"
+  description: "Règles paie algériennes : IRG barème 2024, CNAS 9%/26%, SMIG 20000 DZD, abattement 40%, préavis loi 90-11. Requiert golden tests calculés à la main."
+  author: "kitokoh"
+  repository: "https://github.com/kitokoh/leopardo-hr"
+  license: "MIT"
+requires:
+  speckit_version: ">=0.16.0"
+provides:
+  templates:
+    - type: "template"
+      name: "spec-dz-compliance"
+      file: "templates/spec-dz-append.md"
+      description: "Injecte les règles DZ dans toute spec algérienne"
+      strategy: "append"
+      replaces: "spec-template"
+tags:
+  - "dz"
+  - "algeria"
+  - "payroll"
+  - "irg"
+  - "cnas"
+  - "leopardo"

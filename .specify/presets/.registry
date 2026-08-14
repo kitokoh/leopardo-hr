@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "leopardo-payroll": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:eac083574d01f41b911f3fb55b22e4f9736436e7d8c02feefb0d2e78f8a11199",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": {
+        "copilot": [
+          "speckit-specify"
+        ]
+      },
+      "installed_at": "2026-08-14T16:13:56.204145+00:00"
+    },
+    "leopardo-multitenancy": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:89df9248724bb10ddd997f0257a64089e2f0d7d4d248f9bfcbd47e928a56ed83",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": {},
+      "installed_at": "2026-08-14T16:14:46.604413+00:00"
+    },
+    "leopardo-dz": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:671a8c9a01bbb71cc1aee2c30fabd84ae9c6d3d3977f8fb9227f8d2054cc3ea0",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": {},
+      "installed_at": "2026-08-14T16:14:55.869025+00:00"
+    },
+    "leopardo-cemac": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:d67f237fdc52c9e077c6bcd126133ae6d6c71d7dd3a800000f1ca9baf5d5dbad",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": {},
+      "installed_at": "2026-08-14T16:15:24.148559+00:00"
+    },
+    "leopardo-cedeao": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:1e25acad2124b519db96cf3433c07dc60fe99d6e034cbbe7a502c591e008f3c5",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {},
+      "registered_skills": {},
+      "installed_at": "2026-08-14T16:15:49.453652+00:00"
+    }
+  }
+}

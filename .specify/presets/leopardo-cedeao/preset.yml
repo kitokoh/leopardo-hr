@@ -1,0 +1,28 @@
+schema_version: "1.0"
+preset:
+  id: "leopardo-cedeao"
+  name: "Leopardo HR — CEDEAO/UEMOA Zone (XOF)"
+  version: "1.0.0"
+  description: "Règles paie zone UEMOA/XOF (CI/SN/BF/ML/TG/BJ/NE) : ITSAS+CN CI, TRIMF+CFCE SN, IUTS BF, ITS ML. Niveau pilot requis. Plafonds CNSS/IPRES obligatoires."
+  author: "kitokoh"
+  repository: "https://github.com/kitokoh/leopardo-hr"
+  license: "MIT"
+requires:
+  speckit_version: ">=0.16.0"
+provides:
+  templates:
+    - type: "template"
+      name: "spec-cedeao-compliance"
+      file: "templates/spec-cedeao-append.md"
+      description: "Injecte les règles CEDEAO dans toute spec Afrique de l'Ouest"
+      strategy: "append"
+      replaces: "spec-template"
+tags:
+  - "cedeao"
+  - "uemoa"
+  - "xof"
+  - "cote-divoire"
+  - "senegal"
+  - "burkina"
+  - "mali"
+  - "leopardo"

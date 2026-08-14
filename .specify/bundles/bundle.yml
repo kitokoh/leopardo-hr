@@ -1,0 +1,42 @@
+schema_version: "1.0"
+
+bundle:
+  id: "leopardo-payroll-agent"
+  name: "Leopardo HR — Agent Paie Multi-Pays"
+  version: "1.0.0"
+  role: "payroll-developer"
+  description: "Setup complet pour tout agent travaillant sur le module Payroll de Leopardo HR : conformité légale multi-pays (DZ/CEMAC/CEDEAO), isolation multi-tenant, golden tests obligatoires. Un seul `specify bundle install leopardo-payroll-agent` configure tous les presets nécessaires."
+  author: "kitokoh"
+  repository: "https://github.com/kitokoh/leopardo-hr"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.16.0"
+  tools: []
+  mcp: []
+
+provides:
+  presets:
+    - source: "local"
+      path: ".specify/presets/leopardo-payroll"
+      priority: 5
+    - source: "local"
+      path: ".specify/presets/leopardo-multitenancy"
+      priority: 8
+    - source: "local"
+      path: ".specify/presets/leopardo-dz"
+      priority: 10
+    - source: "local"
+      path: ".specify/presets/leopardo-cemac"
+      priority: 10
+    - source: "local"
+      path: ".specify/presets/leopardo-cedeao"
+      priority: 10
+
+tags:
+  - "payroll"
+  - "leopardo"
+  - "africa"
+  - "compliance"
+  - "multitenancy"
+  - "agent"

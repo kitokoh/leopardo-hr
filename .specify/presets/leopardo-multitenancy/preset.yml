@@ -1,0 +1,35 @@
+schema_version: "1.0"
+
+preset:
+  id: "leopardo-multitenancy"
+  name: "Leopardo HR — Multi-Tenant Guard"
+  version: "1.0.0"
+  description: "Injecte les contraintes d'isolation multi-tenant PostgreSQL dans toute spec Leopardo HR modifiant une table métier ou un endpoint API."
+  author: "kitokoh"
+  repository: "https://github.com/kitokoh/leopardo-hr"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=0.16.0"
+
+provides:
+  templates:
+    - type: "template"
+      name: "spec-multitenancy"
+      file: "templates/spec-tenant-append.md"
+      description: "Ajoute la checklist d'isolation tenant à toute spec"
+      strategy: "append"
+      replaces: "spec-template"
+
+    - type: "template"
+      name: "tasks-multitenancy"
+      file: "templates/tasks-tenant-append.md"
+      description: "Injecte les tâches d'isolation tenant obligatoires"
+      strategy: "append"
+      replaces: "tasks-template"
+
+tags:
+  - "multitenancy"
+  - "security"
+  - "leopardo"
+  - "postgresql"
