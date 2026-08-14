@@ -255,10 +255,16 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            // #1821 : CM passe en 'pilot' (barèmes légaux implémentés) — les
-            // autres membres restent 'placeholder' jusqu'à leurs issues.
-            self::assertSame($memberCode === 'CM' ? 'pilot' : 'placeholder', $rules->confidenceLevel());
-            if ($memberCode === 'CM') {
+            // #1821 : CM passe en 'pilot' (barèmes légaux implémentés) ;
+            // #1824 : GA et CG aussi (IRPP/CNSS spécifiques). Les autres
+            // membres restent 'placeholder' jusqu'à leurs issues.
+            $expectedConfidence = in_array($memberCode, ['CM', 'GA', 'CG'], true) ? 'pilot' : 'placeholder';
+            self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
+            if ($memberCode === 'GA') {
+                self::assertCount(8, $rules->taxSlabs()); // IRPP GA 8 tranches
+            } elseif ($memberCode === 'CG') {
+                self::assertCount(6, $rules->taxSlabs()); // IRPP CG 6 tranches
+            } elseif ($memberCode === 'CM') {
                 self::assertStringContainsString('CM fixed public holidays', $rules->publicHolidaysSource());
             } else {
                 self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
