@@ -329,7 +329,6 @@ class GoldenCiPayrollTest extends TestCase
         // Patronale : 74 129,18 + 94 720,61 + 60 000 (AT 2 % non plafonné).
         $this->assertSame(228849.79, $charges['employer']);
     }
-}
 
     /**
      * #1869 — régression resp : le bulletin CI complet (pipeline calculateRun)
@@ -378,3 +377,4 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame(4486.0, (float) $slip->total_deductions);
         $this->assertSame(95514.0, (float) $slip->net_salary);
     }
+}
