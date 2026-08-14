@@ -37,6 +37,8 @@ GET v1/auth/me
 GET v1/communication/analytics
 GET v1/company-requests
 GET v1/company/branding
+# Documentee dans le spec sans le prefixe v1 (limitation du parser) — voir /supported-countries
+GET v1/supported-countries
 GET v1/health
 GET v1/health/live
 GET v1/health/ready

@@ -50,7 +50,14 @@ class PublicHolidayService
         return $this->cache->remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($countryCode, $year, $companyId): array {
             $query = PublicHoliday::query()
                 ->where('country_code', strtoupper($countryCode))
-                ->where('year', $year);
+                ->where(function ($q) use ($year): void {
+                    // #1936 : les fériés RÉCURRENTS (is_recurring, month_day)
+                    // s'appliquent à TOUTES les années — pas seulement à
+                    // l'année stockée (date = première occurrence). Le filtre
+                    // year exact les rendait invisibles hors année de création.
+                    $q->where('year', $year)
+                        ->orWhere('is_recurring', true);
+                });
 
             // company_id NULL = férié national ; company_id = tenant → override.
             $query->where(function ($q) use ($companyId): void {
@@ -64,7 +71,7 @@ class PublicHolidayService
                 ->orderBy('date')
                 ->get()
                 ->map(fn (PublicHoliday $h): array => [
-                    'date' => $h->date->toDateString(),
+                    'date' => $this->effectiveDate($h, $year),
                     'name' => $h->name,
                     'holiday_type' => $h->holiday_type,
                     'company_id' => $h->company_id,
@@ -81,6 +88,23 @@ class PublicHolidayService
 
             return $this->mergeHolidays($fixed, $islamic);
         });
+    }
+
+    /**
+     * #1936 — date effective d'un férié pour une année donnée : pour un férié
+     * récurrent, l'année demandée remplace l'année stockée (la date stockée
+     * est la première occurrence ; month_day porte mois-jour). Les lignes
+     * récurrentes legacy sans month_day (créées avant que l'UI n'envoie le
+     * champ) dérivent month_day de la date stockée — sans quoi le férié
+     * n'est jamais appliqué hors de son année de création.
+     */
+    private function effectiveDate(PublicHoliday $holiday, int $year): string
+    {
+        if ($holiday->is_recurring) {
+            return sprintf('%04d-%s', $year, $holiday->month_day ?? $holiday->date->format('m-d'));
+        }
+
+        return $holiday->date->toDateString();
     }
 
     /**

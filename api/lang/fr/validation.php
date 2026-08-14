@@ -106,4 +106,5 @@ return [
     'url' => 'Le format de l\'URL de :attribute n\'est pas valide.',
     'uuid' => 'Le champ :attribute doit être un UUID valide.',
     'supported_country' => 'Le champ :attribute doit être un pays supporté (:value).',
+    'country_without_payroll_rules' => 'Le champ :attribute doit être un pays disposant de règles de paie (:value n'est pas supporté par le moteur de paie).',
 ];

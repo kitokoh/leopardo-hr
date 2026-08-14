@@ -117,6 +117,12 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
+
+            public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
+            {
+                return $incomeTax + $bracketTax;
+            }
+
             public function taxSlabs(): array
             {
                 return [];
@@ -279,6 +285,12 @@ class CountryRulesResolverTest extends TestCase
             public function socialContributions(): array
             {
                 return [];
+            }
+
+
+            public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
+            {
+                return $incomeTax + $bracketTax;
             }
 
             public function taxSlabs(): array

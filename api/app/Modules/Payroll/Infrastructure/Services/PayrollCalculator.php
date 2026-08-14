@@ -21,8 +21,8 @@ use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class PayrollCalculator
 {
@@ -100,7 +100,9 @@ class PayrollCalculator
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
 
-        $baseDeductions = $social['employee'] + $incomeTax + $bracketTax;
+        // Issue #1934 — la règle pays décide de la combinaison IR/taxe de
+        // minimum fiscal (défaut : additive ; SN : max(IR, TRIMF)).
+        $baseDeductions = $social['employee'] + $rules->combineMinimumFiscalTax($incomeTax, $bracketTax);
 
         return [
             'social' => $social,
@@ -605,30 +607,46 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
+        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
+        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
+        // ajoutée quand la règle pays la définit (> 0). Le libellé de ligne
+        // est fourni par la règle pays (CI #1825 : « Contribution Nationale
+        // (CN) » au lieu de « Taxe de minimum fiscal »).
+        $incomeTax = $breakdown['income_tax'];
+        $bracketTax = $breakdown['bracket_tax'];
+        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
+
+        // Issue #1934 — mécanisme légal « max(IR, TRIMF) » (Sénégal) : la
+        // règle combine les deux via combineMinimumFiscalTax(). Quand la
+        // combinaison n'est pas additive, on n'affiche que la ligne gagnante
+        // pour que le bulletin reste explicable (somme des lignes de
+        // déduction = total déduit).
+        $shownIncomeTax = $incomeTax;
+        $shownBracketTax = $bracketTax;
+        if ($rules->combineMinimumFiscalTax($incomeTax, $bracketTax) !== $incomeTax + $bracketTax) {
+            if ($incomeTax >= $bracketTax) {
+                $shownBracketTax = 0.0;
+            } else {
+                $shownIncomeTax = 0.0;
+            }
+        }
+
         $lines[] = [
             'name' => 'Impot sur le revenu',
             'type' => 'deduction',
             'base_amount' => $breakdown['taxable_gross'],
             'rate' => null,
-            'amount' => $breakdown['income_tax'],
+            'amount' => $shownIncomeTax,
             'order' => $order++,
         ];
 
-        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
-        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
-        // ajoutée quand la règle pays la définit (> 0). Elle s'ajoute aux
-        // déductions totales via la boucle générique ci-dessous. Le libellé
-        // de ligne est fourni par la règle pays (CI #1825 : « Contribution
-        // Nationale (CN) » au lieu de « Taxe de minimum fiscal »).
-        $bracketTax = $breakdown['bracket_tax'];
-        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
-        if ($bracketTax > 0.0) {
+        if ($shownBracketTax > 0.0) {
             $lines[] = [
                 'name' => $bracketTaxLabel,
                 'type' => 'deduction',
                 'base_amount' => $grossEarnings,
                 'rate' => null,
-                'amount' => $bracketTax,
+                'amount' => $shownBracketTax,
                 'order' => $order++,
             ];
         }
@@ -789,19 +807,30 @@ class PayrollCalculator
         // valide (source réelle de présence). #1919 : seuls les statuts de
         // PRÉSENCE (ontime/late) attestent un jour travaillé — les statuts
         // absent/leave/holiday/incomplete sont exclus (l'enum réel de
-        // attendance_logs.status n'a pas cancelled/rejected). Garde défensive
-        // sur la table : sans elle, les golden tests purs et environnements
-        // sans migration tenant retomberaient sur une QueryException au lieu
-        // du fallback.
+        // attendance_logs.status n'a pas cancelled/rejected). #1925 : garde
+        // résolue via le search_path (`schemaTableExists`, CONVENTIONS
+        // §2.6/#1613) au lieu de `Schema::hasTable()` qui ne voit que
+        // `current_schema()` — en contexte multi-schéma (CI :
+        // shared_tenants,public / local : public,shared_tenants) le garde nu
+        // répondait faux à tort → repli silencieux sur le prorata du contrat
+        // et `actual_days_worked` faux sans aucun signal (revue lead #1862).
         $distinctDays = 0;
-        if (Schema::hasTable('attendance_logs')) {
-            $distinctDays = (int) AttendanceLog::query()
-                ->where('company_id', $run->company_id)
-                ->where('employee_id', $employee->id)
-                ->whereBetween('date', [$run->period_start, $run->period_end])
-                ->whereNotIn('status', ['absent', 'leave', 'holiday', 'incomplete'])
-                ->distinct('date')
-                ->count('date');
+        if (schemaTableExists('attendance_logs')) {
+            try {
+                $distinctDays = (int) AttendanceLog::query()
+                    ->where('company_id', $run->company_id)
+                    ->where('employee_id', $employee->id)
+                    ->whereBetween('date', [$run->period_start, $run->period_end])
+                    ->whereNotIn('status', ['absent', 'leave', 'holiday', 'incomplete'])
+                    ->distinct('date')
+                    ->count('date');
+            } catch (QueryException) {
+                // Garde défensive : table partiellement migrée ou supprimée
+                // entre la vérification et la requête → repli sur le prorata
+                // (comportement historique pour les environnements sans
+                // migration tenant, ex. golden tests purs).
+                $distinctDays = 0;
+            }
         }
 
         $hasAttendanceData = $distinctDays > 0;
