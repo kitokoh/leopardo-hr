@@ -101,8 +101,8 @@ class GoldenBfPayrollTest extends TestCase
         // la valeur légale du palier reste testée ici).
         $tiers = $this->bf()->overtimeRateTiers();
 
-        $this->assertSame(1.15, $tiers[0]);
-        $this->assertSame(9952.1, round(5.0 * 1730.8 * $tiers[0], 2));
+        $this->assertSame(1.15, $tiers[0]['multiplier']);
+        $this->assertSame(9952.1, round(5.0 * 1730.8 * $tiers[0]['multiplier'], 2));
         $this->assertSame(40.0, $this->bf()->overtimeThresholdWeeklyHours());
     }
 
