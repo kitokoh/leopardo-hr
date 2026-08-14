@@ -340,10 +340,12 @@ class GoldenCiPayrollTest extends TestCase
      */
     public function test_golden_ci_full_run_does_not_double_count_cn(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = \App\Core\Tenant\Domain\Models\Company::factory()->create([
             'country' => 'CI',
             'currency' => 'XOF',
         ]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
             'company_id' => $company->id,
             'salary_type' => 'fixed',
@@ -360,6 +362,7 @@ class GoldenCiPayrollTest extends TestCase
             'active' => true,
         ]);
 
+        /** @var \App\Modules\Payroll\Domain\Models\PayrollRun $run */
         $run = \App\Modules\Payroll\Domain\Models\PayrollRun::create([
             'company_id' => $company->id,
             'period_start' => '2026-07-01',
