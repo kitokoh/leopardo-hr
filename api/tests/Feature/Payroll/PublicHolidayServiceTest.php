@@ -200,24 +200,29 @@ class PublicHolidayServiceTest extends TestCase
         // date islamique, les clés tenant-scopées restaient périmées 24 h.
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
+        // « Autre tenant » : un vrai UUID (colonne company_id type uuid en
+        // base — 'some-other-tenant' → SQLSTATE[22P02] sur PostgreSQL, #1968).
+        /** @var Company $otherCountryCompany */
+        $otherCountryCompany = Company::factory()->create(['country' => 'CM']);
+        $otherTenantId = (string) $otherCountryCompany->id;
         $service = $this->service();
 
         // Chauffe les 3 clés (nationale + 2 scopes tenant).
         $service->getHolidays('DZ', 2026);
         $service->getHolidays('DZ', 2026, (string) $company->id);
-        $service->getHolidays('DZ', 2026, 'some-other-tenant');
+        $service->getHolidays('DZ', 2026, $otherTenantId);
 
         // Vérifie que les 3 clés sont bien en cache.
         $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:null'));
         $this->assertNotNull(Cache::store()->get(sprintf('public-holidays:DZ:2026:%s', $company->id)));
-        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
+        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:'.$otherTenantId));
 
         $service->forgetAllScopes('DZ', 2026);
 
         $this->assertNull(Cache::store()->get('public-holidays:DZ:2026:null'));
         $this->assertNull(Cache::store()->get(sprintf('public-holidays:DZ:2026:%s', $company->id)));
         // Les tenants d'autres pays gardent leur cache (pas d'invalidation croisée).
-        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
+        $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:'.$otherTenantId));
     }
 
 }

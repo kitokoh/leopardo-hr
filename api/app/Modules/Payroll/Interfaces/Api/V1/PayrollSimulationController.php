@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,8 +72,11 @@ class PayrollSimulationController extends Controller
             $rules->withTaxSlabs($slabs);
         }
 
-        // Issue #1815 : comparaison « avec/sans plafond légal ».
-        $rules->withCapsEnabled(! (bool) ($validated['ignore_caps'] ?? false));
+        // Issue #1815 : comparaison « avec/sans plafond légal ». La méthode
+        // vit sur AbstractCountryRules (pas sur le contrat) — garde instanceof.
+        if ($rules instanceof AbstractCountryRules) {
+            $rules->withCapsEnabled(! (bool) ($validated['ignore_caps'] ?? false));
+        }
 
         /** @var array{employee: float, employer: float} $social */
         $social = $rules->calculateSocialCharges($gross);

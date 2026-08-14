@@ -122,6 +122,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
+
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
