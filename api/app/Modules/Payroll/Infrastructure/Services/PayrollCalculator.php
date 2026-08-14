@@ -209,9 +209,10 @@ class PayrollCalculator
             throw new PayrollRunLockedException('Payroll run is locked (closing done). Unlock with reason first.');
         }
 
-        $correlationId = $run->correlation_id ?? (string) Str::uuid();
-        // Corrélation des logs de ce calcul (pattern minimal — pas de
-        // middleware dédié dans le repo, cf. issue #1874).
+        $correlationId = $run->correlation_id ?? correlation_id();
+        // Corrélation des logs de ce calcul — le fallback correlation_id()
+        // reprend le header X-Correlation-ID/X-Request-Id de la requête
+        // d'origine quand le run n'en a pas encore (issue #1874).
         Log::withContext(['correlation_id' => $correlationId]);
         if ($run->correlation_id === null) {
             $run->forceFill(['correlation_id' => $correlationId])->save();
@@ -350,9 +351,10 @@ class PayrollCalculator
 
             $run->update([
                 'status' => 'calculated',
-                // Issue #1871 — version/identifiant/période des règles EFFECTIVES
-                // persistées sur le run (miroir des bulletins) : l'audit
-                // PayrollCalculationAuditRecorder les lit depuis le run.
+                // Issue #1874 — version/identifiant/période des règles
+                // EFFECTIVES persistées sur le run (l'audit et les re-calculs
+                // historiques en ont besoin ; seuls les bulletins les
+                // portaient avant — cf. #1871/#1874).
                 'rules_version' => $rulesVersion,
                 'rules_identifier' => $rulesIdentifier,
                 'rules_period' => $rulesPeriod,

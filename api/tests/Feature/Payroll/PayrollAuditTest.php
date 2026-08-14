@@ -118,9 +118,9 @@ class PayrollAuditTest extends TestCase
         $this->assertSame(PayrollCalculationAudit::ACTOR_USER, $audit->actor_type);
         $this->assertSame($this->managerA->id, $audit->actor_id);
 
-        // Agrégats uniquement (jamais de salaires individuels). Le manager
-        // actif de la société est un employé payé (structure par défaut) :
-        // 2 bulletins × 60 000 → brut 120 000 (latent main, QA pass 2026-08-14).
+        // Agrégats uniquement (jamais de salaires individuels). Le manager et
+        // l'employé seedé reçoivent chacun un bulletin (repli structure
+        // d'entreprise par défaut) → 2 bulletins de 60 000.
         $this->assertSame(2, (int) ($audit->input_snapshot['employee_count'] ?? 0));
         $this->assertSame(120000.0, (float) ($audit->result_snapshot['total_gross'] ?? 0.0));
         $this->assertSame(2, (int) ($audit->result_snapshot['employee_count'] ?? 0));
@@ -159,6 +159,27 @@ class PayrollAuditTest extends TestCase
         $this->assertIsString($correlationId2);
         $this->assertNotSame($correlationId, $correlationId2);
         $this->assertDatabaseHas('payroll_calculation_audits', ['correlation_id' => $correlationId2]);
+    }
+
+    public function test_request_correlation_header_echoes_and_links_audit(): void
+    {
+        Sanctum::actingAs($this->managerA);
+
+        $response = $this->withHeader('X-Correlation-ID', '11111111-2222-3333-4444-555555555555')
+            ->postJson('/api/v1/payroll/simulate', [
+                'country_code' => 'DZ',
+                'gross_salary' => 60000,
+            ])->assertOk();
+
+        // Le header est échoé en réponse (RequestIdMiddleware) et l'audit
+        // reprend le MÊME identifiant : requête → job → résultat traçables.
+        $this->assertSame('11111111-2222-3333-4444-555555555555', $response->headers->get('X-Correlation-ID'));
+        $this->assertSame('11111111-2222-3333-4444-555555555555', $response->headers->get('X-Request-Id'));
+
+        /** @var PayrollCalculationAudit $audit */
+        $audit = PayrollCalculationAudit::query()->where('correlation_id', '11111111-2222-3333-4444-555555555555')->first();
+        $this->assertNotNull($audit, 'L\'audit doit reprendre le correlation_id du header.');
+        $this->assertSame(PayrollCalculationAudit::STATUS_SUCCESS, $audit->status);
     }
 
     public function test_audit_show_returns_reproduction_context(): void

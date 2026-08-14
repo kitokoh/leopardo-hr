@@ -151,6 +151,8 @@ class CotisationSimulationTest extends TestCase
         // taux DZ (9 % / 26 %).
         $this->assertSame('CI', $data['country_code']);
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
+        // Plafonds #1913 : famille + AT plafonnés à 70 000 → 100 000 × 4,5 %
+        // + 70 000 × 5,75 % + 70 000 × 2 % = 9 925,00.
         $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['net_before_tax']);
     }
@@ -359,13 +361,15 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('pilot', $data['contract']['confidence_level']);
 
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
+        // Plafonds #1913 : famille + AT plafonnés à 70 000 → 100 000 × 4,5 %
+        // + 70 000 × 5,75 % + 70 000 × 2 % = 9 925,00.
         $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['taxable_gross']);
         $this->assertEquals(4000.0, $data['income_tax']);
         $this->assertEquals(0.0, $data['bracket_tax']);
         $this->assertEquals(7200.0, $data['total_deductions']);
         $this->assertEquals(92800.0, $data['net_salary']);
-        $this->assertEquals(109925.0, $data['total_cost_employer']);
+        $this->assertEquals(109925.0, $data['total_cost_employer']); // 100 000 + 9 925 (plafonds #1913)
 
         // Le contrat imbriqué expose les mêmes montants (cohérence).
         $this->assertEquals(3200.0, $data['contract']['social_employee']);
