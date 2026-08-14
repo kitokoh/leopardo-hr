@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Payroll;
 
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use PHPUnit\Framework\TestCase;
 
@@ -90,5 +92,19 @@ class SenegalRulesUnitTest extends TestCase
         self::assertNull($abatement['cap']);
 
         self::assertSame(90000.0, 300000.0 * 0.30);
+    }
+
+    public function test_minimum_tax_replaces_income_tax_only_for_sn(): void
+    {
+        // Issue #1934 : la TRIMF sénégalaise est un MINIMUM représentatif —
+        // le salarié paie max(IR, TRIMF) (docs/payroll/SN_COMPLIANCE.md §3).
+        self::assertTrue($this->sn()->minimumTaxReplacesIncomeTax());
+
+        // Garde pays : la CN ivoirienne reste ADDITIONNELLE à l'ITSAS
+        // (CedeaoPayrollRules :: calculateBracketTax — docs/payroll/
+        // CI_COMPLIANCE.md §2) — le défaut du contrat est false.
+        self::assertFalse((new CedeaoPayrollRules('CI'))->minimumTaxReplacesIncomeTax());
+        self::assertFalse((new CedeaoPayrollRules('ML'))->minimumTaxReplacesIncomeTax());
+        self::assertFalse((new AlgeriaPayrollRules)->minimumTaxReplacesIncomeTax());
     }
 }

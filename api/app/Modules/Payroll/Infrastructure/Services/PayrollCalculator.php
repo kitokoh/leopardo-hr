@@ -100,6 +100,23 @@ class PayrollCalculator
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
 
+        // SN #1934 : la TRIMF est un MINIMUM REPRÉSENTATIF — le salarié paie
+        // le PLUS ÉLEVÉ de IR / TRIMF, jamais la somme. La règle pays
+        // déclare le comportement (SenegalPayrollRules::
+        // minimumTaxReplacesIncomeTax() → true, docs/payroll/
+        // SN_COMPLIANCE.md §3) ; le perdant est ramené à 0 pour que
+        // base_deductions reste social + incomeTax + bracketTax =
+        // social + max(IR, TRIMF) et que le bulletin ne porte que la ligne
+        // gagnante. Périmètre SN uniquement : la CN ivoirienne reste
+        // additionnelle à l'ITSAS (CedeaoPayrollRules inchangé).
+        if ($rules->minimumTaxReplacesIncomeTax()) {
+            if ($incomeTax >= $bracketTax) {
+                $bracketTax = 0.0;
+            } else {
+                $incomeTax = 0.0;
+            }
+        }
+
         $baseDeductions = $social['employee'] + $incomeTax + $bracketTax;
 
         return [

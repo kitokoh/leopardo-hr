@@ -188,6 +188,18 @@ interface CountryRulesInterface
     public function flatPayrollTaxLabel(): string;
 
     /**
+     * Whether the flat/minimum bracket tax (TRIMF SN, minimum fiscal...)
+     * REPLACES the income tax instead of stacking with it: when true, the
+     * employee pays max(incomeTax, bracketTax) — never the sum. The losing
+     * amount is zeroed by the engine so base_deductions stays
+     * social + max(IR, TRIMF) and the payslip only shows the winning line.
+     * Legal basis: the Senegalese TRIMF is a minimum representative tax
+     * (CGI Sénégal) — SN #1934. Default: false (the two taxes are
+     * cumulative, e.g. CI's CN is added on top of ITSAS).
+     */
+    public function minimumTaxReplacesIncomeTax(): bool;
+
+    /**
      * Whether the country's labour code legally mandates a 13th month
      * (13ème mois / prima) paid in December (or the configured month).
      * Default: false (contractual practice only). ZONE-INFRA (#1820).

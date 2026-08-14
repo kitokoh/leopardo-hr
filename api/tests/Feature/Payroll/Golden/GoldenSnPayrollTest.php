@@ -181,6 +181,65 @@ class GoldenSnPayrollTest extends TestCase
         ];
     }
 
+    public function test_golden_sn_trimf_minimum_tax_replaces_income_tax(): void
+    {
+        // Issue #1934 (docs/payroll/SN_COMPLIANCE.md §3) : la TRIMF est un
+        // MINIMUM représentatif — le salarié paie max(IR, TRIMF), jamais la
+        // somme. La règle SN déclare la capacité ; le noyau commun
+        // (computeNetBreakdown) zéro la ligne perdante.
+        $rules = $this->rules();
+
+        $this->assertTrue($rules->minimumTaxReplacesIncomeTax());
+    }
+
+    #[DataProvider('irTrimfMaxProvider')]
+    public function test_golden_sn_max_ir_trimf(float $gross, float $expectedIr, float $expectedTrimf): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §1-3, issue #1934) — retenue fiscale
+        // = max(IR, TRIMF), jamais IR + TRIMF (sur-retenue corrigée). Le
+        // perdant est ramené à 0 dans le noyau commun computeNetBreakdown().
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown($gross, $this->rules());
+        $withheld = $breakdown['income_tax'] + $breakdown['bracket_tax'];
+
+        $this->assertSame(max($expectedIr, $expectedTrimf), $withheld);
+        $this->assertSame(
+            $expectedIr >= $expectedTrimf ? $expectedIr : 0.0,
+            $breakdown['income_tax']
+        );
+        $this->assertSame(
+            $expectedTrimf > $expectedIr ? $expectedTrimf : 0.0,
+            $breakdown['bracket_tax']
+        );
+        $this->assertSame(
+            $breakdown['social']['employee'] + max($expectedIr, $expectedTrimf),
+            $breakdown['base_deductions']
+        );
+        $this->assertSame(
+            round($gross - $breakdown['base_deductions'], 2),
+            $breakdown['net_salary']
+        );
+    }
+
+    /**
+     * Cas golden max(IR, TRIMF) — calculés à la main (SN_COMPLIANCE.md §1-3) :
+     *   brut 60 000  → IPRES 3 360 · IR = 0 (annuel 463 680 < 630 000)
+     *                  · TRIMF 2 700 → retenue 2 700 (exemple de l'issue #1934)
+     *   brut 100 000 → IPRES 5 600 · IR 2 380 · TRIMF 5 400 → retenue 5 400
+     *                  (TRIMF > IR : l'IR est absorbé)
+     *   brut 150 000 → IPRES 8 400 · IR 8 820 · TRIMF 5 400 → retenue 8 820
+     *                  (IR > TRIMF : la TRIMF est absorbée)
+     *
+     * @return array<string, array{float, float, float}>
+     */
+    public static function irTrimfMaxProvider(): array
+    {
+        return [
+            'IR nul sous le seuil — TRIMF seule' => [60000.0, 0.0, 2700.0],
+            'TRIMF > IR (sous le seuil de bascule)' => [100000.0, 2380.0, 5400.0],
+            'IR > TRIMF (au-dessus du seuil de bascule)' => [150000.0, 8820.0, 5400.0],
+        ];
+    }
+
     public function test_golden_sn_cfce_employeur(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §5) : CFCE = 3 % de la masse brute,

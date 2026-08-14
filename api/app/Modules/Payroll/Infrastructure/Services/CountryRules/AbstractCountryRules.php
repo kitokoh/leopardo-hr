@@ -397,6 +397,18 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * SN #1934: default = the flat/minimum bracket tax (TRIMF...) is
+     * ADDITIVE to the income tax (historic cumulative behaviour). Countries
+     * where the minimum tax legally REPLACES the income tax (the employee
+     * pays max(IR, TRIMF) — Senegal) override this to true; the engine
+     * then zeroes the losing amount in computeNetBreakdown().
+     */
+    public function minimumTaxReplacesIncomeTax(): bool
+    {
+        return false;
+    }
+
+    /**
      * ZONE-INFRA (#1820): default = 13th month not legally mandatory
      * (contractual practice only, matching historic behaviour).
      */

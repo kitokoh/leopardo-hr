@@ -207,6 +207,11 @@ class CountryRulesResolverTest extends TestCase
                 return '';
             }
 
+            public function minimumTaxReplacesIncomeTax(): bool
+            {
+                return false;
+            }
+
             public function thirteenthMonthMandatory(): bool
             {
                 return false;
@@ -369,6 +374,11 @@ class CountryRulesResolverTest extends TestCase
             public function flatPayrollTaxLabel(): string
             {
                 return '';
+            }
+
+            public function minimumTaxReplacesIncomeTax(): bool
+            {
+                return false;
             }
 
             public function thirteenthMonthMandatory(): bool

@@ -12,7 +12,7 @@
 | Règle | État | Référence | Validité |
 |---|---|---|---|
 | IR (barème annuel 6 tranches) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
-| TRIMF (6 tranches forfaitaires) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
+| TRIMF (6 tranches forfaitaires) | ✅ implémentée (pilot) — rétention max(IR, TRIMF) (#1934) | CGI Sénégal | à valider expert |
 | CFCE 3 % patronal | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
 | IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (pilot) | IPRES | à valider expert |
 | IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-2 160k) | ✅ implémentée (pilot) | IPRES | à valider expert |
@@ -60,9 +60,25 @@ la ligne « Taxe de minimum fiscal ») :
 | 350 001 – 700 000 | 18 000 |
 | > 700 000 | 36 000 |
 
-⚠️ Le mécanisme légal « le salarié paie le plus élevé de IR / TRIMF »
-(max(IR, TRIMF)) est un raffinement à valider avec l'expert SN — dans le
-périmètre de l'issue #1827, les deux lignes coexistent dans le bulletin.
+### Rétention = max(IR, TRIMF) — issue #1934
+
+La TRIMF est un **minimum représentatif** (CGI Sénégal) : le salarié paie le
+**plus élevé des deux** — `max(IR, TRIMF)` — **jamais la somme**.
+
+- Ex. brut 100 000 XOF : IR 2 380 < TRIMF 5 400 → retenue **5 400** (l'IR
+  est absorbé par le minimum ; avant #1934 le bulletin retenait 7 780,
+  sur-retenue sur chaque bulletin SN).
+- Ex. brut 150 000 XOF : IR 8 820 > TRIMF 5 400 → retenue **8 820** (la
+  TRIMF est absorbée par l'IR).
+
+Implémentation : la règle pays déclare la capacité
+`SenegalPayrollRules::minimumTaxReplacesIncomeTax() → true` (défaut du
+contrat : `false`) ; le noyau commun `PayrollCalculator::computeNetBreakdown()`
+(issue #1869 — simulation ET bulletin) ramène la ligne perdante à 0 :
+`base_deductions = cotisations salariales + max(IR, TRIMF)` et le bulletin
+ne porte que la ligne gagnante. La Côte d'Ivoire n'est **pas** concernée :
+sa Contribution Nationale (CN) est additionnelle à l'ITSAS
+(`CedeaoPayrollRules`, `docs/payroll/CI_COMPLIANCE.md` §2).
 
 ## 4. IPRES — Régime Général T1
 
