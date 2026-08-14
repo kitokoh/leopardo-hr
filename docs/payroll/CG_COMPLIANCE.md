@@ -75,3 +75,14 @@ au-delà (à confirmer pour CG).
 Fixes : 1ᵉʳ janvier, 1ᵉʳ mai, 15 août, 15 octobre (Fête Nationale),
 1ᵉʳ novembre, 25 décembre + fêtes islamiques mobiles (via table
 `islamic_calendar`, #1812). Gestion dynamique via #1811.
+
+## 11. Déclaration CNSS (CSV)
+
+Déclaration mensuelle CNSS Congo-Brazzaville via `CemacCnsDeclarationGenerator`
+(#2155) — endpoint `GET /payroll-runs/{run}/declarations/cemac-cns`
+(RBAC manager, 404 cross-tenant, 422 hors GA/CG). Une ligne par bulletin
+validé : matricule, nom, prénom, brut, assiette plafonnée
+(min(brut, 2 500 000 XAF)), retraite salariale 4,0 %, retraite patronale
+8,0 %, famille patronale 10,0 % (plafond 2 500 000), AT patronale 3,0 %
+(non plafonné, pilote) + ligne TOTAUX. Format interne documenté — à valider
+avec un comptable CNSS local.

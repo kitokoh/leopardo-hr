@@ -7304,6 +7304,33 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cemac-cns:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Gabon / Congo-Brazzaville — CSV (CEMAC #2155)"
+      description: "CSV Gabon (CNSS GA) ou Congo-Brazzaville (CNSS CG) : une ligne par bulletin validé (matricule, nom, prénom, brut, assiette plafonnée, retraite salariale/patronale, famille patronale, AT patronale, totaux) + TOTAUX. Assiettes alignées sur CemacPayrollRules::calculateSocialCharges() (GA : plafond 3 000 000 XAF, retraite 2,5 %/5,0 %, famille 8 %, AT 3 % non plafonné ; CG : plafond 2 500 000 XAF, retraite 4,0 %/8,0 %, famille 10 %, AT 3 % non plafonné). 422 si le run n'est ni GA ni CG. RBAC manager ; 404 cross-tenant."
+      operationId: downloadCemacCnsDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS GA / CNSS CG"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/declarations/cnps-cm:
     get:
       tags: ["Payroll Engine"]

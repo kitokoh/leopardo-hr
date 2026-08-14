@@ -92,3 +92,14 @@ au-delà (à confirmer pour GA).
 Fixes : 1ᵉʳ janvier, 12 mars (fête de la Rénovation), 1ᵉʳ mai, 17 août (Fête
 Nationale), 15 août, 1ᵉʳ novembre, 25 décembre + fêtes islamiques mobiles
 (via table `islamic_calendar`, #1812). Gestion dynamique via #1811.
+
+## 11. Déclaration CNSS (CSV)
+
+Déclaration mensuelle CNSS Gabon via `CemacCnsDeclarationGenerator`
+(#2155) — endpoint `GET /payroll-runs/{run}/declarations/cemac-cns`
+(RBAC manager, 404 cross-tenant, 422 hors GA/CG). Une ligne par bulletin
+validé : matricule, nom, prénom, brut, assiette plafonnée
+(min(brut, 3 000 000 XAF)), retraite salariale 2,5 %, retraite patronale
+5,0 %, famille patronale 8,0 % (plafond 3 000 000), AT patronale 3,0 %
+(non plafonné, pilote) + ligne TOTAUX. Format interne documenté — à valider
+avec un comptable CNSS local.

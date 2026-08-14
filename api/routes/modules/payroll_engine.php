@@ -134,6 +134,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ci', [SocialDeclarationController::class, 'generateCnssCiDeclaration'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/declarations/ipres-sn', [SocialDeclarationController::class, 'generateIpresSnDeclaration'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/declarations/cedeao-cns', [SocialDeclarationController::class, 'generateCedeaoCnsDeclaration'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/declarations/cemac-cns', [SocialDeclarationController::class, 'generateCemacCnsDeclaration'])->whereNumber('payrollRun');
 
         // Plan 61 — Payroll cycles
         Route::get('/payroll/cycles', [PayrollCycleController::class, 'index']);

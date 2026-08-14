@@ -1,0 +1,230 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Payroll\Infrastructure\Services;
+
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+
+/**
+ * CEMAC (#2155) — déclaration CNSS mensuelle Gabon (GA) / Congo-Brazzaville
+ * (CG) au format CSV.
+ *
+ * Une ligne par bulletin validé : matricule CNSS, nom, prénom, salaire
+ * brut, assiette plafonnée, retraite salariale, retraite patronale, famille
+ * patronale, AT patronale, totaux salarial/patronal par ligne + ligne
+ * TOTAUX. Assiettes et taux alignés sur
+ * `CemacPayrollRules::calculateSocialCharges()` (issue #1824) :
+ *
+ *  - GA (CNSS Gabon) : retraite 2,5 % salarié / 5,0 % patronal, famille
+ *    8,0 % patronal — plafonnées à 3 000 000 XAF/mois ; AT 3,0 % patronal
+ *    non plafonné (GA_COMPLIANCE.md §3).
+ *  - CG (CNSS Congo) : retraite 4,0 % salarié / 8,0 % patronal, famille
+ *    10,0 % patronal — plafonnées à 2 500 000 XAF/mois ; AT 3,0 % patronal
+ *    non plafonné (CG_COMPLIANCE.md §3).
+ *
+ * ⚠️ Format interne documenté — à valider avec un comptable CNSS local.
+ */
+class CemacCnsDeclarationGenerator
+{
+    public const GA_CAP = 3000000.0;
+
+    public const GA_RATE_RETRAITE_EMP = 2.5;
+
+    public const GA_RATE_RETRAITE_PAT = 5.0;
+
+    public const GA_RATE_FAMILLE_PAT = 8.0;
+
+    public const GA_RATE_AT_PAT = 3.0;
+
+    public const CG_CAP = 2500000.0;
+
+    public const CG_RATE_RETRAITE_EMP = 4.0;
+
+    public const CG_RATE_RETRAITE_PAT = 8.0;
+
+    public const CG_RATE_FAMILLE_PAT = 10.0;
+
+    public const CG_RATE_AT_PAT = 3.0;
+
+    public function generate(PayrollRun $run): string
+    {
+        $countryCode = strtoupper((string) $run->country_code);
+
+        if (! in_array($countryCode, ['GA', 'CG'], true)) {
+            throw new \InvalidArgumentException("CemacCnsDeclarationGenerator ne supporte que GA/CG, reçu {$countryCode}.");
+        }
+
+        $slips = $run->paySlips()
+            ->with('employee:id,first_name,last_name,matricule')
+            ->where('status', 'validated')
+            ->get();
+
+        $header = [
+            'matricule', 'nom', 'prenom', 'salaire_brut', 'assiette_plafonnee',
+            'retraite_salariale', 'retraite_patronale', 'famille_patronale',
+            'at_patronale', 'total_salarial', 'total_patronal',
+        ];
+        $rows = [$header];
+
+        $totals = [
+            'gross' => 0.0,
+            'capped_base' => 0.0,
+            'retraite_emp' => 0.0,
+            'retraite_pat' => 0.0,
+            'famille_pat' => 0.0,
+            'at_pat' => 0.0,
+        ];
+
+        foreach ($slips as $slip) {
+            $contrib = $this->contributionFor($slip, $countryCode);
+
+            $totals['gross'] += $contrib['gross'];
+            $totals['capped_base'] += $contrib['capped_base'];
+            $totals['retraite_emp'] += $contrib['retraite_emp'];
+            $totals['retraite_pat'] += $contrib['retraite_pat'];
+            $totals['famille_pat'] += $contrib['famille_pat'];
+            $totals['at_pat'] += $contrib['at_pat'];
+
+            $employee = $slip->employee;
+
+            /** @var string|null $matricule */
+            $matricule = $employee->matricule ?? null;
+            /** @var string|null $lastName */
+            $lastName = $employee->last_name ?? null;
+            /** @var string|null $firstName */
+            $firstName = $employee->first_name ?? null;
+
+            $rows[] = [
+                (string) ($matricule ?? ''),
+                (string) ($lastName ?? ''),
+                (string) ($firstName ?? ''),
+                number_format($contrib['gross'], 2, '.', ''),
+                number_format($contrib['capped_base'], 2, '.', ''),
+                number_format($contrib['retraite_emp'], 2, '.', ''),
+                number_format($contrib['retraite_pat'], 2, '.', ''),
+                number_format($contrib['famille_pat'], 2, '.', ''),
+                number_format($contrib['at_pat'], 2, '.', ''),
+                number_format($contrib['total_emp'], 2, '.', ''),
+                number_format($contrib['total_pat'], 2, '.', ''),
+            ];
+        }
+
+        $rows[] = [
+            'TOTAL',
+            "{$slips->count()} bulletins",
+            '',
+            number_format($totals['gross'], 2, '.', ''),
+            number_format($totals['capped_base'], 2, '.', ''),
+            number_format($totals['retraite_emp'], 2, '.', ''),
+            number_format($totals['retraite_pat'], 2, '.', ''),
+            number_format($totals['famille_pat'], 2, '.', ''),
+            number_format($totals['at_pat'], 2, '.', ''),
+            number_format($totals['retraite_emp'], 2, '.', ''),
+            number_format($totals['retraite_pat'] + $totals['famille_pat'] + $totals['at_pat'], 2, '.', ''),
+        ];
+
+        return $this->toCsv($rows);
+    }
+
+    /**
+     * @return array{gross: float, capped_base: float, retraite_emp: float, retraite_pat: float, famille_pat: float, at_pat: float, total_emp: float, total_pat: float, slip_count: int}
+     */
+    public function totals(PayrollRun $run): array
+    {
+        $countryCode = strtoupper((string) $run->country_code);
+        $slips = $run->paySlips()->where('status', 'validated')->get();
+
+        $gross = 0.0;
+        $cappedBase = 0.0;
+        $retraiteEmp = 0.0;
+        $retraitePat = 0.0;
+        $famillePat = 0.0;
+        $atPat = 0.0;
+
+        foreach ($slips as $slip) {
+            $contrib = $this->contributionFor($slip, $countryCode);
+
+            $gross += $contrib['gross'];
+            $cappedBase += $contrib['capped_base'];
+            $retraiteEmp += $contrib['retraite_emp'];
+            $retraitePat += $contrib['retraite_pat'];
+            $famillePat += $contrib['famille_pat'];
+            $atPat += $contrib['at_pat'];
+        }
+
+        return [
+            'gross' => round($gross, 2),
+            'capped_base' => round($cappedBase, 2),
+            'retraite_emp' => round($retraiteEmp, 2),
+            'retraite_pat' => round($retraitePat, 2),
+            'famille_pat' => round($famillePat, 2),
+            'at_pat' => round($atPat, 2),
+            'total_emp' => round($retraiteEmp, 2),
+            'total_pat' => round($retraitePat + $famillePat + $atPat, 2),
+            'slip_count' => $slips->count(),
+        ];
+    }
+
+    /**
+     * Calcul des cotisations CNSS GA/CG pour un bulletin — source unique
+     * de vérité des lignes ET des totaux (aucune dérive possible).
+     *
+     * @return array{gross: float, capped_base: float, retraite_emp: float, retraite_pat: float, famille_pat: float, at_pat: float, total_emp: float, total_pat: float}
+     */
+    private function contributionFor(PaySlip $slip, string $countryCode): array
+    {
+        $gross = (float) $slip->gross_salary;
+
+        if ($countryCode === 'GA') {
+            $base = min($gross, self::GA_CAP);
+            $retraiteEmp = round($base * self::GA_RATE_RETRAITE_EMP / 100, 2);
+            $retraitePat = round($base * self::GA_RATE_RETRAITE_PAT / 100, 2);
+            // #1824 : famille plafonnée (3 000 000), AT non plafonné (pilote).
+            $famillePat = round($base * self::GA_RATE_FAMILLE_PAT / 100, 2);
+            $atPat = round($gross * self::GA_RATE_AT_PAT / 100, 2);
+        } else { // CG
+            $base = min($gross, self::CG_CAP);
+            $retraiteEmp = round($base * self::CG_RATE_RETRAITE_EMP / 100, 2);
+            $retraitePat = round($base * self::CG_RATE_RETRAITE_PAT / 100, 2);
+            // #1824 : famille plafonnée (2 500 000), AT non plafonné (pilote).
+            $famillePat = round($base * self::CG_RATE_FAMILLE_PAT / 100, 2);
+            $atPat = round($gross * self::CG_RATE_AT_PAT / 100, 2);
+        }
+
+        return [
+            'gross' => $gross,
+            'capped_base' => $base,
+            'retraite_emp' => $retraiteEmp,
+            'retraite_pat' => $retraitePat,
+            'famille_pat' => $famillePat,
+            'at_pat' => $atPat,
+            'total_emp' => round($retraiteEmp, 2),
+            'total_pat' => round($retraitePat + $famillePat + $atPat, 2),
+        ];
+    }
+
+    /**
+     * @param  array<int, array<int, string>>  $rows
+     */
+    private function toCsv(array $rows): string
+    {
+        $lines = array_map(static function (array $row): string {
+            return implode(',', array_map(static function ($cell): string {
+                $cell = (string) $cell;
+
+                // CSV injection (#1922) : un champ commençant par =, +, -, @,
+                // tab ou saut de ligne est neutralisé (préfixe ') pour qu'Excel
+                // / LibreOffice ne l'interprète pas comme une formule/DDE.
+                if ($cell !== '' && str_contains("=+-@\t\r\n", $cell[0])) {
+                    $cell = "'".$cell;
+                }
+
+                return '"'.str_replace('"', '""', $cell).'"';
+            }, $row));
+        }, $rows);
+
+        return implode("\n", $lines)."\n";
+    }
+}

@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\CemacCnsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
@@ -419,6 +420,41 @@ class SocialDeclarationController extends Controller
         $content = $generator->generate($payrollRun);
 
         $scheme = $payrollRun->country_code === 'BF' ? 'CNSS_BF' : 'INPS_ML';
+        $filename = sprintf('%s_%d_%s.csv', $scheme, $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEMAC (#2155) — déclaration CNSS mensuelle Gabon (CSV) /
+     * Congo-Brazzaville (CSV) : une ligne par bulletin validé + totaux.
+     * 422 si le run n'est pas GA/CG.
+     */
+    public function generateCemacCnsDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+        if (! in_array($payrollRun->country_code, ['GA', 'CG'], true)) {
+            return response()->json(['message' => 'Ce run ne concerne ni le Gabon (CNSS GA) ni le Congo (CNSS CG).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cemac_cns_declaration');
+
+        $generator = new CemacCnsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $scheme = $payrollRun->country_code === 'GA' ? 'CNSS_GA' : 'CNSS_CG';
         $filename = sprintf('%s_%d_%s.csv', $scheme, $payrollRun->id, now()->format('Ymd'));
 
         return response()->streamDownload(function () use ($content): void {
