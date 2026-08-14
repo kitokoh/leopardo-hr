@@ -5,6 +5,9 @@ on:
     branches: [main, feat/clean-architecture, feat/modules-migration]
   push:
     branches: [main]
+  # Issue #2032 : checks requis (PHPStan Strict, Module Structure, Frontend
+  # ESLint+TS) — doivent tourner sur le ref de merge de la merge queue.
+  merge_group:
 
 permissions:
   contents: read

@@ -24,6 +24,9 @@ on:
       - '.github/workflows/**'
       - '.github/actions/**'
       - '.github/paths-filters.yml'
+  # Issue #2032 : la merge queue GitHub doit valider ce check requis sur le
+  # ref de merge (les path filters ne s'appliquent pas à merge_group).
+  merge_group:
 
 permissions:
   contents: read

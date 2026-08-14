@@ -11,6 +11,9 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
+  # Issue #2032 : check requis « Backend Coverage » — doit tourner sur le
+  # ref de merge de la merge queue.
+  merge_group:
 
 permissions:
   contents: read
