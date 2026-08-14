@@ -114,7 +114,7 @@ class TaxSlabAdminController extends Controller
         $validated = $this->validatePayload($request, partial: true);
 
         // Normalisation pays (le guard d'unicité compare en majuscules).
-        if (isset($validated['country_code'])) {
+        if (array_key_exists('country_code', $validated)) {
             $validated['country_code'] = strtoupper((string) $validated['country_code']);
         }
 

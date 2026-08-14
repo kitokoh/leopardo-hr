@@ -122,6 +122,22 @@ interface CountryRulesInterface
     public function complianceWarning(): string;
 
     /**
+     * Issue #1872 — source légale de référence du pays (référentiel de
+     * conformité). Surchargée par les pays qui citent une source plus précise
+     * (loi/décret) — utilisée par le contrat de calcul pour afficher
+     * « source + date de vérification » côté clients web/mobile.
+     */
+    public function complianceSource(): string;
+
+    /**
+     * Issue #1872 — date de dernière VÉRIFICATION EXPERTE des taux légaux
+     * (YYYY-MM-DD), ou null tant qu'aucune validation experte n'a eu lieu
+     * (registre : docs/payroll/VALIDATION_EXPERTE.md, issues #1904/#1912).
+     * Un pays en `production` doit renseigner cette date.
+     */
+    public function verificationDate(): ?string;
+
+    /**
      * Standard legal weekly working-hours threshold beyond which overtime
      * applies by default, absent a company-specific schedule override (see
      * Schedule::overtime_threshold_weekly for the per-company setting this
