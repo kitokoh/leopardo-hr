@@ -160,7 +160,9 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
-        $this->assertSame('Bulletin mars 2026.pdf', $document->fresh()->name);
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('Bulletin mars 2026.pdf', $fresh->name);
     }
 
     public function test_read_only_document_cannot_be_moved(): void
@@ -174,7 +176,9 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
-        $this->assertNull($document->fresh()->folder_id);
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertNull($fresh->folder_id);
     }
 
     public function test_read_only_document_cannot_have_notes_updated(): void
@@ -188,7 +192,9 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
-        $this->assertNull($document->fresh()->notes);
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertNull($fresh->notes);
     }
 
     public function test_normal_document_can_be_renamed_and_moved(): void
@@ -202,6 +208,8 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertOk();
-        $this->assertSame('Nouveau nom.pdf', $document->fresh()->name);
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('Nouveau nom.pdf', $fresh->name);
     }
 }
