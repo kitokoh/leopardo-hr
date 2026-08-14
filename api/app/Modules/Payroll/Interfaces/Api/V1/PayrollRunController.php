@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
@@ -17,7 +18,6 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
-use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -110,6 +110,17 @@ class PayrollRunController extends Controller
         $payrollRun->update(['status' => 'calculating']);
         $run = $this->calculator->calculateRun($payrollRun);
 
+        // Issue #1767 : un calcul à 0 bulletin (ex. aucune structure salariale
+        // active pour ce pays) ne doit pas réussir en silence — sinon le run
+        // peut être validé/verrouillé à vide (clôture comptable à zéro).
+        if ((int) $run->employee_count === 0) {
+            $run->update(['status' => PayrollRun::STATUS_DRAFT]);
+
+            return response()->json([
+                'message' => __('payroll.zero_slips_generated'),
+            ], 422);
+        }
+
         return (new PayrollRunResource($run->loadCount('paySlips')))->response();
     }
 
@@ -128,7 +139,7 @@ class PayrollRunController extends Controller
             // Étape 1 du workflow F-11 : validation RH via le service de clôture
             // (mise à jour conditionnelle atomique + audit trail `payroll_run_validated`).
             $this->closing->validateRh($payrollRun, $actor);
-        } catch (PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+        } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
@@ -183,7 +194,7 @@ class PayrollRunController extends Controller
 
         try {
             $this->closing->lock($payrollRun, $actor);
-        } catch (PayrollAlreadyValidatedException|\App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException|\RuntimeException $e) {
+        } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
