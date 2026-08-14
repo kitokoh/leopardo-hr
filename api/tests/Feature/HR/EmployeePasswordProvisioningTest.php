@@ -48,6 +48,10 @@ class EmployeePasswordProvisioningTest extends TestCase
             'slug' => 'acme-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'company@acme-qa.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
             'currency' => 'DZD',
             'status' => 'active',
         ]);
