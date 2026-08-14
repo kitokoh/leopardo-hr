@@ -339,7 +339,7 @@ class PayrollCountryRulesTest extends TestCase
             if ($memberCode === 'CI') {
                 self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'BF') {
-                self::assertCount(5, $rules->taxSlabs()); // IUTS 5 tranches
+                self::assertCount(6, $rules->taxSlabs()); // IUTS 6 tranches (#1915 : +27,5 % > 6 M)
                 self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
             } elseif ($memberCode === 'ML') {
                 self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
