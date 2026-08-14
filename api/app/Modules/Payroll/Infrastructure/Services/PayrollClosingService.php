@@ -34,20 +34,24 @@ class PayrollClosingService
      * Étape 1 — validation RH (contrôle des montants avant clôture comptable).
      *
      * @throws PayrollAlreadyValidatedException si le run est déjà validé
-     * @throws PayrollRunLockedException        si le run est verrouillé
-     * @throws \RuntimeException                si le run n'est pas en état calculé
+     * @throws PayrollRunLockedException si le run est verrouillé
+     * @throws \RuntimeException si le run n'est pas en état calculé
      */
     public function validateRh(PayrollRun $run, Employee $validator): PayrollRun
     {
         if ($run->status === PayrollRun::STATUS_LOCKED) {
-            throw new PayrollRunLockedException();
+            throw new PayrollRunLockedException;
         }
         if ($run->status === PayrollRun::STATUS_VALIDATED) {
-            throw new PayrollAlreadyValidatedException();
+            throw new PayrollAlreadyValidatedException;
         }
         if ($run->status !== PayrollRun::STATUS_CALCULATED) {
             throw new \RuntimeException('Un run doit être calculé avant validation RH (statut actuel : '.$run->status.').');
         }
+
+        // Issue #1767 : interdire la validation d'un run à 0 bulletin (une
+        // clôture comptable à zéro sans avertissement est une erreur RH).
+        $this->assertHasPaySlips($run);
 
         return DB::transaction(function () use ($run, $validator): PayrollRun {
             $updated = PayrollRun::query()
@@ -62,7 +66,7 @@ class PayrollClosingService
             if ($updated === 0) {
                 $fresh = $run->fresh();
                 throw $fresh?->status === PayrollRun::STATUS_LOCKED
-                    ? new PayrollRunLockedException()
+                    ? new PayrollRunLockedException
                     : new PayrollAlreadyValidatedException('L\'état du run a changé entre la lecture et la validation.');
             }
 
@@ -92,11 +96,14 @@ class PayrollClosingService
     public function lock(PayrollRun $run, Employee $validator): PayrollRun
     {
         if ($run->status === PayrollRun::STATUS_LOCKED) {
-            throw new PayrollRunLockedException();
+            throw new PayrollRunLockedException;
         }
         if ($run->status !== PayrollRun::STATUS_VALIDATED) {
             throw new PayrollAlreadyValidatedException('Un run doit être validé (étape RH) avant verrouillage comptable.');
         }
+
+        // Issue #1767 : interdire la clôture comptable d'un run à 0 bulletin.
+        $this->assertHasPaySlips($run);
 
         return DB::transaction(function () use ($run, $validator): PayrollRun {
             $updated = PayrollRun::query()
@@ -111,7 +118,7 @@ class PayrollClosingService
             if ($updated === 0) {
                 $fresh = $run->fresh();
                 throw $fresh?->status === PayrollRun::STATUS_LOCKED
-                    ? new PayrollRunLockedException()
+                    ? new PayrollRunLockedException
                     : new \RuntimeException('L\'état du run a changé entre la lecture et le verrouillage.');
             }
 
@@ -182,6 +189,17 @@ class PayrollClosingService
 
             return $run;
         });
+    }
+
+    /**
+     * Issue #1767 : un run sans aucun bulletin ne doit jamais être validé ni
+     * verrouillé (clôture comptable à zéro sans avertissement).
+     */
+    private function assertHasPaySlips(PayrollRun $run): void
+    {
+        if ($run->paySlips()->count() === 0) {
+            throw new \RuntimeException('Ce run ne contient aucun bulletin — impossible de valider/clôturer une paie vide. Vérifiez les structures salariales actives et recalculez.');
+        }
     }
 
     /**
