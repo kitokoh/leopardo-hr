@@ -43,9 +43,9 @@ class PayrollSimulationController extends Controller
 
         $validated = $request->validate([
             'gross_salary' => ['required', 'numeric', 'min:0'],
-            'country_code' => ['required', 'string', Rule::in([
-                'DZ', 'MA', 'FR', 'TN', 'TR', 'SN', 'CM', 'CF', 'TD', 'CG', 'GA', 'GQ', 'CI', 'ML', 'BF', 'BJ', 'TG', 'NE', 'CA',
-            ])],
+            // #1951 : contrat partagé — mêmes pays que le moteur de paie
+            // (plus de liste in: hardcodée, divergence #1951).
+            'country_code' => ['required', 'string', Rule::in($this->payrollCalculator->rulesResolver()->supportedCountryCodes())],
             'slabs_override' => ['sometimes', 'array', 'min:1'],
             'slabs_override.*.min' => ['required_with:slabs_override', 'numeric', 'min:0'],
             'slabs_override.*.max' => ['nullable', 'numeric', 'min:0'],
