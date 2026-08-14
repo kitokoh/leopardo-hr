@@ -58,7 +58,10 @@ class ResilientThrottleRequests extends ThrottleRequests
             // Limit::none() : route non throttlée — pas de compteur à vérifier.
             // $next() s'exécute HORS de tout try : une exception du pipeline en
             // aval ne doit jamais être convertie en 429 dégradé.
-            return $next($request);
+            /** @var Response $response */
+            $response = $next($request);
+
+            return $response;
         }
 
         // ── Phase limiter : vérification + incrément du compteur (HORS $next).
@@ -85,6 +88,7 @@ class ResilientThrottleRequests extends ThrottleRequests
 
         // ── Pipeline applicatif : les exceptions du contrôleur remontent
         //    telles quelles (jamais converties en 429).
+        /** @var Response $response */
         $response = $next($request);
 
         // ── Phase headers : une panne du stockage n'invalide pas la réponse.
