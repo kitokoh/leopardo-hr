@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use App\Modules\Payroll\Infrastructure\Services\IslamicHijriCalendar;
 use Illuminate\Support\Facades\Artisan;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\IslamicCalendarSeeder;
@@ -63,6 +64,60 @@ class PublicHolidayIslamicSeederTest extends TestCase
 
         (new IslamicCalendarSeeder())->run();
         $this->assertSame($total, DB::table('islamic_calendar')->count());
+    }
+
+    public function test_islamic_calendar_seeder_generates_2028_and_beyond(): void
+    {
+        // Issue #1931 — le seeder doit couvrir 2028+ (algorithme hégirien
+        // tabulaire) : en 2028 la paie ne doit PAS perdre silencieusement
+        // les fériés islamiques (fallback working_days).
+        (new IslamicCalendarSeeder())->run();
+
+        // 2028 : toutes les fêtes du mapping DZ présentes.
+        foreach (['eid_al_fitr', 'eid_al_adha', 'mawlid', 'muharram'] as $key) {
+            $this->assertGreaterThan(
+                0,
+                DB::table('islamic_calendar')->where('holiday_key', $key)->where('year', 2028)->count(),
+                "{$key} manquant pour 2028 (génération #1931)"
+            );
+        }
+
+        // 2035 : toujours couvert (persistance de la génération).
+        $this->assertGreaterThan(
+            0,
+            DB::table('islamic_calendar')->where('holiday_key', 'eid_al_fitr')->where('year', 2035)->count()
+        );
+
+        // Tahmarit (Tamkharit SN) seedé — clé attendue par le mapping SN
+        // (config/islamic_holidays_map.php), jamais présente avant #1931.
+        $this->assertGreaterThan(
+            0,
+            DB::table('islamic_calendar')->where('holiday_key', 'tahmarit')->count(),
+            'tahmarit (Tamkharit) jamais seedé avant #1931'
+        );
+    }
+
+    public function test_islamic_hijri_calendar_matches_observed_2024_2027(): void
+    {
+        // Validation de l'algorithme tabulaire sur les dates OBSERVÉES du
+        // seeder (islamicfinder.org) : ±1-2 jours attendu (observation
+        // lunaire), tolérance large de 3 jours.
+        $cases = [
+            [1445, 10, 1, '2024-04-10'],   // Aïd el-Fitr 2024
+            [1446, 10, 1, '2025-03-30'],   // Aïd el-Fitr 2025
+            [1446, 12, 10, '2025-06-06'],  // Aïd el-Adha 2025
+            [1448, 3, 12, '2026-08-24'],   // Maouloud 2026
+        ];
+
+        foreach ($cases as [$hijriYear, $month, $day, $observed]) {
+            $computed = IslamicHijriCalendar::hijriToGregorianDate($hijriYear, $month, $day);
+            $diff = abs(strtotime($computed) - strtotime($observed)) / 86400;
+            $this->assertLessThanOrEqual(
+                3,
+                $diff,
+                "Écart inattendu entre tabulaire ({$computed}) et observé ({$observed}) pour H{$hijriYear}/{$month}/{$day}"
+            );
+        }
     }
 
     public function test_database_seeder_wires_holiday_seeders(): void
