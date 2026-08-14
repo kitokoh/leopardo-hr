@@ -88,13 +88,15 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CedeaoPayrollRules)->forMemberCountry('CI');
 
-        // Brut 3 000 000 XOF > plafond 1 647 315 → assiette 1 647 315 :
-        //   salariale : 1 647 315 × 3,6 % = 59 303,34
-        //   patronale : 1 647 315 × 16,4 % = 270 159,66
+        // #1825 : taux légaux CNSS CI — brut 3 000 000 XOF > plafond
+        // 1 647 315 → assiette plafonnée pour retraite + famille :
+        //   salariale : 1 647 315 × 3,2 % = 52 714,08
+        //   patronale : retraite 4,5 % + famille 5,75 % sur 1 647 315
+        //               + AT 2,0 % NON plafonné sur le brut complet.
         $charges = $rules->calculateSocialCharges(3000000.0);
 
-        $this->assertSame(59303.34, $charges['employee']);
-        $this->assertSame(270159.66, $charges['employer']);
+        $this->assertSame(52714.08, $charges['employee']);
+        $this->assertSame(228849.79, $charges['employer']);
     }
 
     public function test_other_cedeao_members_keep_uncapped_placeholder(): void

@@ -88,6 +88,19 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
+        // CI (#1825) : taux CNSS légaux CGI ivoirien 2024 — retraite salarié
+        // 3,2 % / patronal 4,5 %, famille patronal 5,75 % (plafond
+        // 1 647 315 XOF/mois), AT patronal 2,0 % (non plafonné).
+        // (valeurs à valider par expert-comptable OHADA-CI — 'pilot'.)
+        if ($this->memberCountryCode === 'CI') {
+            return [
+                ['name' => 'CNSS Retraite Salariale (CI)', 'code' => 'CNSS_CI_RET_EMP', 'type' => 'employee', 'rate' => 3.2, 'cap' => 1647315.0],
+                ['name' => 'CNSS Retraite Patronale (CI)', 'code' => 'CNSS_CI_RET_PAT', 'type' => 'employer', 'rate' => 4.5, 'cap' => 1647315.0],
+                ['name' => 'CNSS Famille Patronale (CI)', 'code' => 'CNSS_CI_FAM_PAT', 'type' => 'employer', 'rate' => 5.75, 'cap' => 1647315.0],
+                ['name' => 'CNSS AT Patronale (CI)', 'code' => 'CNSS_CI_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
+            ];
+        }
+
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNSS_CEDEAO_EMP', 'type' => 'employee', 'rate' => 3.6, 'cap' => null],
             ['name' => 'CNPS/CNSS Patronale (retraite/famille/AT)', 'code' => 'CNSS_CEDEAO_PAT', 'type' => 'employer', 'rate' => 16.4, 'cap' => null],
@@ -96,6 +109,20 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
+        // CI (#1825) : ITSAS Côte d'Ivoire (CGI art. 116-120) — tranches
+        // ANNUELLES : 0–600 000 : 0 % · 600 001–2 000 000 : 2 %
+        // 2 000 001–5 000 000 : 21 % · 5 000 001–10 000 000 : 24,5 %
+        // > 10 000 000 : 29 % (assiette = brut − CNSS − abattement 20 %).
+        if ($this->memberCountryCode === 'CI') {
+            return [
+                ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
+                ['min' => 600001, 'max' => 2000000, 'rate' => 2, 'fixed_deduction' => 0],
+                ['min' => 2000001, 'max' => 5000000, 'rate' => 21, 'fixed_deduction' => 0],
+                ['min' => 5000001, 'max' => 10000000, 'rate' => 24.5, 'fixed_deduction' => 0],
+                ['min' => 10000001, 'max' => null, 'rate' => 29, 'fixed_deduction' => 0],
+            ];
+        }
+
         // Conservative placeholder progressive IGR-style schedule, common
         // shape across UEMOA members. confidenceLevel() below explicitly
         // marks this as 'placeholder', not a legally validated figure per
@@ -111,14 +138,50 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
     {
-        $annualTaxable = $grossTaxable * $annualBasis;
-        $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
+        if ($this->memberCountryCode !== 'CI') {
+            $annualTaxable = $grossTaxable * $annualBasis;
+            $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
-        return round($tax / $annualBasis, 2);
+            return round($tax / $annualBasis, 2);
+        }
+
+        // CI (#1825, CGI art. 116-120) :
+        //   1. Assiette ITSAS = brut − CNSS salariale − abattement frais pro
+        //      (20 % du brut, non plafonné). Le moteur passe brut − CNSS
+        //      salariale ; l'abattement est appliqué sur cette base
+        //      (≈ 19,4 % du brut — approximation pilot, CI_COMPLIANCE.md §1).
+        //   2. ITSAS progressif annuel / 12 (tranches art. 116-120).
+        //   3. Contribution Nationale : 1,5 % sur la part mensuelle > 50 000
+        //      XOF (seuil annuel 600 000 XOF).
+        //   4. Impôt total = ITSAS mensuel + CN mensuelle.
+        $abatement = $this->professionalExpensesDeduction();
+        $monthlyDeduction = $grossTaxable * ($abatement['rate'] / 100);
+
+        $annualTaxable = max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
+        $itsas = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs()) / $annualBasis;
+
+        $cn = max(0.0, $grossTaxable - 50000.0) * 0.015;
+
+        return round($itsas + $cn, 2);
     }
 
     public function calculateSocialCharges(float $grossSalary): array
     {
+        // CI (#1825) : décomposition légale — retraite salarié 3,2 % /
+        // retraite patronal 4,5 % / famille patronal 5,75 % (plafond
+        // 1 647 315 XOF/mois) + AT patronal 2,0 % (non plafonné).
+        if ($this->memberCountryCode === 'CI') {
+            return [
+                'employee' => $this->computeContribution($grossSalary, 'CNSS_CI_RET_EMP', 3.2, 1647315.0),
+                'employer' => round(
+                    $this->computeContribution($grossSalary, 'CNSS_CI_RET_PAT', 4.5, 1647315.0)
+                    + $this->computeContribution($grossSalary, 'CNSS_CI_FAM_PAT', 5.75, 1647315.0)
+                    + $this->computeContribution($grossSalary, 'CNSS_CI_AT_PAT', 2.0, null),
+                    2,
+                ),
+            ];
+        }
+
         // ZONE-INFRA (#1820): Côte d'Ivoire (CI) statutory CNSS ceiling
         // 1 647 315 XOF/month is applied via computeContribution(); the
         // other five CEDEAO members stay on the placeholder (uncapped)
@@ -168,9 +231,25 @@ class CedeaoPayrollRules extends AbstractCountryRules
             'until PA2-COUNTRY-012 delivers a real source.';
     }
 
+    /**
+     * CI (#1825) : abattement frais professionnels 20 % du brut, non
+     * plafonné (CGI ivoirien). Les autres membres UEMOA n'en ont pas
+     * (défaut 0 %).
+     *
+     * @return array{rate: float, cap: float|null}
+     */
+    public function professionalExpensesDeduction(): array
+    {
+        if ($this->memberCountryCode === 'CI') {
+            return ['rate' => 20.0, 'cap' => null];
+        }
+
+        return parent::professionalExpensesDeduction();
+    }
+
     public function confidenceLevel(): string
     {
-        return 'placeholder';
+        return $this->memberCountryCode === 'CI' ? 'pilot' : 'placeholder';
     }
 
     /**
@@ -205,9 +284,28 @@ class CedeaoPayrollRules extends AbstractCountryRules
      */
     public function overtimeRateTiers(): array
     {
+        // CI (#1825, Code du travail art. 21) : +15 % de 40 à 48 h,
+        // +35 % de 48 à 54 h, +50 % au-delà (nuit/dimanche).
+        if ($this->memberCountryCode === 'CI') {
+            return [
+                ['up_to_hours' => 8.0, 'multiplier' => 1.15],
+                ['up_to_hours' => 14.0, 'multiplier' => 1.35],
+                ['up_to_hours' => null, 'multiplier' => 1.50],
+            ];
+        }
+
         return [
             ['up_to_hours' => 8.0, 'multiplier' => 1.15],
             ['up_to_hours' => null, 'multiplier' => 1.35],
         ];
+    }
+
+    /**
+     * CI (#1825) : 13ème mois généralisé par conventions de branche
+     * (obligatoire dans la plupart) — convention OHADA-CI.
+     */
+    public function thirteenthMonthMandatory(): bool
+    {
+        return $this->memberCountryCode === 'CI';
     }
 }
