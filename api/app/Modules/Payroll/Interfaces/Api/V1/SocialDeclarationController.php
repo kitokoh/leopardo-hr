@@ -15,7 +15,7 @@ use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class SocialDeclarationController extends Controller
 {
@@ -292,15 +292,22 @@ class SocialDeclarationController extends Controller
      * CEMAC/CM (#1823) — déclaration CNPS mensuelle Cameroun (format DAS) :
      * CSV téléchargeable, une ligne par bulletin validé du run + totaux.
      */
-    public function generateCnpsCmDeclaration(Request $request, PayrollRun $payrollRun): StreamedResponse
+    public function generateCnpsCmDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
         /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
+        // RBAC resserré : la déclaration CNPS DAS est réservée aux managers
+        // principal/comptable (pas n'importe quel manager).
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
             abort(403);
+        }
+        // Garde pays : la déclaration CNPS CM ne s'applique qu'aux runs
+        // camerounais (CEMAC/CM #1823).
+        if ($payrollRun->country_code !== 'CM') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Cameroun (CNPS CM).'], 422);
         }
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnps_cm_declaration');

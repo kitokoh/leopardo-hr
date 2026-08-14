@@ -224,4 +224,73 @@ class CnpsDeclarationTest extends TestCase
 
         $this->get("/api/v1/payroll-runs/{$run->id}/declarations/cnps-cm")->assertForbidden();
     }
+
+    public function test_manager_rh_cannot_download_declaration(): void
+    {
+        $run = $this->makeRun();
+        // RBAC resserré : manager sans rôle principal/comptable → 403.
+        /** @var Employee $managerRh */
+        $managerRh = Employee::factory()->managerRh()->create(['company_id' => $this->company->id]);
+        Sanctum::actingAs($managerRh);
+
+        $this->get("/api/v1/payroll-runs/{$run->id}/declarations/cnps-cm")->assertForbidden();
+    }
+
+    public function test_non_cm_run_rejected_with_422(): void
+    {
+        /** @var PayrollRun $run */
+        $run = PayrollRun::create([
+            'company_id' => $this->company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'SN',
+            'status' => PayrollRun::STATUS_VALIDATED,
+        ]);
+
+        Sanctum::actingAs($this->manager);
+
+        $this->get("/api/v1/payroll-runs/{$run->id}/declarations/cnps-cm")
+            ->assertStatus(422)
+            ->assertJson(['message' => 'Ce run ne concerne pas le Cameroun (CNPS CM).']);
+    }
+
+    public function test_matricule_falls_back_to_internal_matricule(): void
+    {
+        $run = $this->makeRun();
+        /** @var Employee $emp */
+        $emp = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'first_name' => 'Sans',
+            'last_name' => 'MatriculeCnps',
+            'matricule' => 'EMP-4242',
+            'cnps_matricule' => null,
+        ]);
+        $this->addValidatedSlip($run, $emp, 100000.0);
+
+        $csv = (new CnpsDeclarationGenerator)->generate($run);
+        $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
+
+        $row = str_getcsv($lines[1]);
+        $this->assertSame('EMP-4242', $row[0]);
+    }
+
+    public function test_matricule_falls_back_to_employee_id(): void
+    {
+        $run = $this->makeRun();
+        /** @var Employee $emp */
+        $emp = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'first_name' => 'Sans',
+            'last_name' => 'MatriculeDuTout',
+            'matricule' => null,
+            'cnps_matricule' => null,
+        ]);
+        $this->addValidatedSlip($run, $emp, 100000.0);
+
+        $csv = (new CnpsDeclarationGenerator)->generate($run);
+        $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
+
+        $row = str_getcsv($lines[1]);
+        $this->assertSame((string) $emp->id, $row[0]);
+    }
 }

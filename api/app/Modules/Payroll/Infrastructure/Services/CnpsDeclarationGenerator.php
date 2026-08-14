@@ -5,30 +5,54 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 
 /**
  * CEMAC/CM (#1823) — déclaration CNPS mensuelle camerounaise (format DAS).
  *
  * Une ligne par bulletin validé du run : matricule CNPS, nom, prénom,
- * salaire brut, assiette plafonnée (min(brut, 750 000 XAF)), cotisation
- * vieillesse salariale (4,2 %), vieillesse patronale (4,2 %), famille
- * patronale (7,0 %), AT patronale (2,0 % non plafonnée), total patronal.
- * Ligne de totaux en fin de fichier pour contrôle (CM_COMPLIANCE.md §2).
+ * salaire brut, assiette plafonnée (min(brut, plafond CNPS CM)), cotisation
+ * vieillesse salariale, vieillesse patronale, famille patronale, AT
+ * patronale (non plafonnée), total patronal. Ligne de totaux en fin de
+ * fichier pour contrôle (CM_COMPLIANCE.md §2).
+ *
+ * Les taux et le plafond ne sont PAS dupliqués ici : ils sont résolus depuis
+ * `CemacPayrollRules` (forMemberCountry('CM'), asOf(period du run)) — la
+ * source de vérité unique du moteur de paie, au même titre que le calcul
+ * des bulletins (PA2-ARCH-004 : relecture d'un run passé = taux effectifs
+ * de sa propre période).
+ *
+ * Matricule : `cnps_matricule` employé, repli sur `matricule` interne puis
+ * sur l'id du bulletin si l'employé n'a aucun matricule.
  *
  * ⚠️ Format à valider avec un comptable camerounais — structure interne
  * documentée, comme la CNAS DZ.
  */
 class CnpsDeclarationGenerator
 {
-    public const CNPS_CAP = 750000.0;
+    /**
+     * Taux et plafonds CNPS CM résolus depuis les règles pays (CEMAC/CM) —
+     * codes `CNPS_CM_*` déclarés par CemacPayrollRules::socialContributions().
+     *
+     * @return array<string, array{rate: float, cap: float|null}>
+     */
+    private function contributionRates(PayrollRun $run): array
+    {
+        $resolved = [];
 
-    public const RATE_VIEILLESSE_EMP = 4.2;
+        $rules = (new CemacPayrollRules)
+            ->forMemberCountry('CM')
+            ->asOf($run->period_start);
 
-    public const RATE_VIEILLESSE_PAT = 4.2;
+        foreach ($rules->socialContributions() as $contribution) {
+            $resolved[$contribution['code']] = [
+                'rate' => (float) $contribution['rate'],
+                'cap' => $contribution['cap'] === null ? null : (float) $contribution['cap'],
+            ];
+        }
 
-    public const RATE_FAMILLE_PAT = 7.0;
-
-    public const RATE_AT_PAT = 2.0;
+        return $resolved;
+    }
 
     /**
      * @return string CSV complet : en-tête + une ligne par bulletin + totaux
@@ -36,9 +60,16 @@ class CnpsDeclarationGenerator
     public function generate(PayrollRun $run): string
     {
         $slips = $run->paySlips()
-            ->with('employee:id,first_name,last_name,cnps_matricule')
+            ->with('employee:id,first_name,last_name,matricule,cnps_matricule')
             ->where('status', 'validated')
             ->get();
+
+        $rates = $this->contributionRates($run);
+
+        // Plafond statutaire CNPS CM (vieillesse + famille) : la vieillesse
+        // et la famille partagent le même cap dans CemacPayrollRules ; l'AT
+        // (2 %) n'est pas plafonnée (cap null → assiette = brut entier).
+        $ceiling = $rates['CNPS_CM_VIE_EMP']['cap'] ?? PHP_FLOAT_MAX;
 
         $header = [
             'matricule_cnps', 'nom', 'prenom', 'salaire_brut',
@@ -49,19 +80,19 @@ class CnpsDeclarationGenerator
 
         foreach ($slips as $slip) {
             $gross = (float) $slip->gross_salary;
-            $cappedBase = min($gross, self::CNPS_CAP);
+            $cappedBase = min($gross, $ceiling);
 
-            $vieillesseEmp = round($cappedBase * self::RATE_VIEILLESSE_EMP / 100, 2);
-            $vieillessePat = round($cappedBase * self::RATE_VIEILLESSE_PAT / 100, 2);
-            $famillePat = round($cappedBase * self::RATE_FAMILLE_PAT / 100, 2);
+            $vieillesseEmp = round($cappedBase * $rates['CNPS_CM_VIE_EMP']['rate'] / 100, 2);
+            $vieillessePat = round($cappedBase * $rates['CNPS_CM_VIE_PAT']['rate'] / 100, 2);
+            $famillePat = round($cappedBase * $rates['CNPS_CM_FAM_PAT']['rate'] / 100, 2);
             // L'AT (2 %) n'est pas plafonnée : assiette = brut entier.
-            $atPat = round($gross * self::RATE_AT_PAT / 100, 2);
+            $atPat = round($gross * $rates['CNPS_CM_AT_PAT']['rate'] / 100, 2);
             $totalPat = round($vieillessePat + $famillePat + $atPat, 2);
 
             $employee = $slip->employee;
 
             $rows[] = [
-                (string) ($employee->cnps_matricule ?? ''),
+                (string) ($employee->cnps_matricule ?? $employee->matricule ?? $slip->employee_id),
                 (string) ($employee->last_name ?? ''),
                 (string) ($employee->first_name ?? ''),
                 number_format($gross, 2, '.', ''),
@@ -93,13 +124,17 @@ class CnpsDeclarationGenerator
     }
 
     /**
-     * Totaux de contrôle sur les bulletins validés du run.
+     * Totaux de contrôle sur les bulletins validés du run (mêmes règles
+     * que generate(), taux résolus depuis CemacPayrollRules).
      *
      * @return array{gross: float, capped_base: float, vieillesse_emp: float, vieillesse_pat: float, famille_pat: float, at_pat: float, total_patronal: float, slip_count: int}
      */
     public function totals(PayrollRun $run): array
     {
         $slips = $run->paySlips()->where('status', 'validated')->get();
+
+        $rates = $this->contributionRates($run);
+        $ceiling = $rates['CNPS_CM_VIE_EMP']['cap'] ?? PHP_FLOAT_MAX;
 
         $gross = 0.0;
         $cappedBase = 0.0;
@@ -110,14 +145,14 @@ class CnpsDeclarationGenerator
 
         foreach ($slips as $slip) {
             $slipGross = (float) $slip->gross_salary;
-            $slipCapped = min($slipGross, self::CNPS_CAP);
+            $slipCapped = min($slipGross, $ceiling);
 
             $gross += $slipGross;
             $cappedBase += $slipCapped;
-            $vieillesseEmp += round($slipCapped * self::RATE_VIEILLESSE_EMP / 100, 2);
-            $vieillessePat += round($slipCapped * self::RATE_VIEILLESSE_PAT / 100, 2);
-            $famillePat += round($slipCapped * self::RATE_FAMILLE_PAT / 100, 2);
-            $atPat += round($slipGross * self::RATE_AT_PAT / 100, 2);
+            $vieillesseEmp += round($slipCapped * $rates['CNPS_CM_VIE_EMP']['rate'] / 100, 2);
+            $vieillessePat += round($slipCapped * $rates['CNPS_CM_VIE_PAT']['rate'] / 100, 2);
+            $famillePat += round($slipCapped * $rates['CNPS_CM_FAM_PAT']['rate'] / 100, 2);
+            $atPat += round($slipGross * $rates['CNPS_CM_AT_PAT']['rate'] / 100, 2);
         }
 
         return [
