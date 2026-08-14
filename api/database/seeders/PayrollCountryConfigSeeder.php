@@ -30,6 +30,10 @@ class PayrollCountryConfigSeeder extends Seeder
             new FrancePayrollRules,
             new TurkeyPayrollRules,
             new SenegalPayrollRules,
+            // CM (#1821) : barèmes IRPP CGI 2024 + CNPS (pilot) seedés comme
+            // les autres pays — les autres membres CEMAC restent placeholder
+            // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
+            (new CemacPayrollRules)->forMemberCountry('CM'),
         ];
 
         foreach ($rules as $countryRules) {
@@ -49,6 +53,10 @@ class PayrollCountryConfigSeeder extends Seeder
                         'cap' => $contribution['cap'],
                         'effective_from' => '2026-01-01',
                         'effective_to' => null,
+                        // Issue #1813 : la config nationale de référence est
+                        // officielle → active (contourne le workflow de
+                        // validation réservé aux modifications runtime).
+                        'status' => SocialContribution::STATUS_ACTIVE,
                     ]
                 );
             }
@@ -67,11 +75,11 @@ class PayrollCountryConfigSeeder extends Seeder
                         'fixed_deduction' => $slab['fixed_deduction'],
                         'effective_from' => '2026-01-01',
                         'effective_to' => null,
+                        // Issue #1813 : config nationale officielle → active.
+                        'status' => TaxSlab::STATUS_ACTIVE,
                     ]
                 );
             }
         }
     }
 }
-
-

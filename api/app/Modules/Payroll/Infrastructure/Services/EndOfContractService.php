@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
 
@@ -27,7 +29,7 @@ use Carbon\Carbon;
  */
 class EndOfContractService
 {
-    public function __construct(private readonly PayrollCalculator $calculator = new PayrollCalculator()) {}
+    public function __construct(private readonly PayrollCalculator $calculator = new PayrollCalculator) {}
 
     /**
      * Solde de tout compte à une date donnée (défaut : aujourd'hui).
@@ -93,7 +95,7 @@ class EndOfContractService
         ];
     }
 
-    /** @return array{employee: Employee, company: ?\App\Core\Tenant\Domain\Models\Company, months_of_service: int, settlement: array<string, mixed>} */
+    /** @return array{employee: Employee, company: ?Company, months_of_service: int, settlement: array<string, mixed>} */
     public function certificateData(Employee $employee, ?Carbon $endDate = null): array
     {
         $endDate = $endDate ?? $this->resolveEndDate($employee);
@@ -112,7 +114,7 @@ class EndOfContractService
             return (float) $employee->salary_base;
         }
 
-        $structure = \App\Modules\Payroll\Domain\Models\SalaryStructure::query()
+        $structure = SalaryStructure::query()
             ->where('company_id', $employee->company_id)
             ->where('active', true)
             ->where('country_code', $employee->company->country ?? 'DZ')
