@@ -35,7 +35,9 @@ class PaySlipResource extends JsonResource
             'period_end' => $this->period_end?->toDateString(),
             // Issue #2116 — champs calculés pour les clients web
             // (rétro-compatibles : champs ADDITIFS, aucun retrait).
-            'period' => $this->period_start?->format('Y-m'),
+            // `period_start` est non-nullable (Carbon) : pas de nullsafe
+            // (pattern PHPStan strict nullsafe.neverNull, baseline).
+            'period' => $this->period_start->format('Y-m'),
             'employee_name' => $this->employee_name(),
             'country_code' => $this->payrollRun?->country_code,
             'compliance' => $this->compliancePayload(),
@@ -84,7 +86,8 @@ class PaySlipResource extends JsonResource
             return null;
         }
 
-        $rules = $resolver->resolve($countryCode, $this->company_id);
+        $companyId = $this->company_id !== null ? (string) $this->company_id : null;
+        $rules = $resolver->resolve($countryCode, $companyId);
 
         return self::$complianceCache[$countryCode] = [
             'level' => $rules->confidenceLevel(),
