@@ -40,6 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       run_e2e: ${{ steps.check.outputs.run_e2e }}
+      e2e_failure_reason: ${{ steps.check.outputs.e2e_failure_reason }}
     steps:
       # Audit §4.2 / Plan P3: previously gated on the parent "Deploy - Leopardo RH"
       # workflow_run's overall conclusion, which also depends on the
@@ -80,7 +81,36 @@ jobs:
             const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
 
             core.info(`deploy-api job conclusion: ${deployApiConclusion}`);
+
+            // Issue #1833 : un run « success » à 0 test exécuté est un faux vert.
+            // Quand deploy-api est skippé (gate de déploiement refusé), on NE
+            // conclut PAS en succès silencieux — on échoue explicitement pour
+            // rendre visible que la suite E2E n'a pas protégé main.
+            if (deployApiConclusion === 'skipped') {
+              // Ne PAS lancer la suite E2E (aucun déploiement à tester) mais
+              // échouer explicitement au lieu d'un « success » à 0 test.
+              core.setOutput('run_e2e', 'false');
+              core.setOutput('e2e_failure_reason', 'deploy-api skipped — E2E cannot run, explicit failure (issue #1833)');
+              return;
+            }
+
             core.setOutput('run_e2e', deployApiConclusion === 'success' ? 'true' : 'false');
+
+  fail-on-skipped-deploy:
+    name: E2E blocked (deploy skipped) — explicit failure
+    runs-on: ubuntu-latest
+    needs: should-run
+    # Issue #1833 : si deploy-api a été skippé, la suite E2E ne peut pas
+    # s'exécuter. Plutôt qu'un « success » à 0 test (faux vert), on échoue
+    # explicitement pour signaler que main n'est pas protégé par l'E2E.
+    if: needs.should-run.outputs.e2e_failure_reason != ''
+    steps:
+      - name: Fail — E2E cannot run
+        run: |
+          echo "::error::${{ needs.should-run.outputs.e2e_failure_reason }}"
+          echo "La suite E2E staging n'a pas pu s'exécuter : le job deploy-api du workflow parent était skippé."
+          echo "Inspecter le run Deploy parent pour comprendre pourquoi le gate a refusé le déploiement."
+          exit 1
 
   e2e-api-smoke:
     name: API Smoke Tests
