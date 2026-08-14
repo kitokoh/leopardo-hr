@@ -270,6 +270,30 @@ class PaySlipControllerTest extends TestCase
     }
 
     /**
+     * Issue #2116 — le contrat self-service `/me/pay-slips` expose aussi le
+     * bloc `compliance` (même ressource, mêmes champs calculés).
+     */
+    public function test_employee_self_service_pay_slips_expose_compliance_block(): void
+    {
+        [$company, , $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee, ['status' => 'validated']);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/pay-slips');
+
+        $response->assertOk();
+        $compliance = $response->json('data.0.compliance');
+        $this->assertIsArray($compliance);
+        $this->assertContains($compliance['level'], ['production', 'pilot', 'placeholder', 'unknown']);
+        $this->assertArrayHasKey('warning', $compliance);
+        $this->assertArrayHasKey('warning_key', $compliance);
+        $this->assertSame('payroll.compliance_warning_'.$compliance['level'], $compliance['warning_key']);
+        $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $compliance['source']);
+        $this->assertTrue($compliance['verification_date'] === null || is_string($compliance['verification_date']));
+    }
+
+    /**
      * @return array{0: Company, 1: Employee, 2: Employee}
      */
     private function payrollActor(): array
