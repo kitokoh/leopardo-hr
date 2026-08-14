@@ -19,6 +19,8 @@ class PayrollRunResource extends JsonResource
             'id' => $this->id,
             'company_id' => $this->company_id,
             'country_code' => $this->country_code,
+            // Issue #1874 — identifiant de corrélation (logs ↔ réponse ↔ audit).
+            'correlation_id' => $this->correlation_id,
             'rules_version' => $this->rules_version,
             'rules_period' => $this->rules_period?->toDateString(),
             'rules_identifier' => $this->rules_identifier,

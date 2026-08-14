@@ -7,10 +7,17 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationAuditRecorder;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -27,7 +34,10 @@ use Illuminate\Validation\Rule;
  */
 class PayrollSimulationController extends Controller
 {
-    public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
+    public function __construct(
+        private readonly PayrollCalculator $payrollCalculator,
+        private readonly PayrollCalculationAuditRecorder $auditRecorder,
+    ) {}
 
     public function simulate(Request $request): JsonResponse
     {
@@ -58,7 +68,13 @@ class PayrollSimulationController extends Controller
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
 
-        $rules = $this->payrollCalculator->getRules($countryCode);
+        // Issue #1874 — identifiant de corrélation de la requête (logs ↔
+        // réponse ↔ audit) : UUID généré par requête, propagé aux logs.
+        $correlationId = (string) Str::uuid();
+        Log::withContext(['correlation_id' => $correlationId]);
+
+        $companyId = $user instanceof Employee ? (string) $user->company_id : null;
+        $rules = $this->resolveRules($correlationId, $companyId, $countryCode, $gross, isset($validated['slabs_override']));
 
         // Override dry-run du barème (non persistant).
         if (isset($validated['slabs_override'])) {
@@ -112,8 +128,30 @@ class PayrollSimulationController extends Controller
         $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
         $totalCost = round($gross + $social['employer'], 2);
 
+        // Issue #1874 — audit de la simulation (résultats agrégés uniquement).
+        $this->auditRecorder->recordSimulation(
+            $correlationId,
+            $companyId,
+            $countryCode,
+            ['gross_salary' => $gross, 'has_slabs_override' => isset($validated['slabs_override'])],
+            [
+                'social_employee' => round($social['employee'], 2),
+                'social_employer' => round($social['employer'], 2),
+                'tax_base' => round($taxBase, 2),
+                'income_tax' => round($incomeTax, 2),
+                'net' => $netSalary,
+                'total_cost' => $totalCost,
+            ],
+            PayrollCalculationAudit::STATUS_SUCCESS,
+            null,
+            $rules->rulesVersion(),
+            (new \ReflectionClass($rules))->getShortName(),
+        );
+
         return response()->json([
             'data' => [
+                // Issue #1874 — corrélation requête ↔ logs ↔ audit.
+                'correlation_id' => $correlationId,
                 'gross' => $gross,
                 'country_code' => $countryCode,
                 'social_employee' => $social['employee'],
@@ -125,5 +163,57 @@ class PayrollSimulationController extends Controller
                 'total_cost' => $totalCost,
             ],
         ]);
+    }
+
+    /**
+     * Résout les règles pays pour la simulation ; toute erreur de résolution
+     * est tracée dans l'audit (rule_missing / validation_error /
+     * provider_error) puis relancée — la réponse HTTP reste inchangée.
+     */
+    private function resolveRules(
+        string $correlationId,
+        ?string $companyId,
+        string $countryCode,
+        float $gross,
+        bool $hasSlabsOverride
+    ): CountryRulesInterface {
+        $input = ['gross_salary' => $gross, 'has_slabs_override' => $hasSlabsOverride];
+
+        try {
+            return $this->payrollCalculator->getRules($countryCode);
+        } catch (UnsupportedCountryRulesException $exception) {
+            $this->auditRecorder->recordSimulation(
+                $correlationId,
+                $companyId,
+                $countryCode,
+                $input,
+                null,
+                PayrollCalculationAudit::STATUS_RULE_MISSING
+            );
+
+            throw $exception;
+        } catch (CountryRulesContextMismatchException $exception) {
+            $this->auditRecorder->recordSimulation(
+                $correlationId,
+                $companyId,
+                $countryCode,
+                $input,
+                null,
+                PayrollCalculationAudit::STATUS_VALIDATION_ERROR
+            );
+
+            throw $exception;
+        } catch (\Throwable $exception) {
+            $this->auditRecorder->recordSimulation(
+                $correlationId,
+                $companyId,
+                $countryCode,
+                $input,
+                null,
+                PayrollCalculationAudit::STATUS_PROVIDER_ERROR
+            );
+
+            throw $exception;
+        }
     }
 }

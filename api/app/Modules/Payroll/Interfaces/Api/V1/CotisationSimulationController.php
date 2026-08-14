@@ -6,11 +6,17 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -36,6 +42,7 @@ class CotisationSimulationController extends Controller
     public function __construct(
         private readonly PayrollCalculator $payrollCalculator,
         private readonly PayrollCalculationPresenter $presenter,
+        private readonly PayrollCalculationAuditRecorder $auditRecorder,
     ) {}
 
     public function simulate(Request $request): JsonResponse
@@ -61,17 +68,18 @@ class CotisationSimulationController extends Controller
             ? Carbon::parse($validated['rules_period'])
             : null;
 
+        // Issue #1874 — identifiant de corrélation de la requête (logs ↔
+        // réponse ↔ audit) : UUID généré par requête, propagé aux logs.
+        $correlationId = (string) Str::uuid();
+        Log::withContext(['correlation_id' => $correlationId]);
+
         // Pays inconnu → 422 explicite (UnsupportedCountryRulesException,
         // rendue par le handler d'exceptions avec un message métier clair).
         // Issue #1924/#1871 — le tenant et la période effective sont transmis
         // afin que les overrides entreprise et les règles historiques soient
         // identiques à ceux appliqués par un bulletin réel.
         $companyId = (string) $actor->company_id;
-        $rules = $this->payrollCalculator->rulesResolver()->resolve(
-            $countryCode,
-            $companyId,
-            $rulesPeriod
-        );
+        $rules = $this->resolveRules($correlationId, $companyId, $countryCode, $gross, $rulesPeriod);
 
         // Issue #1869 — mêmes appels métier que PayrollCalculator::calculateSlip().
         $breakdown = $this->payrollCalculator->computeNetBreakdown($gross, $rules);
@@ -100,8 +108,32 @@ class CotisationSimulationController extends Controller
             }
         }
 
+        // Issue #1874 — audit de la simulation (résultats agrégés uniquement,
+        // jamais de salaires individuels ni de secrets).
+        $this->auditRecorder->recordSimulation(
+            $correlationId,
+            $companyId,
+            $countryCode,
+            ['gross_salary' => $gross, 'rules_period' => $rulesPeriod?->toDateString()],
+            [
+                'total_employee_deduction' => round($social['employee'], 2),
+                'total_employer_cost' => round($social['employer'], 2),
+                'income_tax' => $breakdown['income_tax'],
+                'bracket_tax' => $breakdown['bracket_tax'],
+                'total_deductions' => round($breakdown['base_deductions'], 2),
+                'net_salary' => $breakdown['net_salary'],
+                'total_cost_employer' => $breakdown['total_cost'],
+            ],
+            PayrollCalculationAudit::STATUS_SUCCESS,
+            null,
+            $rules->rulesVersion(),
+            (new \ReflectionClass($rules))->getShortName(),
+        );
+
         return response()->json([
             'data' => [
+                // Issue #1874 — corrélation requête ↔ logs ↔ audit.
+                'correlation_id' => $correlationId,
                 // ── Champs historiques (rétro-compatibles) ───────────────────
                 'country_code' => $countryCode,
                 'gross_salary' => $gross,
@@ -129,5 +161,57 @@ class CotisationSimulationController extends Controller
                 ),
             ],
         ]);
+    }
+
+    /**
+     * Résout les règles pays pour la simulation ; toute erreur de résolution
+     * est tracée dans l'audit (rule_missing / validation_error /
+     * provider_error) puis relancée — la réponse HTTP reste inchangée.
+     */
+    private function resolveRules(
+        string $correlationId,
+        string $companyId,
+        string $countryCode,
+        float $gross,
+        ?Carbon $rulesPeriod
+    ): CountryRulesInterface {
+        $input = ['gross_salary' => $gross, 'rules_period' => $rulesPeriod?->toDateString()];
+
+        try {
+            return $this->payrollCalculator->rulesResolver()->resolve($countryCode, $companyId, $rulesPeriod);
+        } catch (UnsupportedCountryRulesException $exception) {
+            $this->auditRecorder->recordSimulation(
+                $correlationId,
+                $companyId,
+                $countryCode,
+                $input,
+                null,
+                PayrollCalculationAudit::STATUS_RULE_MISSING
+            );
+
+            throw $exception;
+        } catch (CountryRulesContextMismatchException $exception) {
+            $this->auditRecorder->recordSimulation(
+                $correlationId,
+                $companyId,
+                $countryCode,
+                $input,
+                null,
+                PayrollCalculationAudit::STATUS_VALIDATION_ERROR
+            );
+
+            throw $exception;
+        } catch (\Throwable $exception) {
+            $this->auditRecorder->recordSimulation(
+                $correlationId,
+                $companyId,
+                $countryCode,
+                $input,
+                null,
+                PayrollCalculationAudit::STATUS_PROVIDER_ERROR
+            );
+
+            throw $exception;
+        }
     }
 }

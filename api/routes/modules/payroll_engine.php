@@ -21,6 +21,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
 use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
@@ -154,5 +155,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/payment-documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
         Route::get('/payments/{payrollRun}/documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
+    });
+
+    // Issue #1874 — audit des calculs de paie (lecture seule, immuable).
+    // RBAC : manager principal/RH du tenant (PayrollAuditPolicy — isolation
+    // tenant stricte : la liste est scopée à la société de l'acteur) ;
+    // platform admin via /api/v1/admin/payroll/audit (routes api.php).
+    Route::middleware(['api.manager:principal,rh'])->group(function (): void {
+        Route::get('/payroll/audit', [PayrollAuditController::class, 'index']);
+        Route::get('/payroll/audit/{correlationId}', [PayrollAuditController::class, 'show'])->whereUuid('correlationId');
     });
 });

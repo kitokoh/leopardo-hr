@@ -10,6 +10,7 @@ use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesCo
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PayrollCalculator
 {
@@ -35,16 +37,22 @@ class PayrollCalculator
 
     private CountryRulesResolver $resolver;
 
+    private PayrollCalculationAuditRecorder $auditRecorder;
+
     /**
      * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
      */
     public function __construct(
         iterable $countryRules = [],
         private readonly ?PublicHolidayService $publicHolidayService = null,
+        ?PayrollCalculationAuditRecorder $auditRecorder = null,
     ) {
         // MULTI-PAYS (#1868) : point d'entrée unique pour la résolution des
         // règles pays — la map vit dans CountryRulesResolver, plus ici.
         $this->resolver = new CountryRulesResolver($countryRules);
+        // Issue #1874 — audit des calculs : jamais null (repli direct si le
+        // conteneur n'injecte pas le service, ex. app(PayrollCalculator::class)).
+        $this->auditRecorder = $auditRecorder ?? new PayrollCalculationAuditRecorder();
     }
 
     /**
@@ -116,14 +124,68 @@ class PayrollCalculator
         ];
     }
 
+    /**
+     * Issue #1874 — orchestrateur de calcul d'un run de paie :
+     *  1. identifiant de corrélation (généré à la première passe, persisté
+     *     sur le run, propagé aux logs via Log::withContext) ;
+     *  2. exécution du calcul (corps historique dans executeCalculateRun) ;
+     *  3. enregistrement d'audit (payroll_calculation_audits) — succès ou
+     *     échec mappé (rule_missing / provider_error), jamais de données
+     *     individuelles ni de secrets (docs/payroll/AUDIT.md).
+     *
+     * Un run verrouillé (clôture comptable) ne peut plus être recalculé —
+     * aucune modification silencieuse après clôture (F-11) : le garde reste
+     * en tête, hors du périmètre audité (ce n'est pas un calcul).
+     */
     public function calculateRun(PayrollRun $run): PayrollRun
     {
-        // Programme FOCUS (F-11) : un run verrouillé (clôture comptable) ne peut
-        // plus être recalculé — aucune modification silencieuse après clôture.
         if ($run->status === PayrollRun::STATUS_LOCKED) {
             throw new PayrollRunLockedException('Payroll run is locked (closing done). Unlock with reason first.');
         }
 
+        $correlationId = $run->correlation_id ?? (string) Str::uuid();
+        // Corrélation des logs de ce calcul (pattern minimal — pas de
+        // middleware dédié dans le repo, cf. issue #1874).
+        Log::withContext(['correlation_id' => $correlationId]);
+        if ($run->correlation_id === null) {
+            $run->forceFill(['correlation_id' => $correlationId])->save();
+        }
+
+        try {
+            $result = $this->executeCalculateRun($run);
+
+            $this->auditRecorder->recordRunSuccess($result, $correlationId);
+
+            return $result;
+        } catch (UnsupportedCountryRulesException $exception) {
+            // Pays sans règles enregistrées → statut rule_missing (observable).
+            $this->auditRecorder->recordRunFailure(
+                $run,
+                $correlationId,
+                PayrollCalculationAudit::STATUS_RULE_MISSING,
+                $exception
+            );
+
+            throw $exception;
+        } catch (\Throwable $exception) {
+            // Tout autre échec moteur/stockage → provider_error (observable).
+            $this->auditRecorder->recordRunFailure(
+                $run,
+                $correlationId,
+                PayrollCalculationAudit::STATUS_PROVIDER_ERROR,
+                $exception
+            );
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Corps historique de calculateRun() (issues #1868/#1871/#1983) — ne
+     * contient ni corrélation ni audit : uniquement le calcul lui-même.
+     */
+    private function executeCalculateRun(PayrollRun $run): PayrollRun
+    {
         $companyId = $run->company_id;
         $rules = $this->getRules($run->country_code);
         // Scope the rules to this company so any company-specific TaxSlab/

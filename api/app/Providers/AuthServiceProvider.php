@@ -24,6 +24,7 @@ use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\Marketing\Domain\Models\SocialAccount;
 use App\Modules\Marketing\Domain\Models\SocialPost;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
@@ -48,6 +49,7 @@ use App\Policies\FeatureFlagPolicy;
 use App\Policies\InvoicePolicy;
 use App\Policies\LoanPolicy;
 use App\Policies\OnboardingPolicy;
+use App\Policies\PayrollAuditPolicy;
 use App\Policies\PayrollPolicy;
 use App\Policies\PublicHolidayPolicy;
 use App\Policies\RateValidationPolicy;
@@ -104,6 +106,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(SocialContribution::class, SocialContributionPolicy::class);
         Gate::policy(PublicHoliday::class, PublicHolidayPolicy::class);
         Gate::policy(TaxRateChangeLog::class, RateValidationPolicy::class);
+        // Issue #1874 — audit des calculs de paie (manager principal/RH +
+        // platform admin, isolation tenant stricte).
+        Gate::policy(PayrollCalculationAudit::class, PayrollAuditPolicy::class);
         Gate::policy(FeaturePlanMatrix::class, FeatureFlagPolicy::class);
         Gate::policy(OnboardingStep::class, OnboardingPolicy::class);
 
