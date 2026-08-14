@@ -282,6 +282,7 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('pilot', $data['contract']['confidence_level']);
         $this->assertIsString($data['contract']['rounding_policy']);
         $this->assertSame(12, strlen($data['contract']['slab_version']));
+        $this->assertMatchesRegularExpression('/^v1-[0-9a-f]{16}$/', $data['contract']['rules_version']);
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', $data['contract']['rules_period']);
 
         // Montants (identiques au bulletin).
@@ -454,12 +455,16 @@ class CotisationSimulationTest extends TestCase
         $data = $this->postJson('/api/v1/cotisation-simulation', [
             'gross_salary' => 60000,
             'country_code' => 'DZ',
+            'rules_period' => '2026-07-01',
         ])->assertOk()->json('data');
 
         $this->assertEquals((float) $slip->gross_salary, $data['gross_salary']);
         $this->assertEquals((float) $slip->total_deductions, $data['total_deductions']);
         $this->assertEquals((float) $slip->net_salary, $data['net_salary']);
         $this->assertEquals((float) $slip->total_cost, $data['total_cost_employer']);
+        $this->assertMatchesRegularExpression('/^v1-[0-9a-f]{16}$/', (string) $slip->rules_version);
+        $this->assertSame($slip->rules_version, $data['contract']['rules_version']);
+        $this->assertSame($slip->rules_period?->toDateString(), $data['contract']['rules_period']);
     }
 
     /**

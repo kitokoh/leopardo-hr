@@ -10,6 +10,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 /**
@@ -50,21 +51,27 @@ class CotisationSimulationController extends Controller
             'gross_salary' => 'required|numeric|min:0',
             // #1951 : contrat partagé du moteur (plus de liste in: hardcodée).
             'country_code' => ['required', 'string', Rule::in($this->payrollCalculator->rulesResolver()->supportedCountryCodes())],
+            'rules_period' => ['nullable', 'date'],
         ]);
 
-        /** @var array{gross_salary: float|string, country_code: string} $validated */
+        /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null} $validated */
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
+        $rulesPeriod = isset($validated['rules_period']) && $validated['rules_period'] !== null
+            ? Carbon::parse($validated['rules_period'])
+            : null;
 
         // Pays inconnu → 422 explicite (UnsupportedCountryRulesException,
         // rendue par le handler d'exceptions avec un message métier clair).
-        //
-        // Issue #1924 — la simulation TENANT résout les règles avec le
-        // company_id du manager connecté : les overrides de cotisations
-        // entreprise (SocialContribution company-scoped) s'appliquent comme
-        // sur le bulletin réel (repli pays si aucune ligne entreprise).
+        // Issue #1924/#1871 — le tenant et la période effective sont transmis
+        // afin que les overrides entreprise et les règles historiques soient
+        // identiques à ceux appliqués par un bulletin réel.
         $companyId = (string) $actor->company_id;
-        $rules = $this->payrollCalculator->rulesResolver()->resolve($countryCode, $companyId);
+        $rules = $this->payrollCalculator->rulesResolver()->resolve(
+            $countryCode,
+            $companyId,
+            $rulesPeriod
+        );
 
         // Issue #1869 — mêmes appels métier que PayrollCalculator::calculateSlip().
         $breakdown = $this->payrollCalculator->computeNetBreakdown($gross, $rules);
@@ -112,9 +119,14 @@ class CotisationSimulationController extends Controller
                 'net_salary' => $breakdown['net_salary'],
                 'total_cost_employer' => $breakdown['total_cost'],
                 // ── Contrat complet et explicable (issue #1869) ──────────────
-                // Issue #1924 — company_id du tenant transmis : le bloc
-                // contract reflète les overrides entreprise (comme le bulletin).
-                'contract' => $this->presenter->present($countryCode, $gross, $companyId),
+                // Le contrat reflète les overrides entreprise et la période
+                // effective, comme le bulletin réel.
+                'contract' => $this->presenter->present(
+                    $countryCode,
+                    $gross,
+                    $companyId,
+                    $rulesPeriod
+                ),
             ],
         ]);
     }

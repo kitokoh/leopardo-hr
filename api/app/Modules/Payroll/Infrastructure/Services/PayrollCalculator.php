@@ -142,6 +142,11 @@ class PayrollCalculator
         if ($rules instanceof AbstractCountryRules) {
             $rules = $rules->forCompany($companyId)->asOf($run->period_start);
         }
+        // Issue #1871 — version/identifiant/période des règles EFFECTIVES,
+        // persistées sur le run et chaque bulletin (audit et re-calcul).
+        $rulesVersion = $rules->rulesVersion();
+        $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
+        $rulesPeriod = $run->period_start->toDateString();
 
         // Issue #1983 — un run de régularisation ne recalcule PAS des bulletins
         // complets : il produit un DIFFÉRENTIEL par employé affecté (corrigé −
@@ -168,7 +173,16 @@ class PayrollCalculator
         /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
 
-        DB::transaction(function () use ($run, $employees, $structures, $defaultStructure, $rules) {
+        DB::transaction(function () use (
+            $run,
+            $employees,
+            $structures,
+            $defaultStructure,
+            $rules,
+            $rulesVersion,
+            $rulesIdentifier,
+            $rulesPeriod
+        ) {
             $run->paySlips()->delete();
 
             $totalGross = 0.0;
@@ -190,7 +204,15 @@ class PayrollCalculator
                     continue;
                 }
 
-                $slip = $this->calculateSlip($run, $employee, $structure, $rules);
+                $slip = $this->calculateSlip(
+                    $run,
+                    $employee,
+                    $structure,
+                    $rules,
+                    $rulesVersion,
+                    $rulesIdentifier,
+                    $rulesPeriod
+                );
 
                 $totalGross += (float) $slip->gross_salary;
                 $totalDeductions += (float) $slip->total_deductions;
@@ -399,7 +421,10 @@ class PayrollCalculator
         PayrollRun $run,
         Employee $employee,
         SalaryStructure $structure,
-        CountryRulesContract $rules
+        CountryRulesContract $rules,
+        string $rulesVersion,
+        string $rulesIdentifier,
+        string $rulesPeriod
     ): PaySlip {
         $values = $this->computeSlipValues($run, $employee, $structure, $rules);
 
@@ -410,6 +435,9 @@ class PayrollCalculator
             'employee_id' => $employee->id,
             'period_start' => $run->period_start,
             'period_end' => $run->period_end,
+            'rules_version' => $rulesVersion,
+            'rules_period' => $rulesPeriod,
+            'rules_identifier' => $rulesIdentifier,
             'gross_salary' => $values['gross_salary'],
             'total_deductions' => $values['total_deductions'],
             'net_salary' => $values['net_salary'],
