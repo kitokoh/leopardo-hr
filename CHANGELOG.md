@@ -2,7 +2,8 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
-## [Unreleased]
+### Added
+- **feat(payroll): Gabon + Congo Brazzaville — règles paie de « placeholder » à « pilot » (Closes #1824).** `CemacPayrollRules` membres GA et CG : GA — IRPP 8 tranches annuelles (0/5/10/15/20/25/30/35 %) + CNSS 2024 (retraite 2,5/5,0 %, famille 8,0 % plafonnés 3 000 000 XAF, AT 3,0 % non plafonné) ; CG — IRPP 6 tranches annuelles (0/1/10/25/40/45 %) + CNSS 2024 (retraite 4,0/8,0 %, famille 10,0 % plafonnés 2 500 000 XAF, AT 3,0 % non plafonné) ; préavis employé 30 j (matrice 8 j/1 m/3 m documentée), `confidenceLevel() = pilot` pour GA/CG uniquement (CM/CF/TD/GQ inchangés). Référentiels `docs/payroll/GA_COMPLIANCE.md` + `docs/payroll/CG_COMPLIANCE.md` créés ; golden tests `GoldenGaPayrollTest` + `GoldenCgPayrollTest` (14 cas calculés à la main) ; `PayrollCountryRulesTest` + `AbstractCountryRulesCapTest` alignés.
 
 ### Chore
 - **chore(version): défaut APP_VERSION aligné sur PILOTAGE.md (4.24.0).** `api/config/app.php` gardait le défaut `4.23.5` (commit « Version Sync » #739) alors que le repo est en 4.24.0 depuis la release préparée (#1722) — la prod affichait 4.23.5 dans `/api/v1/health` malgré le nouveau code déployé (Render n'a pas d'APP_VERSION). Le défaut passe à 4.24.0 ; l'env garde la priorité.

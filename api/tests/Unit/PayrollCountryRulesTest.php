@@ -255,8 +255,17 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            self::assertSame('placeholder', $rules->confidenceLevel());
-            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            // Issue #1824 : GA et CG sont passés au niveau 'pilot' (IRPP/CNSS
+            // spécifiques) ; CM/CF/TD/GQ restent 'placeholder' (CM : #1821).
+            $expectedConfidence = in_array($memberCode, ['GA', 'CG'], true) ? 'pilot' : 'placeholder';
+            self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
+            if ($memberCode === 'GA') {
+                self::assertCount(8, $rules->taxSlabs()); // IRPP GA 8 tranches
+            } elseif ($memberCode === 'CG') {
+                self::assertCount(6, $rules->taxSlabs()); // IRPP CG 6 tranches
+            } else {
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            }
             self::assertNotEmpty($rules->socialContributions());
         }
     }
@@ -270,14 +279,18 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_cemac_calculates_social_charges_and_progressive_income_tax(): void
     {
+        // Issue #1824 : GA est passé au 'pilot' (4 cotisations CNSS gabonaises)
+        // — salariale 2,5 % + patronale 5 %/8 %/3 % = 16 %.
         $rules = (new CemacPayrollRules)->forMemberCountry('GA');
 
         $charges = $rules->calculateSocialCharges(1000);
-        self::assertEqualsWithDelta(42.0, $charges['employee'], 0.01);
-        self::assertEqualsWithDelta(162.0, $charges['employer'], 0.01);
+        self::assertEqualsWithDelta(25.0, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(160.0, $charges['employer'], 0.01);
 
+        // IRPP GA (tranches annuelles) : 41 667/mois → 500 000/an → 0 % ;
+        // 150 000/mois → 1 800 000/an → 5 % sur 300 000 = 15 000 → 1 250/mois.
         self::assertSame(0.0, $rules->calculateIncomeTax(500000 / 12));
-        self::assertSame(4166.67, $rules->calculateIncomeTax(1000000 / 12));
+        self::assertSame(1250.0, $rules->calculateIncomeTax(150000.0));
     }
 
     /**

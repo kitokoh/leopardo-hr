@@ -72,9 +72,10 @@ class AbstractCountryRulesCapTest extends TestCase
 
     public function test_other_cemac_members_keep_uncapped_placeholder(): void
     {
-        // #1821 : seuls les membres passés en pilot reçoivent leur plafond —
-        // GA/CG/CF/TD/GQ restent sur le placeholder non plafonné (#1824).
-        $rules = (new CemacPayrollRules)->forMemberCountry('GA');
+        // #1821/#1824 : seuls les membres passés en pilot reçoivent leurs taux
+        // légaux — CF/TD/GQ restent sur le placeholder non plafonné. GA/CG
+        // (pilot #1824) sont couverts par leurs golden tests.
+        $rules = (new CemacPayrollRules)->forMemberCountry('TD');
 
         $charges = $rules->calculateSocialCharges(2000000.0);
 
