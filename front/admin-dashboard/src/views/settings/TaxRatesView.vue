@@ -116,7 +116,7 @@
             <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="tx-country">{{ $t('taxRates.cols.country', 'Pays') }}</label>
             <select id="tx-country" v-model="slabFilter.country_code" class="form-input min-w-32" @change="loadSlabs">
               <option value="">{{ $t('taxRates.all.all', 'Tous') }}</option>
-              <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t('countries.' + cc.code, cc.label) }}</option>
+              <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t('countries.' + cc.code, cc.code) }}</option>
             </select>
           </div>
         </div>
@@ -216,15 +216,16 @@ const localeStore = useLocaleStore()
 /** Traduction avec fallback sur la clé pour faciliter le débogage. */
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
+// Libellés via le catalogue i18n (clés `countries.<CODE>`, fallback = code).
 const supportedCountries = [
-  { code: 'DZ', label: 'Algérie' },
-  { code: 'MA', label: 'Maroc' },
-  { code: 'TN', label: 'Tunisie' },
-  { code: 'SN', label: 'Sénégal' },
-  { code: 'CM', label: 'Cameroun' },
-  { code: 'CI', label: "Côte d'Ivoire" },
-  { code: 'BF', label: 'Burkina Faso' },
-  { code: 'ML', label: 'Mali' },
+  { code: 'DZ' },
+  { code: 'MA' },
+  { code: 'TN' },
+  { code: 'SN' },
+  { code: 'CM' },
+  { code: 'CI' },
+  { code: 'BF' },
+  { code: 'ML' },
 ]
 
 const loading = ref(false)
