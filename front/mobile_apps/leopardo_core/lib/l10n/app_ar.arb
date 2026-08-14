@@ -236,5 +236,11 @@
   "holidaysSaved": "تم حفظ العيد الرسمي.",
   "holidaysSaveError": "تعذر حفظ العيد الرسمي.",
   "holidaysDeleted": "تم حذف العيد الرسمي.",
-  "holidaysDeleteError": "تعذر الحذف."
+  "holidaysDeleteError": "تعذر الحذف.",
+  "holidaysCountriesDz": "الجزائر",
+  "holidaysCountriesCm": "الكاميرون",
+  "holidaysCountriesCi": "ساحل العاج",
+  "holidaysCountriesSn": "السنغال",
+  "holidaysCountriesMa": "المغرب",
+  "holidaysCountriesTn": "تونس"
 }

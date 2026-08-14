@@ -236,5 +236,11 @@
   "holidaysSaved": "Public holiday saved.",
   "holidaysSaveError": "Unable to save the public holiday.",
   "holidaysDeleted": "Public holiday deleted.",
-  "holidaysDeleteError": "Unable to delete."
+  "holidaysDeleteError": "Unable to delete.",
+  "holidaysCountriesDz": "Algeria",
+  "holidaysCountriesCm": "Cameroon",
+  "holidaysCountriesCi": "Côte d'Ivoire",
+  "holidaysCountriesSn": "Senegal",
+  "holidaysCountriesMa": "Morocco",
+  "holidaysCountriesTn": "Tunisia"
 }

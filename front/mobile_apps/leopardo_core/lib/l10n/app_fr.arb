@@ -236,5 +236,11 @@
   "holidaysSaved": "Jour férié enregistré.",
   "holidaysSaveError": "Impossible d'enregistrer le jour férié.",
   "holidaysDeleted": "Jour férié supprimé.",
-  "holidaysDeleteError": "Impossible de supprimer."
+  "holidaysDeleteError": "Impossible de supprimer.",
+  "holidaysCountriesDz": "Algérie",
+  "holidaysCountriesCm": "Cameroun",
+  "holidaysCountriesCi": "Côte d'Ivoire",
+  "holidaysCountriesSn": "Sénégal",
+  "holidaysCountriesMa": "Maroc",
+  "holidaysCountriesTn": "Tunisie"
 }

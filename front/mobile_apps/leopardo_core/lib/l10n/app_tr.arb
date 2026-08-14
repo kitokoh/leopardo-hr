@@ -236,5 +236,11 @@
   "holidaysSaved": "Resmî tatil kaydedildi.",
   "holidaysSaveError": "Resmî tatil kaydedilemedi.",
   "holidaysDeleted": "Resmî tatil silindi.",
-  "holidaysDeleteError": "Silinemedi."
+  "holidaysDeleteError": "Silinemedi.",
+  "holidaysCountriesDz": "Cezayir",
+  "holidaysCountriesCm": "Kamerun",
+  "holidaysCountriesCi": "Fildişi Sahili",
+  "holidaysCountriesSn": "Senegal",
+  "holidaysCountriesMa": "Fas",
+  "holidaysCountriesTn": "Tunus"
 }
