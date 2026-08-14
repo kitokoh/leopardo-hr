@@ -107,10 +107,9 @@ class PublicHolidayService
 
         $holidayDates = [];
         foreach ($holidays as $holiday) {
-            $date = $holiday['date'] ?? null;
-            if (is_string($date) || $date instanceof Carbon) {
-                $holidayDates[$date instanceof Carbon ? $date->toDateString() : $date] = true;
-            }
+            /** @var string $date */
+            $date = $holiday['date'];
+            $holidayDates[$date] = true;
         }
 
         $workingDays = 0.0;

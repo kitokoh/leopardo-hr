@@ -16409,13 +16409,13 @@ components:
       type: object
       properties:
         id: { type: integer }
-        company_id: { type: [integer, "null"] }
+        company_id: { type: integer, nullable: true }
         country_code: { type: string }
         name: { type: string }
         date: { type: string, format: date }
         year: { type: integer }
         is_recurring: { type: boolean }
-        month_day: { type: [string, "null"] }
+        month_day: { type: string, nullable: true }
         holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }
     PublicHolidayInput:
       type: object
@@ -16426,5 +16426,5 @@ components:
         date: { type: string, format: date }
         year: { type: integer }
         is_recurring: { type: boolean, default: false }
-        month_day: { type: [string, "null"] }
+        month_day: { type: string, nullable: true }
         holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }

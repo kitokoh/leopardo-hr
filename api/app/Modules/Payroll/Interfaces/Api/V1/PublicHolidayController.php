@@ -122,7 +122,7 @@ class PublicHolidayController extends Controller
             return (int) $user->company_id;
         }
 
-        abort(403, 'Seul un super-admin ou un manager principal peut gérer les jours fériés.');
+        abort(403, __('payroll.public_holidays_admin_only'));
     }
 
     private function authorizeWrite(Request $request, PublicHoliday $holiday): void
@@ -141,7 +141,7 @@ class PublicHolidayController extends Controller
             return;
         }
 
-        abort(403, 'Un manager principal ne peut modifier que les jours fériés de sa propre entreprise.');
+        abort(403, __('payroll.public_holidays_company_only'));
     }
 
     /**
