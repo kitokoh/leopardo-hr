@@ -110,6 +110,24 @@ class StoreEmployeeRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // Issue #1765 : les clients envoient souvent les montants en chaîne
+        // (formulaires HTML, TextField Flutter). La règle 'numeric' accepte
+        // les chaînes numériques ("40000"), mais le DTO typé
+        // (CreateEmployeeDTO::$salary_base : float) explose en TypeError →
+        // HTTP 500. On normalise les champs numériques AVANT la validation.
+        foreach (['salary_base', 'hourly_rate'] as $numericField) {
+            $value = $this->input($numericField);
+
+            if ($value !== null && $value !== '' && is_numeric($value)) {
+                $this->merge([$numericField => (float) $value]);
+            }
+        }
+
+        $scheduleId = $this->input('schedule_id');
+        if ($scheduleId !== null && $scheduleId !== '' && is_numeric($scheduleId)) {
+            $this->merge(['schedule_id' => (int) $scheduleId]);
+        }
+
         if (DB::getDriverName() !== 'pgsql') {
             return;
         }
