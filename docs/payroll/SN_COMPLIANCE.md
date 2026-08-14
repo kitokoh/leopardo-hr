@@ -60,9 +60,13 @@ la ligne « Taxe de minimum fiscal ») :
 | 350 001 – 700 000 | 18 000 |
 | > 700 000 | 36 000 |
 
-⚠️ Le mécanisme légal « le salarié paie le plus élevé de IR / TRIMF »
-(max(IR, TRIMF)) est un raffinement à valider avec l'expert SN — dans le
-périmètre de l'issue #1827, les deux lignes coexistent dans le bulletin.
+⚠️ **max(IR, TRIMF)** : le salarié paie le PLUS ÉLEVÉ des deux — le TRIMF est
+un minimum représentatif de l'IR, jamais cumulé avec lui. Implémenté dans le
+moteur (#1934) via `combineIncomeAndMinimumTax()` (règle SN = `max`) ; le
+bulletin porte la ligne IR (impôt calculé) et, si le minimum dépasse l'impôt,
+la ligne TRIMF pour le COMPLÉMENT (`TRIMF − IR`). Golden : brut 60 000 → IR 0 +
+TRIMF 2 700 ; 100 000 → IR 2 380 + complément 3 020 ; 250 000 → IR 25 300 +
+complément 0.
 
 ## 4. IPRES — Régime Général T1
 

@@ -302,4 +302,51 @@ class GoldenSnPayrollTest extends TestCase
             'tranche 40 % (annuel 24 412 032)' => [3000000.0, 726984.40],
         ];
     }
+
+    // ── #1934 : max(IR, TRIMF) — plus jamais de sur-retenue cumulative ─────
+
+    public function test_golden_sn_trimf_wins_over_ir_60000(): void
+    {
+        // Calcul manuel (#1934, SN_COMPLIANCE §1/§3) — brut 60 000 XOF :
+        //   IPRES salariale = 60 000 × 5,6 % = 3 360
+        //   Assiette IR = 56 640 − abattement 30 % du brut (18 000) = 38 640
+        //     → annuel 463 680 → tranche 0 % → IR = 0
+        //   TRIMF tranche 25 001–75 000 → 2 700
+        //   max(IR, TRIMF) = 2 700 → déductions = 3 360 + 2 700 = 6 060
+        //   Net = 53 940. AVANT #1934 : 2 700 + 0 (cumul) — aucune sur-retenue.
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(60000.0, $this->rules());
+
+        $this->assertSame(3360.0, $breakdown['social']['employee']);
+        $this->assertSame(0.0, $breakdown['income_tax']);
+        $this->assertSame(2700.0, $breakdown['bracket_tax']); // complément TRIMF retenu
+        $this->assertSame(6060.0, $breakdown['base_deductions']);
+        $this->assertSame(53940.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_sn_ir_wins_over_trimf_250000(): void
+    {
+        // Calcul manuel (#1934) — brut 250 000 XOF (golden existant) :
+        //   IPRES salariale = 14 000 · IR = 25 300 · TRIMF tranche
+        //   150 001–350 000 → 9 000.
+        //   max(IR, TRIMF) = 25 300 → AUCUN complément TRIMF retenu.
+        //   AVANT #1934 : 25 300 + 9 000 = 34 300 (sur-retenue de 9 000).
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(250000.0, $this->rules());
+
+        $this->assertSame(25300.0, $breakdown['income_tax']);
+        $this->assertSame(0.0, $breakdown['bracket_tax']); // IR > TRIMF → pas de complément
+        $this->assertSame(39300.0, $breakdown['base_deductions']);
+        $this->assertSame(210700.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_sn_trimf_top_up_100000(): void
+    {
+        // Calcul manuel (#1934) — brut 100 000 XOF :
+        //   IPRES = 5 600 · IR = 2 380 (golden existant) · TRIMF = 5 400.
+        //   max = 5 400 → complément retenu = 5 400 − 2 380 = 3 020.
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(100000.0, $this->rules());
+
+        $this->assertSame(2380.0, $breakdown['income_tax']);
+        $this->assertSame(3020.0, $breakdown['bracket_tax']);
+        $this->assertSame(11000.0, $breakdown['base_deductions']); // 5 600 + 5 400
+    }
 }

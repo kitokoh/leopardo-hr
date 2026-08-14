@@ -100,13 +100,24 @@ class PayrollCalculator
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
 
-        $baseDeductions = $social['employee'] + $incomeTax + $bracketTax;
+        // Issue #1934 : l'IR et le minimum fiscal sont combinés selon la
+        // règle pays — cumul (défaut, ex. CN CI) ou max(IR, TRIMF) (SN).
+        // La méthode vit sur AbstractCountryRules (pas sur le contrat) —
+        // garde instanceof (pattern withCapsEnabled #1815).
+        // `bracket_tax` exposé = complément effectivement retenu EN PLUS de
+        // l'IR (le minimum brut reste visible via la ligne du bulletin).
+        $combinedIncomeAndMinimum = $rules instanceof AbstractCountryRules
+            ? $rules->combineIncomeAndMinimumTax($incomeTax, $bracketTax)
+            : $incomeTax + $bracketTax;
+        $minimumTopUp = max(0.0, $combinedIncomeAndMinimum - $incomeTax);
+
+        $baseDeductions = $social['employee'] + $combinedIncomeAndMinimum;
 
         return [
             'social' => $social,
             'taxable_gross' => $taxableGross,
             'income_tax' => $incomeTax,
-            'bracket_tax' => $bracketTax,
+            'bracket_tax' => $minimumTopUp,
             'base_deductions' => $baseDeductions,
             'net_salary' => round(max(0.0, $grossEarnings - $baseDeductions), 2),
             'total_cost' => round($grossEarnings + $social['employer'], 2),

@@ -386,6 +386,21 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * Combinaison impôt sur le revenu + taxe de minimum fiscal.
+     *
+     * Défaut : CUMUL (IR + minimum fiscal) — cas de la CI où la CN
+     * (Contribution Nationale, #1825) s'ajoute à l'ITSAS.
+     *
+     * Les pays où le minimum fiscal est REPRÉSENTATIF de l'IR surchargent
+     * (Sénégal #1934 : le salarié paie max(IR, TRIMF), jamais les deux —
+     * sinon sur-retenue certaine sur chaque bulletin).
+     */
+    public function combineIncomeAndMinimumTax(float $incomeTax, float $minimumTax): float
+    {
+        return $incomeTax + $minimumTax;
+    }
+
+    /**
      * ZONE-INFRA (#1820): default label of the flat-tax deduction line —
      * "Taxe de minimum fiscal". Countries using the same mechanism for a
      * differently-named flat tax (CI's Contribution Nationale, #1825)

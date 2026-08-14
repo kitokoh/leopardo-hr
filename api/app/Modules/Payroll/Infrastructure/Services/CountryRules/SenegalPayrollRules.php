@@ -125,6 +125,19 @@ class SenegalPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * Issue #1934 : le TRIMF est un minimum REPRÉSENTATIF de l'IR — le
+     * salarié paie le plus élevé des deux (max(IR, TRIMF)), jamais les deux
+     * cumulés (sur-retenue certaine sur chaque bulletin SN sinon, cf. la
+     * revue #1830). Le moteur retient donc max(IR, TRIMF) dans les
+     * déductions totales et n'ajoute sur le bulletin que le complément
+     * éventuel (TRIMF − IR) quand le minimum dépasse l'impôt.
+     */
+    public function combineIncomeAndMinimumTax(float $incomeTax, float $minimumTax): float
+    {
+        return max($incomeTax, $minimumTax);
+    }
+
+    /**
      * Issue #1827 : abattement frais professionnels sénégalais — 30 % du
      * brut, NON plafonné (docs/payroll/SN_COMPLIANCE.md §6). Appliqué par
      * PayrollCalculator::calculateSlip() sur l'assiette imposable.
