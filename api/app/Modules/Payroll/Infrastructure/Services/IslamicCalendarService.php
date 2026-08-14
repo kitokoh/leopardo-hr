@@ -82,11 +82,21 @@ class IslamicCalendarService
      * Fêtes islamiques d'un pays aplaties en jours chômés consécutifs, au
      * format attendu par `PublicHolidayService::getHolidays()`.
      *
+     * Issue #1930 [P1] — seules les dates CONFIRMÉES (`confirmed = true`,
+     * validées par un admin plateforme) alimentent le calcul des jours ouvrés
+     * et la paie. Les dates approximatives du seeder (`source = 'computed'`,
+     * `confirmed = false`) sont exclues : les intégrer reviendrait à payer sur
+     * un calendrier non fiable. `getHolidaysForCountry()` (usage admin) garde
+     * les dates non confirmées pour permettre leur validation.
+     *
      * @return array<int, array{date: string, name: string, holiday_type: string, company_id: null}>
      */
     public function resolveForPayroll(string $countryCode, int $year, ?string $companyId = null): array
     {
-        $holidays = $this->getHolidaysForCountry($countryCode, $year);
+        $holidays = array_filter(
+            $this->getHolidaysForCountry($countryCode, $year),
+            static fn (array $holiday): bool => (bool) ($holiday['confirmed'] ?? false),
+        );
 
         $resolved = [];
         foreach ($holidays as $holiday) {
