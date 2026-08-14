@@ -3,6 +3,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ### Added
+- **fix(test): PublicHolidayServiceTest — accolade de classe mal placée (CI Golden rouge).** Le merge #1910 (fix jours fériés #1895/#1897/#1898) a ajouté la méthode test_forget_all_scopes_invalidates_tenant_keys APRÈS l'accolade fermante de la classe, ce qui produisait une erreur de syntaxe PHP (unexpected token public) cassant la passe `php artisan test --filter=Golden` sur main et sur toutes les PR ouvertes. L'accolade fermante est remise en fin de classe (1 ligne déplacée, aucun changement de logique).
 ### Added
 
 - **test(seed): régression #1895 — fériés + calendrier islamique seedés par DatabaseSeeder.** Couverture des seeders `PublicHolidaySeeder` (fériés fixes DZ/CM/CI/SN 2024-2027) et `IslamicCalendarSeeder` (dates islamiques approximatives) : peuplement, **idempotence** des deux, et reproduction de la commande de production `php artisan db:seed --class=DatabaseSeeder --force` (le câblage dans l'orchestrateur est livré par #1910 — ce test le verrouille contre toute régression).

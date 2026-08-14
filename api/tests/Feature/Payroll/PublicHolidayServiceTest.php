@@ -192,7 +192,6 @@ class PublicHolidayServiceTest extends TestCase
         );
         $this->assertSame(3.0, $days); // lun 25, mar 26, jeu 28 chômé… → mer 27 & jeu 28 chômés → 25,26,29
     }
-}
 
     public function test_forget_all_scopes_invalidates_tenant_keys(): void
     {
@@ -219,3 +218,4 @@ class PublicHolidayServiceTest extends TestCase
         // Les tenants d'autres pays gardent leur cache (pas d'invalidation croisée).
         $this->assertNotNull(Cache::store()->get('public-holidays:DZ:2026:some-other-tenant'));
     }
+}
