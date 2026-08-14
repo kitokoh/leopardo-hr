@@ -102,9 +102,12 @@ class PublicHolidayServiceTest extends TestCase
             restDays: [5, 6],
         );
 
-        // Semaine du 13/07/2026 : lun 13, mar 14, mer 15, jeu 16, ven 17 (repos), sam 18 (repos), dim 19.
-        $this->assertSame(4.0, $national);
-        $this->assertSame(3.0, $withCompany); // le pont du 15 retire un jour ouvré
+        // Semaine du 13/07/2026 : lun 13, mar 14, mer 15, jeu 16, ven 17
+        // (repos), sam 18 (repos), dim 19 → 5 jours ouvrés sans férié dans la
+        // période ; le férié national du 05/07 est hors période.
+        $this->assertSame(5.0, $national);
+        // Avec l'override entreprise, le pont du 15/07 retire un jour ouvré.
+        $this->assertSame(4.0, $withCompany);
     }
 
     public function test_fallback_when_no_holidays_configured(): void
