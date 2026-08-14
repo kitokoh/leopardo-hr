@@ -26,12 +26,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Render peut rejouer les migrations (entrypoint) : idempotence.
-        if (Schema::hasTable('islamic_calendar')) {
+        // F-17 (#1595/#1933) : garde d'existence résolue via le search_path
+        // courant (`current_schemas(false)`), pas `Schema::hasTable()` nu qui
+        // ne voit que `current_schema()` — le search_path diffère entre CI et
+        // local, un garde au nom nu peut répondre faux à tort et sauter
+        // silencieusement la migration. Création QUALIFIÉE dans `public` :
+        // table partagée entre tous les tenants, schéma indépendant du
+        // search_path.
+        if (schemaTableExists('islamic_calendar')) {
             return;
         }
 
-        Schema::create('islamic_calendar', function (Blueprint $table): void {
+        Schema::create('public.islamic_calendar', function (Blueprint $table): void {
             $table->id();
             $table->string('holiday_key', 30);
             $table->unsignedSmallInteger('year');
@@ -49,6 +55,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('islamic_calendar');
+        Schema::dropIfExists('public.islamic_calendar');
     }
 };
