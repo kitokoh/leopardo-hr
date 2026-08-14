@@ -9,6 +9,8 @@ return [
     'compliance_warning_placeholder' => ":country için yalnızca yapısal kurallar: oranlar ve katkılar henüz kaynaklandırılmadı — gerçek bordroda kullanmayın.",
     'compliance_warning_pilot' => ":country için pilot kurallar, kamu referanslarından alınmış ancak yerel olarak yasal olarak doğrulanmamıştır — yasal kullanımdan önce yerel danışmanla teyit edin.",
     'compliance_warning_production' => ":country bordrosu için doğrulanmış kurallar — beyanname vermeden önce güncel oranları yerel danışmanla teyit edin.",
+
+    'compliance_warning_unknown' => "Uygulanmış bordro kuralları olmayan ülke — yasal değer mevcut değil.",
     'tax_scale_default_name' => ":country yasal vergi ölçeği :year",
 
     // Issue #1923 — yasal oran doğrulama iş akışı (#1813): servis/dinleyici/

@@ -11,6 +11,8 @@ return [
     'compliance_warning_placeholder' => "Structure-only rules for :country: rates and contributions are not yet sourced — do not use for real payroll.",
     'compliance_warning_pilot' => "Pilot ruleset for :country, sourced from public references but not legally validated locally — confirm with local counsel before statutory use.",
     'compliance_warning_production' => "Rules validated for :country payroll — always confirm current rates with local counsel before filing.",
+
+    'compliance_warning_unknown' => "Country without implemented payroll rules — no legal values available.",
     'tax_scale_default_name' => ":country legal tax scale :year",
 
     // Issue #1923 — legal rate validation workflow (#1813): service/listener/

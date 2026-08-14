@@ -58,10 +58,21 @@ class TenantCountryRequiredTest extends TestCase
         $this->assertTrue($dz['available']);
         $this->assertContains($dz['confidence'], ['pilot', 'placeholder', 'production', 'unknown']);
 
+        // Issue #2127 — bloc compliance structuré par pays (contrat #1872).
+        $this->assertIsArray($dz['compliance']);
+        $this->assertContains($dz['compliance']['level'], ['production', 'pilot', 'placeholder', 'unknown']);
+        $this->assertSame($dz['compliance']['level'], $dz['confidence']);
+        $this->assertNotEmpty($dz['compliance']['warning']);
+        $this->assertNotEmpty($dz['compliance']['warning_localized']);
+        $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $dz['compliance']['source']);
+        $this->assertTrue($dz['compliance']['verified_at'] === null || is_string($dz['compliance']['verified_at']));
+
         // Pays référencé sans règles de paie (ex. US) : disponible = false.
         $us = $countries->get('US');
         $this->assertNotNull($us);
         $this->assertFalse($us['available']);
+        $this->assertSame('unknown', $us['compliance']['level']);
+        $this->assertNotEmpty($us['compliance']['warning_localized']);
     }
 
     // ── Provisioning : pays obligatoire et supporté ───────────────────────

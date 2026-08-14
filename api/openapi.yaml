@@ -6364,6 +6364,19 @@ paths:
                         timezone: { type: string }
                         confidence: { type: string, enum: [production, pilot, placeholder, unknown] }
                         available: { type: boolean }
+                        compliance:
+                          type: object
+                          description: "Bloc conformite par niveau de confiance (contrat #1872, issue #2127)."
+                          properties:
+                            level: { type: string, enum: [production, pilot, placeholder, unknown] }
+                            warning: { type: string }
+                            warning_localized: { type: string }
+                            source:
+                              type: string
+                              nullable: true
+                            verified_at:
+                              type: string
+                              nullable: true
         "401":
           $ref: "#/components/responses/Error401"
 
