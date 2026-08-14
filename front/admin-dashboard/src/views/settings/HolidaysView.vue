@@ -259,7 +259,7 @@ const loading = ref(false)
 const saving = ref(false)
 const modalOpen = ref(false)
 const editing = ref(null)
-const form = reactive({ name: '', date: '', holiday_type: 'fixed', is_recurring: false })
+const form = reactive({ name: '', date: '', holiday_type: 'fixed', is_recurring: false, month_day: null })
 
 // ── Fêtes islamiques (issue #1812) ─────────────────────────────────────
 const islamicYear = ref(new Date().getFullYear())
@@ -314,7 +314,7 @@ async function loadIslamicCalendar() {
 
 function openCreate() {
   editing.value = null
-  Object.assign(form, { name: '', date: `${year.value}-01-01`, holiday_type: 'fixed', is_recurring: false })
+  Object.assign(form, { name: '', date: `${year.value}-01-01`, holiday_type: 'fixed', is_recurring: false, month_day: null })
   modalOpen.value = true
 }
 
@@ -325,6 +325,7 @@ function openEdit(h) {
     date: h.date,
     holiday_type: h.holiday_type,
     is_recurring: Boolean(h.is_recurring),
+    month_day: h.month_day ?? null,
   })
   modalOpen.value = true
 }
@@ -339,6 +340,9 @@ async function saveHoliday() {
       year: year.value,
       holiday_type: form.holiday_type,
       is_recurring: form.is_recurring,
+      // #1936 : l'API exige month_day pour un férié récurrent (validation
+      // #1937) — dérivé de la date choisie (mm-jj).
+      month_day: form.is_recurring && form.date ? form.date.slice(5) : null,
     }
     if (editing.value) {
       await api.put(`/admin/public-holidays/${editing.value.id}`, payload)

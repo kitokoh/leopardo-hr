@@ -159,4 +159,95 @@ class PayrollRegularizationTest extends TestCase
             'reason' => '',
         ])->assertUnprocessable();
     }
+
+    // ── #1942 : garde-fous durcis ──────────────────────────────────────────
+
+    public function test_paid_run_is_regularizable(): void
+    {
+        // Cas d'usage réel #1942 : « déjà payé », pas seulement verrouillé.
+        $paidRun = $this->makeRun(PayrollRun::STATUS_PAID);
+
+        Sanctum::actingAs($this->manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$paidRun->id}/regularize", [
+            'reason' => 'Erreur détectée après paiement',
+        ])->assertCreated();
+    }
+
+    public function test_double_regularization_blocked(): void
+    {
+        $lockedRun = $this->makeRun(PayrollRun::STATUS_LOCKED);
+
+        Sanctum::actingAs($this->manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/regularize", [
+            'reason' => 'Première régularisation',
+        ])->assertCreated();
+
+        // Double-clic / double soumission → 422, jamais 2 runs.
+        $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/regularize", [
+            'reason' => 'Deuxième tentative',
+        ])->assertStatus(422);
+
+        $this->getJson("/api/v1/payroll-runs/{$lockedRun->id}/regularizations")
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    }
+
+    public function test_cannot_regularize_a_regularization(): void
+    {
+        $lockedRun = $this->makeRun(PayrollRun::STATUS_LOCKED);
+
+        Sanctum::actingAs($this->manager);
+
+        $created = $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/regularize", [
+            'reason' => 'Régularisation initiale',
+        ])->assertCreated()->json('data');
+
+        // Pas de chaîne de régularisations : l'invariant original immuable
+        // tomberait (le delta serait calculé sur un run déjà dérivé).
+        $this->postJson("/api/v1/payroll-runs/{$created['id']}/regularize", [
+            'reason' => 'Tentative de chaîne',
+        ])->assertStatus(422);
+    }
+
+    public function test_unlock_blocked_when_regularizations_exist(): void
+    {
+        $lockedRun = $this->makeRun(PayrollRun::STATUS_LOCKED);
+
+        Sanctum::actingAs($this->manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/regularize", [
+            'reason' => 'Régularisation en cours',
+        ])->assertCreated();
+
+        // Unlock interdit : l'original ne doit jamais être modifié tant que
+        // des régularisations actives existent (#1942).
+        $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/unlock", [
+            'reason' => 'Tentative de déverrouillage',
+        ])->assertStatus(422);
+
+        $lockedRun->refresh();
+        $this->assertSame(PayrollRun::STATUS_LOCKED, $lockedRun->status);
+    }
+
+    public function test_cancelled_regularization_frees_the_slot(): void
+    {
+        $lockedRun = $this->makeRun(PayrollRun::STATUS_LOCKED);
+
+        Sanctum::actingAs($this->manager);
+
+        $created = $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/regularize", [
+            'reason' => 'Régularisation à annuler',
+        ])->assertCreated()->json('data');
+
+        /** @var PayrollRun $regularizationRun */
+        $regularizationRun = PayrollRun::query()->findOrFail($created['id']);
+        $regularizationRun->update(['status' => PayrollRun::STATUS_CANCELLED]);
+
+        // La place est libérée : une nouvelle régularisation est acceptée.
+        $this->postJson("/api/v1/payroll-runs/{$lockedRun->id}/regularize", [
+            'reason' => 'Nouvelle régularisation après annulation',
+        ])->assertCreated();
+    }
 }

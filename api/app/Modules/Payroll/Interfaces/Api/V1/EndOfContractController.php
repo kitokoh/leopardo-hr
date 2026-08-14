@@ -41,8 +41,19 @@ class EndOfContractController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.settlement', $employee);
 
+        // Issue #1943 — contexte de départ optionnel : seul un licenciement de
+        // CDI (hors faute lourde) avec préavis non effectué déclenche
+        // l'indemnité compensatrice. Sans contexte → préavis 0 (prudent).
+        $context = [
+            'departure_reason' => $request->query('departure_reason'),
+            'notice_served' => filter_var(
+                $request->query('notice_served', 'false'),
+                FILTER_VALIDATE_BOOLEAN
+            ),
+        ];
+
         return response()->json([
-            'data' => $this->service->settlement($employee),
+            'data' => $this->service->settlement($employee, null, $context),
         ]);
     }
 

@@ -10,6 +10,8 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -137,5 +139,68 @@ class TaxRateChangeLogTest extends TestCase
         $this->assertSame('Taux hors plafond.', $rejected->reason);
         $this->assertSame(TaxSlab::STATUS_PENDING, $rejected['previous_value']['status']);
         $this->assertSame(TaxSlab::STATUS_DRAFT, $rejected['new_value']['status']);
+    }
+
+    // ── Issue #1927 : immutabilité AU NIVEAU BASE (trigger PostgreSQL) ──────
+
+    /**
+     * Le trigger `BEFORE UPDATE OR DELETE` (migration 000011) bloque les
+     * mutations directes en SQL — même pour un rôle possédant la table
+     * (le blocage modèle #1813 ne couvrait pas l'accès brut).
+     */
+    public function test_db_level_update_is_blocked_by_trigger(): void
+    {
+        /** @var TaxRateChangeLog $log */
+        $log = TaxRateChangeLog::create([
+            'table_name' => TaxRateChangeLog::TABLE_TAX_SLABS,
+            'record_id' => 1,
+            'action' => TaxRateChangeLog::ACTION_CREATED,
+            'actor_id' => 1,
+            'actor_role' => 'employee',
+            'new_value' => ['rate' => 23],
+        ]);
+
+        $this->expectException(QueryException::class);
+
+        DB::table('tax_rate_change_log')
+            ->where('id', $log->id)
+            ->update(['action' => 'tampered']);
+    }
+
+    public function test_db_level_delete_is_blocked_by_trigger(): void
+    {
+        /** @var TaxRateChangeLog $log */
+        $log = TaxRateChangeLog::create([
+            'table_name' => TaxRateChangeLog::TABLE_TAX_SLABS,
+            'record_id' => 2,
+            'action' => TaxRateChangeLog::ACTION_CREATED,
+            'actor_id' => 1,
+            'actor_role' => 'employee',
+            'new_value' => ['rate' => 23],
+        ]);
+
+        $this->expectException(QueryException::class);
+
+        DB::table('tax_rate_change_log')
+            ->where('id', $log->id)
+            ->delete();
+    }
+
+    public function test_db_level_insert_still_works_with_trigger(): void
+    {
+        // L'append reste autorisé : le trigger ne couvre que UPDATE/DELETE.
+        $id = DB::table('tax_rate_change_log')->insertGetId([
+            'table_name' => TaxRateChangeLog::TABLE_TAX_SLABS,
+            'record_id' => 3,
+            'action' => TaxRateChangeLog::ACTION_CREATED,
+            'actor_id' => 1,
+            'actor_role' => 'employee',
+            'new_value' => json_encode(['rate' => 23]),
+            'created_at' => now(),
+        ]);
+
+        $this->assertNotNull(
+            TaxRateChangeLog::query()->find($id),
+        );
     }
 }
