@@ -29,6 +29,13 @@ interface CountryRulesInterface
      */
     public function withTaxSlabs(array $slabs): static;
 
+    /**
+     * Issue #1815 — active/désactive l'application des plafonds statutaires
+     * dans les cotisations (simulation « avec/sans plafond légal », dry-run
+     * non persistant).
+     */
+    public function withCapsEnabled(bool $enabled): static;
+
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float;
 
     /**
