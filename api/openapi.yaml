@@ -1041,6 +1041,45 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /platform/companies/{company}/country:
+    patch:
+      tags: ["Platform"]
+      summary: "Reformer/choisir le pays legal d'un tenant (invariant 9)"
+      description: "Chemin de sortie super-admin pour les tenants legacy crees sans pays (#1867/#1952). Refuse (422) des que des donnees de paie existent (invariant 9)."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/CompanyUuid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country]
+              properties:
+                country: { type: string, minLength: 2, maxLength: 2, description: "Code pays ISO 3166-1 alpha-2 (allowliste CountryDefaults)" }
+      responses:
+        "200":
+          description: "Pays legal mis a jour (devise/fuseau/langue alignes)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      company: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /platform/companies/{company}/features:
     get:
       tags: ["Platform"]
