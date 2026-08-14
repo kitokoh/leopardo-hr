@@ -8484,7 +8484,7 @@ paths:
                               warning: { type: string }
                               warning_key: { type: string }
                               source: { type: string }
-                              verification_date: { type: [string, "null"], format: date }
+                              verification_date: { type: string, format: date, nullable: true }
                           rounding_policy: { type: string }
                           gross: { type: number }
                           social_employee: { type: number }
