@@ -127,6 +127,10 @@ class CountryIsolationMatrixTest extends TestCase
         /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
+        // Le workflow #1813 : les lignes nouvellement créées sont draft par
+        // défaut (migration 2026_08_14_000001 ALTER ... SET DEFAULT 'draft')
+        // — la résolution paie n'utilise que les lignes ACTIVES, donc le test
+        // d'isolation doit créer une ligne active explicitement.
         TaxSlab::create([
             'company_id' => $companyA->id,
             'country_code' => 'DZ',
@@ -136,6 +140,7 @@ class CountryIsolationMatrixTest extends TestCase
             'rate' => 5,
             'fixed_deduction' => 0,
             'effective_from' => '2026-01-01',
+            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         $calculator = new PayrollCalculator;

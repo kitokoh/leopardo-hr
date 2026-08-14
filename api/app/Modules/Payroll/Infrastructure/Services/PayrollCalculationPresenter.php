@@ -57,7 +57,7 @@ class PayrollCalculationPresenter
         $socialEmployee = round($social['employee'], 2);
         $socialEmployer = round($social['employer'], 2);
         $taxBase = round($grossRounded - $socialEmployee, 2);
-        $incomeTax = $rules->calculateIncomeTax($taxBase);
+        $incomeTax = $rules->calculateIncomeTax($taxBase, 12, $grossRounded);
         // Net = brut − retenues applicables, SANS double comptage.
         $netSalary = round($grossRounded - $socialEmployee - $incomeTax, 2);
 
