@@ -95,7 +95,7 @@ class IslamicCalendarService
     {
         $holidays = array_filter(
             $this->getHolidaysForCountry($countryCode, $year),
-            static fn (array $holiday): bool => $holiday['confirmed'] === true,
+            static fn (array $holiday): bool => (bool) $holiday['confirmed'],
         );
 
         $resolved = [];
