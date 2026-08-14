@@ -24,6 +24,7 @@ use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
 use App\Listeners\WebhookListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -40,15 +41,22 @@ class EventServiceProvider extends ServiceProvider
         EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],
         SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
+    ];
 
+    public function boot(): void
+    {
         // Issue #1813/#1923 — workflow de validation des taux légaux : le
         // listener n'était enregistré nulle part (mort) alors que le
         // CHANGELOG #1813 promet des notifications aux platform_admins.
         // L'event discovery (handle{Event}) est désactivé dans ce repo :
         // enregistrement explicite `Class@méthode` pour dispatcher chaque
-        // événement vers son handler dédié.
-        TaxRateSubmitted::class => [NotifyTaxRateValidation::class.'@handleTaxRateSubmitted'],
-        TaxRateApproved::class => [NotifyTaxRateValidation::class.'@handleTaxRateApproved'],
-        TaxRateRejected::class => [NotifyTaxRateValidation::class.'@handleTaxRateRejected'],
-    ];
+        // événement vers son handler dédié. Enregistré via Event::listen
+        // (boot) pour garder `$listen` dans le shape
+        // array<class-string, array<int, class-string>> (PHPStan Strict).
+        Event::listen(TaxRateSubmitted::class, NotifyTaxRateValidation::class.'@handleTaxRateSubmitted');
+        Event::listen(TaxRateApproved::class, NotifyTaxRateValidation::class.'@handleTaxRateApproved');
+        Event::listen(TaxRateRejected::class, NotifyTaxRateValidation::class.'@handleTaxRateRejected');
+
+        parent::boot();
+    }
 }

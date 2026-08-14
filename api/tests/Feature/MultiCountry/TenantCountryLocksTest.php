@@ -133,7 +133,9 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'ZZ',
         ])->assertStatus(422)->assertJsonValidationErrors('country');
 
-        $this->assertSame('', $company->fresh()->country);
+        $freshCompany = $company->fresh();
+        $this->assertNotNull($freshCompany);
+        $this->assertSame('', $freshCompany->country);
     }
 
     public function test_country_change_refused_after_payroll_run_invariant9(): void
@@ -155,7 +157,9 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'CI',
         ])->assertStatus(422);
 
-        $this->assertSame('DZ', $company->fresh()->country);
+        $freshCompany = $company->fresh();
+        $this->assertNotNull($freshCompany);
+        $this->assertSame('DZ', $freshCompany->country);
     }
 
     public function test_country_change_refused_after_salary_structure_invariant9(): void
@@ -179,6 +183,8 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'CI',
         ])->assertStatus(422);
 
-        $this->assertSame('DZ', $company->fresh()->country);
+        $freshCompany = $company->fresh();
+        $this->assertNotNull($freshCompany);
+        $this->assertSame('DZ', $freshCompany->country);
     }
 }

@@ -122,10 +122,10 @@ class NotifyTaxRateValidation
 
         try {
             try {
-                $company = PlatformCompanyLookup::findOrFail((string) $model->company_id);
+                $company = PlatformCompanyLookup::findOrFail((string) $model->getAttribute('company_id'));
             } catch (\Throwable $e) {
                 Log::warning('tax-rate.submitter-company-lookup-failed', [
-                    'company_id' => $model->company_id,
+                    'company_id' => $model->getAttribute('company_id'),
                     'error' => $e->getMessage(),
                 ]);
 
@@ -157,7 +157,7 @@ class NotifyTaxRateValidation
             });
         } catch (\Throwable $e) {
             Log::warning('tax-rate.notification-tenant-failed', [
-                'company_id' => $model->company_id,
+                'company_id' => $model->getAttribute('company_id'),
                 'error' => $e->getMessage(),
             ]);
         } finally {
