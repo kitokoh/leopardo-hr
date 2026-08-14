@@ -78,9 +78,11 @@ class SenegalPayrollRules extends AbstractCountryRules
         //  - IPRES T2 (régime cadres) 2,4 % / 3,6 % sur la tranche
         //    432 001 – 2 160 000 XOF — appliquée quand le brut dépasse le
         //    plafond T1 (hypothèse pilote : brut > 432 k ⇒ régime cadres) ;
-        //  - CSS prestations familiales 3 % + AT 1 % (non plafonnées) ;
+        //  - CSS prestations familiales 3 % + AT 1 %, chacune plafonnée à
+        //    63 000 XOF/mois selon la procédure administrative CSS ;
         //  - CFCE 3 % sur la masse salariale brute (patronal uniquement).
         $ipresCap = 432000.0;
+        $cssCap = 63000.0;
         $t2Floor = 432000.0;
         $t2Ceiling = 2160000.0;
 
@@ -93,8 +95,8 @@ class SenegalPayrollRules extends AbstractCountryRules
             $employer += round($t2Base * $this->resolveContributionRate('IPRES_SN_PAT_T2', 3.6) / 100, 2);
         }
 
-        $employer += $this->computeContribution($grossSalary, 'CSS_SN_PAT_FAM', 3.0, null)
-            + $this->computeContribution($grossSalary, 'CSS_SN_PAT_AT', 1.0, null)
+        $employer += $this->computeContribution($grossSalary, 'CSS_SN_PAT_FAM', 3.0, $cssCap)
+            + $this->computeContribution($grossSalary, 'CSS_SN_PAT_AT', 1.0, $cssCap)
             + $this->computeContribution($grossSalary, 'CFCE_SN_PAT', 3.0, null);
 
         return [

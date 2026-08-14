@@ -6,14 +6,16 @@ namespace App\Listeners;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Core\Tenant\TenantManager;
 use App\Events\TaxRateApproved;
 use App\Events\TaxRateRejected;
 use App\Events\TaxRateSubmitted;
 use App\Modules\Notification\Application\Actions\SendNotification;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Support\PlatformCompanyLookup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Message;
-use Illuminate\Mail\PendingMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -26,17 +28,35 @@ use Illuminate\Support\Facades\Mail;
  * - Approbation/Rejet → notification in-app (AppNotification) + email
  *   best-effort au comptable/principal qui a soumis.
  *
+ * Issue #1923 (revue lead) :
+ * - Le listener est ENFIN enregistré (EventServiceProvider, notation
+ *   `Class@handleTaxRateSubmitted|Approved|Rejected` — l'event discovery
+ *   étant désactivée dans ce repo, les méthodes handleTaxRate* n'étaient
+ *   jamais appelées) ;
+ * - Tous les messages passent par le catalogue `api/lang/{fr,en,ar,tr}/payroll.php`
+ *   (PA2-I18N-007, plus de chaînes accentuées en dur) ;
+ * - La notification in-app approbation/rejet résout le tenant du
+ *   soumissionnaire via le company_id de la ligne (le contexte admin n'a pas
+ *   de search_path tenant) : `TenantManager::withinTenant()` + lookup
+ *   `public.companies` (Pattern PlatformCompanyLookup, #1994).
+ *
  * Les envois email ne doivent JAMAIS casser la transition (try/catch +
  * report, pattern UserInvitationService #1776).
  */
 class NotifyTaxRateValidation
 {
-    public function __construct(private readonly SendNotification $sendNotification) {}
+    public function __construct(
+        private readonly SendNotification $sendNotification,
+        private readonly TenantManager $tenantManager,
+    ) {}
 
     public function handleTaxRateSubmitted(TaxRateSubmitted $event): void
     {
         $label = $this->label($event->model);
-        $title = sprintf('Validation de taux demandée — %s', $label);
+        $title = __('payroll.rate_validation_requested_title', ['label' => $label]);
+        $kind = $event->model instanceof TaxSlab
+            ? __('payroll.rate_kind_tax_scale')
+            : __('payroll.rate_kind_contribution');
 
         Log::info('tax-rate.submitted', [
             'table' => $event->model->getTable(),
@@ -45,74 +65,114 @@ class NotifyTaxRateValidation
         ]);
 
         foreach (SuperAdmin::query()->get() as $admin) {
-            $this->emailBestEffort($admin->email, $title, sprintf(
-                'Un %s de taux légal (%s) attend votre validation dans l’interface admin.',
-                $event->model instanceof TaxSlab ? 'barème fiscal' : 'taux de cotisation',
-                $label,
-            ));
+            $this->emailBestEffort($admin->email, $title, __('payroll.rate_validation_requested_body', [
+                'kind' => $kind,
+                'label' => $label,
+            ]));
         }
     }
 
     public function handleTaxRateApproved(TaxRateApproved $event): void
     {
-        $this->notifySubmitter($event->model, 'approuvée', sprintf(
-            'Votre modification de taux légal (%s) a été approuvée et est active.',
-            $this->label($event->model),
-        ));
+        $this->notifySubmitter(
+            $event->model,
+            __('payroll.rate_approved_title'),
+            __('payroll.rate_approved_body', ['label' => $this->label($event->model)]),
+        );
     }
 
     public function handleTaxRateRejected(TaxRateRejected $event): void
     {
-        $this->notifySubmitter($event->model, 'rejetée', sprintf(
-            'Votre modification de taux légal (%s) a été rejetée : %s',
-            $this->label($event->model),
-            $event->reason,
-        ));
+        $this->notifySubmitter(
+            $event->model,
+            __('payroll.rate_rejected_title'),
+            __('payroll.rate_rejected_body', [
+                'label' => $this->label($event->model),
+                'reason' => $event->reason,
+            ]),
+        );
     }
 
     /**
      * Notifie l'auteur de la soumission (comptable/principal) : notification
      * in-app dans le schéma tenant + email best-effort.
+     *
+     * Issue #1923 — la transition approbation/rejet s'exécute dans le
+     * contexte platform_admin (aucun search_path tenant) : le tenant du
+     * soumissionnaire est résolu depuis le `company_id` de la ligne
+     * (`public.companies`, pattern PlatformCompanyLookup) et le traitement
+     * in-app s'exécute via `TenantManager::withinTenant()`.
      */
-    private function notifySubmitter(Model $model, string $verb, string $body): void
+    private function notifySubmitter(Model $model, string $title, string $body): void
     {
         /** @var int|null $submittedBy */
         $submittedBy = $model->submitted_by ?? null;
-        if ($submittedBy === null) {
+        if ($submittedBy === null || $model->company_id === null) {
             return;
         }
 
-        $submitter = Employee::query()->find($submittedBy);
-        if ($submitter === null) {
-            return;
-        }
+        // Issue #1923 — le contexte admin n'a pas de TenantMiddleware pour
+        // restaurer le search_path : on sauvegarde l'état AVANT le lookup
+        // public + le scope tenant, et on le restaure dans tous les cas
+        // (sinon la requête suivante résoudrait les tables dans le mauvais
+        // schéma — pattern TenantMiddleware, même `SHOW search_path`).
+        $previousSearchPath = DB::getDriverName() === 'pgsql'
+            ? DB::scalar('SHOW search_path')
+            : null;
 
         try {
-            $this->sendNotification->handle(
-                (int) $submitter->id,
-                'tax_rate_validation',
-                sprintf('Modification de taux %s', $verb),
-                $body,
-                ['table' => $model->getTable(), 'record_id' => $model->getKey()],
-            );
+            try {
+                $company = PlatformCompanyLookup::findOrFail((string) $model->company_id);
+            } catch (\Throwable $e) {
+                Log::warning('tax-rate.submitter-company-lookup-failed', [
+                    'company_id' => $model->company_id,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return;
+            }
+
+            $this->tenantManager->withinTenant($company, function () use ($submittedBy, $title, $body, $model): void {
+                $submitter = Employee::query()->find($submittedBy);
+                if ($submitter === null) {
+                    return;
+                }
+
+                try {
+                    $this->sendNotification->handle(
+                        (int) $submitter->id,
+                        'tax_rate_validation',
+                        $title,
+                        $body,
+                        ['table' => $model->getTable(), 'record_id' => $model->getKey()],
+                    );
+                } catch (\Throwable $e) {
+                    Log::warning('tax-rate.notification-inapp-failed', [
+                        'employee_id' => $submitter->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+
+                $this->emailBestEffort($submitter->email, $title, $body);
+            });
         } catch (\Throwable $e) {
-            Log::warning('tax-rate.notification-inapp-failed', [
-                'employee_id' => $submitter->id,
+            Log::warning('tax-rate.notification-tenant-failed', [
+                'company_id' => $model->company_id,
                 'error' => $e->getMessage(),
             ]);
+        } finally {
+            if (is_string($previousSearchPath) && $previousSearchPath !== '') {
+                DB::statement('SET search_path TO '.$previousSearchPath);
+            }
         }
-
-        $this->emailBestEffort($submitter->email, sprintf('Modification de taux %s', $verb), $body);
     }
 
     private function emailBestEffort(string $to, string $subject, string $body): void
     {
         try {
-            /** @var PendingMail $pending */
-            $pending = Mail::raw($body, function (Message $message) use ($to, $subject): void {
+            Mail::raw($body, function (Message $message) use ($to, $subject): void {
                 $message->to($to)->subject($subject);
             });
-            unset($pending);
         } catch (\Throwable $e) {
             // Mailer non configuré (MAIL_MAILER vide) ou transport en erreur :
             // la transition ne doit jamais casser pour un email (#1776).

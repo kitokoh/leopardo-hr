@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -13,6 +14,9 @@ use Tests\TestCase;
 /**
  * Issue #1815 — Interface admin des cotisations sociales : CRUD national
  * (platform_admin) + simulation avec/sans plafond légal.
+ *
+ * Issue #1923 — audit trail `tax_rate_change_log` sur chaque mutation +
+ * garde d'unicité (pas de doublon ACTIF sur le même code / fenêtre d'effet).
  */
 class SocialContributionAdminControllerTest extends TestCase
 {
@@ -108,5 +112,116 @@ class SocialContributionAdminControllerTest extends TestCase
         $this->assertSame(31500.0, (float) $capped['social_employee']);
         // Non plafonné : 4,2 % × 900 000 = 37 800.
         $this->assertSame(37800.0, (float) $uncapped['social_employee']);
+    }
+
+    public function test_admin_mutations_write_audit_entries(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $created = $this->postJson('/api/v1/admin/social-contributions', [
+            'country_code' => 'SN',
+            'name' => 'IPRES',
+            'code' => 'IPRES_SN_EMP',
+            'type' => 'employee',
+            'rate' => 5.6,
+            'cap' => 432000,
+            'effective_from' => '2026-01-01',
+        ])->assertCreated()->json('data');
+
+        $id = $created['id'];
+
+        $createdEntry = TaxRateChangeLog::query()
+            ->where('table_name', TaxRateChangeLog::TABLE_SOCIAL_CONTRIBUTIONS)
+            ->where('action', TaxRateChangeLog::ACTION_CREATED)
+            ->first();
+        $this->assertNotNull($createdEntry, 'la création admin doit être tracée');
+        $this->assertSame('platform_admin', $createdEntry->actor_role);
+
+        $this->putJson("/api/v1/admin/social-contributions/{$id}", ['rate' => 5.8])
+            ->assertOk()
+            ->assertJsonPath('data.rate', 5.8);
+
+        $updatedEntry = TaxRateChangeLog::query()
+            ->where('table_name', TaxRateChangeLog::TABLE_SOCIAL_CONTRIBUTIONS)
+            ->where('record_id', $id)
+            ->where('action', TaxRateChangeLog::ACTION_UPDATED)
+            ->first();
+        $this->assertNotNull($updatedEntry, 'la mise à jour admin doit être tracée');
+        $this->assertSame(5.6, (float) $updatedEntry->previous_value['rate']);
+        $this->assertSame(5.8, (float) $updatedEntry->new_value['rate']);
+
+        $this->deleteJson("/api/v1/admin/social-contributions/{$id}")->assertStatus(204);
+
+        $deletedEntry = TaxRateChangeLog::query()
+            ->where('table_name', TaxRateChangeLog::TABLE_SOCIAL_CONTRIBUTIONS)
+            ->where('record_id', $id)
+            ->where('action', TaxRateChangeLog::ACTION_DELETED)
+            ->first();
+        $this->assertNotNull($deletedEntry, 'la suppression admin doit être tracée');
+    }
+
+    public function test_admin_store_rejects_overlapping_active_duplicate(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        // Première ligne active, fenêtre ouverte.
+        $this->postJson('/api/v1/admin/social-contributions', [
+            'country_code' => 'CM',
+            'name' => 'CNPS Vieillesse',
+            'code' => 'CNPS_CM_VIE',
+            'type' => 'employee',
+            'rate' => 4.2,
+            'cap' => 750000,
+            'effective_from' => '2026-01-01',
+        ])->assertCreated();
+
+        // Même code, fenêtre qui CHEVAUCHE → 422 (résolveur `->first()` ambigu).
+        $this->postJson('/api/v1/admin/social-contributions', [
+            'country_code' => 'CM',
+            'name' => 'CNPS Vieillesse (doublon)',
+            'code' => 'CNPS_CM_VIE',
+            'type' => 'employee',
+            'rate' => 4.4,
+            'cap' => 750000,
+            'effective_from' => '2026-06-01',
+        ])->assertStatus(422);
+
+        $this->assertSame(1, SocialContribution::query()->count(), 'aucun doublon actif ne doit être créé');
+    }
+
+    public function test_admin_update_rejects_window_shrinking_onto_another_active_row(): void
+    {
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        // Ligne A : fenêtre BORNÉE 2026 (pour que B démarre sans chevauchement).
+        $a = $this->postJson('/api/v1/admin/social-contributions', [
+            'country_code' => 'SN',
+            'name' => 'IPRES',
+            'code' => 'IPRES_SN_EMP',
+            'type' => 'employee',
+            'rate' => 5.6,
+            'cap' => 432000,
+            'effective_from' => '2026-01-01',
+            'effective_to' => '2026-12-31',
+        ])->assertCreated()->json('data');
+
+        // Ligne B : fenêtre 2027+ (non chevauchante avec A bornée en 2026).
+        $b = $this->postJson('/api/v1/admin/social-contributions', [
+            'country_code' => 'SN',
+            'name' => 'IPRES (2027)',
+            'code' => 'IPRES_SN_EMP',
+            'type' => 'employee',
+            'rate' => 6.0,
+            'cap' => 432000,
+            'effective_from' => '2027-01-01',
+        ])->assertCreated()->json('data');
+
+        // Étendre B vers 2026 → chevauchement avec A → 422.
+        $this->putJson("/api/v1/admin/social-contributions/{$b['id']}", [
+            'effective_from' => '2026-06-01',
+        ])->assertStatus(422);
+
+        // A reste intacte.
+        $this->assertSame(5.6, (float) SocialContribution::query()->findOrFail($a['id'])->rate);
     }
 }

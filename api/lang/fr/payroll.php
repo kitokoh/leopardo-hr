@@ -26,4 +26,21 @@ return [
             'message' => 'Aucune règle de paie n\'est disponible pour :country : le calcul de paie n\'est pas disponible pour ce pays.',
         ],
     ],
+
+    // Issue #1923 — workflow de validation des taux légaux (#1813) : messages
+    // du service/listener/contrôleurs admin, plus aucune chaîne accentuée en dur.
+    'rate_submit_draft_only' => 'Seule une ligne en brouillon peut être soumise (statut actuel : :status).',
+    'rate_approve_pending_only' => 'Seule une ligne en attente de validation peut être approuvée (statut actuel : :status).',
+    'rate_reject_pending_only' => 'Seule une ligne en attente de validation peut être rejetée (statut actuel : :status).',
+    'rate_reject_reason_required' => 'Un motif de rejet est obligatoire.',
+    'rate_table_unknown' => 'Table inconnue.',
+    'rate_overlap_conflict' => 'Une ligne active existe déjà pour cette même identité sur une période qui chevauche la nouvelle fenêtre d\'effet : fermez d\'abord la fenêtre de la ligne existante.',
+    'rate_validation_requested_title' => 'Validation de taux demandée — :label',
+    'rate_validation_requested_body' => 'Un :kind de taux légal (:label) attend votre validation dans l\'interface admin.',
+    'rate_kind_tax_scale' => 'barème fiscal',
+    'rate_kind_contribution' => 'taux de cotisation',
+    'rate_approved_title' => 'Modification de taux approuvée',
+    'rate_approved_body' => 'Votre modification de taux légal (:label) a été approuvée et est active.',
+    'rate_rejected_title' => 'Modification de taux rejetée',
+    'rate_rejected_body' => 'Votre modification de taux légal (:label) a été rejetée : :reason',
 ];

@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $table_name 'tax_slabs' | 'social_contributions'
  * @property int $record_id
- * @property string $action created|submitted|approved|rejected|superseded
+ * @property string $action created|submitted|approved|rejected|superseded|updated|deleted
  * @property int $actor_id
  * @property string $actor_role
  * @property array<string, mixed>|null $previous_value
@@ -44,6 +44,13 @@ class TaxRateChangeLog extends Model
     public const ACTION_REJECTED = 'rejected';
 
     public const ACTION_SUPERSEDED = 'superseded';
+
+    // Issue #1923 — audit du CRUD admin national (référentiel légal) :
+    // les lignes company_id IS NULL ne passent pas par le workflow
+    // draft→validation, chaque mutation directe du platform_admin est tracée.
+    public const ACTION_UPDATED = 'updated';
+
+    public const ACTION_DELETED = 'deleted';
 
     protected $table = 'tax_rate_change_log';
 
