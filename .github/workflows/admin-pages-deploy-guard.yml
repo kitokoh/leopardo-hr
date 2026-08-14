@@ -1,0 +1,63 @@
+name: Admin Pages Deploy Guard
+
+# Issue #1834 : le déploiement du SPA admin repose sur l'intégration Git
+# Cloudflare Pages, qui peut échouer silencieusement (pas de workflow GitHub
+# dédié). Ce garde vérifie que le header CSP réellement servi par
+# leo-admin.pages.dev correspond au fichier `_headers` du repo — si
+# l'intégration Git ne redéploie pas, le run est rouge et l'écart est visible.
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_url:
+        description: "Admin dashboard base URL"
+        required: false
+        default: "https://leo-admin.pages.dev"
+  schedule:
+    - cron: "17 */6 * * *"   # toutes les 6 h (heure :17)
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: admin-pages-deploy-guard
+  cancel-in-progress: false
+
+jobs:
+  check-csp-header:
+    name: Verify served CSP matches repo _headers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Check deployed CSP header
+        shell: bash
+        env:
+          ADMIN_URL: ${{ github.event.inputs.admin_url || 'https://leo-admin.pages.dev' }}
+        run: |
+          set -euo pipefail
+          echo "Probing ${ADMIN_URL}/login for the CSP header served by Cloudflare Pages..."
+          HEADERS="$(curl -sI --max-time 30 "${ADMIN_URL}/login" || true)"
+
+          SERVED_CSP="$(echo "${HEADERS}" | tr -d '\r' | sed -n 's/^content-security-policy-report-only: //Ip' || true)"
+          if [[ -z "${SERVED_CSP}" ]]; then
+            echo "::error::Aucun header Content-Security-Policy-Report-Only servi par ${ADMIN_URL} — déploiement CF Pages absent ou bloqué (issue #1834)."
+            exit 1
+          fi
+
+          # Le fichier _headers du repo ne contient plus upgrade-insecure-requests
+          # (fix #1783) : si le header servi le contient encore, l'intégration Git
+          # Cloudflare Pages n'a pas redéployé main.
+          if echo "${SERVED_CSP}" | grep -q "upgrade-insecure-requests"; then
+            echo "::error::Header CSP servi obsolète : contient encore upgrade-insecure-requests (issue #1834)."
+            echo "L'intégration Git Cloudflare Pages (leo-admin) ne redéploie pas main — vérifier le dashboard CF (branche de production = main, build command, logs de build)."
+            exit 1
+          fi
+
+          echo "OK — header CSP servi aligné sur le repo (pas d'upgrade-insecure-requests)."
