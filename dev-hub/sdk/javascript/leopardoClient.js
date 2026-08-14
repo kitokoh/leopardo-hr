@@ -190,6 +190,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/islamic-calendar/confirm-year/{year}", options);
     },
 
+    /** Lister les enregistrements d'audit des calculs de paie (platform_admin, cross-tenant) — issue #1874 */
+    listPayrollAuditsAdmin(options = {}) {
+      return request("GET", "/admin/payroll/audit", options);
+    },
+
+    /** Détail d'un enregistrement d'audit de calcul de paie (platform_admin) — issue #1874 */
+    getPayrollAuditAdmin(options = {}) {
+      return request("GET", "/admin/payroll/audit/{correlationId}", options);
+    },
+
     /** Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814 */
     simulatePayrollAdmin(options = {}) {
       return request("POST", "/admin/payroll/simulate", options);
@@ -1538,6 +1548,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Valider la session de paie */
     postPayrollRunsByPayrollRunValidate(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/validate", options);
+    },
+
+    /** Lister les enregistrements d'audit des calculs de paie (manager principal/RH) — issue #1874 */
+    listPayrollAudits(options = {}) {
+      return request("GET", "/payroll/audit", options);
+    },
+
+    /** Détail d'un enregistrement d'audit de calcul de paie (manager principal/RH) — issue #1874 */
+    getPayrollAudit(options = {}) {
+      return request("GET", "/payroll/audit/{correlationId}", options);
     },
 
     /** Previsualiser un cycle de paie candidat */

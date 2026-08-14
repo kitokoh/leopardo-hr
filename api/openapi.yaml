@@ -1381,6 +1381,70 @@ paths:
         "401": { $ref: "#/components/responses/Error401" }
         "403": { $ref: "#/components/responses/Error403" }
         "422": { $ref: "#/components/responses/Validation422" }
+  /admin/payroll/audit:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les enregistrements d'audit des calculs de paie (platform_admin, cross-tenant) — issue #1874"
+      description: "Vue plateforme de l'audit des calculs (runs de paie + simulations) : lecture seule, isolation par filtre company_id optionnel. RBAC : platform_admin (PayrollAuditPolicy)."
+      operationId: listPayrollAuditsAdmin
+      parameters:
+        - name: company_id
+          in: query
+          required: false
+          description: "Filtrer sur un tenant précis (UUID)"
+          schema: { type: string, format: uuid }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [success, validation_error, rule_missing, provider_error, fallback_forbidden] }
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string }
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginée des enregistrements d'audit"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollCalculationAudit"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/payroll/audit/{correlationId}:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Détail d'un enregistrement d'audit de calcul de paie (platform_admin) — issue #1874"
+      description: "Reproduction du contexte d'un calcul (pays, période, version de règles, paramètres agrégés, résultats agrégés, statut) à partir de son correlation_id. Cross-tenant pour le platform_admin."
+      operationId: getPayrollAuditAdmin
+      parameters:
+        - name: correlationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "Enregistrement d'audit"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollCalculationAudit"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
   /admin/rate-validation/pending:
     get:
       tags: ["Platform Admin"]
@@ -6935,6 +6999,66 @@ paths:
   # =============================================
 
   # --- Payroll Runs ---
+  /payroll/audit:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les enregistrements d'audit des calculs de paie (manager principal/RH) — issue #1874"
+      description: "Audit immuable des calculs (runs de paie + simulations) du tenant courant : lecture seule, isolation tenant stricte (la liste est scopée à la société de l'acteur). RBAC : manager principal/RH (PayrollAuditPolicy)."
+      operationId: listPayrollAudits
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [success, validation_error, rule_missing, provider_error, fallback_forbidden] }
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string }
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginée des enregistrements d'audit du tenant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollCalculationAudit"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /payroll/audit/{correlationId}:
+    get:
+      tags: ["Payroll"]
+      summary: "Détail d'un enregistrement d'audit de calcul de paie (manager principal/RH) — issue #1874"
+      description: "Reproduction du contexte d'un calcul (pays, période, version de règles, paramètres agrégés, résultats agrégés, statut) à partir de son correlation_id. 404 si l'enregistrement n'appartient pas au tenant courant."
+      operationId: getPayrollAudit
+      parameters:
+        - name: correlationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "Enregistrement d'audit"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollCalculationAudit"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
   /payroll-runs:
     get:
       tags: ["Payroll"]
@@ -8435,6 +8559,10 @@ paths:
                   data:
                     type: object
                     properties:
+                      correlation_id:
+                        type: string
+                        format: uuid
+                        description: "Issue #1874 — identifiant de corrélation de la requête (logs ↔ réponse ↔ audit)."
                       country_code: { type: string }
                       gross_salary: { type: number }
                       employee_contributions:
@@ -16439,6 +16567,11 @@ components:
         country_code:
           type: string
           description: ISO-3166 country context used by the payroll rules.
+        correlation_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: "Issue #1874 — identifiant de corrélation du run (logs ↔ réponse ↔ audit)."
         rules_version:
           type: string
           nullable: true
@@ -16491,6 +16624,48 @@ components:
         created_at:
           type: string
           format: date-time
+
+    PayrollCalculationAudit:
+      type: object
+      description: "Issue #1874 — enregistrement d'audit immuable d'un calcul de paie (run ou simulation) : contexte de règles (pays, période, version), paramètres d'entrée agrégés NON sensibles, résultats agrégés et statut de résolution — de quoi expliquer/reproduire/auditer un résultat sans exposer de données individuelles ni de secrets."
+      properties:
+        id: { type: integer }
+        correlation_id: { type: string, format: uuid }
+        company_id: { type: string, format: uuid, nullable: true, description: "NULL pour les calculs plateforme (simulation super-admin sur règles nationales)." }
+        actor:
+          type: object
+          properties:
+            type: { type: string, enum: [user, job] }
+            id: { type: integer, nullable: true }
+        country_code: { type: string }
+        period_start: { type: string, format: date, nullable: true }
+        period_end: { type: string, format: date, nullable: true }
+        rules_version:
+          type: string
+          nullable: true
+          description: "Empreinte stable des règles effectives (permet de reproduire le calcul à l'identique)."
+        rules_identifier:
+          type: string
+          nullable: true
+          description: "Implémentation des règles pays appliquée."
+        input:
+          type: object
+          nullable: true
+          description: "Paramètres agrégés non sensibles (ex. nombre d'employés, masse salariale brute) — jamais de salaires individuels ni de secrets."
+          additionalProperties: true
+        result:
+          type: object
+          nullable: true
+          description: "Résultats agrégés (net total, coût employeur total…) — null en cas d'échec."
+          additionalProperties: true
+        status:
+          type: string
+          enum: [success, validation_error, rule_missing, provider_error, fallback_forbidden]
+        error_message:
+          type: string
+          nullable: true
+          description: "Classe d'erreur uniquement (jamais de message brut ni de secret)."
+        created_at: { type: string, format: date-time }
 
     SalaryStructure:
       type: object
@@ -16591,6 +16766,10 @@ components:
     PayrollSimulationResult:
       type: object
       properties:
+        correlation_id:
+          type: string
+          format: uuid
+          description: "Issue #1874 — identifiant de corrélation de la requête (logs ↔ réponse ↔ audit)."
         gross: { type: number }
         country_code: { type: string }
         social_employee: { type: number }

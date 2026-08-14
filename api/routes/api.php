@@ -19,6 +19,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
 use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
@@ -331,6 +332,12 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab');
         Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults']);
         Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+
+        // Issue #1874 — audit des calculs de paie (vue plateforme, cross-tenant :
+        // filtre company_id optionnel ; le platform_admin est autorisé par
+        // PayrollAuditPolicy — pattern #1917).
+        Route::get('/payroll/audit', [PayrollAuditController::class, 'index']);
+        Route::get('/payroll/audit/{correlationId}', [PayrollAuditController::class, 'show'])->whereUuid('correlationId');
 
         // Issue #1815 — cotisations sociales nationales (CRUD admin).
         Route::get('/social-contributions', [SocialContributionAdminController::class, 'index']);

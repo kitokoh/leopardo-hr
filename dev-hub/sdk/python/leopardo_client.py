@@ -172,6 +172,14 @@ class LeopardoClient:
         """Confirmer toutes les dates islamiques d'une année (super-admin)"""
         return self.request("POST", "/admin/islamic-calendar/confirm-year/{year}", **kwargs)
 
+    def listpayrollauditsadmin(self, **kwargs):
+        """Lister les enregistrements d'audit des calculs de paie (platform_admin, cross-tenant) — issue #1874"""
+        return self.request("GET", "/admin/payroll/audit", **kwargs)
+
+    def getpayrollauditadmin(self, **kwargs):
+        """Détail d'un enregistrement d'audit de calcul de paie (platform_admin) — issue #1874"""
+        return self.request("GET", "/admin/payroll/audit/{correlationId}", **kwargs)
+
     def simulatepayrolladmin(self, **kwargs):
         """Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814"""
         return self.request("POST", "/admin/payroll/simulate", **kwargs)
@@ -1251,6 +1259,14 @@ class LeopardoClient:
     def post_payroll_runs_by_payrollrun_validate(self, **kwargs):
         """Valider la session de paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/validate", **kwargs)
+
+    def listpayrollaudits(self, **kwargs):
+        """Lister les enregistrements d'audit des calculs de paie (manager principal/RH) — issue #1874"""
+        return self.request("GET", "/payroll/audit", **kwargs)
+
+    def getpayrollaudit(self, **kwargs):
+        """Détail d'un enregistrement d'audit de calcul de paie (manager principal/RH) — issue #1874"""
+        return self.request("GET", "/payroll/audit/{correlationId}", **kwargs)
 
     def get_payroll_cycles_preview(self, **kwargs):
         """Previsualiser un cycle de paie candidat"""

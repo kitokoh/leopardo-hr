@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $period_start
  * @property Carbon $period_end
  * @property string $country_code
+ * @property string|null $correlation_id
  * @property string|null $rules_version
  * @property Carbon|null $rules_period
  * @property string|null $rules_identifier
@@ -70,6 +71,7 @@ class PayrollRun extends Model
 
     protected $fillable = [
         'company_id', 'period_start', 'period_end', 'country_code',
+        'correlation_id',
         'rules_version', 'rules_period', 'rules_identifier', 'status',
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',
         'employee_count', 'calculated_at', 'validated_by', 'validated_at',
