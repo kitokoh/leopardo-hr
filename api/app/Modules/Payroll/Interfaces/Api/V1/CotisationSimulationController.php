@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
@@ -52,6 +53,9 @@ class CotisationSimulationController extends Controller
             // #1951 : contrat partagé du moteur (plus de liste in: hardcodée).
             'country_code' => ['required', 'string', Rule::in($this->payrollCalculator->rulesResolver()->supportedCountryCodes())],
             'rules_period' => ['nullable', 'date'],
+            // Issue #1872 — une règle « placeholder » (aucune valeur légale
+            // implémentée) exige une confirmation explicite.
+            'acknowledge_placeholder' => ['nullable', 'boolean'],
         ]);
 
         /** @var array{gross_salary: float|string, country_code: string, rules_period?: string|null} $validated */
@@ -71,6 +75,38 @@ class CotisationSimulationController extends Controller
             $companyId,
             $rulesPeriod
         );
+
+        // Issue #1872 — les règles « placeholder » (BJ/TG/NE/CF/TD/GQ : aucune
+        // valeur légale sourcée) ne peuvent pas alimenter une simulation sans
+        // confirmation explicite ; l'acceptation est AUDITÉE (tenant, pays,
+        // acteur) — jamais de secrets ni de données biométriques.
+        if ($rules->confidenceLevel() === 'placeholder') {
+            $acknowledged = (bool) ($validated['acknowledge_placeholder'] ?? false);
+            if (! $acknowledged) {
+                return response()->json([
+                    'message' => __('payroll.placeholder_acknowledge_required', ['country' => $countryCode]),
+                    'errors' => [
+                        'acknowledge_placeholder' => [__('payroll.placeholder_acknowledge_required', ['country' => $countryCode])],
+                    ],
+                ], 422);
+            }
+
+            AuditLog::create([
+                'company_id' => $actor->company_id,
+                'user_id' => $actor->id,
+                'action' => 'placeholder_warning_acknowledged',
+                'auditable_type' => 'App\Modules\Payroll\Infrastructure\Services\CountryRules\CountryRulesResolver',
+                'auditable_id' => 0,
+                'old_values' => [],
+                'new_values' => [
+                    'country_code' => $countryCode,
+                    'rules_identifier' => (new \ReflectionClass($rules))->getShortName(),
+                    'confidence_level' => 'placeholder',
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        }
 
         // Issue #1869 — mêmes appels métier que PayrollCalculator::calculateSlip().
         $breakdown = $this->payrollCalculator->computeNetBreakdown($gross, $rules);

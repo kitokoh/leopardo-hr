@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
@@ -52,6 +53,8 @@ class PayrollSimulationController extends Controller
             'slabs_override.*.rate' => ['required_with:slabs_override', 'numeric', 'min:0', 'max:100'],
             'slabs_override.*.fixed_deduction' => ['sometimes', 'numeric', 'min:0'],
             'ignore_caps' => ['sometimes', 'boolean'],
+            // Issue #1872 — règle « placeholder » : confirmation explicite requise.
+            'acknowledge_placeholder' => ['sometimes', 'boolean'],
         ]);
 
         /** @var array{gross_salary: float|string, country_code: string, slabs_override?: array<int, array{min: float|string, max?: float|string|null, rate: float|string, fixed_deduction?: float|string}>, ignore_caps?: bool} $validated */
@@ -59,6 +62,40 @@ class PayrollSimulationController extends Controller
         $countryCode = $validated['country_code'];
 
         $rules = $this->payrollCalculator->getRules($countryCode);
+
+        // Issue #1872 — règle « placeholder » : simulation indicative
+        // interdite sans confirmation explicite (jamais de présentation
+        // comme bulletin certifié) ; l'acceptation est AUDITÉE.
+        if ($rules->confidenceLevel() === 'placeholder') {
+            $acknowledged = (bool) ($validated['acknowledge_placeholder'] ?? false);
+            if (! $acknowledged) {
+                return response()->json([
+                    'message' => __('payroll.placeholder_acknowledge_required', ['country' => $countryCode]),
+                    'errors' => [
+                        'acknowledge_placeholder' => [__('payroll.placeholder_acknowledge_required', ['country' => $countryCode])],
+                    ],
+                ], 422);
+            }
+
+            $companyId = $user instanceof Employee ? $user->company_id : null;
+            if ($companyId !== null) {
+                AuditLog::create([
+                    'company_id' => $companyId,
+                    'user_id' => $user->id,
+                    'action' => 'placeholder_warning_acknowledged',
+                    'auditable_type' => 'App\Modules\Payroll\Infrastructure\Services\CountryRules\CountryRulesResolver',
+                    'auditable_id' => 0,
+                    'old_values' => [],
+                    'new_values' => [
+                        'country_code' => $countryCode,
+                        'rules_identifier' => (new \ReflectionClass($rules))->getShortName(),
+                        'confidence_level' => 'placeholder',
+                    ],
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            }
+        }
 
         // Override dry-run du barème (non persistant).
         if (isset($validated['slabs_override'])) {

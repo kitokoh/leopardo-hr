@@ -25,4 +25,9 @@ return [
     'rate_approved_body' => 'Votre modification de taux légal (:label) a été approuvée et est active.',
     'rate_rejected_title' => 'Modification de taux rejetée',
     'rate_rejected_body' => 'Votre modification de taux légal (:label) a été rejetée : :reason',
+
+    'placeholder_acknowledge_required' => "Les règles de paie pour le pays :country sont encore au stade « placeholder » : aucune valeur légale n'est implémentée. Confirmez explicitement (acknowledge_placeholder=true) — les montants sont INDICATIFS et ne peuvent pas servir à un bulletin réel.",
+    'compliance_warning_placeholder' => "Règles de structure uniquement pour :country : les taux et cotisations ne sont pas encore sourcés — ne pas utiliser pour une paie réelle.",
+    'compliance_warning_pilot' => "Règles pilotes pour :country, issues de références publiques mais non validées localement — confirmez avec un conseil local avant tout usage réglementaire.",
+    'compliance_warning_production' => "Règles validées pour la paie :country — confirmez toujours les taux courants auprès d'un conseil local avant une déclaration.",
 ];
