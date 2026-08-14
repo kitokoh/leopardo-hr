@@ -119,12 +119,15 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        $employeeRate = $this->resolveContributionRate('CNSS_CEDEAO_EMP', 3.6);
-        $employerRate = $this->resolveContributionRate('CNSS_CEDEAO_PAT', 16.4);
+        // ZONE-INFRA (#1820): Côte d'Ivoire (CI) statutory CNSS ceiling
+        // 1 647 315 XOF/month is applied via computeContribution(); the
+        // other five CEDEAO members stay on the placeholder (uncapped)
+        // rates until their own member-state issues land (BF/ML: #1829).
+        $cap = $this->memberCountryCode === 'CI' ? 1647315.0 : null;
 
         return [
-            'employee' => round($grossSalary * $employeeRate / 100, 2),
-            'employer' => round($grossSalary * $employerRate / 100, 2),
+            'employee' => $this->computeContribution($grossSalary, 'CNSS_CEDEAO_EMP', 3.6, $cap),
+            'employer' => $this->computeContribution($grossSalary, 'CNSS_CEDEAO_PAT', 16.4, $cap),
         ];
     }
 

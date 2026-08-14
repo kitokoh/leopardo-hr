@@ -268,6 +268,41 @@ class PayrollCalculator
             ];
         }
 
+        // ZONE-INFRA (#1820) — 13ème mois légal obligatoire : injecté comme
+        // ligne earning du mois de décembre, donc soumis aux cotisations et à
+        // l'impôt (traitement 'fully_taxable' par défaut — un pays qui
+        // l'étale sur l'année pourra surcharger thirteenthMonthTaxTreatment()).
+        if ($rules->thirteenthMonthMandatory() && (int) $run->period_start->month === 12) {
+            $grossEarnings += $basePaid;
+            $lines[] = [
+                'name' => '13ème mois',
+                'type' => 'earning',
+                'base_amount' => $basePaid,
+                'rate' => null,
+                'amount' => $basePaid,
+                'order' => $order++,
+            ];
+        }
+
+        // ZONE-INFRA (#1820) — allocations familiales par enfant à charge :
+        // ligne earning injectée quand la règle pays définit un montant ET que
+        // l'employé expose children_count > 0 (colonne non câblée côté
+        // provisioning pour l'instant — le mécanisme est prêt et inerte tant
+        // qu'aucune règle pays ne retourne un montant).
+        $childrenCount = $employee->getAttribute('children_count');
+        if ($rules->familyAllowancePerChild() > 0.0 && is_numeric($childrenCount) && (int) $childrenCount > 0) {
+            $allowance = round($rules->familyAllowancePerChild() * (int) $childrenCount, 2);
+            $grossEarnings += $allowance;
+            $lines[] = [
+                'name' => 'Allocations familiales',
+                'type' => 'earning',
+                'base_amount' => (int) $childrenCount,
+                'rate' => null,
+                'amount' => $allowance,
+                'order' => $order++,
+            ];
+        }
+
         /** @var array{employee: float, employer: float} $social */
         $social = $rules->calculateSocialCharges($grossEarnings);
 
@@ -291,6 +326,22 @@ class PayrollCalculator
             'amount' => $incomeTax,
             'order' => $order++,
         ];
+
+        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
+        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
+        // ajoutée quand la règle pays la définit (> 0). Elle s'ajoute aux
+        // déductions totales via la boucle générique ci-dessous.
+        $bracketTax = $rules->calculateBracketTax($grossEarnings);
+        if ($bracketTax > 0.0) {
+            $lines[] = [
+                'name' => 'Taxe de minimum fiscal',
+                'type' => 'deduction',
+                'base_amount' => $grossEarnings,
+                'rate' => null,
+                'amount' => $bracketTax,
+                'order' => $order++,
+            ];
+        }
 
         foreach ($components as $component) {
             /** @var SalaryComponent $component */
