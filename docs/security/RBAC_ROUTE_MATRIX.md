@@ -141,3 +141,4 @@ New `api.manager` middleware (`EnsureApiManagerMiddleware`) enforces route-level
 | HR extended self-service `/me/*` | none (auth+tenant) | R | R | R | R | R | R | Own contracts/trainings/loans. |
 | Contracts/Recruitment/Training/Loans CRUD | `api.manager` | RW | RW | RW | RW | RW | - | Any manager. |
 | Reports/Webhooks/Audit/Predictions | `api.manager` + controller policies where present | R | R | R | R | R | - | Any tenant manager can access report surfaces covered by existing feature tests. |
+| Payroll engine `/payroll-runs/{run}/declarations/cnps-cm` (#1823) | R | - | - | RW | - | - | CEMAC/CM #1823 : déclaration CNPS mensuelle DAS (CSV) réservée aux managers principal/comptable ; plafond 750 000 XAF appliqué sur l'assiette, AT 2 % non plafonnée, ligne TOTAUX ; 404 cross-tenant. Tests : `CnpsDeclarationTest`. |

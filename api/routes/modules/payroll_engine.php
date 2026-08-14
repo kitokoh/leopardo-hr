@@ -96,6 +96,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
 
+        // Social Declarations — CNPS Cameroun DAS (CEMAC/CM #1823)
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnps-cm', [SocialDeclarationController::class, 'generateCnpsCmDeclaration'])->whereNumber('payrollRun');
+
         // Social Declarations (CNAS DZ / CNSS MA / DSN FR)
         Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
         Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);

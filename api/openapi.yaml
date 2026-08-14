@@ -6759,7 +6759,32 @@ paths:
         "422":
           description: "Validated runs cannot be cancelled"
 
-  /payroll-runs/{payrollRun}/summary:
+  /payroll-runs/{payrollRun}/declarations/cnps-cm:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"
+      description: "Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant."
+      operationId: downloadCnpsCmDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV DAS"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /payroll-runs/{payrollRun}/regularize:
     get:
       tags: ["Payroll"]
       summary: "Resume de la session de paie"
