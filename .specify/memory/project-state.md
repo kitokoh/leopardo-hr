@@ -13,8 +13,8 @@
 | Pays | Code | Niveau | Golden tests | Déclaration | Remarque |
 |------|------|--------|-------------|-------------|---------|
 | Algérie | DZ | 🟡 `pilot`* (à valider expert) | ✅ 20+ cas | ✅ CNAS CSV | Wedge commercial — priorité absolue |
-| Maroc | MA | 🟡 `pilot` | ❌ manquants | ❌ | |
-| Tunisie | TN | 🟡 `pilot` | ❌ manquants | ❌ | |
+| Maroc | MA | 🟡 `pilot` | ✅ 3 cas (#2119) | ❌ | Abattement frais pro 35 % non implémenté (MA_COMPLIANCE.md) |
+| Tunisie | TN | 🟡 `pilot` | ✅ 3 cas (#2119) | ❌ | Abattement 10 % non implémenté (TN_COMPLIANCE.md) |
 
 > \* `pilot`* = pilot dans le code, validation experte non signée (registre `docs/payroll/VALIDATION_EXPERTE.md`).
 
@@ -47,9 +47,9 @@
 
 | Pays | Code | Niveau | Remarque |
 |------|------|--------|---------|
-| France | FR | 🟡 `pilot`* (à valider expert) | Barèmes implémentés, golden tests manquants |
-| Turquie | TR | 🟡 `pilot` | Barèmes implémentés, golden tests manquants |
-| Canada | CA | 🟡 `pilot` | Fédéral seulement |
+| France | FR | 🟡 `pilot`* (à valider expert) | ✅ 3 cas (#2119) |
+| Turquie | TR | 🟡 `pilot` | ✅ 3 cas (#2119) |
+| Canada | CA | 🟡 `pilot` | ✅ 3 cas (#2119) — fédéral seulement |
 
 ---
 
