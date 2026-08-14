@@ -105,6 +105,17 @@ type CopyTree = {
     downloadPdf: string;
     viewDetail: string;
     resultsCount: string;
+    detailTitle: string;
+    detailClose: string;
+    detailLoading: string;
+    detailError: string;
+    detailDeductions: string;
+    detailEmployerContributions: string;
+    detailTotalCost: string;
+    detailWorkingDays: string;
+    detailDaysWorked: string;
+    detailOvertimeHours: string;
+    detailSalaryBreakdown: string;
   };
   smartAttendancePage: {
     title: string;
@@ -419,6 +430,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'Telecharger PDF',
       viewDetail: 'Voir detail',
       resultsCount: 'resultats',
+      detailTitle: 'Detail du bulletin',
+      detailClose: 'Fermer',
+      detailLoading: 'Chargement du detail...',
+      detailError: 'Detail indisponible pour le moment — affichage des donnees de la liste.',
+      detailDeductions: 'Deductions',
+      detailEmployerContributions: 'Charges patronales',
+      detailTotalCost: 'Cout total employeur',
+      detailWorkingDays: 'Jours ouvres',
+      detailDaysWorked: 'Jours travailles',
+      detailOvertimeHours: 'Heures supplementaires',
+      detailSalaryBreakdown: 'Composition du salaire',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
@@ -731,6 +753,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'تحميل PDF',
       viewDetail: 'عرض التفاصيل',
       resultsCount: 'نتائج',
+      detailTitle: 'تفاصيل كشف الراتب',
+      detailClose: 'إغلاق',
+      detailLoading: 'جار تحميل التفاصيل...',
+      detailError: 'التفاصيل غير متوفرة حاليا — عرض بيانات القائمة.',
+      detailDeductions: 'الخصومات',
+      detailEmployerContributions: 'اشتراكات صاحب العمل',
+      detailTotalCost: 'التكلفة الإجمالية لصاحب العمل',
+      detailWorkingDays: 'أيام العمل',
+      detailDaysWorked: 'أيام العمل الفعلية',
+      detailOvertimeHours: 'ساعات العمل الإضافي',
+      detailSalaryBreakdown: 'تفاصيل الراتب',
     },
     smartAttendancePage: {
       title: 'الحضور الذكي',
@@ -1043,6 +1076,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'PDF indir',
       viewDetail: 'Detayi gor',
       resultsCount: 'sonuc',
+      detailTitle: 'Bordro Detayi',
+      detailClose: 'Kapat',
+      detailLoading: 'Detay yukleniyor...',
+      detailError: 'Detay su anda mevcut degil — liste verileri gosteriliyor.',
+      detailDeductions: 'Kesintiler',
+      detailEmployerContributions: 'Isveren katkilari',
+      detailTotalCost: 'Isveren toplam maliyeti',
+      detailWorkingDays: 'Calisma gunleri',
+      detailDaysWorked: 'Filii calisilan gunler',
+      detailOvertimeHours: 'Fazla mesai saatleri',
+      detailSalaryBreakdown: 'Maas detayi',
     },
     smartAttendancePage: {
       title: 'Akilli Devam',
@@ -1355,6 +1399,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'Download PDF',
       viewDetail: 'View detail',
       resultsCount: 'results',
+      detailTitle: 'Pay slip details',
+      detailClose: 'Close',
+      detailLoading: 'Loading details...',
+      detailError: 'Details temporarily unavailable — showing list data.',
+      detailDeductions: 'Deductions',
+      detailEmployerContributions: 'Employer contributions',
+      detailTotalCost: 'Total employer cost',
+      detailWorkingDays: 'Working days',
+      detailDaysWorked: 'Actual days worked',
+      detailOvertimeHours: 'Overtime hours',
+      detailSalaryBreakdown: 'Salary breakdown',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
