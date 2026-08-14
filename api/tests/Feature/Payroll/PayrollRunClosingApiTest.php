@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -71,11 +72,36 @@ class PayrollRunClosingApiTest extends TestCase
         return $run;
     }
 
+    /**
+     * Issue #1767 : un run sans bulletin ne peut plus être validé/verrouillé —
+     * le workflow de clôture doit donc disposer d'au moins un bulletin.
+     */
+    private function addPaySlip(PayrollRun $run, Employee $employee): void
+    {
+        PaySlip::create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'period_start' => $run->period_start,
+            'period_end' => $run->period_end,
+            'gross_salary' => 60000,
+            'total_deductions' => 12442,
+            'net_salary' => 47558,
+            'employer_contributions' => 15600,
+            'total_cost' => 75600,
+            'working_days' => 22,
+            'actual_days_worked' => 22,
+            'overtime_hours' => 0,
+            'status' => 'calculated',
+        ]);
+    }
+
     public function test_full_closing_workflow_via_api(): void
     {
         Sanctum::actingAs($this->manager);
 
         $run = $this->makeRun(PayrollRun::STATUS_CALCULATED);
+        $this->addPaySlip($run, $this->employee);
 
         // Étape 1 : validation RH → audit trail.
         $this->postJson("/api/v1/payroll-runs/{$run->id}/validate")
