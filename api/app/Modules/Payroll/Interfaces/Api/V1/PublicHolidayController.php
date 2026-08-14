@@ -171,7 +171,7 @@ class PublicHolidayController extends Controller
         // Issue #1937 : pays allowlisté (registre #1867) + normalisé, year
         // recoupé avec date, month_day requis si récurrent et cohérent.
         $validator = Validator::make($request->all(), [
-            'country_code' => ['required', 'string', 'size:2', Rule::in(array_keys(CountryDefaults::DEFAULTS))],
+            'country_code' => ['required', 'string', 'size:2', Rule::in(array_keys(CountryDefaults::all()))],
             'name' => ['required', 'string', 'max:120'],
             'date' => ['required', 'date'],
             'year' => ['required', 'integer', 'min:2020', 'max:2100'],
