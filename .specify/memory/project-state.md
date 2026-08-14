@@ -95,6 +95,16 @@
 | Pointage → paie (F-20) | ✅ | actual_days_worked depuis logs |
 | Offline mobile | ✅ | sync_service.dart |
 
+### Vitrine web & Contrat API
+
+| Fonctionnalité | État | Remarque |
+|----------------|------|---------|
+| Sitemap `/blog/*` = slugs réels | ✅ | `data/blog.ts` source (plus de mdx obsolètes) — vague QA 2026-08-14 |
+| PWA share_target `/share` | ✅ | Route handler POST → 303 /signup — vague QA 2026-08-14 |
+| Skip-link `#main-content` racine | ✅ | Layout racine — vague QA 2026-08-14 |
+| Verbes OpenAPI alignés routes | ✅ | loans/expense PUT, cabinet PATCH, smart-attendance preferences PUT — vague QA 2026-08-14 |
+| `EdgeController` méthodes mortes | ✅ | installScript/downloadDockerCompose/licensePublicKey supprimés (doublons) — vague QA 2026-08-14 |
+
 ### Sécurité & RGPD
 
 | Fonctionnalité | État | Remarque |
