@@ -105,4 +105,5 @@ return [
     'unique' => 'La valeur du champ :attribute est déjà utilisée.',
     'url' => 'Le format de l\'URL de :attribute n\'est pas valide.',
     'uuid' => 'Le champ :attribute doit être un UUID valide.',
+    'supported_country' => 'Le champ :attribute doit être un pays supporté (:value).',
 ];

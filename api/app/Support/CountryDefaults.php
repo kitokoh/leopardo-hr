@@ -63,4 +63,37 @@ final class CountryDefaults
             self::DEFAULTS,
         );
     }
+
+    /**
+     * MULTI-PAYS (#1867) — résolution STRICTE, sans fallback silencieux vers
+     * DZ. Retourne null pour un code absent, inconnu ou non supporté.
+     *
+     * @return array{country: string, label: string, language: string, currency: string, timezone: string}|null
+     */
+    public static function find(?string $country): ?array
+    {
+        $code = strtoupper(trim((string) $country));
+
+        if ($code === '' || ! isset(self::DEFAULTS[$code])) {
+            return null;
+        }
+
+        $defaults = self::DEFAULTS[$code];
+
+        return [
+            'country' => $code,
+            'label' => $defaults['label'],
+            'language' => $defaults['language'],
+            'currency' => $defaults['currency'],
+            'timezone' => $defaults['timezone'],
+        ];
+    }
+
+    /**
+     * MULTI-PAYS (#1867) — le code est-il un pays supporté du registre ?
+     */
+    public static function isSupported(?string $country): bool
+    {
+        return self::find($country) !== null;
+    }
 }

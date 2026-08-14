@@ -9,6 +9,7 @@ use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
 use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
+use App\Http\Middleware\RequireTenantCountry;
 use App\Http\Middleware\ResilientThrottleRequests;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SentryContextMiddleware;
@@ -98,6 +99,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
             'token.refresh' => TokenAutoRefreshMiddleware::class,
+            // MULTI-PAYS (#1867) : pays légal du tenant obligatoire et supporté
+            // avant toute opération RH/paie sensible.
+            'tenant.country' => RequireTenantCountry::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.

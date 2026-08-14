@@ -15,7 +15,6 @@ use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
-use App\Modules\Payroll\Interfaces\Api\V1\EndOfContractController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
@@ -28,6 +27,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationControlle
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\SseTokenController;
+use App\Modules\Payroll\Interfaces\Api\V1\EndOfContractController;
 use App\Modules\Payroll\Interfaces\Api\V1\EstimationController;
 use App\Modules\Payroll\Interfaces\Api\V1\LedgerController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
@@ -42,10 +42,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     // ── Employees ─────────────────────────────────────────────────────────────
     Route::get('/employees', [EmployeeController::class, 'index']);
-    Route::post('/employees', [EmployeeController::class, 'store']);
+    // MULTI-PAYS (#1867) : création/modification d'employé refusées si le pays
+    // légal du tenant est absent ou non supporté.
+    Route::post('/employees', [EmployeeController::class, 'store'])->middleware('tenant.country');
     Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->whereNumber('employee');
-    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
-    Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
+    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
+    Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
     Route::get('/employees/{employee}/end-of-contract', [EndOfContractController::class, 'settlement'])->whereNumber('employee');
     Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');

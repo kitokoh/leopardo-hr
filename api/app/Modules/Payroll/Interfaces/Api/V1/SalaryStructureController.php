@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SalaryStructureResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -50,6 +51,10 @@ class SalaryStructureController extends Controller
             'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
             'frequency' => 'nullable|in:monthly,bi_weekly,weekly',
         ]);
+
+        // MULTI-PAYS (#1867) : une structure salariale est liée au pays légal
+        // du tenant — un client ne peut pas la créer pour un autre pays.
+        $this->assertCountryMatchesTenant($request, (string) $validated['country_code']);
 
         $structure = SalaryStructure::create([
             'company_id' => $actor->company_id,
@@ -102,6 +107,12 @@ class SalaryStructureController extends Controller
             'active' => 'sometimes|boolean',
         ]);
 
+        // MULTI-PAYS (#1867) : le pays d'une structure ne peut pas être
+        // modifié vers un pays différent du pays légal du tenant.
+        if (isset($validated['country_code'])) {
+            $this->assertCountryMatchesTenant($request, (string) $validated['country_code']);
+        }
+
         $salaryStructure->update($validated);
 
         return (new SalaryStructureResource($salaryStructure->refresh()))->response();
@@ -122,5 +133,23 @@ class SalaryStructureController extends Controller
 
         return response()->json(['message' => 'Salary structure deleted successfully.']);
     }
-}
 
+    /**
+     * MULTI-PAYS (#1867) — verrou : une structure salariale (ou un run) doit
+     * porter le pays légal du tenant. Un `country_code` client différent est
+     * refusé explicitement (422), jamais contourné.
+     */
+    private function assertCountryMatchesTenant(Request $request, string $countryCode): void
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $company = $actor->company;
+        $tenantCountry = $company instanceof Company
+            ? strtoupper((string) $company->country)
+            : null;
+
+        if ($tenantCountry !== null && strtoupper($countryCode) !== $tenantCountry) {
+            abort(422, "Le pays de la structure doit correspondre au pays légal du tenant ({$tenantCountry}).");
+        }
+    }
+}

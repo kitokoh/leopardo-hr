@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
+use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -38,7 +40,9 @@ class SelfServiceTrialController extends Controller
             'last_name' => ['nullable', 'string', 'max:80'],
             'role' => ['nullable', 'string', 'in:founder,manager,hr,operations,other'],
             'employees' => ['nullable', 'string', 'in:1-10,11-50,51-200,201-500,500+'],
-            'country' => ['nullable', 'string', 'max:2'],
+            // MULTI-PAYS (#1867) : le pays est obligatoire et doit être un
+            // pays supporté du registre (plus de fallback silencieux DZ).
+            'country' => ['required', 'string', 'size:2', new SupportedCountry],
             'phone' => ['nullable', 'string', 'max:40'],
             'plan' => ['nullable', 'string', 'max:80'],
             'source' => ['nullable', 'string', 'max:120'],
@@ -61,8 +65,8 @@ class SelfServiceTrialController extends Controller
         }
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
-            \App\Jobs\ProvisionDemoTenantJob::dispatch($email, $validated['company']);
-            
+            ProvisionDemoTenantJob::dispatch($email, $validated['company']);
+
             return new JsonResponse([
                 'success' => true,
                 'message' => __('billing.trial_signup_received'),
