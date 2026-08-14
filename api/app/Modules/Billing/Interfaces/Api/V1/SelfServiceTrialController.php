@@ -65,7 +65,9 @@ class SelfServiceTrialController extends Controller
         }
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
-            ProvisionDemoTenantJob::dispatch($email, $validated['company']);
+            // MULTI-PAYS (#1950) : le pays validé du signup est transmis au job
+            // (plus de fallback silencieux DZ — invariant 10 de la spec).
+            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country']);
 
             return new JsonResponse([
                 'success' => true,

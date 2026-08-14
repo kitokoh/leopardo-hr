@@ -86,14 +86,7 @@ class PayrollCountryConfigSeeder extends Seeder
                 );
             }
 
-            // Issue #2003 : seed depuis le barème LÉGAL de référence
-            // (`legalReferenceTaxSlabs()` = defaultTaxSlabs(), ancré dans le
-            // code par pays) et non depuis `taxSlabs()` qui résout la base
-            // AVANT le code — sur une base déjà seedée, re-seeder depuis
-            // `taxSlabs()` serait un no-op silencieux et laisserait les
-            // corrections légales (ex. tranche IUTS BF 27,5 %, #1915/#1972)
-            // inappliquées aux tenants existants.
-            foreach ($countryRules->legalReferenceTaxSlabs() as $slab) {
+            foreach ($countryRules->taxSlabs() as $slab) {
                 TaxSlab::updateOrCreate(
                     [
                         'company_id' => null,
@@ -105,8 +98,10 @@ class PayrollCountryConfigSeeder extends Seeder
                         'max_amount' => $slab['max'],
                         'rate' => $slab['rate'],
                         'fixed_deduction' => $slab['fixed_deduction'],
-                        // Issue #1932 : effective_from annoncé par le name
-                        // (« 2024 » pour BF/ML/CI/CM) — pas 2026-01-01 en dur.
+                        // Issue #1932 : le barème est seedé avec le
+                        // effective_from annoncé par le name (« 2024 » pour
+                        // BF/ML/CI/CM) — pas une date en dur 2026-01-01 qui
+                        // casserait le recalcul rétroactif asOf().
                         'effective_from' => $effectiveFrom,
                         'effective_to' => null,
                         // Issue #1813 : config nationale officielle → active.

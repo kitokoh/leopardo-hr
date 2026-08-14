@@ -14,7 +14,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="slab-country">{{ $t('tax_slabs.th_country') }}</label>
           <select id="slab-country" v-model="countryCode" class="form-input min-w-40" @change="onCountryChange">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
           </select>
         </div>
         <div>
@@ -108,22 +108,34 @@ import { onMounted, ref } from 'vue'
 import api from '@/services/api'
 import TaxSlabEditor from '@/components/payroll/TaxSlabEditor.vue'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
+const localeStore = useLocaleStore()
+
+/** Traduction avec interpolation {var} — convention catalogue i18n (#1916). */
+function t(key, vars = {}) {
+  let msg = translate(localeStore.current, key, key)
+  for (const [k, v] of Object.entries(vars)) {
+    msg = msg.replace(`{${k}}`, String(v))
+  }
+  return msg
+}
 
 const supportedCountries = [
-  { code: 'DZ', flag: '🇩🇿', label: 'Algérie' },
-  { code: 'CM', flag: '🇨🇲', label: 'Cameroun' },
-  { code: 'CI', flag: '🇨🇮', label: "Côte d'Ivoire" },
-  { code: 'SN', flag: '🇸🇳', label: 'Sénégal' },
-  { code: 'MA', flag: '🇲🇦', label: 'Maroc' },
-  { code: 'TN', flag: '🇹🇳', label: 'Tunisie' },
-  { code: 'TR', flag: '🇹🇷', label: 'Turquie' },
-  { code: 'FR', flag: '🇫🇷', label: 'France' },
-  { code: 'CG', flag: '🇨🇬', label: 'Congo' },
-  { code: 'GA', flag: '🇬🇦', label: 'Gabon' },
-  { code: 'BF', flag: '🇧🇫', label: 'Burkina Faso' },
-  { code: 'ML', flag: '🇲🇱', label: 'Mali' },
+  { code: 'DZ', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
+  { code: 'CM', flag: '🇨🇲', labelKey: 'common.countries.CM' },
+  { code: 'CI', flag: '🇨🇮', labelKey: 'common.countries.CI' },
+  { code: 'SN', flag: '🇸🇳', labelKey: 'common.countries.SN' },
+  { code: 'MA', flag: '🇲🇦', labelKey: 'common.countries.MA' },
+  { code: 'TN', flag: '🇹🇳', labelKey: 'common.countries.TN' },
+  { code: 'TR', flag: '🇹🇷', labelKey: 'common.countries.TR' },
+  { code: 'FR', flag: '🇫🇷', labelKey: 'common.countries.FR' },
+  { code: 'CG', flag: '🇨🇬', labelKey: 'common.countries.CG' },
+  { code: 'GA', flag: '🇬🇦', labelKey: 'common.countries.GA' },
+  { code: 'BF', flag: '🇧🇫', labelKey: 'common.countries.BF' },
+  { code: 'ML', flag: '🇲🇱', labelKey: 'common.countries.ML' },
 ]
 
 const countryCode = ref('DZ')
@@ -160,7 +172,7 @@ async function runSimulate() {
     })
     simResult.value = data.data
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Simulation impossible.')
+    toast.error(err?.response?.data?.message || t('tax_slabs.sim_error'))
   } finally {
     simulating.value = false
   }
