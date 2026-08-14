@@ -208,6 +208,16 @@ class CountryRulesResolverTest extends TestCase
                 return null;
             }
 
+            public function complianceSource(): string
+            {
+                return 'docs/payroll/_TEST_COMPLIANCE.md';
+            }
+
+            public function verificationDate(): ?string
+            {
+                return null;
+            }
+
             public function complianceWarningKey(): string
             {
                 return 'payroll.compliance_warning_placeholder';
@@ -410,6 +420,16 @@ class CountryRulesResolverTest extends TestCase
                 return null;
             }
 
+
+            public function complianceSource(): string
+            {
+                return 'docs/payroll/_TEST_COMPLIANCE.md';
+            }
+
+            public function verificationDate(): ?string
+            {
+                return null;
+            }
 
             public function complianceSource(): string
             {

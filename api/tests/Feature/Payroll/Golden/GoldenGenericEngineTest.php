@@ -87,6 +87,9 @@ class GoldenGenericEngineTest extends TestCase
             {
                 return [];
             }
+
+            // Stubs des méthodes abstraites (interface #1868) — le test ne
+            // vérifie que les défauts de fin de contrat.
             public function countryCode(): string
             {
                 return 'XX';
@@ -102,6 +105,7 @@ class GoldenGenericEngineTest extends TestCase
                 return 0.0;
             }
 
+            /** @return list<array<string, mixed>> */
             public function socialContributions(): array
             {
                 return [];
@@ -112,6 +116,7 @@ class GoldenGenericEngineTest extends TestCase
                 return 0.0;
             }
 
+            /** @return array{employee: float, employer: float} */
             public function calculateSocialCharges(float $grossSalary): array
             {
                 return ['employee' => 0.0, 'employer' => 0.0];
@@ -122,11 +127,13 @@ class GoldenGenericEngineTest extends TestCase
                 return 'UTC';
             }
 
+            /** @return list<int> */
             public function weeklyRestDays(): array
             {
-                return [];
+                return [0];
             }
 
+            /** @return list<string> */
             public function supportedPayCycles(): array
             {
                 return ['monthly'];
@@ -134,7 +141,7 @@ class GoldenGenericEngineTest extends TestCase
 
             public function publicHolidaysSource(): string
             {
-                return '';
+                return 'none';
             }
 
             public function confidenceLevel(): string
@@ -152,11 +159,11 @@ class GoldenGenericEngineTest extends TestCase
                 return 40.0;
             }
 
+            /** @return list<array{up_to_hours: float|null, multiplier: float}> */
             public function overtimeRateTiers(): array
             {
-                return [];
+                return [['up_to_hours' => null, 'multiplier' => 1.0]];
             }
-
         };
 
         $this->assertSame(0.0, $rules->noticePeriodDays(5.0));
