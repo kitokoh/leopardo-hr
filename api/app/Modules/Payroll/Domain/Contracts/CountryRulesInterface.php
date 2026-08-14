@@ -150,6 +150,15 @@ interface CountryRulesInterface
     public function calculateBracketTax(float $grossSalary): float;
 
     /**
+     * Display label of the flat-tax deduction line injected by the payroll
+     * engine when calculateBracketTax() returns > 0. Defaults to
+     * "Taxe de minimum fiscal"; countries that use the same mechanism for a
+     * differently-named flat tax (e.g. CI's Contribution Nationale, CN)
+     * override this so the payslip line is honest. ZONE-INFRA (#1820).
+     */
+    public function flatPayrollTaxLabel(): string;
+
+    /**
      * Whether the country's labour code legally mandates a 13th month
      * (13ème mois / prima) paid in December (or the configured month).
      * Default: false (contractual practice only). ZONE-INFRA (#1820).
