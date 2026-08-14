@@ -150,14 +150,16 @@ class PublicHolidayServiceTest extends TestCase
     public function test_islamic_holidays_merged_with_fixed(): void
     {
         // Issue #1812 — les fêtes islamiques mobiles (table islamic_calendar)
-        // enrichissent le calendrier des fériés fixes au runtime.
+        // enrichissent le calendrier des fériés fixes au runtime. #1930 : la
+        // fusion ne concerne que les dates CONFIRMÉES par un admin plateforme.
         IslamicCalendar::create([
             'holiday_key' => 'eid_al_adha',
             'year' => 2026,
             'gregorian_date' => '2026-05-27',
             'duration_days' => 2,
-            'source' => 'computed',
-            'confirmed' => false,
+            'source' => 'manual',
+            'confirmed' => true,
+            'confirmed_by' => 42,
         ]);
 
         PublicHoliday::create([
