@@ -10,7 +10,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
