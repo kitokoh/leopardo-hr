@@ -282,14 +282,18 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_cemac_calculates_social_charges_and_progressive_income_tax(): void
     {
+        // #1824 : GA passé au niveau pilot — CNSS Gabon (retraite salarié
+        // 2,5 % / patronale 5,0 % + famille 8,0 % plafonnés 3 000 000 XAF,
+        // AT 3,0 % non plafonné) et IRPP 8 tranches annuelles (0 % sous
+        // 1,5 M XAF) — les valeurs placeholder (4,2 %/16,2 %) sont obsolètes.
         $rules = (new CemacPayrollRules)->forMemberCountry('GA');
 
         $charges = $rules->calculateSocialCharges(1000);
-        self::assertEqualsWithDelta(42.0, $charges['employee'], 0.01);
-        self::assertEqualsWithDelta(162.0, $charges['employer'], 0.01);
+        self::assertEqualsWithDelta(25.0, $charges['employee'], 0.01);
+        self::assertEqualsWithDelta(160.0, $charges['employer'], 0.01);
 
         self::assertSame(0.0, $rules->calculateIncomeTax(500000 / 12));
-        self::assertSame(4166.67, $rules->calculateIncomeTax(1000000 / 12));
+        self::assertSame(0.0, $rules->calculateIncomeTax(1000000 / 12));
     }
 
     /**
@@ -339,7 +343,7 @@ class PayrollCountryRulesTest extends TestCase
             if ($memberCode === 'CI') {
                 self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'BF') {
-                self::assertCount(5, $rules->taxSlabs()); // IUTS 5 tranches
+                self::assertCount(6, $rules->taxSlabs()); // IUTS 6 tranches (#1915 : +27,5 % > 6 M)
                 self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
             } elseif ($memberCode === 'ML') {
                 self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches

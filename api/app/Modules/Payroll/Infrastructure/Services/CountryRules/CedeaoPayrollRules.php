@@ -153,13 +153,17 @@ class CedeaoPayrollRules extends AbstractCountryRules
         if ($this->memberCountryCode === 'BF') {
             // IUTS Burkina Faso (CGI 2024) — tranches ANNUELLES, taux « tout
             // compris » (contribution communale incluse) — issue #1829,
-            // docs/payroll/BF_COMPLIANCE.md §1.
+            // docs/payroll/BF_COMPLIANCE.md §1. #1915 : la tranche
+            // > 6 000 000 @ 27,5 % (CGI BF) était fusionnée avec la 4e
+            // tranche (max null @ 23,6 %) → sous-imposition au-delà de
+            // ~500 000 FCFA/mois.
             return [
                 ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
                 ['min' => 600001, 'max' => 1500000, 'rate' => 12.1, 'fixed_deduction' => 0],
                 ['min' => 1500001, 'max' => 3000000, 'rate' => 13.9, 'fixed_deduction' => 0],
                 ['min' => 3000001, 'max' => 4500000, 'rate' => 18.7, 'fixed_deduction' => 0],
-                ['min' => 4500001, 'max' => null, 'rate' => 23.6, 'fixed_deduction' => 0],
+                ['min' => 4500001, 'max' => 6000000, 'rate' => 23.6, 'fixed_deduction' => 0],
+                ['min' => 6000001, 'max' => null, 'rate' => 27.5, 'fixed_deduction' => 0],
             ];
         }
 
