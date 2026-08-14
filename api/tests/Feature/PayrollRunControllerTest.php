@@ -361,7 +361,8 @@ class PayrollRunControllerTest extends TestCase
         // AUCUNE règle de paie — le run doit être refusé dès la validation
         // (422) au lieu d'échouer au calcul (UnsupportedCountryRulesException).
         $company = Company::factory()->create(['country' => 'GB', 'currency' => 'GBP', 'timezone' => 'Europe/London']);
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->getKey()]);
 
         Sanctum::actingAs($manager);
 
@@ -383,7 +384,8 @@ class PayrollRunControllerTest extends TestCase
         // #1951 : CI (CEDEAO, règles résolubles) accepté — le contrat partagé
         // du moteur remplace la liste in: hardcodée.
         $company = Company::factory()->create(['country' => 'CI', 'currency' => 'XOF', 'timezone' => 'Africa/Abidjan']);
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->getKey()]);
 
         Sanctum::actingAs($manager);
 

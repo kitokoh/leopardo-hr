@@ -42,7 +42,7 @@ class PayrollCalculationPresenter
      *   slab_version: string,
      *   rules_version: string,
      *   confidence_level: string,
-     *   compliance: array{level: string, warning: string, source: string, verification_date: string|null},
+     *   compliance: array{level: string, warning: string, warning_key: string, source: string, verification_date: string|null},
      *   rounding_policy: string,
      *   gross: float,
      *   social_employee: float,

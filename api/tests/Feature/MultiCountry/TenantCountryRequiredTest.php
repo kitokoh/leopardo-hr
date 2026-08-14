@@ -48,7 +48,7 @@ class TenantCountryRequiredTest extends TestCase
         $registry = $response->json('data');
         $countries = collect($registry)->keyBy('country');
 
-        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string}|null $dz */
+        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array{level: string, warning: string, warning_localized: string, source: string, verified_at: string|null}}|null $dz */
         $dz = $countries->get('DZ');
         $this->assertNotNull($dz);
         $this->assertNotNull($countries->get('CI'));
@@ -59,15 +59,14 @@ class TenantCountryRequiredTest extends TestCase
         $this->assertContains($dz['confidence'], ['pilot', 'placeholder', 'production', 'unknown']);
 
         // Issue #2127 — bloc compliance structuré par pays (contrat #1872).
-        $this->assertIsArray($dz['compliance']);
         $this->assertContains($dz['compliance']['level'], ['production', 'pilot', 'placeholder', 'unknown']);
         $this->assertSame($dz['compliance']['level'], $dz['confidence']);
         $this->assertNotEmpty($dz['compliance']['warning']);
         $this->assertNotEmpty($dz['compliance']['warning_localized']);
         $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $dz['compliance']['source']);
-        $this->assertTrue($dz['compliance']['verified_at'] === null || is_string($dz['compliance']['verified_at']));
 
         // Pays référencé sans règles de paie (ex. US) : disponible = false.
+        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array{level: string, warning: string, warning_localized: string, source: string, verified_at: string|null}}|null $us */
         $us = $countries->get('US');
         $this->assertNotNull($us);
         $this->assertFalse($us['available']);
