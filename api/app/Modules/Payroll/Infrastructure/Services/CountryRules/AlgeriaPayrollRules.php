@@ -54,12 +54,12 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        $employeeRate = $this->resolveContributionRate('CNAS_EMP', 9.0);
-        $employerRate = $this->resolveContributionRate('CNAS_PAT', 26.0);
-
+        // ZONE-INFRA (#1820): routed through computeContribution() so the
+        // statutory cap (none for DZ today) is applied consistently and a
+        // future CNAS cap change only touches the defaults/DB rows.
         return [
-            'employee' => round($grossSalary * $employeeRate / 100, 2),
-            'employer' => round($grossSalary * $employerRate / 100, 2),
+            'employee' => $this->computeContribution($grossSalary, 'CNAS_EMP', 9.0, null),
+            'employer' => $this->computeContribution($grossSalary, 'CNAS_PAT', 26.0, null),
         ];
     }
 

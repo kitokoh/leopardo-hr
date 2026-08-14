@@ -255,8 +255,14 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            self::assertSame('placeholder', $rules->confidenceLevel());
-            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            // #1821 : CM passe en 'pilot' (barèmes légaux implémentés) — les
+            // autres membres restent 'placeholder' jusqu'à leurs issues.
+            self::assertSame($memberCode === 'CM' ? 'pilot' : 'placeholder', $rules->confidenceLevel());
+            if ($memberCode === 'CM') {
+                self::assertStringContainsString('CM fixed public holidays', $rules->publicHolidaysSource());
+            } else {
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            }
             self::assertNotEmpty($rules->socialContributions());
         }
     }
