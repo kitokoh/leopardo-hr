@@ -211,7 +211,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function complianceVerifiedAt(): ?string
+            public function complianceVerifiedAt(): null
             {
                 return null;
             }
@@ -414,7 +414,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function complianceVerifiedAt(): ?string
+            public function complianceVerifiedAt(): null
             {
                 return null;
             }

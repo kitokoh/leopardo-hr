@@ -147,7 +147,7 @@ class SocialContributionAdminControllerTest extends TestCase
             ->where('action', TaxRateChangeLog::ACTION_UPDATED)
             ->first();
         $this->assertNotNull($updatedEntry, 'la mise à jour admin doit être tracée');
-        $this->assertSame(5.6, (float) $updatedEntry->previous_value['rate']);
+        $this->assertSame(5.6, (float) ($updatedEntry->previous_value['rate'] ?? 0.0));
         $this->assertSame(5.8, (float) $updatedEntry->new_value['rate']);
 
         $this->deleteJson("/api/v1/admin/social-contributions/{$id}")->assertStatus(204);
@@ -222,6 +222,6 @@ class SocialContributionAdminControllerTest extends TestCase
         ])->assertStatus(422);
 
         // A reste intacte.
-        $this->assertSame(5.6, (float) SocialContribution::query()->findOrFail($a['id'])->rate);
+        $this->assertSame(5.6, (float) SocialContribution::query()->findOrFail((int) $a['id'])->rate);
     }
 }

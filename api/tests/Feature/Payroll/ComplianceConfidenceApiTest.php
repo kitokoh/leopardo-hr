@@ -59,7 +59,7 @@ class ComplianceConfidenceApiTest extends TestCase
         $this->assertSame('payroll.compliance_warning_pilot', $contract['compliance']['warning_key']);
         $this->assertArrayHasKey('verification_date', $contract['compliance']);
 
-        // Pilot : la même structure, niveau pilot.
+        // Second pays pilot : la même structure, niveau pilot.
         $pilot = $presenter->present('CI', 500000.0);
         $this->assertSame('pilot', $pilot['compliance']['level']);
         $this->assertStringContainsString('CI_COMPLIANCE', $pilot['compliance']['source']);
