@@ -139,14 +139,6 @@ class MigrationSchemaPlacementTest extends TestCase
 
     public function test_artisan_migrate_is_idempotent(): void
     {
-        // QA pass 2026-08-14 (#2172) : RefreshTenantDatabase crée une table
-        // `migrations` DANS shared_tenants (SET search_path TO shared_tenants
-        // avant migrate tenant) en plus de celle de public — selon l'ordre du
-        // search_path, getRan() résout la mauvaise table et rejoue toutes les
-        // migrations (SQLSTATE[42P07] sur la contrainte 000004). Forcer
-        // `public` en premier : le repository migratoires est bien public.
-        DB::statement('SET search_path TO public,shared_tenants');
-
         // PHPStan Strict : artisan() retourne PendingCommand|int — annotation
         // @var + assertExitCode (pattern BiometricPurgeExpiredTest).
         /** @var PendingCommand $command */

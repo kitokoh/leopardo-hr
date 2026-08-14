@@ -136,8 +136,7 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'ZZ',
         ])->assertStatus(422)->assertJsonValidationErrors('country');
 
-        // country est char(2) : '' stocké → '  ' (padding PostgreSQL).
-        $this->assertSame('', trim((string) $company->fresh()->country));
+        $this->assertSame('', $company->refresh()->country);
     }
 
     public function test_country_change_refused_after_payroll_run_invariant9(): void
