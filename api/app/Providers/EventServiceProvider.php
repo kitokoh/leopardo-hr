@@ -27,7 +27,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 
 class EventServiceProvider extends ServiceProvider
 {
-    /** @var array<class-string, array<int, string|list<string>>> */
+    /** @var array<class-string, array<int, class-string|string>> */
     protected $listen = [
         EmployeeCreated::class => [AuditLogger::class, WebhookListener::class],
         EmployeeArchived::class => [AuditLogger::class, WebhookListener::class],
@@ -45,8 +45,8 @@ class EventServiceProvider extends ServiceProvider
         // (aucune notification à la soumission/approbation/rejet malgré le
         // CHANGELOG) — écart 1 de la revue lead #1923. Méthodes nommées
         // handleTaxRate* → forme explicite [class, méthode].
-        TaxRateSubmitted::class => [[NotifyTaxRateValidation::class, 'handleTaxRateSubmitted']],
-        TaxRateApproved::class => [[NotifyTaxRateValidation::class, 'handleTaxRateApproved']],
-        TaxRateRejected::class => [[NotifyTaxRateValidation::class, 'handleTaxRateRejected']],
+        TaxRateSubmitted::class => [NotifyTaxRateValidation::class.'@handleTaxRateSubmitted'],
+        TaxRateApproved::class => [NotifyTaxRateValidation::class.'@handleTaxRateApproved'],
+        TaxRateRejected::class => [NotifyTaxRateValidation::class.'@handleTaxRateRejected'],
     ];
 }
