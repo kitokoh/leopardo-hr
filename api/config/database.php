@@ -94,6 +94,11 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => env('DB_SEARCH_PATH', 'shared_tenants,public'),
+            // Issue #1770 : force `set time zone 'UTC'` sur CHAQUE connexion —
+            // sans ça, un serveur/self-host en heure locale interprète les
+            // timestamps « naïfs » écrits par l'app (ex. pointage) dans son
+            // fuseau → heures décalées et paie fausses. Tout est stocké en UTC.
+            'timezone' => env('DB_TIMEZONE', 'UTC'),
             'sslmode' => 'prefer',
         ],
 
