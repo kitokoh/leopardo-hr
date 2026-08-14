@@ -100,7 +100,11 @@ class TenantCountryLocksTest extends TestCase
     public function test_admin_can_repair_country_on_legacy_tenant_without_payroll(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create(['country' => '', 'currency' => null, 'timezone' => null]);
+        // `timezone` et `currency` sont NOT NULL avec défauts (Africa/Algiers,
+        // DZD) : on n'injecte pas de null explicite. Le tenant « legacy » n'a
+        // simplement pas de pays — l'endpoint de réparation doit le renseigner
+        // avec devise/fuseau/langue cohérents (pays écrasé, XOF + Africa/Dakar).
+        $company = Company::factory()->create(['country' => '']);
         Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
 
         $this->patchJson('/api/v1/platform/companies/'.$company->id.'/country', [
@@ -119,7 +123,8 @@ class TenantCountryLocksTest extends TestCase
             ->latest('id')
             ->first();
         $this->assertNotNull($audit, 'Le changement de pays doit être journalisé.');
-        $this->assertSame('', $audit->old_values['country'] ?? '');
+        // country est `char(2)` : la valeur lue en base est paddée ('  ').
+        $this->assertSame('', trim((string) ($audit->old_values['country'] ?? '')));
         $this->assertSame('SN', $audit->new_values['country'] ?? null);
     }
 
@@ -133,7 +138,8 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'ZZ',
         ])->assertStatus(422)->assertJsonValidationErrors('country');
 
-        $this->assertSame('', $company->refresh()->country);
+        // country est `char(2)` : Postgres stocke '' en '  ' (padding bpchar).
+        $this->assertSame('', trim((string) $company->refresh()->country));
     }
 
     public function test_country_change_refused_after_payroll_run_invariant9(): void

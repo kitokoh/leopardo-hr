@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Http\Controllers\Controller;
+use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
-use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -285,6 +285,15 @@ class PlatformCompanyController extends Controller
      */
     public function updateCountry(Request $request, string $companyId): RedirectResponse|JsonResponse
     {
+        // Sauvegarde du search_path AVANT toute bascule : la restauration doit
+        // rendre l'état initial de la connexion (ex. `public,shared_tenants`),
+        // pas seulement `public` — sinon les requêtes suivantes (audit #1873,
+        // tables tenant) échouent avec « relation ... does not exist ».
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $originalSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
         DB::statement('SET search_path TO public');
 
         $company = Company::query()->findOrFail($companyId);
@@ -297,11 +306,15 @@ class PlatformCompanyController extends Controller
         if ($countryDefaults === null) {
             $message = 'Le pays est invalide ou non supporte ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
             if ($request->expectsJson()) {
+                DB::statement('SET search_path TO '.$originalSearchPath);
+
                 return new JsonResponse([
                     'message' => $message,
                     'errors' => ['country' => [$message]],
                 ], 422);
             }
+
+            DB::statement('SET search_path TO '.$originalSearchPath);
 
             return back()->withInput()->withErrors(['country' => $message]);
         }
@@ -312,18 +325,13 @@ class PlatformCompanyController extends Controller
         // pour le check, puis RESTAURATION en `finally` (une session restée
         // sur le schéma tenant fuirait vers les requêtes suivantes — même
         // garde que `withTenantSearchPath()` de PlatformCompanyHealthService).
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previousSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
-            ? (string) $searchPathRow->search_path
-            : 'public';
-
         $hasPayrollData = false;
         DB::statement('SET search_path TO '.$company->getSafeSearchPath());
         try {
             $hasPayrollData = PayrollRun::query()->where('company_id', $company->id)->exists()
                 || SalaryStructure::query()->where('company_id', $company->id)->exists();
         } finally {
-            DB::statement('SET search_path TO '.$previousSearchPath);
+            DB::statement('SET search_path TO '.$originalSearchPath);
         }
 
         if ($hasPayrollData) {
@@ -387,7 +395,6 @@ class PlatformCompanyController extends Controller
             ->with('status', 'Pays du tenant mis a jour.');
     }
 
-
     /**
      * Renvoie l invitation du manager principal de la societe.
      * Utile quand l email initial n est jamais arrive ou que le lien a expire.
@@ -431,4 +438,3 @@ class PlatformCompanyController extends Controller
         return back()->with('status', 'Invitation manager renvoyee.');
     }
 }
-
