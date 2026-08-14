@@ -148,6 +148,18 @@ class FrontendApiContractTest extends TestCase
             'admin hr reports' => ['GET', 'api/v1/admin/hr-reports'],
             'admin marketing oauth config get' => ['GET', 'api/v1/admin/platform/marketing/oauth-config'],
             'admin marketing oauth config update' => ['PUT', 'api/v1/admin/platform/marketing/oauth-config'],
+            'admin tax rates slabs list' => ['GET', 'api/v1/platform/payroll/tax-rates/tax-slabs'],
+            'admin tax rates contributions list' => ['GET', 'api/v1/platform/payroll/tax-rates/social-contributions'],
+            'admin tax rates pending queue' => ['GET', 'api/v1/platform/payroll/tax-rates/pending'],
+            'admin tax rates history' => ['GET', 'api/v1/platform/payroll/tax-rates/history'],
+            'admin tax rates slab approve' => ['PUT', 'api/v1/platform/payroll/tax-rates/tax-slabs/{taxSlab}/approve'],
+            'admin tax rates slab reject' => ['PUT', 'api/v1/platform/payroll/tax-rates/tax-slabs/{taxSlab}/reject'],
+            'admin tax rates contribution approve' => ['PUT', 'api/v1/platform/payroll/tax-rates/social-contributions/{socialContribution}/approve'],
+            'admin tax rates contribution reject' => ['PUT', 'api/v1/platform/payroll/tax-rates/social-contributions/{socialContribution}/reject'],
+            'manager tax slab submit' => ['PUT', 'api/v1/tax-slabs/{taxSlab}/submit'],
+            'manager tax slab history' => ['GET', 'api/v1/tax-slabs/{taxSlab}/history'],
+            'manager social contribution submit' => ['PUT', 'api/v1/social-contributions/{socialContribution}/submit'],
+            'manager social contribution history' => ['GET', 'api/v1/social-contributions/{socialContribution}/history'],
         ];
     }
 

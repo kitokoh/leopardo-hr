@@ -58,17 +58,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::put('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'update'])->whereNumber('salaryComponent');
         Route::delete('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'destroy'])->whereNumber('salaryComponent');
 
-        // Tax Slabs
+        // Tax Slabs (ADMIN-PAIE #1813 : submit/history = workflow de validation)
         Route::get('/tax-slabs', [TaxSlabController::class, 'index']);
         Route::post('/tax-slabs', [TaxSlabController::class, 'store']);
         Route::put('/tax-slabs/{taxSlab}', [TaxSlabController::class, 'update'])->whereNumber('taxSlab');
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabController::class, 'destroy'])->whereNumber('taxSlab');
+        Route::put('/tax-slabs/{taxSlab}/submit', [TaxSlabController::class, 'submit'])->whereNumber('taxSlab');
+        Route::get('/tax-slabs/{taxSlab}/history', [TaxSlabController::class, 'history'])->whereNumber('taxSlab');
 
-        // Social Contributions
+        // Social Contributions (ADMIN-PAIE #1813 : submit/history = workflow de validation)
         Route::get('/social-contributions', [SocialContributionController::class, 'index']);
         Route::post('/social-contributions', [SocialContributionController::class, 'store']);
         Route::put('/social-contributions/{socialContribution}', [SocialContributionController::class, 'update'])->whereNumber('socialContribution');
         Route::delete('/social-contributions/{socialContribution}', [SocialContributionController::class, 'destroy'])->whereNumber('socialContribution');
+        Route::put('/social-contributions/{socialContribution}/submit', [SocialContributionController::class, 'submit'])->whereNumber('socialContribution');
+        Route::get('/social-contributions/{socialContribution}/history', [SocialContributionController::class, 'history'])->whereNumber('socialContribution');
 
         // Payroll Runs
         Route::get('/payroll-runs', [PayrollRunController::class, 'index']);

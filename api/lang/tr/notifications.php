@@ -32,4 +32,9 @@ return [
 
     'payment_document_ready_title' => 'Belge hazır',
     'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
+
+    'tax_rate_approved_title' => 'Oran değişikliği onaylandı',
+    'tax_rate_approved_body' => '":rate_name" (:country) oran değişikliğiniz onaylandı ve artık maaş hesaplamalarında aktif.',
+    'tax_rate_rejected_title' => 'Oran değişikliği reddedildi',
+    'tax_rate_rejected_body' => '":rate_name" (:country) oran değişikliğiniz reddedildi. Neden: :reason',
 ];

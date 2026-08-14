@@ -7196,6 +7196,252 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /platform/payroll/tax-rates/pending:
+    get:
+      tags: ["Payroll Engine - Platform"]
+      summary: "File d'attente de validation des taux legaux (super_admin, #1813)"
+      operationId: getPendingTaxRates
+      responses:
+        "200":
+          description: "Barèmes et cotisations en attente de validation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tax_slabs:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/TaxSlab"
+                      social_contributions:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/payroll/tax-rates/tax-slabs:
+    get:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Lister les barèmes fiscaux toutes lignes (super_admin, #1813)"
+      operationId: listPlatformTaxSlabs
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, pending_validation, active, superseded] }
+        - name: country_code
+          in: query
+          schema: { type: string }
+        - name: company_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Barèmes cross-tenant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/payroll/tax-rates/social-contributions:
+    get:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Lister les cotisations sociales toutes lignes (super_admin, #1813)"
+      operationId: listPlatformSocialContributions
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, pending_validation, active, superseded] }
+        - name: country_code
+          in: query
+          schema: { type: string }
+        - name: company_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Cotisations cross-tenant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/payroll/tax-rates/history:
+    get:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Audit trail immuable global (super_admin, #1813)"
+      operationId: getTaxRateChangeLog
+      parameters:
+        - name: table_name
+          in: query
+          schema: { type: string, enum: [tax_slabs, social_contributions] }
+        - name: action
+          in: query
+          schema: { type: string, enum: [created, submitted, approved, rejected, superseded] }
+      responses:
+        "200":
+          description: "Dernières entrées append-only"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/payroll/tax-rates/tax-slabs/{taxSlab}/approve:
+    put:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Approuver un barème en attente (super_admin, #1813)"
+      operationId: approveTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Barème actif, ancienne ligne superseded"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/payroll/tax-rates/tax-slabs/{taxSlab}/reject:
+    put:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Rejeter un barème en attente avec motif (super_admin, #1813)"
+      operationId: rejectTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 2000
+      responses:
+        "200":
+          description: "Barème repassé en draft avec motif tracé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/payroll/tax-rates/social-contributions/{socialContribution}/approve:
+    put:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Approuver une cotisation en attente (super_admin, #1813)"
+      operationId: approveSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Cotisation active, ancienne ligne superseded"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/payroll/tax-rates/social-contributions/{socialContribution}/reject:
+    put:
+      tags: ["Payroll Engine - Platform"]
+      summary: "Rejeter une cotisation en attente avec motif (super_admin, #1813)"
+      operationId: rejectSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 2000
+      responses:
+        "200":
+          description: "Cotisation repassée en draft avec motif tracé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /tax-slabs:
     get:
       tags: ["Payroll Engine"]
@@ -7320,6 +7566,65 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /tax-slabs/{taxSlab}/submit:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Soumettre une tranche pour validation (workflow #1813, manager)"
+      description: "Transite la tranche de draft vers pending_validation. Seul un platform_admin pourra l'approuver."
+      operationId: submitTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Tranche soumise (status=pending_validation)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /tax-slabs/{taxSlab}/history:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Audit trail immuable d'une tranche (workflow #1813, manager)"
+      operationId: getTaxSlabHistory
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entrees append-only de tax_rate_change_log"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /social-contributions:
     get:
       tags: ["Payroll Engine"]
@@ -7433,6 +7738,65 @@ paths:
       responses:
         "200":
           description: "Cotisation supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /social-contributions/{socialContribution}/submit:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Soumettre une cotisation pour validation (workflow #1813, manager)"
+      description: "Transite la cotisation de draft vers pending_validation. Seul un platform_admin pourra l'approuver."
+      operationId: submitSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Cotisation soumise (status=pending_validation)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /social-contributions/{socialContribution}/history:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Audit trail immuable d'une cotisation (workflow #1813, manager)"
+      operationId: getSocialContributionHistory
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entrees append-only de tax_rate_change_log"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -15597,6 +15961,36 @@ components:
           type: string
           format: date-time
 
+    TaxRateChangeLog:
+      type: object
+      description: "Audit trail immuable des modifications de taux légaux (#1813) — table append-only, aucun UPDATE/DELETE possible."
+      properties:
+        id:
+          type: integer
+        table_name:
+          type: string
+          enum: [tax_slabs, social_contributions]
+        record_id:
+          type: integer
+        action:
+          type: string
+          enum: [created, submitted, approved, rejected, superseded]
+        actor_id:
+          type: integer
+        actor_role:
+          type: string
+        previous_value:
+          type: object
+          nullable: true
+        new_value:
+          type: object
+        reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
     TaxSlab:
       type: object
       properties:
@@ -15619,6 +16013,23 @@ components:
         effective_to:
           type: string
           format: date
+          nullable: true
+        status:
+          type: string
+          enum: [draft, pending_validation, active, superseded]
+          description: "Workflow de validation des taux legaux (#1813) — seule une ligne active entre dans les calculs."
+        submitted_by:
+          type: integer
+          nullable: true
+        validated_by:
+          type: integer
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        rejection_reason:
+          type: string
           nullable: true
         created_at:
           type: string

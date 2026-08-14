@@ -32,4 +32,9 @@ return [
 
     'payment_document_ready_title' => 'Document ready',
     'payment_document_ready_body' => 'Your payment document is generated and available to download.',
+
+    'tax_rate_approved_title' => 'Rate change approved',
+    'tax_rate_approved_body' => 'Your rate change ":rate_name" (:country) has been approved and is now active for payroll calculations.',
+    'tax_rate_rejected_title' => 'Rate change rejected',
+    'tax_rate_rejected_body' => 'Your rate change ":rate_name" (:country) was rejected. Reason: :reason',
 ];

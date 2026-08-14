@@ -32,4 +32,9 @@ return [
 
     'payment_document_ready_title' => 'Document prêt',
     'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
+
+    'tax_rate_approved_title' => 'Modification de taux approuvée',
+    'tax_rate_approved_body' => 'Votre modification de taux « :rate_name » (:country) a été approuvée et est désormais active pour les calculs de paie.',
+    'tax_rate_rejected_title' => 'Modification de taux rejetée',
+    'tax_rate_rejected_body' => 'Votre modification de taux « :rate_name » (:country) a été rejetée. Motif : :reason',
 ];

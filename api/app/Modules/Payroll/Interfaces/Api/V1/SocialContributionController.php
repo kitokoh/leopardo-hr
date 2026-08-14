@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SocialContributionResource;
+use App\Modules\Payroll\Application\Services\TaxRateValidationWorkflow;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,6 +36,10 @@ class SocialContributionController extends Controller
         return SocialContributionResource::collection($query->orderBy('country_code')->orderBy('type')->orderBy('name')->get())->response();
     }
 
+    public function __construct(
+        private readonly TaxRateValidationWorkflow $validationWorkflow,
+    ) {}
+
     public function store(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -50,6 +55,7 @@ class SocialContributionController extends Controller
         // recalculated against for an audit. See the
         // make_social_contributions_code_unique_per_effective_period
         // migration.
+        /** @var array<string, mixed> $validated */
         $validated = $request->validate([
             'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
             'name' => 'required|string|max:150',
@@ -68,6 +74,9 @@ class SocialContributionController extends Controller
             'effective_to' => 'nullable|date|after:effective_from',
         ]);
 
+        // ADMIN-PAIE (#1813) : toute création passe par le workflow de
+        // validation — la ligne naît en `draft` et n'entre dans les calculs
+        // qu'après soumission + approbation par un platform_admin.
         $contribution = SocialContribution::create([
             'company_id' => $actor->company_id,
             'country_code' => $validated['country_code'],
@@ -78,11 +87,50 @@ class SocialContributionController extends Controller
             'cap' => $validated['cap'] ?? null,
             'effective_from' => $validated['effective_from'],
             'effective_to' => $validated['effective_to'] ?? null,
+            'status' => TaxRateValidationWorkflow::STATUS_DRAFT,
         ]);
+
+        $this->validationWorkflow->recordCreation($contribution, $actor);
 
         return (new SocialContributionResource($contribution))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * ADMIN-PAIE (#1813) — soumission d'une cotisation : draft → pending_validation.
+     */
+    public function submit(Request $request, SocialContribution $socialContribution): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $contribution = $this->validationWorkflow->submit($socialContribution, $actor);
+
+        return (new SocialContributionResource($contribution))->response();
+    }
+
+    /**
+     * ADMIN-PAIE (#1813) — lecture de l'audit trail immuable de la cotisation.
+     */
+    public function history(Request $request, SocialContribution $socialContribution): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        return response()->json(['data' => $this->validationWorkflow->history($socialContribution)]);
     }
 
     public function update(Request $request, SocialContribution $socialContribution): JsonResponse

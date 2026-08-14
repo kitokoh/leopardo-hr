@@ -129,3 +129,15 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 - `front/zkteco-kiosk` accepte une base API avec ou sans `/api/v1`.
 - Les exports admin passent par Axios authentifie afin de conserver le bearer token sur Cloudflare Pages.
 - Une route critique supprimee ou renommee doit mettre a jour cette matrice, les appels frontend, la spec OpenAPI si exposee et le test contractuel.
+| Admin dashboard | Taux légaux — barèmes (toutes lignes) | `GET /api/v1/platform/payroll/tax-rates/tax-slabs` | super_admin | `PlatformTaxRateControllerTest` |
+| Admin dashboard | Taux légaux — cotisations (toutes lignes) | `GET /api/v1/platform/payroll/tax-rates/social-contributions` | super_admin | `PlatformTaxRateControllerTest` |
+| Admin dashboard | Taux légaux — file d'attente validation | `GET /api/v1/platform/payroll/tax-rates/pending` | super_admin | `PlatformTaxRateControllerTest` |
+| Admin dashboard | Taux légaux — approbation barème | `PUT /api/v1/platform/payroll/tax-rates/tax-slabs/{taxSlab}/approve` | super_admin | `PlatformTaxRateControllerTest`, `TaxSlabValidationWorkflowTest` |
+| Admin dashboard | Taux légaux — rejet barème (motif) | `PUT /api/v1/platform/payroll/tax-rates/tax-slabs/{taxSlab}/reject` | super_admin | `TaxSlabValidationWorkflowTest` |
+| Admin dashboard | Taux légaux — approbation cotisation | `PUT /api/v1/platform/payroll/tax-rates/social-contributions/{socialContribution}/approve` | super_admin | `PlatformTaxRateControllerTest` |
+| Admin dashboard | Taux légaux — rejet cotisation (motif) | `PUT /api/v1/platform/payroll/tax-rates/social-contributions/{socialContribution}/reject` | super_admin | `PlatformTaxRateControllerTest` |
+| Admin dashboard | Taux légaux — audit trail immuable | `GET /api/v1/platform/payroll/tax-rates/history` | super_admin | `PlatformTaxRateControllerTest` |
+| Manager web/mobile | Taux légaux — soumission barème (workflow #1813) | `PUT /api/v1/tax-slabs/{taxSlab}/submit` | manager principal/comptable | `TaxSlabValidationWorkflowTest` |
+| Manager web/mobile | Taux légaux — soumission cotisation (workflow #1813) | `PUT /api/v1/social-contributions/{socialContribution}/submit` | manager principal/comptable | `TaxSlabValidationWorkflowTest` |
+| Manager web/mobile | Taux légaux — historique d'un barème | `GET /api/v1/tax-slabs/{taxSlab}/history` | manager principal/comptable | `TaxSlabValidationWorkflowTest` |
+| Manager web/mobile | Taux légaux — historique d'une cotisation | `GET /api/v1/social-contributions/{socialContribution}/history` | manager principal/comptable | `TaxSlabValidationWorkflowTest` |

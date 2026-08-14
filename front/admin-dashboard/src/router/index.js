@@ -286,6 +286,15 @@ const routes = [
           title: 'Mon compte',
           icon: 'UserCircleIcon'
         }
+      },
+      {
+        path: '/settings/payroll/tax-rates',
+        name: 'payroll-tax-rates',
+        component: () => import('@/views/settings/TaxRatesView.vue'),
+        meta: {
+          title: 'Taux légaux',
+          icon: 'ScaleIcon'
+        }
       }
     ]
   },

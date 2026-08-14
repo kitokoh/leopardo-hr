@@ -19,6 +19,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\PlatformTaxRateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
@@ -257,6 +258,20 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
         Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
         Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+
+        // ADMIN-PAIE (#1813) — workflow de validation des taux légaux :
+        // approbation/rejet réservés au platform_admin, listing cross-tenant
+        // et audit trail immuable (consommé par front/admin-dashboard).
+        Route::prefix('payroll/tax-rates')->group(function (): void {
+            Route::get('/tax-slabs', [PlatformTaxRateController::class, 'slabs']);
+            Route::get('/social-contributions', [PlatformTaxRateController::class, 'contributions']);
+            Route::get('/pending', [PlatformTaxRateController::class, 'pending']);
+            Route::get('/history', [PlatformTaxRateController::class, 'history']);
+            Route::put('/tax-slabs/{taxSlab}/approve', [PlatformTaxRateController::class, 'approveTaxSlab'])->whereNumber('taxSlab');
+            Route::put('/tax-slabs/{taxSlab}/reject', [PlatformTaxRateController::class, 'rejectTaxSlab'])->whereNumber('taxSlab');
+            Route::put('/social-contributions/{socialContribution}/approve', [PlatformTaxRateController::class, 'approveSocialContribution'])->whereNumber('socialContribution');
+            Route::put('/social-contributions/{socialContribution}/reject', [PlatformTaxRateController::class, 'rejectSocialContribution'])->whereNumber('socialContribution');
+        });
 
         // Edge node management (super-admin).
         // Uses EdgeNodeController against the canonical UUID edge_nodes

@@ -9,15 +9,22 @@ use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
+use App\Events\CompanyCreated;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
-use App\Events\CompanyCreated;
 use App\Events\PayrollValidated;
+use App\Events\SocialContributionApproved;
+use App\Events\SocialContributionRejected;
+use App\Events\SocialContributionSubmittedForValidation;
 use App\Events\SubscriptionPaid;
+use App\Events\TaxSlabApproved;
+use App\Events\TaxSlabRejected;
+use App\Events\TaxSlabSubmittedForValidation;
 use App\Listeners\AuditLogger;
 use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\ProcessCommissionOnPayment;
+use App\Listeners\TaxRateChangeNotifier;
 use App\Listeners\WebhookListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -36,5 +43,13 @@ class EventServiceProvider extends ServiceProvider
         EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],
         SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
+
+        // ADMIN-PAIE (#1813) — notifications du workflow de validation des taux légaux.
+        TaxSlabSubmittedForValidation::class => [TaxRateChangeNotifier::class],
+        TaxSlabApproved::class => [TaxRateChangeNotifier::class],
+        TaxSlabRejected::class => [TaxRateChangeNotifier::class],
+        SocialContributionSubmittedForValidation::class => [TaxRateChangeNotifier::class],
+        SocialContributionApproved::class => [TaxRateChangeNotifier::class],
+        SocialContributionRejected::class => [TaxRateChangeNotifier::class],
     ];
 }

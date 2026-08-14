@@ -32,4 +32,9 @@ return [
 
     'payment_document_ready_title' => 'المستند جاهز',
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
+
+    'tax_rate_approved_title' => 'تمت الموافقة على تعديل المعدل',
+    'tax_rate_approved_body' => 'تمت الموافقة على تعديل المعدل « :rate_name » (:country) وهو الآن نشط في حسابات الرواتب.',
+    'tax_rate_rejected_title' => 'تم رفض تعديل المعدل',
+    'tax_rate_rejected_body' => 'تم رفض تعديل المعدل « :rate_name » (:country). السبب: :reason',
 ];

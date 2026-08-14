@@ -249,5 +249,21 @@ return [
             'title_key' => 'notifications.payment_document_ready_title',
             'body_key' => 'notifications.payment_document_ready_body',
         ],
+        'tax_rate_approved' => [
+            // ADMIN-PAIE (#1813) — workflow de validation des taux légaux :
+            // notifie le soumissionnaire quand le platform_admin approuve.
+            'category' => 'payroll',
+            'title_key' => 'notifications.tax_rate_approved_title',
+            'body_key' => 'notifications.tax_rate_approved_body',
+            'vars' => ['rate_name', 'country'],
+        ],
+        'tax_rate_rejected' => [
+            // ADMIN-PAIE (#1813) — notifie le soumissionnaire du motif de
+            // rejet d'une modification de taux légal.
+            'category' => 'payroll',
+            'title_key' => 'notifications.tax_rate_rejected_title',
+            'body_key' => 'notifications.tax_rate_rejected_body',
+            'vars' => ['rate_name', 'country', 'reason'],
+        ],
     ],
 ];

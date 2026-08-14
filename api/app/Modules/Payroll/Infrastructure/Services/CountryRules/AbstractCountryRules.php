@@ -103,7 +103,10 @@ abstract class AbstractCountryRules implements CountryRulesInterface
                 return null;
             }
 
-            $base = TaxSlab::query()->forCountry($this->countryCode())->effective($this->asOfDate);
+            // ADMIN-PAIE (#1813) : seules les lignes `active` entrent dans les
+            // calculs — une ligne draft/pending_validation/superseded est
+            // ignorée (la ligne active précédente reste en vigueur).
+            $base = TaxSlab::query()->forCountry($this->countryCode())->effective($this->asOfDate)->active();
 
             if ($this->companyId !== null) {
                 $companySlabs = (clone $base)->where('company_id', $this->companyId)->orderBy('min_amount')->get();
@@ -195,10 +198,13 @@ abstract class AbstractCountryRules implements CountryRulesInterface
                 return $this->resolvedContributions[$code] = null;
             }
 
+            // ADMIN-PAIE (#1813) : seules les lignes `active` entrent dans les
+            // calculs (workflow de validation des taux légaux).
             $base = SocialContribution::query()
                 ->forCountry($this->countryCode())
                 ->where('code', $code)
-                ->effective($this->asOfDate);
+                ->effective($this->asOfDate)
+                ->active();
 
             if ($this->companyId !== null) {
                 $companyRow = (clone $base)->where('company_id', $this->companyId)->first();
