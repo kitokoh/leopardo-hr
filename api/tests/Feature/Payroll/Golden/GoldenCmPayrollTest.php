@@ -35,6 +35,9 @@ class GoldenCmPayrollTest extends TestCase
      * DANS calculateIncomeTax() sur le brut réel transmis en 3e argument.
      * Les golden verrouillent CE comportement légal.
      */
+    /**
+     * @return array{employee_charge: float, employer_charge: float, abatement: float, taxable: float}
+     */
     private function cmTaxBase(float $gross): array
     {
         $charges = $this->cm()->calculateSocialCharges($gross);
@@ -58,6 +61,7 @@ class GoldenCmPayrollTest extends TestCase
         return $this->cm()->calculateIncomeTax($gross - $this->cmTaxBase($gross)['employee_charge'], 12, $gross);
     }
 
+/** @return array<string, list<mixed>> */
     public static function irppProvider(): array
     {
         // [brut, base taxable (brut − CNPS), IRPP mensuel légal avec
@@ -86,6 +90,7 @@ class GoldenCmPayrollTest extends TestCase
         $this->assertSame($expectedIrpp, $this->cm()->calculateIncomeTax($monthlyTaxable, 12, $gross));
     }
 
+/** @return array<string, list<mixed>> */
     public static function cnpsProvider(): array
     {
         // [brut, salariale attendue, patronale attendue]
@@ -175,6 +180,7 @@ class GoldenCmPayrollTest extends TestCase
         $this->assertSame(94831.0, $this->cm()->calculateIncomeTax(670600.0, 12, 700000.0));
     }
 
+/** @return array<string, list<mixed>> */
     public static function prorataProvider(): array
     {
         return [
@@ -218,6 +224,7 @@ class GoldenCmPayrollTest extends TestCase
         $this->assertSame(14077.21, round($expected, 2));
     }
 
+/** @return array<string, list<mixed>> */
     public static function seniorityProvider(): array
     {
         // [ancienneté en années, préavis légal en jours]

@@ -122,7 +122,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
+            public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
             }
@@ -238,9 +238,19 @@ class CountryRulesResolverTest extends TestCase
             /**
              * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
              */
-            public function withSlabs(?array $slabs): static
+            public function withTaxSlabs(array $slabs): static
             {
                 return $this;
+            }
+
+            public function withCapsEnabled(bool $enabled): static
+            {
+                return $this;
+            }
+
+            public function flatPayrollTaxLabel(): string
+            {
+                return 'IR';
             }
         };
 
@@ -287,7 +297,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
+            public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
             }
@@ -390,9 +400,19 @@ class CountryRulesResolverTest extends TestCase
             /**
              * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
              */
-            public function withSlabs(?array $slabs): static
+            public function withTaxSlabs(array $slabs): static
             {
                 return $this;
+            }
+
+            public function withCapsEnabled(bool $enabled): static
+            {
+                return $this;
+            }
+
+            public function flatPayrollTaxLabel(): string
+            {
+                return 'IR';
             }
         };
 
