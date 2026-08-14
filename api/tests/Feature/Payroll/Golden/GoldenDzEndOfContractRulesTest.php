@@ -6,7 +6,6 @@ namespace Tests\Feature\Payroll\Golden;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
 use Carbon\Carbon;
@@ -30,10 +29,13 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
     public function test_dz_rules_expose_pilot_notice_and_severance_values(): void
     {
-        $rules = new AlgeriaPayrollRules;
+        $rules = new AlgeriaPayrollRules();
 
-        // Valeurs pilot DZ (F-31) : préavis 0 j, licenciement 1 mois/an.
-        $this->assertSame(0.0, $rules->noticePeriodDays(5.0));
+        // Issue #1819 — préavis DZ (usage dominant, Loi 90-11 art. 73-4/98 —
+        // renvoi aux conventions collectives) : 1 mois < 10 ans, 2 mois ≥ 10 ans.
+        $this->assertSame(30.0, $rules->noticePeriodDays(5.0));
+        $this->assertSame(30.0, $rules->noticePeriodDays(0.5));
+        $this->assertSame(60.0, $rules->noticePeriodDays(12.0));
         $this->assertSame(1.0, $rules->severanceMonthsPerYear(5.0));
         $this->assertSame(1.0, $rules->severanceMonthsPerYear(12.0));
     }
@@ -50,13 +52,13 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01', // 60 mois = 5 ans exacts
         ]);
 
-        $service = new EndOfContractService;
+        $service = new EndOfContractService();
         $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
 
         // Golden F-08 (calculé à la main) : 60 000 × 5 ans × 1,0 mois/an = 300 000 DZD.
         $this->assertSame(300000.0, $settlement['breakdown']['severance']);
-        // Préavis pilot DZ : 0 jour → aucune indemnité compensatrice par défaut.
-        $this->assertSame(0.0, $settlement['breakdown']['notice_pay']);
+        // Issue #1819 — préavis 1 mois (30 j) : 60 000 × 30/22 = 81 818,18 DZD.
+        $this->assertSame(81818.18, $settlement['breakdown']['notice_pay']);
         // Cohérence du solde : prorata + congés + préavis + licenciement.
         $expectedTotal = round(
             $settlement['breakdown']['prorated_pay']
@@ -68,12 +70,12 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         $this->assertSame($expectedTotal, $settlement['breakdown']['total']);
     }
 
-    public function test_unregistered_country_throws_typed_error(): void
+    public function test_unregistered_country_falls_back_to_dz_defaults_without_exception(): void
     {
-        // MULTI-PAYS (#1868) : un pays non enregistré (ex. 'US') lève une
-        // erreur métier typée — PLUS AUCUN repli silencieux vers les défauts
-        // DZ en fin de contrat (l'ancien comportement masquait les pays mal
-        // configurés et appliquait la juridiction DZ à d'autres pays).
+        // Pays inconnu du moteur (ex. 'US') : repli silencieux sur les défauts DZ
+        // (1 mois/an, préavis 1 mois — issue #1819) — aucune exception en fin de
+        // contrat (régression évitée : avant F-31 le service utilisait toujours
+        // ces défauts).
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'US']);
         /** @var Employee $employee */
@@ -84,11 +86,11 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01',
         ]);
 
-        $service = new EndOfContractService;
+        $service = new EndOfContractService();
+        $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
 
-        $this->expectException(UnsupportedCountryRulesException::class);
-        $this->expectExceptionMessage('US');
-
-        $service->settlement($employee, Carbon::parse('2026-01-01'));
+        $this->assertSame(300000.0, $settlement['breakdown']['severance']);
+        // Fallback DZ (issue #1819) : préavis 1 mois → 60 000 × 30/22 = 81 818,18.
+        $this->assertSame(81818.18, $settlement['breakdown']['notice_pay']);
     }
 }
