@@ -158,7 +158,7 @@ class PayrollCalculator
         PayrollRun $run,
         Employee $employee,
         SalaryStructure $structure,
-        CountryRulesInterface $rules
+        CountryRulesContract $rules
     ): PaySlip {
         $baseSalary = $structure->base_salary;
         $worked = $this->computeWorkedDays($run, $employee);

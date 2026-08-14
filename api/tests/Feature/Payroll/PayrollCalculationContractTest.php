@@ -49,16 +49,13 @@ class PayrollCalculationContractTest extends TestCase
 
     public function test_golden_ci_contract(): void
     {
-        // Calcul manuel (CI pilot #1825 — docs/payroll/CI_COMPLIANCE.md §1-§4)
-        // — brut 500 000 XOF :
-        //   CNSS salariale 3,2 % = 16 000 (plafond 1 647 315 non atteint)
-        //   Patronale = 4,5 % (22 500) + famille 5,75 % (28 750)
-        //     + AT 2,0 % non plafonné (10 000) = 61 250
-        //   Assiette = 500 000 − 16 000 = 484 000
-        //   Abattement frais pro 20 % (non plafonné, sur l'assiette) = 96 800
-        //   Base imposable mensuelle = 387 200 → annuelle 4 646 400
-        //   ITSAS annuel : 0-600k × 0 % = 0 · 600k-2M × 2 % = 28 000
-        //     2M-4,6464M × 21 % = 555 744 → 583 744 / 12 = 48 645,33
+        // Calcul manuel (CedeaoPayrollRules pilot CI, #1825) — brut 500 000 XOF :
+        //   CNSS salariale 3,2 % = 16 000 · patronale 4,5 + 5,75 + 2,0 % = 61 250
+        //   Assiette = 484 000 · abattement frais pro 20 % sur assiette = 96 800
+        //     (le présentateur ne transmet pas encore le brut réel — suivi
+        //     #1924/#1891) · annuel 4 646 400
+        //   Tranches annuelles ITSAS : 0-600k × 0 % = 0 · 600k-2M × 2 % = 28 000
+        //     2M-4,6464M × 21 % = 555 744 → impôt mensuel 583 744 / 12 = 48 645,33
         //   Net = 500 000 − 16 000 − 48 645,33 = 435 354,67
         //   Coût employeur = 500 000 + 61 250 = 561 250
         $contract = $this->presenter()->present('CI', 500000.0);
