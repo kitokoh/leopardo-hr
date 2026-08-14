@@ -22,6 +22,12 @@ import {
 } from 'lucide-react';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import {
+  mobileDownloadLabel,
+  mobileDownloadTarget,
+  type MobileAppSlug,
+  type MobilePlatform,
+} from '@/modules/vitrine/lib/mobile-download';
 
 type FeatureCard = {
   icon: React.ReactNode;
@@ -35,111 +41,13 @@ type RequirementItem = {
 };
 
 type AppLocale = 'fr' | 'en' | 'tr' | 'ar';
-type MobilePlatform = 'android' | 'ios';
-type MobileAppSlug = 'employee' | 'manager' | 'platform-admin';
-
-type MobileDownloadTarget = {
-  href: string;
-  isFallback: boolean;
-};
-
-const mobileDownloadEnv: Record<
-  MobileAppSlug,
-  Record<MobilePlatform, string | undefined>
-> = {
-  employee: {
-    android: process.env.NEXT_PUBLIC_LEOPARDO_EMPLOYEE_ANDROID_URL,
-    ios: process.env.NEXT_PUBLIC_LEOPARDO_EMPLOYEE_IOS_URL,
-  },
-  manager: {
-    android: process.env.NEXT_PUBLIC_LEOPARDO_MANAGER_ANDROID_URL,
-    ios: process.env.NEXT_PUBLIC_LEOPARDO_MANAGER_IOS_URL,
-  },
-  'platform-admin': {
-    android: process.env.NEXT_PUBLIC_LEOPARDO_PLATFORM_ADMIN_ANDROID_URL,
-    ios: process.env.NEXT_PUBLIC_LEOPARDO_PLATFORM_ADMIN_IOS_URL,
-  },
-};
-
-const firebaseTesterLinks: Partial<Record<MobileAppSlug, Partial<Record<MobilePlatform, string>>>> = {
-  employee: {
-    android: 'https://appdistribution.firebase.dev/i/e2bde6595da9d96e',
-  },
-  manager: {
-    android: 'https://appdistribution.firebase.dev/i/e51102534a5dff22',
-  },
-  'platform-admin': {
-    android: 'https://appdistribution.firebase.dev/i/f37b128b1c89a006',
-  },
-};
-
-function mobileDownloadTarget(
-  slug: MobileAppSlug,
-  platform: MobilePlatform,
-): MobileDownloadTarget {
-  const configured = mobileDownloadEnv[slug][platform]?.trim()
-    || firebaseTesterLinks[slug]?.[platform]?.trim();
-
-  if (configured) {
-    return { href: configured, isFallback: false };
-  }
-
-  return {
-    href: `/signup?source=download_${slug}_${platform}`,
-    isFallback: true,
-  };
-}
-
-function testerFallbackLabel(locale: AppLocale): string {
-  switch (locale) {
-    case 'en':
-      return 'Join the tester list';
-    case 'tr':
-      return 'Test listesine katil';
-    case 'ar':
-      return 'انضم إلى قائمة الاختبار';
-    default:
-      return 'Rejoindre les testeurs';
-  }
-}
-
-function firebaseTesterLabel(locale: AppLocale): string {
-  switch (locale) {
-    case 'en':
-      return 'Install tester build';
-    case 'tr':
-      return 'Test surumunu yukle';
-    case 'ar':
-      return 'تثبيت نسخة الاختبار';
-    default:
-      return 'Installer la version test';
-  }
-}
-
-function mobileDownloadLabel(
-  target: MobileDownloadTarget,
-  configuredLabel: string,
-  locale: AppLocale,
-): string {
-  if (target.isFallback) {
-    return testerFallbackLabel(locale);
-  }
-
-  if (target.href.includes('appdistribution.firebase.dev')) {
-    return firebaseTesterLabel(locale);
-  }
-
-  return configuredLabel;
-}
 
 const copy: Record<AppLocale, {
   badge: string;
   headline: string;
   subheadline: string;
   downloadCta: string;
-  version: string;
-  size: string;
-  requirement: string;
+  ctaNote: string;
   features: FeatureCard[];
   requirements: RequirementItem[];
   howItWorks: {
@@ -152,10 +60,8 @@ const copy: Record<AppLocale, {
     badge: 'Application Desktop',
     headline: 'Leopardo pour Windows',
     subheadline: 'Le client lourd pour synchroniser vos pointeuses ZKTeco, gerer le mode hors-ligne, et superviser vos sites depuis le bureau.',
-    downloadCta: 'Telecharger pour Windows',
-    version: 'v2.1.0',
-    size: '68 Mo',
-    requirement: 'Windows 10+ (64-bit)',
+    downloadCta: 'Être contacté',
+    ctaNote: 'Aucun installateur public n\'est encore disponible. Notre équipe vous contacte pour préparer votre installation.',
     features: [
       { icon: <Fingerprint className="w-6 h-6" />, title: 'Synchronisation ZKTeco', description: 'Connexion directe aux bornes biometriques ZKTeco. Push/pull des pointages en temps reel via TCP/IP ou USB.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez a travailler sans internet. Les pointages sont stockes localement et synchronises automatiquement au retour du reseau.' },
@@ -189,10 +95,8 @@ const copy: Record<AppLocale, {
     badge: 'Desktop Application',
     headline: 'Leopardo for Windows',
     subheadline: 'The desktop client to sync your ZKTeco terminals, manage offline mode, and supervise your sites from your workstation.',
-    downloadCta: 'Download for Windows',
-    version: 'v2.1.0',
-    size: '68 MB',
-    requirement: 'Windows 10+ (64-bit)',
+    downloadCta: 'Get in touch',
+    ctaNote: 'No public installer is available yet. Our team will contact you to prepare your setup.',
     features: [
       { icon: <Fingerprint className="w-6 h-6" />, title: 'ZKTeco Synchronization', description: 'Direct connection to ZKTeco biometric terminals. Push/pull attendance in real time via TCP/IP or USB.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'Offline Mode', description: 'Keep working without internet. Attendance data is stored locally and synced automatically when connectivity returns.' },
@@ -226,10 +130,8 @@ const copy: Record<AppLocale, {
     badge: 'Masaustu Uygulamasi',
     headline: 'Windows icin Leopardo',
     subheadline: 'ZKTeco terminallerinizi senkronize etmek, cevrimdisi modu yonetmek ve is istasyonunuzdan sitelerinizi denetlemek icin masaustu istemcisi.',
-    downloadCta: 'Windows icin indir',
-    version: 'v2.1.0',
-    size: '68 MB',
-    requirement: 'Windows 10+ (64-bit)',
+    downloadCta: 'Iletisime gecin',
+    ctaNote: 'Henuz halka acik bir yukleyici yok. Ekibimiz kurulumunuz icin sizinle iletisime gecer.',
     features: [
       { icon: <Fingerprint className="w-6 h-6" />, title: 'ZKTeco Senkronizasyonu', description: 'ZKTeco biyometrik terminallere dogrudan baglanti. TCP/IP veya USB uzerinden gercek zamanli yoklama.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'Cevrimdisi Mod', description: 'Internet olmadan calismaya devam edin. Yoklama verileri yerel olarak saklanir ve otomatik senkronize edilir.' },
@@ -260,13 +162,11 @@ const copy: Record<AppLocale, {
     ],
   },
   ar: {
-    badge: 'تطبيق سطح المكتب',
-    headline: 'ليوباردو لويندوز',
-    subheadline: 'عميل سطح المكتب لمزامنة أجهزة ZKTeco وإدارة وضع عدم الاتصال والإشراف على مواقعك.',
-    downloadCta: 'تحميل لويندوز',
-    version: 'v2.1.0',
-    size: '68 ميغابايت',
-    requirement: 'ويندوز 10+ (64-بت)',
+    badge: 'ØªØ·Ø¨ÙŠÙ‚ Ø³Ø·Ø­ Ø§Ù„Ù…ÙƒØªØ¨',
+    headline: 'Ù„ÙŠÙˆØ¨Ø§Ø±Ø¯Ùˆ Ù„ÙˆÙŠÙ†Ø¯ÙˆØ²',
+    subheadline: 'Ø¹Ù…ÙŠÙ„ Ø³Ø·Ø­ Ø§Ù„Ù…ÙƒØªØ¨ Ù„Ù…Ø²Ø§Ù…Ù†Ø© Ø£Ø¬Ù‡Ø²Ø© ZKTeco ÙˆØ¥Ø¯Ø§Ø±Ø© ÙˆØ¶Ø¹ Ø¹Ø¯Ù… Ø§Ù„Ø§ØªØµØ§Ù„ ÙˆØ§Ù„Ø¥Ø´Ø±Ø§Ù Ø¹Ù„Ù‰ Ù…ÙˆØ§Ù‚Ø¹Ùƒ.',
+    downloadCta: 'اتصل بنا',
+    ctaNote: 'لا يوجد مثبّت عام متاح بعد. سيتواصل معك فريقنا لتجهيز التثبيت.',
     features: [
       { icon: <Fingerprint className="w-6 h-6" />, title: 'مزامنة ZKTeco', description: 'اتصال مباشر بأجهزة ZKTeco البيومترية. دفع/سحب الحضور في الوقت الفعلي.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'وضع عدم الاتصال', description: 'استمر في العمل بدون إنترنت. يتم تخزين بيانات الحضور محلياً ومزامنتها تلقائياً.' },
@@ -565,13 +465,7 @@ export default function DownloadPage() {
                 <Download className="w-5 h-5" />
                 {c.downloadCta}
               </Link>
-              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                <span>{c.version}</span>
-                <span className="w-1 h-1 rounded-full bg-slate-300" />
-                <span>{c.size}</span>
-                <span className="w-1 h-1 rounded-full bg-slate-300" />
-                <span>{c.requirement}</span>
-              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md">{c.ctaNote}</p>
             </div>
           </motion.div>
         </div>
