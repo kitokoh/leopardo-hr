@@ -44,6 +44,10 @@ class CountryIsolationMatrixTest extends TestCase
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => $base,
+            // Contrat ancré avant la période : empêche le prorata aléatoire du
+            // factory (contract_start aléatoire) de casser les montants.
+            'contract_start' => '2020-01-01',
+            'contract_end' => null,
         ]);
 
         $run = PayrollRun::create([
@@ -144,15 +148,19 @@ class CountryIsolationMatrixTest extends TestCase
 
     public function test_rule_instances_are_independent_no_shared_state(): void
     {
-        // Pas de cache global : deux résolutions successives produisent des
-        // instances indépendantes ; scoper l'une n'affecte pas l'autre.
+        // Instances de règles : une instance partagée et immuable par pays
+        // (résolveur #1868) ; scoper l'une (forCompany/asOf) produit un clone
+        // qui n'affecte jamais l'instance d'origine ni les autres pays.
         $calculator = new PayrollCalculator;
 
         $dz = $calculator->getRules('DZ');
         $cm = $calculator->getRules('CM');
 
         $this->assertNotSame($dz, $cm);
-        $this->assertNotSame($dz, $calculator->getRules('DZ'));
+        // Le résolveur (#1868) retourne volontairement l'instance partagée et
+        // immuable du pays (pas de cache global à purger) : l'isolation vient
+        // des clones forCompany()/asOf() vérifiés ci-dessous.
+        $this->assertSame($dz, $calculator->getRules('DZ'));
 
         // Scoper DZ sur un tenant ne modifie pas les valeurs CM (immutabilité).
         $scopedDz = $dz->forCompany('tenant-x')->asOf('2026-07-01');
