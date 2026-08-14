@@ -107,12 +107,12 @@ consommées par `EndOfContractService` au lieu de valeurs codées en dur).
 | Sujet | Statut | Référence | À faire |
 |---|---|---|---|
 | Congés payés (2,5 j/mois, 1/10ᵉ vs maintien) | ✅ implémenté + golden tests | F-07 (#1537), loi 90-11 | Assiette « 12 mois » à confirmer |
-| Préavis — durées légales | ⚙️ mécanisme implémenté (règles pays) | loi 90-11 art. 98 | Valeur DZ pilot = 0 j (contrat). **Candidat non verrouillé : 1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans — à valider expert comptable DZ** |
-| Indemnité de licenciement | ⚙️ implémenté : 1 mois/an via règles pays | loi 90-11 | **Plafond légal non appliqué** (à paramétrer/valider) |
+| Préavis — durées légales | ✅ implémenté (#1819) : **1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans** (30/60 j calendaires, indemnité = base × j/22) | loi 90-11 art. 73-4 (2 h/j de recherche d'emploi pendant le délai-congé) ; la **durée** est renvoyée aux conventions collectives/règlement intérieur — valeur retenue = usage dominant, confidenceLevel reste `pilot` | Validation expert comptable DZ avant passage `production` |
+| Indemnité de licenciement | ⚙️ implémenté : 1 mois/an via règles pays | loi 90-11 art. 72 (1 mois/an, plafond 15 mois) | **Plafond légal de 15 mois non appliqué** (à paramétrer/valider) |
 | Solde de tout compte + certificat de travail | ✅ implémenté + golden tests | F-08 (#1538) | — |
 | Heures supplémentaires (25 %/50 %) | ⚙️ implémenté (palier unique ×1,5 pilot) | loi 90-11 art. 33 | Seuil conventionnel à confirmer |
-| Assurance chômage | 📝 **à identifier** | — | Aucune cotisation implémentée ; confirmer l'existence/l'assiette avant de coder |
-| Rétroactifs et régularisations | 📝 à documenter | — | Mécanique de bulletin rétroactif non implémentée (roadmap) |
+| Assurance chômage | ✅ **documentée NON applicable au secteur privé (#1819)** | LF 2022 art. 189 ; décrets exécutifs n° 22-70 (10/02/2022) et n° 26-87 (21/01/2026) ; CNAC (décret exécutif n° 94-188) | Aucune cotisation AC_DZ_EMP/AC_DZ_PAT — l'allocation chômage (primo-demandeurs ANEM, 13 000 DZD/mois) est financée par le budget de l'État (≈ 420 Mds DZD en LF 2026), pas par les employeurs |
+| Rétroactifs et régularisations | ✅ implémenté (#1818) | — | — |
 
 > Règle (inchangée) : toute modification de taux/durée = mise à jour
 > **simultanée** du référentiel + du golden test + du CHANGELOG.
