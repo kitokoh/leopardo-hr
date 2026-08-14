@@ -6,7 +6,6 @@ namespace Tests\Feature\MultiCountry;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
-use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
@@ -114,18 +113,11 @@ class ProvisioningCountryStrictTest extends TestCase
         $this->assertNull(CountryDefaults::find('ZZ'));
         $this->assertNull(CountryDefaults::find(''));
         $this->assertNull(CountryDefaults::find(null));
-        $this->assertSame('CI', CountryDefaults::find('ci')['country']);
+        $foundCi = CountryDefaults::find('ci');
+        $this->assertNotNull($foundCi);
+        $this->assertSame('CI', $foundCi['country']);
 
         // for() reste réservé à l'affichage (fallback DZ documenté).
         $this->assertSame('DZ', CountryDefaults::for('ZZ')['country']);
-    }
-
-    private function superAdmin(): SuperAdmin
-    {
-        return new SuperAdmin([
-            'id' => 1,
-            'name' => 'Audit',
-            'email' => 'audit@leopardo.test',
-        ]);
     }
 }

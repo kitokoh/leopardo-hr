@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
@@ -59,6 +60,8 @@ class PayrollCalculator
      * Résout les règles de paie d'un pays via le résolveur unique (#1868).
      *
      * @throws UnsupportedCountryRulesException si le pays n'est pas enregistré
+     * @throws CountryRulesContextMismatchException si la règle résolue ne
+     *                                              correspond pas au pays demandé
      */
     public function getRules(string $countryCode): CountryRulesContract
     {

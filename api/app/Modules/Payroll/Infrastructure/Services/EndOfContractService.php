@@ -72,7 +72,7 @@ class EndOfContractService
         // #1868 : PLUS AUCUN repli silencieux vers DZ — un pays non enregistré
         // propage UnsupportedCountryRulesException (422 explicite), comme le
         // vérifie GoldenDzEndOfContractRulesTest.
-        $countryCode = $employee->company->country ?? 'DZ';
+        $countryCode = $employee->company?->country ?? 'DZ';
 
         $rules = $this->calculator->getRules($countryCode);
 

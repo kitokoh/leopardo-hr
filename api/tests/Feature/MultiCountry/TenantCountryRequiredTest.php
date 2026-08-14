@@ -44,11 +44,11 @@ class TenantCountryRequiredTest extends TestCase
 
         $response = $this->getJson('/api/v1/supported-countries')->assertOk();
 
-        /** @var array<int, array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string}> $registry */
+        /** @var array<int, array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array{level: string, warning: string, warning_localized: string, source: string|null, verified_at: string|null}}> $registry */
         $registry = $response->json('data');
         $countries = collect($registry)->keyBy('country');
 
-        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string}|null $dz */
+        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array{level: string, warning: string, warning_localized: string, source: string|null, verified_at: string|null}}|null $dz */
         $dz = $countries->get('DZ');
         $this->assertNotNull($dz);
         $this->assertNotNull($countries->get('CI'));
@@ -68,6 +68,7 @@ class TenantCountryRequiredTest extends TestCase
         $this->assertTrue($dz['compliance']['verified_at'] === null || is_string($dz['compliance']['verified_at']));
 
         // Pays référencé sans règles de paie (ex. US) : disponible = false.
+        /** @var array{country: string, currency: string, timezone: string, language: string, available: bool, confidence: string, compliance: array{level: string, warning: string, warning_localized: string, source: string|null, verified_at: string|null}}|null $us */
         $us = $countries->get('US');
         $this->assertNotNull($us);
         $this->assertFalse($us['available']);

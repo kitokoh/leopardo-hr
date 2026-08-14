@@ -96,9 +96,9 @@ class MigrationSchemaPlacementTest extends TestCase
 
     public function test_artisan_migrate_is_idempotent(): void
     {
-        // PHPStan Strict : artisan() retourne PendingCommand|int — assertExitCode
-        // est la forme typée compatible (pattern MakeModuleCommandTest).
-        $this->artisan('migrate', ['--path' => 'database/migrations/public'])->assertExitCode(0);
-        $this->artisan('migrate', ['--path' => 'database/migrations/tenant'])->assertExitCode(0);
+        // PHPStan Strict : artisan() retourne PendingCommand|int — on exécute
+        // explicitement ->run() (int) puis on vérifie le code de sortie.
+        $this->assertSame(0, $this->artisan('migrate', ['--path' => 'database/migrations/public'])->run());
+        $this->assertSame(0, $this->artisan('migrate', ['--path' => 'database/migrations/tenant'])->run());
     }
 }
