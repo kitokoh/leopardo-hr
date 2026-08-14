@@ -19,6 +19,11 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      */
     protected ?string $companyId = null;
 
+    /** @var array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null */
+    private ?array $taxSlabsOverride = null;
+
+    private bool $capsEnabled = true;
+
     /**
      * Point in time used to resolve which TaxSlab/SocialContribution rows are
      * "effective" (PA2-ARCH-004: country rates/tables are associated with an
@@ -90,7 +95,37 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      */
     public function taxSlabs(): array
     {
+        // Issue #1814 : override de simulation (dry-run) — prioritaire sur la
+        // base, ne persiste rien.
+        if ($this->taxSlabsOverride !== null) {
+            return $this->taxSlabsOverride;
+        }
+
         return $this->resolveTaxSlabsFromDatabase() ?? $this->defaultTaxSlabs();
+    }
+
+    /**
+     * Issue #1814 — injecte un barème temporaire pour la simulation d'impact
+     * (endpoint /payroll/simulate). Ne touche pas à la base de données.
+     *
+     * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
+     */
+    /**
+     * Issue #1815 — active/désactive l'application des plafonds de cotisation
+     * (mode simulation « avec/sans plafond »). N'affecte que cette instance.
+     */
+    public function withCapsEnabled(bool $enabled): static
+    {
+        $this->capsEnabled = $enabled;
+
+        return $this;
+    }
+
+    public function withTaxSlabs(array $slabs): static
+    {
+        $this->taxSlabsOverride = $slabs;
+
+        return $this;
     }
 
     /**
@@ -103,7 +138,12 @@ abstract class AbstractCountryRules implements CountryRulesInterface
                 return null;
             }
 
-            $base = TaxSlab::query()->forCountry($this->countryCode())->effective($this->asOfDate);
+            // Issue #1813 : seules les lignes ACTIVES participent aux calculs
+            // (draft/pending_validation/superseded sont ignorées).
+            $base = TaxSlab::query()
+                ->forCountry($this->countryCode())
+                ->active()
+                ->effective($this->asOfDate);
 
             if ($this->companyId !== null) {
                 $companySlabs = (clone $base)->where('company_id', $this->companyId)->orderBy('min_amount')->get();
@@ -197,6 +237,7 @@ abstract class AbstractCountryRules implements CountryRulesInterface
 
             $base = SocialContribution::query()
                 ->forCountry($this->countryCode())
+                ->active()
                 ->where('code', $code)
                 ->effective($this->asOfDate);
 
@@ -317,7 +358,9 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     ): float {
         $rate = $this->resolveContributionRate($code, $defaultRate);
         $cap = $this->resolveContributionCap($code, $defaultCap);
-        $base = $cap !== null ? min($grossSalary, $cap) : $grossSalary;
+        // Issue #1815 : le simulateur peut désactiver le plafonnement pour
+        // comparer l'impact « avec/sans plafond légal ».
+        $base = $this->capsEnabled && $cap !== null ? min($grossSalary, $cap) : $grossSalary;
 
         return round($base * $rate / 100, 2);
     }

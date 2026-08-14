@@ -153,6 +153,33 @@ const routes = [
         }
       },
       {
+        path: '/settings/payroll/social-contributions',
+        name: 'social-contributions',
+        component: () => import('@/views/settings/SocialContributionsView.vue'),
+        meta: {
+          title: 'Cotisations sociales',
+          icon: 'BanknotesIcon'
+        }
+      },
+      {
+        path: '/settings/payroll/tax-slabs',
+        name: 'tax-slabs',
+        component: () => import('@/views/settings/TaxSlabsView.vue'),
+        meta: {
+          title: 'Barèmes fiscaux',
+          icon: 'ScaleIcon'
+        }
+      },
+      {
+        path: '/settings/payroll/tax-rates',
+        name: 'tax-rates',
+        component: () => import('@/views/settings/TaxRatesView.vue'),
+        meta: {
+          title: 'Taux légaux',
+          icon: 'ScaleIcon'
+        }
+      },
+      {
         path: '/leaves',
         name: 'leaves',
         component: () => import('@/views/leaves/LeavesView.vue'),
@@ -285,6 +312,15 @@ const routes = [
         meta: {
           title: 'Mon compte',
           icon: 'UserCircleIcon'
+        }
+      },
+      {
+        path: '/settings/payroll/holidays',
+        name: 'payroll-holidays',
+        component: () => import('../views/settings/HolidaysView.vue'),
+        meta: {
+          title: 'holidays.nav.title',
+          icon: 'CalendarIcon'
         }
       }
     ]
