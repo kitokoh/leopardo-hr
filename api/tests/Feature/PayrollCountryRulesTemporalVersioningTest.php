@@ -47,6 +47,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             $table->decimal('fixed_deduction', 14, 2)->default(0);
             $table->date('effective_from');
             $table->date('effective_to')->nullable();
+            $table->string('status', 20)->default('active')->index();
             $table->timestampsTz();
 
             $table->index(['country_code', 'effective_from']);
@@ -63,6 +64,7 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             $table->decimal('cap', 14, 2)->nullable();
             $table->date('effective_from');
             $table->date('effective_to')->nullable();
+            $table->string('status', 20)->default('active')->index();
             $table->timestampsTz();
 
             $table->unique(['company_id', 'code', 'effective_from'], 'social_contributions_company_code_effective_unique');
@@ -96,7 +98,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2025-01-01',
             'effective_to' => '2025-12-31',
-            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         SocialContribution::create([
@@ -109,7 +110,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2026-01-01',
             'effective_to' => null,
-            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = new AlgeriaPayrollRules;
@@ -138,7 +138,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'fixed_deduction' => 0,
             'effective_from' => '2025-01-01',
             'effective_to' => '2025-12-31',
-            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         TaxSlab::create([
@@ -151,7 +150,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'fixed_deduction' => 0,
             'effective_from' => '2026-01-01',
             'effective_to' => null,
-            'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         $rules = new AlgeriaPayrollRules;
@@ -181,7 +179,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => now()->subYear()->toDateString(),
             'effective_to' => null,
-            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = new AlgeriaPayrollRules;
@@ -207,7 +204,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => now()->subYear()->toDateString(),
             'effective_to' => null,
-            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = (new AlgeriaPayrollRules)->asOf('2099-01-01')->asOf(null);
@@ -236,7 +232,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2025-01-01',
             'effective_to' => null,
-            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         SocialContribution::create([
@@ -249,7 +244,6 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             'cap' => null,
             'effective_from' => '2025-01-01',
             'effective_to' => null,
-            'status' => SocialContribution::STATUS_ACTIVE,
         ]);
 
         $rules = (new AlgeriaPayrollRules)->forCompany($companyId)->asOf('2025-06-15');
