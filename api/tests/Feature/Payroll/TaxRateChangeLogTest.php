@@ -204,3 +204,27 @@ class TaxRateChangeLogTest extends TestCase
         );
     }
 }
+
+    public function test_db_level_truncate_is_blocked_by_trigger(): void
+    {
+        // Issue #2024 — le trigger append-only (#1927) couvrait UPDATE/DELETE
+        // mais pas TRUNCATE : le propriétaire de la table pouvait vider la
+        // piste d'audit en un seul vidage. BEFORE TRUNCATE lève la même
+        // exception (P0001) — QueryException côté Laravel.
+        /** @var TaxRateChangeLog $log */
+        $log = TaxRateChangeLog::create([
+            'table_name' => TaxRateChangeLog::TABLE_TAX_SLABS,
+            'record_id' => 4,
+            'action' => TaxRateChangeLog::ACTION_CREATED,
+            'actor_id' => 1,
+            'actor_role' => 'employee',
+            'new_value' => ['rate' => 23],
+        ]);
+
+        $this->assertDatabaseHas('tax_rate_change_log', ['id' => $log->id]);
+
+        $this->expectException(QueryException::class);
+
+        DB::table('tax_rate_change_log')->truncate();
+    }
+}
