@@ -20,6 +20,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryStructureController;
@@ -57,6 +58,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'show'])->whereNumber('salaryComponent');
         Route::put('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'update'])->whereNumber('salaryComponent');
         Route::delete('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'destroy'])->whereNumber('salaryComponent');
+
+        // Issue #1814 — simulation d'impact (dry-run, manager).
+        Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
 
         // Tax Slabs
         Route::get('/tax-slabs', [TaxSlabController::class, 'index']);

@@ -19,6 +19,9 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      */
     protected ?string $companyId = null;
 
+    /** @var array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null */
+    private ?array $taxSlabsOverride = null;
+
     /**
      * Point in time used to resolve which TaxSlab/SocialContribution rows are
      * "effective" (PA2-ARCH-004: country rates/tables are associated with an
@@ -90,7 +93,26 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      */
     public function taxSlabs(): array
     {
+        // Issue #1814 : override de simulation (dry-run) — prioritaire sur la
+        // base, ne persiste rien.
+        if ($this->taxSlabsOverride !== null) {
+            return $this->taxSlabsOverride;
+        }
+
         return $this->resolveTaxSlabsFromDatabase() ?? $this->defaultTaxSlabs();
+    }
+
+    /**
+     * Issue #1814 — injecte un barème temporaire pour la simulation d'impact
+     * (endpoint /payroll/simulate). Ne touche pas à la base de données.
+     *
+     * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
+     */
+    public function withTaxSlabs(array $slabs): static
+    {
+        $this->taxSlabsOverride = $slabs;
+
+        return $this;
     }
 
     /**

@@ -153,6 +153,15 @@ const routes = [
         }
       },
       {
+        path: '/settings/payroll/tax-slabs',
+        name: 'tax-slabs',
+        component: () => import('@/views/settings/TaxSlabsView.vue'),
+        meta: {
+          title: 'Barèmes fiscaux',
+          icon: 'ScaleIcon'
+        }
+      },
+      {
         path: '/settings/payroll/tax-rates',
         name: 'tax-rates',
         component: () => import('@/views/settings/TaxRatesView.vue'),

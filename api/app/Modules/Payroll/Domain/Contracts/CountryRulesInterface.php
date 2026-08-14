@@ -22,6 +22,13 @@ interface CountryRulesInterface
      */
     public function taxSlabs(): array;
 
+    /**
+     * Issue #1814 — override temporaire du barème pour simulation (dry-run).
+     *
+     * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
+     */
+    public function withTaxSlabs(array $slabs): static;
+
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float;
 
     /**

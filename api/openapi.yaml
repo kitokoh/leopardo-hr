@@ -1197,6 +1197,149 @@ paths:
           $ref: "#/components/responses/Error403"
 
 
+  /admin/tax-slabs:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"
+      operationId: listAdminTaxSlabs
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Tranches nationales"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Platform Admin"]
+      summary: "Créer une tranche nationale (platform_admin) — issue #1814"
+      operationId: storeAdminTaxSlab
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaxSlabInput"
+      responses:
+        "201":
+          description: "Tranche créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier une tranche nationale (platform_admin) — issue #1814"
+      operationId: updateAdminTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaxSlabInput"
+      responses:
+        "200":
+          description: "Tranche modifiée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer une tranche nationale (platform_admin) — issue #1814"
+      operationId: destroyAdminTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: "Supprimé" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+  /admin/tax-slabs/reset-defaults:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"
+      operationId: resetAdminTaxSlabs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country_code]
+              properties:
+                country_code: { type: string }
+      responses:
+        "200":
+          description: "Barème réinitialisé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country_code: { type: string }
+                      created: { type: integer }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/payroll/simulate:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814"
+      operationId: simulatePayrollAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollSimulationInput"
+      responses:
+        "200":
+          description: "Résultat de la simulation (non persistant)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollSimulationResult"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
   /admin/rate-validation/pending:
     get:
       tags: ["Platform Admin"]
@@ -7280,6 +7423,30 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /payroll/simulate:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Simuler l'impact d'un barème (manager, dry-run) — issue #1814"
+      operationId: simulatePayroll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollSimulationInput"
+      responses:
+        "200":
+          description: "Résultat de la simulation (non persistant)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollSimulationResult"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
   /tax-slabs:
     get:
       tags: ["Payroll Engine"]
@@ -15810,6 +15977,55 @@ components:
         rejection_reason: { type: string, nullable: true }
         effective_from: { type: string, format: date }
         effective_to: { type: string, nullable: true }
+    PayrollSimulationInput:
+      type: object
+      required: [country_code, gross_salary]
+      properties:
+        country_code: { type: string }
+        gross_salary: { type: number, minimum: 0 }
+        slabs_override:
+          type: array
+          items:
+            type: object
+            required: [min, rate]
+            properties:
+              min: { type: number, minimum: 0 }
+              max: { type: number, nullable: true }
+              rate: { type: number, minimum: 0, maximum: 100 }
+              fixed_deduction: { type: number, minimum: 0 }
+    PayrollSimulationResult:
+      type: object
+      properties:
+        gross: { type: number }
+        country_code: { type: string }
+        social_employee: { type: number }
+        social_employer: { type: number }
+        tax_base: { type: number }
+        income_tax: { type: number }
+        income_tax_by_slab:
+          type: array
+          items:
+            type: object
+            properties:
+              min: { type: number }
+              max: { type: number, nullable: true }
+              rate: { type: number }
+              taxable_amount: { type: number }
+              tax: { type: number }
+        net: { type: number }
+        total_cost: { type: number }
+    TaxSlabInput:
+      type: object
+      required: [country_code, name, min_amount, rate, effective_from]
+      properties:
+        country_code: { type: string }
+        name: { type: string }
+        min_amount: { type: number, minimum: 0 }
+        max_amount: { type: number, nullable: true }
+        rate: { type: number, minimum: 0, maximum: 100 }
+        fixed_deduction: { type: number, minimum: 0 }
+        effective_from: { type: string, format: date }
+        effective_to: { type: string, format: date, nullable: true }
     TaxSlab:
       type: object
       properties:

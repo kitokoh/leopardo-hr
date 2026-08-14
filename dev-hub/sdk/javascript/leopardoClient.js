@@ -175,6 +175,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/hr-reports", options);
     },
 
+    /** Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814 */
+    simulatePayrollAdmin(options = {}) {
+      return request("POST", "/admin/payroll/simulate", options);
+    },
+
     /** Config OAuth marketing (super-admin) */
     getAdminPlatformMarketingOauthConfig(options = {}) {
       return request("GET", "/admin/platform/marketing/oauth-config", options);
@@ -198,6 +203,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les modifications de taux en attente de validation — issue #1813 */
     listPendingRateValidation(options = {}) {
       return request("GET", "/admin/rate-validation/pending", options);
+    },
+
+    /** Supprimer une tranche nationale (platform_admin) — issue #1814 */
+    destroyAdminTaxSlab(options = {}) {
+      return request("DELETE", "/admin/tax-slabs", options);
+    },
+
+    /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
+    listAdminTaxSlabs(options = {}) {
+      return request("GET", "/admin/tax-slabs", options);
+    },
+
+    /** Créer une tranche nationale (platform_admin) — issue #1814 */
+    storeAdminTaxSlab(options = {}) {
+      return request("POST", "/admin/tax-slabs", options);
+    },
+
+    /** Modifier une tranche nationale (platform_admin) — issue #1814 */
+    updateAdminTaxSlab(options = {}) {
+      return request("PUT", "/admin/tax-slabs", options);
+    },
+
+    /** Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814 */
+    resetAdminTaxSlabs(options = {}) {
+      return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
     /** Couts IA par periode */
@@ -1453,6 +1483,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume mobile des soldes paie equipe */
     getPayrollMobileSummary(options = {}) {
       return request("GET", "/payroll/mobile-summary", options);
+    },
+
+    /** Simuler l'impact d'un barème (manager, dry-run) — issue #1814 */
+    simulatePayroll(options = {}) {
+      return request("POST", "/payroll/simulate", options);
     },
 
     /** Connexion super-admin */

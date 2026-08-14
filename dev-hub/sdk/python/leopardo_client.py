@@ -160,6 +160,10 @@ class LeopardoClient:
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
 
+    def simulatepayrolladmin(self, **kwargs):
+        """Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814"""
+        return self.request("POST", "/admin/payroll/simulate", **kwargs)
+
     def get_admin_platform_marketing_oauth_config(self, **kwargs):
         """Config OAuth marketing (super-admin)"""
         return self.request("GET", "/admin/platform/marketing/oauth-config", **kwargs)
@@ -179,6 +183,26 @@ class LeopardoClient:
     def listpendingratevalidation(self, **kwargs):
         """Lister les modifications de taux en attente de validation — issue #1813"""
         return self.request("GET", "/admin/rate-validation/pending", **kwargs)
+
+    def destroyadmintaxslab(self, **kwargs):
+        """Supprimer une tranche nationale (platform_admin) — issue #1814"""
+        return self.request("DELETE", "/admin/tax-slabs", **kwargs)
+
+    def listadmintaxslabs(self, **kwargs):
+        """Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"""
+        return self.request("GET", "/admin/tax-slabs", **kwargs)
+
+    def storeadmintaxslab(self, **kwargs):
+        """Créer une tranche nationale (platform_admin) — issue #1814"""
+        return self.request("POST", "/admin/tax-slabs", **kwargs)
+
+    def updateadmintaxslab(self, **kwargs):
+        """Modifier une tranche nationale (platform_admin) — issue #1814"""
+        return self.request("PUT", "/admin/tax-slabs", **kwargs)
+
+    def resetadmintaxslabs(self, **kwargs):
+        """Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"""
+        return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
@@ -1183,6 +1207,10 @@ class LeopardoClient:
     def get_payroll_mobile_summary(self, **kwargs):
         """Resume mobile des soldes paie equipe"""
         return self.request("GET", "/payroll/mobile-summary", **kwargs)
+
+    def simulatepayroll(self, **kwargs):
+        """Simuler l'impact d'un barème (manager, dry-run) — issue #1814"""
+        return self.request("POST", "/payroll/simulate", **kwargs)
 
     def post_platform_auth_login(self, **kwargs):
         """Connexion super-admin"""
