@@ -76,10 +76,13 @@ class PayrollJournalGenerator
                 $cell = (string) $cell;
 
                 // Neutralisation CSV formula injection (OWASP) : une cellule
-                // commençant par =, +, -, @ ou des tabulations/CR est préfixée
-                // d'une apostrophe pour empêcher l'exécution dans Excel/LibreOffice
-                // (les champs matricule/nom sont contrôlés par l'employé).
-                if ($cell !== '' && str_contains('=+-@'."\t".chr(13), $cell[0])) {
+                // TEXTE commençant par =, +, -, @ ou des tabulations/CR est
+                // préfixée d'une apostrophe pour empêcher l'exécution dans
+                // Excel/LibreOffice (les champs matricule/nom sont contrôlés
+                // par l'employé). Issue #2223 : les MONTANTS (y compris
+                // négatifs — régularisations) ne sont jamais préfixés, sinon
+                // `'-123.45'` devient du texte et casse les totaux comptables.
+                if ($cell !== '' && ! is_numeric($cell) && str_contains('=+-@'."\t".chr(13), $cell[0])) {
                     $cell = "'".$cell;
                 }
 

@@ -23,7 +23,9 @@ class PayrollAccountingExportService
      */
     public function generateCsvClosure(PayrollRun $run): Closure
     {
-        $slips = $run->paySlips()->with('employee')->get();
+        // Issue #2223 : seuls les bulletins VALIDÉS sont exportés (un
+        // brouillon/calculé ne doit pas entrer dans la compta).
+        $slips = $run->paySlips()->with('employee')->where('status', 'validated')->get();
         $currency = $this->resolveCurrency($run);
         $periodStart = $run->period_start->toDateString();
         $periodEnd = $run->period_end->toDateString();
@@ -52,10 +54,13 @@ class PayrollAccountingExportService
 
             foreach ($slips as $slip) {
                 fputcsv($file, [
-                    $slip->employee->matricule ?? '',
-                    $slip->employee->last_name ?? '',
-                    $slip->employee->first_name ?? '',
-                    $slip->employee->salary_type ?? '',
+                    // Issue #2223 : neutralisation CSV des champs TEXTE
+                    // contrôlés par l'employé (=CMD() interdit) — les
+                    // montants restent des nombres.
+                    $this->csvSafe((string) ($slip->employee->matricule ?? '')),
+                    $this->csvSafe((string) ($slip->employee->last_name ?? '')),
+                    $this->csvSafe((string) ($slip->employee->first_name ?? '')),
+                    $this->csvSafe((string) ($slip->employee->salary_type ?? '')),
                     $countryCode,
                     $currency,
                     $periodStart,
@@ -69,6 +74,20 @@ class PayrollAccountingExportService
 
             fclose($file);
         };
+    }
+
+    /**
+     * Issue #2223 — neutralisation CSV formula injection (OWASP) sur les
+     * champs texte : une valeur commençant par =, +, -, @, tab ou CR est
+     * préfixée d'une apostrophe (les montants numériques ne passent pas ici).
+     */
+    private function csvSafe(string $value): string
+    {
+        if ($value !== '' && str_contains('=+-@'."\t".chr(13), $value[0])) {
+            return "'".$value;
+        }
+
+        return $value;
     }
 
     /**

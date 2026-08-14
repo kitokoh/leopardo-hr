@@ -65,8 +65,17 @@ class BankExportGeneratorTest extends TestCase
         $run = new PayrollRun;
         $run->setRawAttributes([
             'id' => 77,
+            'company_id' => 1,
             'period_start' => Carbon::parse('2026-05-01'),
         ]);
+        // Issue #2223 : identité bancaire de l'émetteur depuis le profil
+        // entreprise — plus jamais de placeholder.
+        $company = new \App\Core\Tenant\Domain\Models\Company;
+        $company->setRawAttributes(['id' => 1, 'metadata' => [
+            'iban' => 'FR7630006000011234567890189',
+            'bic' => 'AGRIFRPP',
+        ]]);
+        $run->setRelation('company', $company);
 
         $slip = new PaySlip;
         $slip->setRawAttributes([
@@ -86,6 +95,11 @@ class BankExportGeneratorTest extends TestCase
         self::assertStringContainsString('<CtrlSum>8750.25</CtrlSum>', $xml);
         self::assertStringContainsString('<Cdtr><Nm>Amina &amp; Co Benali &lt;Finance&gt;</Nm></Cdtr>', $xml);
         self::assertStringContainsString('<RmtInf><Ustrd>Salaire 05/2026</Ustrd></RmtInf>', $xml);
+        // Issue #2223 : l'IBAN/BIC émetteur vient du profil entreprise.
+        self::assertStringContainsString('<IBAN>FR7630006000011234567890189</IBAN></Id></DbtrAcct>', $xml);
+        self::assertStringContainsString('<BIC>AGRIFRPP</BIC>', $xml);
+        self::assertStringNotContainsString('PLACEHOLDER', $xml);
+        self::assertStringNotContainsString('UNKNOWN', $xml);
 
         // PA2-I18N-003: the SEPA transfer currency must follow the payroll
         // run's own country instead of a hardcoded EUR literal.
@@ -105,8 +119,15 @@ class BankExportGeneratorTest extends TestCase
         $run = new PayrollRun;
         $run->setRawAttributes([
             'id' => 78,
+            'company_id' => 1,
             'period_start' => Carbon::parse('2026-05-01'),
         ]);
+        $company = new \App\Core\Tenant\Domain\Models\Company;
+        $company->setRawAttributes(['id' => 1, 'metadata' => [
+            'iban' => 'FR7630006000011234567890189',
+            'bic' => 'AGRIFRPP',
+        ]]);
+        $run->setRelation('company', $company);
 
         $slip = new PaySlip;
         $slip->setRawAttributes([
@@ -122,6 +143,61 @@ class BankExportGeneratorTest extends TestCase
         $xml = $method->invoke($generator, $run, new Collection([$slip]));
 
         self::assertStringContainsString('<InstdAmt Ccy="EUR">1200.00</InstdAmt>', $xml);
+        self::assertStringNotContainsString('PLACEHOLDER', $xml);
+        self::assertStringNotContainsString('UNKNOWN', $xml);
+
+        Carbon::setTestNow();
+    }
+
+    public function test_sepa_export_skips_employees_without_iban_and_requires_company_bank_identity(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-20 10:00:00'));
+
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateSepaXml');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes([
+            'id' => 79,
+            'company_id' => 1,
+            'period_start' => Carbon::parse('2026-05-01'),
+        ]);
+        $company = new \App\Core\Tenant\Domain\Models\Company;
+        $company->setRawAttributes(['id' => 1, 'metadata' => [
+            'iban' => 'FR7630006000011234567890189',
+            'bic' => 'AGRIFRPP',
+        ]]);
+        $run->setRelation('company', $company);
+
+        // Un employé avec IBAN, un sans → le second est exclu (jamais UNKNOWN).
+        $withIban = new PaySlip;
+        $withIban->setRawAttributes(['employee_id' => 1, 'net_salary' => 1000]);
+        $withIban->setRelation('employee', (object) [
+            'first_name' => 'A', 'last_name' => 'B', 'iban' => 'FR7630006000011234567890189',
+        ]);
+        $withoutIban = new PaySlip;
+        $withoutIban->setRawAttributes(['employee_id' => 2, 'net_salary' => 2000]);
+        $withoutIban->setRelation('employee', (object) [
+            'first_name' => 'C', 'last_name' => 'D', 'iban' => null,
+        ]);
+
+        $xml = $method->invoke($generator, $run, new Collection([$withIban, $withoutIban]), 'EUR');
+
+        self::assertStringContainsString('<NbOfTxs>1</NbOfTxs>', $xml);
+        self::assertStringContainsString('<CtrlSum>1000.00</CtrlSum>', $xml);
+        self::assertStringNotContainsString('UNKNOWN', $xml);
+        self::assertStringNotContainsString('SAL-79-2', $xml); // employé sans IBAN exclu
+
+        // Sans identité bancaire entreprise → exception (export bloqué).
+        $runNoCompany = new PayrollRun;
+        $runNoCompany->setRawAttributes([
+            'id' => 80,
+            'company_id' => 999,
+            'period_start' => Carbon::parse('2026-05-01'),
+        ]);
+        $this->expectException(\RuntimeException::class);
+        $method->invoke($generator, $runNoCompany, new Collection([$withIban]), 'EUR');
 
         Carbon::setTestNow();
     }

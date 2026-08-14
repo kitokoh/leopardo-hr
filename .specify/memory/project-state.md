@@ -67,7 +67,7 @@
 | CNPS declaration CSV (CM) | ✅ | — | CnpsDeclarationGenerator |
 | CNSS declaration CSV (CI) | ✅ | — | |
 | IPRES/CSS declaration CSV (SN) | ✅ | — | |
-| Bank export (SEPA / CSV) | ✅ | — | BankExportGenerator |
+| Bank export (SEPA / CSV) | ✅ | #2223 | IBAN/BIC entreprise réels, aucun placeholder, employés sans IBAN exclus |
 | F-20 actual_days_worked (présence) | ✅ | #1816 | Depuis AttendanceLogs réels |
 | Archivage Cabinet auto | ✅ | #1817 | ArchivePaySlipsToCabinetJob |
 | Bulletins rétroactifs | ✅ | #1818 | PayrollRegularizationService |

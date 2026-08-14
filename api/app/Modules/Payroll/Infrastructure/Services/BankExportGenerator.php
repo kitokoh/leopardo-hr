@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 /**
  * PA2-I18N-003 — Bank export currency must follow the payroll run's own
@@ -71,9 +72,22 @@ class BankExportGenerator
 
     private function generateSepaXml(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
     {
+        // Issue #2220/#2223 : l'IBAN/BIC de l'émetteur vient du profil
+        // entreprise (Company.metadata['iban'/'bic']) — jamais de
+        // placeholder. Export bloqué (exception) si non configuré : un
+        // fichier de paiement avec un faux IBAN serait rejeté par la banque.
+        [$companyIban, $companyBic] = $this->companyBankIdentity($run);
+
+        // Issue #2223 : les employés sans IBAN sont EXCLUS du fichier (avec
+        // avertissement) — jamais de valeur fabriquée ('UNKNOWN').
+        $eligibleSlips = $slips->filter(
+            fn ($slip): bool => is_string($slip->employee->iban ?? null) && $slip->employee->iban !== ''
+        );
+        $skipped = $slips->count() - $eligibleSlips->count();
+
         $msgId = 'LEO-'.now()->format('YmdHis').'-'.$run->id;
-        $nbTransactions = $slips->count();
-        $totalAmount = $slips->sum('net_salary');
+        $nbTransactions = $eligibleSlips->count();
+        $totalAmount = $eligibleSlips->sum('net_salary');
         $creationDate = now()->toIso8601String();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
@@ -93,13 +107,13 @@ class BankExportGenerator
         $xml .= '      <CtrlSum>'.number_format($totalAmount, 2, '.', '').'</CtrlSum>'."\n";
         $xml .= '      <ReqdExctnDt>'.now()->addWeekdays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
         $xml .= '      <Dbtr><Nm>Leopardo RH</Nm></Dbtr>'."\n";
-        $xml .= '      <DbtrAcct><Id><IBAN>PLACEHOLDER_COMPANY_IBAN</IBAN></Id></DbtrAcct>'."\n";
-        $xml .= '      <DbtrAgt><FinInstnId><BIC>PLACEHOLDER_BIC</BIC></FinInstnId></DbtrAgt>'."\n";
+        $xml .= '      <DbtrAcct><Id><IBAN>'.$this->xmlEscape($companyIban).'</IBAN></Id></DbtrAcct>'."\n";
+        $xml .= '      <DbtrAgt><FinInstnId><BIC>'.$this->xmlEscape($companyBic).'</BIC></FinInstnId></DbtrAgt>'."\n";
 
-        foreach ($slips as $slip) {
+        foreach ($eligibleSlips as $slip) {
             $employee = $slip->employee;
             $name = trim(($employee->first_name ?? '').' '.($employee->last_name ?? ''));
-            $iban = $employee->iban ?? 'UNKNOWN';
+            $iban = (string) $employee->iban;
 
             $xml .= '      <CdtTrfTxInf>'."\n";
             $xml .= '        <PmtId><EndToEndId>SAL-'.$run->id.'-'.$slip->employee_id.'</EndToEndId></PmtId>'."\n";
@@ -115,7 +129,38 @@ class BankExportGenerator
         $xml .= '  </CstmrCdtTrfInitn>'."\n";
         $xml .= '</Document>'."\n";
 
+        if ($skipped > 0) {
+            Log::warning('bank_export.sepa_skipped_missing_iban', [
+                'run_id' => $run->id,
+                'skipped' => $skipped,
+            ]);
+        }
+
         return $xml;
+    }
+
+    /**
+     * Issue #2223 — identité bancaire de l'émetteur (Company.metadata) :
+     * jamais de placeholder. Lève une exception si IBAN/BIC non configurés
+     * (l'export bloqué vaut mieux qu'un fichier bancaire invalide).
+     *
+     * @return array{0: string, 1: string}
+     */
+    private function companyBankIdentity(PayrollRun $run): array
+    {
+        $company = $run->relationLoaded('company')
+            ? $run->getRelation('company')
+            : \App\Core\Tenant\Domain\Models\Company::query()->where('id', $run->company_id)->first();
+
+        $metadata = $company instanceof \App\Core\Tenant\Domain\Models\Company ? ($company->metadata ?? []) : [];
+        $iban = (string) ($metadata['iban'] ?? '');
+        $bic = (string) ($metadata['bic'] ?? '');
+
+        if ($iban === '' || $bic === '') {
+            throw new \RuntimeException('Company IBAN/BIC not configured: bank export SEPA impossible (Company.metadata iban/bic).');
+        }
+
+        return [$iban, $bic];
     }
 
     private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string
@@ -128,10 +173,19 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $ccp = $employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT);
+            // Issue #2223 : jamais de CCP fabriqué (zéro-paddé). Les
+            // employés sans compte sont exclus du fichier (avertissement).
+            $ccp = $employee->bank_account ?? $employee->iban ?? null;
+            if ($ccp === null || trim((string) $ccp) === '') {
+                Log::warning('bank_export.ccp_skipped_missing_account', [
+                    'run_id' => $run->id,
+                    'employee_id' => $slip->employee_id,
+                ]);
+                continue;
+            }
             $amount = str_pad(number_format($slip->net_salary, 2, '', ''), 12, '0', STR_PAD_LEFT);
 
-            $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad($ccp, 20).str_pad($name, 30).$amount;
+            $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad((string) $ccp, 20).str_pad($name, 30).$amount;
             $seq++;
         }
 
@@ -186,12 +240,21 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
+            // Issue #2223 : jamais de compte vide/fabriqué dans un fichier
+            // de paiement — exclusion avec avertissement.
             $account = $employee->bank_account ?? $employee->iban ?? '';
+            if (trim((string) $account) === '') {
+                Log::warning('bank_export.bna_skipped_missing_account', [
+                    'run_id' => $run->id,
+                    'employee_id' => $slip->employee_id,
+                ]);
+                continue;
+            }
 
             $lines[] = implode('|', [
                 'DETAIL',
                 str_pad((string) $seq, 6, '0', STR_PAD_LEFT),
-                $account,
+                (string) $account,
                 $name,
                 number_format($slip->net_salary, 2, '.', ''),
                 'DZD',
