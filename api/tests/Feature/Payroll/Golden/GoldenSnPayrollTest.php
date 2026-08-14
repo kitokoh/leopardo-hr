@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -217,13 +216,6 @@ class GoldenSnPayrollTest extends TestCase
         $base = 3000000.0 - $charges['employee'];
 
         $this->assertSame(726984.40, $rules->calculateIncomeTax($base, 12, 3000000.0));
-    }
-
-    public function test_golden_sn_prorata_entree_10(): void
-    {
-        // Calcul manuel (SN_COMPLIANCE.md) : prorata entrée le 10 → 22 × 22/31
-        // = 15,61 j (mécanique F-05). Base 250 000 × 15,61/22 = 177 386,36.
-        $this->assertSame(177386.36, (new PayrollCalculator())->computeProratedBase(250000.0, 22.0, 15.61));
     }
 
     public function test_golden_sn_hs_tiers(): void

@@ -219,6 +219,53 @@ class BulletinDeclarationReconciliationTest extends TestCase
         );
     }
 
+    /**
+     * Issue #2014 — la divergence bulletin ↔ CSV SN est un PÉRIMÈTRE
+     * documenté, pas une erreur : le fichier mensuel IPRES/CSS n'inclut ni
+     * CSS AT 1 % (déclaration séparée selon le risque) ni CFCE 3 %
+     * (contribution fiscale DGI). Le patronal du bulletin doit donc être
+     * exactement égal au total_patronal déclaré + CSS AT + CFCE.
+     */
+    public function test_sn_csv_total_patronal_excludes_at_and_cfce_by_design(): void
+    {
+        $run = $this->engineRun('SN', 'XOF', 400000.0, [
+            'first_name' => 'Aminata', 'last_name' => 'Sow', 'ipres_matricule' => 'IPRES-SN-003',
+            'ipres_category' => 'general',
+        ]);
+
+        /** @var PaySlip $slip */
+        $slip = $run->paySlips()->firstOrFail();
+        $slip->update(['status' => 'validated']);
+
+        $csv = (new IpresDeclarationGenerator)->generate($run);
+        $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
+        $row = str_getcsv($lines[1]);
+
+        $gross = (float) $slip->gross_salary;
+        $rules = new SenegalPayrollRules;
+        $charges = $rules->calculateSocialCharges($gross);
+
+        // Déclaré : T1 patronal + CSS famille (plafond CSS 63 000 — #1913).
+        $declared = (float) $row[12];
+        $this->assertEquals($charges['employer'] - (float) $slip->employer_contributions, 0.0, 'bulletin == moteur');
+        $this->assertSame(
+            number_format(
+                min($gross, 432000.0) * 8.4 / 100 + min($gross, 63000.0) * 3.0 / 100,
+                2, '.', ''
+            ),
+            $row[12],
+        );
+
+        // Différence bulletin − déclaré == CSS AT (1 %) + CFCE (3 %).
+        $excluded = $charges['employer'] - $declared;
+        $this->assertEquals(
+            round(min($gross, 63000.0) * 1.0 / 100 + $gross * 3.0 / 100, 2),
+            $excluded,
+            'AT + CFCE exclus du fichier mensuel IPRES/CSS (issue #2014)',
+        );
+        $this->assertGreaterThan(0.0, $excluded);
+    }
+
     public function test_sn_cadre_t2_tranche_reconciles_between_engine_and_declaration(): void
     {
         // Cadre T2, brut 1 000 000 XOF : le moteur applique T2 sur la tranche

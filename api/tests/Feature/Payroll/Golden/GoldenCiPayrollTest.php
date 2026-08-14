@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -252,19 +251,6 @@ class GoldenCiPayrollTest extends TestCase
             '5 à 10 ans'      => [7.0, 60.0],
             '10 ans et plus'  => [12.0, 90.0],
         ];
-    }
-
-    public function test_golden_ci_prorata_entree_15(): void
-    {
-        // Calcul manuel (CI_COMPLIANCE.md) : prorata entrée le 15 → 12,06 j/22
-        // (même mécanique F-05 que DZ) : 22 × 17/31 = 12,06.
-        $this->assertSame(32890.91, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 12.06));
-    }
-
-    public function test_golden_ci_prorata_sortie_10(): void
-    {
-        // Calcul manuel : sortie le 10 → 7,10 j/22 : 22 × 10/31 = 7,10.
-        $this->assertSame(19363.64, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 7.10));
     }
 
     public function test_golden_ci_cnss_employee_zero_on_zero_salary(): void

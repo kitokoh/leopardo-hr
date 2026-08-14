@@ -17,6 +17,17 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
  * (2,4 %) / patronale (3,6 %), CSS famille patronale (3,0 %) + ligne
  * TOTAUX.
  *
+ * ⚠️ PÉRIMÈTRE (issue #2014 — divergence bulletin/CSV documentée) :
+ *   - CSS famille : plafonnée à 63 000 XOF/mois (procédure administrative
+ *     CSS via eRegulations Sénégal — même décision que le moteur, #1913) ;
+ *   - CSS AT (1 %, taux selon risque) : NON inclus — déclaration séparée
+ *     (annuelle/par risque) hors fichier mensuel IPRES/CSS ;
+ *   - CFCE (3 %) : NON inclus — contribution FISCALE (CGI SN), déclarée à
+ *     la DGI séparément du fichier IPRES/CSS.
+ *   → le total_patronal déclaré est INTENTIONNELLEMENT inférieur aux
+ *   employer_contributions du bulletin (qui incluent AT + CFCE) : c'est le
+ *   périmètre du fichier, pas une erreur de calcul.
+ *
  * ⚠️ Format interne documenté — à valider avec un comptable sénégalais.
  */
 class IpresDeclarationGenerator
@@ -34,6 +45,15 @@ class IpresDeclarationGenerator
     public const RATE_T2_PAT = 3.6;
 
     public const RATE_CSS_FAMILLE_PAT = 3.0;
+
+    /**
+     * Plafond mensuel de l'assiette CSS (prestations familiales) —
+     * procédure administrative CSS (eRegulations Sénégal), aligné sur la
+     * décision moteur #1913/#2045. ⚠️ Le plafond serait passé à 80 000 XOF
+     * en 2025 (décision CSS, contestée par le CNP) — à confirmer expert
+     * (suivi #1904/#1912).
+     */
+    public const CSS_FAMILLE_CAP = 63000.0;
 
     public function generate(PayrollRun $run): string
     {
@@ -181,7 +201,8 @@ class IpresDeclarationGenerator
         $t1Pat = round($t1Base * self::RATE_T1_PAT / 100, 2);
         $t2Emp = round($t2Base * self::RATE_T2_EMP / 100, 2);
         $t2Pat = round($t2Base * self::RATE_T2_PAT / 100, 2);
-        $cssFamillePat = round($t1Base * self::RATE_CSS_FAMILLE_PAT / 100, 2);
+        $cssBase = min($gross, self::CSS_FAMILLE_CAP);
+        $cssFamillePat = round($cssBase * self::RATE_CSS_FAMILLE_PAT / 100, 2);
         $totalPatronal = round($t1Pat + $t2Pat + $cssFamillePat, 2);
 
         return [

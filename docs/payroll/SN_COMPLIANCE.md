@@ -91,12 +91,32 @@ T1, hypothèse pilote : brut > 432 000 ⇒ régime cadres) :
 **3 % sur la masse salariale brute** (charge patronale uniquement, non
 plafonnée) — `CFCE_SN_PAT`.
 
+> **Périmètre déclaration (issue #2014)** : la CFCE est une contribution
+> **fiscale** (CGI Sénégal), déclarée à la DGI **séparément** du fichier
+> mensuel IPRES/CSS (déclaration CFCE propre, assiette et périodicité
+> selon les textes). Le générateur `IpresDeclarationGenerator` l'exclut
+> donc du `total_patronal` déclaré — l'écart avec les
+> `employer_contributions` du bulletin (qui l'incluent) est attendu et
+> documenté (test `BulletinDeclarationReconciliationTest`).
+
 ## 6. CSS — Caisse de Sécurité Sociale
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
-| Prestations familiales patronale | 3,0 % | employeur | aucun |
-| Accidents du travail patronale | 1,0 % | employeur | aucun (pilote, variable) |
+| Prestations familiales patronale | 3,0 % ⚠️ | employeur | **63 000 XOF/mois** |
+| Accidents du travail patronale | 1,0 % | employeur | **63 000 XOF/mois** (taux selon risque) |
+
+> **⚠️ Points experts (issue #2014/#1913)** :
+> 1. **Taux** : les sources officielles (CLEISS, CIPRES) portent la
+>    prestation familiale CSS à **7 %** (et non 3 %) — l'implémentation
+>    conserve 3 % (pilot) en attendant la validation expert-comptable ;
+> 2. **Plafond** : la procédure administrative CSS plafonne l'assiette à
+>    **63 000 XOF/mois** (décision moteur + CSV alignés, #1913/#2014) ; une
+>    décision CSS de janvier 2025 porterait le plafond à **80 000 XOF**
+>    (contestée par le CNP) — à confirmer ;
+> 3. **CSS AT** : déclarée **séparément** du fichier mensuel IPRES/CSS
+>    (taux 1 à 5 % selon l'activité principale) — exclue du CSV par
+>    conception (issue #2014).
 
 ## 7. Abattement frais professionnels
 

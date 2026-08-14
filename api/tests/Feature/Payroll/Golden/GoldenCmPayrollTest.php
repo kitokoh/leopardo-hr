@@ -186,22 +186,6 @@ class GoldenCmPayrollTest extends TestCase
     /**
      * @return array<string, array{float, float, float, float}>
      */
-    public static function prorataProvider(): array
-    {
-        return [
-            'entrée le 15 (12/22)' => [200000.0, 22.0, 12.0, 109090.91],   // 200 000 × 12/22
-            'sortie le 10 (7/22)'  => [200000.0, 22.0, 7.0, 63636.36],    // 200 000 × 7/22
-        ];
-    }
-
-    #[DataProvider('prorataProvider')]
-    public function test_golden_cm_prorated_base(float $base, float $working, float $actual, float $expected): void
-    {
-        // Calcul manuel (CM_COMPLIANCE.md §7, méthode F-05) :
-        //   base × (jours effectivement travaillés / jours ouvrés).
-        $this->assertSame($expected, (new PayrollCalculator())->computeProratedBase($base, $working, $actual));
-    }
-
     public function test_golden_cm_overtime_5h_first_tier(): void
     {
         // Calcul manuel (CM_COMPLIANCE.md §9) — 5 h sup, palier 1 :

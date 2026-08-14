@@ -14,6 +14,13 @@ Les **golden tests** sont la référence de conformité du moteur de paie : chaq
 | Fichier | Famille | Cas |
 |---|---|---|
 | `GoldenDzPayrollTest.php` | IRG + CNAS + net (DZ) | SMIG 20k, 60k, 350k — voir doc §1-§2 |
+| `GoldenEngineGenericTest.php` | **Mécaniques moteur génériques** (issue #1938) | prorata F-05, taux horaire/HS, défauts fin de contrat — **aucune valeur légale** |
+
+> **Issue #1938 — cas génériques centralisés** : les golden pays (BF/ML/GA/CG
+> + prorata CI/SN/CM) ne contiennent QUE des cas pays avec arithmétique
+> visible calculée à la main et source légale citée. Les mécaniques moteur
+> partagées (prorata, HS, fin de contrat par défaut) vivent dans
+> `GoldenEngineGenericTest` — une seule suite, aucune duplication.
 
 ## Objectif (métrique FOCUS)
 
