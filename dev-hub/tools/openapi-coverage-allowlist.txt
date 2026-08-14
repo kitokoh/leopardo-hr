@@ -372,3 +372,17 @@ GET v1admin/fleet/alerts
 GET v1admin/hr-reports
 GET v1admin/platform/marketing/oauth-config
 PUT v1admin/platform/marketing/oauth-config
+GET v1admin/rate-validation/pending
+PUT v1admin/rate-validation/{param}/{param}/approve
+PUT v1admin/rate-validation/{param}/{param}/reject
+GET v1admin/tax-slabs
+POST v1admin/tax-slabs
+PUT v1admin/tax-slabs/{param}
+DELETE v1admin/tax-slabs/{param}
+POST v1admin/tax-slabs/reset-defaults
+POST v1admin/payroll/simulate
+POST v1payroll/simulate
+GET v1admin/social-contributions
+POST v1admin/social-contributions
+PUT v1admin/social-contributions/{param}
+DELETE v1admin/social-contributions/{param}

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use Illuminate\Support\Collection;
 
 /**
  * Programme FOCUS — F-10 : déclaration CNAS mensuelle (CSV).
@@ -70,21 +71,19 @@ class CnasDeclarationGenerator
 
     private function rulesFor(string $countryCode): CountryRulesInterface
     {
-        $rulesMap = [
-            'DZ' => new AlgeriaPayrollRules(),
-        ];
-
-        return $rulesMap[$countryCode] ?? new AlgeriaPayrollRules();
+        // MULTI-PAYS (#1868) : AUCUN fallback silencieux vers DZ — un pays
+        // non enregistré lève une erreur typée (UnsupportedCountryRulesException).
+        return (new CountryRulesResolver)->resolve($countryCode);
     }
 
     /**
      * Taux effectif : priorité aux lignes du bulletin (calcul réel), sinon taux
      * de la règle pays.
      *
-     * @param  \Illuminate\Support\Collection<int, \App\Modules\Payroll\Domain\Models\PaySlipLine>  $lines
+     * @param  Collection<int, PaySlipLine>  $lines
      */
     private function rateFromLines(
-        \Illuminate\Support\Collection $lines,
+        Collection $lines,
         ?string $lineName,
         float $gross,
         CountryRulesInterface $rules,

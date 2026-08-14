@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll\Golden;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
 use Carbon\Carbon;
@@ -29,7 +30,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
     public function test_dz_rules_expose_pilot_notice_and_severance_values(): void
     {
-        $rules = new AlgeriaPayrollRules();
+        $rules = new AlgeriaPayrollRules;
 
         // Valeurs pilot DZ (F-31) : préavis 0 j, licenciement 1 mois/an.
         $this->assertSame(0.0, $rules->noticePeriodDays(5.0));
@@ -49,7 +50,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01', // 60 mois = 5 ans exacts
         ]);
 
-        $service = new EndOfContractService();
+        $service = new EndOfContractService;
         $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
 
         // Golden F-08 (calculé à la main) : 60 000 × 5 ans × 1,0 mois/an = 300 000 DZD.
@@ -67,11 +68,12 @@ class GoldenDzEndOfContractRulesTest extends TestCase
         $this->assertSame($expectedTotal, $settlement['breakdown']['total']);
     }
 
-    public function test_unregistered_country_falls_back_to_dz_defaults_without_exception(): void
+    public function test_unregistered_country_throws_typed_error(): void
     {
-        // Pays inconnu du moteur (ex. 'US') : repli silencieux sur les défauts DZ
-        // (1 mois/an, 0 j de préavis) — aucune exception en fin de contrat
-        // (régression évitée : avant F-31 le service utilisait toujours ces défauts).
+        // MULTI-PAYS (#1868) : un pays non enregistré (ex. 'US') lève une
+        // erreur métier typée — PLUS AUCUN repli silencieux vers les défauts
+        // DZ en fin de contrat (l'ancien comportement masquait les pays mal
+        // configurés et appliquait la juridiction DZ à d'autres pays).
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'US']);
         /** @var Employee $employee */
@@ -82,10 +84,11 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'contract_end' => '2026-01-01',
         ]);
 
-        $service = new EndOfContractService();
-        $settlement = $service->settlement($employee, Carbon::parse('2026-01-01'));
+        $service = new EndOfContractService;
 
-        $this->assertSame(300000.0, $settlement['breakdown']['severance']);
-        $this->assertSame(0.0, $settlement['breakdown']['notice_pay']);
+        $this->expectException(UnsupportedCountryRulesException::class);
+        $this->expectExceptionMessage('US');
+
+        $service->settlement($employee, Carbon::parse('2026-01-01'));
     }
 }
