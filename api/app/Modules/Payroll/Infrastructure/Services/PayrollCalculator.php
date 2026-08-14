@@ -7,26 +7,21 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PayrollCalculator
 {
@@ -36,62 +31,37 @@ class PayrollCalculator
     /** Heures mensuelles de référence (base / 173,33 h). */
     public const MONTHLY_HOURS = 173.33;
 
-    /** @var array<string, CountryRulesInterface> */
-    private array $rulesMap;
+    private CountryRulesResolver $resolver;
 
     /**
-     * @param  iterable<CountryRulesInterface>  $countryRules
+     * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
      */
-    public function __construct(iterable $countryRules = [])
-    {
-        $this->rulesMap = [];
-
-        foreach ($countryRules as $rule) {
-            $this->rulesMap[$rule->countryCode()] = $rule;
-        }
-
-        if ($this->rulesMap === []) {
-            $this->rulesMap = [
-                'DZ' => new AlgeriaPayrollRules,
-                'MA' => new MoroccoPayrollRules,
-                'TN' => new TunisiaPayrollRules,
-                'FR' => new FrancePayrollRules,
-                'TR' => new TurkeyPayrollRules,
-                'SN' => new SenegalPayrollRules,
-            ];
-
-            // CEMAC zone (PA2-COUNTRY-007): one CemacPayrollRules instance per
-            // member state, each scoped via forMemberCountry() so countryCode()
-            // returns the actual ISO 3166-1 alpha-2 code (CemacPayrollRules is
-            // a single class covering all six members, not six separate ones).
-            foreach (CemacPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
-                $this->rulesMap[$memberCountryCode] = (new CemacPayrollRules)->forMemberCountry($memberCountryCode);
-            }
-
-            // CEDEAO/UEMOA zone (PA2-COUNTRY-008): same pattern as CEMAC above,
-            // one CedeaoPayrollRules instance per XOF member state (Senegal
-            // already has its own dedicated SenegalPayrollRules and is not
-            // duplicated here).
-            foreach (CedeaoPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
-                $this->rulesMap[$memberCountryCode] = (new CedeaoPayrollRules)->forMemberCountry($memberCountryCode);
-            }
-
-            // Canada (PA2-COUNTRY-009): single ISO country code CA, province
-            // is an optional refinement (timezone/overtime threshold) rather
-            // than a separate registered country code — see CanadaPayrollRules
-            // docblock. Federal defaults (no province) are registered here;
-            // callers with a known province should use forProvince().
-            $this->rulesMap['CA'] = new CanadaPayrollRules;
-        }
+    public function __construct(
+        iterable $countryRules = [],
+        private readonly ?PublicHolidayService $publicHolidayService = null,
+    ) {
+        // MULTI-PAYS (#1868) : point d'entrée unique pour la résolution des
+        // règles pays — la map vit dans CountryRulesResolver, plus ici.
+        $this->resolver = new CountryRulesResolver($countryRules);
     }
 
+    /**
+     * Résout les règles de paie d'un pays via le résolveur unique (#1868).
+     *
+     * @throws UnsupportedCountryRulesException si le pays n'est pas enregistré
+     */
     public function getRules(string $countryCode): CountryRulesInterface
     {
-        if (! isset($this->rulesMap[$countryCode])) {
-            throw new \InvalidArgumentException("No payroll rules for country: {$countryCode}");
-        }
+        return $this->resolver->resolve($countryCode);
+    }
 
-        return $this->rulesMap[$countryCode];
+    /**
+     * Résolveur unique des règles pays (MULTI-PAYS #1868) — expose les
+     * scopes entreprise/période pour les services qui en ont besoin.
+     */
+    public function rulesResolver(): CountryRulesResolver
+    {
+        return $this->resolver;
     }
 
     public function calculateRun(PayrollRun $run): PayrollRun
@@ -394,6 +364,7 @@ class PayrollCalculator
             'working_days' => $worked['working_days'],
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
+            'has_attendance_data' => $worked['has_attendance_data'],
             'status' => 'calculated',
         ]);
 
@@ -446,21 +417,46 @@ class PayrollCalculator
     }
 
     /**
-     * Programme FOCUS (F-05) — jours travaillés sur la période du run.
+     * Programme FOCUS (F-05/F-20) — jours travaillés sur la période du run.
      *
      * Recoupe le contrat de l'employé (contract_start / contract_end) avec la
      * période du run : prorata d'entrée/sortie en cours de mois.
      *
-     * overtime_hours : source future = pointage/attendance (F-20) ; 0 tant que
-     * le lien présence → paie n'est pas branché.
+     * overtime_hours : implémenté — alimenté par le pointage (F-20) via
+     * AttendanceLog.overtime_hours dans collectWorkInputs().
      *
-     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float}
+     * actual_days_worked (F-20, #1816) : source réelle = jours DISTINCTS
+     * pointés avec au moins un log valide sur la période (AttendanceLog,
+     * statuts cancelled/rejected/incomplete exclus) ; fallback = prorata
+     * contrat quand aucun log valide n'existe (comportement historique).
+     * has_attendance_data indique quelle source a été utilisée.
+     *
+     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee): array
     {
-        $workingDays = (float) self::STANDARD_WORKING_DAYS;
+        // Issue #1811 : jours ouvrés dynamiques par pays (fériés + jours de
+        // repos hebdomadaire) au lieu de la constante 22. Fallback 22 si le
+        // service n'est pas injecté ou si aucun férié n'est configuré.
         $periodStart = $run->period_start->copy()->startOfDay();
         $periodEnd = $run->period_end->copy()->startOfDay();
+
+        $workingDays = $this->publicHolidayService !== null
+            ? $this->publicHolidayService->workingDaysBetween(
+                $periodStart,
+                $periodEnd,
+                (string) $run->country_code,
+                holidays: null,
+                companyId: $run->company_id,
+                restDays: $this->weeklyRestDaysFor((string) $run->country_code),
+            )
+            : (float) self::STANDARD_WORKING_DAYS;
+
+        // Garde-fou : ne jamais retourner 0 (période sans aucun jour ouvré
+        // ou pays sans règles) — on retombe sur la constante historique.
+        if ($workingDays <= 0.0) {
+            $workingDays = (float) self::STANDARD_WORKING_DAYS;
+        }
 
         $overlapStart = $periodStart->copy();
         if ($employee->contract_start !== null && $employee->contract_start->gt($periodStart)) {
@@ -472,17 +468,66 @@ class PayrollCalculator
             $overlapEnd = $employee->contract_end->copy()->startOfDay();
         }
 
-        $periodDays = $periodStart->diffInDays($periodEnd) + 1;
-        $overlapDays = max(0, $overlapStart->diffInDays($overlapEnd) + 1);
+        // F-20 (#1816) — compter les jours distincts avec au moins 1 log
+        // valide (source réelle de présence). Garde défensive sur la table :
+        // sans elle, les golden tests purs et environnements sans migration
+        // tenant retomberaient sur une QueryException au lieu du fallback.
+        $distinctDays = 0;
+        if (Schema::hasTable('attendance_logs')) {
+            $distinctDays = (int) AttendanceLog::query()
+                ->where('company_id', $run->company_id)
+                ->where('employee_id', $employee->id)
+                ->whereBetween('date', [$run->period_start, $run->period_end])
+                ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+                ->distinct('date')
+                ->count('date');
+        }
 
-        $ratio = $periodDays > 0 ? min(1.0, $overlapDays / $periodDays) : 0.0;
-        $actualDays = round($workingDays * $ratio, 2);
+        $hasAttendanceData = $distinctDays > 0;
+        $actualDays = $hasAttendanceData
+            ? (float) $distinctDays
+            : $this->contractProrata($periodStart, $periodEnd, $overlapStart, $overlapEnd, $workingDays);
 
         return [
             'working_days' => $workingDays,
             'actual_days_worked' => $actualDays,
             'overtime_hours' => 0.0,
+            'has_attendance_data' => $hasAttendanceData,
         ];
+    }
+
+    /**
+     * Jours de repos hebdomadaire du pays (ISO 1=lundi..7=dimanche).
+     *
+     * @return array<int, int>
+     */
+    private function weeklyRestDaysFor(string $countryCode): array
+    {
+        try {
+            return $this->getRules($countryCode)->weeklyRestDays();
+        } catch (\Throwable) {
+            return [6, 7];
+        }
+    }
+
+    /**
+     * F-20 (#1816) — prorata calendaire de repli (fallback) quand aucun log
+     * de pointage valide n'existe sur la période : ratio de chevauchement
+     * contrat ↔ période appliqué aux jours ouvrés standards.
+     */
+    private function contractProrata(
+        Carbon $periodStart,
+        Carbon $periodEnd,
+        Carbon $overlapStart,
+        Carbon $overlapEnd,
+        float $workingDays
+    ): float {
+        $periodDays = $periodStart->diffInDays($periodEnd) + 1;
+        $overlapDays = max(0, $overlapStart->diffInDays($overlapEnd) + 1);
+
+        $ratio = $periodDays > 0 ? min(1.0, $overlapDays / $periodDays) : 0.0;
+
+        return round($workingDays * $ratio, 2);
     }
 
     /**
