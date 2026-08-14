@@ -3,6 +3,9 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ### Added
+### Added
+
+- **fix(payroll): déclarations CNSS CI / IPRES SN — `employees.cnss_ci_matricule`, `ipres_matricule`, `ipres_category` ajoutés au `$fillable` et au PHPDoc de `Employee` (suivi review #1830).** Les colonnes existaient en base (migration `000007`) mais le modèle ne les remplissait pas : la protection de mass-assignment ignorait silencieusement ces attributs, les matricules des CSV CNSS CI et IPRES/CSS SN étaient donc toujours vides en production. `CiSnDeclarationTest` redevient vert (les valeurs de matricules sont enfin persistées).
 
 - **fix(admin-dashboard): jours fériés — édition/suppression des fériés nationaux + i18n complète de la section calendrier islamique (Closes #1896, #1899).** (1) **#1896 [P2]** `HolidaysView.vue` désactivait les boutons Modifier/Supprimer pour les lignes `company_id === null` — or cette SPA super-admin ne montre QUE les fériés nationaux (scope admin) : l'édition était impossible pour toutes les lignes visibles. Les boutons sont activés ; le RBAC API (`authorizeWrite`) garde les écritures scopeées (tenant managers → fériés entreprise uniquement). (2) **#1899 [P2]** la section calendrier islamique (titres, tableau, statuts, modales, toasts, confirm dialogs) était en français en dur : nouveau namespace `holidays.islamic.*` (25 clés × 4 locales FR/EN/AR/TR) dans `front/admin-dashboard` et `shared/i18n` (source canonique) ; tous les littéraux remplacés par `$t()`/`t()` avec placeholders.
 

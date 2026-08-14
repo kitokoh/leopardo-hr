@@ -43,6 +43,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int|null $salary_structure_id
  * @property string|null $matricule
  * @property string|null $cnps_matricule
+ * @property string|null $cnss_ci_matricule
+ * @property string|null $ipres_matricule
+ * @property string|null $ipres_category
  * @property string|null $zkteco_id
  * @property string $first_name
  * @property string|null $middle_name
@@ -141,6 +144,9 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'salary_structure_id',
         'matricule',
         'cnps_matricule',
+        'cnss_ci_matricule',
+        'ipres_matricule',
+        'ipres_category',
         'zkteco_id',
         'first_name',
         'middle_name',
