@@ -27,4 +27,17 @@ return [
     'rate_approved_body' => "Yasal oran değişikliğiniz (:label) onaylandı ve artık aktif.",
     'rate_rejected_title' => "Oran değişikliği reddedildi",
     'rate_rejected_body' => "Yasal oran değişikliğiniz (:label) reddedildi: :reason",
+    // Issue #2112 — niveau de confiance des règles pays : libellés et
+    // messages localisés (consommés par l'admin TaxSlabsView).
+    'confidence' => [
+        'label' => 'Maaş kuralları güven düzeyi',
+        'level_production' => 'Üretim',
+        'level_pilot' => 'Pilot',
+        'level_placeholder' => 'Taslak',
+        'level_unknown' => 'Bilinmiyor',
+        'production' => ['message' => ":country için doğrulanmış ve üretimde kullanılan kurallar. Yasal bildirimler için bu tutarlara dayanmadan önce güncel oranları her zaman yerel bir danışmanla teyit edin."],
+        'pilot' => ['message' => ":country için pilot kurallar: genel kamu kaynaklarından (iş kanunu) alınan ancak yerelde henüz yasal olarak doğrulanmamış tutarlar. Yasal yükümlülükleriniz için bu rakamlara (vergi dilimleri, sosyal güvenlik katkıları, fazla mesai eşikleri) dayanmadan önce yerel bir hukuk veya vergi danışmanına danışın."],
+        'placeholder' => ['message' => ":country için değersiz taslak: vergi ve sosyal güvenlik katkı tutarları henüz belgelenmemiştir ve değiştirilene kadar gerçek maaş döngülerinde kullanılmamalıdır."],
+        'unknown' => ['message' => ":country için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."],
+    ],
 ];

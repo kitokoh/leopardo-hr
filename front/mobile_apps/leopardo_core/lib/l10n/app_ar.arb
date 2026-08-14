@@ -421,5 +421,14 @@
   "socialContribCreated": "تم إنشاء الاشتراك.",
   "socialContribDeleted": "تم حذف الاشتراك.",
   "socialContribDeleteError": "تعذّر الحذف.",
-  "socialContribDeleteConfirm": "حذف «{name}»؟"
+  "socialContribDeleteConfirm": "حذف «{name}»؟",
+  "payrollConfidenceLabel": "درجة الثقة في قواعد الرواتب",
+  "payrollConfidenceLevelProduction": "إنتاج",
+  "payrollConfidenceLevelPilot": "تجريبي",
+  "payrollConfidenceLevelPlaceholder": "مبدئي",
+  "payrollConfidenceLevelUnknown": "غير معروف",
+  "payrollConfidenceProductionMessage": "قواعد مُتحقق منها وتُستخدم في الإنتاج لـ {country}. أكّد دائمًا الأسعار السارية مع مستشار محلي قبل الاعتماد على هذه المبالغ في التصريحات الإلزامية.",
+  "payrollConfidencePilotMessage": "قواعد تجريبية لـ {country}: مبالغ مستندة إلى مراجع عامة (مدونة العمل) لكنها غير مُتحقق منها قانونيًا محليًا. أكّد مع مستشار قانوني أو ضريبي محلي قبل الاعتماد على هذه الأرقام (شرائح الضريبة، اشتراكات الضمان الاجتماعي، سقوف الساعات الإضافية) في التزاماتك القانونية.",
+  "payrollConfidencePlaceholderMessage": "قواعد مبدئية بلا قيم لـ {country}: مبالغ الضريبة والاشتراكات غير موثقة بعد ولا يجوز استخدامها في دورات رواتب حقيقية حتى تُستبدل.",
+  "payrollConfidenceUnknownMessage": "لا تتوفر قواعد رواتب لـ {country}: حساب الرواتب غير متاح لهذا البلد."
 }

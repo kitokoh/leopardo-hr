@@ -29,4 +29,17 @@ return [
     'rate_approved_body' => 'Your legal rate change (:label) has been approved and is now active.',
     'rate_rejected_title' => 'Rate change rejected',
     'rate_rejected_body' => 'Your legal rate change (:label) has been rejected: :reason',
+    // Issue #2112 — niveau de confiance des règles pays : libellés et
+    // messages localisés (consommés par l'admin TaxSlabsView).
+    'confidence' => [
+        'label' => 'Payroll rules confidence',
+        'level_production' => 'Production',
+        'level_pilot' => 'Pilot',
+        'level_placeholder' => 'Placeholder',
+        'level_unknown' => 'Unknown',
+        'production' => ['message' => "Rules validated and used in production for :country. Always confirm current rates with a local advisor before relying on these amounts for statutory filings."],
+        'pilot' => ['message' => "Pilot rules for :country: amounts based on general public references (labor code) but not yet legally validated locally. Confirm with a local legal or tax advisor before relying on these figures (tax brackets, social contributions, overtime thresholds) for your statutory obligations."],
+        'placeholder' => ['message' => "Placeholder without values for :country: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced."],
+        'unknown' => ['message' => "No payroll rules are available for :country: payroll calculation is not available for this country."],
+    ],
 ];

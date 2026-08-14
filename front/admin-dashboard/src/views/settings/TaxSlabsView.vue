@@ -58,6 +58,24 @@
         </div>
       </div>
 
+      <div v-if="confidenceLevel" class="mt-6 rounded-2xl border p-4" :class="confidenceBannerClass" role="alert">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 text-xl leading-none" aria-hidden="true">{{ confidenceIcon }}</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-bold text-slate-900 dark:text-white">
+              {{ t('payroll.confidence.label') }} — {{ t(confidenceLevelLabelKey) }}
+            </p>
+            <p class="mt-1 text-sm text-slate-700 dark:text-slate-200">{{ confidenceMessage }}</p>
+            <p
+              v-if="simResult.compliance && simResult.compliance.warning && confidenceMessage !== simResult.compliance.warning"
+              class="mt-1 text-xs text-slate-500 dark:text-slate-400"
+            >
+              {{ simResult.compliance.warning }}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div v-if="simResult" class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4">
           <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">{{ $t('tax_slabs.sim_gross') }}</div>
@@ -104,7 +122,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import api from '@/services/api'
 import TaxSlabEditor from '@/components/payroll/TaxSlabEditor.vue'
 import { useToast } from 'vue-toastification'
@@ -146,6 +164,49 @@ const grossSalary = ref(60000)
 const compareSalary = ref(0)
 const simulating = ref(false)
 const simResult = ref(null)
+
+// Issue #1872/#2112 — bandeau de conformité : niveau de confiance des règles
+// pays renvoyé par POST /payroll/simulate (bloc `compliance` du contrat).
+// Un niveau pilote/placeholder ne doit jamais être présenté comme une paie
+// légalement certifiée ; messages localisés via le catalogue payroll.confidence.*.
+const confidenceLevel = computed(() => simResult.value?.compliance?.level || null)
+
+const confidenceLevelLabelKey = computed(() => {
+  const level = confidenceLevel.value
+  return level ? `payroll.confidence.level_${level}` : 'payroll.confidence.level_unknown'
+})
+
+const confidenceMessage = computed(() => {
+  const level = confidenceLevel.value
+  const key = level ? `payroll.confidence.${level}.message` : 'payroll.confidence.unknown.message'
+  return t(key, { country: countryCode.value })
+})
+
+const confidenceBannerClass = computed(() => {
+  switch (confidenceLevel.value) {
+    case 'production':
+      return 'border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
+    case 'placeholder':
+      return 'border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
+    case 'pilot':
+      return 'border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20'
+    default:
+      return 'border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50'
+  }
+})
+
+const confidenceIcon = computed(() => {
+  switch (confidenceLevel.value) {
+    case 'production':
+      return '✅'
+    case 'placeholder':
+      return '⛔'
+    case 'pilot':
+      return '⚠️'
+    default:
+      return 'ℹ️'
+  }
+})
 
 let debounceTimer = null
 
