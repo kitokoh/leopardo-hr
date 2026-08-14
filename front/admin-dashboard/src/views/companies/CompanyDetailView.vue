@@ -313,11 +313,6 @@
                   <dd class="text-xs font-bold text-brand-400">{{ formatDateTime(health.adoption.attendance.last_punch_at) }}</dd>
                 </div>
               </dl>
-
-              <button class="mt-8 w-full inline-flex items-center justify-center rounded-xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 transition-colors border border-white/10">
-                <CommandLineIcon class="mr-2 h-4 w-4" />
-                Accès Super-Console
-              </button>
             </div>
           </section>
         </aside>
@@ -339,7 +334,6 @@ import {
   BoltIcon,
   CheckBadgeIcon,
   CreditCardIcon,
-  CommandLineIcon,
   CloudArrowUpIcon,
   BuildingOfficeIcon,
   SparklesIcon,

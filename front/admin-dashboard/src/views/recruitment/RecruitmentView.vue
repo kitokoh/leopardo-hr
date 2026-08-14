@@ -159,7 +159,7 @@
                 type="button"
                 @click.stop="updateApplicantStatus(item, previousStage(item.status))"
               >
-                â† ← Retour
+                ← Retour
               </button>
               <button
                 v-if="nextStage(item.status)"

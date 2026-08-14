@@ -67,7 +67,15 @@
       </div>
 
       <div v-else class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
-        <article v-for="request in sortedRequests" :key="request.id" class="group p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors relative overflow-hidden">
+        <article
+          v-for="request in sortedRequests"
+          :key="request.id"
+          :ref="(el) => setRequestEl(request.id, el)"
+          :class="[
+            'group p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors relative overflow-hidden',
+            highlightedRequestId === request.id ? 'ring-2 ring-brand-500/70 bg-brand-50/50 dark:bg-brand-900/10 rounded-2xl' : ''
+          ]"
+        >
           <div class="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between relative z-10">
             <div class="min-w-0 flex-1 space-y-4">
               <div class="flex flex-wrap items-center gap-4">
@@ -188,7 +196,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import {
   ArrowPathIcon,
@@ -210,6 +219,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const toast = useToast()
+const route = useRoute()
 const localeStore = useLocaleStore()
 const isLoading = ref(false)
 const errorMessage = ref('')
@@ -219,6 +229,35 @@ const requests = ref([])
 const meta = ref({ total: 0, current_page: 1, last_page: 1 })
 const notesByRequest = reactive({})
 const statusCounts = ref({ pending: 0, approved: 0, rejected: 0 })
+// Lead focus: when arriving from the CRM pipeline (e.g. /support?request=42),
+// highlight and scroll to the matching request.
+const highlightedRequestId = ref(null)
+const requestEls = {}
+
+function setRequestEl(id, el) {
+  if (el) requestEls[id] = el
+  else delete requestEls[id]
+}
+
+function focusRequestFromQuery() {
+  const rawId = route.query.request
+  if (!rawId) return
+  const targetId = Number(rawId)
+  if (!Number.isInteger(targetId)) return
+
+  highlightedRequestId.value = targetId
+  nextTick(() => {
+    const el = requestEls[targetId]
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      window.setTimeout(() => { highlightedRequestId.value = null }, 3000)
+    } else if (activeStatus.value !== 'all') {
+      // The request may live in another status bucket: widen the filter once.
+      activeStatus.value = 'all'
+      loadRequests().then(focusRequestFromQuery)
+    }
+  })
+}
 
 const filters = [
   { value: 'all', label: 'Toutes' },
@@ -319,7 +358,10 @@ function formatDate(value) {
   }).format(new Date(value))
 }
 
-onMounted(loadRequests)
+onMounted(async () => {
+  await loadRequests()
+  focusRequestFromQuery()
+})
 </script>
 
 <style scoped>

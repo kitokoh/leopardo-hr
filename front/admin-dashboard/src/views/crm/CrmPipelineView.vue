@@ -217,8 +217,9 @@ function formatSource(source) {
   return SOURCE_LABELS[source] || source
 }
 
-function openRequest() {
-  router.push('/support')
+function openRequest(id) {
+  // Carry the lead id so the support queue can focus the matching request.
+  router.push({ path: '/support', query: { request: id } })
 }
 
 function openCompany(companyId) {

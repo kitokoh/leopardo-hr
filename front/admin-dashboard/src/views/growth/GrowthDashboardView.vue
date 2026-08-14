@@ -63,7 +63,6 @@
                   >
                     Approuver
                   </button>
-                  <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">Gérer</button>
                 </td>
               </tr>
               <tr v-if="partners.length === 0">

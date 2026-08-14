@@ -30,7 +30,7 @@
     <div class="glass-card dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 animate-spin inline-block">↻</div>
-        <p>Chargement des nodes”¦</p>
+        <p>Chargement des nodes…</p>
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
@@ -104,7 +104,7 @@
                   :disabled="!node.is_online || syncingNodeId === node.id"
                   class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {{ syncingNodeId === node.id ? 'Sync”¦' : 'Sync' }}
+                  {{ syncingNodeId === node.id ? 'Sync…' : 'Sync' }}
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
