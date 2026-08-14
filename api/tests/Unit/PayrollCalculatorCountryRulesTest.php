@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
@@ -102,15 +103,16 @@ class PayrollCalculatorCountryRulesTest extends TestCase
     /**
      * Locks in the current documented behavior for a country code that
      * CountryDefaults does not know about at all: a payroll run must fail
-     * loudly with InvalidArgumentException rather than silently using the
-     * wrong country's rules or a default currency.
+     * loudly with UnsupportedCountryRulesException (résolveur #1868/#1889,
+     * plus aucun repli silencieux — API 422 explicite) rather than silently
+     * using the wrong country's rules or a default currency.
      */
     public function test_default_rules_map_rejects_country_codes_without_payroll_rules(): void
     {
         $calculator = new PayrollCalculator;
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('No payroll rules for country: XX');
+        $this->expectException(UnsupportedCountryRulesException::class);
+        $this->expectExceptionMessage('Aucune règle de paie enregistrée pour le pays « XX ».');
 
         $calculator->getRules('XX');
     }
@@ -141,7 +143,7 @@ class PayrollCalculatorCountryRulesTest extends TestCase
 
         self::assertInstanceOf(AlgeriaPayrollRules::class, $calculator->getRules('DZ'));
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(UnsupportedCountryRulesException::class);
         $calculator->getRules('FR');
     }
 }
