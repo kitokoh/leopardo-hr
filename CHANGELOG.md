@@ -2,7 +2,8 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
-## [Unreleased]
+### Added
+- **feat(payroll): F-20 — actual_days_worked depuis les logs de présence réels (Closes #1816).** `PayrollCalculator::computeWorkedDays()` compte désormais les **jours distincts** avec au moins un log `AttendanceLog` valide (statuts `cancelled`/`rejected`/`incomplete` exclus) sur la période du run ; sans log valide, fallback prorata contrat (comportement historique). Nouveau champ `pay_slips.has_attendance_data` (migration additive + fillable + cast booléen) traçant la source du décompte dans le bulletin. `DZ_COMPLIANCE.md` §5 mis à jour. Tests : `AttendanceDrivenWorkedDaysTest` (5 cas — jours distincts, exclusions, fallback prorata, prorata entrée mi-mois, scope période).
 
 ### Chore
 - **chore(version): défaut APP_VERSION aligné sur PILOTAGE.md (4.24.0).** `api/config/app.php` gardait le défaut `4.23.5` (commit « Version Sync » #739) alors que le repo est en 4.24.0 depuis la release préparée (#1722) — la prod affichait 4.23.5 dans `/api/v1/health` malgré le nouveau code déployé (Render n'a pas d'APP_VERSION). Le défaut passe à 4.24.0 ; l'env garde la priorité.

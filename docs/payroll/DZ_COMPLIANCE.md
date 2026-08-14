@@ -70,6 +70,12 @@
 **Méthode de prorata** : jours travaillés (actual_days_worked / 22 jours ouvrés standards),
 recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculator::computeWorkedDays).
 
+**F-20 (#1816 — implémenté 2026-08-14)** : `actual_days_worked` provient désormais des logs de
+présence réels (`AttendanceLog`) — nombre de **jours distincts** avec au moins un log valide
+(statuts `cancelled`/`rejected`/`incomplete` exclus) sur la période du run. Sans log valide,
+fallback prorata contrat (comportement historique). Le bulletin trace la source via
+`pay_slips.has_attendance_data` (true = pointage réel, false = prorata).
+
 | Cas | Calcul | Résultat |
 |---|---|---|
 | Entrée 15/07 (17 j calendaires sur 31) | 22 × 17/31 = 12,06 j → 60 000 × 12,06/22 | **32 890,91** |

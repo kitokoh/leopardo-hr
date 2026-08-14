@@ -43,7 +43,7 @@ class PaySlip extends Model
         'payroll_run_id', 'company_id', 'employee_id', 'contract_id',
         'period_start', 'period_end', 'gross_salary', 'total_deductions',
         'net_salary', 'employer_contributions', 'total_cost',
-        'working_days', 'actual_days_worked', 'overtime_hours',
+        'working_days', 'actual_days_worked', 'overtime_hours', 'has_attendance_data',
         'status', 'pdf_path', 'sent_at',
     ];
 
@@ -58,6 +58,7 @@ class PaySlip extends Model
         'working_days' => 'float',
         'actual_days_worked' => 'float',
         'overtime_hours' => 'float',
+        'has_attendance_data' => 'boolean',
         'sent_at' => 'datetime',
     ];
 

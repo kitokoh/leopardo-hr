@@ -27,6 +27,7 @@ use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PayrollCalculator
 {
@@ -394,6 +395,7 @@ class PayrollCalculator
             'working_days' => $worked['working_days'],
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
+            'has_attendance_data' => $worked['has_attendance_data'],
             'status' => 'calculated',
         ]);
 
@@ -451,10 +453,16 @@ class PayrollCalculator
      * Recoupe le contrat de l'employé (contract_start / contract_end) avec la
      * période du run : prorata d'entrée/sortie en cours de mois.
      *
-     * overtime_hours : source future = pointage/attendance (F-20) ; 0 tant que
-     * le lien présence → paie n'est pas branché.
+     * F-20 (#1816) — IMPLÉMENTÉ : actual_days_worked = nombre de JOURS
+     * DISTINCTS avec au moins un log de présence valide (AttendanceLog) sur
+     * la période. Fallback : prorata contrat (comportement historique)
+     * quand aucun log valide n'existe. `has_attendance_data` permet au
+     * bulletin de tracer la source du décompte.
      *
-     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float}
+     * overtime_hours : source future = pointage/attendance (F-20) ; 0 tant
+     * que le lien présence → paie n'est pas branché.
+     *
+     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee): array
     {
@@ -476,12 +484,29 @@ class PayrollCalculator
         $overlapDays = max(0, $overlapStart->diffInDays($overlapEnd) + 1);
 
         $ratio = $periodDays > 0 ? min(1.0, $overlapDays / $periodDays) : 0.0;
-        $actualDays = round($workingDays * $ratio, 2);
+        $contractProrata = round($workingDays * $ratio, 2);
+
+        // F-20 (#1816) : jours distincts avec au moins un log de présence
+        // valide. Guard schema (tests DB-less / environnements sans la table)
+        // → fallback prorata.
+        $distinctDays = 0;
+        $hasAttendanceData = false;
+        if (Schema::hasTable('attendance_logs')) {
+            $distinctDays = (int) AttendanceLog::query()
+                ->where('company_id', $run->company_id)
+                ->where('employee_id', $employee->id)
+                ->whereBetween('date', [$periodStart, $periodEnd])
+                ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+                ->distinct('date')
+                ->count('date');
+            $hasAttendanceData = $distinctDays > 0;
+        }
 
         return [
             'working_days' => $workingDays,
-            'actual_days_worked' => $actualDays,
+            'actual_days_worked' => $hasAttendanceData ? (float) $distinctDays : $contractProrata,
             'overtime_hours' => 0.0,
+            'has_attendance_data' => $hasAttendanceData,
         ];
     }
 
