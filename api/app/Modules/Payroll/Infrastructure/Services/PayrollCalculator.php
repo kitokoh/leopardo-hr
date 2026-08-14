@@ -7,21 +7,13 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,62 +28,35 @@ class PayrollCalculator
     /** Heures mensuelles de référence (base / 173,33 h). */
     public const MONTHLY_HOURS = 173.33;
 
-    /** @var array<string, CountryRulesInterface> */
-    private array $rulesMap;
+    private CountryRulesResolver $resolver;
 
     /**
-     * @param  iterable<CountryRulesInterface>  $countryRules
+     * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
      */
     public function __construct(iterable $countryRules = [])
     {
-        $this->rulesMap = [];
-
-        foreach ($countryRules as $rule) {
-            $this->rulesMap[$rule->countryCode()] = $rule;
-        }
-
-        if ($this->rulesMap === []) {
-            $this->rulesMap = [
-                'DZ' => new AlgeriaPayrollRules,
-                'MA' => new MoroccoPayrollRules,
-                'TN' => new TunisiaPayrollRules,
-                'FR' => new FrancePayrollRules,
-                'TR' => new TurkeyPayrollRules,
-                'SN' => new SenegalPayrollRules,
-            ];
-
-            // CEMAC zone (PA2-COUNTRY-007): one CemacPayrollRules instance per
-            // member state, each scoped via forMemberCountry() so countryCode()
-            // returns the actual ISO 3166-1 alpha-2 code (CemacPayrollRules is
-            // a single class covering all six members, not six separate ones).
-            foreach (CemacPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
-                $this->rulesMap[$memberCountryCode] = (new CemacPayrollRules)->forMemberCountry($memberCountryCode);
-            }
-
-            // CEDEAO/UEMOA zone (PA2-COUNTRY-008): same pattern as CEMAC above,
-            // one CedeaoPayrollRules instance per XOF member state (Senegal
-            // already has its own dedicated SenegalPayrollRules and is not
-            // duplicated here).
-            foreach (CedeaoPayrollRules::MEMBER_COUNTRY_CODES as $memberCountryCode) {
-                $this->rulesMap[$memberCountryCode] = (new CedeaoPayrollRules)->forMemberCountry($memberCountryCode);
-            }
-
-            // Canada (PA2-COUNTRY-009): single ISO country code CA, province
-            // is an optional refinement (timezone/overtime threshold) rather
-            // than a separate registered country code — see CanadaPayrollRules
-            // docblock. Federal defaults (no province) are registered here;
-            // callers with a known province should use forProvince().
-            $this->rulesMap['CA'] = new CanadaPayrollRules;
-        }
+        // MULTI-PAYS (#1868) : point d'entrée unique pour la résolution des
+        // règles pays — la map vit dans CountryRulesResolver, plus ici.
+        $this->resolver = new CountryRulesResolver($countryRules);
     }
 
+    /**
+     * Résout les règles de paie d'un pays via le résolveur unique (#1868).
+     *
+     * @throws UnsupportedCountryRulesException si le pays n'est pas enregistré
+     */
     public function getRules(string $countryCode): CountryRulesInterface
     {
-        if (! isset($this->rulesMap[$countryCode])) {
-            throw new \InvalidArgumentException("No payroll rules for country: {$countryCode}");
-        }
+        return $this->resolver->resolve($countryCode);
+    }
 
-        return $this->rulesMap[$countryCode];
+    /**
+     * Résolveur unique des règles pays (MULTI-PAYS #1868) — expose les
+     * scopes entreprise/période pour les services qui en ont besoin.
+     */
+    public function rulesResolver(): CountryRulesResolver
+    {
+        return $this->resolver;
     }
 
     public function calculateRun(PayrollRun $run): PayrollRun
