@@ -189,6 +189,23 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     abstract protected function defaultTaxSlabs(): array;
 
     /**
+     * Issue #2003 — barème LÉGAL par défaut, indépendant de la base.
+     *
+     * `taxSlabs()` résout la base D'ABORD (`resolveTaxSlabsFromDatabase() ??
+     * defaultTaxSlabs()`), ce qui rendait le re-seed un no-op silencieux :
+     * les tenants gardaient des barèmes obsolètes (ex. tranche IUTS BF
+     * 27,5 % absente des lignes seedées, #2003). Le seeder de config pays
+     * doit donc lire la source LÉGALE directement, pas la résolution.
+     *
+     * @return array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>
+     */
+    public function legalDefaultTaxSlabs(): array
+    {
+        return $this->defaultTaxSlabs();
+    }
+
+
+    /**
      * Resolves the effective rate (percentage points, e.g. 9.0 for 9%) for a
      * given SocialContribution code as of asOfDate() (or now() when unset),
      * scoped to companyId() with a fallback to the global (company_id IS

@@ -85,7 +85,7 @@ class PayrollCountryConfigSeeder extends Seeder
                 );
             }
 
-            foreach ($countryRules->taxSlabs() as $slab) {
+            foreach ($countryRules->legalDefaultTaxSlabs() as $slab) {
                 TaxSlab::updateOrCreate(
                     [
                         'company_id' => null,
