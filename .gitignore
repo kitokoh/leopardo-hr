@@ -31,6 +31,7 @@ target/
 *.env.*
 # ...mais les fichiers d'exemple (sans secrets reels) restent versionnes
 !*.env.example
+!*.env.testing.example
 
 # Editors
 .vscode/
