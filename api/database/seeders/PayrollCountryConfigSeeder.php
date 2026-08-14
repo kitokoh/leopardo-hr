@@ -30,6 +30,10 @@ class PayrollCountryConfigSeeder extends Seeder
             new FrancePayrollRules,
             new TurkeyPayrollRules,
             new SenegalPayrollRules,
+            // CM (#1821) : barèmes IRPP CGI 2024 + CNPS (pilot) seedés comme
+            // les autres pays — les autres membres CEMAC restent placeholder
+            // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
+            (new CemacPayrollRules)->forMemberCountry('CM'),
         ];
 
         foreach ($rules as $countryRules) {
@@ -73,5 +77,3 @@ class PayrollCountryConfigSeeder extends Seeder
         }
     }
 }
-
-

@@ -52,13 +52,18 @@ class SenegalPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        $employeeRate = $this->resolveContributionRate('IPRES_SN_EMP', 5.6);
-        $employerRate = $this->resolveContributionRate('IPRES_SN_PAT', 8.4)
-            + $this->resolveContributionRate('CSS_SN_PAT', 3.0);
+        // ZONE-INFRA (#1820): IPRES/CSS are each capped at the statutory
+        // ceiling (432 000 XOF/month) — the employer-side IPRES and CSS
+        // contributions each get their own cap application instead of a
+        // summed rate applied to the full gross (which overcharged above
+        // the ceiling). The `social_contributions` DB rows may override
+        // rates/caps (effective dating, company overrides).
+        $ipresCap = 432000.0;
 
         return [
-            'employee' => round($grossSalary * $employeeRate / 100, 2),
-            'employer' => round($grossSalary * $employerRate / 100, 2),
+            'employee' => $this->computeContribution($grossSalary, 'IPRES_SN_EMP', 5.6, $ipresCap),
+            'employer' => $this->computeContribution($grossSalary, 'IPRES_SN_PAT', 8.4, $ipresCap)
+                + $this->computeContribution($grossSalary, 'CSS_SN_PAT', 3.0, $ipresCap),
         ];
     }
 
