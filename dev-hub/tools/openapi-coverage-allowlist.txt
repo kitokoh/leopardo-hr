@@ -26,6 +26,10 @@ POST ai/voice/transcribe
 POST ai/workflows/prepare-payroll
 
 ## api.php — 91 route(s)
+# MULTI-PAYS (#1867/#1971) : registre des pays supportés — documenté dans openapi.yaml
+# (chemin sans préfixe v1, convention /health) ; la clé v1/... ne peut jamais matcher le
+# parseur openapi (slash initial), d'où cette entrée d'allowlist.
+GET v1/supported-countries
 # Auth/Core : webhooks fournisseurs entrants (stripe/chargily), endpoints onboarding/trial/i18n/health internes — exclusions documentées dans le gap doc
 DELETE v1platform/announcements/{param}
 DELETE v1platform/impersonations/{param}

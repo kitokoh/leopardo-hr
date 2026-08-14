@@ -840,6 +840,53 @@ paths:
                     type: string
                     example: "ok"
 
+  /supported-countries:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les pays supportes et leur niveau de confiance paie"
+      description: "Issue #1867/#1971 — registre unique des pays supportes : code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite (regles resolubles ou non). Source de verite pour les formulaires de provisioning et les ecrans de calcul — aucun fallback silencieux. (Route reelle : /v1/supported-countries — le prefixe de version n'est pas porte par les chemins openapi, cf. convention /health.)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Registre des pays supportes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: ["country", "label", "language", "currency", "timezone", "confidence", "available"]
+                      properties:
+                        country:
+                          type: string
+                          example: "SN"
+                        label:
+                          type: string
+                          example: "Senegal"
+                        language:
+                          type: string
+                          example: "fr"
+                        currency:
+                          type: string
+                          example: "XOF"
+                        timezone:
+                          type: string
+                          example: "Africa/Dakar"
+                        confidence:
+                          type: string
+                          example: "pilot"
+                          description: "Niveau de confiance des regles de paie (pilot|placeholder|unknown)"
+                        available:
+                          type: boolean
+                          example: true
+                          description: "true si des regles de paie resolubles existent pour ce pays"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /platform/country-defaults:
     get:
       tags: ["Platform"]
@@ -6315,6 +6362,32 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/pay-slips/{paySlip}/document:
+    get:
+      tags: ["Me"]
+      summary: "Telecharger le document archive d'un de mes bulletins de paie"
+      description: "Issue #1817/#1971 — renvoie le document Cabinet archive (bulletin signe/immuable) si le run est cloture ; sinon repli sur le PDF standard. Memes droits que /me/pay-slips/{paySlip} (proprietaire ou manager de la meme entreprise)."
+      operationId: downloadMyPaySlipDocument
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document archive (PDF) ou repli PDF standard"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/balance:
     get:
       tags: ["Me"]
@@ -6998,6 +7071,159 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           description: "Validated runs cannot be cancelled"
+
+  /payroll-runs/{payrollRun}/declarations/cnss-ci:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"
+      description: "CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75 %, AT 2 %, totaux) + TOTAUX. 422 si le run n'est pas CI. RBAC manager ; 404 cross-tenant."
+      operationId: downloadCnssCiDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CI"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/ipres-sn:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"
+      description: "CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 3 %) + TOTAUX. 422 si le run n'est pas SN. RBAC manager ; 404 cross-tenant."
+      operationId: downloadIpresSnDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV IPRES/CSS SN"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/cnps-cm:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"
+      description: "Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CM."
+      operationId: downloadCnpsCmDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV DAS"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularize:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
+      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
+      operationId: regularizePayrollRun
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 2000
+      responses:
+        "201":
+          description: "Run de régularisation créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Le run ne concerne pas le Cameroun (CNPS CM)"
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularizations:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les régularisations d'un run (DZ-DEPTH #1818)"
+      operationId: listPayrollRunRegularizations
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Runs de régularisation liés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /payroll-runs/{payrollRun}/summary:
     get:
@@ -8220,6 +8446,22 @@ paths:
                       net_before_tax: { type: number }
                       net_salary: { type: number }
                       total_cost_employer: { type: number }
+                      contract:
+                        type: object
+                        description: "Contrat de calcul complet et explicable (MULTI-PAYS #1869) — mêmes appels métier que le bulletin."
+                        properties:
+                          country_code: { type: string }
+                          currency: { type: string }
+                          gross: { type: number }
+                          social_employee: { type: number }
+                          tax_base: { type: number }
+                          income_tax: { type: number }
+                          other_deductions: { type: number }
+                          net_salary: { type: number }
+                          social_employer: { type: number }
+                          total_cost: { type: number }
+                          rules_period: { type: string, format: date }
+                          slab_version: { type: string }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -16171,6 +16413,15 @@ components:
         status:
           type: string
           enum: [draft, calculating, validated, cancelled]
+        type:
+          type: string
+          enum: [standard, regularization]
+        original_run_id:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          nullable: true
         total_gross:
           type: number
           nullable: true

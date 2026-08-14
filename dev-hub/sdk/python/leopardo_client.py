@@ -171,6 +171,7 @@ class LeopardoClient:
     def confirmislamiccalendaryear(self, **kwargs):
         """Confirmer toutes les dates islamiques d'une année (super-admin)"""
         return self.request("POST", "/admin/islamic-calendar/confirm-year/{year}", **kwargs)
+
     def simulatepayrolladmin(self, **kwargs):
         """Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814"""
         return self.request("POST", "/admin/payroll/simulate", **kwargs)
@@ -198,6 +199,7 @@ class LeopardoClient:
     def updatepublicholidayadmin(self, **kwargs):
         """Modifier un jour férié (super-admin)"""
         return self.request("PUT", "/admin/public-holidays/{publicHoliday}", **kwargs)
+
     def approveratevalidation(self, **kwargs):
         """Approuver une modification de taux (platform_admin) — issue #1813"""
         return self.request("PUT", "/admin/rate-validation/{table}/{id}/approve", **kwargs)
@@ -1042,6 +1044,10 @@ class LeopardoClient:
         """Voir un de mes bulletins de paie"""
         return self.request("GET", "/me/pay-slips/{paySlip}", **kwargs)
 
+    def downloadmypayslipdocument(self, **kwargs):
+        """Telecharger le document archive d'un de mes bulletins de paie"""
+        return self.request("GET", "/me/pay-slips/{paySlip}/document", **kwargs)
+
     def downloadmypayslippdf(self, **kwargs):
         """Telecharger un de mes bulletins de paie en PDF"""
         return self.request("GET", "/me/pay-slips/{paySlip}/pdf", **kwargs)
@@ -1198,6 +1204,18 @@ class LeopardoClient:
         """Annuler une session de paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/cancel", **kwargs)
 
+    def downloadcnpscmdeclaration(self, **kwargs):
+        """Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", **kwargs)
+
+    def downloadcnsscideclaration(self, **kwargs):
+        """Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", **kwargs)
+
+    def downloadipressndeclaration(self, **kwargs):
+        """Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/ipres-sn", **kwargs)
+
     def get_payroll_runs_by_payrollrun_journal(self, **kwargs):
         """Journal de paie mensuel CSV (F-10)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
@@ -1213,6 +1231,14 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
         """Documents de paiement d'un cycle paie"""
         return self.request("GET", "/payroll-runs/{payrollRun}/payment-documents", **kwargs)
+
+    def listpayrollrunregularizations(self, **kwargs):
+        """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/regularizations", **kwargs)
+
+    def regularizepayrollrun(self, **kwargs):
+        """Créer un run de régularisation (DZ-DEPTH #1818)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/regularize", **kwargs)
 
     def get_payroll_runs_by_payrollrun_summary(self, **kwargs):
         """Resume de la session de paie"""
@@ -1673,6 +1699,10 @@ class LeopardoClient:
     def get_sso_status(self, **kwargs):
         """Statut SSO de l'entreprise"""
         return self.request("GET", "/sso/status", **kwargs)
+
+    def get_supported_countries(self, **kwargs):
+        """Lister les pays supportes et leur niveau de confiance paie"""
+        return self.request("GET", "/supported-countries", **kwargs)
 
     def get_tasks(self, **kwargs):
         """Lister les taches"""

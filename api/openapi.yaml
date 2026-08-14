@@ -829,6 +829,53 @@ paths:
                     type: string
                     example: "ok"
 
+  /supported-countries:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les pays supportes et leur niveau de confiance paie"
+      description: "Issue #1867/#1971 — registre unique des pays supportes : code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite (regles resolubles ou non). Source de verite pour les formulaires de provisioning et les ecrans de calcul — aucun fallback silencieux. (Route reelle : /v1/supported-countries — le prefixe de version n'est pas porte par les chemins openapi, cf. convention /health.)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Registre des pays supportes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: ["country", "label", "language", "currency", "timezone", "confidence", "available"]
+                      properties:
+                        country:
+                          type: string
+                          example: "SN"
+                        label:
+                          type: string
+                          example: "Senegal"
+                        language:
+                          type: string
+                          example: "fr"
+                        currency:
+                          type: string
+                          example: "XOF"
+                        timezone:
+                          type: string
+                          example: "Africa/Dakar"
+                        confidence:
+                          type: string
+                          example: "pilot"
+                          description: "Niveau de confiance des regles de paie (pilot|placeholder|unknown)"
+                        available:
+                          type: boolean
+                          example: true
+                          description: "true si des regles de paie resolubles existent pour ce pays"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /platform/country-defaults:
     get:
       tags: ["Platform"]
@@ -6304,6 +6351,32 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/pay-slips/{paySlip}/document:
+    get:
+      tags: ["Me"]
+      summary: "Telecharger le document archive d'un de mes bulletins de paie"
+      description: "Issue #1817/#1971 — renvoie le document Cabinet archive (bulletin signe/immuable) si le run est cloture ; sinon repli sur le PDF standard. Memes droits que /me/pay-slips/{paySlip} (proprietaire ou manager de la meme entreprise)."
+      operationId: downloadMyPaySlipDocument
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document archive (PDF) ou repli PDF standard"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/balance:
     get:
       tags: ["Me"]
@@ -7048,12 +7121,6 @@ paths:
       summary: "Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"
       description: "Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CM."
       operationId: downloadCnpsCmDeclaration
-  /payroll-runs/{payrollRun}/regularize:
-    post:
-      tags: ["Payroll Engine"]
-      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
-      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
-      operationId: regularizePayrollRun
       parameters:
         - name: payrollRun
           in: path
@@ -7066,6 +7133,26 @@ paths:
             text/csv:
               schema:
                 type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularize:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
+      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
+      operationId: regularizePayrollRun
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
       requestBody:
         required: true
         content:
@@ -16313,6 +16400,8 @@ components:
           type: string
           nullable: true
         status:
+          type: string
+          enum: [draft, calculating, validated, cancelled]
         type:
           type: string
           enum: [standard, regularization]
@@ -16322,8 +16411,6 @@ components:
         reason:
           type: string
           nullable: true
-          type: string
-          enum: [draft, calculating, validated, cancelled]
         total_gross:
           type: number
           nullable: true
