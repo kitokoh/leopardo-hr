@@ -18,6 +18,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon $period_start
  * @property Carbon $period_end
  * @property string $country_code
+ * @property string|null $rules_version
+ * @property Carbon|null $rules_period
+ * @property string|null $rules_identifier
  * @property string $status
  * @property float $total_gross
  * @property float $total_deductions
@@ -66,7 +69,8 @@ class PayrollRun extends Model
     use BelongsToCompany;
 
     protected $fillable = [
-        'company_id', 'period_start', 'period_end', 'country_code', 'status',
+        'company_id', 'period_start', 'period_end', 'country_code',
+        'rules_version', 'rules_period', 'rules_identifier', 'status',
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',
         'employee_count', 'calculated_at', 'validated_by', 'validated_at',
         'paid_at', 'locked_by', 'locked_at', 'notes',
@@ -76,6 +80,7 @@ class PayrollRun extends Model
     protected $casts = [
         'period_start' => 'date',
         'period_end' => 'date',
+        'rules_period' => 'date',
         'total_gross' => 'float',
         'total_deductions' => 'float',
         'total_net' => 'float',

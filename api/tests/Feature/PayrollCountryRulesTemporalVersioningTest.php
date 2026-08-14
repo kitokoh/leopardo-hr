@@ -218,6 +218,41 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
      * through the same forCompany()+asOf() combination PayrollCalculator
      * uses (forCompany($companyId)->asOf($run->period_start)).
      */
+    public function test_rules_version_is_stable_and_changes_with_effective_rules(): void
+    {
+        SocialContribution::create([
+            'company_id' => null,
+            'country_code' => 'DZ',
+            'name' => 'CNAS Salariale (2025)',
+            'code' => 'CNAS_EMP',
+            'type' => 'employee',
+            'rate' => 9.0,
+            'cap' => null,
+            'effective_from' => '2025-01-01',
+            'effective_to' => '2025-12-31',
+        ]);
+        SocialContribution::create([
+            'company_id' => null,
+            'country_code' => 'DZ',
+            'name' => 'CNAS Salariale (2026)',
+            'code' => 'CNAS_EMP',
+            'type' => 'employee',
+            'rate' => 9.5,
+            'cap' => null,
+            'effective_from' => '2026-01-01',
+            'effective_to' => null,
+        ]);
+
+        $rules = new AlgeriaPayrollRules;
+        $pastVersion = $rules->asOf('2025-06-15')->rulesVersion();
+        $pastVersionAgain = $rules->asOf('2025-06-15')->rulesVersion();
+        $currentVersion = $rules->asOf('2026-06-15')->rulesVersion();
+
+        self::assertSame($pastVersion, $pastVersionAgain);
+        self::assertNotSame($pastVersion, $currentVersion);
+        self::assertStringStartsWith('v1-', $pastVersion);
+    }
+
     public function test_company_override_and_asof_compose_together(): void
     {
         $companyId = '11111111-1111-1111-1111-111111111111';

@@ -54,6 +54,12 @@ interface CountryRulesInterface
     public function asOf(\DateTimeInterface|string|null $date): static;
 
     /**
+     * Stable fingerprint of the effective country rules, including the
+     * company/date scope and the resolved tax/social schedules.
+     */
+    public function rulesVersion(): string;
+
+    /**
      * @return array{employee: float, employer: float}
      */
     public function calculateSocialCharges(float $grossSalary): array;

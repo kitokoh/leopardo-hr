@@ -76,6 +76,27 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * Stable fingerprint of the exact effective ruleset used by a calculation.
+     * The payload includes the country, tenant/date scope, tax slabs and social
+     * contribution schedule so a changed override cannot reuse an old version.
+     */
+    public function rulesVersion(): string
+    {
+        $payload = [
+            'country_code' => $this->countryCode(),
+            'company_id' => $this->companyId,
+            'as_of' => $this->asOfDate?->toDateString(),
+            'tax_slabs' => $this->taxSlabs(),
+            'social_contributions' => $this->socialContributions(),
+            'resolved_social_probe' => $this->calculateSocialCharges(10000.0),
+            'resolved_income_tax_probe' => $this->calculateIncomeTax(10000.0),
+            'resolved_bracket_tax_probe' => $this->calculateBracketTax(10000.0),
+        ];
+
+        return 'v1-'.substr(hash('sha256', json_encode($payload, JSON_THROW_ON_ERROR)), 0, 16);
+    }
+
+    /**
      * Effective tax slabs: company-specific override from the `tax_slabs` table
      * if present, else a global (company_id IS NULL) override from the same
      * table, else the country's hardcoded default slabs. This makes the

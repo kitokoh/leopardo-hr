@@ -16438,6 +16438,22 @@ components:
           type: integer
         company_id:
           type: integer
+        country_code:
+          type: string
+          description: ISO-3166 country context used by the payroll rules.
+        rules_version:
+          type: string
+          nullable: true
+          description: Stable fingerprint of the effective country rules used for calculation.
+        rules_period:
+          type: string
+          format: date
+          nullable: true
+          description: Effective date used to resolve the country rules.
+        rules_identifier:
+          type: string
+          nullable: true
+          description: Country rules implementation identifier.
         period_month:
           type: integer
         period_year:
