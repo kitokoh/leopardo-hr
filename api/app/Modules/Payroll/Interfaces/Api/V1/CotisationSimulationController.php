@@ -10,6 +10,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * Simulation de cotisations sociales et d'impôt sur le revenu.
@@ -47,7 +48,8 @@ class CotisationSimulationController extends Controller
 
         $validated = $request->validate([
             'gross_salary' => 'required|numeric|min:0',
-            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            // #1951 : contrat partagé du moteur (plus de liste in: hardcodée).
+            'country_code' => ['required', 'string', Rule::in($this->payrollCalculator->rulesResolver()->supportedCountryCodes())],
         ]);
 
         /** @var array{gross_salary: float|string, country_code: string} $validated */
