@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Rules;
 
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\CountryRulesResolver;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Support\CountryDefaults;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;

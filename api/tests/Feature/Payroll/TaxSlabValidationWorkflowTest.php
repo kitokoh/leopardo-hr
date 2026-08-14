@@ -7,6 +7,11 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Events\TaxRateApproved;
+use App\Events\TaxRateRejected;
+use App\Events\TaxRateSubmitted;
+use App\Listeners\NotifyTaxRateValidation;
+use App\Modules\Notification\Domain\Models\AppNotification;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
@@ -83,9 +88,9 @@ class TaxSlabValidationWorkflowTest extends TestCase
         $this->assertSame(23.0, (float) $slabs[0]['rate']);
     }
 
-    public function test_full_workflow_draft_submit_approve_supersedes_previous(): void
+    public function test_full_workflow_draft_submit_approve_closes_previous_window(): void
     {
-        // Ancienne ligne active (même tranche).
+        // Ancienne ligne active (même tranche), fenêtre ouverte depuis 2025.
         TaxSlab::create([
             'company_id' => $this->company->id,
             'country_code' => 'DZ',
@@ -94,13 +99,14 @@ class TaxSlabValidationWorkflowTest extends TestCase
             'max_amount' => 100000,
             'rate' => 23,
             'fixed_deduction' => 0,
-            'effective_from' => '2026-01-01',
+            'effective_from' => '2025-01-01',
+            'effective_to' => null,
             'status' => TaxSlab::STATUS_ACTIVE,
         ]);
 
         Sanctum::actingAs($this->manager);
 
-        // 1. Le comptable crée une proposition (draft).
+        // 1. Le comptable crée une proposition (draft), effective à partir de 2026.
         $created = $this->postJson('/api/v1/tax-slabs', [
             'country_code' => 'DZ',
             'name' => 'Tranche 1 (révisée)',
@@ -119,7 +125,7 @@ class TaxSlabValidationWorkflowTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', TaxSlab::STATUS_PENDING);
 
-        // 3. Approbation par le platform_admin (pending → active + ancienne → superseded).
+        // 3. Approbation par le platform_admin (pending → active).
         Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
 
         $this->putJson("/api/v1/admin/rate-validation/tax_slabs/{$id}/approve")
@@ -132,12 +138,32 @@ class TaxSlabValidationWorkflowTest extends TestCase
         $this->assertSame($this->superAdmin->id, $approved->validated_by);
         $this->assertNotNull($approved->validated_at);
 
+        // Issue #1923 (PA2-ARCH-004) — l'ancienne ligne n'est PLUS flippée
+        // `superseded` : sa fenêtre d'effet est fermée au 31/12/2025 et elle
+        // reste `active` pour préserver la rétroactivité.
         /** @var TaxSlab $old */
-        $old = TaxSlab::query()->where('status', TaxSlab::STATUS_SUPERSEDED)->firstOrFail();
+        $old = TaxSlab::query()
+            ->where('rate', 23.0)
+            ->where('company_id', $this->company->id)
+            ->firstOrFail();
 
         $this->assertSame(23.0, (float) $old->rate);
+        $this->assertSame(TaxSlab::STATUS_ACTIVE, $old->status);
+        $this->assertSame('2025-12-31', $old->effective_to?->toDateString());
 
-        // 4. La ligne approuvée est maintenant utilisée dans les calculs.
+        // 4. Recalcul historique : l'ancien taux s'applique avant 2026, le
+        // nouveau à partir de 2026 (résolution asOf de AbstractCountryRules).
+        $rules = new AlgeriaPayrollRules;
+
+        $pastSlabs = $rules->asOf('2025-06-01')->forCompany((string) $this->company->id)->taxSlabs();
+        $this->assertCount(1, $pastSlabs);
+        $this->assertSame(23.0, (float) $pastSlabs[0]['rate']);
+
+        $currentSlabs = $rules->asOf('2026-06-01')->forCompany((string) $this->company->id)->taxSlabs();
+        $this->assertCount(1, $currentSlabs);
+        $this->assertSame(26.0, (float) $currentSlabs[0]['rate']);
+
+        // 5. La ligne approuvée est maintenant utilisée dans les calculs.
         Sanctum::actingAs($this->manager);
         $this->getJson('/api/v1/tax-slabs')->assertOk();
     }
@@ -204,6 +230,12 @@ class TaxSlabValidationWorkflowTest extends TestCase
         /** @var TaxSlab $freshSlab */
         $freshSlab = $slab->fresh();
         $this->assertSame(TaxSlab::STATUS_DRAFT, $freshSlab->status);
+
+        // Issue #1923 — un rejet n'est PAS une validation : validated_by et
+        // validated_at restent NULL (seule l'approbation tamponne « validé »).
+        $this->assertNull($freshSlab->validated_by);
+        $this->assertNull($freshSlab->validated_at);
+        $this->assertNull($freshSlab->submitted_by, 'le rejet ne renseigne pas submitted_by sur une ligne créée sans soumission');
     }
 
     public function test_social_contribution_workflow(): void
@@ -258,6 +290,77 @@ class TaxSlabValidationWorkflowTest extends TestCase
 
         $this->putJson("/api/v1/tax-slabs/{$slab->id}", ['rate' => 30])->assertStatus(409);
         $this->deleteJson("/api/v1/tax-slabs/{$slab->id}")->assertStatus(409);
+    }
+
+    public function test_listener_is_registered_and_runs_on_submit(): void
+    {
+        // Issue #1923 (écart 1) — le listener NotifyTaxRateValidation était
+        // mort : les méthodes handleTaxRate* n'étaient enregistrées nulle
+        // part (event discovery désactivée dans ce repo). Il doit être
+        // câblé pour les 3 événements, en notation `Class@méthode`.
+        $raw = app('events')->getRawListeners();
+
+        $this->assertContains(NotifyTaxRateValidation::class.'@handleTaxRateSubmitted', $raw[TaxRateSubmitted::class] ?? []);
+        $this->assertContains(NotifyTaxRateValidation::class.'@handleTaxRateApproved', $raw[TaxRateApproved::class] ?? []);
+        $this->assertContains(NotifyTaxRateValidation::class.'@handleTaxRateRejected', $raw[TaxRateRejected::class] ?? []);
+
+        // La table `app_notifications` n'est créée par aucune migration du
+        // repo (dette #1813) : schéma manuel local au test (pattern
+        // PayrollCountryRulesTemporalVersioningTest) pour prouver la chaîne
+        // listener → tenant → notification in-app de bout en bout.
+        \Illuminate\Support\Facades\Schema::create('app_notifications', function (\Illuminate\Database\Schema\Blueprint $table): void {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->string('type', 80);
+            $table->string('title', 255);
+            $table->text('body')->nullable();
+            $table->jsonb('data')->nullable();
+            $table->boolean('read')->default(false);
+            $table->timestamp('read_at')->nullable();
+            $table->string('action_url', 500)->nullable();
+            $table->timestampsTz();
+        });
+
+        // Un platform_admin existe : la soumission déclenche l'email best-effort.
+        SuperAdmin::query()->create([
+            'name' => 'Admin Notif',
+            'email' => 'sa-notif@leopardo-rh.com',
+            'password_hash' => bcrypt('secret123'),
+            'role' => 'super_admin',
+        ]);
+
+        Sanctum::actingAs($this->manager);
+
+        $created = $this->postJson('/api/v1/tax-slabs', [
+            'country_code' => 'DZ',
+            'name' => 'Tranche notif',
+            'min_amount' => 0,
+            'max_amount' => 50000,
+            'rate' => 20,
+            'fixed_deduction' => 0,
+            'effective_from' => '2026-01-01',
+        ])->assertCreated()->json('data');
+
+        $this->putJson("/api/v1/tax-slabs/{$created['id']}/submit")->assertOk();
+
+        // Approbation par le platform_admin : le listener résout le tenant du
+        // soumissionnaire (company_id de la ligne) et écrit une notification
+        // in-app dans le schéma tenant — preuve de bout en bout que le
+        // listener (et sa restauration de search_path) fonctionne.
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
+
+        $this->putJson("/api/v1/admin/rate-validation/tax_slabs/{$created['id']}/approve")
+            ->assertOk()
+            ->assertJsonPath('data.status', TaxSlab::STATUS_ACTIVE);
+
+        $notification = AppNotification::query()
+            ->where('user_id', $this->manager->id)
+            ->where('type', 'tax_rate_validation')
+            ->first();
+
+        $this->assertNotNull($notification, 'le listener doit notifier le soumissionnaire in-app');
+        $this->assertSame((int) $created['id'], (int) $notification->data['record_id']);
+        $this->assertSame('tax_slabs', $notification->data['table']);
     }
 
     public function test_history_endpoint_returns_immutable_trail(): void

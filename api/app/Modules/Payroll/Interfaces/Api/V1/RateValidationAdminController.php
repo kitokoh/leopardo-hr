@@ -77,7 +77,7 @@ class RateValidationAdminController extends Controller
 
         $reason = (string) $request->input('reason', '');
         if (trim($reason) === '') {
-            abort(422, 'Un motif de rejet est obligatoire.');
+            abort(422, __('payroll.rate_reject_reason_required'));
         }
 
         $model = $this->resolveModel($table, $id);
@@ -104,7 +104,7 @@ class RateValidationAdminController extends Controller
             return SocialContribution::query()->findOrFail($id);
         }
 
-        abort(404, 'Table inconnue.');
+        abort(404, __('payroll.rate_table_unknown'));
     }
 
     /**
