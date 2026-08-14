@@ -40,6 +40,12 @@
     <div class="title">{{ __('pdf.payslip_title') }}</div>
     <div class="period">{{ __('pdf.period') }} : {{ $slip->period_start->format('d/m/Y') }} — {{ $slip->period_end->format('d/m/Y') }}</div>
 
+    @if (! empty($isRegularization))
+        <div style="background: #fef3c7; border: 2px solid #d97706; color: #92400e; font-weight: bold; text-align: center; padding: 10px; margin: 14px 0; text-transform: uppercase;">
+            {{ __('pdf.payslip_regularization_banner') }} — @if(! empty($originalRunId)){{ __('pdf.payslip_regularization_corrects') }} #{{ $originalRunId }}@endif
+        </div>
+    @endif
+
     <div class="info-grid">
         <div class="info-col">
             <div class="info-label">{{ __('pdf.employee') }}</div>

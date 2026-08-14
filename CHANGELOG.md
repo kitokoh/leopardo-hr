@@ -2,7 +2,8 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
-## [Unreleased]
+### Added
+- **feat(payroll): bulletins rétroactifs et régularisations — correctif d'un run clôturé (Closes #1818).** `PayrollRegularizationService::createRegularization()` : seul un run `locked` est régularisable → crée un run `type=regularization` (même période/pays, `original_run_id` renseigné, motif) + audit `payroll_run_regularization_created` (reason, original_run_id, actor_id), sans modifier l'original. Endpoints `POST /api/v1/payroll-runs/{run}/regularize` (principal/comptable, 422 si non verrouillé) et `GET /api/v1/payroll-runs/{run}/regularizations` (404 cross-tenant). Migration additive `payroll_runs.type/original_run_id/reason` (+ contrainte CHECK idempotente). PDF : bannière « Bulletin de régularisation — corrige le run #N » (blade + i18n fr/en/ar/tr). Le run de régularisation suit le workflow complet (draft → calculated → validated → locked). Tests : `PayrollRegularizationTest` (7 cas — création, 422 non-verrouillé, workflow complet, listing, isolation tenant, RBAC, mention PDF).
 
 ### Chore
 - **chore(version): défaut APP_VERSION aligné sur PILOTAGE.md (4.24.0).** `api/config/app.php` gardait le défaut `4.23.5` (commit « Version Sync » #739) alors que le repo est en 4.24.0 depuis la release préparée (#1722) — la prod affichait 4.23.5 dans `/api/v1/health` malgré le nouveau code déployé (Render n'a pas d'APP_VERSION). Le défaut passe à 4.24.0 ; l'env garde la priorité.

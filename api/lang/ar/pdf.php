@@ -28,6 +28,8 @@ return [
 
     // كشف الراتب (payslip.blade.php)
     'payslip_title' => 'كشف الراتب',
+    'payslip_regularization_banner' => 'قسيمة تسوية',
+    'payslip_regularization_corrects' => 'تصحح الدفعة',
     'payslip_company_fallback' => 'الشركة',
     'payslip_matricule' => 'رقم الموظف',
     'payslip_worked_days' => 'أيام العمل',

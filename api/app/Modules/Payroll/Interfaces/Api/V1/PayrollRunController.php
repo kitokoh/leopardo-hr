@@ -17,6 +17,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
+use App\Modules\Payroll\Infrastructure\Services\PayrollRegularizationService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class PayrollRunController extends Controller
     public function __construct(
         private readonly PayrollCalculator $calculator,
         private readonly PayrollClosingService $closing,
+        private readonly PayrollRegularizationService $regularization,
         private readonly DataAccessAuditLogger $auditLogger,
     ) {}
 
@@ -174,6 +176,63 @@ class PayrollRunController extends Controller
         $payrollRun->update(['status' => 'cancelled']);
 
         return (new PayrollRunResource($payrollRun->refresh()))->response();
+    }
+
+    /**
+     * Issue #1818 — crée un run de régularisation pour un run clôturé
+     * (locked). Réservé principal/comptable ; 404 cross-tenant ; 422 si le
+     * run n'est pas verrouillé.
+     */
+    public function regularize(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager() || ! ($actor->isPrincipal() || $actor->isComptable())) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reason' => 'sometimes|nullable|string|max:1000',
+        ]);
+
+        try {
+            $regularization = $this->regularization->createRegularization(
+                $payrollRun,
+                $actor,
+                $validated['reason'] ?? null,
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return (new PayrollRunResource($regularization))->response();
+    }
+
+    /**
+     * Issue #1818 — liste les runs de régularisation liés à un run donné
+     * (original_run_id = {run}). 404 cross-tenant.
+     */
+    public function regularizations(Request $request, PayrollRun $payrollRun): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $runs = PayrollRun::query()
+            ->where('company_id', $actor->company_id)
+            ->where('original_run_id', $payrollRun->id)
+            ->orderByDesc('id')
+            ->get();
+
+        return PayrollRunResource::collection($runs)->response();
     }
 
     /**

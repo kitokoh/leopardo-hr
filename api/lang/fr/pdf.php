@@ -28,6 +28,8 @@ return [
 
     // Bulletin de paie (payslip.blade.php)
     'payslip_title' => 'Bulletin de Paie',
+    'payslip_regularization_banner' => 'Bulletin de régularisation',
+    'payslip_regularization_corrects' => 'corrige le run',
     'payslip_company_fallback' => 'Entreprise',
     'payslip_matricule' => 'Matricule',
     'payslip_worked_days' => 'Jours travaillés',

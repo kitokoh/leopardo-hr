@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Support\CountryDefaults;
 use App\Support\I18nCatalog;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -56,6 +57,11 @@ class PaySlipPdfGenerator
             // F-09 (#1539) : cumuls annuels (brut, retenues, net) des
             // bulletins validés de l'employé jusqu'à la période du bulletin.
             'annualCumuls' => $this->annualCumuls($paySlip),
+            // Issue #1818 : mention « BULLETIN DE RÉGULARISATION » portée en
+            // haut du bulletin quand le run est un correctif (type
+            // regularization, original_run_id renseigné).
+            'isRegularization' => $paySlip->payrollRun?->type === PayrollRun::TYPE_REGULARIZATION,
+            'originalRunId' => $paySlip->payrollRun?->original_run_id,
         ]);
 
         $pdf->setPaper('A4', 'portrait');

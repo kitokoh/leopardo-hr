@@ -28,6 +28,8 @@ return [
 
     // Payslip (payslip.blade.php)
     'payslip_title' => 'Payslip',
+    'payslip_regularization_banner' => 'Regularization pay slip',
+    'payslip_regularization_corrects' => 'corrects run',
     'payslip_company_fallback' => 'Company',
     'payslip_matricule' => 'Employee ID',
     'payslip_worked_days' => 'Days worked',

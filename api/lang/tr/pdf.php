@@ -28,6 +28,8 @@ return [
 
     // Maaş bordrosu (payslip.blade.php)
     'payslip_title' => 'Maaş Bordrosu',
+    'payslip_regularization_banner' => 'Düzeltme bordrosu',
+    'payslip_regularization_corrects' => 'düzeltir çalıştırma',
     'payslip_company_fallback' => 'Şirket',
     'payslip_matricule' => 'Personel numarası',
     'payslip_worked_days' => 'Çalışılan günler',

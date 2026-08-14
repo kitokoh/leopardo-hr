@@ -46,10 +46,16 @@ class PayrollRun extends Model
     public const STATUS_LOCKED = 'locked';
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_ERROR = 'error'; // async batch job failed
+
+    /** Issue #1818 — types de run (régularisation = correctif d'un run clôturé). */
+    public const TYPE_STANDARD = 'standard';
+
+    public const TYPE_REGULARIZATION = 'regularization';
     use BelongsToCompany;
 
     protected $fillable = [
         'company_id', 'period_start', 'period_end', 'country_code', 'status',
+        'type', 'original_run_id', 'reason',
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',
         'employee_count', 'calculated_at', 'validated_by', 'validated_at',
         'paid_at', 'locked_by', 'locked_at', 'notes',
