@@ -108,7 +108,9 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function confidenceLevel(): string
     {
-        return 'pilot';
+        // DZ : validé expert-comptable 2026-08-08 (docs/payroll/DZ_COMPLIANCE.md —
+        // IRG barème + abattement, CNAS 9 %/26 %, SMIG 20 000 DZD). #1904.
+        return 'production';
     }
 
     /**

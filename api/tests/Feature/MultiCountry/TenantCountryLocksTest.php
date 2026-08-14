@@ -100,10 +100,8 @@ class TenantCountryLocksTest extends TestCase
     public function test_admin_can_repair_country_on_legacy_tenant_without_payroll(): void
     {
         /** @var Company $company */
-        // `timezone` et `currency` sont NOT NULL avec défauts (Africa/Algiers,
-        // DZD) : on n'injecte pas de null explicite. Le tenant « legacy » n'a
-        // simplement pas de pays — l'endpoint de réparation doit le renseigner
-        // avec devise/fuseau/langue cohérents (pays écrasé, XOF + Africa/Dakar).
+        // Legacy : pays vide (timezone/currency sont NOT NULL avec défaut —
+        // « legacy » = pays absent uniquement).
         $company = Company::factory()->create(['country' => '']);
         Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
 
@@ -123,7 +121,7 @@ class TenantCountryLocksTest extends TestCase
             ->latest('id')
             ->first();
         $this->assertNotNull($audit, 'Le changement de pays doit être journalisé.');
-        // char(2) : une valeur vide est relue espacée ('  ') — trim avant comparaison.
+        // country est char(2) : '' stocké → '  ' (padding PostgreSQL).
         $this->assertSame('', trim((string) ($audit->old_values['country'] ?? '')));
         $this->assertSame('SN', $audit->new_values['country'] ?? null);
     }
@@ -138,9 +136,8 @@ class TenantCountryLocksTest extends TestCase
             'country' => 'ZZ',
         ])->assertStatus(422)->assertJsonValidationErrors('country');
 
-        // La colonne `country` est un char(2) : une valeur vide est relue
-        // espacée ('  ') — on compare après trim (le pays n'a pas changé).
-        $this->assertSame('', trim((string) $company->refresh()->country));
+        // country est char(2) : '' stocké → '  ' (padding PostgreSQL).
+        $this->assertSame('', trim((string) $company->fresh()->country));
     }
 
     public function test_country_change_refused_after_payroll_run_invariant9(): void
