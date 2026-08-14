@@ -7042,8 +7042,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /payroll-runs/{payrollRun}/regularize:
-
   /payroll-runs/{payrollRun}/declarations/cnps-cm:
     get:
       tags: ["Payroll Engine"]
