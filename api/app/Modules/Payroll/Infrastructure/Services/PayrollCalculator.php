@@ -355,9 +355,10 @@ class PayrollCalculator
         // de ligne est fourni par la règle pays (CI #1825 : « Contribution
         // Nationale (CN) » au lieu de « Taxe de minimum fiscal »).
         $bracketTax = $breakdown['bracket_tax'];
+        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
         if ($bracketTax > 0.0) {
             $lines[] = [
-                'name' => $rules->flatPayrollTaxLabel(),
+                'name' => $bracketTaxLabel,
                 'type' => 'deduction',
                 'base_amount' => $grossEarnings,
                 'rate' => null,
@@ -394,13 +395,16 @@ class PayrollCalculator
 
         // Déductions totales = base commune (cotisations salariales + impôt +
         // taxe de minimum fiscal) + composants de déduction personnalisés.
-        // La boucle exclut les trois lignes déjà comptées dans la base.
+        // La boucle exclut les lignes déjà comptées dans la base (la taxe
+        // forfaitaire par son libellé RÉEL — « Taxe de minimum fiscal » ou
+        // « Contribution Nationale (CN) » pour CI #1825 — sinon double
+        // déduction sur les bulletins CI).
         $totalDeductions = $breakdown['base_deductions'];
         foreach ($lines as $line) {
             if ($line['type'] === 'deduction'
                 && $line['name'] !== 'Cotisations salariales'
                 && $line['name'] !== 'Impot sur le revenu'
-                && $line['name'] !== 'Taxe de minimum fiscal') {
+                && $line['name'] !== $bracketTaxLabel) {
                 $totalDeductions += $line['amount'];
             }
         }
