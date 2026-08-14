@@ -14,6 +14,7 @@ use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
@@ -35,8 +36,10 @@ class PayrollCalculator
     /**
      * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
      */
-    public function __construct(iterable $countryRules = [])
-    {
+    public function __construct(
+        iterable $countryRules = [],
+        private readonly ?PublicHolidayService $publicHolidayService = null,
+    ) {
         // MULTI-PAYS (#1868) : point d'entrée unique pour la résolution des
         // règles pays — la map vit dans CountryRulesResolver, plus ici.
         $this->resolver = new CountryRulesResolver($countryRules);
@@ -432,9 +435,28 @@ class PayrollCalculator
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee): array
     {
-        $workingDays = (float) self::STANDARD_WORKING_DAYS;
+        // Issue #1811 : jours ouvrés dynamiques par pays (fériés + jours de
+        // repos hebdomadaire) au lieu de la constante 22. Fallback 22 si le
+        // service n'est pas injecté ou si aucun férié n'est configuré.
         $periodStart = $run->period_start->copy()->startOfDay();
         $periodEnd = $run->period_end->copy()->startOfDay();
+
+        $workingDays = $this->publicHolidayService !== null
+            ? $this->publicHolidayService->workingDaysBetween(
+                $periodStart,
+                $periodEnd,
+                (string) $run->country_code,
+                holidays: null,
+                companyId: $run->company_id,
+                restDays: $this->weeklyRestDaysFor((string) $run->country_code),
+            )
+            : (float) self::STANDARD_WORKING_DAYS;
+
+        // Garde-fou : ne jamais retourner 0 (période sans aucun jour ouvré
+        // ou pays sans règles) — on retombe sur la constante historique.
+        if ($workingDays <= 0.0) {
+            $workingDays = (float) self::STANDARD_WORKING_DAYS;
+        }
 
         $overlapStart = $periodStart->copy();
         if ($employee->contract_start !== null && $employee->contract_start->gt($periodStart)) {
@@ -472,6 +494,20 @@ class PayrollCalculator
             'overtime_hours' => 0.0,
             'has_attendance_data' => $hasAttendanceData,
         ];
+    }
+
+    /**
+     * Jours de repos hebdomadaire du pays (ISO 1=lundi..7=dimanche).
+     *
+     * @return array<int, int>
+     */
+    private function weeklyRestDaysFor(string $countryCode): array
+    {
+        try {
+            return $this->getRules($countryCode)->weeklyRestDays();
+        } catch (\Throwable) {
+            return [6, 7];
+        }
     }
 
     /**

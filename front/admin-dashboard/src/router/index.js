@@ -313,6 +313,15 @@ const routes = [
           title: 'Mon compte',
           icon: 'UserCircleIcon'
         }
+      },
+      {
+        path: '/settings/payroll/holidays',
+        name: 'payroll-holidays',
+        component: () => import('../views/settings/HolidaysView.vue'),
+        meta: {
+          title: 'holidays.nav.title',
+          icon: 'CalendarIcon'
+        }
       }
     ]
   },
