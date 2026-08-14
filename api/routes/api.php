@@ -19,7 +19,9 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
 use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
 use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabAdminController;
@@ -299,6 +301,20 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
+
+        // Public holidays (issue #1811) — super-admin : CRUD fériés nationaux.
+        Route::get('/public-holidays', [PublicHolidayController::class, 'index']);
+        Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
+        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
+        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
+
+        // Islamic calendar (issue #1812) — super-admin : dates mobiles des
+        // fêtes islamiques (Aïd, Maouloud, Tamkharit…) par année.
+        Route::get('/islamic-calendar', [IslamicCalendarController::class, 'index']);
+        Route::post('/islamic-calendar/confirm-year/{year}', [IslamicCalendarController::class, 'confirmYear'])->whereNumber('year');
+        Route::put('/islamic-calendar/{holidayKey}/{year}', [IslamicCalendarController::class, 'update'])
+            ->whereIn('holidayKey', ['eid_al_fitr', 'eid_al_adha', 'mawlid', 'tahmarit', 'muharram'])
+            ->whereNumber('year');
 
         // Issue #1814 — barèmes fiscaux nationaux (CRUD admin) + simulation.
         Route::get('/tax-slabs', [TaxSlabAdminController::class, 'index']);

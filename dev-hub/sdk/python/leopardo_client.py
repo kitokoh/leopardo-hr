@@ -160,6 +160,18 @@ class LeopardoClient:
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
 
+    def listislamiccalendar(self, **kwargs):
+        """Lister les fêtes islamiques d'une année (super-admin)"""
+        return self.request("GET", "/admin/islamic-calendar", **kwargs)
+
+    def updateislamiccalendarholiday(self, **kwargs):
+        """Modifier/confirmer une fête islamique (super-admin)"""
+        return self.request("PUT", "/admin/islamic-calendar/{holidayKey}/{year}", **kwargs)
+
+    def confirmislamiccalendaryear(self, **kwargs):
+        """Confirmer toutes les dates islamiques d'une année (super-admin)"""
+        return self.request("POST", "/admin/islamic-calendar/confirm-year/{year}", **kwargs)
+
     def simulatepayrolladmin(self, **kwargs):
         """Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814"""
         return self.request("POST", "/admin/payroll/simulate", **kwargs)
@@ -171,6 +183,22 @@ class LeopardoClient:
     def put_admin_platform_marketing_oauth_config(self, **kwargs):
         """Enregistrer la config OAuth d'un provider marketing"""
         return self.request("PUT", "/admin/platform/marketing/oauth-config", **kwargs)
+
+    def listpublicholidaysadmin(self, **kwargs):
+        """Lister les jours fériés d'un pays/année (super-admin : national + entreprise)"""
+        return self.request("GET", "/admin/public-holidays", **kwargs)
+
+    def storepublicholidayadmin(self, **kwargs):
+        """Créer un jour férié national (super-admin)"""
+        return self.request("POST", "/admin/public-holidays", **kwargs)
+
+    def destroypublicholidayadmin(self, **kwargs):
+        """Supprimer un jour férié (super-admin)"""
+        return self.request("DELETE", "/admin/public-holidays/{publicHoliday}", **kwargs)
+
+    def updatepublicholidayadmin(self, **kwargs):
+        """Modifier un jour férié (super-admin)"""
+        return self.request("PUT", "/admin/public-holidays/{publicHoliday}", **kwargs)
 
     def approveratevalidation(self, **kwargs):
         """Approuver une modification de taux (platform_admin) — issue #1813"""
@@ -1359,6 +1387,22 @@ class LeopardoClient:
     def put_projects_by_project(self, **kwargs):
         """Mettre a jour un projet"""
         return self.request("PUT", "/projects/{project}", **kwargs)
+
+    def listpublicholidays(self, **kwargs):
+        """Lister les jours fériés du pays (manager principal : nationaux + entreprise)"""
+        return self.request("GET", "/public-holidays", **kwargs)
+
+    def storepublicholiday(self, **kwargs):
+        """Créer un jour férié d'entreprise (manager principal)"""
+        return self.request("POST", "/public-holidays", **kwargs)
+
+    def destroypublicholiday(self, **kwargs):
+        """Supprimer un jour férié d'entreprise (manager principal)"""
+        return self.request("DELETE", "/public-holidays/{publicHoliday}", **kwargs)
+
+    def updatepublicholiday(self, **kwargs):
+        """Modifier un jour férié d'entreprise (manager principal)"""
+        return self.request("PUT", "/public-holidays/{publicHoliday}", **kwargs)
 
     def post_push_notifications_send(self, **kwargs):
         """Envoyer une notification push de test a un employe"""

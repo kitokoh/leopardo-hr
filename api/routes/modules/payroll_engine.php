@@ -21,6 +21,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryStructureController;
@@ -61,6 +62,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // Issue #1814 — simulation d'impact (dry-run, manager).
         Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+
+        // Public holidays (issue #1811) — manager principal : CRUD entreprise.
+        Route::get('/public-holidays', [PublicHolidayController::class, 'index']);
+        Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
+        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
+        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
 
         // Tax Slabs
         Route::get('/tax-slabs', [TaxSlabController::class, 'index']);

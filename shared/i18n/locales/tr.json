@@ -425,5 +425,92 @@
     "sim_employer": "İşveren katkıları",
     "sim_tax": "Vergi",
     "total_cost": "Toplam işveren maliyeti"
+  },
+  "holidays": {
+    "page": {
+      "title": "Ülkelere göre resmi tatiller",
+      "subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı resmi tatil takvimi (issue #1811). Ulusal tatiller paylaşılır; şirket tatilleri yalnızca şirketinize özeldir."
+    },
+    "country": "Ülke",
+    "year": "Yıl",
+    "add": "Resmî tatil ekle",
+    "th": {
+      "date": "Tarih",
+      "name": "Ad",
+      "type": "Tür",
+      "scope": "Kapsam",
+      "actions": "İşlemler"
+    },
+    "scope": {
+      "national": "Ulusal",
+      "company": "Şirkete özel"
+    },
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "empty": "{country} / {year} için resmî tatil yok.",
+    "modal": {
+      "editTitle": "Resmi tatili düzenle",
+      "newTitle": "Yeni resmi tatil"
+    },
+    "name": {
+      "label": "Ad"
+    },
+    "date": {
+      "label": "Tarih"
+    },
+    "type": {
+      "label": "Tür",
+      "fixed": "Sabit",
+      "islamic": "İslami",
+      "christian": "Hristiyan",
+      "custom": "Özel"
+    },
+    "recurring": "Her yıl tekrarlanır",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor…",
+    "save": "Kaydet",
+    "errors": {
+      "load": "Resmi tatiller yüklenemedi.",
+      "save": "Resmi tatil kaydedilemedi.",
+      "delete": "Silinemedi."
+    },
+    "success": {
+      "saved": "Resmi tatil kaydedildi.",
+      "deleted": "Resmi tatil silindi."
+    },
+    "confirm": {
+      "delete": "« :name » silinsin mi?"
+    },
+    "nav": {
+      "title": "Resmi tatiller"
+    },
+    "page_title": "Ülkeye göre resmî tatiller",
+    "page_subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.",
+    "th_date": "Tarih",
+    "th_name": "Ad",
+    "th_type": "Tür",
+    "th_scope": "Kapsam",
+    "th_actions": "İşlemler",
+    "scope_national": "Ulusal",
+    "scope_company": "Şirket",
+    "edit_title": "Resmî tatili düzenle",
+    "add_title": "Yeni resmî tatil",
+    "type_fixed": "Sabit",
+    "type_islamic": "İslami",
+    "type_christian": "Hristiyan",
+    "type_custom": "Özel",
+    "load_error": "Resmî tatiller yüklenemedi.",
+    "saved": "Resmî tatil kaydedildi.",
+    "save_error": "Resmî tatil kaydedilemedi.",
+    "deleted": "Resmî tatil silindi.",
+    "delete_error": "Silinemedi.",
+    "countries": {
+      "DZ": "Cezayir",
+      "CM": "Kamerun",
+      "CI": "Fildişi Sahili",
+      "SN": "Senegal",
+      "MA": "Fas",
+      "TN": "Tunus"
+    }
   }
 }

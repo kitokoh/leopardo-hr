@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -35,8 +36,10 @@ class PayrollCalculator
     /**
      * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
      */
-    public function __construct(iterable $countryRules = [])
-    {
+    public function __construct(
+        iterable $countryRules = [],
+        private readonly ?PublicHolidayService $publicHolidayService = null,
+    ) {
         // MULTI-PAYS (#1868) : point d'entrée unique pour la résolution des
         // règles pays — la map vit dans CountryRulesResolver, plus ici.
         $this->resolver = new CountryRulesResolver($countryRules);
@@ -432,9 +435,26 @@ class PayrollCalculator
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee): array
     {
-        $workingDays = (float) self::STANDARD_WORKING_DAYS;
         $periodStart = $run->period_start->copy()->startOfDay();
         $periodEnd = $run->period_end->copy()->startOfDay();
+
+        // Issue #1811/#1812 : jours ouvrés dynamiques par pays (fériés fixes +
+        // islamiques + jours de repos hebdomadaire) via PublicHolidayService ;
+        // fallback 22 si le service n'est pas injecté ou aucun férié configuré.
+        $workingDays = $this->publicHolidayService !== null
+            ? $this->publicHolidayService->workingDaysBetween(
+                $periodStart,
+                $periodEnd,
+                (string) $run->country_code,
+                holidays: null,
+                companyId: $run->company_id,
+                restDays: $this->getRules((string) $run->country_code)->weeklyRestDays(),
+            )
+            : (float) self::STANDARD_WORKING_DAYS;
+
+        if ($workingDays <= 0.0) {
+            $workingDays = (float) self::STANDARD_WORKING_DAYS;
+        }
 
         $overlapStart = $periodStart->copy();
         if ($employee->contract_start !== null && $employee->contract_start->gt($periodStart)) {

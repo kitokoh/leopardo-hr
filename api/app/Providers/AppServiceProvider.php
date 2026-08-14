@@ -7,12 +7,15 @@ use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
+use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Policies\ExportPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -28,6 +31,15 @@ class AppServiceProvider extends ServiceProvider
     {
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
+
+        // Issue #1811 : service jours fériés — cache Redis (repository par défaut).
+        // Issue #1812 : le calendrier islamique (dates mobiles saisies par
+        // l'admin) est fusionné dans le calcul des jours ouvrés.
+        $this->app->singleton(IslamicCalendarService::class, fn (): IslamicCalendarService => new IslamicCalendarService(Cache::store()));
+        $this->app->singleton(
+            PublicHolidayService::class,
+            fn (): PublicHolidayService => new PublicHolidayService(Cache::store(), app(IslamicCalendarService::class)),
+        );
 
         $this->app->bind(LLMClient::class, function (): LLMClient {
             $provider = (string) config('ai.provider', 'openai');
