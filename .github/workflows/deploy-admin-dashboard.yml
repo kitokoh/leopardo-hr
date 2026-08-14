@@ -1,0 +1,80 @@
+name: Deploy Admin Dashboard - Cloudflare Pages
+
+# Issue #1834 : le déploiement du SPA admin reposait uniquement sur
+# l'intégration Git Cloudflare Pages, qui ne redéployait pas main (header CSP
+# obsolète servi 17 h après le merge du fix #1783, aucun build déclenché).
+# Ce workflow donne un chemin de déploiement indépendant via GitHub Actions :
+# build `front/admin-dashboard` (Vite → dist/) puis `wrangler pages deploy`
+# sur le projet Cloudflare Pages `leo-admin`.
+#
+# Prérequis (une seule fois, dashboard repo → Settings → Secrets) :
+#   - CLOUDFLARE_API_TOKEN   (token avec permission Pages:Edit sur le compte)
+#   - CLOUDFLARE_ACCOUNT_ID  (identifiant du compte Cloudflare)
+# Si ces secrets sont absents, le job se termine en skip explicite (warning
+# visible) : l'intégration Git Cloudflare Pages reste le repli.
+#
+# La garde `admin-pages-deploy-guard.yml` (issue #1834) continue de vérifier
+# toutes les 6 h que le header CSP servi correspond au fichier `_headers` du
+# repo — le déploiement ne peut plus échouer silencieusement.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement cible (production uniquement pour l'instant)"
+        required: false
+        default: "production"
+  push:
+    branches: [main]
+    paths:
+      - 'front/admin-dashboard/**'
+      - '.github/workflows/deploy-admin-dashboard.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-admin-dashboard
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  deploy:
+    name: Build & deploy admin-dashboard to Cloudflare Pages
+    runs-on: ubuntu-latest
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
+
+      - name: Build admin dashboard
+        working-directory: front/admin-dashboard
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to Cloudflare Pages (leo-admin)
+        if: ${{ env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != '' }}
+        uses: cloudflare/wrangler-action@daa9d8682aeee1cc1db0c836b85cec21c2f0d58a # v3.14.1
+        with:
+          apiToken: ${{ env.CF_API_TOKEN }}
+          accountId: ${{ env.CF_ACCOUNT_ID }}
+          command: pages deploy front/admin-dashboard/dist --project-name=leo-admin --branch=main
+
+      - name: Skip — secrets Cloudflare absents
+        if: ${{ env.CF_API_TOKEN == '' || env.CF_ACCOUNT_ID == '' }}
+        run: |
+          echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID absents — déploiement Cloudflare Pages sauté (issue #1834). Ajouter les secrets pour activer le déploiement GitHub Actions ; l'intégration Git Cloudflare Pages reste le repli."
