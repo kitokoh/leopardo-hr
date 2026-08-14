@@ -214,14 +214,14 @@ class PublicHolidayControllerTest extends TestCase
             \Illuminate\Support\Carbon::parse('2026-11-01'),
             \Illuminate\Support\Carbon::parse('2026-11-30'),
             'DZ',
-            companyId: (int) $this->companyA->id,
+            companyId: (string) $this->companyA->id,
             restDays: [5, 6],
         );
         $companyB = $service->workingDaysBetween(
             \Illuminate\Support\Carbon::parse('2026-11-01'),
             \Illuminate\Support\Carbon::parse('2026-11-30'),
             'DZ',
-            companyId: (int) $this->companyB->id,
+            companyId: (string) $this->companyB->id,
             restDays: [5, 6],
         );
 

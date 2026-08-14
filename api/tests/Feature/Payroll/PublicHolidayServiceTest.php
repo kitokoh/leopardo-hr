@@ -88,7 +88,7 @@ class PublicHolidayServiceTest extends TestCase
             Carbon::parse('2026-07-13'),
             Carbon::parse('2026-07-19'),
             'DZ',
-            companyId: (int) $company->id,
+            companyId: (string) $company->id,
             restDays: [5, 6],
         );
 
@@ -136,7 +136,7 @@ class PublicHolidayServiceTest extends TestCase
         ]);
 
         $national = $this->service()->getHolidays('DZ', 2026);
-        $withCompany = $this->service()->getHolidays('DZ', 2026, (int) $company->id);
+        $withCompany = $this->service()->getHolidays('DZ', 2026, (string) $company->id);
 
         $this->assertCount(1, $national);
         $this->assertCount(2, $withCompany);
