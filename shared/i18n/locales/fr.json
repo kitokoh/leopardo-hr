@@ -593,7 +593,9 @@
       },
       "unknown": {
         "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
-      }
+      },
+      "source_label": "Source légale",
+      "verified_label": "Vérification experte"
     }
   }
 }

@@ -593,7 +593,9 @@
       },
       "unknown": {
         "message": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."
-      }
+      },
+      "source_label": "Yasal kaynak",
+      "verified_label": "Uzman doğrulaması"
     }
   }
 }

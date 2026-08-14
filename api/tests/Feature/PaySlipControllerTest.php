@@ -133,6 +133,29 @@ class PaySlipControllerTest extends TestCase
             ->assertJsonPath('data.0.status', 'validated');
     }
 
+    public function test_employee_pay_slips_expose_compliance_block(): void
+    {
+        // Issue #2116 — le contrat de bulletin expose le bloc conformité
+        // #1872 (niveau de confiance, avertissement, source légale, date de
+        // vérification experte nullable) résolu depuis le pays du run.
+        [$company, , $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee, ['status' => 'validated']);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/pay-slips');
+
+        $response->assertOk();
+        $compliance = $response->json('data.0.compliance');
+        $this->assertIsArray($compliance);
+        $this->assertContains($compliance['level'], ['production', 'pilot', 'placeholder', 'unknown']);
+        $this->assertArrayHasKey('warning', $compliance);
+        $this->assertArrayHasKey('warning_key', $compliance);
+        $this->assertSame('payroll.compliance_warning_'.$compliance['level'], $compliance['warning_key']);
+        $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $compliance['source']);
+        $this->assertTrue($compliance['verification_date'] === null || is_string($compliance['verification_date']));
+    }
+
     public function test_employee_can_open_own_validated_pay_slip_but_not_other_tenant_slip(): void
     {
         [$company, , $employee] = $this->payrollActor();

@@ -593,7 +593,9 @@
       },
       "unknown": {
         "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
-      }
+      },
+      "source_label": "Legal source",
+      "verified_label": "Expert verification"
     }
   }
 }

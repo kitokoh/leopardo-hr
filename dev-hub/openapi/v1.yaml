@@ -16386,6 +16386,23 @@ components:
           type: number
         total_contributions:
           type: number
+        compliance:
+          type: object
+          description: "Bloc conformite par niveau de confiance (contrat #1872, issue #2116)."
+          properties:
+            level:
+              type: string
+              enum: [production, pilot, placeholder, unknown]
+            warning:
+              type: string
+            warning_key:
+              type: string
+            source:
+              type: string
+              nullable: true
+            verification_date:
+              type: string
+              nullable: true
         lines:
           type: array
           items:

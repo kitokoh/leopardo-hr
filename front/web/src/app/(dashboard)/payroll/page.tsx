@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 import {
   DollarSign,
   Download,
@@ -18,6 +19,14 @@ import {
 
 const emptySubscribe = () => () => {};
 
+interface PaySlipCompliance {
+  level: string;
+  warning: string;
+  warning_key: string;
+  source: string | null;
+  verification_date: string | null;
+}
+
 interface PaySlip {
   id: number;
   employee_id: number;
@@ -27,6 +36,7 @@ interface PaySlip {
   net_salary: number;
   status: string;
   created_at: string;
+  compliance?: PaySlipCompliance;
 }
 
 interface PayrollRun {
@@ -79,6 +89,34 @@ export default function PayrollPage() {
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency: 'EUR' }).format(val || 0);
+
+  // Issue #2116 — bloc conformité du contrat #1872 : bandeau par niveau de
+  // confiance (production/pilot/placeholder/unknown) exposé sur les bulletins.
+  const compliance = useMemo(
+    () => payslips.find(s => s.compliance?.level)?.compliance ?? null,
+    [payslips],
+  );
+
+  const complianceBannerClass = (level: string) => {
+    if (level === 'production') return 'border-emerald-200 bg-emerald-50/70'
+    if (level === 'placeholder' || level === 'unknown') return 'border-rose-200 bg-rose-50/70'
+    return 'border-amber-200 bg-amber-50/70'
+  };
+
+  const complianceIcon = (level: string) => {
+    if (level === 'production') return '✅'
+    if (level === 'placeholder' || level === 'unknown') return '⚠️'
+    return '🟡'
+  };
+
+  const complianceCountry = (source: string | null) =>
+    source?.match(/docs\/payroll\/([A-Z]{2})_COMPLIANCE\.md/)?.[1] ?? '';
+
+  const complianceMessage = (c: PaySlipCompliance) => {
+    const localized = t(locale, `payroll.confidence.${c.level}.message`, c.warning);
+    const country = complianceCountry(c.source);
+    return country ? localized.replace('{country}', country) : localized.replace('{country}', '').trim();
+  };
 
   const downloadPdf = async (id: number) => {
     try {
@@ -143,6 +181,28 @@ export default function PayrollPage() {
           {labels.tabRuns}
         </button>
       </div>
+
+      {compliance && (
+        <section className={`rounded-2xl border p-5 ${complianceBannerClass(compliance.level)}`}>
+          <div className="flex items-start gap-3">
+            <span className="text-xl leading-none" aria-hidden="true">{complianceIcon(compliance.level)}</span>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-slate-900">
+                {t(locale, `payroll.confidence.level_${compliance.level}`, compliance.level)}
+              </p>
+              <p className="mt-0.5 text-sm text-slate-600">{complianceMessage(compliance)}</p>
+              <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500">
+                {compliance.source && (
+                  <span>{t(locale, 'payroll.confidence.source_label', 'Source')} : {compliance.source}</span>
+                )}
+                {compliance.verification_date && (
+                  <span>{t(locale, 'payroll.confidence.verified_label', 'Expert verification')} : {compliance.verification_date}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {tab === 'slips' && (
         <>
