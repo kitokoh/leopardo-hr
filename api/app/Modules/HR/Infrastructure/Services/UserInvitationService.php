@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\Mail\UserInvitationMail;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Domain\Models\UserInvitation;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Mail\UserInvitationMail;
+use App\Modules\HR\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -52,12 +52,21 @@ class UserInvitationService
             ],
         );
 
-        Mail::to($employee->email)->send(new UserInvitationMail(
-            company: $company,
-            employee: $employee,
-            activationUrl: route('invitation.activate.show', ['token' => $plainToken]),
-            invitedByEmail: $invitedByEmail,
-        ));
+        // Issue #1776 : un transport mail absent ou invalide (MAIL_MAILER non
+        // configuré, MAIL_URL vide → « Unsupported mail transport [] ») ne doit
+        // PAS faire échouer le flux principal (création d'employé, invitation,
+        // provisioning). L'invitation reste enregistrée et valide en base —
+        // l'envoi pourra être retenté (resend) une fois le mailer configuré.
+        try {
+            Mail::to($employee->email)->send(new UserInvitationMail(
+                company: $company,
+                employee: $employee,
+                activationUrl: route('invitation.activate.show', ['token' => $plainToken]),
+                invitedByEmail: $invitedByEmail,
+            ));
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return $plainToken;
     }
@@ -96,5 +105,3 @@ class UserInvitationService
         });
     }
 }
-
-
