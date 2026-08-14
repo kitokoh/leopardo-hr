@@ -189,6 +189,20 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     abstract protected function defaultTaxSlabs(): array;
 
     /**
+     * Barème légal de référence (source légale), indépendant de la base :
+     * retourne `defaultTaxSlabs()` — les valeurs ancrées dans le code par
+     * pays (CGI, codes du travail). Issue #2003 : le seeder doit seeder
+     * depuis cette source, pas depuis `taxSlabs()` qui résout la base AVANT
+     * le code (re-seeder = no-op silencieux quand la base diverge du code).
+     *
+     * @return array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>
+     */
+    public function legalReferenceTaxSlabs(): array
+    {
+        return $this->defaultTaxSlabs();
+    }
+
+    /**
      * Resolves the effective rate (percentage points, e.g. 9.0 for 9%) for a
      * given SocialContribution code as of asOfDate() (or now() when unset),
      * scoped to companyId() with a fallback to the global (company_id IS
