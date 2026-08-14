@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -16,10 +17,14 @@ use Tests\TestCase;
  * docs/payroll/DZ_COMPLIANCE.md §5. Méthode de prorata : jours travaillés
  * (actual_days_worked / 22), recoupe contrat ↔ période du run.
  *
- * Pas de base de données : modèles non persistés (casts date/Carbon).
+ * Base de données : nécessaire depuis F-20 (#1816) — computeWorkedDays()
+ * interroge les logs de présence réels (AttendanceLog) avant de retomber sur
+ * le prorata contrat ; les modèles des cas purs ne sont pas persistés
+ * (casts date/Carbon) et le fallback est vérifié sans aucun log.
  */
 class GoldenDzProrataOvertimeTest extends TestCase
 {
+    use RefreshTenantDatabase;
     public static function prorataProvider(): array
     {
         return [
@@ -86,5 +91,7 @@ class GoldenDzProrataOvertimeTest extends TestCase
         $this->assertSame(22.0, $worked['working_days']);
         $this->assertSame($expectedActual, $worked['actual_days_worked']);
         $this->assertSame(0.0, $worked['overtime_hours']);
+        // F-20 (#1816) : aucun log de présence → fallback prorata.
+        $this->assertFalse($worked['has_attendance_data']);
     }
 }

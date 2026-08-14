@@ -394,6 +394,7 @@ class PayrollCalculator
             'working_days' => $worked['working_days'],
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
+            'has_attendance_data' => $worked['has_attendance_data'],
             'status' => 'calculated',
         ]);
 
@@ -446,19 +447,46 @@ class PayrollCalculator
     }
 
     /**
-     * Programme FOCUS (F-05) — jours travaillés sur la période du run.
+     * Programme FOCUS (F-05 / F-20) — jours travaillés sur la période du run.
      *
-     * Recoupe le contrat de l'employé (contract_start / contract_end) avec la
-     * période du run : prorata d'entrée/sortie en cours de mois.
+     * Source des jours réellement travaillés (F-20, implémenté 2026-08-14) :
+     * jours distincts avec au moins un log de présence valide (AttendanceLog)
+     * sur la période du run — cf. docs/payroll/DZ_COMPLIANCE.md §5. Si aucun
+     * log n'existe sur la période, repli sur le prorata de contrat
+     * (recoupe contract_start / contract_end avec la période du run :
+     * prorata d'entrée/sortie en cours de mois).
      *
-     * overtime_hours : source future = pointage/attendance (F-20) ; 0 tant que
-     * le lien présence → paie n'est pas branché.
-     *
-     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float}
+     * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee): array
     {
         $workingDays = (float) self::STANDARD_WORKING_DAYS;
+
+        // F-20 : jours distincts avec au moins 1 log valide. Les logs
+        // annulés / rejetés / incomplets sont exclus (même convention que
+        // collectWorkInputs(), qui alimente overtime_hours depuis les mêmes
+        // sources de pointage).
+        $distinctDays = AttendanceLog::query()
+            ->where('company_id', $run->company_id)
+            ->where('employee_id', $employee->id)
+            ->whereBetween('date', [$run->period_start, $run->period_end])
+            ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+            ->distinct()
+            ->count('date');
+
+        $hasAttendanceData = $distinctDays > 0;
+
+        if ($hasAttendanceData) {
+            return [
+                'working_days' => $workingDays,
+                'actual_days_worked' => (float) $distinctDays,
+                'overtime_hours' => 0.0,
+                'has_attendance_data' => true,
+            ];
+        }
+
+        // Fallback : prorata contrat (recoupe contract_start / contract_end
+        // avec la période du run) quand aucun log de présence n'existe.
         $periodStart = $run->period_start->copy()->startOfDay();
         $periodEnd = $run->period_end->copy()->startOfDay();
 
@@ -482,6 +510,7 @@ class PayrollCalculator
             'working_days' => $workingDays,
             'actual_days_worked' => $actualDays,
             'overtime_hours' => 0.0,
+            'has_attendance_data' => false,
         ];
     }
 
