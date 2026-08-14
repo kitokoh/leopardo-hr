@@ -54,7 +54,29 @@ final readonly class CreateEmployeeDTO
 
     public static function fromRequest(StoreEmployeeRequest $request): self
     {
-        return new self(...$request->validated());
+        $data = $request->validated();
+
+        // Les clients (formulaires HTML, champs texte Flutter, curl) envoient souvent les
+        // champs numériques/booleans en chaîne. La validation ('numeric'/'boolean') accepte
+        // ces chaînes, mais le constructeur typé du DTO (float/int/bool) lèverait un
+        // TypeError → HTTP 500. On caste donc explicitement avant construction (#1765).
+        foreach (['salary_base', 'hourly_rate'] as $floatField) {
+            if (isset($data[$floatField]) && $data[$floatField] !== null) {
+                $data[$floatField] = (float) $data[$floatField];
+            }
+        }
+
+        if (isset($data['schedule_id']) && $data['schedule_id'] !== null) {
+            $data['schedule_id'] = (int) $data['schedule_id'];
+        }
+
+        foreach (['send_invitation', 'biometric_face_enabled', 'biometric_fingerprint_enabled'] as $boolField) {
+            if (isset($data[$boolField])) {
+                $data[$boolField] = filter_var($data[$boolField], FILTER_VALIDATE_BOOLEAN);
+            }
+        }
+
+        return new self(...$data);
     }
 
     /** @return array<string, mixed> */

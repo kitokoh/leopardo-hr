@@ -56,6 +56,25 @@ final readonly class UpdateEmployeeDTO
     {
         $validated = method_exists($request, 'validated') ? $request->validated() : $request->all();
 
+        // Même blindage que CreateEmployeeDTO (#1765) : les champs numériques/booleans
+        // arrivent parfois en chaîne (formulaires HTML, clients mobiles) et feraient
+        // échouer le constructeur typé du DTO en TypeError.
+        foreach (['salary_base', 'hourly_rate'] as $floatField) {
+            if (isset($validated[$floatField]) && $validated[$floatField] !== null) {
+                $validated[$floatField] = (float) $validated[$floatField];
+            }
+        }
+
+        if (isset($validated['schedule_id']) && $validated['schedule_id'] !== null) {
+            $validated['schedule_id'] = (int) $validated['schedule_id'];
+        }
+
+        foreach (['biometric_face_enabled', 'biometric_fingerprint_enabled'] as $boolField) {
+            if (isset($validated[$boolField])) {
+                $validated[$boolField] = filter_var($validated[$boolField], FILTER_VALIDATE_BOOLEAN);
+            }
+        }
+
         return new self(...$validated);
     }
 
