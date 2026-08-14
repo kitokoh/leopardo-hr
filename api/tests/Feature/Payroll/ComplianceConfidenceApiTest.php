@@ -7,7 +7,6 @@ namespace Tests\Feature\Payroll;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
@@ -226,12 +225,12 @@ class ComplianceConfidenceApiTest extends TestCase
 
     public function test_abstract_rules_compliance_defaults(): void
     {
-        $rules = new class extends AbstractCountryRules {
-            protected function defaultTaxSlabs(): array
-            {
-                return [];
-            }
-        };
+        // Règle CEDEAO membre non livré (XX) : retombe sur les défauts
+        // AbstractCountryRules (placeholder) — contrairement à une classe
+        // anonyme, une règle concrète implémente toute l'interface
+        // CountryRulesInterface (les classes anonymes partielles font échouer
+        // PHP au chargement : « contains N abstract methods »).
+        $rules = new CedeaoPayrollRules('XX');
 
         $this->assertSame('docs/payroll/XX_COMPLIANCE.md', $rules->complianceSource());
         $this->assertNull($rules->verificationDate());
