@@ -44,6 +44,8 @@ class DatabaseSeeder extends Seeder
             LanguageSeeder::class,  // Langues (fr/ar/en/tr)
             HrModelSeeder::class,   // Modèles RH par pays (DZ/MA/TN/FR/TR/SN/CM/CI)
             SuperAdminSeeder::class, // Premier Super Admin
+            PublicHolidaySeeder::class,   // Jours fériés fixes par pays (BUG #1895 : jamais exécutés en prod)
+            IslamicCalendarSeeder::class, // Calendrier islamique par année (BUG #1895)
         ]);
 
         $this->command->info('');

@@ -49,7 +49,10 @@ class CnssDeclarationGenerator
             $retraiteEmp = round($cappedBase * self::RATE_RETRAITE_EMP / 100, 2);
             $retraitePat = round($cappedBase * self::RATE_RETRAITE_PAT / 100, 2);
             $famillePat = round($cappedBase * self::RATE_FAMILLE_PAT / 100, 2);
-            $atPat = round($cappedBase * self::RATE_AT_PAT / 100, 2);
+            // BUG #1898 : l'AT patronal (2,0 %) est NON plafonné (comme le moteur
+            // calculateSocialCharges — cap => null) — la déclaration le plafonnait
+            // à tort, faussant le total patronal au-delà de 1 647 315 XOF.
+            $atPat = round($gross * self::RATE_AT_PAT / 100, 2);
             $totalEmp = round($retraiteEmp, 2);
             $totalPat = round($retraitePat + $famillePat + $atPat, 2);
 
