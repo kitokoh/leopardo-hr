@@ -158,6 +158,58 @@ class TenantCountryRequiredTest extends TestCase
         ])->assertCreated();
     }
 
+    public function test_payroll_run_store_refused_for_country_without_payroll_rules(): void
+    {
+        // #1951 : GB/US sont au registre d'affichage (CountryDefaults) mais
+        // n'ont AUCUNE règle de paie (CountryRulesResolver). Le run doit être
+        // refusé dès la validation (422), pas au moment du calcul
+        // (UnsupportedCountryRulesException) — une seule définition du « pays
+        // supporté » : celle des règles disponibles.
+        foreach (['GB', 'US'] as $countryCode) {
+            /** @var Company $company */
+            $company = Company::factory()->create(['country' => $countryCode]);
+            Sanctum::actingAs($this->makeManager($company));
+
+            $this->postJson('/api/v1/payroll-runs', [
+                'period_start' => '2026-08-01',
+                'period_end' => '2026-08-31',
+                'country_code' => $countryCode,
+            ])->assertUnprocessable()->assertJsonValidationErrors('country_code');
+        }
+    }
+
+    public function test_payroll_run_store_accepted_for_country_with_payroll_rules(): void
+    {
+        // #1951 : la CI (CEDEAO) est un pays du registre AVEC règles de paie
+        // résolubles → création de run acceptée (201).
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CI']);
+        Sanctum::actingAs($this->makeManager($company));
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'period_start' => '2026-08-01',
+            'period_end' => '2026-08-31',
+            'country_code' => 'CI',
+        ])->assertCreated()->assertJsonPath('data.country_code', 'CI');
+    }
+
+    public function test_salary_structure_store_refused_for_country_without_payroll_rules(): void
+    {
+        // #1951 : la liste in: hardcodée du contrôleur est remplacée par le
+        // contrat partagé (CountryRulesResolver) → GB refusé même quand le
+        // pays correspond au tenant.
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'GB']);
+        Sanctum::actingAs($this->makeManager($company));
+
+        $this->postJson('/api/v1/salary-structures', [
+            'name' => 'Grille GB',
+            'base_salary' => 3000,
+            'currency' => 'GBP',
+            'country_code' => 'GB',
+        ])->assertUnprocessable()->assertJsonValidationErrors('country_code');
+    }
+
     public function test_salary_structure_store_is_locked_to_tenant_country(): void
     {
         /** @var Company $company */

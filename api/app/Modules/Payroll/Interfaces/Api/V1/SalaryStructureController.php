@@ -9,8 +9,10 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SalaryStructureResource;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SalaryStructureController extends Controller
 {
@@ -48,7 +50,7 @@ class SalaryStructureController extends Controller
             'name' => 'required|string|max:150',
             'base_salary' => 'required|numeric|min:0',
             'currency' => 'required|string|size:3',
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            'country_code' => ['required', 'string', 'size:2', Rule::in((new CountryRulesResolver)->supportedCountryCodes())],
             'frequency' => 'nullable|in:monthly,bi_weekly,weekly',
         ]);
 
@@ -102,7 +104,7 @@ class SalaryStructureController extends Controller
             'name' => 'sometimes|string|max:150',
             'base_salary' => 'sometimes|numeric|min:0',
             'currency' => 'sometimes|string|size:3',
-            'country_code' => 'sometimes|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            'country_code' => ['sometimes', 'string', 'size:2', Rule::in((new CountryRulesResolver)->supportedCountryCodes())],
             'frequency' => 'sometimes|in:monthly,bi_weekly,weekly',
             'active' => 'sometimes|boolean',
         ]);
