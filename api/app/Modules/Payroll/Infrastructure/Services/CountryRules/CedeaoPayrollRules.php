@@ -88,30 +88,6 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
-        // BF (#1829) : CNSS Burkina Faso — retraite salarié 5,5 % + retraite
-        // patronal 6,5 % + famille patronal 7,0 % plafonnés à 900 000
-        // XOF/mois, AT patronal 3,5 % non plafonné (taux pilote).
-        if ($this->memberCountryCode === 'BF') {
-            return [
-                ['name' => 'CNSS Retraite Salariale', 'code' => 'CNSS_BF_RET_EMP', 'type' => 'employee', 'rate' => 5.5, 'cap' => 900000.0],
-                ['name' => 'CNSS Retraite Patronale', 'code' => 'CNSS_BF_RET_PAT', 'type' => 'employer', 'rate' => 6.5, 'cap' => 900000.0],
-                ['name' => 'CNSS Prestations Familiales Patronale', 'code' => 'CNSS_BF_FAM_PAT', 'type' => 'employer', 'rate' => 7.0, 'cap' => 900000.0],
-                ['name' => 'CNSS Risques Professionnels Patronale', 'code' => 'CNSS_BF_AT_PAT', 'type' => 'employer', 'rate' => 3.5, 'cap' => null],
-            ];
-        }
-
-        // ML (#1829) : INPS Mali — retraite salarié 3,6 % + retraite patronal
-        // 7,4 % plafonnés à 3 000 000 XOF/mois, famille patronal 4,0 % et AT
-        // patronal 2,0 % non plafonnés (taux pilote).
-        if ($this->memberCountryCode === 'ML') {
-            return [
-                ['name' => 'INPS Retraite Salariale', 'code' => 'INPS_ML_RET_EMP', 'type' => 'employee', 'rate' => 3.6, 'cap' => 3000000.0],
-                ['name' => 'INPS Retraite Patronale', 'code' => 'INPS_ML_RET_PAT', 'type' => 'employer', 'rate' => 7.4, 'cap' => 3000000.0],
-                ['name' => 'INPS Prestations Familiales Patronale', 'code' => 'INPS_ML_FAM_PAT', 'type' => 'employer', 'rate' => 4.0, 'cap' => null],
-                ['name' => 'INPS Risques Professionnels Patronale', 'code' => 'INPS_ML_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
-            ];
-        }
-
         // CI (#1825) : taux CNSS légaux (CGI CI / Code de la sécurité
         // sociale ivoirien) — retraite 3,2 % salarié + 4,5 % patronal,
         // famille 5,75 % patronal (plafond 1 647 315 XOF/mois), AT 2,0 %
@@ -125,6 +101,32 @@ class CedeaoPayrollRules extends AbstractCountryRules
             ];
         }
 
+        if ($this->memberCountryCode === 'BF') {
+            // CNSS Burkina Faso (issue #1829) : retraite salarié 5,5 % +
+            // retraite patronal 6,5 % + famille patronal 7,0 % plafonnés à
+            // 900 000 XOF/mois, AT patronal 3,5 % non plafonné (taux pilote).
+            return [
+                ['name' => 'CNSS Retraite Salariale', 'code' => 'CNSS_BF_RET_EMP', 'type' => 'employee', 'rate' => 5.5, 'cap' => 900000.0],
+                ['name' => 'CNSS Retraite Patronale', 'code' => 'CNSS_BF_RET_PAT', 'type' => 'employer', 'rate' => 6.5, 'cap' => 900000.0],
+                ['name' => 'CNSS Prestations Familiales Patronale', 'code' => 'CNSS_BF_FAM_PAT', 'type' => 'employer', 'rate' => 7.0, 'cap' => 900000.0],
+                ['name' => 'CNSS Risques Professionnels Patronale', 'code' => 'CNSS_BF_AT_PAT', 'type' => 'employer', 'rate' => 3.5, 'cap' => null],
+            ];
+        }
+
+        if ($this->memberCountryCode === 'ML') {
+            // INPS Mali (issue #1829) : retraite salarié 3,6 % + retraite
+            // patronal 7,4 % plafonnés à 3 000 000 XOF/mois, famille patronal
+            // 4,0 % et AT patronal 2,0 % non plafonnés (taux pilote).
+            return [
+                ['name' => 'INPS Retraite Salariale', 'code' => 'INPS_ML_RET_EMP', 'type' => 'employee', 'rate' => 3.6, 'cap' => 3000000.0],
+                ['name' => 'INPS Retraite Patronale', 'code' => 'INPS_ML_RET_PAT', 'type' => 'employer', 'rate' => 7.4, 'cap' => 3000000.0],
+                ['name' => 'INPS Prestations Familiales Patronale', 'code' => 'INPS_ML_FAM_PAT', 'type' => 'employer', 'rate' => 4.0, 'cap' => null],
+                ['name' => 'INPS Risques Professionnels Patronale', 'code' => 'INPS_ML_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
+            ];
+        }
+
+        // Placeholder générique pour les autres membres UEMOA (BJ, TG, NE)
+        // tant que leurs issues pays n'ont pas livré de taux légaux validés.
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNSS_CEDEAO_EMP', 'type' => 'employee', 'rate' => 3.6, 'cap' => null],
             ['name' => 'CNPS/CNSS Patronale (retraite/famille/AT)', 'code' => 'CNSS_CEDEAO_PAT', 'type' => 'employer', 'rate' => 16.4, 'cap' => null],
@@ -133,32 +135,6 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
-        // BF (#1829) : IUTS Burkina Faso (CGI 2024) — tranches ANNUELLES,
-        // taux « tout compris » (contribution communale incluse) —
-        // docs/payroll/BF_COMPLIANCE.md §1.
-        if ($this->memberCountryCode === 'BF') {
-            return [
-                ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
-                ['min' => 600001, 'max' => 1500000, 'rate' => 12.1, 'fixed_deduction' => 0],
-                ['min' => 1500001, 'max' => 3000000, 'rate' => 13.9, 'fixed_deduction' => 0],
-                ['min' => 3000001, 'max' => 4500000, 'rate' => 18.7, 'fixed_deduction' => 0],
-                ['min' => 4500001, 'max' => null, 'rate' => 23.6, 'fixed_deduction' => 0],
-            ];
-        }
-
-        // ML (#1829) : ITS Mali (CGI 2024) — tranches ANNUELLES —
-        // docs/payroll/ML_COMPLIANCE.md §1.
-        if ($this->memberCountryCode === 'ML') {
-            return [
-                ['min' => 0, 'max' => 540000, 'rate' => 0, 'fixed_deduction' => 0],
-                ['min' => 540001, 'max' => 1320000, 'rate' => 5, 'fixed_deduction' => 0],
-                ['min' => 1320001, 'max' => 2040000, 'rate' => 10, 'fixed_deduction' => 0],
-                ['min' => 2040001, 'max' => 3480000, 'rate' => 15, 'fixed_deduction' => 0],
-                ['min' => 3480001, 'max' => 6360000, 'rate' => 20, 'fixed_deduction' => 0],
-                ['min' => 6360001, 'max' => null, 'rate' => 30, 'fixed_deduction' => 0],
-            ];
-        }
-
         // CI (#1825) : ITSAS Côte d'Ivoire (CGI CI art. 116-120) — tranches
         // ANNUELLES : 0–600 000 XOF : 0 % · 600 001–2 000 000 : 2 % ·
         // 2 000 001–5 000 000 : 21 % · 5 000 001–10 000 000 : 24,5 % ·
@@ -171,6 +147,32 @@ class CedeaoPayrollRules extends AbstractCountryRules
                 ['min' => 2000001, 'max' => 5000000, 'rate' => 21, 'fixed_deduction' => 0],
                 ['min' => 5000001, 'max' => 10000000, 'rate' => 24.5, 'fixed_deduction' => 0],
                 ['min' => 10000001, 'max' => null, 'rate' => 29, 'fixed_deduction' => 0],
+            ];
+        }
+
+        if ($this->memberCountryCode === 'BF') {
+            // IUTS Burkina Faso (CGI 2024) — tranches ANNUELLES, taux « tout
+            // compris » (contribution communale incluse) — issue #1829,
+            // docs/payroll/BF_COMPLIANCE.md §1.
+            return [
+                ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
+                ['min' => 600001, 'max' => 1500000, 'rate' => 12.1, 'fixed_deduction' => 0],
+                ['min' => 1500001, 'max' => 3000000, 'rate' => 13.9, 'fixed_deduction' => 0],
+                ['min' => 3000001, 'max' => 4500000, 'rate' => 18.7, 'fixed_deduction' => 0],
+                ['min' => 4500001, 'max' => null, 'rate' => 23.6, 'fixed_deduction' => 0],
+            ];
+        }
+
+        if ($this->memberCountryCode === 'ML') {
+            // ITS Mali (CGI 2024) — tranches ANNUELLES — issue #1829,
+            // docs/payroll/ML_COMPLIANCE.md §1.
+            return [
+                ['min' => 0, 'max' => 540000, 'rate' => 0, 'fixed_deduction' => 0],
+                ['min' => 540001, 'max' => 1320000, 'rate' => 5, 'fixed_deduction' => 0],
+                ['min' => 1320001, 'max' => 2040000, 'rate' => 10, 'fixed_deduction' => 0],
+                ['min' => 2040001, 'max' => 3480000, 'rate' => 15, 'fixed_deduction' => 0],
+                ['min' => 3480001, 'max' => 6360000, 'rate' => 20, 'fixed_deduction' => 0],
+                ['min' => 6360001, 'max' => null, 'rate' => 30, 'fixed_deduction' => 0],
             ];
         }
 
@@ -265,36 +267,6 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        // BF (#1829) : CNSS Burkina Faso — retraite salariale 5,5 % +
-        // patronale 6,5 % + famille 7,0 % plafonnées à 900 000 XOF/mois,
-        // AT 3,5 % non plafonné (docs/payroll/BF_COMPLIANCE.md §3).
-        if ($this->memberCountryCode === 'BF') {
-            return [
-                'employee' => $this->computeContribution($grossSalary, 'CNSS_BF_RET_EMP', 5.5, 900000.0),
-                'employer' => round(
-                    $this->computeContribution($grossSalary, 'CNSS_BF_RET_PAT', 6.5, 900000.0)
-                    + $this->computeContribution($grossSalary, 'CNSS_BF_FAM_PAT', 7.0, 900000.0)
-                    + $this->computeContribution($grossSalary, 'CNSS_BF_AT_PAT', 3.5, null),
-                    2
-                ),
-            ];
-        }
-
-        // ML (#1829) : INPS Mali — retraite salariale 3,6 % + patronale
-        // 7,4 % plafonnées à 3 000 000 XOF/mois, famille 4,0 % + AT 2,0 %
-        // non plafonnés (docs/payroll/ML_COMPLIANCE.md §3).
-        if ($this->memberCountryCode === 'ML') {
-            return [
-                'employee' => $this->computeContribution($grossSalary, 'INPS_ML_RET_EMP', 3.6, 3000000.0),
-                'employer' => round(
-                    $this->computeContribution($grossSalary, 'INPS_ML_RET_PAT', 7.4, 3000000.0)
-                    + $this->computeContribution($grossSalary, 'INPS_ML_FAM_PAT', 4.0, null)
-                    + $this->computeContribution($grossSalary, 'INPS_ML_AT_PAT', 2.0, null),
-                    2
-                ),
-            ];
-        }
-
         // CI (#1825) : CNSS avec plafond statutaire 1 647 315 XOF/mois sur la
         // retraite et la famille ; l'AT (2 %) n'est pas plafonné. Les autres
         // cinq membres CEDEAO restent sur le placeholder (non plafonné)
@@ -320,6 +292,36 @@ class CedeaoPayrollRules extends AbstractCountryRules
         // 1 647 315 XOF/month is applied via computeContribution(); the
         // other five CEDEAO members stay on the placeholder (uncapped)
         // rates until their own member-state issues land (BF/ML: #1829).
+        if ($this->memberCountryCode === 'BF') {
+            // CNSS Burkina Faso (issue #1829) : retraite salariale 5,5 % +
+            // patronale 6,5 % + famille 7,0 % plafonnées à 900 000 XOF/mois,
+            // AT 3,5 % non plafonné (docs/payroll/BF_COMPLIANCE.md §3).
+            return [
+                'employee' => $this->computeContribution($grossSalary, 'CNSS_BF_RET_EMP', 5.5, 900000.0),
+                'employer' => round(
+                    $this->computeContribution($grossSalary, 'CNSS_BF_RET_PAT', 6.5, 900000.0)
+                    + $this->computeContribution($grossSalary, 'CNSS_BF_FAM_PAT', 7.0, 900000.0)
+                    + $this->computeContribution($grossSalary, 'CNSS_BF_AT_PAT', 3.5, null),
+                    2
+                ),
+            ];
+        }
+
+        if ($this->memberCountryCode === 'ML') {
+            // INPS Mali (issue #1829) : retraite salariale 3,6 % + patronale
+            // 7,4 % plafonnées à 3 000 000 XOF/mois, famille 4,0 % + AT 2,0 %
+            // non plafonnés (docs/payroll/ML_COMPLIANCE.md §3).
+            return [
+                'employee' => $this->computeContribution($grossSalary, 'INPS_ML_RET_EMP', 3.6, 3000000.0),
+                'employer' => round(
+                    $this->computeContribution($grossSalary, 'INPS_ML_RET_PAT', 7.4, 3000000.0)
+                    + $this->computeContribution($grossSalary, 'INPS_ML_FAM_PAT', 4.0, null)
+                    + $this->computeContribution($grossSalary, 'INPS_ML_AT_PAT', 2.0, null),
+                    2
+                ),
+            ];
+        }
+
         $cap = $this->memberCountryCode === 'CI' ? 1647315.0 : null;
 
         return [
@@ -339,10 +341,10 @@ class CedeaoPayrollRules extends AbstractCountryRules
      */
     public function noticePeriodDays(float $yearsOfService): float
     {
-        // BF/ML (#1829) : préavis OHADA — niveau employé/technicien (1 mois) ;
-        // ouvriers (8 jours) et cadres (3 mois) documentés dans
-        // BF_COMPLIANCE.md §7 / ML_COMPLIANCE.md §7.
         if (in_array($this->memberCountryCode, ['BF', 'ML'], true)) {
+            // BF/ML (issue #1829) : préavis légal 1 mois quel que soit le
+            // niveau d'ancienneté (docs BF_COMPLIANCE.md §7 / ML_COMPLIANCE.md
+            // §7) — à valider expert.
             return 30.0;
         }
 
@@ -400,13 +402,12 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function confidenceLevel(): string
     {
-        // BF (#1829) et ML (#1829) : IUTS/ITS + CNSS/INPS implémentés depuis
-        // les sources légales publiques (CGI 2024) — niveau 'pilot' tant
-        // qu'un expert-comptable local n'a pas validé les chiffres.
-        // CI passe en 'pilot' (#1825) : barèmes ITSAS CGI 2024 + CNSS + CN +
-        // préavis Code du travail implémentés, à valider par un
-        // expert-comptable ivoirien avant passage en 'production'.
-        return in_array($this->memberCountryCode, ['BF', 'ML', 'CI'], true) ? 'pilot' : 'placeholder';
+        // CI (#1825) : barèmes ITSAS CGI 2024 + CNSS + CN + préavis
+        // implémentés, à valider expert-comptable avant 'production'.
+        // BF/ML (#1829) : IUTS/ITS + CNSS/INPS depuis sources légales
+        // publiques (CGI 2024) — niveau 'pilot' tant qu'un expert local
+        // n'a pas validé les chiffres (issue #1904).
+        return in_array($this->memberCountryCode, ['CI', 'BF', 'ML'], true) ? 'pilot' : 'placeholder';
     }
 
     /**
