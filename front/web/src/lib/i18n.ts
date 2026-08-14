@@ -91,6 +91,7 @@ type CopyTree = {
     columnGross: string;
     columnNet: string;
     columnStatus: string;
+    columnCompliance: string;
     columnActions: string;
     columnEmployees: string;
     columnTotalGross: string;
@@ -404,6 +405,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'Brut',
       columnNet: 'Net',
       columnStatus: 'Statut',
+      columnCompliance: 'Conformite',
       columnActions: 'Actions',
       columnEmployees: 'Employes',
       columnTotalGross: 'Total Brut',
@@ -715,6 +717,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'الإجمالي',
       columnNet: 'الصافي',
       columnStatus: 'الحالة',
+      columnCompliance: 'المطابقة',
       columnActions: 'الإجراءات',
       columnEmployees: 'الموظفون',
       columnTotalGross: 'إجمالي الإجمالي',
@@ -1026,6 +1029,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'Brut',
       columnNet: 'Net',
       columnStatus: 'Durum',
+      columnCompliance: 'Uyumluluk',
       columnActions: 'Islemler',
       columnEmployees: 'Calisanlar',
       columnTotalGross: 'Toplam Brut',
@@ -1337,6 +1341,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'Gross',
       columnNet: 'Net',
       columnStatus: 'Status',
+      columnCompliance: 'Compliance',
       columnActions: 'Actions',
       columnEmployees: 'Employees',
       columnTotalGross: 'Total Gross',

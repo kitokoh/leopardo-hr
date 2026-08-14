@@ -1893,7 +1893,7 @@ paths:
                   data:
                     type: array
                     items:
-                      type: object
+                      $ref: "#/components/schemas/PaySlip"
                   meta:
                     type: object
         "403":
@@ -16362,6 +16362,32 @@ components:
           type: string
           format: date-time
 
+    Compliance:
+      type: object
+      description: >-
+        Issue #1872/#2116 — niveau de confiance des règles pays appliquées
+        à un calcul ou un bulletin. `level` : production | pilot | placeholder
+        | unknown. `warning_key` pointe le catalogue i18n
+        `payroll.compliance_warning_{level}` ; `source` référence la fiche
+        compliance pays ; `verification_date` (nullable) = date de la dernière
+        validation experte (registre docs/payroll/VALIDATION_EXPERTE.md).
+      properties:
+        level:
+          type: string
+          enum: [production, pilot, placeholder, unknown]
+        warning:
+          type: string
+        warning_key:
+          type: string
+          example: payroll.compliance_warning_pilot
+        source:
+          type: string
+          example: docs/payroll/CI_COMPLIANCE.md
+        verification_date:
+          type: string
+          format: date
+          nullable: true
+
     PaySlip:
       type: object
       properties:
@@ -16375,6 +16401,33 @@ components:
           type: integer
         period_year:
           type: integer
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        period:
+          type: string
+          description: Libellé court `YYYY-MM` du bulletin (champ calculé, issue #2116)
+          example: "2026-05"
+        employee_name:
+          type: string
+          nullable: true
+          description: Nom complet calculé `prénom nom` (champ calculé, issue #2116)
+        country_code:
+          type: string
+          nullable: true
+          description: Pays du run de paie (source du bloc compliance)
+          example: CI
+        compliance:
+          allOf:
+            - $ref: "#/components/schemas/Compliance"
+          nullable: true
+          description: >-
+            Bloc conformité (issue #2116) — null quand le pays du run n'est
+            pas supporté par le moteur (rétro-compatible : aucun affichage
+            côté client)
         gross_salary:
           type: number
         net_salary:

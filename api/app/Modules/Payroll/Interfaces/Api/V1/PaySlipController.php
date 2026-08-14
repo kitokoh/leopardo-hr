@@ -45,7 +45,9 @@ class PaySlipController extends Controller
 
         $query = PaySlip::query()
             ->where('company_id', $actor->company_id)
-            ->with(['employee:id,first_name,last_name,email']);
+            // Issue #2116 — payrollRun porté pour le bloc `compliance`
+            // (country_code) exposé par PaySlipResource.
+            ->with(['employee:id,first_name,last_name,email', 'payrollRun:id,country_code']);
 
         if (! empty($validated['payroll_run_id'])) {
             $runId = (int) $validated['payroll_run_id'];
@@ -91,7 +93,7 @@ class PaySlipController extends Controller
         }
 
         $slips = $payrollRun->paySlips()
-            ->with(['employee:id,first_name,last_name,email', 'lines'])
+            ->with(['employee:id,first_name,last_name,email', 'lines', 'payrollRun:id,country_code'])
             ->paginate($request->integer('per_page', 20));
 
         $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', $payrollRun, [
@@ -112,7 +114,7 @@ class PaySlipController extends Controller
             abort(403);
         }
 
-        $paySlip->load(['employee:id,first_name,last_name,email', 'lines', 'payrollRun']);
+        $paySlip->load(['employee:id,first_name,last_name,email', 'lines', 'payrollRun:id,country_code']);
 
         $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.detail', $paySlip);
 

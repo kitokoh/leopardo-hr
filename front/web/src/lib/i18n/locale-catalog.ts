@@ -58,6 +58,19 @@ export function catalogDirection(locale: AppLocale): 'ltr' | 'rtl' {
   return locale === 'ar' ? 'rtl' : 'ltr';
 }
 
+/**
+ * Interpole les placeholders `{name}` d'un template i18n avec des valeurs.
+ * Les clés inconnues restent telles quelles (aucune perte d'information).
+ *
+ * @example
+ *   interpolate('Règles pilotes pour {country} : …', { country: 'CI' })
+ */
+export function interpolate(template: string, params: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) =>
+    key in params ? String(params[key]) : match,
+  );
+}
+
 /** Liste toutes les langues avec leur label natif depuis les catalogues. */
 export function getLocaleOptions(): Array<{ value: AppLocale; label: string; nativeLabel: string }> {
   const locales: AppLocale[] = ['fr', 'ar', 'tr', 'en'];
