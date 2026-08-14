@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
@@ -67,7 +68,7 @@ class EndOfContractService
 
         try {
             $rules = $this->calculator->getRules($countryCode);
-        } catch (\InvalidArgumentException) {
+        } catch (UnsupportedCountryRulesException) {
             $rules = $this->calculator->getRules('DZ');
         }
 
