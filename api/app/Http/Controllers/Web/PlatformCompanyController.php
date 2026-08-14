@@ -327,7 +327,7 @@ class PlatformCompanyController extends Controller
         }
 
         if ($hasPayrollData) {
-            $message = 'Le pays d'un tenant avec des donnees de paie (runs ou structures salariales) ne peut pas etre modifie (invariant 9). Purge/export prealable requis.';
+            $message = 'Le pays d\'un tenant avec des donnees de paie (runs ou structures salariales) ne peut pas etre modifie (invariant 9). Purge/export prealable requis.';
             if ($request->expectsJson()) {
                 return new JsonResponse([
                     'message' => $message,
