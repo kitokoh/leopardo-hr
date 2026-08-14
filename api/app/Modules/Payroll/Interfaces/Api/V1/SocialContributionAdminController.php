@@ -7,10 +7,14 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
@@ -21,10 +25,23 @@ use Illuminate\Validation\Rule;
  * pays ; les overrides par entreprise restent gérés côté tenant.
  *
  * Compatible #1813 : lignes créées `active` (référentiel officiel).
+ *
+ * Issue #1923 (revue lead) :
+ * - chaque mutation (store/update/destroy) est TRACÉE dans
+ *   `tax_rate_change_log` (actor_role = platform_admin) et exécutée dans une
+ *   transaction ;
+ * - garde d'unicité : pas de doublon ACTIF pour la même identité
+ *   (pays, code) avec une fenêtre d'effet qui chevauche la nouvelle
+ *   (`AbstractCountryRules::resolveContribution()` fait un `->first()` sur le
+ *   code : deux lignes actives simultanées rendraient le taux ambigu).
  */
 class SocialContributionAdminController extends Controller
 {
-    public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
+    public function __construct(
+        private readonly PayrollCalculator $payrollCalculator,
+        private readonly TaxRateValidationService $validation,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         $this->assertPlatformAdmin($request);
@@ -53,18 +70,41 @@ class SocialContributionAdminController extends Controller
 
         $validated = $this->validatePayload($request);
 
-        $contribution = SocialContribution::create([
-            'company_id' => null,
-            'country_code' => strtoupper($validated['country_code']),
-            'name' => $validated['name'],
-            'code' => $validated['code'],
-            'type' => $validated['type'],
-            'rate' => $validated['rate'],
-            'cap' => $validated['cap'] ?? null,
-            'effective_from' => $validated['effective_from'],
-            'effective_to' => $validated['effective_to'] ?? null,
-            'status' => SocialContribution::STATUS_ACTIVE,
-        ]);
+        $countryCode = strtoupper($validated['country_code']);
+        $effectiveFrom = (string) $validated['effective_from'];
+        $effectiveTo = isset($validated['effective_to']) && $validated['effective_to'] !== null
+            ? (string) $validated['effective_to']
+            : null;
+
+        // Issue #1923 — garde d'unicité avant création (doublon actif).
+        $this->assertNoOverlappingActiveContribution(
+            $countryCode,
+            $validated['code'],
+            $effectiveFrom,
+            $effectiveTo,
+        );
+
+        /** @var SuperAdmin $actor */
+        $actor = $request->user();
+
+        $contribution = DB::transaction(function () use ($countryCode, $validated, $effectiveFrom, $effectiveTo, $actor): SocialContribution {
+            $contribution = SocialContribution::create([
+                'company_id' => null,
+                'country_code' => $countryCode,
+                'name' => $validated['name'],
+                'code' => $validated['code'],
+                'type' => $validated['type'],
+                'rate' => $validated['rate'],
+                'cap' => $validated['cap'] ?? null,
+                'effective_from' => $effectiveFrom,
+                'effective_to' => $effectiveTo,
+                'status' => SocialContribution::STATUS_ACTIVE,
+            ]);
+
+            $this->validation->logAdminCreated($contribution, $actor);
+
+            return $contribution;
+        });
 
         return response()->json(['data' => $this->serialize($contribution)], 201);
     }
@@ -75,7 +115,39 @@ class SocialContributionAdminController extends Controller
 
         /** @var SocialContribution $contribution */
         $contribution = SocialContribution::query()->whereNull('company_id')->findOrFail($socialContribution);
-        $contribution->update($this->validatePayload($request, partial: true));
+
+        $validated = $this->validatePayload($request, partial: true);
+
+        // Normalisation pays (le guard d'unicité compare en majuscules).
+        if (isset($validated['country_code'])) {
+            $validated['country_code'] = strtoupper((string) $validated['country_code']);
+        }
+
+        // Issue #1923 — la garde d'unicité porte sur l'identité/window APRÈS
+        // fusion (update partiel : les champs absents gardent leur valeur).
+        $merged = array_merge([
+            'country_code' => $contribution->country_code,
+            'code' => $contribution->code,
+            'effective_from' => $contribution->effective_from->toDateString(),
+            'effective_to' => $contribution->effective_to?->toDateString(),
+        ], $validated);
+
+        $this->assertNoOverlappingActiveContribution(
+            strtoupper((string) $merged['country_code']),
+            (string) $merged['code'],
+            (string) $merged['effective_from'],
+            isset($merged['effective_to']) && $merged['effective_to'] !== null ? (string) $merged['effective_to'] : null,
+            exceptId: (int) $contribution->id,
+        );
+
+        /** @var SuperAdmin $actor */
+        $actor = $request->user();
+
+        DB::transaction(function () use ($contribution, $validated, $actor): void {
+            $previous = TaxRateChangeLog::snapshot($contribution);
+            $contribution->update($validated);
+            $this->validation->logAdminUpdated($contribution, $actor, $previous);
+        });
 
         return response()->json(['data' => $this->serialize($contribution->refresh())]);
     }
@@ -86,9 +158,53 @@ class SocialContributionAdminController extends Controller
 
         /** @var SocialContribution $contribution */
         $contribution = SocialContribution::query()->whereNull('company_id')->findOrFail($socialContribution);
-        $contribution->delete();
+
+        /** @var SuperAdmin $actor */
+        $actor = $request->user();
+
+        DB::transaction(function () use ($contribution, $actor): void {
+            $snapshot = TaxRateChangeLog::snapshot($contribution);
+            $contribution->delete();
+            $this->validation->logAdminDeleted($contribution, $actor, $snapshot);
+        });
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Issue #1923 — garde d'unicité : refuse un doublon ACTIF de même code
+     * (pays + code) dont la fenêtre d'effet chevauche
+     * [effectiveFrom, effectiveTo] (bornes incluses, null = ouvert).
+     */
+    private function assertNoOverlappingActiveContribution(
+        string $countryCode,
+        string $code,
+        string $effectiveFrom,
+        ?string $effectiveTo,
+        ?int $exceptId = null,
+    ): void {
+        $query = SocialContribution::query()
+            ->whereNull('company_id')
+            ->where('country_code', $countryCode)
+            ->where('status', SocialContribution::STATUS_ACTIVE)
+            ->where('code', $code);
+
+        if ($exceptId !== null) {
+            $query->whereKeyNot($exceptId);
+        }
+
+        // Chevauchement : a1 <= b2 AND b1 <= a2 (b2/a2 null = +∞).
+        $query->where(function (Builder $q) use ($effectiveFrom): void {
+            $q->whereNull('effective_to')->orWhere('effective_to', '>=', $effectiveFrom);
+        });
+
+        if ($effectiveTo !== null) {
+            $query->where('effective_from', '<=', $effectiveTo);
+        }
+
+        if ($query->exists()) {
+            abort(422, __('payroll.rate_overlap_conflict'));
+        }
     }
 
     /**

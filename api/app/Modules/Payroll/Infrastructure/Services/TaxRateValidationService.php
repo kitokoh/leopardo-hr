@@ -13,7 +13,9 @@ use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Issue #1813 — Workflow de validation des modifications de taux légaux.
@@ -21,12 +23,24 @@ use Illuminate\Support\Collection;
  * Protège `tax_slabs` et `social_contributions` (utilisées directement dans
  * les bulletins) contre les changements accidentels ou non autorisés :
  *
- *   draft → pending_validation → active (l'ancienne ligne active → superseded)
+ *   draft → pending_validation → active (l'ancienne ligne active → fenêtre
+ *                                  d'effet fermée, effective_to = nouveau
+ *                                  effective_from − 1 jour)
  *                                ↘ rejected → draft (motif tracé)
  *
- * - Seules les lignes `status = active` sont utilisées dans les calculs
- *   (filtre ajouté dans AbstractCountryRules::resolveTaxSlabsFromDatabase et
- *   resolveContribution).
+ * Issue #1923 (revue lead) :
+ * - Chaque transition s'exécute dans UNE transaction (statut + supersession
+ *   + audit ne peuvent plus être désynchronisés) ;
+ * - Le rejet ne tamponne PLUS `validated_by`/`validated_at` (seule
+ *   l'approbation valide) ;
+ * - La rétroactivité (PA2-ARCH-004) : l'ancienne ligne reste `active` avec
+ *   sa fenêtre FERMÉE au lieu d'un flip `superseded` — un recalcul historique
+ *   (`asOf()`) résout encore l'ancien taux pour les périodes antérieures ;
+ * - Les messages sont localisés (catalogue `payroll`, 4 langues).
+ *
+ * - Seules les lignes `status = active` ET effectives à la date calculée
+ *   sont utilisées dans les calculs (AbstractCountryRules::resolveTaxSlabsFromDatabase
+ *   et resolveContribution).
  * - Chaque transition écrit une entrée immuable dans `tax_rate_change_log`
  *   (append-only, état avant/après en JSONB).
  * - Approbation réservée au platform_admin ; soumission réservée au
@@ -48,21 +62,26 @@ class TaxRateValidationService
         $this->assertTable($model);
 
         if ($model->status !== TaxSlab::STATUS_DRAFT) {
-            throw new \DomainException(sprintf(
-                'Seule une ligne en brouillon peut être soumise (statut actuel : %s).',
-                (string) $model->status,
-            ));
+            throw new \DomainException(__('payroll.rate_submit_draft_only', [
+                'status' => (string) $model->status,
+            ]));
         }
 
-        $previous = TaxRateChangeLog::snapshot($model);
-        $model->forceFill([
-            'status' => TaxSlab::STATUS_PENDING,
-            'submitted_by' => $actor->id,
-            'rejection_reason' => null,
-        ])->save();
+        // Issue #1923 : statut + audit dans la même transaction — plus de
+        // demi-transition possible en cas d'erreur entre les deux requêtes.
+        DB::transaction(function () use ($model, $actor): void {
+            $previous = TaxRateChangeLog::snapshot($model);
+            $model->forceFill([
+                'status' => TaxSlab::STATUS_PENDING,
+                'submitted_by' => $actor->id,
+                'rejection_reason' => null,
+            ])->save();
 
-        $this->log($model, TaxRateChangeLog::ACTION_SUBMITTED, (int) $actor->id, 'employee', $previous);
+            $this->log($model, TaxRateChangeLog::ACTION_SUBMITTED, (int) $actor->id, 'employee', $previous);
+        });
 
+        // Notification après commit (listener synchrone best-effort : un
+        // échec d'email ne doit jamais faire échouer la transition).
         TaxRateSubmitted::dispatch($model, $actor);
 
         return $model;
@@ -70,7 +89,9 @@ class TaxRateValidationService
 
     /**
      * Approuve une ligne pending (pending_validation → active).
-     * L'ancienne ligne active de même identité passe en superseded.
+     * L'ancienne ligne active de même identité voit sa fenêtre d'effet
+     * fermée (effective_to = nouveau effective_from − 1 jour) au lieu d'un
+     * flip `superseded` : la rétroactivité PA2-ARCH-004 reste possible.
      *
      * @param  TaxSlab|SocialContribution  $model
      *
@@ -81,33 +102,31 @@ class TaxRateValidationService
         $this->assertTable($model);
 
         if ($model->status !== TaxSlab::STATUS_PENDING) {
-            throw new \DomainException(sprintf(
-                'Seule une ligne en attente de validation peut être approuvée (statut actuel : %s).',
-                (string) $model->status,
-            ));
+            throw new \DomainException(__('payroll.rate_approve_pending_only', [
+                'status' => (string) $model->status,
+            ]));
         }
 
-        $previous = TaxRateChangeLog::snapshot($model);
+        DB::transaction(function () use ($model, $actor): void {
+            $previous = TaxRateChangeLog::snapshot($model);
 
-        // L'ancienne ligne active de même identité devient superseded.
-        foreach ($this->activeIdenticalRows($model) as $oldRow) {
-            $oldPrevious = TaxRateChangeLog::snapshot($oldRow);
-            $oldRow->forceFill([
-                'status' => TaxSlab::STATUS_SUPERSEDED,
+            // Les lignes actives de même identité dont la fenêtre CHEVAUCHE la
+            // nouvelle sont fermées (les lignes déjà closes restent intactes).
+            foreach ($this->activeIdenticalRows($model) as $oldRow) {
+                $oldPrevious = TaxRateChangeLog::snapshot($oldRow);
+                $this->closeOldRowWindow($oldRow, $model);
+
+                $this->log($oldRow, TaxRateChangeLog::ACTION_SUPERSEDED, (int) $actor->id, 'platform_admin', $oldPrevious);
+            }
+
+            $model->forceFill([
+                'status' => TaxSlab::STATUS_ACTIVE,
                 'validated_by' => $actor->id,
                 'validated_at' => now(),
             ])->save();
 
-            $this->log($oldRow, TaxRateChangeLog::ACTION_SUPERSEDED, (int) $actor->id, 'platform_admin', $oldPrevious);
-        }
-
-        $model->forceFill([
-            'status' => TaxSlab::STATUS_ACTIVE,
-            'validated_by' => $actor->id,
-            'validated_at' => now(),
-        ])->save();
-
-        $this->log($model, TaxRateChangeLog::ACTION_APPROVED, (int) $actor->id, 'platform_admin', $previous);
+            $this->log($model, TaxRateChangeLog::ACTION_APPROVED, (int) $actor->id, 'platform_admin', $previous);
+        });
 
         TaxRateApproved::dispatch($model, $actor);
 
@@ -116,6 +135,10 @@ class TaxRateValidationService
 
     /**
      * Rejette une ligne pending (pending_validation → draft) avec motif.
+     *
+     * Issue #1923 : le rejet ne tamponne PAS `validated_by`/`validated_at` —
+     * seule l'approbation signifie « validé ». La ligne rejetée repart en
+     * draft avec le motif, prête à être corrigée puis re-soumise.
      *
      * @param  TaxSlab|SocialContribution  $model
      *
@@ -126,25 +149,24 @@ class TaxRateValidationService
         $this->assertTable($model);
 
         if ($model->status !== TaxSlab::STATUS_PENDING) {
-            throw new \DomainException(sprintf(
-                'Seule une ligne en attente de validation peut être rejetée (statut actuel : %s).',
-                (string) $model->status,
-            ));
+            throw new \DomainException(__('payroll.rate_reject_pending_only', [
+                'status' => (string) $model->status,
+            ]));
         }
 
         if (trim($reason) === '') {
-            throw new \DomainException('Un motif de rejet est obligatoire.');
+            throw new \DomainException(__('payroll.rate_reject_reason_required'));
         }
 
-        $previous = TaxRateChangeLog::snapshot($model);
-        $model->forceFill([
-            'status' => TaxSlab::STATUS_DRAFT,
-            'validated_by' => $actor->id,
-            'validated_at' => now(),
-            'rejection_reason' => trim($reason),
-        ])->save();
+        DB::transaction(function () use ($model, $actor, $reason): void {
+            $previous = TaxRateChangeLog::snapshot($model);
+            $model->forceFill([
+                'status' => TaxSlab::STATUS_DRAFT,
+                'rejection_reason' => trim($reason),
+            ])->save();
 
-        $this->log($model, TaxRateChangeLog::ACTION_REJECTED, (int) $actor->id, 'platform_admin', $previous, trim($reason));
+            $this->log($model, TaxRateChangeLog::ACTION_REJECTED, (int) $actor->id, 'platform_admin', $previous, trim($reason));
+        });
 
         TaxRateRejected::dispatch($model, $actor, trim($reason));
 
@@ -181,6 +203,46 @@ class TaxRateValidationService
     }
 
     /**
+     * Issue #1923 — audit du CRUD admin national (company_id IS NULL).
+     *
+     * Les lignes nationales du référentiel légal ne passent pas par le
+     * workflow draft→validation : le platform_admin les crée/modifie/
+     * supprime directement. Chaque mutation est tracée dans
+     * `tax_rate_change_log` (action created/updated/deleted/reset,
+     * actor_role = platform_admin) pour préserver l'audit trail immuable.
+     *
+     * @param  TaxSlab|SocialContribution  $model
+     */
+    public function logAdminCreated(Model $model, SuperAdmin $actor): void
+    {
+        $this->assertTable($model);
+
+        $this->log($model, TaxRateChangeLog::ACTION_CREATED, (int) $actor->id, 'platform_admin');
+    }
+
+    /**
+     * @param  TaxSlab|SocialContribution  $model
+     * @param  array<string, mixed>  $previous  snapshot AVANT la mise à jour
+     */
+    public function logAdminUpdated(Model $model, SuperAdmin $actor, array $previous): void
+    {
+        $this->assertTable($model);
+
+        $this->log($model, TaxRateChangeLog::ACTION_UPDATED, (int) $actor->id, 'platform_admin', $previous);
+    }
+
+    /**
+     * @param  TaxSlab|SocialContribution  $model
+     * @param  array<string, mixed>  $snapshot  état de la ligne au moment de la suppression
+     */
+    public function logAdminDeleted(Model $model, SuperAdmin $actor, array $snapshot): void
+    {
+        $this->assertTable($model);
+
+        $this->log($model, TaxRateChangeLog::ACTION_DELETED, (int) $actor->id, 'platform_admin', $snapshot, null, $snapshot);
+    }
+
+    /**
      * @param  TaxSlab|SocialContribution  $model
      * @return \Illuminate\Database\Eloquent\Collection<int, TaxSlab|SocialContribution>
      */
@@ -200,10 +262,50 @@ class TaxRateValidationService
             $query->where('code', $model->code);
         }
 
+        // Issue #1923 — ne fermer QUE les lignes dont la fenêtre d'effet
+        // chevauche la nouvelle (une ligne déjà close avant le nouveau
+        // effective_from doit rester intacte : la refermer l'ÉTENDRAIT).
+        $query->where(function ($q) use ($model): void {
+            $q->whereNull('effective_to')->orWhere('effective_to', '>=', $model->effective_from);
+        });
+
+        if ($model->effective_to !== null) {
+            $query->where('effective_from', '<=', $model->effective_to);
+        }
+
         /** @var \Illuminate\Database\Eloquent\Collection<int, TaxSlab|SocialContribution> $rows */
         $rows = $query->whereKeyNot($model->getKey())->get();
 
         return $rows;
+    }
+
+    /**
+     * Issue #1923 (PA2-ARCH-004) — ferme la fenêtre d'effet de l'ancienne
+     * ligne active au lieu de flipper son statut :
+     *
+     * - cas nominal : `effective_to = nouveau effective_from − 1 jour`, la
+     *   ligne reste `active` → `active() + effective(asOf)` résout encore
+     *   l'ancien taux pour les périodes antérieures au changement ;
+     * - cas dégénéré (nouvelle ligne qui démarre avant/le même jour que
+     *   l'ancienne) : une fenêtre fermée serait inversée (effective_to <
+     *   effective_from) — l'ancienne ligne est entièrement remplacée et
+     *   passe `superseded` (elle ne matchera jamais `effective()`).
+     *
+     * @param  TaxSlab|SocialContribution  $oldRow
+     * @param  TaxSlab|SocialContribution  $newRow
+     */
+    private function closeOldRowWindow(Model $oldRow, Model $newRow): void
+    {
+        $newEffectiveFrom = Carbon::parse($newRow->effective_from);
+        $closureDate = $newEffectiveFrom->copy()->subDay();
+
+        if (Carbon::parse($oldRow->effective_from)->greaterThan($closureDate)) {
+            $oldRow->forceFill(['status' => TaxSlab::STATUS_SUPERSEDED])->save();
+
+            return;
+        }
+
+        $oldRow->forceFill(['effective_to' => $closureDate->toDateString()])->save();
     }
 
     private function tableName(Model $model): string
@@ -228,6 +330,7 @@ class TaxRateValidationService
 
     /**
      * @param  array<string, mixed>|null  $previous
+     * @param  array<string, mixed>|null  $newValue
      */
     private function log(
         Model $model,
@@ -236,6 +339,7 @@ class TaxRateValidationService
         string $actorRole,
         ?array $previous = null,
         ?string $reason = null,
+        ?array $newValue = null,
     ): void {
         TaxRateChangeLog::create([
             'table_name' => $this->tableName($model),
@@ -244,7 +348,7 @@ class TaxRateValidationService
             'actor_id' => $actorId,
             'actor_role' => $actorRole,
             'previous_value' => $previous,
-            'new_value' => TaxRateChangeLog::snapshot($model),
+            'new_value' => $newValue ?? TaxRateChangeLog::snapshot($model),
             'reason' => $reason,
         ]);
     }
