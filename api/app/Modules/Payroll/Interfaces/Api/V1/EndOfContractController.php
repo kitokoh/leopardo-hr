@@ -41,8 +41,13 @@ class EndOfContractController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.settlement', $employee);
 
+        // #1943 — motif de départ optionnel : end_of_term (CDD), resignation,
+        // misconduct (faute lourde) → pas d'indemnité de préavis ; layoff →
+        // préavis (défaut si non précisé).
+        $departureReason = $request->query('departure_reason');
+
         return response()->json([
-            'data' => $this->service->settlement($employee),
+            'data' => $this->service->settlement($employee, null, is_string($departureReason) && $departureReason !== '' ? $departureReason : null),
         ]);
     }
 

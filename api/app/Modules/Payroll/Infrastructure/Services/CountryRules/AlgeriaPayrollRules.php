@@ -23,14 +23,13 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
-        // Issue #1819 — ASSURANCE CHÔMAGE DZ : AUCUNE cotisation salariale ni
-        // patronale applicable au secteur privé. L'allocation chômage
-        // algérienne (LF 2022, art. 189 ; décrets exécutifs n° 22-70 du
-        // 10/02/2022 et n° 26-87 du 21/01/2026) bénéficie aux primo-demandeurs
-        // d'emploi inscrits à l'ANEM et est financée par le budget de l'État
-        // (≈ 420 Mds DZD en LF 2026), pas par les entreprises. La CNAC
-        // (décret exécutif n° 94-188) finance la création d'activités des
-        // demandeurs d'emploi — ce n'est pas une assurance chômage cotisée.
+        // Issue #1819/#1943 — ASSURANCE CHÔMAGE DZ : PAS de ligne de
+        // cotisation séparée AC_DZ_EMP/AC_DZ_PAT (double cotisation interdite).
+        // Le régime contributif CNAC (décret législatif n° 94-11, art. 94-188 ;
+        // décrets exécutifs n° 22-70/26-87) couvre les salariés du privé
+        // licenciés pour motif économique : 1 % patronal + 0,5 % salarié, DÉJÀ
+        // inclus dans les agrégats CNAS (9 % / 26 %) ci-dessous. L'allocation
+        // chômage des primo-demandeurs (ANEM) est financée par l'État.
         // → pas de codes AC_DZ_EMP / AC_DZ_PAT (docs/payroll/DZ_COMPLIANCE.md §7).
         return [
             ['name' => 'CNAS Salariale', 'code' => 'CNAS_EMP', 'type' => 'employee', 'rate' => 9.0, 'cap' => null],
@@ -153,20 +152,28 @@ class AlgeriaPayrollRules extends AbstractCountryRules
      * expert comptable DZ ne les a pas validées (confidenceLevel='pilot').
      */
     /**
-     * Issue #1819 — Préavis DZ (délai-congé de licenciement).
+     * Issue #1819/#1943 — Préavis DZ (délai-congé de licenciement).
      *
      * La Loi n° 90-11 du 21/04/1990 ne fixe PAS de durée légale ferme : elle
      * renvoie aux conventions collectives / au règlement intérieur (pendant le
      * délai-congé, le travailleur dispose de 2 h/jour cumulables et rémunérées
      * pour rechercher un emploi, art. 73-4). L'usage dominant en pratique
      * algérienne, retenu ici comme valeur par défaut paramétrable :
-     *   1 mois (30 j) si ancienneté < 10 ans, 2 mois (60 j) si ≥ 10 ans.
+     *   1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans.
+     *
+     * #1943 — les jours retournés sont des JOURS OUVRÉS (22/44, semaine de
+     * 5 jours, STANDARD_WORKING_DAYS) : l'indemnité compensatrice de préavis
+     * est la rémunération de la période de préavis (Loi 90-11 art. 98) et le
+     * moteur paie `base × jours / workingDays(22)` — des jours CALENDAIRES
+     * (30/60) sur-payaient de 1,36× (30/22) chaque mois de préavis. 1 mois
+     * de préavis = 22 jours ouvrés → indemnité = 1 salaire mensuel exact.
+     *
      * (cf. docs/payroll/DZ_COMPLIANCE.md §7 — confidenceLevel reste 'pilot',
      * validation expert comptable DZ requise avant passage en 'production'.)
      */
     public function noticePeriodDays(float $yearsOfService): float
     {
-        return $yearsOfService >= 10.0 ? 60.0 : 30.0;
+        return $yearsOfService >= 10.0 ? 44.0 : 22.0;
     }
 
     /**

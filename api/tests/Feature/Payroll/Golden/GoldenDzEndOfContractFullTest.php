@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
- * DZ-DEPTH (issue #1819) — assurance chômage DZ + préavis légaux.
+ * DZ-DEPTH (issue #1819/#1943) — assurance chômage DZ + préavis légaux.
  *
  * Préavis DZ (Loi 90-11, art. 73-4/98 — renvoi aux conventions collectives ;
  * usage dominant retenu : 1 mois < 10 ans, 2 mois ≥ 10 ans) :
  *   indemnité de préavis non effectué = base × noticeDays / workingDays
- *   (30 j calendaires → 30/22ᵉ du salaire mensuel, golden F-08).
+ *   avec noticeDays en JOURS OUVRÉS (#1943 : 22/44 au lieu de 30/60
+ *   calendaires — 30/22 sur-payait 1,36× le salaire mensuel).
  *
  * Valeurs calculées à la main — référence docs/payroll/DZ_COMPLIANCE.md §7.
  */
@@ -27,12 +28,12 @@ class GoldenDzEndOfContractFullTest extends TestCase
     public static function noticeProvider(): array
     {
         return [
-            // [ancienneté, jours de préavis, indemnité sur base 200 000 / 22 j]
-            'moins de 1 an (0,5)'   => [0.5, 30.0, 272727.27],  // 200 000 × 30/22
-            '5 ans (1 mois)'        => [5.0, 30.0, 272727.27],  // 200 000 × 30/22
-            '9 ans 11 mois'         => [9.9, 30.0, 272727.27],
-            '10 ans (2 mois)'       => [10.0, 60.0, 545454.55], // 200 000 × 60/22
-            '12 ans'                => [12.0, 60.0, 545454.55],
+            // [ancienneté, jours de préavis OUVRÉS, indemnité sur base 200 000 / 22 j]
+            'moins de 1 an (0,5)'   => [0.5, 22.0, 200000.00],  // 200 000 × 22/22 = 1 mois
+            '5 ans (1 mois)'        => [5.0, 22.0, 200000.00],  // 200 000 × 22/22
+            '9 ans 11 mois'         => [9.9, 22.0, 200000.00],
+            '10 ans (2 mois)'       => [10.0, 44.0, 400000.00], // 200 000 × 44/22 = 2 mois
+            '12 ans'                => [12.0, 44.0, 400000.00],
         ];
     }
 
@@ -59,45 +60,46 @@ class GoldenDzEndOfContractFullTest extends TestCase
 
     public function test_notice_period_under_5_years(): void
     {
-        // Ancienneté 3 ans → préavis 1 mois (30 j) → indemnité 200 000 × 30/22.
-        $this->assertSame(30.0, (new AlgeriaPayrollRules)->noticePeriodDays(3.0));
+        // Ancienneté 3 ans → préavis 1 mois (22 j ouvrés) → indemnité 200 000 × 22/22.
+        $this->assertSame(22.0, (new AlgeriaPayrollRules)->noticePeriodDays(3.0));
 
         $settlement = (new PayrollCalculator)->computeFinalSettlement(
-            200000.0, 3.0, 22.0, 22.0, 0.0, 2400000.0, 1.0, 30.0
+            200000.0, 3.0, 22.0, 22.0, 0.0, 2400000.0, 1.0, 22.0
         );
 
-        $this->assertSame(272727.27, $settlement['notice_pay']);
+        $this->assertSame(200000.00, $settlement['notice_pay']);
     }
 
     public function test_notice_period_5_to_10_years(): void
     {
-        // Ancienneté 8 ans → préavis 1 mois (30 j) → indemnité 200 000 × 30/22.
-        $this->assertSame(30.0, (new AlgeriaPayrollRules)->noticePeriodDays(8.0));
+        // Ancienneté 8 ans → préavis 1 mois (22 j ouvrés) → indemnité 200 000 × 22/22.
+        $this->assertSame(22.0, (new AlgeriaPayrollRules)->noticePeriodDays(8.0));
 
         $settlement = (new PayrollCalculator)->computeFinalSettlement(
-            200000.0, 8.0, 22.0, 22.0, 0.0, 2400000.0, 1.0, 30.0
+            200000.0, 8.0, 22.0, 22.0, 0.0, 2400000.0, 1.0, 22.0
         );
 
-        $this->assertSame(272727.27, $settlement['notice_pay']);
+        $this->assertSame(200000.00, $settlement['notice_pay']);
     }
 
     public function test_notice_period_over_10_years(): void
     {
-        // Ancienneté 15 ans → préavis 2 mois (60 j) → indemnité 200 000 × 60/22.
-        $this->assertSame(60.0, (new AlgeriaPayrollRules)->noticePeriodDays(15.0));
+        // Ancienneté 15 ans → préavis 2 mois (44 j ouvrés) → indemnité 200 000 × 44/22.
+        $this->assertSame(44.0, (new AlgeriaPayrollRules)->noticePeriodDays(15.0));
 
         $settlement = (new PayrollCalculator)->computeFinalSettlement(
-            200000.0, 15.0, 22.0, 22.0, 0.0, 2400000.0, 1.0, 60.0
+            200000.0, 15.0, 22.0, 22.0, 0.0, 2400000.0, 1.0, 44.0
         );
 
-        $this->assertSame(545454.55, $settlement['notice_pay']);
+        $this->assertSame(400000.00, $settlement['notice_pay']);
     }
 
-    public function test_no_unemployment_insurance_contribution_in_dz(): void
+    public function test_no_separate_unemployment_insurance_line_in_dz(): void
     {
-        // Issue #1819 — l'allocation chômage DZ (LF 2022 art. 189, décrets
-        // 22-70/26-87) est financée par l'État, pas par les entreprises :
-        // aucune cotisation AC_DZ_EMP / AC_DZ_PAT dans le référentiel DZ.
+        // Issue #1943 — pas de ligne AC_DZ_EMP / AC_DZ_PAT séparée : le régime
+        // contributif CNAC (décret législatif 94-11, 1 % patronal + 0,5 %
+        // salarié) est DÉJÀ inclus dans les agrégats CNAS (9 % / 26 %) — une
+        // ligne séparée serait une double cotisation.
         $codes = array_map(
             static fn (array $c): string => $c['code'],
             (new AlgeriaPayrollRules)->socialContributions()

@@ -18,11 +18,10 @@ use Tests\TestCase;
  * licenciement) sont consommées par EndOfContractService au lieu de valeurs
  * codées en dur (avant : severanceMonthsPerYear=1.0, noticeDays=0.0 inline).
  *
- * Valeurs pilot DZ documentées dans docs/payroll/DZ_COMPLIANCE.md §7 — aucun
- * changement de calcul par rapport au comportement historique (F-08) : la
+ * Valeurs pilot DZ documentées dans docs/payroll/DZ_COMPLIANCE.md §7 : la
  * mécanique devient paramétrable par pays, les valeurs DZ restent 1 mois/an
- * et 0 jour de préavis, à valider par expert comptable DZ (confidenceLevel
- * 'pilot').
+ * et 22/44 jours ouvrés de préavis (#1943 — plus de surpaie 30/22), à valider
+ * par expert comptable DZ (confidenceLevel 'pilot').
  */
 class GoldenDzEndOfContractRulesTest extends TestCase
 {
@@ -32,11 +31,12 @@ class GoldenDzEndOfContractRulesTest extends TestCase
     {
         $rules = new AlgeriaPayrollRules();
 
-        // Issue #1819 — préavis DZ (usage dominant, Loi 90-11 art. 73-4/98 —
-        // renvoi aux conventions collectives) : 1 mois < 10 ans, 2 mois ≥ 10 ans.
-        $this->assertSame(30.0, $rules->noticePeriodDays(5.0));
-        $this->assertSame(30.0, $rules->noticePeriodDays(0.5));
-        $this->assertSame(60.0, $rules->noticePeriodDays(12.0));
+        // Issue #1819/#1943 — préavis DZ (usage dominant, Loi 90-11 art.
+        // 73-4/98) : 1 mois < 10 ans, 2 mois ≥ 10 ans, en JOURS OUVRÉS
+        // (22/44 — 30/60 calendaires sur-payaient de 1,36×).
+        $this->assertSame(22.0, $rules->noticePeriodDays(5.0));
+        $this->assertSame(22.0, $rules->noticePeriodDays(0.5));
+        $this->assertSame(44.0, $rules->noticePeriodDays(12.0));
         $this->assertSame(1.0, $rules->severanceMonthsPerYear(5.0));
         $this->assertSame(1.0, $rules->severanceMonthsPerYear(12.0));
     }
@@ -51,6 +51,7 @@ class GoldenDzEndOfContractRulesTest extends TestCase
             'salary_base' => 60000.0,
             'contract_start' => '2021-01-01',
             'contract_end' => '2026-01-01', // 60 mois = 5 ans exacts
+            'contract_type' => 'CDI', // préavis dû (licenciement CDI)
         ]);
 
         $service = new EndOfContractService();
@@ -58,8 +59,8 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
         // Golden F-08 (calculé à la main) : 60 000 × 5 ans × 1,0 mois/an = 300 000 DZD.
         $this->assertSame(300000.0, $settlement['breakdown']['severance']);
-        // Issue #1819 — préavis 1 mois (30 j) : 60 000 × 30/22 = 81 818,18 DZD.
-        $this->assertSame(81818.18, $settlement['breakdown']['notice_pay']);
+        // Issue #1943 — préavis 1 mois en jours ouvrés : 60 000 × 22/22 = 60 000 DZD.
+        $this->assertSame(60000.0, $settlement['breakdown']['notice_pay']);
         // Cohérence du solde : prorata + congés + préavis + licenciement.
         $expectedTotal = round(
             $settlement['breakdown']['prorated_pay']
@@ -91,5 +92,37 @@ class GoldenDzEndOfContractRulesTest extends TestCase
 
         $this->expectException(UnsupportedCountryRulesException::class);
         $service->settlement($employee, Carbon::parse('2026-01-01'));
+    }
+
+    public function test_no_notice_pay_for_fixed_term_end_or_resignation(): void
+    {
+        // Issue #1943 — l'indemnité de préavis n'est due que si l'employeur
+        // licencie (layoff) et dispense du préavis : CDD à terme naturel,
+        // démission et faute lourde ne génèrent AUCUN préavis.
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'salary_base' => 60000.0,
+            'contract_start' => '2024-01-01',
+            'contract_end' => '2026-01-01',
+            'contract_type' => 'CDD',
+        ]);
+
+        $service = new EndOfContractService();
+
+        $endOfTerm = $service->settlement($employee, Carbon::parse('2026-01-01'), 'end_of_term');
+        $this->assertSame(0.0, $endOfTerm['breakdown']['notice_pay']);
+
+        $resignation = $service->settlement($employee, Carbon::parse('2026-01-01'), 'resignation');
+        $this->assertSame(0.0, $resignation['breakdown']['notice_pay']);
+
+        $misconduct = $service->settlement($employee, Carbon::parse('2026-01-01'), 'misconduct');
+        $this->assertSame(0.0, $misconduct['breakdown']['notice_pay']);
+
+        // Licenciement (layoff) : préavis dû — 60 000 × 22/22 = 60 000.
+        $layoff = $service->settlement($employee, Carbon::parse('2026-01-01'), 'layoff');
+        $this->assertSame(60000.0, $layoff['breakdown']['notice_pay']);
     }
 }

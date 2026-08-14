@@ -22,7 +22,9 @@ use Carbon\Carbon;
  *
  * Régime DZ (documenté, à valider comptable — FOCUS 2 F-31, règles pays) :
  *  - préavis : durée légale résolue via `CountryRulesInterface::noticePeriodDays`
- *    (valeur pilote DZ : 0 — à renseigner selon le contrat / l'exécution) ;
+ *    (jours OUVRÉS — #1943, 22/44) ; l'indemnité n'est due que si l'employeur
+ *    licencie (layoff) et dispense le préavis — `departureReason` exclut les
+ *    départs sans préavis (CDD à terme naturel, démission, faute lourde) ;
  *  - indemnité d'ancienneté : 1 mois de salaire par année via
  *    `CountryRulesInterface::severanceMonthsPerYear` (Loi 90-11, plafond
  *    légal non appliqué ici — à paramétrer par entreprise).
@@ -46,7 +48,7 @@ class EndOfContractService
      *   breakdown: array{prorated_pay: float, leave_indemnity: float, notice_pay: float, severance: float, total: float}
      * }
      */
-    public function settlement(Employee $employee, ?Carbon $endDate = null): array
+    public function settlement(Employee $employee, ?Carbon $endDate = null, ?string $departureReason = null): array
     {
         $endDate = $endDate ?? $this->resolveEndDate($employee);
         $monthlyBase = $this->monthlyBase($employee);
@@ -56,6 +58,12 @@ class EndOfContractService
         $proratedDays = $this->proratedDays($employee, $endDate);
         $unpaidLeaveDays = $this->unpaidLeaveDays($employee, $endDate);
         $referenceGross = $this->referenceGross12Months($employee, $endDate);
+
+        // #1943 — conditionnement du préavis : l'indemnité compensatrice n'est
+        // due que lorsque l'employeur licencie et dispense du préavis. Aucun
+        // préavis pour : CDD arrivé à son terme naturel, démission, faute
+        // lourde (le paramètre permet aussi d'indiquer qu'il a été effectué).
+        $noticeDue = $departureReason === null || $departureReason === 'layoff';
 
         // FOCUS 2 (F-31) : préavis et indemnité de licenciement sont portés
         // par les règles pays (CountryRulesInterface) au lieu de valeurs codées
@@ -76,7 +84,7 @@ class EndOfContractService
             unpaidLeaveDays: $unpaidLeaveDays,
             referenceGross12Months: $referenceGross,
             severanceMonthsPerYear: $rules->severanceMonthsPerYear($yearsOfService),
-            noticeDays: $rules->noticePeriodDays($yearsOfService),
+            noticeDays: $noticeDue ? $rules->noticePeriodDays($yearsOfService) : 0.0,
         );
 
         return [
