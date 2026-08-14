@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["Tests - Leopardo RH", "Web CI - Leopardo Admin"]
     types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,9 +16,14 @@ env:
   DEFAULT_API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
   DEFAULT_API_HEALTHCHECK_URL: https://gestionemployerbackend.onrender.com/api/v1/health
 
+# Issue #1835 : déduplication par SHA — deux parents (Tests + Web CI)
+# complètent chacun pour le même SHA ; le 2e run annule le 1er (qui évalue
+# le même SHA, donc même décision) au lieu d'empiler 2 déploiements + 2 E2E
+# + 2 OWASP. Deux SHA différents restent indépendants (pas d'annulation
+# croisée) : le gate anti-stale de deploy-main tranche seul.
 concurrency:
-  group: deploy-main-${{ github.event.workflow_run.head_branch || github.ref }}
-  cancel-in-progress: false
+  group: deploy-main-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
 
 jobs:
   prepare:
