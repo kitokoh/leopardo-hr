@@ -138,7 +138,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import {
@@ -150,7 +149,6 @@ import {
   CreditCardIcon,
   ChatBubbleLeftRightIcon,
   CogIcon,
-  DocumentTextIcon,
   ArrowRightOnRectangleIcon,
   CurrencyEuroIcon,
   CalendarDaysIcon,
@@ -183,7 +181,6 @@ defineProps({
 
 defineEmits(['close'])
 
-const router = useRouter()
 const localeStore = useLocaleStore()
 /** Traduction avec fallback sur le libellé anglais de la clé */
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)

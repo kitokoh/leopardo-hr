@@ -200,9 +200,6 @@ import { useToast } from 'vue-toastification'
 import {
   ArrowPathIcon,
   ChatBubbleBottomCenterTextIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  XCircleIcon,
   InboxIcon,
   PaperAirplaneIcon,
   XMarkIcon

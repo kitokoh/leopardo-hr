@@ -151,7 +151,7 @@ defineEmits(['analyze-features', 'create-campaign'])
 
 // Computed properties
 const features = computed(() => {
-  return props.data.sort((a, b) => b.adoption - a.adoption)
+  return [...props.data].sort((a, b) => b.adoption - a.adoption)
 })
 
 const averageAdoption = computed(() => {

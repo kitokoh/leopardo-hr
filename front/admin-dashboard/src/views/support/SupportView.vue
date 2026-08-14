@@ -192,10 +192,6 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import {
   ArrowPathIcon,
-  ChatBubbleBottomCenterTextIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  XCircleIcon,
   ExclamationTriangleIcon,
   InboxIcon,
   TagIcon,

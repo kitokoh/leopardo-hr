@@ -327,7 +327,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { Switch } from '@headlessui/vue'
@@ -335,9 +335,6 @@ import {
   ArrowLeftIcon,
   ArrowPathIcon,
   ExclamationCircleIcon,
-  HeartIcon,
-  UsersIcon,
-  FingerPrintIcon,
   BanknotesIcon,
   BoltIcon,
   CheckBadgeIcon,

@@ -313,30 +313,6 @@ const securityStatus = reactive({
 // System configuration
 const systemConfig = ref({})
 
-// Scaling configuration
-const scalingConfig = reactive({
-  enabled: true,
-  minInstances: 2,
-  maxInstances: 10,
-  targetCpuPercent: 70,
-  scaleUpCooldown: 300,
-  scaleDownCooldown: 600
-})
-
-const scalingMetrics = reactive({
-  currentInstances: 3,
-  averageCpu: 45,
-  requestsPerSecond: 150
-})
-
-// Load balancer
-const loadBalancerNodes = ref([])
-const trafficMetrics = reactive({
-  totalRequests: 15420,
-  averageResponseTime: 89,
-  errorRate: 0.02
-})
-
 // Auto-refresh interval
 let metricsInterval = null
 
@@ -362,7 +338,6 @@ async function loadSystemData() {
       loadSecurityAlerts(),
       loadApiTests(),
       loadSystemConfig(),
-      loadLoadBalancerNodes(),
       updatePerformanceMetrics()
     ])
   } catch (error) {
@@ -557,41 +532,6 @@ async function loadSystemConfig() {
   }
 }
 
-async function loadLoadBalancerNodes() {
-  // Mock load balancer nodes
-  loadBalancerNodes.value = [
-    {
-      id: 1,
-      name: 'api-node-1',
-      ip: '10.0.1.10',
-      status: 'healthy',
-      connections: 145,
-      cpu: 45,
-      memory: 67,
-      responseTime: 89
-    },
-    {
-      id: 2,
-      name: 'api-node-2',
-      ip: '10.0.1.11',
-      status: 'healthy',
-      connections: 132,
-      cpu: 52,
-      memory: 71,
-      responseTime: 92
-    },
-    {
-      id: 3,
-      name: 'api-node-3',
-      ip: '10.0.1.12',
-      status: 'draining',
-      connections: 23,
-      cpu: 15,
-      memory: 34,
-      responseTime: 78
-    }
-  ]
-}
 
 function startMetricsRefresh() {
   // Update metrics every 5 seconds
@@ -667,24 +607,6 @@ async function toggleMaintenanceMode() {
 function refreshMetrics() {
   updatePerformanceMetrics()
   toast.success('Métriques actualisées')
-}
-
-// Task management
-function toggleTask(taskId) {
-  const task = automatedTasks.value.find(t => t.id === taskId)
-  if (task) {
-    task.enabled = !task.enabled
-    toast.success(`Tâche ${task.enabled ? 'activée' : 'désactivée'}`)
-  }
-}
-
-function editTask(task) {
-  toast.info(`Ã‰dition de la tâche: ${task.name}`)
-}
-
-function deleteTask(taskId) {
-  automatedTasks.value = automatedTasks.value.filter(t => t.id !== taskId)
-  toast.success('Tâche supprimée')
 }
 
 function handleTaskCreated(task) {
@@ -790,38 +712,5 @@ function handleApiTestCreated(test) {
   apiTests.value.push(test)
   showApiTesterModal.value = false
   toast.success('Test API créé')
-}
-
-// Scaling
-function updateScalingConfig(config) {
-  Object.assign(scalingConfig, config)
-  toast.success('Configuration d\'auto-scaling mise Ã  jour')
-}
-
-function manualScale(action) {
-  if (action === 'up') {
-    scalingMetrics.currentInstances++
-    toast.success('Instance ajoutée manuellement')
-  } else {
-    scalingMetrics.currentInstances--
-    toast.success('Instance supprimée manuellement')
-  }
-}
-
-// Load Balancer
-function toggleLoadBalancerNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = node.status === 'healthy' ? 'unhealthy' : 'healthy'
-    toast.success(`NÅ“ud ${node.name} ${node.status === 'healthy' ? 'activé' : 'désactivé'}`)
-  }
-}
-
-function drainNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = 'draining'
-    toast.info(`Drainage du nÅ“ud ${node.name} en cours`)
-  }
 }
 </script>
