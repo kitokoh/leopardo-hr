@@ -49,23 +49,15 @@ class PayrollCalculationContractTest extends TestCase
 
     public function test_golden_ci_contract(): void
     {
-        // Calcul manuel (CI #1825/#1893 — CGI CI art. 116-120) — brut 500 000 XOF :
+        // Calcul manuel (CI #1918 — réforme ITS 2024, CGI art. 119 bis) — brut 500 000 XOF :
         //   CNSS retraite salariale 3,2 % = 16 000 (plafond 1 647 315 non atteint)
         //   Patronal : retraite 4,5 % = 22 500 · famille 5,75 % = 28 750 ·
         //   AT 2,0 % = 10 000 → 61 250
-        //   Assiette = 500 000 − 16 000 = 484 000
-        //   Abattement frais pro 20 % sur le BRUT (transmis par le moteur,
-        //   #1893 — gap « présentateur ne transmet pas le brut réel » #1924/#1891
-        //   résolu par #1869) = 100 000
-        //   Base annuelle = (484 000 − 100 000) × 12 = 4 608 000
-        //   ITSAS annuel : 0-600k × 0 % = 0 · 600k-2M × 2 % = 28 000 ·
-        //     2M-4,608M × 21 % = 547 680 → 575 680 / 12 = 47 973,33
-        //   Contribution Nationale = (500 000 − 50 000) × 1,5 % = 6 750
-        //   Net = 500 000 − 16 000 − 47 973,33 − 6 750 = 429 276,67
+        //   ITS unifié MENSUEL sur le BRUT (plus d'abattement ni de CN) :
+        //     75 001–240 000 × 16 % = 26 400 · 240 001–500 000 × 21 %
+        //     = 260 000 × 21 % = 54 600 → 81 000,00
+        //   Net = 500 000 − 16 000 − 81 000 = 403 000,00
         //   Coût employeur = 500 000 + 61 250 = 561 250
-        // NB : l'abattement s'applique sur le BRUT réel (valeur du bulletin —
-        // le présentateur historique l'appliquait sur l'assiette, d'où un
-        // écart simulation ≠ bulletin corrigé par #1869).
         $contract = $this->presenter()->present('CI', 500000.0);
 
         $this->assertSame('CI', $contract['country_code']);
@@ -73,10 +65,10 @@ class PayrollCalculationContractTest extends TestCase
         $this->assertSame('pilot', $contract['confidence_level']);
         $this->assertEquals(16000.0, $contract['social_employee']);
         $this->assertEquals(484000.0, $contract['tax_base']);
-        $this->assertEquals(47973.33, $contract['income_tax']);
-        $this->assertEquals(6750.0, $contract['bracket_tax']);
-        $this->assertEquals(6750.0, $contract['other_deductions']);
-        $this->assertEquals(429276.67, $contract['net_salary']);
+        $this->assertEquals(81000.0, $contract['income_tax']);
+        $this->assertEquals(0.0, $contract['bracket_tax']);
+        $this->assertEquals(0.0, $contract['other_deductions']);
+        $this->assertEquals(403000.0, $contract['net_salary']);
         $this->assertEquals(61250.0, $contract['social_employer']);
         $this->assertEquals(561250.0, $contract['total_cost']);
     }

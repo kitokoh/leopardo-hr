@@ -11,11 +11,10 @@ use PHPUnit\Framework\TestCase;
  * #1825 — Côte d'Ivoire (CI) : CedeaoPayrollRules de "placeholder" → "pilot".
  *
  * Règles implémentées (référence : docs/payroll/CI_COMPLIANCE.md) :
- *   - ITSAS (CGI CI art. 116-120) : 5 tranches annuelles, assiette =
- *     brut − CNSS salariale − abattement frais pro 20 % (non plafonné)
- *   - CN (Contribution Nationale) : 1,5 % sur la part du brut mensuel
- *     > 50 000 XOF — calculée séparément (calculateBracketTax) et sommée
- *     avec l'ITSAS sur le bulletin
+ *   - ITS unifié 2024 (ordonnance 2023-718/719, CGI art. 119 bis) : 6
+ *     tranches MENSUELLES sur le brut (0/16/21/24/28/32 %) — réforme qui
+ *     supprime l'ancien ITSAS annuel (0/2/21/24,5/29 %) et la CN 1,5 %
+ *     (fusionnés dans l'ITS unique, #1918)
  *   - CNSS : retraite 3,2 % salarié + 4,5 % patronal, famille 5,75 %
  *     patronal (plafond 1 647 315 XOF/mois), AT 2,0 % patronal non plafonné
  *   - 13ème mois obligatoire (conventions de branche OHADA-CI)
@@ -39,49 +38,47 @@ class CedeaoRulesUnitTest extends TestCase
         $this->assertSame('CI', $this->rules()->countryCode());
     }
 
-    public function test_ci_itsas_and_cn_calculated_separately(): void
+    public function test_ci_its_2024_unique_on_gross(): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §1) — brut mensuel 200 000 XOF :
-        //   CNSS salariale 3,2 % = 6 400 → assiette transmise par le moteur
-        //   = 200 000 − 6 400 = 193 600.
-        //   Abattement 20 % = 38 720 → base ITSAS = 154 880/mois
-        //   → annuel 1 858 560 → tranche 2 % sur (1 858 560 − 600 000)
-        //   = 1 258 560 × 2 % = 25 171,20 → ITSAS mensuel = 2 097,60.
-        //   CN = (200 000 − 50 000) × 1,5 % = 2 250,00.
-        //   Impôt total mensuel = 2 097,60 + 2 250,00 = 4 347,60.
-        $itsas = $this->rules()->calculateIncomeTax(193600.0);
+        // Calcul manuel (CI_COMPLIANCE.md §1 — ITS 2024, #1918) — base = brut
+        // mensuel 200 000 XOF (la CNSS salariale n'est plus déduite de la
+        // base ITS depuis la réforme) :
+        //   ITS = 75 001–200 000 × 16 % = 125 000 × 16 % = 20 000,00.
+        //   CN abolie → calculateBracketTax = 0,00.
+        //   Impôt total mensuel = 20 000,00.
+        $its = $this->rules()->calculateIncomeTax(200000.0);
         $cn = $this->rules()->calculateBracketTax(200000.0);
 
-        $this->assertSame(2097.6, $itsas);
-        $this->assertSame(2250.0, $cn);
-        $this->assertSame(4347.6, round($itsas + $cn, 2));
+        $this->assertSame(20000.0, $its);
+        $this->assertSame(0.0, $cn);
+        $this->assertSame(20000.0, round($its + $cn, 2));
     }
 
-    public function test_ci_abatement_20_percent(): void
+    public function test_ci_abatement_supprime_2024(): void
     {
-        // Sans abattement, l'ITSAS sur 193 600/mois (annuel 2 323 200)
-        // serait 2 872,00 ; avec abattement 20 % (annuel 1 858 560) il
-        // tombe à 2 097,60 (CI_COMPLIANCE.md §1).
+        // ITS 2024 (#1918) : plus d'abattement frais pro — l'ITS s'applique
+        // sur le brut (art. 119 bis).
         $this->assertSame(
-            ['rate' => 20.0, 'cap' => null],
+            ['rate' => 0.0, 'cap' => null],
             $this->rules()->professionalExpensesDeduction()
         );
-        $this->assertSame(2097.6, $this->rules()->calculateIncomeTax(193600.0));
+        // Brut 193 600 → 75 001–193 600 × 16 % = 118 600 × 16 % = 18 976,00.
+        $this->assertSame(18976.0, $this->rules()->calculateIncomeTax(193600.0));
 
-        // Haut salaire : abattement 20 % appliqué sans plafonnement.
-        // Brut 1 000 000 → CNSS 32 000 → assiette 968 000 → base 774 400
-        // → annuel 9 292 800 → tranches 2 %/21 %/24,5 % → 1 709 736
-        // → mensuel 142 478,00 (CI_COMPLIANCE.md §1, cas haut salaire).
-        $this->assertSame(142478.0, $this->rules()->calculateIncomeTax(968000.0));
+        // Haut salaire : brut 968 000 → 26 400 (75 001–240 000 × 16 %)
+        // + 117 600 (240 001–800 000 × 21 %) + 168 000 × 24 %
+        // (800 001–968 000) = 40 320 → 184 320,00.
+        $this->assertSame(184320.0, $this->rules()->calculateIncomeTax(968000.0));
     }
 
-    public function test_ci_cn_below_threshold_is_zero(): void
+    public function test_ci_cn_aboli_depuis_2024(): void
     {
-        // CN = max(0, (brut − 50 000)) × 1,5 % → brut ≤ 50 000 → 0.
+        // CN (1,5 %) supprimée par la réforme 2024 (fusionnée dans l'ITS)
+        // → calculateBracketTax = 0 quel que soit le brut (#1918).
         $this->assertSame(0.0, $this->rules()->calculateBracketTax(50000.0));
         $this->assertSame(0.0, $this->rules()->calculateBracketTax(49999.99));
-        // Brut 75 000 → CN = 25 000 × 1,5 % = 375,00.
-        $this->assertSame(375.0, $this->rules()->calculateBracketTax(75000.0));
+        $this->assertSame(0.0, $this->rules()->calculateBracketTax(75000.0));
+        $this->assertSame(0.0, $this->rules()->calculateBracketTax(5000000.0));
     }
 
     public function test_ci_cnss_cap_at_1647315(): void
@@ -157,7 +154,7 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_ci_flat_tax_label_is_contribution_nationale(): void
     {
-        $this->assertSame('Contribution Nationale (CN)', $this->rules()->flatPayrollTaxLabel());
+        $this->assertSame('Taxe de minimum fiscal', $this->rules()->flatPayrollTaxLabel());
         // Les autres pays gardent le libellé générique (ex. TRIMF SN).
         $this->assertSame('Taxe de minimum fiscal', (new CedeaoPayrollRules)->forMemberCountry('BF')->flatPayrollTaxLabel());
     }

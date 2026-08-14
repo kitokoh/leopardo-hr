@@ -309,14 +309,12 @@ class CotisationSimulationTest extends TestCase
     }
 
     /**
-     * Contrat CI (CEDEAO, brut 100 000) — calcul manuel (CI #1825/#1893) :
+     * Contrat CI (CEDEAO, brut 100 000) — calcul manuel (CI #1918, ITS 2024) :
      *   CNSS retraite salariale 3,2 % = 3 200 ;
-     *   assiette = 100 000 − 3 200 = 96 800 ;
-     *   abattement frais pro 20 % sur le brut = 20 000 ;
-     *   base annuelle = (96 800 − 20 000) × 12 = 921 600 ;
-     *   ITSAS : 0–600 000 : 0 · 600 001–921 600 : 321 600 × 2 % = 6 432 → /12 = 536 ;
-     *   Contribution Nationale = (100 000 − 50 000) × 1,5 % = 750 ;
-     *   net = 100 000 − 3 200 − 536 − 750 = 95 514 ;
+     *   assiette exposée = 100 000 − 3 200 = 96 800 ;
+     *   ITS unifié mensuel sur le brut : 75 001–100 000 × 16 %
+     *     = 25 000 × 16 % = 4 000 (plus d'abattement, plus de CN) ;
+     *   net = 100 000 − 3 200 − 4 000 = 92 800 ;
      *   coût = 100 000 + 12 250 = 112 250.
      */
     public function test_contract_ci_cedeao_full_breakdown(): void
@@ -346,16 +344,16 @@ class CotisationSimulationTest extends TestCase
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
         $this->assertEquals(12250.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['taxable_gross']);
-        $this->assertEquals(536.0, $data['income_tax']);
-        $this->assertEquals(750.0, $data['bracket_tax']);
-        $this->assertEquals(4486.0, $data['total_deductions']);
-        $this->assertEquals(95514.0, $data['net_salary']);
+        $this->assertEquals(4000.0, $data['income_tax']);
+        $this->assertEquals(0.0, $data['bracket_tax']);
+        $this->assertEquals(7200.0, $data['total_deductions']);
+        $this->assertEquals(92800.0, $data['net_salary']);
         $this->assertEquals(112250.0, $data['total_cost_employer']);
 
         // Le contrat imbriqué expose les mêmes montants (cohérence).
         $this->assertEquals(3200.0, $data['contract']['social_employee']);
-        $this->assertEquals(750.0, $data['contract']['bracket_tax']);
-        $this->assertEquals(95514.0, $data['contract']['net_salary']);
+        $this->assertEquals(0.0, $data['contract']['bracket_tax']);
+        $this->assertEquals(92800.0, $data['contract']['net_salary']);
     }
 
     /**
