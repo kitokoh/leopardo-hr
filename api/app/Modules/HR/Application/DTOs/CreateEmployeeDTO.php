@@ -61,12 +61,12 @@ final readonly class CreateEmployeeDTO
         // ces chaînes, mais le constructeur typé du DTO (float/int/bool) lèverait un
         // TypeError → HTTP 500. On caste donc explicitement avant construction (#1765).
         foreach (['salary_base', 'hourly_rate'] as $floatField) {
-            if (isset($data[$floatField]) && $data[$floatField] !== null) {
+            if (isset($data[$floatField])) {
                 $data[$floatField] = (float) $data[$floatField];
             }
         }
 
-        if (isset($data['schedule_id']) && $data['schedule_id'] !== null) {
+        if (isset($data['schedule_id'])) {
             $data['schedule_id'] = (int) $data['schedule_id'];
         }
 

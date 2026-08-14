@@ -60,12 +60,12 @@ final readonly class UpdateEmployeeDTO
         // arrivent parfois en chaîne (formulaires HTML, clients mobiles) et feraient
         // échouer le constructeur typé du DTO en TypeError.
         foreach (['salary_base', 'hourly_rate'] as $floatField) {
-            if (isset($validated[$floatField]) && $validated[$floatField] !== null) {
+            if (isset($validated[$floatField])) {
                 $validated[$floatField] = (float) $validated[$floatField];
             }
         }
 
-        if (isset($validated['schedule_id']) && $validated['schedule_id'] !== null) {
+        if (isset($validated['schedule_id'])) {
             $validated['schedule_id'] = (int) $validated['schedule_id'];
         }
 
