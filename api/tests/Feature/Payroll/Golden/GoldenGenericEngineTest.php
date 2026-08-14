@@ -87,6 +87,83 @@ class GoldenGenericEngineTest extends TestCase
             {
                 return [];
             }
+
+            // Stubs des méthodes abstraites (interface #1868) — le test ne
+            // vérifie que les défauts de fin de contrat.
+            public function countryCode(): string
+            {
+                return 'XX';
+            }
+
+            public function currency(): string
+            {
+                return 'XOF';
+            }
+
+            public function minimumWage(): float
+            {
+                return 0.0;
+            }
+
+            /** @return list<array<string, mixed>> */
+            public function socialContributions(): array
+            {
+                return [];
+            }
+
+            public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+            {
+                return 0.0;
+            }
+
+            /** @return array{employee: float, employer: float} */
+            public function calculateSocialCharges(float $grossSalary): array
+            {
+                return ['employee' => 0.0, 'employer' => 0.0];
+            }
+
+            public function timezone(): string
+            {
+                return 'UTC';
+            }
+
+            /** @return list<int> */
+            public function weeklyRestDays(): array
+            {
+                return [0];
+            }
+
+            /** @return list<string> */
+            public function supportedPayCycles(): array
+            {
+                return ['monthly'];
+            }
+
+            public function publicHolidaysSource(): string
+            {
+                return 'none';
+            }
+
+            public function confidenceLevel(): string
+            {
+                return 'placeholder';
+            }
+
+            public function language(): string
+            {
+                return 'fr';
+            }
+
+            public function overtimeThresholdWeeklyHours(): float
+            {
+                return 40.0;
+            }
+
+            /** @return list<array{up_to_hours: float|null, multiplier: float}> */
+            public function overtimeRateTiers(): array
+            {
+                return [['up_to_hours' => null, 'multiplier' => 1.0]];
+            }
         };
 
         $this->assertSame(0.0, $rules->noticePeriodDays(5.0));
