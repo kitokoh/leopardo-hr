@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use Tests\TestCase;
@@ -32,12 +33,37 @@ class PayrollClosingTest extends TestCase
         ]);
     }
 
+    /**
+     * Issue #1767 : un run sans bulletin ne peut plus être validé/verrouillé —
+     * les tests de workflow de clôture doivent donc créer au moins un bulletin.
+     */
+    private function addPaySlip(PayrollRun $run, Employee $employee): void
+    {
+        PaySlip::create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $run->company_id,
+            'employee_id' => $employee->id,
+            'period_start' => $run->period_start,
+            'period_end' => $run->period_end,
+            'gross_salary' => 60000,
+            'total_deductions' => 12442,
+            'net_salary' => 47558,
+            'employer_contributions' => 15600,
+            'total_cost' => 75600,
+            'working_days' => 22,
+            'actual_days_worked' => 22,
+            'overtime_hours' => 0,
+            'status' => 'calculated',
+        ]);
+    }
+
     public function test_validation_rh_then_comptable_lock_flow(): void
     {
         $company = Company::factory()->create();
         $rh = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $comptable = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $run = $this->makeRun($company, PayrollRun::STATUS_CALCULATED);
+        $this->addPaySlip($run, $rh);
 
         $service = new PayrollClosingService();
 
@@ -76,6 +102,7 @@ class PayrollClosingTest extends TestCase
         $rh = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $comptable = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $run = $this->makeRun($company, PayrollRun::STATUS_CALCULATED);
+        $this->addPaySlip($run, $rh);
 
         $service = new PayrollClosingService();
         $service->validateRh($run, $rh);
@@ -91,6 +118,7 @@ class PayrollClosingTest extends TestCase
         $rh = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $comptable = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $run = $this->makeRun($company, PayrollRun::STATUS_CALCULATED);
+        $this->addPaySlip($run, $rh);
 
         $service = new PayrollClosingService();
         $service->validateRh($run, $rh);
