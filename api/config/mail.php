@@ -40,7 +40,12 @@ return [
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
-            'url' => env('MAIL_URL'),
+            // Issue #1766 : une MAIL_URL vide (ex. .env.example par défaut) ne
+            // doit pas être traitée comme une URL — Laravel 12 parse le DSN
+            // vide et écrase `transport` par null → « Unsupported mail
+            // transport [] » à chaque envoi. `?: null` préserve le transport
+            // smtp configuré ci-dessous tant que MAIL_URL est absent/vide.
+            'url' => env('MAIL_URL') ?: null,
             'host' => env('MAIL_HOST', '127.0.0.1'),
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
