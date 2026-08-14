@@ -131,6 +131,11 @@ class CountryIsolationMatrixTest extends TestCase
             'max_amount' => 100000,
             'rate' => 5,
             'fixed_deduction' => 0,
+            // Issue #1813 : seules les lignes ACTIVES participent aux
+            // calculs (le défaut en base est désormais 'draft' depuis la
+            // migration du workflow de validation) — sans ce statut le
+            // barème est ignoré et le test échouait (rate 0.0 au lieu de 5.0).
+            'status' => TaxSlab::STATUS_ACTIVE,
             'effective_from' => '2026-01-01',
         ]);
 
