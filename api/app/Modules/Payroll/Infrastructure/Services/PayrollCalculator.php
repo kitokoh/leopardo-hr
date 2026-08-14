@@ -584,7 +584,6 @@ class PayrollCalculator
                 $distinctDays = 0;
             }
         }
-        }
 
         $hasAttendanceData = $distinctDays > 0;
         // #1919 : le décompte réel est plafonné aux jours ouvrés standards —
