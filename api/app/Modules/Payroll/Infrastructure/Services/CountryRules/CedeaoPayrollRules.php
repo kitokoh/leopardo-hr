@@ -80,7 +80,7 @@ class CedeaoPayrollRules extends AbstractCountryRules
             'ML' => 40000.0,
             'BF' => 34664.0,
             'BJ' => 52000.0,
-            'TG' => 35000.0,
+            'TG' => 52500.0, // SMIG 2023 (52 500 XOF/mois depuis le 01/01/2023)
             'NE' => 30047.0,
             default => 75000.0, // CI
         };
@@ -128,7 +128,23 @@ class CedeaoPayrollRules extends AbstractCountryRules
             ];
         }
 
-        // Placeholder générique pour les autres membres UEMOA (BJ, TG, NE)
+        if ($this->memberCountryCode === 'TG') {
+            // CNSS Togo (issue #2121, loi 67-12 / Code sécurité sociale
+            // 2011-006 — cleiss 2026) : pensions 12,5 % patronal + 4 %
+            // salarial, prestations familiales 3 % patronal, risques
+            // professionnels 2 % patronal — total patronal 17,5 %, assiette
+            // = totalité des revenus (aucun plafond, plancher SMIG).
+            // L'AMU (décret 2023-096/PR, 5 % + 5 %) n'est pas encore
+            // modélisée (suivi expert, TG_COMPLIANCE.md §3).
+            return [
+                ['name' => 'CNSS Pensions Salariale (TG)', 'code' => 'CNSS_TG_VIE_EMP', 'type' => 'employee', 'rate' => 4.0, 'cap' => null],
+                ['name' => 'CNSS Pensions Patronale (TG)', 'code' => 'CNSS_TG_VIE_PAT', 'type' => 'employer', 'rate' => 12.5, 'cap' => null],
+                ['name' => 'CNSS Prestations Familiales Patronale (TG)', 'code' => 'CNSS_TG_FAM_PAT', 'type' => 'employer', 'rate' => 3.0, 'cap' => null],
+                ['name' => 'CNSS Risques Professionnels Patronale (TG)', 'code' => 'CNSS_TG_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
+            ];
+        }
+
+        // Placeholder générique pour les autres membres UEMOA (BJ, NE)
         // tant que leurs issues pays n'ont pas livré de taux légaux validés.
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNSS_CEDEAO_EMP', 'type' => 'employee', 'rate' => 3.6, 'cap' => null],
@@ -189,6 +205,22 @@ class CedeaoPayrollRules extends AbstractCountryRules
             ];
         }
 
+        if ($this->memberCountryCode === 'TG') {
+            // IRPP Togo (issue #2121, CGI art. 74 — Loi n°2022-022 LF 2023,
+            // reconduit) : 8 tranches ANNUELLES progressives, 0 % → 35 %,
+            // assiette = brut − CNSS − abattement 28 % (TG_COMPLIANCE.md §1-§2).
+            return [
+                ['min' => 0, 'max' => 900000, 'rate' => 0, 'fixed_deduction' => 0],
+                ['min' => 900001, 'max' => 3000000, 'rate' => 3, 'fixed_deduction' => 0],
+                ['min' => 3000001, 'max' => 6000000, 'rate' => 10, 'fixed_deduction' => 0],
+                ['min' => 6000001, 'max' => 9000000, 'rate' => 15, 'fixed_deduction' => 0],
+                ['min' => 9000001, 'max' => 12000000, 'rate' => 20, 'fixed_deduction' => 0],
+                ['min' => 12000001, 'max' => 15000000, 'rate' => 25, 'fixed_deduction' => 0],
+                ['min' => 15000001, 'max' => 20000000, 'rate' => 30, 'fixed_deduction' => 0],
+                ['min' => 20000001, 'max' => null, 'rate' => 35, 'fixed_deduction' => 0],
+            ];
+        }
+
         // Conservative placeholder progressive IGR-style schedule, common
         // shape across UEMOA members. confidenceLevel() below explicitly
         // marks this as 'placeholder', not a legally validated figure per
@@ -204,6 +236,25 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
+        if ($this->memberCountryCode === 'TG') {
+            // TG (issue #2121, CGI art. 26 + 74) : assiette = brut − CNSS
+            // salariale − abattement frais pro 28 % (fraction du revenu
+            // ≤ 10 M FCFA/an → déduction mensuelle plafonnée à 233 333,33),
+            // puis barème ANNUEL progressif art. 74 divisé par 12. L'AMU
+            // (5 % salariale, décret 2023-096/PR) et les charges de famille
+            // (10 000/mois/personne, art. 72-73) ne sont pas modélisées
+            // (défaut célibataire 1 part) — TG_COMPLIANCE.md §2.
+            $abatement = $this->professionalExpensesDeduction();
+            $monthlyDeduction = min(
+                $grossTaxable * ($abatement['rate'] / 100),
+                $abatement['cap'] ?? PHP_FLOAT_MAX
+            );
+            $annualTaxable = max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
+            $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
+
+            return round($tax / $annualBasis, 2);
+        }
+
         if ($this->memberCountryCode !== 'CI') {
             $annualTaxable = $grossTaxable * $annualBasis;
             $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
@@ -256,6 +307,14 @@ class CedeaoPayrollRules extends AbstractCountryRules
      */
     public function professionalExpensesDeduction(): array
     {
+        // TG (issue #2121) : abattement forfaitaire frais professionnels
+        // 28 % sur la fraction du revenu n'excédant pas 10 M FCFA/an
+        // (CGI art. 26) → déduction mensuelle plafonnée à 28 % ×
+        // 833 333,33 = 233 333,33 XOF (TG_COMPLIANCE.md §2).
+        if ($this->memberCountryCode === 'TG') {
+            return ['rate' => 28.0, 'cap' => 233333.33];
+        }
+
         return parent::professionalExpensesDeduction();
     }
 
@@ -314,6 +373,22 @@ class CedeaoPayrollRules extends AbstractCountryRules
             ];
         }
 
+        if ($this->memberCountryCode === 'TG') {
+            // CNSS Togo (issue #2121) : pensions salariale 4 % + patronale
+            // 12,5 % + famille 3 % + AT 2 % — toutes NON plafonnées
+            // (assiette = totalité des revenus, cleiss 2026 ;
+            // TG_COMPLIANCE.md §3).
+            return [
+                'employee' => $this->computeContribution($grossSalary, 'CNSS_TG_VIE_EMP', 4.0, null),
+                'employer' => round(
+                    $this->computeContribution($grossSalary, 'CNSS_TG_VIE_PAT', 12.5, null)
+                    + $this->computeContribution($grossSalary, 'CNSS_TG_FAM_PAT', 3.0, null)
+                    + $this->computeContribution($grossSalary, 'CNSS_TG_AT_PAT', 2.0, null),
+                    2
+                ),
+            ];
+        }
+
         $cap = $this->memberCountryCode === 'CI' ? 1647315.0 : null;
 
         return [
@@ -342,6 +417,15 @@ class CedeaoPayrollRules extends AbstractCountryRules
             // niveau d'ancienneté (docs BF_COMPLIANCE.md §7 / ML_COMPLIANCE.md
             // §7) — à valider expert.
             return 30.0;
+        }
+
+        if ($this->memberCountryCode === 'TG') {
+            // TG (issue #2121, Code du travail art. 74) : ouvriers/employés
+            // 1 mois (30 j), agents de maîtrise/cadres 3 mois (90 j). Le
+            // moteur ne transmet pas toujours la catégorie : approximation
+            // pilote sur le niveau employé (30 j), matrice complète
+            // documentée TG_COMPLIANCE.md §6 — à valider expert.
+            return $category === 'cadre' || $category === 'agent_de_maitrise' ? 90.0 : 30.0;
         }
 
         if ($this->memberCountryCode !== 'CI') {
@@ -398,6 +482,10 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return 'CI fixed public holidays: 1er jan, lundi de Pâques, 1er mai, Ascension, lundi de Pentecôte, 7 août, 15 août, 1er nov, 15 nov, 25 déc (CI_COMPLIANCE.md §7) + mobile Islamic holidays (Aïd el-Fitr, Aïd el-Adha, Maouloud) — Islamic calendar wiring pending.';
         }
 
+        if ($this->memberCountryCode === 'TG') {
+            return 'TG fixed public holidays: 1er jan, 13 jan (Fête de la Libération), lundi de Pâques, 27 avril (Fête de l\'Indépendance), 1er mai, Ascension, lundi de Pentecôte, 15 août, 1er nov, 25 déc (TG_COMPLIANCE.md §Statut) + mobile Islamic holidays (Aïd el-Fitr, Aïd el-Adha, Maouloud) — Islamic calendar wiring pending, dates `confirmed` requises (#1930).';
+        }
+
         return 'placeholder: no official CEDEAO/UEMOA member-state public-holiday calendar wired in yet; '.
             'national/religious holidays must be entered manually per company '.
             'until PA2-COUNTRY-012 delivers a real source.';
@@ -410,7 +498,9 @@ class CedeaoPayrollRules extends AbstractCountryRules
         // BF/ML (#1829) : IUTS/ITS + CNSS/INPS depuis sources légales
         // publiques (CGI 2024) — niveau 'pilot' tant qu'un expert local
         // n'a pas validé les chiffres (issue #1904).
-        return in_array($this->memberCountryCode, ['CI', 'BF', 'ML'], true) ? 'pilot' : 'placeholder';
+        // TG (#2121) : IRPP art. 74 + CNSS depuis sources publiques
+        // (CGI, cleiss/CNSS) — 'pilot' en attente de validation experte.
+        return in_array($this->memberCountryCode, ['CI', 'BF', 'ML', 'TG'], true) ? 'pilot' : 'placeholder';
     }
 
     /**

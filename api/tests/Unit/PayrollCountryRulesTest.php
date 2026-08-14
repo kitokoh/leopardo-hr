@@ -322,7 +322,7 @@ class PayrollCountryRulesTest extends TestCase
             'ML' => ['Africa/Bamako', 40000.0],
             'BF' => ['Africa/Ouagadougou', 34664.0],
             'BJ' => ['Africa/Porto-Novo', 52000.0],
-            'TG' => ['Africa/Lome', 35000.0],
+            'TG' => ['Africa/Lome', 52500.0],
             'NE' => ['Africa/Niamey', 30047.0],
         ];
 
@@ -335,10 +335,10 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            // #1825 + #1829 : CI, BF et ML sont passés au niveau 'pilot'
-            // (barèmes légaux implémentés) — les autres membres UEMOA restent
-            // 'placeholder' jusqu'à leurs issues.
-            $expectedConfidence = in_array($memberCode, ['CI', 'BF', 'ML'], true) ? 'pilot' : 'placeholder';
+            // #1825 + #1829 + #2121 : CI, BF, ML et TG sont passés au niveau
+            // 'pilot' (barèmes légaux implémentés) — les autres membres
+            // UEMOA restent 'placeholder' jusqu'à leurs issues.
+            $expectedConfidence = in_array($memberCode, ['CI', 'BF', 'ML', 'TG'], true) ? 'pilot' : 'placeholder';
             self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
             if ($memberCode === 'CI') {
                 self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
@@ -347,6 +347,9 @@ class PayrollCountryRulesTest extends TestCase
                 self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
             } elseif ($memberCode === 'ML') {
                 self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
+            } elseif ($memberCode === 'TG') {
+                self::assertCount(8, $rules->taxSlabs()); // IRPP 8 tranches art. 74
+                self::assertSame(3.0, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
             } else {
                 self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
             }

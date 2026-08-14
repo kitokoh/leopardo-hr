@@ -39,7 +39,7 @@
 | Sénégal | SN | ✅ `pilot` | ✅ 20+ cas | ✅ IPRES/CSS CSV | TRIMF + CFCE + IPRES T2 cadres |
 | Burkina Faso | BF | 🟡 `pilot` | ✅ 6 cas | ❌ | IUTS |
 | Mali | ML | 🟡 `pilot` | ✅ 6 cas | ❌ | ITS + INPS |
-| Togo | TG | 🔴 `placeholder` | ❌ | ❌ | **Prochain candidat CEDEAO** |
+| Togo | TG | 🟡 `pilot` | ✅ 8 cas | ❌ | IRPP art. 74 + CNSS + SMIG 52 500 (#2121) |
 | Bénin | BJ | 🔴 `placeholder` | ❌ | ❌ | |
 | Niger | NE | 🔴 `placeholder` | ❌ | ❌ | |
 
