@@ -6229,6 +6229,35 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /supported-countries:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Registre des pays supportes"
+      description: "Source unique de verite (MULTI-PAYS #1867) : pour chaque pays du referentiel — code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite (regles resolubles ou non)."
+      operationId: listSupportedCountries
+      responses:
+        "200":
+          description: "Registre des pays"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        country: { type: string }
+                        label: { type: string }
+                        language: { type: string }
+                        currency: { type: string }
+                        timezone: { type: string }
+                        confidence: { type: string, enum: [production, pilot, placeholder, unknown] }
+                        available: { type: boolean }
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /me/pay-slips:
     get:
       tags: ["Me"]
@@ -6297,6 +6326,37 @@ paths:
               schema:
                 type: string
                 format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /me/pay-slips/{paySlip}/document:
+    get:
+      tags: ["Me"]
+      summary: "URL de telechargement de mon bulletin archive dans le Cabinet"
+      description: "Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne l'URL de telechargement securise de ce document."
+      operationId: archivedMyPaySlipDocument
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "URL du document archive"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      document_id: { type: integer }
+                      url: { type: string }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -7048,6 +7108,28 @@ paths:
       summary: "Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"
       description: "Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CM."
       operationId: downloadCnpsCmDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV DAS"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Le run ne concerne pas le Cameroun (CNPS CM)"
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/regularize:
     post:
       tags: ["Payroll Engine"]

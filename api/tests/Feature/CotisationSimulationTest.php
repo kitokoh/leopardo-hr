@@ -374,7 +374,7 @@ class CotisationSimulationTest extends TestCase
         ]);
         Sanctum::actingAs($manager);
 
-        /** @var array<string, int|float> $data */
+        /** @var array<string, mixed> $data */
         $data = $this->postJson('/api/v1/cotisation-simulation', [
             'gross_salary' => 5000,
             'country_code' => 'FR',
