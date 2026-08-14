@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Collection;
 use Throwable;
@@ -84,7 +85,7 @@ class BankExportGenerator
         ];
     }
 
-    /** @param Collection<int, \App\Modules\Payroll\Domain\Models\PaySlip> $slips */
+    /** @param Collection<int, PaySlip> $slips */
     private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency): string
     {
         $bank = $this->companyBankDetails($run);
@@ -130,8 +131,7 @@ class BankExportGenerator
         string $currency = 'EUR',
         ?string $companyIban = null,
         ?string $companyBic = null,
-    ): string
-    {
+    ): string {
         if (! is_string($companyIban) || ! is_string($companyBic) || $companyIban === '' || $companyBic === '') {
             throw new \RuntimeException(
                 'Configuration bancaire entreprise manquante (metadata.bank.iban / metadata.bank.bic) — export SEPA impossible.'
