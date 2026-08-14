@@ -97,7 +97,12 @@ class PayrollCountryConfigSeeder extends Seeder
                         'max_amount' => $slab['max'],
                         'rate' => $slab['rate'],
                         'fixed_deduction' => $slab['fixed_deduction'],
-                        'effective_from' => '2026-01-01',
+                        // Issue #1932 : la date d'effet annoncée par le name
+                        // ('BF payroll tax 2024') doit être celle des données —
+                        // 2026-01-01 en dur rendait les slabs 2024/2025
+                        // ineffectifs pour asOf() (repli silencieux sur les
+                        // défauts codés).
+                        'effective_from' => $effectiveFrom,
                         'effective_to' => null,
                         // Issue #1813 : config nationale officielle → active.
                         'status' => TaxSlab::STATUS_ACTIVE,
