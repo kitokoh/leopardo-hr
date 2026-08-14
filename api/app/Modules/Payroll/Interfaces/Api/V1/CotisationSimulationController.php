@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
-use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationAuditRecorder;
@@ -223,17 +222,6 @@ class CotisationSimulationController extends Controller
                 $input,
                 null,
                 PayrollCalculationAudit::STATUS_RULE_MISSING
-            );
-
-            throw $exception;
-        } catch (CountryRulesContextMismatchException $exception) {
-            $this->auditRecorder->recordSimulation(
-                $correlationId,
-                $companyId,
-                $countryCode,
-                $input,
-                null,
-                PayrollCalculationAudit::STATUS_VALIDATION_ERROR
             );
 
             throw $exception;
