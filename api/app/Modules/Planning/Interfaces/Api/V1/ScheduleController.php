@@ -63,6 +63,10 @@ class ScheduleController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        // Issue #2217 : la création d'un planning modifie les horaires de
+        // toute l'entreprise (impacte heures/pointages) → manager uniquement
+        // (aligné sur show/destroy).
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         if (! empty($request->validated('is_default'))) {
             Schedule::where('company_id', $actor->company_id)->where('is_default', true)->update(['is_default' => false]);
@@ -97,6 +101,8 @@ class ScheduleController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        // Issue #2217 : modification de planning → manager uniquement.
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         if (! empty($request->validated('is_default'))) {
             Schedule::where('company_id', $actor->company_id)->where('id', '!=', $schedule->id)->where('is_default', true)->update(['is_default' => false]);
@@ -114,6 +120,9 @@ class ScheduleController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        // Issue #2217 : l'affectation d'employés à un planning impacte leurs
+        // heures de travail → manager uniquement.
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         if ((string) $schedule->company_id !== (string) $actor->company_id) {
             abort(404);

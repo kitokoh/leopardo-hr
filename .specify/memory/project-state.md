@@ -100,6 +100,7 @@
 | Fonctionnalité | État | Remarque |
 |----------------|------|---------|
 | Rotation secrets Redis (#1472) | 🔴 Action humaine | Runbook prêt, force-push = décision humaine |
+| RBAC Fleet & Planning | ✅ | #2217 — routes flotte/planning manager-only |
 | Chiffrement données paie au repos | ✅ | F-17 |
 | RGPD anonymisation (gdpr:anonymize-employee) | ✅ | F-18 |
 | Biométrie rétention/purge (RGPD) | ✅ | S-1 |
