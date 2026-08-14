@@ -114,6 +114,12 @@ class CabinetService
 
     public function deleteDocument(CabinetDocument $document): void
     {
+        // Issue #1817 : un document read_only (ex. bulletin archivé) ne peut
+        // pas être supprimé par un employé — garde côté service.
+        if ($document->read_only) {
+            abort(403, __('errors.FORBIDDEN'));
+        }
+
         Storage::disk($document->disk)->delete($document->path);
         $document->delete();
     }

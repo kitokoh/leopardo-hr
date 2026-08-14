@@ -1197,6 +1197,235 @@ paths:
           $ref: "#/components/responses/Error403"
 
 
+  /admin/tax-slabs:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"
+      operationId: listAdminTaxSlabs
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Tranches nationales"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Platform Admin"]
+      summary: "Créer une tranche nationale (platform_admin) — issue #1814"
+      operationId: storeAdminTaxSlab
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaxSlabInput"
+      responses:
+        "201":
+          description: "Tranche créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/tax-slabs/{taxSlab}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier une tranche nationale (platform_admin) — issue #1814"
+      operationId: updateAdminTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaxSlabInput"
+      responses:
+        "200":
+          description: "Tranche modifiée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer une tranche nationale (platform_admin) — issue #1814"
+      operationId: destroyAdminTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: "Supprimé" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
+  /admin/tax-slabs/reset-defaults:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"
+      operationId: resetAdminTaxSlabs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country_code]
+              properties:
+                country_code: { type: string }
+      responses:
+        "200":
+          description: "Barème réinitialisé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country_code: { type: string }
+                      created: { type: integer }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/payroll/simulate:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814"
+      operationId: simulatePayrollAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollSimulationInput"
+      responses:
+        "200":
+          description: "Résultat de la simulation (non persistant)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollSimulationResult"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/rate-validation/pending:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les modifications de taux en attente de validation — issue #1813"
+      operationId: listPendingRateValidation
+      responses:
+        "200":
+          description: "Barèmes + cotisations en pending_validation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RateValidationItem"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/rate-validation/{table}/{id}/approve:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Approuver une modification de taux (platform_admin) — issue #1813"
+      operationId: approveRateValidation
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema: { type: string, enum: [tax_slabs, social_contributions] }
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Ligne active, ancienne ligne superseded"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RateValidationItem"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/rate-validation/{table}/{id}/reject:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Rejeter une modification de taux avec motif (platform_admin) — issue #1813"
+      operationId: rejectRateValidation
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema: { type: string, enum: [tax_slabs, social_contributions] }
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        "200":
+          description: "Ligne retournée en draft avec motif"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RateValidationItem"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
   /admin/dashboard/stats:
     get:
       tags: ["Platform"]
@@ -6759,6 +6988,145 @@ paths:
         "422":
           description: "Validated runs cannot be cancelled"
 
+  /payroll-runs/{payrollRun}/declarations/cnss-ci:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"
+      description: "CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75 %, AT 2 %, totaux) + TOTAUX. 422 si le run n'est pas CI. RBAC manager ; 404 cross-tenant."
+      operationId: downloadCnssCiDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CI"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/ipres-sn:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"
+      description: "CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 3 %) + TOTAUX. 422 si le run n'est pas SN. RBAC manager ; 404 cross-tenant."
+      operationId: downloadIpresSnDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV IPRES/CSS SN"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/cnps-cm:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"
+      description: "Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CM."
+      operationId: downloadCnpsCmDeclaration
+  /payroll-runs/{payrollRun}/regularize:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un run de régularisation (DZ-DEPTH #1818)"
+      description: "Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon)."
+      operationId: regularizePayrollRun
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV DAS"
+          content:
+            text/csv:
+              schema:
+                type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 2000
+      responses:
+        "201":
+          description: "Run de régularisation créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Le run ne concerne pas le Cameroun (CNPS CM)"
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularizations:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les régularisations d'un run (DZ-DEPTH #1818)"
+      operationId: listPayrollRunRegularizations
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Runs de régularisation liés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /payroll-runs/{payrollRun}/summary:
     get:
       tags: ["Payroll"]
@@ -7036,6 +7404,288 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /admin/public-holidays:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les jours fériés d'un pays/année (super-admin : national + entreprise)"
+      description: "Issue #1811 — CRUD jours fériés par pays. Super-admin : voit tout ; manager principal : nationaux + siens."
+      operationId: listPublicHolidaysAdmin
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string, default: DZ }
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des jours fériés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Platform Admin"]
+      summary: "Créer un jour férié national (super-admin)"
+      operationId: storePublicHolidayAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "201":
+          description: "Jour férié créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /admin/public-holidays/{publicHoliday}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier un jour férié (super-admin)"
+      operationId: updatePublicHolidayAdmin
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "200":
+          description: "Jour férié modifié"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer un jour férié (super-admin)"
+      operationId: destroyPublicHolidayAdmin
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Supprimé"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/islamic-calendar:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les fêtes islamiques d'une année (super-admin)"
+      description: "Issue #1812 — Calendrier islamique dynamique : dates mobiles des fêtes islamiques (Aïd el-Fitr, Aïd el-Adha/Tabaski, Maouloud, Tamkharit, Nouvel an hégirien) saisies par année. Uniquement accessible au super-admin (guard super_admin_api)."
+      operationId: listIslamicCalendar
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fêtes islamiques de l'année + compteur de dates non confirmées"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/IslamicCalendarHoliday"
+                  meta:
+                    type: object
+                    properties:
+                      year: { type: integer }
+                      unconfirmed_count: { type: integer }
+                      unconfirmed:
+                        type: array
+                        items: { type: object }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/islamic-calendar/confirm-year/{year}:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Confirmer toutes les dates islamiques d'une année (super-admin)"
+      operationId: confirmIslamicCalendarYear
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Année confirmée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      year: { type: integer }
+                      confirmed_count: { type: integer }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /admin/islamic-calendar/{holidayKey}/{year}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier/confirmer une fête islamique (super-admin)"
+      operationId: updateIslamicCalendarHoliday
+      parameters:
+        - name: holidayKey
+          in: path
+          required: true
+          schema: { type: string, enum: [eid_al_fitr, eid_al_adha, mawlid, tahmarit, muharram] }
+        - name: year
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IslamicCalendarHolidayInput"
+      responses:
+        "200":
+          description: "Fête islamique mise à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/IslamicCalendarHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /public-holidays:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les jours fériés du pays (manager principal : nationaux + entreprise)"
+      operationId: listPublicHolidays
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string, default: DZ }
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des jours fériés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un jour férié d'entreprise (manager principal)"
+      operationId: storePublicHoliday
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "201":
+          description: "Jour férié créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /public-holidays/{publicHoliday}:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Modifier un jour férié d'entreprise (manager principal)"
+      operationId: updatePublicHoliday
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "200":
+          description: "Jour férié modifié"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer un jour férié d'entreprise (manager principal)"
+      operationId: destroyPublicHoliday
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Supprimé"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+
   /salary-components:
     get:
       tags: ["Payroll Engine"]
@@ -7196,6 +7846,30 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /payroll/simulate:
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Simuler l'impact d'un barème (manager, dry-run) — issue #1814"
+      operationId: simulatePayroll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollSimulationInput"
+      responses:
+        "200":
+          description: "Résultat de la simulation (non persistant)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollSimulationResult"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
   /tax-slabs:
     get:
       tags: ["Payroll Engine"]
@@ -7320,6 +7994,56 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /tax-slabs/{taxSlab}/submit:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Soumettre une tranche d'impot pour validation (manager) — issue #1813"
+      operationId: submitTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Tranche soumise (pending_validation)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /tax-slabs/{taxSlab}/history:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Historique immuable des modifications d'une tranche (manager) — issue #1813"
+      operationId: taxSlabHistory
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Audit trail (tax_rate_change_log, append-only)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
   /social-contributions:
     get:
       tags: ["Payroll Engine"]
@@ -7439,6 +8163,56 @@ paths:
           $ref: "#/components/responses/Error403"
         "404":
           $ref: "#/components/responses/Error404"
+
+  /social-contributions/{socialContribution}/submit:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Soumettre une regle de cotisation pour validation (manager) — issue #1813"
+      operationId: submitSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Cotisation soumise (pending_validation)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /social-contributions/{socialContribution}/history:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Historique immuable des modifications d'une cotisation (manager) — issue #1813"
+      operationId: socialContributionHistory
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Audit trail (tax_rate_change_log, append-only)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
 
   /social-declarations/cnas-dz:
     post:
@@ -15539,6 +16313,15 @@ components:
           type: string
           nullable: true
         status:
+        type:
+          type: string
+          enum: [standard, regularization]
+        original_run_id:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          nullable: true
           type: string
           enum: [draft, calculating, validated, cancelled]
         total_gross:
@@ -15613,6 +16396,96 @@ components:
           type: string
           format: date-time
 
+    TaxRateChangeLog:
+      type: object
+      properties:
+        id: { type: integer }
+        table_name: { type: string, enum: [tax_slabs, social_contributions] }
+        record_id: { type: integer }
+        action: { type: string, enum: [created, submitted, approved, rejected, superseded] }
+        actor_id: { type: integer }
+        actor_role: { type: string }
+        previous_value: { type: object, nullable: true }
+        new_value: { type: object }
+        reason: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+    RateValidationItem:
+      type: object
+      properties:
+        id: { type: integer }
+        table: { type: string, enum: [tax_slabs, social_contributions] }
+        company_id: { type: string, nullable: true }
+        country_code: { type: string }
+        name: { type: string }
+        rate: { type: number }
+        status: { type: string, enum: [draft, pending_validation, active, superseded] }
+        submitted_by: { type: integer, nullable: true }
+        validated_by: { type: integer, nullable: true }
+        validated_at: { type: string, nullable: true }
+        rejection_reason: { type: string, nullable: true }
+        effective_from: { type: string, format: date }
+        effective_to: { type: string, nullable: true }
+    PayrollSimulationInput:
+      type: object
+      required: [country_code, gross_salary]
+      properties:
+        country_code: { type: string }
+        gross_salary: { type: number, minimum: 0 }
+        slabs_override:
+          type: array
+          items:
+            type: object
+            required: [min, rate]
+            properties:
+              min: { type: number, minimum: 0 }
+              max: { type: number, nullable: true }
+              rate: { type: number, minimum: 0, maximum: 100 }
+              fixed_deduction: { type: number, minimum: 0 }
+    PayrollSimulationResult:
+      type: object
+      properties:
+        gross: { type: number }
+        country_code: { type: string }
+        social_employee: { type: number }
+        social_employer: { type: number }
+        tax_base: { type: number }
+        income_tax: { type: number }
+        income_tax_by_slab:
+          type: array
+          items:
+            type: object
+            properties:
+              min: { type: number }
+              max: { type: number, nullable: true }
+              rate: { type: number }
+              taxable_amount: { type: number }
+              tax: { type: number }
+        net: { type: number }
+        total_cost: { type: number }
+    TaxSlabInput:
+      type: object
+      required: [country_code, name, min_amount, rate, effective_from]
+      properties:
+        country_code: { type: string }
+        name: { type: string }
+        min_amount: { type: number, minimum: 0 }
+        max_amount: { type: number, nullable: true }
+        rate: { type: number, minimum: 0, maximum: 100 }
+        fixed_deduction: { type: number, minimum: 0 }
+        effective_from: { type: string, format: date }
+        effective_to: { type: string, format: date, nullable: true }
+    SocialContributionInput:
+      type: object
+      required: [country_code, name, code, type, rate, effective_from]
+      properties:
+        country_code: { type: string }
+        name: { type: string }
+        code: { type: string }
+        type: { type: string, enum: [employee, employer] }
+        rate: { type: number, minimum: 0, maximum: 100 }
+        cap: { type: number, nullable: true, minimum: 0 }
+        effective_from: { type: string, format: date }
+        effective_to: { type: string, format: date, nullable: true }
     TaxSlab:
       type: object
       properties:
@@ -16230,3 +17103,51 @@ components:
           minLength: 8
         company_code:
           type: string
+
+    PublicHoliday:
+      type: object
+      properties:
+        id: { type: integer }
+        company_id: { type: string, nullable: true }
+        country_code: { type: string }
+        name: { type: string }
+        date: { type: string, format: date }
+        year: { type: integer }
+        is_recurring: { type: boolean }
+        month_day: { type: string, nullable: true }
+        holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }
+    PublicHolidayInput:
+      type: object
+      required: [country_code, name, date, year, holiday_type]
+      properties:
+        country_code: { type: string }
+        name: { type: string }
+        date: { type: string, format: date }
+        year: { type: integer }
+        is_recurring: { type: boolean, default: false }
+        month_day: { type: string, nullable: true }
+        holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }
+
+    IslamicCalendarHoliday:
+      type: object
+      properties:
+        id: { type: integer }
+        holiday_key: { type: string, enum: [eid_al_fitr, eid_al_adha, mawlid, tahmarit, muharram] }
+        name: { type: string }
+        year: { type: integer }
+        gregorian_date: { type: string, format: date }
+        duration_days: { type: integer }
+        source: { type: string, enum: [manual, api, computed] }
+        confirmed: { type: boolean }
+        confirmed_by: { type: integer, nullable: true }
+        countries:
+          type: array
+          items: { type: string }
+    IslamicCalendarHolidayInput:
+      type: object
+      required: [gregorian_date, duration_days]
+      properties:
+        gregorian_date: { type: string, format: date }
+        duration_days: { type: integer, minimum: 1, maximum: 5 }
+        confirmed: { type: boolean, default: true }
+        source: { type: string, enum: [manual, api, computed], default: manual }

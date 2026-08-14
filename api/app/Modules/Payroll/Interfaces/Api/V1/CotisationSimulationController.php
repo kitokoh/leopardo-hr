@@ -57,9 +57,10 @@ class CotisationSimulationController extends Controller
         $social = $rules->calculateSocialCharges($gross);
 
         $taxableGross = round($gross - $social['employee'], 2);
-        // Même appel que PayrollCalculator::calculateSlip() : le 2e paramètre
-        // (annualBasis) a un défaut de 12 dans le contrat et toutes les règles.
-        $incomeTax = $rules->calculateIncomeTax($taxableGross);
+        // Même appel que PayrollCalculator::calculateSlip() : le 3e paramètre
+        // (grossForAbatement) = brut réel pour l'abattement frais pro légal
+        // (CM/CI — 30 %/20 % du brut, cf. #1821/#1825).
+        $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $gross);
         $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
 
         $employeeContributions = [];
