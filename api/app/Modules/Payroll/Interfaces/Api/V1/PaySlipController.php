@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Interfaces\Api\V1\CabinetDocumentController;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -173,6 +175,57 @@ class PaySlipController extends Controller
         return (new PaySlipResource($paySlip))->response();
     }
 
+    /**
+     * F-09/#1817 — accès au bulletin archivé dans le Cabinet employé.
+     *
+     * Retourne l'URL de téléchargement sécurisé (authentifiée, tenant-scopée)
+     * du `CabinetDocument` `payslip` archivé par `ArchivePaySlipsToCabinetJob`
+     * lors de la clôture du run.
+     */
+    public function myPaySlipDocument(Request $request, PaySlip $paySlip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($paySlip->employee_id !== $actor->id || $paySlip->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if (! in_array($paySlip->status, ['validated', 'sent'])) {
+            abort(404);
+        }
+
+        $document = CabinetDocument::query()
+            ->where('company_id', $this->legacyCompanyKey($paySlip->company_id))
+            ->where('employee_id', $paySlip->employee_id)
+            ->where('document_type', 'payslip')
+            ->where('read_only', true)
+            ->where('path', $this->archivePathFor($paySlip))
+            ->first();
+
+        if ($document === null) {
+            abort(404, 'Bulletin non encore archivé dans le Cabinet. Réessayez après la génération du PDF.');
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.document', $paySlip, [
+            'scope' => 'self_service',
+            'cabinet_document_id' => $document->id,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'document_id' => $document->id,
+                'name' => $document->name,
+                'original_name' => $document->original_name,
+                'mime_type' => $document->mime_type,
+                'size' => $document->size,
+                'download_url' => action(
+                    [CabinetDocumentController::class, 'download'],
+                    ['cabinetDocument' => $document->id]
+                ),
+            ],
+        ]);
+    }
+
     public function downloadPdf(Request $request, PaySlip $paySlip, PaySlipPdfGenerator $generator): Response
     {
         /** @var Employee $actor */
@@ -241,6 +294,39 @@ class PaySlipController extends Controller
             'sent_count' => $sent,
             'total_slips' => $slips->count(),
         ]);
+    }
+
+    /**
+     * Chemin d'archivage identique à `ArchivePaySlipsToCabinetJob` :
+     * `payslips/{company_id}/{year}/{month}/slip_{employee_id}_{run_id}.pdf`.
+     */
+    private function archivePathFor(PaySlip $paySlip): string
+    {
+        $year = $paySlip->period_end?->format('Y') ?? date('Y');
+        $month = $paySlip->period_end?->format('m') ?? date('m');
+
+        return sprintf(
+            'payslips/%s/%s/%s/slip_%d_%d.pdf',
+            $paySlip->company_id,
+            $year,
+            $month,
+            $paySlip->employee_id,
+            $paySlip->payroll_run_id
+        );
+    }
+
+    /**
+     * `cabinet_documents.company_id` est une clé historique entière (les
+     * tenants modernes portent des UUID) — même convention que
+     * `CabinetService::legacyCompanyKey()`.
+     */
+    private function legacyCompanyKey(string|int|null $companyId): int
+    {
+        if (is_numeric($companyId)) {
+            return (int) $companyId;
+        }
+
+        return 0;
     }
 }
 

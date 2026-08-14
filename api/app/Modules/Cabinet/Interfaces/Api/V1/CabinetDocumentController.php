@@ -85,6 +85,7 @@ class CabinetDocumentController extends Controller
     public function update(UpdateDocumentRequest $request, CabinetDocument $cabinetDocument): JsonResponse
     {
         $this->authorizeOwnership($request, $cabinetDocument);
+        $this->abortIfReadOnly($cabinetDocument);
 
         $document = $this->cabinetService->updateDocument($cabinetDocument, $request->validated());
 
@@ -94,6 +95,7 @@ class CabinetDocumentController extends Controller
     public function destroy(Request $request, CabinetDocument $cabinetDocument): JsonResponse
     {
         $this->authorizeOwnership($request, $cabinetDocument);
+        $this->abortIfReadOnly($cabinetDocument);
 
         $this->cabinetService->deleteDocument($cabinetDocument);
 
@@ -140,6 +142,17 @@ class CabinetDocumentController extends Controller
 
         if ($document->employee_id !== $actor->id) {
             abort(403);
+        }
+    }
+
+    /**
+     * F-09/#1817 : un document archivé en lecture seule (bulletin de paie)
+     * ne peut être ni modifié ni supprimé par l'employé.
+     */
+    private function abortIfReadOnly(CabinetDocument $document): void
+    {
+        if ($document->read_only) {
+            abort(403, 'Ce document est en lecture seule (bulletin archivé) et ne peut pas être modifié ni supprimé.');
         }
     }
 }

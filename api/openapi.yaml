@@ -6075,6 +6075,41 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/pay-slips/{paySlip}/document:
+    get:
+      tags: ["Me"]
+      summary: "Document du bulletin archive dans le Cabinet employe"
+      description: "Retourne les metadonnees et l'URL de telechargement securisee du CabinetDocument (read_only, type payslip) archive automatiquement a la cloture du run (F-09/#1817)."
+      operationId: showMyPaySlipArchivedDocument
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document Cabinet archive du bulletin"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      document_id: { type: integer }
+                      name: { type: string }
+                      original_name: { type: string }
+                      mime_type: { type: string }
+                      size: { type: integer }
+                      download_url: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/balance:
     get:
       tags: ["Me"]

@@ -22,6 +22,8 @@ use Illuminate\Support\Carbon;
  * @property string $disk
  * @property string $path
  * @property string|null $notes
+ * @property string|null $document_type
+ * @property bool $read_only
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
@@ -41,12 +43,15 @@ class CabinetDocument extends Model
         'disk',
         'path',
         'notes',
+        'document_type',
+        'read_only',
     ];
 
     protected $casts = [
         'company_id' => 'integer',
         'employee_id' => 'integer',
         'size' => 'integer',
+        'read_only' => 'boolean',
     ];
 
     /**

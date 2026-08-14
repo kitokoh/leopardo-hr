@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Jobs\ArchivePaySlipsToCabinetJob;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
@@ -27,6 +28,8 @@ use Illuminate\Support\Facades\DB;
  *   modification non tracée.
  * - les colonnes JSON d'audit reçoivent de vrais tableaux (casts `array`),
  *   jamais de json_encode() (double-encodage).
+ * - lock() dispatch ensuite `ArchivePaySlipsToCabinetJob` APRÈS le commit de
+ *   la transaction : le job n'observe jamais un état non commité.
  */
 class PayrollClosingService
 {
@@ -105,7 +108,7 @@ class PayrollClosingService
         // Issue #1767 : interdire la clôture comptable d'un run à 0 bulletin.
         $this->assertHasPaySlips($run);
 
-        return DB::transaction(function () use ($run, $validator): PayrollRun {
+        $locked = DB::transaction(function () use ($run, $validator): PayrollRun {
             $updated = PayrollRun::query()
                 ->whereKey($run->id)
                 ->where('status', PayrollRun::STATUS_VALIDATED)
@@ -137,6 +140,13 @@ class PayrollClosingService
 
             return $run;
         });
+
+        // F-09/#1817 : archivage automatique des bulletins dans le Cabinet
+        // employé. Dispatch APRÈS le commit de la transaction de verrouillage
+        // pour que le job ne lise jamais un état non commité.
+        ArchivePaySlipsToCabinetJob::dispatch($locked->id, $validator->id);
+
+        return $locked;
     }
 
     /**
