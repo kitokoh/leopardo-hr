@@ -138,15 +138,21 @@ class SenegalPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * Issue #1827 : préavis sénégalais (Code du travail) — 8 jours ouvriers,
-     * 1 mois employés/techniciens, 3 mois cadres. L'interface n'expose que
-     * l'ancienneté : implémentation pilote au niveau employé/technicien
-     * (30 jours) ; ouvriers/cadres documentés dans SN_COMPLIANCE.md §8, la
-     * catégorie du contrat sera prise en compte dans un suivi.
+     * Issue #1827/#2123 : préavis sénégalais (Code du travail) — 8 jours
+     * ouvriers, 1 mois employés/techniciens, 3 mois cadres. La catégorie est
+     * portée par `employees.ipres_category` ('cadre' | 'general' | 'ouvrier') :
+     * - 'cadre'  → 90 jours
+     * - 'ouvrier' → 8 jours
+     * - tout autre / null → 30 jours (employés/techniciens, pilote historique)
+     * Valeurs sourcées : SN_COMPLIANCE.md §8 (à valider expert #1904).
      */
-    public function noticePeriodDays(float $yearsOfService): float
+    public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
-        return 30.0;
+        return match (strtolower((string) $category)) {
+            'cadre' => 90.0,
+            'ouvrier', 'worker' => 8.0,
+            default => 30.0, // employés / techniciens (1 mois)
+        };
     }
 
     public function timezone(): string

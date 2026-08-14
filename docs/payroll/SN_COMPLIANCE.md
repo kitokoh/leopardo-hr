@@ -21,7 +21,7 @@
 | Abattement frais pro 30 % (non plafonné) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
 | SMIG 58 900 XOF/mois | ✅ implémentée | — | à valider |
 | Congés (2,1 j/mois = 25,2 j/an, +1 j/5 ans) | 📝 à documenter/test | Code du travail | — |
-| Préavis (8 j ouvriers / 1 m employés / 3 m cadres) | ✅ implémentée (pilot, niveau employé) | Code du travail | à valider expert |
+| Préavis (8 j ouvriers / 1 m employés / 3 m cadres) | ✅ implémentée (pilot, par catégorie #2123) | Code du travail | à valider expert |
 | Jours fériés fixes SN | 📝 via CRUD jours fériés (#1811) | loi | — |
 | Jours fériés islamiques (Korité, Tabaski, Gamou, Taamhrit) | 📝 via calendrier islamique (#1812) | table `islamic_calendar` | — |
 
@@ -120,9 +120,14 @@ plafonnée) — `CFCE_SN_PAT`.
 | Employés / Techniciens | 1 mois |
 | Cadres | 3 mois |
 
-⚠️ L'interface n'expose que l'ancienneté : implémentation pilote au niveau
-**employé/technicien** (30 jours) — ouvriers et cadres documentés ici, la
-catégorie du contrat sera prise en compte dans un suivi.
+**Implémentation (issue #2123)** : la durée est résolue par catégorie via
+`employees.ipres_category` (`SenegalPayrollRules::noticePeriodDays($years, $category)` +
+`EndOfContractService`) : `cadre` → 90 j, `ouvrier`/`worker` → 8 j, tout
+autre/null → 30 j (employés/techniciens). Verrouillé par
+`GoldenSnPayrollTest::test_golden_sn_preavis_par_categorie`. À valider par
+l'expert-comptable local (#1904) ; la valeur `ouvrier` reste à alimenter
+par les données (le champ `ipres_category` ne porte aujourd'hui que
+`cadre`/`general`).
 
 ## 9. Congés payés
 

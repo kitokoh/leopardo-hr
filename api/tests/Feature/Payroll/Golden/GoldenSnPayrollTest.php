@@ -261,13 +261,29 @@ class GoldenSnPayrollTest extends TestCase
 
     public function test_golden_sn_preavis_employe(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §8) : préavis pilote au niveau
-        // employé/technicien = 30 jours (8 j ouvriers / 3 mois cadres
-        // documentés, non implémentés).
+        // Calcul manuel (SN_COMPLIANCE.md §8) : préavis employé/technicien =
+        // 1 mois = 30 jours (défaut, catégorie inconnue ou 'general').
         $rules = $this->rules();
 
         $this->assertSame(30.0, $rules->noticePeriodDays(1.0));
         $this->assertSame(30.0, $rules->noticePeriodDays(10.0));
+        $this->assertSame(30.0, $rules->noticePeriodDays(5.0, 'general'));
+        $this->assertSame(30.0, $rules->noticePeriodDays(5.0, null));
+    }
+
+    public function test_golden_sn_preavis_par_categorie(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §8 — Code du travail Sénégal,
+        // issue #2123) : la durée dépend de la catégorie du contrat
+        // (employees.ipres_category) :
+        //   ouvriers → 8 jours · employés/techniciens → 1 mois (30 j) ·
+        //   cadres → 3 mois (90 j)
+        $rules = $this->rules();
+
+        $this->assertSame(8.0, $rules->noticePeriodDays(5.0, 'ouvrier'));
+        $this->assertSame(8.0, $rules->noticePeriodDays(5.0, 'worker'));
+        $this->assertSame(30.0, $rules->noticePeriodDays(5.0, 'general'));
+        $this->assertSame(90.0, $rules->noticePeriodDays(5.0, 'cadre'));
     }
 
     public function test_golden_sn_minimum_wage_currency_timezone(): void

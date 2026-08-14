@@ -163,7 +163,9 @@ class EndOfContractService
         }
 
         if (in_array($reason, ['dismissal', 'redundancy', 'economic', 'layoff', 'licenciement', 'licenciement-economique'], true)) {
-            return $rules->noticePeriodDays($yearsOfService);
+            // Catégorie professionnelle (SN #2123 : cadre/general/ouvrier via
+            // employees.ipres_category) — les règles pays décident de la durée.
+            return $rules->noticePeriodDays($yearsOfService, $employee->ipres_category);
         }
 
         return 0.0;
