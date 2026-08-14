@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getAllPosts } from '@/lib/mdx';
-import { getEnvConfig } from '@/modules/vitrine/lib/env';
+import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -62,20 +61,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/planning-employes', today, 'monthly', 0.7),
   ];
 
-  // Blog entries are only advertised when the blog is enabled (issue #2276):
-  // the route returns 404 via blog/layout.tsx when NEXT_PUBLIC_ENABLE_BLOG is off.
-  const blogPages: MetadataRoute.Sitemap = enableBlog
-    ? [
-        page('/blog', today, 'weekly', 0.8),
-        ...getAllPosts().map((post) => ({
-          url: `${siteUrl}/blog/${post.slug}`,
-          lastModified: post.date ? new Date(post.date) : today,
-          changeFrequency: 'monthly' as const,
-          priority: 0.6,
-          alternates: localizedAlternates(`/blog/${post.slug}`),
-        })),
-      ]
-    : [];
+  // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
+  // Déduplication des slugs toutes locales confondues : un seul entry par slug,
+  // le post de la locale par défaut 'fr' gagne (itérée en premier).
+  const postsBySlug = new Map<string, BlogPost>();
+  for (const locale of locales) {
+    for (const post of getBlogPosts(locale)) {
+      if (!postsBySlug.has(post.slug)) {
+        postsBySlug.set(post.slug, post);
+      }
+    }
+  }
+
+  const blogPages: MetadataRoute.Sitemap = [...postsBySlug.values()].map((post) => ({
+    url: `${siteUrl}/blog/${post.slug}`,
+    lastModified: post.date ? new Date(post.date) : today,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+    alternates: localizedAlternates(`/blog/${post.slug}`),
+  }));
 
   return [...staticPages, ...blogPages];
 }

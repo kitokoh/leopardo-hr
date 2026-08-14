@@ -18,13 +18,15 @@ use Illuminate\Support\Facades\Log;
  * Endpoints Cloud exposés pour le déploiement et la gestion des nœuds Edge.
  *
  * Routes publiques (sans auth) :
- *   GET  /edge/install.sh                  → script d'installation bash
- *   GET  /edge/download/docker-compose.yml → docker-compose pré-configuré
- *   GET  /edge/license-public-key          → clé publique RS256 (PEM)
+ *   GET  /edge/download/env-example → exemple .env.edge
  *
- * Routes nœud Edge (token EDGE_TOKEN) :
- *   POST /edge/heartbeat   → heartbeat depuis le nœud
- *   POST /edge/sync        → réception sync depuis le nœud
+ * Les endpoints /edge/install.sh, /edge/download/docker-compose.yml et
+ * /edge/license-public-key sont servis par {@see EdgeDownloadController}
+ * (installScript/dockerCompose/licensePublicKey).
+ *
+ * Routes nœud Edge :
+ *   POST /edge/heartbeat → heartbeat depuis le nœud (no-op legacy, voir
+ *                          note dans la méthode)
  *
  * NOTE (issue #1291): the platform super-admin node-management endpoints
  * (`GET/POST/DELETE /platform/edge/nodes*`) used to live on this class as
@@ -53,126 +55,6 @@ class EdgeController extends Controller
     // Script d'installation & téléchargements
     // =========================================================================
 
-    /** GET /edge/install.sh */
-    public function installScript(): Response
-    {
-        $cloudApiUrl = config('app.url');
-        $version = config('app.version', '1.0.0');
-
-        $script = <<<BASH
-        #!/usr/bin/env bash
-        # =============================================================================
-        # Leopardo Edge — Script d'installation automatique
-        # Généré par {$cloudApiUrl}
-        # Version : {$version}
-        # =============================================================================
-        set -euo pipefail
-
-        LEOPARDO_VERSION="{$version}"
-        CLOUD_API_URL="{$cloudApiUrl}"
-        INSTALL_DIR="\${LEOPARDO_EDGE_DIR:-/opt/leopardo-edge}"
-
-        echo ""
-        echo "╔══════════════════════════════════════════════╗"
-        echo "║   Leopardo Edge — Installation               ║"
-        echo "║   v\$LEOPARDO_VERSION                          ║"
-        echo "╚══════════════════════════════════════════════╝"
-        echo ""
-
-        check_deps() {
-            local missing=()
-            for cmd in docker curl; do
-                command -v "\$cmd" &>/dev/null || missing+=("\$cmd")
-            done
-            if [ \${#missing[@]} -gt 0 ]; then
-                echo "❌ Dépendances manquantes : \${missing[*]}"
-                exit 1
-            fi
-            if ! docker compose version &>/dev/null && ! command -v docker-compose &>/dev/null; then
-                echo "❌ Docker Compose introuvable."
-                exit 1
-            fi
-        }
-
-        check_deps
-
-        echo "📁 Répertoire : \$INSTALL_DIR"
-        mkdir -p "\$INSTALL_DIR/keys"
-        cd "\$INSTALL_DIR"
-
-        echo "⬇  Téléchargement docker-compose.yml..."
-        curl -fsSL "\$CLOUD_API_URL/edge/download/docker-compose.yml" -o docker-compose.yml
-
-        if [ ! -f .env.edge ]; then
-            curl -fsSL "\$CLOUD_API_URL/edge/download/env-example" -o .env.edge
-        fi
-
-        if [ ! -f keys/edge_license_public.pem ]; then
-            echo "🔑 Retrieving Edge license public key..."
-            curl -fsSL "\$CLOUD_API_URL/edge/license-public-key" -o keys/edge_license_public.pem
-        fi
-
-        echo "🚀 Démarrage du nœud Edge..."
-        if docker compose version &>/dev/null; then
-            docker compose --env-file .env.edge pull --quiet
-            docker compose --env-file .env.edge up -d
-        else
-            docker-compose --env-file .env.edge pull --quiet
-            docker-compose --env-file .env.edge up -d
-        fi
-
-        echo "✅ Nœud Edge Leopardo démarré !"
-        BASH;
-
-        $script = preg_replace('/^        /m', '', $script) ?? $script;
-
-        return response($script, 200, [
-            'Content-Type' => 'text/x-shellscript; charset=utf-8',
-            'Content-Disposition' => 'inline; filename="leopardo-edge-install.sh"',
-            'Cache-Control' => 'no-cache, no-store',
-            'X-Content-Type-Options' => 'nosniff',
-        ]);
-    }
-
-    /** GET /edge/download/docker-compose.yml */
-    public function downloadDockerCompose(): Response
-    {
-        $version = config('app.version', '1.0.0');
-        $cloudApiUrl = config('app.url');
-
-        $filePath = base_path('edge/docker-compose.yml');
-
-        if (file_exists($filePath)) {
-            return response((string) file_get_contents($filePath), 200, [
-                'Content-Type' => 'application/yaml; charset=utf-8',
-                'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
-                'Cache-Control' => 'public, max-age=300',
-            ]);
-        }
-
-        // Fallback généré dynamiquement
-        $yaml = <<<YAML
-        version: "3.9"
-        services:
-          edge:
-            image: leopardo/edge-api:{$version}
-            container_name: leopardo-edge
-            restart: unless-stopped
-            environment:
-              CLOUD_API_URL: "\${CLOUD_API_URL:-{$cloudApiUrl}}"
-              EDGE_NODE_ID:  "\${EDGE_NODE_ID}"
-              EDGE_TOKEN:    "\${EDGE_TOKEN}"
-        YAML;
-
-        $yaml = preg_replace('/^        /m', '', $yaml) ?? $yaml;
-
-        return response($yaml, 200, [
-            'Content-Type' => 'application/yaml; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="docker-compose.yml"',
-            'Cache-Control' => 'public, max-age=300',
-        ]);
-    }
-
     /** GET /edge/download/env-example */
     public function downloadEnvExample(): Response
     {
@@ -195,36 +77,6 @@ class EdgeController extends Controller
             'Content-Type' => 'text/plain; charset=utf-8',
             'Content-Disposition' => 'attachment; filename=".env.edge.example"',
             'Cache-Control' => 'public, max-age=300',
-        ]);
-    }
-
-    /** GET /edge/license-public-key */
-    public function licensePublicKey(): Response
-    {
-        $pem = config('edge.license_public_key', '');
-
-        // Try file fallback
-        if (empty($pem)) {
-            $keyPath = base_path('edge/keys/edge_license_public.pem');
-            if (file_exists($keyPath)) {
-                $pem = (string) file_get_contents($keyPath);
-            }
-        }
-
-        if (empty($pem)) {
-            return response(
-                json_encode(['error' => 'edge_public_key_not_configured']),
-                503,
-                ['Content-Type' => 'application/json']
-            );
-        }
-
-        $pem = str_replace('\\n', "\n", $pem);
-
-        return response($pem, 200, [
-            'Content-Type' => 'application/x-pem-file',
-            'Cache-Control' => 'public, max-age=3600',
-            'X-Edge-Version' => config('app.version', '1.0.0'),
         ]);
     }
 

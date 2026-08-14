@@ -2050,16 +2050,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/smart-attendance/geo-events", options);
     },
 
-    /** Lire la configuration GPS de l'entreprise (manager/RH) */
-    getSmartAttendanceModeSettings(options = {}) {
-      return request("GET", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Mettre à jour la configuration GPS (admin) */
-    putSmartAttendanceModeSettings(options = {}) {
-      return request("PUT", "/smart-attendance/mode-settings", options);
-    },
-
     /** Mettre à jour les préférences de pointage */
     putSmartAttendancePreferences(options = {}) {
       return request("PUT", "/smart-attendance/preferences", options);

@@ -57,7 +57,7 @@ export default function LandingPage() {
     >
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
-      <main id="main-content">
+      <main>
         {/* ─── HERO ─── Phase-3 */}
         <HeroSection
           badge={{

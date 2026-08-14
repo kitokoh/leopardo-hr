@@ -8,8 +8,8 @@
 
 ## Phase 1 — Vitrine : liens et contenus (US1-US2)
 
-- [ ] T001 [P2] US1 `/docs` — corriger les ~35 ancres mortes : soit ajouter les `id` manquants aux sections existantes (intro/onboarding/team/dashboard/leaves/payroll/contracts/mobile-*/api-*/webhooks-*/sdk-*/playground-*/security/rbac/deploy/api-auth/zkteco/exports/calendar/multi-tenant/partner-api), soit retirer les cartes/liens vers des sections inexistantes. Audit final : `grep href="/docs#"` → chaque ancre a un `id` dans le fichier.
-- [ ] T002 [P2] US2 `/videos` — remplacer le placeholder « Vidéo en cours de chargement... » par un vrai lecteur : iframe `https://www.youtube-nocookie.com/embed/{youtubeId}?autoplay=1` (loading lazy, title accessible), fallback clair « vidéo indisponible » si `youtubeId` invalide. Test navigateur : clic play → iframe dans le DOM.
+- [x] T001 [P2] US1 `/docs` — ancres mortes corrigées par la **PR parallèle #2281** (vague QA hardening 2, spec `qa-hardening-wave-2-2026-08-14`) : sections réelles ajoutées (`#security`, `#rbac`...), ancres TOC réalignées. Retiré de cette branche pour éviter le conflit (règle anti-doublon).
+- [x] T002 [P2] US2 `/videos` — lecteur réel (vidéo locale `public/videos/product-demo.mp4` + sous-titres) implémenté par la **PR parallèle #2281**. Retiré de cette branche (anti-doublon).
 
 ## Phase 2 — Vitrine : sitemap, PWA, accessibilité (US3-US4)
 

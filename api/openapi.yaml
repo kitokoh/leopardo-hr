@@ -12060,21 +12060,6 @@ paths:
                     $ref: "#/components/schemas/AttendanceModeSettings"
         "422":
           $ref: "#/components/responses/Validation422"
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lire la configuration GPS de l'entreprise (manager/RH)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Configuration de mode entreprise"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/AttendanceModeSettings"
 
   /smart-attendance/preferences:
     put:
@@ -12088,15 +12073,31 @@ paths:
           application/json:
             schema:
               type: object
+              required: [preferred_mode]
               properties:
                 preferred_mode:
                   type: string
-                  enum: [manual, gps, qr]
+                  enum: [gps_auto, qr, manual]
                 gps_consent_given:
+                  type: boolean
+                revoke_consent:
                   type: boolean
       responses:
         "200":
           description: "Préférences mises à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/EmployeeAttendancePreference"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   /smart-attendance/geo-events:
     post:
@@ -12735,7 +12736,7 @@ components:
         id: { type: integer }
         employee_id: { type: integer }
         company_id: { type: string, format: uuid }
-        preferred_mode: { type: string, enum: [manual, gps, qr] }
+        preferred_mode: { type: string, enum: [gps_auto, qr, manual] }
         gps_consent_given: { type: boolean }
         gps_consent_at: { type: string, format: date-time, nullable: true }
 
