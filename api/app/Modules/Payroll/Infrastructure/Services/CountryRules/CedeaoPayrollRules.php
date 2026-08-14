@@ -148,17 +148,18 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
         // CI (#1825, CGI CI art. 116-120) :
         //   1. Assiette = brut − CNSS salariale − abattement frais pro
-        //      (20 % du brut, non plafonné). Le moteur passe déjà
-        //      brut − CNSS salariale ; l'abattement est appliqué sur cette
-        //      base (≈ 19,4 % du brut — approximation pilot documentée
-        //      CI_COMPLIANCE.md §1, à valider par expert-comptable).
+        //      (20 % du BRUT, non plafonné — formule légale, fix #1893).
+        //      Le moteur passe $grossTaxable = brut − CNSS salariale et
+        //      $grossForAbatement = brut réel ; l'abattement s'applique sur
+        //      le brut réel (défaut : $grossTaxable si non fourni).
         //   2. ITSAS progressif annuel / 12 (5 tranches).
         // La Contribution Nationale (CN, 1,5 % sur la part du brut mensuel
         // > 50 000 XOF) est calculée séparément dans calculateBracketTax() ;
         // les deux sont sommées sur le bulletin (impôt total mensuel).
         $abatement = $this->professionalExpensesDeduction();
+        $abatementBase = $grossForAbatement ?? $grossTaxable;
         $monthlyDeduction = min(
-            $grossTaxable * ($abatement['rate'] / 100),
+            $abatementBase * ($abatement['rate'] / 100),
             $abatement['cap'] ?? PHP_FLOAT_MAX
         );
 
