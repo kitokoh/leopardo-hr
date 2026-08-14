@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Payroll\Domain\Exceptions\PayrollEmptyRunException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -169,13 +170,25 @@ class PayrollCalculator
                 $totalEmployerCost += (float) $slip->total_cost;
             }
 
+            $slipsCount = $run->paySlips()->count();
+
+            // #1767 — Garde anti-clôture à vide : si aucun bulletin n'a pu être
+            // généré (pas de structure salariale active pour ce pays, ou aucun
+            // employé actif), on annule TOUT (rollback : les anciens bulletins
+            // ne sont pas détruits) au lieu de réussir en silence avec 0 employé.
+            if ($slipsCount === 0) {
+                throw new PayrollEmptyRunException(
+                    'Aucun bulletin généré : vérifiez qu\'au moins une structure salariale active existe pour le pays « '.$run->country_code.' » et que des employés actifs y sont rattachés.'
+                );
+            }
+
             $run->update([
                 'status' => 'calculated',
                 'total_gross' => round($totalGross, 2),
                 'total_deductions' => round($totalDeductions, 2),
                 'total_net' => round($totalNet, 2),
                 'total_employer_cost' => round($totalEmployerCost, 2),
-                'employee_count' => $run->paySlips()->count(),
+                'employee_count' => $slipsCount,
                 'calculated_at' => now(),
             ]);
         });

@@ -107,8 +107,19 @@ class PayrollRunController extends Controller
             return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
         }
 
+        $previousStatus = $payrollRun->status;
         $payrollRun->update(['status' => 'calculating']);
-        $run = $this->calculator->calculateRun($payrollRun);
+
+        try {
+            $run = $this->calculator->calculateRun($payrollRun);
+        } catch (\App\Modules\Payroll\Domain\Exceptions\PayrollEmptyRunException $e) {
+            // #1767 — Aucun bulletin généré (pas de structure salariale active,
+            // aucun employé actif) : on refuse le « succès » silencieux et on
+            // restaure le statut précédent pour ne pas bloquer le run.
+            $payrollRun->refresh()->update(['status' => $previousStatus]);
+
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return (new PayrollRunResource($run->loadCount('paySlips')))->response();
     }
@@ -122,6 +133,12 @@ class PayrollRunController extends Controller
         }
         if ($actor->isManager() === false) {
             abort(403);
+        }
+
+        // #1767 — Garde anti-clôture à vide : un run sans bulletin ne peut pas
+        // être validé (sinon clôture comptable à zéro sans aucun avertissement).
+        if ($payrollRun->paySlips()->count() === 0) {
+            return response()->json(['message' => 'Le run ne contient aucun bulletin : impossible de le valider. Corrigez le calcul (structure salariale active requise) avant validation.'], 422);
         }
 
         try {
@@ -179,6 +196,12 @@ class PayrollRunController extends Controller
         }
         if ($actor->isManager() === false) {
             abort(403);
+        }
+
+        // #1767 — Garde anti-clôture à vide : un run sans bulletin ne peut pas
+        // être verrouillé (clôture comptable à zéro interdite).
+        if ($payrollRun->paySlips()->count() === 0) {
+            return response()->json(['message' => 'Le run ne contient aucun bulletin : impossible de le verrouiller. Corrigez le calcul (structure salariale active requise) avant clôture.'], 422);
         }
 
         try {
