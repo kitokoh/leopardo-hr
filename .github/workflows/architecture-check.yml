@@ -143,6 +143,9 @@ jobs:
       - name: Check for orphan (unrouted) controllers
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
+      - name: Check migration basename collisions (issue #1962)
+        run: dev-hub/tools/check-migration-basename-collisions.sh
+
       - name: Report test-schema drift vs migrations (issue #1489, non blocking)
         continue-on-error: true
         run: dev-hub/tools/check-test-schema-drift.sh api
