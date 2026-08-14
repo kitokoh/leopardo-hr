@@ -6,6 +6,9 @@ import { expect, test } from '@playwright/test'
  */
 test.describe('Tax slabs admin page', () => {
   test.beforeEach(async ({ page }) => {
+    // Le libellé de l'app suit admin_locale (localStorage) sinon navigator.language
+    // (en-US dans le headless) — les assertions ci-dessous sont en français.
+    await page.addInitScript(() => localStorage.setItem('admin_locale', 'fr'))
     await page.goto('/login')
     await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
     await page.locator('#password').fill('password123')
@@ -15,7 +18,8 @@ test.describe('Tax slabs admin page', () => {
 
   test('page loads with country selector and editor', async ({ page }) => {
     await page.goto('/settings/payroll/tax-slabs')
-    await expect(page.getByRole('heading', { name: /Barèmes fiscaux/i })).toBeVisible()
+    // Le h1 ET le sous-titre (h3) contiennent 'Barèmes fiscaux' — cibler le h1.
+    await expect(page.getByRole('heading', { name: /Barèmes fiscaux/i }).first()).toBeVisible()
     await expect(page.locator('#slab-country')).toBeVisible()
     await expect(page.getByRole('button', { name: /Ajouter une tranche/i })).toBeVisible()
     await expect(page.getByRole('heading', { name: /Simulateur d'impact/i })).toBeVisible()
@@ -34,7 +38,9 @@ test.describe('Tax slabs admin page', () => {
     await page.goto('/settings/payroll/tax-slabs')
     await page.getByRole('button', { name: /Ajouter une tranche/i }).click()
     await expect(page.getByRole('heading', { name: /Ajouter une tranche/i })).toBeVisible()
-    await expect(page.locator('#slab-DZ-min-1')).toBeVisible()
+    // L'uid est un compteur global : les lignes du tableau consomment les
+    // premiers compteurs, le modal porte donc slab-DZ-min-2+ — assertion robuste.
+    await expect(page.locator('input[id^="slab-DZ-min-"]').first()).toBeVisible()
     await page.getByRole('button', { name: /Annuler/i }).click()
     await expect(page.getByRole('heading', { name: /Ajouter une tranche/i })).not.toBeVisible()
   })
