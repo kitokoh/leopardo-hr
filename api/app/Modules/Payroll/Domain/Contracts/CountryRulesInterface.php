@@ -163,8 +163,14 @@ interface CountryRulesInterface
      * Country rules own the legal duration; 0 means "no statutory notice pay
      * by default — the contract/execution decides" (historic Leopardo
      * behaviour, F-08). FOCUS 2 (F-31).
+     *
+     * `$category` est un indicateur optionnel de catégorie professionnelle
+     * (ex. SN : 'cadre' / 'general' / 'ouvrier' via `employees.ipres_category`)
+     * pour les pays dont la durée légale dépend de la catégorie du contrat
+     * (Code du travail Sénégal §8 — issue #2123). Null = catégorie inconnue
+     * (défaut pays).
      */
-    public function noticePeriodDays(float $yearsOfService): float;
+    public function noticePeriodDays(float $yearsOfService, ?string $category = null): float;
 
     /**
      * Severance months of base salary per year of service (indemnité de
