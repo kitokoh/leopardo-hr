@@ -28,12 +28,14 @@ use Illuminate\Support\Carbon;
  * @property float $working_days
  * @property float $actual_days_worked
  * @property float $overtime_hours
+ * @property bool $has_attendance_data
  * @property string $status
  * @property string|null $pdf_path
  * @property Carbon|null $sent_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PaySlip extends Model
 {
@@ -44,7 +46,7 @@ class PaySlip extends Model
         'period_start', 'period_end', 'gross_salary', 'total_deductions',
         'net_salary', 'employer_contributions', 'total_cost',
         'working_days', 'actual_days_worked', 'overtime_hours',
-        'status', 'pdf_path', 'sent_at',
+        'has_attendance_data', 'status', 'pdf_path', 'sent_at',
     ];
 
     protected $casts = [
@@ -58,6 +60,7 @@ class PaySlip extends Model
         'working_days' => 'float',
         'actual_days_worked' => 'float',
         'overtime_hours' => 'float',
+        'has_attendance_data' => 'boolean',
         'sent_at' => 'datetime',
     ];
 

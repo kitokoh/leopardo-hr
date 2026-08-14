@@ -6,11 +6,13 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -30,8 +32,11 @@ class PayrollTenantIsolationTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
     private Company $companyB;
+
     private Employee $managerA;
+
     private Employee $managerB;
 
     protected function setUp(): void
@@ -133,7 +138,7 @@ class PayrollTenantIsolationTest extends TestCase
         Sanctum::actingAs($this->managerB);
 
         $this->getJson("/api/v1/salary-structures/{$dataA['structure']->id}")->assertNotFound();
-        $this->putJson("/api/v1/salary-structures/{$dataA['structure']->id}", ['name' => 'Vol']) ->assertNotFound();
+        $this->putJson("/api/v1/salary-structures/{$dataA['structure']->id}", ['name' => 'Vol'])->assertNotFound();
         $this->deleteJson("/api/v1/salary-structures/{$dataA['structure']->id}")->assertNotFound();
     }
 
@@ -143,7 +148,7 @@ class PayrollTenantIsolationTest extends TestCase
 
         Sanctum::actingAs($this->managerB);
 
-        $this->getJson("/api/v1/tax-slabs")->assertOk()->assertJsonMissing(['id' => $dataA['taxSlab']->id]);
+        $this->getJson('/api/v1/tax-slabs')->assertOk()->assertJsonMissing(['id' => $dataA['taxSlab']->id]);
         $this->putJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}", ['rate' => 99])->assertNotFound();
         $this->deleteJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}")->assertNotFound();
     }
@@ -189,5 +194,25 @@ class PayrollTenantIsolationTest extends TestCase
         $response = $this->getJson('/api/v1/me/pay-slips')->assertOk();
         $ids = collect(data_get($response->json('data'), '*.id'));
         $this->assertTrue($ids->contains($dataA['slip']->id) === false);
+    }
+
+    public function test_cross_tenant_attendance_logs_are_not_counted_in_worked_days(): void
+    {
+        $dataA = $this->seedPayrollData($this->companyA);
+        /** @var Employee $employeeA */
+        $employeeA = $dataA['slip']->employee;
+        /** @var Employee $employeeB */
+        $employeeB = Employee::factory()->create(['company_id' => $this->companyB->id]);
+
+        // Logs de présence valides... mais sur le tenant B (isolation F-20 #1816).
+        AttendanceLog::create(['company_id' => $this->companyB->id, 'employee_id' => $employeeB->id, 'date' => '2026-06-02', 'status' => 'ontime']);
+        AttendanceLog::create(['company_id' => $this->companyB->id, 'employee_id' => $employeeB->id, 'date' => '2026-06-03', 'status' => 'ontime']);
+        AttendanceLog::create(['company_id' => $this->companyB->id, 'employee_id' => $employeeB->id, 'date' => '2026-06-04', 'status' => 'late']);
+
+        $worked = (new PayrollCalculator)->computeWorkedDays($dataA['run'], $employeeA);
+
+        // Les logs du tenant B ne doivent pas être comptés : fallback prorata.
+        $this->assertSame(22.0, $worked['actual_days_worked']);
+        $this->assertFalse($worked['has_attendance_data']);
     }
 }
