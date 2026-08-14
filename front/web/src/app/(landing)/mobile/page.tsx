@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import {
+  mobileDownloadLabel,
+  mobileDownloadTarget,
+  type MobileAppSlug,
+} from '@/modules/vitrine/lib/mobile-download';
+import {
   Bell,
   BriefcaseBusiness,
   Building2,
@@ -113,8 +118,19 @@ const copy: Record<Lang, LangCopy> = {
 
 /* ─────────────────────────────────────────
    App definitions
-───────────────────────────────────────── */
-const apps = [
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+type MobileApp = {
+  id: MobileAppSlug;
+  name: string;
+  subtitle: Record<Lang, string>;
+  desc: Record<Lang, string>;
+  color: string;
+  gradient: string;
+  icon: React.ComponentType<{ className?: string }>;
+  features: Array<{ icon: React.ComponentType<{ className?: string }>; label: Record<Lang, string> }>;
+};
+
+const apps: MobileApp[] = [
   {
     id: 'employee',
     name: 'Leopardo Employee',
@@ -141,8 +157,6 @@ const apps = [
       { icon: Zap, label: { fr: "Demandes d'absence", en: 'Leave requests', tr: 'İzin talepleri', ar: 'طلبات الإجازات' } },
       { icon: CheckCircle, label: { fr: 'Avances salaires', en: 'Salary advances', tr: 'Maaş avansları', ar: 'سلف الراتب' } },
     ],
-    androidHref: '#android-employee',
-    iosHref: '#ios-employee',
   },
   {
     id: 'manager',
@@ -170,8 +184,6 @@ const apps = [
       { icon: FileText, label: { fr: 'Paie simplifiée', en: 'Simplified payroll', tr: 'Basit bordro', ar: 'رواتب مبسطة' } },
       { icon: Bell, label: { fr: 'Alertes équipe', en: 'Team alerts', tr: 'Ekip uyarıları', ar: 'تنبيهات الفريق' } },
     ],
-    androidHref: '#android-manager',
-    iosHref: '#ios-manager',
   },
   {
     id: 'platform-admin',
@@ -199,8 +211,6 @@ const apps = [
       { icon: Zap, label: { fr: 'Provisioning rapide', en: 'Fast provisioning', tr: 'Hızlı provizyon', ar: 'توفير سريع' } },
       { icon: Bell, label: { fr: 'Alertes plateforme', en: 'Platform alerts', tr: 'Platform uyarıları', ar: 'تنبيهات المنصة' } },
     ],
-    androidHref: '#android-platform-admin',
-    iosHref: '#ios-platform-admin',
   },
 ];
 
@@ -312,6 +322,8 @@ export default function MobilePage() {
           <div className="space-y-16">
             {apps.map((app, idx) => {
               const c = colorMap[app.color];
+              const androidTarget = mobileDownloadTarget(app.id, 'android');
+              const iosTarget = mobileDownloadTarget(app.id, 'ios');
               return (
                 <motion.div
                   key={app.id}
@@ -375,22 +387,20 @@ export default function MobilePage() {
                     {/* Download buttons */}
                     <div className="mt-6 flex flex-wrap gap-3">
                       <Link
-                        href={app.androidHref}
-                        className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r ${app.gradient} text-white opacity-75 cursor-not-allowed`}
-                        aria-label={`${t.android} — ${t.soon}`}
+                        href={androidTarget.href}
+                        className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r ${app.gradient} text-white hover:opacity-90 transition-opacity`}
+                        aria-label={`${mobileDownloadLabel(androidTarget, t.android, lang)} — ${app.name}`}
                       >
                         <Download className="w-4 h-4" />
-                        {t.android}
-                        <span className="ml-1 text-xs opacity-80">({t.soon})</span>
+                        {mobileDownloadLabel(androidTarget, t.android, lang)}
                       </Link>
                       <Link
-                        href={app.iosHref}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 opacity-75 cursor-not-allowed"
-                        aria-label={`${t.ios} — ${t.soon}`}
+                        href={iosTarget.href}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-700 transition-colors"
+                        aria-label={`${mobileDownloadLabel(iosTarget, t.ios, lang)} — ${app.name}`}
                       >
                         <Smartphone className="w-4 h-4" />
-                        {t.ios}
-                        <span className="ml-1 text-xs opacity-80">({t.soon})</span>
+                        {mobileDownloadLabel(iosTarget, t.ios, lang)}
                       </Link>
                     </div>
                   </div>
