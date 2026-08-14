@@ -43,6 +43,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
+use App\Modules\Payroll\Interfaces\Api\V1\PlatformTaxRateApprovalController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
 use Illuminate\Support\Facades\Route;
@@ -266,6 +267,18 @@ Route::prefix('v1')->group(function (): void {
             Route::get('/', [EdgeNodeController::class, 'listAllNodes']);
             Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
             Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode']);
+        });
+
+        // Issue #1813 — seconde signature du workflow de validation des taux
+        // légaux (barèmes fiscaux / cotisations sociales) : le platform admin
+        // approuve ou rejette les propositions des clients, cross-tenant.
+        Route::prefix('payroll')->group(function (): void {
+            Route::get('/tax-slabs/pending', [PlatformTaxRateApprovalController::class, 'pendingTaxSlabs']);
+            Route::put('/tax-slabs/{taxSlab}/approve', [PlatformTaxRateApprovalController::class, 'approveTaxSlab'])->whereNumber('taxSlab');
+            Route::put('/tax-slabs/{taxSlab}/reject', [PlatformTaxRateApprovalController::class, 'rejectTaxSlab'])->whereNumber('taxSlab');
+            Route::get('/social-contributions/pending', [PlatformTaxRateApprovalController::class, 'pendingSocialContributions']);
+            Route::put('/social-contributions/{socialContribution}/approve', [PlatformTaxRateApprovalController::class, 'approveSocialContribution'])->whereNumber('socialContribution');
+            Route::put('/social-contributions/{socialContribution}/reject', [PlatformTaxRateApprovalController::class, 'rejectSocialContribution'])->whereNumber('socialContribution');
         });
     });
     // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.

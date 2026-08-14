@@ -15,9 +15,13 @@ use App\Events\EmployeeRoleAssigned;
 use App\Events\CompanyCreated;
 use App\Events\PayrollValidated;
 use App\Events\SubscriptionPaid;
+use App\Events\TaxRateApproved;
+use App\Events\TaxRateRejected;
+use App\Events\TaxRateSubmittedForValidation;
 use App\Listeners\AuditLogger;
 use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\ProcessCommissionOnPayment;
+use App\Listeners\TaxRateValidationLogger;
 use App\Listeners\WebhookListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -36,5 +40,9 @@ class EventServiceProvider extends ServiceProvider
         EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],
         SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
+        // Issue #1813 — workflow de validation des taux légaux.
+        TaxRateSubmittedForValidation::class => [TaxRateValidationLogger::class],
+        TaxRateApproved::class => [TaxRateValidationLogger::class],
+        TaxRateRejected::class => [TaxRateValidationLogger::class],
     ];
 }

@@ -69,6 +69,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/social-contributions', [SocialContributionController::class, 'store']);
         Route::put('/social-contributions/{socialContribution}', [SocialContributionController::class, 'update'])->whereNumber('socialContribution');
         Route::delete('/social-contributions/{socialContribution}', [SocialContributionController::class, 'destroy'])->whereNumber('socialContribution');
+        // Issue #1813 — workflow de validation des taux légaux.
+        Route::put('/social-contributions/{socialContribution}/submit', [SocialContributionController::class, 'submit'])->whereNumber('socialContribution');
+        Route::get('/social-contributions/{socialContribution}/history', [SocialContributionController::class, 'history'])->whereNumber('socialContribution');
 
         // Payroll Runs
         Route::get('/payroll-runs', [PayrollRunController::class, 'index']);

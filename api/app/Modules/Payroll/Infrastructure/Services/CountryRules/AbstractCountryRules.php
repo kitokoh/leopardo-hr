@@ -198,7 +198,10 @@ abstract class AbstractCountryRules implements CountryRulesInterface
             $base = SocialContribution::query()
                 ->forCountry($this->countryCode())
                 ->where('code', $code)
-                ->effective($this->asOfDate);
+                ->effective($this->asOfDate)
+                // Issue #1813 : seules les lignes validées (status = 'active')
+                // sont utilisées par les calculs.
+                ->active();
 
             if ($this->companyId !== null) {
                 $companyRow = (clone $base)->where('company_id', $this->companyId)->first();

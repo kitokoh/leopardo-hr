@@ -7,10 +7,13 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaxSlabResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Events\TaxRateSubmittedForValidation;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use RuntimeException;
 
 class TaxSlabController extends Controller
 {
@@ -50,6 +53,10 @@ class TaxSlabController extends Controller
             'fixed_deduction' => 'nullable|numeric|min:0',
             'effective_from' => 'required|date',
             'effective_to' => 'nullable|date|after:effective_from',
+            // Issue #1813 : la création passe par le workflow de validation —
+            // statut `draft` par défaut (le platform admin doit approuver).
+            // `active` reste accepté explicitement (rétrocompat / seeder API).
+            'status' => ['sometimes', Rule::in([TaxSlab::STATUS_DRAFT, TaxSlab::STATUS_ACTIVE])],
         ]);
 
         $slab = TaxSlab::create([
@@ -62,11 +69,69 @@ class TaxSlabController extends Controller
             'fixed_deduction' => $validated['fixed_deduction'] ?? 0,
             'effective_from' => $validated['effective_from'],
             'effective_to' => $validated['effective_to'] ?? null,
+            'status' => $validated['status'] ?? TaxSlab::STATUS_DRAFT,
         ]);
+
+        // Audit trail immuable : création tracée (issue #1813).
+        app(TaxRateValidationService::class)->recordCreated($slab, $actor);
 
         return (new TaxSlabResource($slab))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * Issue #1813 — soumission pour validation (draft → pending_validation).
+     * Rôle : manager (principal / comptable) du tenant de la ligne.
+     */
+    public function submit(Request $request, TaxSlab $taxSlab): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        try {
+            $slab = app(TaxRateValidationService::class)->submit($taxSlab, $actor);
+        } catch (RuntimeException $e) {
+            abort(422, $e->getMessage());
+        }
+
+        TaxRateSubmittedForValidation::dispatch($slab->getTable(), (int) $slab->id, (int) $actor->id);
+
+        return (new TaxSlabResource($slab))->response();
+    }
+
+    /**
+     * Issue #1813 — historique immuable (tax_rate_change_log) d'un barème.
+     */
+    public function history(Request $request, TaxSlab $taxSlab): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => app(TaxRateValidationService::class)->history($taxSlab)->map(fn ($entry) => [
+                'id' => $entry->id,
+                'action' => $entry->action,
+                'actor_id' => $entry->actor_id,
+                'actor_role' => $entry->actor_role,
+                'previous_value' => $entry->previous_value,
+                'new_value' => $entry->new_value,
+                'reason' => $entry->reason,
+                'created_at' => $entry->created_at?->toIso8601String(),
+            ])->values(),
+        ]);
     }
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse

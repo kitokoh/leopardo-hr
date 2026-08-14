@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Events\TaxRateSubmittedForValidation;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SocialContributionResource;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -66,6 +68,9 @@ class SocialContributionController extends Controller
             'cap' => 'nullable|numeric|min:0',
             'effective_from' => 'required|date',
             'effective_to' => 'nullable|date|after:effective_from',
+            // Issue #1813 : statut `draft` par défaut (workflow de validation),
+            // `active` accepté explicitement (rétrocompat / seeder API).
+            'status' => ['sometimes', Rule::in([SocialContribution::STATUS_DRAFT, SocialContribution::STATUS_ACTIVE])],
         ]);
 
         $contribution = SocialContribution::create([
@@ -78,11 +83,69 @@ class SocialContributionController extends Controller
             'cap' => $validated['cap'] ?? null,
             'effective_from' => $validated['effective_from'],
             'effective_to' => $validated['effective_to'] ?? null,
+            'status' => $validated['status'] ?? SocialContribution::STATUS_DRAFT,
         ]);
+
+        // Audit trail immuable : création tracée (issue #1813).
+        app(TaxRateValidationService::class)->recordCreated($contribution, $actor);
 
         return (new SocialContributionResource($contribution))
             ->response()
             ->setStatusCode(201);
+    }
+
+    /**
+     * Issue #1813 — soumission pour validation (draft → pending_validation).
+     * Rôle : manager (principal / comptable) du tenant de la ligne.
+     */
+    public function submit(Request $request, SocialContribution $socialContribution): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        try {
+            $contribution = app(TaxRateValidationService::class)->submit($socialContribution, $actor);
+        } catch (RuntimeException $e) {
+            abort(422, $e->getMessage());
+        }
+
+        TaxRateSubmittedForValidation::dispatch($contribution->getTable(), (int) $contribution->id, (int) $actor->id);
+
+        return (new SocialContributionResource($contribution))->response();
+    }
+
+    /**
+     * Issue #1813 — historique immuable (tax_rate_change_log) d'une cotisation.
+     */
+    public function history(Request $request, SocialContribution $socialContribution): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $socialContribution->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => app(TaxRateValidationService::class)->history($socialContribution)->map(fn ($entry) => [
+                'id' => $entry->id,
+                'action' => $entry->action,
+                'actor_id' => $entry->actor_id,
+                'actor_role' => $entry->actor_role,
+                'previous_value' => $entry->previous_value,
+                'new_value' => $entry->new_value,
+                'reason' => $entry->reason,
+                'created_at' => $entry->created_at?->toIso8601String(),
+            ])->values(),
+        ]);
     }
 
     public function update(Request $request, SocialContribution $socialContribution): JsonResponse
