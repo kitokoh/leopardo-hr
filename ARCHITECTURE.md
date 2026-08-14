@@ -144,3 +144,22 @@ Les pipelines principaux :
 ## Conventions
 
 Voir `CONVENTIONS.md` pour les règles de nommage, commits, branches et PR.
+
+## Résolveur unique des règles pays (MULTI-PAYS #1868)
+
+Le point d'entrée UNIQUE pour résoudre les règles de paie d'un pays est
+`App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver`
+(registre pays → `CountryRulesInterface` construit par
+`CountryRulesResolver::defaultRulesMap()`, y compris les zones CEMAC et
+CEDEAO éclatées par État membre).
+
+- `resolve(code, ?companyId, ?asOf)` applique les scopes entreprise
+  (`forCompany`) et période d'effet (`asOf`) ; un pays inconnu lève
+  `UnsupportedCountryRulesException` (422) — **aucun fallback silencieux
+  vers DZ ou une autre juridiction** ; une incohérence de contexte
+  (`countryCode()` ≠ code demandé) lève
+  `CountryRulesContextMismatchException`.
+- `PayrollCalculator` délègue sa résolution au résolveur
+  (`getRules()` + `rulesResolver()`).
+- Interdit : tables de taux locales dans les contrôleurs/services
+  (`COUNTRY_RATES`/`CEMAC_RATES`/fallbacks `?? new AlgeriaPayrollRules`).
