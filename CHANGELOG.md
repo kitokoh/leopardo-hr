@@ -4,6 +4,8 @@
 
 ### Added
 
+- **fix(security): contrôleurs taux légaux/jours fériés — Policies Laravel (issue #1917).** CONVENTIONS §2.5 : les checks inline (`isManager()`/`abort(403)`/`assertPlatformAdmin`/`companyScope`+`authorizeWrite`) de `TaxSlabController`, `SocialContributionController`, `PublicHolidayController` et `RateValidationAdminController` sont remplacés par des Policies enregistrées (`TaxSlabPolicy`, `SocialContributionPolicy`, `PublicHolidayPolicy`, `RateValidationPolicy` + enregistrement `AuthServiceProvider`). Matrice : SuperAdmin plateforme = tout ; manager/principal RH = opérations sur SA société (tenant isolation conservée via Policy, plus de check inline) ; RateValidation = SuperAdmin uniquement (double signature #1813). Méthodes mortes supprimées (`authorizeWrite`, `assertPlatformAdmin`).
+
 - **fix(security): tax_rate_change_log — TRUNCATE bloqué par trigger BEFORE TRUNCATE (issue #2024).** Le trigger append-only #1927 couvrait UPDATE/DELETE mais pas TRUNCATE : le propriétaire de la table pouvait vider la piste d'audit en un seul vidage (même gap que le REVOKE initial #1813). Migration tenant `2026_08_14_000012` : trigger `BEFORE TRUNCATE` FOR EACH STATEMENT levant la même exception P0001 que UPDATE/DELETE (même fonction `tax_rate_change_log_append_only`), schéma résolu F-17. Test DB-level : `TRUNCATE` → `QueryException` (`TaxRateChangeLogTest`).
 
 - **fix(payroll): computeWorkedDays — le repli silencieux sur le prorata contrat est journalisé (#2025).** Quand `attendance_logs` est absente du search_path (§2.6/#1613) ou que la requête échoue entre la garde et l'exécution, `Log::warning` trace company/employé/période (+ erreur) au lieu d'un repli muet qui faussait `actual_days_worked` sans signal (revue lead #1862).

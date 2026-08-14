@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
+use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
@@ -29,6 +30,9 @@ class RateValidationAdminController extends Controller
      */
     public function pending(Request $request): JsonResponse
     {
+        // Issue #1917 : Policy Laravel — réservé SuperAdmin plateforme.
+        $this->authorize('pending', TaxRateChangeLog::class);
+
         $table = (string) $request->input('table', 'all');
 
         $items = [];
@@ -50,7 +54,8 @@ class RateValidationAdminController extends Controller
 
     public function approve(Request $request, string $table, int $id): JsonResponse
     {
-        $this->assertPlatformAdmin($request);
+        // Issue #1917 : Policy Laravel — réservé SuperAdmin plateforme.
+        $this->authorize('approve', TaxRateChangeLog::class);
 
         /** @var SuperAdmin $admin */
         $admin = $request->user();
@@ -67,7 +72,8 @@ class RateValidationAdminController extends Controller
 
     public function reject(Request $request, string $table, int $id): JsonResponse
     {
-        $this->assertPlatformAdmin($request);
+        // Issue #1917 : Policy Laravel — réservé SuperAdmin plateforme.
+        $this->authorize('reject', TaxRateChangeLog::class);
 
         $reason = (string) $request->input('reason', '');
         if (trim($reason) === '') {
@@ -99,13 +105,6 @@ class RateValidationAdminController extends Controller
         }
 
         abort(404, 'Table inconnue.');
-    }
-
-    private function assertPlatformAdmin(Request $request): void
-    {
-        if (! $request->user() instanceof SuperAdmin) {
-            abort(403, __('errors.FORBIDDEN'));
-        }
     }
 
     /**

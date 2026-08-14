@@ -21,11 +21,11 @@ class TaxSlabController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        // Issue #1917 : autorisation via Policy Laravel (manager/super-admin).
+        $this->authorize('viewAny', TaxSlab::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
         // Scope to the authenticated employee's company for tenant isolation.
         // Without this filter, slabs from other tenants leak across companies.
@@ -40,11 +40,11 @@ class TaxSlabController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Issue #1917 : Policy Laravel.
+        $this->authorize('create', TaxSlab::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
         $validated = $request->validate([
             'country_code' => ['required', 'string', 'size:2', new SupportedCountry], // #1951 contrat partagé
@@ -82,15 +82,8 @@ class TaxSlabController extends Controller
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-        // Tenant isolation: reject cross-company access.
-        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
-            abort(404);
-        }
+        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        $this->authorize('update', $taxSlab);
 
         // Issue #1813 : une ligne soumise/active ne se modifie plus directement —
         // on propose une nouvelle modification (draft) via le workflow.
@@ -122,15 +115,8 @@ class TaxSlabController extends Controller
 
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-        // Tenant isolation: reject cross-company access.
-        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
-            abort(404);
-        }
+        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        $this->authorize('delete', $taxSlab);
 
         // Issue #1813 : seules les lignes draft peuvent être supprimées.
         if ($taxSlab->status !== TaxSlab::STATUS_DRAFT) {
@@ -147,14 +133,11 @@ class TaxSlabController extends Controller
      */
     public function submit(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        $this->authorize('submit', $taxSlab);
+
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
-            abort(404);
-        }
 
         try {
             $this->validation->submit($taxSlab, $actor);
@@ -170,14 +153,8 @@ class TaxSlabController extends Controller
      */
     public function history(Request $request, TaxSlab $taxSlab): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
-            abort(404);
-        }
+        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        $this->authorize('view', $taxSlab);
 
         return response()->json([
             'data' => $this->validation->history($taxSlab)
