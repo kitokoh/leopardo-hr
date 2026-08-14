@@ -86,4 +86,77 @@ class EmployeeNumericCastTest extends TestCase
             'salary_base' => 60000,
         ]);
     }
+
+    public function test_employee_creation_accepts_html_form_booleans(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        // Valeurs envoyées par un formulaire HTML (checkbox "on", "1") :
+        // normalisées avant le DTO typé (bool) au lieu d'un TypeError → 500.
+        $response = $this->postJson('/api/v1/employees', [
+            'first_name' => 'Lina',
+            'last_name' => 'K',
+            'email' => 'lina.k@x.dz',
+            'hire_date' => '2026-08-01',
+            'role' => 'employee',
+            'password' => 'secret1234',
+            'send_invitation' => 'on',
+            'biometric_face_enabled' => '1',
+            'salary_base' => '38000',
+        ]);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('employees', [
+            'email' => 'lina.k@x.dz',
+            'salary_base' => 38000,
+            'biometric_face_enabled' => true,
+        ]);
+    }
+
+    public function test_employee_update_accepts_numeric_strings(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+        ]);
+
+        $response = $this->putJson("/api/v1/employees/{$employee->id}", [
+            'salary_base' => '45000',
+            'hourly_rate' => '1700.75',
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('employees', [
+            'id' => $employee->id,
+            'salary_base' => 45000,
+            'hourly_rate' => 1700.75,
+        ]);
+    }
+
+    public function test_employee_update_accepts_html_form_booleans(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+        ]);
+
+        $response = $this->putJson("/api/v1/employees/{$employee->id}", [
+            'biometric_fingerprint_enabled' => 'true',
+            'biometric_face_enabled' => '0',
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('employees', [
+            'id' => $employee->id,
+            'biometric_fingerprint_enabled' => true,
+            'biometric_face_enabled' => false,
+        ]);
+    }
 }

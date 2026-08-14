@@ -128,6 +128,22 @@ class StoreEmployeeRequest extends FormRequest
             $this->merge(['schedule_id' => (int) $scheduleId]);
         }
 
+        // Booléens : les formulaires HTML envoient "1"/"on"/"true" — la règle
+        // 'boolean' accepte "1"/"0" mais le DTO typé (bool) explose en
+        // TypeError sur les chaînes. Valeurs invalides laissées telles
+        // quelles → 422 par la règle.
+        foreach (['send_invitation', 'biometric_face_enabled', 'biometric_fingerprint_enabled'] as $boolField) {
+            $value = $this->input($boolField);
+
+            if (is_bool($value) || (is_int($value) && in_array($value, [0, 1], true))) {
+                continue;
+            }
+
+            if (in_array($value, ['1', '0', 'true', 'false', 'on', 'off', 'yes', 'no'], true)) {
+                $this->merge([$boolField => filter_var($value, FILTER_VALIDATE_BOOLEAN)]);
+            }
+        }
+
         if (DB::getDriverName() !== 'pgsql') {
             return;
         }
