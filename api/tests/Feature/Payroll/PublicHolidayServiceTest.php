@@ -180,6 +180,7 @@ class PublicHolidayServiceTest extends TestCase
         $this->assertContains('2026-05-28', $dates); // islamique jour 2
 
         $islamic = collect($holidays)->firstWhere('date', '2026-05-27');
+        $this->assertIsArray($islamic);
         $this->assertSame('islamic', $islamic['holiday_type']);
 
         // workingDaysBetween intègre les deux fériés islamiques.

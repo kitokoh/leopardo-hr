@@ -185,6 +185,9 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame($expectedItsas, $rules->calculateIncomeTax($gross - $cnss, 12, $gross));
     }
 
+    /** @return array<string, list<float>> */
+
+
     public static function itsasProvider(): array
     {
         return [
@@ -238,6 +241,9 @@ class GoldenCiPayrollTest extends TestCase
 
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
     }
+
+    /** @return array<string, list<float>> */
+
 
     public static function preavisProvider(): array
     {

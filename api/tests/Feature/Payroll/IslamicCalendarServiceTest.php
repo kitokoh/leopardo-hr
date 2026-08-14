@@ -152,6 +152,7 @@ class IslamicCalendarServiceTest extends TestCase
         // Le cache du pays a été invalidé : la nouvelle date est servie.
         $dz = $this->service()->getHolidaysForCountry('DZ', 2026);
         $fitr = collect($dz)->firstWhere('holiday_key', 'eid_al_fitr');
+        $this->assertIsArray($fitr);
         $this->assertSame('2026-03-21', $fitr['date']);
     }
 

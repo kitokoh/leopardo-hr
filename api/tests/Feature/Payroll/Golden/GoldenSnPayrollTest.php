@@ -166,6 +166,9 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame($expectedTrimf, $rules->calculateBracketTax($gross));
     }
 
+    /** @return array<string, list<float>> */
+
+
     public static function trimfProvider(): array
     {
         return [
@@ -284,6 +287,9 @@ class GoldenSnPayrollTest extends TestCase
 
         $this->assertSame($expectedIr, $rules->calculateIncomeTax($base, 12, $gross));
     }
+
+    /** @return array<string, list<float>> */
+
 
     public static function irProvider(): array
     {

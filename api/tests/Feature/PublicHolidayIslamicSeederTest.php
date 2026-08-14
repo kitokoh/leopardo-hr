@@ -68,8 +68,9 @@ class PublicHolidayIslamicSeederTest extends TestCase
     {
         // Reproduit la commande de production :
         //   php artisan db:seed --class=DatabaseSeeder --force
-        $this->artisan('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true])
-            ->assertExitCode(0);
+        /** @var \Illuminate\Testing\PendingCommand $seed */
+        $seed = $this->artisan('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true]);
+        $seed->assertExitCode(0);
 
         // Après le seed de prod, les fériés et dates islamiques existent.
         $this->assertGreaterThan(0, PublicHoliday::count());
