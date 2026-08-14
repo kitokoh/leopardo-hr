@@ -134,7 +134,7 @@
             <div>
               <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="rate-country">{{ $t('tax_rates.th_country') }}</label>
               <select id="rate-country" v-model="form.country_code" class="form-input" required>
-                <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.label }}</option>
+                <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t(cc.labelKey) }}</option>
               </select>
             </div>
           </div>
@@ -239,13 +239,13 @@ function t(key, fallback = '') {
 }
 
 const supportedCountries = [
-  { code: 'DZ', label: 'Algérie' },
-  { code: 'CM', label: 'Cameroun' },
-  { code: 'CI', label: "Côte d'Ivoire" },
-  { code: 'SN', label: 'Sénégal' },
-  { code: 'MA', label: 'Maroc' },
-  { code: 'TN', label: 'Tunisie' },
-  { code: 'FR', label: 'France' },
+  { code: 'DZ', labelKey: 'common.countries.DZ' },
+  { code: 'CM', labelKey: 'common.countries.CM' },
+  { code: 'CI', labelKey: 'common.countries.CI' },
+  { code: 'SN', labelKey: 'common.countries.SN' },
+  { code: 'MA', labelKey: 'common.countries.MA' },
+  { code: 'TN', labelKey: 'common.countries.TN' },
+  { code: 'FR', labelKey: 'common.countries.FR' },
 ]
 
 const isPlatformAdmin = ref(false)
