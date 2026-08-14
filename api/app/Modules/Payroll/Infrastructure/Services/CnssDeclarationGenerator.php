@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 
 /**
  * CEDEAO (#1830) — déclaration CNSS mensuelle Côte d'Ivoire (CSV).
@@ -42,19 +43,24 @@ class CnssDeclarationGenerator
         ];
         $rows = [$header];
 
-        foreach ($slips as $slip) {
-            $gross = (float) $slip->gross_salary;
-            $cappedBase = min($gross, self::CNSS_CI_CAP);
+        $totals = [
+            'gross' => 0.0,
+            'capped_base' => 0.0,
+            'retraite_emp' => 0.0,
+            'retraite_pat' => 0.0,
+            'famille_pat' => 0.0,
+            'at_pat' => 0.0,
+        ];
 
-            $retraiteEmp = round($cappedBase * self::RATE_RETRAITE_EMP / 100, 2);
-            $retraitePat = round($cappedBase * self::RATE_RETRAITE_PAT / 100, 2);
-            $famillePat = round($cappedBase * self::RATE_FAMILLE_PAT / 100, 2);
-            // BUG #1898 : l'AT patronal (2,0 %) est NON plafonné (comme le moteur
-            // calculateSocialCharges — cap => null) — la déclaration le plafonnait
-            // à tort, faussant le total patronal au-delà de 1 647 315 XOF.
-            $atPat = round($gross * self::RATE_AT_PAT / 100, 2);
-            $totalEmp = round($retraiteEmp, 2);
-            $totalPat = round($retraitePat + $famillePat + $atPat, 2);
+        foreach ($slips as $slip) {
+            $contrib = $this->contributionFor($slip);
+
+            $totals['gross'] += $contrib['gross'];
+            $totals['capped_base'] += $contrib['capped_base'];
+            $totals['retraite_emp'] += $contrib['retraite_emp'];
+            $totals['retraite_pat'] += $contrib['retraite_pat'];
+            $totals['famille_pat'] += $contrib['famille_pat'];
+            $totals['at_pat'] += $contrib['at_pat'];
 
             $employee = $slip->employee;
 
@@ -69,18 +75,16 @@ class CnssDeclarationGenerator
                 (string) ($matricule ?? ''),
                 (string) ($lastName ?? ''),
                 (string) ($firstName ?? ''),
-                number_format($gross, 2, '.', ''),
-                number_format($cappedBase, 2, '.', ''),
-                number_format($retraiteEmp, 2, '.', ''),
-                number_format($retraitePat, 2, '.', ''),
-                number_format($famillePat, 2, '.', ''),
-                number_format($atPat, 2, '.', ''),
-                number_format($totalEmp, 2, '.', ''),
-                number_format($totalPat, 2, '.', ''),
+                number_format($contrib['gross'], 2, '.', ''),
+                number_format($contrib['capped_base'], 2, '.', ''),
+                number_format($contrib['retraite_emp'], 2, '.', ''),
+                number_format($contrib['retraite_pat'], 2, '.', ''),
+                number_format($contrib['famille_pat'], 2, '.', ''),
+                number_format($contrib['at_pat'], 2, '.', ''),
+                number_format($contrib['total_emp'], 2, '.', ''),
+                number_format($contrib['total_pat'], 2, '.', ''),
             ];
         }
-
-        $totals = $this->totals($run);
 
         $rows[] = [
             'TOTAL',
@@ -92,8 +96,8 @@ class CnssDeclarationGenerator
             number_format($totals['retraite_pat'], 2, '.', ''),
             number_format($totals['famille_pat'], 2, '.', ''),
             number_format($totals['at_pat'], 2, '.', ''),
-            number_format($totals['total_emp'], 2, '.', ''),
-            number_format($totals['total_pat'], 2, '.', ''),
+            number_format($totals['retraite_emp'], 2, '.', ''),
+            number_format($totals['retraite_pat'] + $totals['famille_pat'] + $totals['at_pat'], 2, '.', ''),
         ];
 
         return $this->toCsv($rows);
@@ -114,15 +118,14 @@ class CnssDeclarationGenerator
         $atPat = 0.0;
 
         foreach ($slips as $slip) {
-            $slipGross = (float) $slip->gross_salary;
-            $slipCapped = min($slipGross, self::CNSS_CI_CAP);
+            $contrib = $this->contributionFor($slip);
 
-            $gross += $slipGross;
-            $cappedBase += $slipCapped;
-            $retraiteEmp += round($slipCapped * self::RATE_RETRAITE_EMP / 100, 2);
-            $retraitePat += round($slipCapped * self::RATE_RETRAITE_PAT / 100, 2);
-            $famillePat += round($slipCapped * self::RATE_FAMILLE_PAT / 100, 2);
-            $atPat += round($slipCapped * self::RATE_AT_PAT / 100, 2);
+            $gross += $contrib['gross'];
+            $cappedBase += $contrib['capped_base'];
+            $retraiteEmp += $contrib['retraite_emp'];
+            $retraitePat += $contrib['retraite_pat'];
+            $famillePat += $contrib['famille_pat'];
+            $atPat += $contrib['at_pat'];
         }
 
         return [
@@ -139,6 +142,39 @@ class CnssDeclarationGenerator
     }
 
     /**
+     * Calcul des cotisations CNSS CI pour un bulletin — source unique de
+     * vérité des lignes ET des totaux (aucune dérive possible).
+     *
+     * @return array{gross: float, capped_base: float, retraite_emp: float, retraite_pat: float, famille_pat: float, at_pat: float, total_emp: float, total_pat: float}
+     */
+    private function contributionFor(PaySlip $slip): array
+    {
+        $gross = (float) $slip->gross_salary;
+        $cappedBase = min($gross, self::CNSS_CI_CAP);
+
+        $retraiteEmp = round($cappedBase * self::RATE_RETRAITE_EMP / 100, 2);
+        $retraitePat = round($cappedBase * self::RATE_RETRAITE_PAT / 100, 2);
+        $famillePat = round($cappedBase * self::RATE_FAMILLE_PAT / 100, 2);
+        // BUG #1898 : l'AT patronal (2,0 %) est NON plafonné (comme le moteur
+        // calculateSocialCharges — cap => null) — la déclaration le plafonnait
+        // à tort, faussant le total patronal au-delà de 1 647 315 XOF.
+        $atPat = round($gross * self::RATE_AT_PAT / 100, 2);
+        $totalEmp = round($retraiteEmp, 2);
+        $totalPat = round($retraitePat + $famillePat + $atPat, 2);
+
+        return [
+            'gross' => $gross,
+            'capped_base' => $cappedBase,
+            'retraite_emp' => $retraiteEmp,
+            'retraite_pat' => $retraitePat,
+            'famille_pat' => $famillePat,
+            'at_pat' => $atPat,
+            'total_emp' => $totalEmp,
+            'total_pat' => $totalPat,
+        ];
+    }
+
+    /**
      * @param  array<int, array<int, string>>  $rows
      */
     private function toCsv(array $rows): string
@@ -146,6 +182,13 @@ class CnssDeclarationGenerator
         $lines = array_map(static function (array $row): string {
             return implode(',', array_map(static function ($cell): string {
                 $cell = (string) $cell;
+
+                // CSV injection (#1922) : un champ commençant par =, +, -, @,
+                // tab ou saut de ligne est neutralisé (préfixe ') pour qu'Excel
+                // / LibreOffice ne l'interprète pas comme une formule/DDE.
+                if ($cell !== '' && str_contains("=+-@\t\r\n", $cell[0])) {
+                    $cell = "'".$cell;
+                }
 
                 return '"'.str_replace('"', '""', $cell).'"';
             }, $row));

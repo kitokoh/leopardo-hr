@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 
 /**
  * CEDEAO (#1830) — déclaration IPRES/CSS mensuelle Sénégal (CSV).
@@ -49,8 +50,29 @@ class IpresDeclarationGenerator
         ];
         $rows = [$header];
 
+        $totals = [
+            'gross' => 0.0,
+            't1_base' => 0.0,
+            't1_emp' => 0.0,
+            't1_pat' => 0.0,
+            't2_base' => 0.0,
+            't2_emp' => 0.0,
+            't2_pat' => 0.0,
+            'css_famille_pat' => 0.0,
+        ];
+
         foreach ($slips as $slip) {
-            $gross = (float) $slip->gross_salary;
+            $contrib = $this->contributionFor($slip);
+
+            $totals['gross'] += $contrib['gross'];
+            $totals['t1_base'] += $contrib['t1_base'];
+            $totals['t1_emp'] += $contrib['t1_emp'];
+            $totals['t1_pat'] += $contrib['t1_pat'];
+            $totals['t2_base'] += $contrib['t2_base'];
+            $totals['t2_emp'] += $contrib['t2_emp'];
+            $totals['t2_pat'] += $contrib['t2_pat'];
+            $totals['css_famille_pat'] += $contrib['css_famille_pat'];
+
             $employee = $slip->employee;
 
             /** @var string|null $matricule */
@@ -61,34 +83,22 @@ class IpresDeclarationGenerator
             $firstName = $employee->first_name ?? null;
             $isCadre = ($employee->ipres_category ?? 'general') === 'cadre';
 
-            $t1Base = min($gross, self::IPRES_T1_CAP);
-            $t2Base = $isCadre ? max(0.0, min($gross, self::IPRES_T2_CAP) - self::IPRES_T1_CAP) : 0.0;
-
-            $t1Emp = round($t1Base * self::RATE_T1_EMP / 100, 2);
-            $t1Pat = round($t1Base * self::RATE_T1_PAT / 100, 2);
-            $t2Emp = round($t2Base * self::RATE_T2_EMP / 100, 2);
-            $t2Pat = round($t2Base * self::RATE_T2_PAT / 100, 2);
-            $cssFamillePat = round(min($gross, self::IPRES_T1_CAP) * self::RATE_CSS_FAMILLE_PAT / 100, 2);
-            $totalPat = round($t1Pat + $t2Pat + $cssFamillePat, 2);
-
             $rows[] = [
                 (string) ($matricule ?? ''),
                 (string) ($lastName ?? ''),
                 (string) ($firstName ?? ''),
                 $isCadre ? 'cadre' : 'general',
-                number_format($gross, 2, '.', ''),
-                number_format($t1Base, 2, '.', ''),
-                number_format($t1Emp, 2, '.', ''),
-                number_format($t1Pat, 2, '.', ''),
-                number_format($t2Base, 2, '.', ''),
-                number_format($t2Emp, 2, '.', ''),
-                number_format($t2Pat, 2, '.', ''),
-                number_format($cssFamillePat, 2, '.', ''),
-                number_format($totalPat, 2, '.', ''),
+                number_format($contrib['gross'], 2, '.', ''),
+                number_format($contrib['t1_base'], 2, '.', ''),
+                number_format($contrib['t1_emp'], 2, '.', ''),
+                number_format($contrib['t1_pat'], 2, '.', ''),
+                number_format($contrib['t2_base'], 2, '.', ''),
+                number_format($contrib['t2_emp'], 2, '.', ''),
+                number_format($contrib['t2_pat'], 2, '.', ''),
+                number_format($contrib['css_famille_pat'], 2, '.', ''),
+                number_format($contrib['total_patronal'], 2, '.', ''),
             ];
         }
-
-        $totals = $this->totals($run);
 
         $rows[] = [
             'TOTAL',
@@ -103,7 +113,7 @@ class IpresDeclarationGenerator
             number_format($totals['t2_emp'], 2, '.', ''),
             number_format($totals['t2_pat'], 2, '.', ''),
             number_format($totals['css_famille_pat'], 2, '.', ''),
-            number_format($totals['total_patronal'], 2, '.', ''),
+            number_format($totals['t1_pat'] + $totals['t2_pat'] + $totals['css_famille_pat'], 2, '.', ''),
         ];
 
         return $this->toCsv($rows);
@@ -126,20 +136,16 @@ class IpresDeclarationGenerator
         $cssFamillePat = 0.0;
 
         foreach ($slips as $slip) {
-            $slipGross = (float) $slip->gross_salary;
-            $isCadre = ($slip->employee->ipres_category ?? 'general') === 'cadre';
+            $contrib = $this->contributionFor($slip);
 
-            $slipT1 = min($slipGross, self::IPRES_T1_CAP);
-            $slipT2 = $isCadre ? max(0.0, min($slipGross, self::IPRES_T2_CAP) - self::IPRES_T1_CAP) : 0.0;
-
-            $gross += $slipGross;
-            $t1Base += $slipT1;
-            $t1Emp += round($slipT1 * self::RATE_T1_EMP / 100, 2);
-            $t1Pat += round($slipT1 * self::RATE_T1_PAT / 100, 2);
-            $t2Base += $slipT2;
-            $t2Emp += round($slipT2 * self::RATE_T2_EMP / 100, 2);
-            $t2Pat += round($slipT2 * self::RATE_T2_PAT / 100, 2);
-            $cssFamillePat += round($slipT1 * self::RATE_CSS_FAMILLE_PAT / 100, 2);
+            $gross += $contrib['gross'];
+            $t1Base += $contrib['t1_base'];
+            $t1Emp += $contrib['t1_emp'];
+            $t1Pat += $contrib['t1_pat'];
+            $t2Base += $contrib['t2_base'];
+            $t2Emp += $contrib['t2_emp'];
+            $t2Pat += $contrib['t2_pat'];
+            $cssFamillePat += $contrib['css_famille_pat'];
         }
 
         return [
@@ -157,6 +163,41 @@ class IpresDeclarationGenerator
     }
 
     /**
+     * Calcul des cotisations IPRES/CSS pour un bulletin — source unique de
+     * vérité des lignes ET des totaux (aucune dérive possible).
+     *
+     * @return array{gross: float, t1_base: float, t1_emp: float, t1_pat: float, t2_base: float, t2_emp: float, t2_pat: float, css_famille_pat: float, total_patronal: float}
+     */
+    private function contributionFor(PaySlip $slip): array
+    {
+        $gross = (float) $slip->gross_salary;
+        $employee = $slip->employee;
+        $isCadre = ($employee->ipres_category ?? 'general') === 'cadre';
+
+        $t1Base = min($gross, self::IPRES_T1_CAP);
+        $t2Base = $isCadre ? max(0.0, min($gross, self::IPRES_T2_CAP) - self::IPRES_T1_CAP) : 0.0;
+
+        $t1Emp = round($t1Base * self::RATE_T1_EMP / 100, 2);
+        $t1Pat = round($t1Base * self::RATE_T1_PAT / 100, 2);
+        $t2Emp = round($t2Base * self::RATE_T2_EMP / 100, 2);
+        $t2Pat = round($t2Base * self::RATE_T2_PAT / 100, 2);
+        $cssFamillePat = round($t1Base * self::RATE_CSS_FAMILLE_PAT / 100, 2);
+        $totalPatronal = round($t1Pat + $t2Pat + $cssFamillePat, 2);
+
+        return [
+            'gross' => $gross,
+            't1_base' => $t1Base,
+            't1_emp' => $t1Emp,
+            't1_pat' => $t1Pat,
+            't2_base' => $t2Base,
+            't2_emp' => $t2Emp,
+            't2_pat' => $t2Pat,
+            'css_famille_pat' => $cssFamillePat,
+            'total_patronal' => $totalPatronal,
+        ];
+    }
+
+    /**
      * @param  array<int, array<int, string>>  $rows
      */
     private function toCsv(array $rows): string
@@ -164,6 +205,13 @@ class IpresDeclarationGenerator
         $lines = array_map(static function (array $row): string {
             return implode(',', array_map(static function ($cell): string {
                 $cell = (string) $cell;
+
+                // CSV injection (#1922) : un champ commençant par =, +, -, @,
+                // tab ou saut de ligne est neutralisé (préfixe ') pour qu'Excel
+                // / LibreOffice ne l'interprète pas comme une formule/DDE.
+                if ($cell !== '' && str_contains("=+-@\t\r\n", $cell[0])) {
+                    $cell = "'".$cell;
+                }
 
                 return '"'.str_replace('"', '""', $cell).'"';
             }, $row));
