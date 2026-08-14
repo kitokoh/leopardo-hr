@@ -270,7 +270,11 @@ class CemacPayrollRules extends AbstractCountryRules
 
         // Placeholder ZONE-INFRA (#1820): the other CEMAC members (CF/TD/GQ)
         // stay on the placeholder (uncapped) rates until their own
-        // member-state issues land.
+        // member-state issues land. `$cap` est volontairement `null` ici :
+        // il n'est défini que dans le bloc CM (fix review #1824 — la
+        // référence à `$cap` indéfini cassait PHPStan strict + les tests
+        // PHPUnit (failOnWarning) pour CF/TD/GQ).
+        $cap = null;
 
         return [
             'employee' => $this->computeContribution($grossSalary, 'CNPS_CEMAC_EMP', 4.2, $cap),
