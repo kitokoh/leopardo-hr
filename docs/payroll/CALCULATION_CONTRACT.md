@@ -21,7 +21,7 @@ Le point d'entrée unique est `PayrollCalculator::computeNetBreakdown(float $gro
 | 2 | `assiette = brut − cotisations salariales` | `taxable_gross` (non arrondi) |
 | 3 | `$rules->calculateIncomeTax($assiette)` | `income_tax` |
 | 4 | `$rules->calculateBracketTax($brut)` | `bracket_tax` (TRIMF SN / minimum fiscal, 0 si non applicable) |
-| 5 | `retenues = salariales + impôt + bracket_tax` | `base_deductions` |
+| 5 | `retenues = salariales + combine(impôt, bracket_tax)` | `base_deductions` (défaut additif ; SN : `max(IR, TRIMF)`, #1934) |
 | 6 | `net = max(0, brut − retenues)` | `net_salary` |
 | 7 | `coût = brut + patronales` | `total_cost` |
 
@@ -101,7 +101,7 @@ composants, les deux chemins retournent rigoureusement le même net.
 ## Invariants vérifiés par les tests
 
 - `net_salary === max(0, gross_salary − total_deductions)` (à 2 décimales).
-- `total_deductions === total_employee_deduction + income_tax + bracket_tax`.
+- `total_deductions === total_employee_deduction + combine(income_tax, bracket_tax)` (défaut additif ; SN : `max(IR, TRIMF)` depuis #1934 — ne pas sommer les deux bruts pour SN).
 - `total_cost_employer === gross_salary + total_employer_cost`.
 - `income_tax(simulation) === income_tax(bulletin)` pour un même brut et un
   même contexte (test `test_contract_simulation_matches_payslip_for_same_case`).
