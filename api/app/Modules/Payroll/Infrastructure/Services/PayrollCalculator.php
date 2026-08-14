@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PayrollCalculator
 {
@@ -100,7 +101,9 @@ class PayrollCalculator
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
 
-        $baseDeductions = $social['employee'] + $incomeTax + $bracketTax;
+        // Issue #1934 — la règle pays décide de la combinaison IR/taxe de
+        // minimum fiscal (défaut : additive ; SN : max(IR, TRIMF)).
+        $baseDeductions = $social['employee'] + $rules->combineMinimumFiscalTax($incomeTax, $bracketTax);
 
         return [
             'social' => $social,
@@ -138,6 +141,13 @@ class PayrollCalculator
         // whatever rates happen to be current today.
         if ($rules instanceof AbstractCountryRules) {
             $rules = $rules->forCompany($companyId)->asOf($run->period_start);
+        }
+
+        // Issue #1983 — un run de régularisation ne recalcule PAS des bulletins
+        // complets : il produit un DIFFÉRENTIEL par employé affecté (corrigé −
+        // original), en référence au run original verrouillé.
+        if ($run->type === PayrollRun::TYPE_REGULARIZATION) {
+            return $this->calculateRegularizationRun($run, $rules);
         }
 
         /** @var Collection<int, Employee> $employees */
@@ -202,12 +212,247 @@ class PayrollCalculator
         return $run->refresh();
     }
 
+    /**
+     * Issue #1983 — calcul d'un run de régularisation (type=regularization) :
+     * DIFFÉRENTIEL par employé affecté, jamais un bulletin complet.
+     *
+     * Périmètre : les employés ayant un bulletin dans le run ORIGINAL
+     * (verrouillé) — les départs en cours de période sont donc couverts et les
+     * embauchés après la période exclus (aucun bulletin original).
+     *
+     * Valeur corrigée : recalcul complet du bulletin pour la période d'origine
+     * avec les règles pays résolues asOf ($run->period_start == période
+     * d'origine) et la structure salariale/le salaire de base ACTUELS de
+     * l'employé (pas d'historique de structures — limite documentée). Les
+     * entrées de travail (présences, heures sup., congés) sont celles
+     * calculées au moment du run de régularisation (données actuelles).
+     *
+     * Delta = corrigé − original (par ligne et par champ). Un employé dont le
+     * delta est nul ne reçoit AUCUN bulletin. Chaque bulletin de
+     * régularisation référence son original (`original_slip_id`).
+     *
+     * @throws \RuntimeException si le run original manque ou n'est pas verrouillé
+     */
+    private function calculateRegularizationRun(PayrollRun $run, CountryRulesContract $rules): PayrollRun
+    {
+        /** @var PayrollRun|null $original */
+        $original = $run->originalRun;
+        if ($original === null) {
+            throw new \RuntimeException('Un run de régularisation doit référencer son run original (original_run_id).');
+        }
+        if ($original->status !== PayrollRun::STATUS_LOCKED) {
+            throw new \RuntimeException('Le run original doit être verrouillé pour calculer un différentiel de régularisation.');
+        }
+
+        /** @var Collection<int, SalaryStructure> $structuresCollection */
+        $structuresCollection = SalaryStructure::query()
+            ->where('company_id', $run->company_id)
+            ->where('country_code', $run->country_code)
+            ->where('active', true)
+            ->with('components')
+            ->get();
+
+        /** @var Collection<int|string, SalaryStructure> $structures */
+        $structures = $structuresCollection->keyBy('id');
+
+        /** @var SalaryStructure|null $defaultStructure */
+        $defaultStructure = $structures->first();
+
+        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules): void {
+            // Recalcul idempotent : on repart de zéro (aucune double application).
+            $run->paySlips()->delete();
+
+            $totalGross = 0.0;
+            $totalDeductions = 0.0;
+            $totalNet = 0.0;
+            $totalEmployerCost = 0.0;
+
+            /** @var Collection<int, PaySlip> $originalSlips */
+            $originalSlips = $original->paySlips()->with(['employee', 'lines'])->get();
+
+            foreach ($originalSlips as $originalSlip) {
+                /** @var Employee|null $employee */
+                $employee = $originalSlip->employee;
+                if ($employee === null) {
+                    continue;
+                }
+
+                // Embauché APRÈS la période → aucun bulletin (garde défensive :
+                // sans bulletin original, l'employé n'apparaît pas ici).
+                if ($employee->contract_start !== null && $run->period_end < $employee->contract_start) {
+                    continue;
+                }
+
+                /** @var SalaryStructure|null $structure */
+                $structure = $employee->salary_structure_id !== null
+                    ? ($structures->get($employee->salary_structure_id) ?? $defaultStructure)
+                    : $defaultStructure;
+
+                if ($structure === null) {
+                    continue;
+                }
+
+                $corrected = $this->computeSlipValues($run, $employee, $structure, $rules);
+
+                $delta = [
+                    'gross_salary' => round($corrected['gross_salary'] - (float) $originalSlip->gross_salary, 2),
+                    'total_deductions' => round($corrected['total_deductions'] - (float) $originalSlip->total_deductions, 2),
+                    'net_salary' => round($corrected['net_salary'] - (float) $originalSlip->net_salary, 2),
+                    'employer_contributions' => round($corrected['employer_contributions'] - (float) $originalSlip->employer_contributions, 2),
+                    'total_cost' => round($corrected['total_cost'] - (float) $originalSlip->total_cost, 2),
+                ];
+
+                // Aucun changement pour cet employé → pas de bulletin.
+                if (abs($delta['gross_salary']) < 0.005
+                    && abs($delta['total_deductions']) < 0.005
+                    && abs($delta['net_salary']) < 0.005
+                    && abs($delta['total_cost']) < 0.005) {
+                    continue;
+                }
+
+                /** @var PaySlip $slip */
+                $slip = PaySlip::create([
+                    'payroll_run_id' => $run->id,
+                    'company_id' => $run->company_id,
+                    'employee_id' => $employee->id,
+                    'period_start' => $run->period_start,
+                    'period_end' => $run->period_end,
+                    'gross_salary' => $delta['gross_salary'],
+                    'total_deductions' => $delta['total_deductions'],
+                    'net_salary' => $delta['net_salary'],
+                    'employer_contributions' => $delta['employer_contributions'],
+                    'total_cost' => $delta['total_cost'],
+                    'working_days' => $corrected['working_days'],
+                    'actual_days_worked' => $corrected['actual_days_worked'],
+                    'overtime_hours' => $corrected['overtime_hours'],
+                    'has_attendance_data' => $corrected['has_attendance_data'],
+                    'status' => 'calculated',
+                    'original_slip_id' => $originalSlip->id,
+                ]);
+
+                $this->createDeltaLines($slip, $corrected['lines'], $originalSlip);
+
+                $totalGross += $delta['gross_salary'];
+                $totalDeductions += $delta['total_deductions'];
+                $totalNet += $delta['net_salary'];
+                $totalEmployerCost += $delta['total_cost'];
+            }
+
+            $run->update([
+                'status' => 'calculated',
+                'total_gross' => round($totalGross, 2),
+                'total_deductions' => round($totalDeductions, 2),
+                'total_net' => round($totalNet, 2),
+                'total_employer_cost' => round($totalEmployerCost, 2),
+                'employee_count' => $run->paySlips()->count(),
+                'calculated_at' => now(),
+            ]);
+        });
+
+        return $run->refresh();
+    }
+
+    /**
+     * Issue #1983 — lignes du bulletin de régularisation : différentiel
+     * corrigé − original par libellé (zéro exclu).
+     *
+     * @param  array<int, array<string, mixed>>  $correctedLines
+     */
+    private function createDeltaLines(PaySlip $slip, array $correctedLines, PaySlip $originalSlip): void
+    {
+        /** @var Collection<string, PaySlipLine> $originalLinesByName */
+        $originalLinesByName = $originalSlip->lines->keyBy('name');
+
+        $order = 0;
+        foreach ($correctedLines as $correctedLine) {
+            /** @var string $lineName */
+            $lineName = $correctedLine['name'];
+            /** @var PaySlipLine|null $originalLine */
+            $originalLine = $originalLinesByName->get($lineName);
+
+            /** @var int|float $correctedAmount */
+            $correctedAmount = $correctedLine['amount'];
+            $originalAmount = $originalLine !== null ? $originalLine->amount : 0.0;
+
+            $deltaAmount = round((float) $correctedAmount - (float) $originalAmount, 2);
+            if (abs($deltaAmount) < 0.005) {
+                continue;
+            }
+
+            /** @var int|float|null $correctedBase */
+            $correctedBase = $correctedLine['base_amount'] ?? 0.0;
+            $originalBase = $originalLine !== null ? $originalLine->base_amount : 0.0;
+
+            PaySlipLine::create([
+                'pay_slip_id' => $slip->id,
+                'name' => $lineName,
+                'type' => $correctedLine['type'],
+                'base_amount' => round((float) $correctedBase - (float) $originalBase, 2),
+                'rate' => $correctedLine['rate'] ?? null,
+                'amount' => $deltaAmount,
+                'order' => $order++,
+            ]);
+        }
+    }
+
     private function calculateSlip(
         PayrollRun $run,
         Employee $employee,
         SalaryStructure $structure,
         CountryRulesContract $rules
     ): PaySlip {
+        $values = $this->computeSlipValues($run, $employee, $structure, $rules);
+
+        /** @var PaySlip $slip */
+        $slip = PaySlip::create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $run->company_id,
+            'employee_id' => $employee->id,
+            'period_start' => $run->period_start,
+            'period_end' => $run->period_end,
+            'gross_salary' => $values['gross_salary'],
+            'total_deductions' => $values['total_deductions'],
+            'net_salary' => $values['net_salary'],
+            'employer_contributions' => $values['employer_contributions'],
+            'total_cost' => $values['total_cost'],
+            'working_days' => $values['working_days'],
+            'actual_days_worked' => $values['actual_days_worked'],
+            'overtime_hours' => $values['overtime_hours'],
+            'has_attendance_data' => $values['has_attendance_data'],
+            'status' => 'calculated',
+        ]);
+
+        foreach ($values['lines'] as $line) {
+            PaySlipLine::create(array_merge($line, ['pay_slip_id' => $slip->id]));
+        }
+
+        return $slip;
+    }
+
+    /**
+     * Issue #1983 — calcule les VALEURS d'un bulletin SANS persister.
+     * Utilisé par calculateSlip() (bulletin standard) et par
+     * calculateRegularizationRun() (valeur corrigée du différentiel).
+     *
+     * @return array{
+     *     gross_salary: float,
+     *     total_deductions: float,
+     *     net_salary: float,
+     *     employer_contributions: float,
+     *     total_cost: float,
+     *     working_days: float,
+     *     actual_days_worked: float,
+     *     overtime_hours: float,
+     *     has_attendance_data: bool,
+     *     lines: list<array<string, mixed>>,
+     * }
+     */
+    private function computeSlipValues(
+        PayrollRun $run,
+        Employee $employee,
+        SalaryStructure $structure,
+        CountryRulesContract $rules
+    ): array {
         $baseSalary = $structure->base_salary;
         $worked = $this->computeWorkedDays($run, $employee);
         $inputs = $this->collectWorkInputs($run, $employee);
@@ -363,30 +608,46 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
+        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
+        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
+        // ajoutée quand la règle pays la définit (> 0). Le libellé de ligne
+        // est fourni par la règle pays (CI #1825 : « Contribution Nationale
+        // (CN) » au lieu de « Taxe de minimum fiscal »).
+        $incomeTax = $breakdown['income_tax'];
+        $bracketTax = $breakdown['bracket_tax'];
+        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
+
+        // Issue #1934 — mécanisme légal « max(IR, TRIMF) » (Sénégal) : la
+        // règle combine les deux via combineMinimumFiscalTax(). Quand la
+        // combinaison n'est pas additive, on n'affiche que la ligne gagnante
+        // pour que le bulletin reste explicable (somme des lignes de
+        // déduction = total déduit).
+        $shownIncomeTax = $incomeTax;
+        $shownBracketTax = $bracketTax;
+        if ($rules->combineMinimumFiscalTax($incomeTax, $bracketTax) !== $incomeTax + $bracketTax) {
+            if ($incomeTax >= $bracketTax) {
+                $shownBracketTax = 0.0;
+            } else {
+                $shownIncomeTax = 0.0;
+            }
+        }
+
         $lines[] = [
             'name' => 'Impot sur le revenu',
             'type' => 'deduction',
             'base_amount' => $breakdown['taxable_gross'],
             'rate' => null,
-            'amount' => $breakdown['income_tax'],
+            'amount' => $shownIncomeTax,
             'order' => $order++,
         ];
 
-        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
-        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
-        // ajoutée quand la règle pays la définit (> 0). Elle s'ajoute aux
-        // déductions totales via la boucle générique ci-dessous. Le libellé
-        // de ligne est fourni par la règle pays (CI #1825 : « Contribution
-        // Nationale (CN) » au lieu de « Taxe de minimum fiscal »).
-        $bracketTax = $breakdown['bracket_tax'];
-        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
-        if ($bracketTax > 0.0) {
+        if ($shownBracketTax > 0.0) {
             $lines[] = [
                 'name' => $bracketTaxLabel,
                 'type' => 'deduction',
                 'base_amount' => $grossEarnings,
                 'rate' => null,
-                'amount' => $bracketTax,
+                'amount' => $shownBracketTax,
                 'order' => $order++,
             ];
         }
@@ -436,13 +697,7 @@ class PayrollCalculator
         $netSalary = round(max(0, $grossEarnings - $totalDeductions), 2);
         $totalCost = $breakdown['total_cost'];
 
-        /** @var PaySlip $slip */
-        $slip = PaySlip::create([
-            'payroll_run_id' => $run->id,
-            'company_id' => $run->company_id,
-            'employee_id' => $employee->id,
-            'period_start' => $run->period_start,
-            'period_end' => $run->period_end,
+        return [
             'gross_salary' => round($grossEarnings, 2),
             'total_deductions' => round($totalDeductions, 2),
             'net_salary' => $netSalary,
@@ -452,14 +707,8 @@ class PayrollCalculator
             'actual_days_worked' => $worked['actual_days_worked'],
             'overtime_hours' => $worked['overtime_hours'],
             'has_attendance_data' => $worked['has_attendance_data'],
-            'status' => 'calculated',
-        ]);
-
-        foreach ($lines as $line) {
-            PaySlipLine::create(array_merge($line, ['pay_slip_id' => $slip->id]));
-        }
-
-        return $slip;
+            'lines' => $lines,
+        ];
     }
 
     /**
@@ -576,13 +825,29 @@ class PayrollCalculator
                     ->whereNotIn('status', ['absent', 'leave', 'holiday', 'incomplete'])
                     ->distinct('date')
                     ->count('date');
-            } catch (QueryException) {
+            } catch (QueryException $e) {
                 // Garde défensive : table partiellement migrée ou supprimée
                 // entre la vérification et la requête → repli sur le prorata
                 // (comportement historique pour les environnements sans
-                // migration tenant, ex. golden tests purs).
+                // migration tenant, ex. golden tests purs). #2025 : le repli
+                // n'est plus silencieux — journalisé pour observabilité.
+                Log::warning('computeWorkedDays: repli prorata — requête attendance_logs en échec', [
+                    'company_id' => $run->company_id,
+                    'employee_id' => $employee->id,
+                    'period_start' => $run->period_start->toDateString(),
+                    'period_end' => $run->period_end->toDateString(),
+                    'error' => $e->getMessage(),
+                ]);
                 $distinctDays = 0;
             }
+        } else {
+            // #2025 : table absente du search_path (CI : shared_tenants,public
+            // vs local : public,shared_tenants — CONVENTIONS §2.6/#1613) →
+            // repli prorata historique, désormais journalisé.
+            Log::warning('computeWorkedDays: repli prorata — table attendance_logs absente du search_path', [
+                'company_id' => $run->company_id,
+                'employee_id' => $employee->id,
+            ]);
         }
 
         $hasAttendanceData = $distinctDays > 0;
