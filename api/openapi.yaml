@@ -7036,6 +7036,196 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /admin/public-holidays:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les jours fériés d'un pays/année (super-admin : national + entreprise)"
+      description: "Issue #1811 — CRUD jours fériés par pays. Super-admin : voit tout ; manager principal : nationaux + siens."
+      operationId: listPublicHolidaysAdmin
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string, default: DZ }
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des jours fériés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Platform Admin"]
+      summary: "Créer un jour férié national (super-admin)"
+      operationId: storePublicHolidayAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "201":
+          description: "Jour férié créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /admin/public-holidays/{publicHoliday}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier un jour férié (super-admin)"
+      operationId: updatePublicHolidayAdmin
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "200":
+          description: "Jour férié modifié"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer un jour férié (super-admin)"
+      operationId: destroyPublicHolidayAdmin
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Supprimé"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /public-holidays:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Lister les jours fériés du pays (manager principal : nationaux + entreprise)"
+      operationId: listPublicHolidays
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string, default: DZ }
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des jours fériés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Payroll Engine"]
+      summary: "Créer un jour férié d'entreprise (manager principal)"
+      operationId: storePublicHoliday
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "201":
+          description: "Jour férié créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+  /public-holidays/{publicHoliday}:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Modifier un jour férié d'entreprise (manager principal)"
+      operationId: updatePublicHoliday
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublicHolidayInput"
+      responses:
+        "200":
+          description: "Jour férié modifié"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PublicHoliday"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Error422" }
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer un jour férié d'entreprise (manager principal)"
+      operationId: destroyPublicHoliday
+      parameters:
+        - name: publicHoliday
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Supprimé"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+
   /salary-components:
     get:
       tags: ["Payroll Engine"]
@@ -16214,3 +16404,27 @@ components:
           minLength: 8
         company_code:
           type: string
+
+    PublicHoliday:
+      type: object
+      properties:
+        id: { type: integer }
+        company_id: { type: [integer, "null"] }
+        country_code: { type: string }
+        name: { type: string }
+        date: { type: string, format: date }
+        year: { type: integer }
+        is_recurring: { type: boolean }
+        month_day: { type: [string, "null"] }
+        holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }
+    PublicHolidayInput:
+      type: object
+      required: [country_code, name, date, year, holiday_type]
+      properties:
+        country_code: { type: string }
+        name: { type: string }
+        date: { type: string, format: date }
+        year: { type: integer }
+        is_recurring: { type: boolean, default: false }
+        month_day: { type: [string, "null"] }
+        holiday_type: { type: string, enum: [fixed, islamic, christian, custom] }

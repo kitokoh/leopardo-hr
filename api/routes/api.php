@@ -27,6 +27,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
@@ -295,5 +296,11 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
+
+        // Public holidays (issue #1811) — super-admin : CRUD fériés nationaux.
+        Route::get('/public-holidays', [PublicHolidayController::class, 'index']);
+        Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
+        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
+        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
     });
 });

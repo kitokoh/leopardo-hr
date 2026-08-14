@@ -9,6 +9,9 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
+use Illuminate\Support\Facades\Cache;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use Tests\RefreshTenantDatabase;
@@ -99,6 +102,48 @@ class PayrollCalculatorCoverageTest extends TestCase
         $this->assertSame(22.0, $result['working_days']);
         // 21 jours de chevauchement sur 30 → 22 × 21/30 = 15,4
         $this->assertSame(15.4, $result['actual_days_worked']);
+    }
+
+    public function test_worked_days_dz_november_2026_uses_holidays_and_rest_days(): void
+    {
+        // Issue #1811 : computeWorkedDays utilise PublicHolidayService quand il
+        // est injecté — DZ nov 2026 : week-end ven/sam (8 j) + 1er nov férié
+        // (dimanche = jour ouvré en DZ) → 30 - 8 - 1 = 21 jours ouvrés.
+        PublicHoliday::create([
+            'company_id' => null,
+            'country_code' => 'DZ',
+            'name' => 'Fête de la Révolution',
+            'date' => '2026-11-01',
+            'year' => 2026,
+            'is_recurring' => true,
+            'month_day' => '11-01',
+            'holiday_type' => 'fixed',
+        ]);
+
+        $calculator = new PayrollCalculator(
+            countryRules: [],
+            publicHolidayService: new PublicHolidayService(Cache::store()),
+        );
+
+        [$run, $employee] = $this->runAndEmployee('2026-11-01', '2026-11-30');
+        $employee->update(['contract_start' => '2025-01-01', 'contract_end' => null]);
+
+        $result = $calculator->computeWorkedDays($run, $employee);
+
+        $this->assertSame(21.0, $result['working_days']);
+        $this->assertSame(21.0, $result['actual_days_worked']);
+    }
+
+    public function test_worked_days_falls_back_to_22_without_service(): void
+    {
+        // Issue #1811 : sans PublicHolidayService injecté (tests historiques,
+        // contexts legacy), le comportement reste la constante 22.
+        [$run, $employee] = $this->runAndEmployee('2026-11-01', '2026-11-30');
+        $employee->update(['contract_start' => '2025-01-01', 'contract_end' => null]);
+
+        $result = $this->calculator->computeWorkedDays($run, $employee);
+
+        $this->assertSame(22.0, $result['working_days']);
     }
 
     public function test_worked_days_contract_end_mid_month(): void

@@ -18,6 +18,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
 use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
 use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
@@ -57,6 +58,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'show'])->whereNumber('salaryComponent');
         Route::put('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'update'])->whereNumber('salaryComponent');
         Route::delete('/salary-components/{salaryComponent}', [SalaryComponentController::class, 'destroy'])->whereNumber('salaryComponent');
+
+        // Public holidays (issue #1811) — manager principal : CRUD entreprise
+        // uniquement (les fériés nationaux sont en lecture seule).
+        Route::get('/public-holidays', [PublicHolidayController::class, 'index']);
+        Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
+        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
+        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
 
         // Tax Slabs
         Route::get('/tax-slabs', [TaxSlabController::class, 'index']);

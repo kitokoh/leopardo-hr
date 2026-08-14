@@ -185,6 +185,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/admin/platform/marketing/oauth-config", options);
     },
 
+    /** Lister les jours fériés d'un pays/année (super-admin : national + entreprise) */
+    listPublicHolidaysAdmin(options = {}) {
+      return request("GET", "/admin/public-holidays", options);
+    },
+
+    /** Créer un jour férié national (super-admin) */
+    storePublicHolidayAdmin(options = {}) {
+      return request("POST", "/admin/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié (super-admin) */
+    destroyPublicHolidayAdmin(options = {}) {
+      return request("DELETE", "/admin/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié (super-admin) */
+    updatePublicHolidayAdmin(options = {}) {
+      return request("PUT", "/admin/public-holidays/{publicHoliday}", options);
+    },
+
     /** Couts IA par periode */
     getAiAnalyticsCosts(options = {}) {
       return request("GET", "/ai/analytics/costs", options);
@@ -1623,6 +1643,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre a jour un projet */
     putProjectsByProject(options = {}) {
       return request("PUT", "/projects/{project}", options);
+    },
+
+    /** Lister les jours fériés du pays (manager principal : nationaux + entreprise) */
+    listPublicHolidays(options = {}) {
+      return request("GET", "/public-holidays", options);
+    },
+
+    /** Créer un jour férié d'entreprise (manager principal) */
+    storePublicHoliday(options = {}) {
+      return request("POST", "/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié d'entreprise (manager principal) */
+    destroyPublicHoliday(options = {}) {
+      return request("DELETE", "/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié d'entreprise (manager principal) */
+    updatePublicHoliday(options = {}) {
+      return request("PUT", "/public-holidays/{publicHoliday}", options);
     },
 
     /** Envoyer une notification push de test a un employe */

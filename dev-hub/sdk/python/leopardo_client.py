@@ -168,6 +168,22 @@ class LeopardoClient:
         """Enregistrer la config OAuth d'un provider marketing"""
         return self.request("PUT", "/admin/platform/marketing/oauth-config", **kwargs)
 
+    def listpublicholidaysadmin(self, **kwargs):
+        """Lister les jours fériés d'un pays/année (super-admin : national + entreprise)"""
+        return self.request("GET", "/admin/public-holidays", **kwargs)
+
+    def storepublicholidayadmin(self, **kwargs):
+        """Créer un jour férié national (super-admin)"""
+        return self.request("POST", "/admin/public-holidays", **kwargs)
+
+    def destroypublicholidayadmin(self, **kwargs):
+        """Supprimer un jour férié (super-admin)"""
+        return self.request("DELETE", "/admin/public-holidays/{publicHoliday}", **kwargs)
+
+    def updatepublicholidayadmin(self, **kwargs):
+        """Modifier un jour férié (super-admin)"""
+        return self.request("PUT", "/admin/public-holidays/{publicHoliday}", **kwargs)
+
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
         return self.request("GET", "/ai/analytics/costs", **kwargs)
@@ -1319,6 +1335,22 @@ class LeopardoClient:
     def put_projects_by_project(self, **kwargs):
         """Mettre a jour un projet"""
         return self.request("PUT", "/projects/{project}", **kwargs)
+
+    def listpublicholidays(self, **kwargs):
+        """Lister les jours fériés du pays (manager principal : nationaux + entreprise)"""
+        return self.request("GET", "/public-holidays", **kwargs)
+
+    def storepublicholiday(self, **kwargs):
+        """Créer un jour férié d'entreprise (manager principal)"""
+        return self.request("POST", "/public-holidays", **kwargs)
+
+    def destroypublicholiday(self, **kwargs):
+        """Supprimer un jour férié d'entreprise (manager principal)"""
+        return self.request("DELETE", "/public-holidays/{publicHoliday}", **kwargs)
+
+    def updatepublicholiday(self, **kwargs):
+        """Modifier un jour férié d'entreprise (manager principal)"""
+        return self.request("PUT", "/public-holidays/{publicHoliday}", **kwargs)
 
     def post_push_notifications_send(self, **kwargs):
         """Envoyer une notification push de test a un employe"""

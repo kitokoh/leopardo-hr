@@ -372,3 +372,7 @@ GET v1admin/fleet/alerts
 GET v1admin/hr-reports
 GET v1admin/platform/marketing/oauth-config
 PUT v1admin/platform/marketing/oauth-config
+GET v1admin/public-holidays
+POST v1admin/public-holidays
+PUT v1admin/public-holidays/{param}
+DELETE v1admin/public-holidays/{param}

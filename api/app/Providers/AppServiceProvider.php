@@ -14,10 +14,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
+
+        // Issue #1811 : service jours fériés — cache Redis (repository par défaut).
+        $this->app->singleton(PublicHolidayService::class, fn (): PublicHolidayService => new PublicHolidayService(Cache::store()));
 
         $this->app->bind(LLMClient::class, function (): LLMClient {
             $provider = (string) config('ai.provider', 'openai');
