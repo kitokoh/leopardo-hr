@@ -167,8 +167,8 @@ export default function DashboardPage() {
       await apiFetch('/announcements', {
         method: 'POST',
         body: JSON.stringify({
-          title: 'Felicitations equipe',
-          body: 'Felicitations a toute l\'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !',
+          title: i18nT(locale, 'dashboard.leo_ia_announcement_title'),
+          body: i18nT(locale, 'dashboard.leo_ia_announcement_body'),
           priority: 'normal',
           audience_type: 'company',
         }),
@@ -181,7 +181,7 @@ export default function DashboardPage() {
         duration_ms: Math.round(performance.now() - startedAt),
       });
     } catch (error) {
-      setAnnouncementError(error instanceof ApiError ? error.message : 'Impossible d\'envoyer le message. Reessayez dans quelques instants.');
+      setAnnouncementError(error instanceof ApiError ? error.message : i18nT(locale, 'dashboard.leo_ia_announcement_error'));
       trackClientEvent('leo_ia_announcement_sent', {
         status: 'error',
         audience_type: 'company',
@@ -190,7 +190,7 @@ export default function DashboardPage() {
     } finally {
       setAnnouncementSending(false);
     }
-  }, [announcementSending]);
+  }, [announcementSending, locale]);
 
   const dismissLeoCard = useCallback(() => {
     try {
