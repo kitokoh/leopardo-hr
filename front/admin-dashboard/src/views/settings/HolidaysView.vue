@@ -226,8 +226,20 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
+const localeStore = useLocaleStore()
+
+/** Traduction avec interpolation {var} — convention catalogue i18n (#1812/#1916). */
+function t(key, vars = {}) {
+  let msg = translate(localeStore.current, key, key)
+  for (const [k, v] of Object.entries(vars)) {
+    msg = msg.replace(`{${k}}`, String(v))
+  }
+  return msg
+}
 
 const supportedCountries = [
   { code: 'DZ', labelKey: 'holidays.countries.DZ' },
