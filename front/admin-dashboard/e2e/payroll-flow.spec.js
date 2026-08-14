@@ -21,7 +21,9 @@ test.describe('Payroll page structure', () => {
     'Skipped: requires PLAYWRIGHT_AUTH_TOKEN env var for authenticated tests',
   )
 
-  test('payroll view loads with expected sections', async ({ page }) => {
+  test('tenant-scoped payroll view redirects the super-admin to the dashboard', async ({ page }) => {
+    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
+    // l'accès direct par URL à une vue tenant redirige vers le dashboard.
     // Set auth token if available
     await page.addInitScript((token) => {
       sessionStorage.setItem('admin_token', token)
@@ -29,8 +31,7 @@ test.describe('Payroll page structure', () => {
 
     await page.goto('/payroll')
 
-    await expect(page.getByRole('heading', { name: /paie|payroll|bulletins/i })).toBeVisible({
-      timeout: 10_000,
-    })
+    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
+    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
   })
 })

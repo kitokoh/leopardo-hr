@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import NProgress from 'nprogress'
+import { useToast } from 'vue-toastification'
 import 'nprogress/nprogress.css'
 
 // Configuration NProgress
@@ -149,7 +150,8 @@ const routes = [
         component: () => import('@/views/payroll/PayrollView.vue'),
         meta: {
           title: 'Paie',
-          icon: 'CurrencyEuroIcon'
+          icon: 'CurrencyEuroIcon',
+          requiresTenant: true
         }
       },
       {
@@ -185,7 +187,8 @@ const routes = [
         component: () => import('@/views/leaves/LeavesView.vue'),
         meta: {
           title: 'Congés & Absences',
-          icon: 'CalendarDaysIcon'
+          icon: 'CalendarDaysIcon',
+          requiresTenant: true
         }
       },
       {
@@ -194,7 +197,8 @@ const routes = [
         component: () => import('@/views/contracts/ContractsView.vue'),
         meta: {
           title: 'Contrats',
-          icon: 'DocumentDuplicateIcon'
+          icon: 'DocumentDuplicateIcon',
+          requiresTenant: true
         }
       },
       {
@@ -203,7 +207,8 @@ const routes = [
         component: () => import('@/views/recruitment/RecruitmentView.vue'),
         meta: {
           title: 'Recrutement',
-          icon: 'UserPlusIcon'
+          icon: 'UserPlusIcon',
+          requiresTenant: true
         }
       },
       {
@@ -212,7 +217,8 @@ const routes = [
         component: () => import('@/views/training/TrainingView.vue'),
         meta: {
           title: 'Formations',
-          icon: 'AcademicCapIcon'
+          icon: 'AcademicCapIcon',
+          requiresTenant: true
         }
       },
       {
@@ -221,7 +227,8 @@ const routes = [
         component: () => import('@/views/fleet/FleetView.vue'),
         meta: {
           title: 'Flotte véhicules',
-          icon: 'TruckIcon'
+          icon: 'TruckIcon',
+          requiresTenant: true
         }
       },
       {
@@ -230,7 +237,8 @@ const routes = [
         component: () => import('@/views/chat/ChatView.vue'),
         meta: {
           title: 'Chat IA',
-          icon: 'SparklesIcon'
+          icon: 'SparklesIcon',
+          requiresTenant: true
         }
       },
       {
@@ -239,7 +247,8 @@ const routes = [
         component: () => import('@/views/webhooks/WebhooksView.vue'),
         meta: {
           title: 'Webhooks',
-          icon: 'LinkIcon'
+          icon: 'LinkIcon',
+          requiresTenant: true
         }
       },
       {
@@ -248,7 +257,8 @@ const routes = [
         component: () => import('@/views/exports/ExportsView.vue'),
         meta: {
           title: 'Exports & Rapports',
-          icon: 'ArrowDownTrayIcon'
+          icon: 'ArrowDownTrayIcon',
+          requiresTenant: true
         }
       },
       {
@@ -257,7 +267,8 @@ const routes = [
         component: () => import('@/views/reports/ReportsView.vue'),
         meta: {
           title: 'Rapports RH',
-          icon: 'ChartPieIcon'
+          icon: 'ChartPieIcon',
+          requiresTenant: true
         }
       },
       {
@@ -266,7 +277,8 @@ const routes = [
         component: () => import('@/views/predictions/PredictionsView.vue'),
         meta: {
           title: 'Dashboard Prédictif IA',
-          icon: 'ChartBarSquareIcon'
+          icon: 'ChartBarSquareIcon',
+          requiresTenant: true
         }
       },
       {
@@ -275,7 +287,8 @@ const routes = [
         component: () => import('@/views/audit/AuditLogsView.vue'),
         meta: {
           title: 'Journal d\'audit',
-          icon: 'ShieldCheckIcon'
+          icon: 'ShieldCheckIcon',
+          requiresTenant: true
         }
       },
       {
@@ -356,18 +369,29 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     if (authStore.token) {
       const isValid = await authStore.checkAuth()
-      if (isValid) {
-        next()
+      if (!isValid) {
+        next('/login')
         return
       }
+    } else {
+      next('/login')
+      return
     }
-
-    next('/login')
-    return
   }
 
   // Rediriger vers dashboard si déjà connecté et tentative d'accès au login
   if (to.name === 'login' && authStore.isAuthenticated) {
+    next('/')
+    return
+  }
+
+  // Vues tenant-scopées (issue #2272) : la console super-admin n'a pas de
+  // contexte tenant — un token super-admin reçoit un 401 systématique sur
+  // ces endpoints. Accès direct par URL → redirection propre vers le
+  // dashboard, jamais une page qui échoue en 401 muet.
+  if (to.matched.some((record) => record.meta.requiresTenant)) {
+    const toast = useToast()
+    toast.warning('Fonctionnalité entreprise — réservée aux espaces client')
     next('/')
     return
   }

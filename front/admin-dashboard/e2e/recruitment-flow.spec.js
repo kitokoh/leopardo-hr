@@ -1,12 +1,10 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('Recruitment flow', () => {
-  // Flaky tracking (issue #1575) : timeout relevé à 60 s et retries séparés
-  // (3) — l'interaction avec l'API mockée peut être lente en CI.
   test.setTimeout(60_000)
   test.describe.configure({ retries: 3 })
 
-  test('creates a job, opens the pipeline, and advances an applicant with mocked API', async ({ page }) => {
+  test('tenant-scoped recruitment view redirects the super-admin to the dashboard', async ({ page }) => {
     const corsHeaders = {
       // `*` plutôt qu'une origine figée : le port d'origine du webServer
       // (4173) peut être 127.0.0.1 ou localhost selon l'environnement CI.
@@ -27,25 +25,6 @@ test.describe('Recruitment flow', () => {
       }
       return false
     }
-    const jobs = [
-      {
-        id: 1,
-        title: 'Serveur senior',
-        location: 'Alger',
-        status: 'published',
-        created_at: '2026-05-14',
-      },
-    ]
-    const applicants = [
-      {
-        id: 10,
-        first_name: 'Nadia',
-        last_name: 'Belaid',
-        email: 'nadia@example.test',
-        status: 'new',
-        applied_at: '2026-05-14',
-      },
-    ]
 
     await page.route(/\/platform\/auth\/login(?:\?.*)?$/, async (route) => {
       if (handleOptions(route)) return
@@ -72,66 +51,16 @@ test.describe('Recruitment flow', () => {
       })
     })
 
-    await page.route(/\/api\/v1\/recruitment\/jobs(?:\?.*)?$/, async (route) => {
-      if (handleOptions(route)) return
-      if (route.request().method() === 'POST') {
-        const payload = route.request().postDataJSON()
-        jobs.push({
-          id: 2,
-          title: payload.title,
-          location: payload.location,
-          status: 'draft',
-          created_at: '2026-05-14',
-        })
-        await fulfillJson(route, { data: jobs.at(-1) }, 201)
-        return
-      }
-
-      await fulfillJson(route, { data: jobs })
-    })
-
-    await page.route(/\/api\/v1\/recruitment\/jobs\/\d+\/applicants(?:\?.*)?$/, async (route) => {
-      if (handleOptions(route)) return
-      const jobId = Number(route.request().url().match(/\/jobs\/(\d+)\/applicants/)?.[1])
-      await fulfillJson(route, { data: jobId === 1 ? applicants : [] })
-    })
-
-    await page.route(/\/api\/v1\/recruitment\/applicants\/\d+\/status(?:\?.*)?$/, async (route) => {
-  // Cockpit plateforme (DashboardView) : 3 appels au mount — sans mock,
-  // le token factice reçoit un 401 réel → logout global → spec cassée.
-  await page.route(/\/api\/v1\/platform\/companies\/health(?:\?.*)?$/, async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { summary: { totalCompanies: 0, activeSubscriptions: 0, monthlyRevenue: 0 }, items: [] } }) })
-  })
-  await page.route(/\/api\/v1\/platform\/metrics\/overview(?:\?.*)?$/, async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) })
-  })
-  await page.route(/\/api\/v1\/platform\/company-requests(?:\?.*)?$/, async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], meta: { total: 0 } }) })
-  })
-
-      if (handleOptions(route)) return
-      const payload = route.request().postDataJSON()
-      applicants[0].status = payload.status
-      await fulfillJson(route, { data: applicants[0] })
-    })
-
     await page.addInitScript(() => {
       sessionStorage.setItem('admin_token', 'playwright-admin-token')
     })
 
+    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
+    // l'accès direct par URL à une vue tenant redirige vers le dashboard,
+    // jamais une page qui échoue en 401 muet.
     await page.goto('/recruitment')
-    await page.getByRole('button', { name: /Postes/i }).click()
-    await page.getByPlaceholder(/Intitul./i).fill('Chef de rang')
-    await page.getByPlaceholder(/Lieu/i).fill('Oran')
-    await page.getByRole('button', { name: /Cr.er le poste/i }).click()
 
-    await expect(page.getByText('Chef de rang')).toBeVisible()
-
-    await page.getByRole('button', { name: /Pipeline Kanban/i }).click()
-    await expect(page.getByText('Nadia Belaid').first()).toBeVisible()
-    await page.getByRole('button', { name: /Avancer/i }).click()
-
-    await expect(page.getByText('Nadia Belaid').first()).toBeVisible()
-    expect(applicants[0].status).toBe('screening')
+    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
+    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
   })
 })
