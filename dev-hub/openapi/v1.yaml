@@ -17471,6 +17471,30 @@ components:
           type: integer
         employee_name:
           type: string
+        compliance:
+          type: object
+          nullable: true
+          description: >-
+            Issue #2143/#1872 — bloc de conformité paie du pays (niveau,
+            avertissement localisé, source légale, date de vérification
+            experte). Null quand le pays n'est pas supporté par le moteur
+            (rétro-compatible : aucun affichage côté client).
+          properties:
+            level:
+              type: string
+              enum: [production, pilot, placeholder, unknown]
+            warning:
+              type: string
+            warning_key:
+              type: string
+              example: payroll.compliance_warning_pilot
+            source:
+              type: string
+              example: docs/payroll/DZ_COMPLIANCE.md
+            verification_date:
+              type: string
+              format: date
+              nullable: true
         period:
           type: object
           properties:

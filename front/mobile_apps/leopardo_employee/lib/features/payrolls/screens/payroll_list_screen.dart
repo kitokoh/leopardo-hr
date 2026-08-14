@@ -501,6 +501,17 @@ class _BalanceCard extends StatelessWidget {
                 ],
               ),
             ],
+            // Issue #2143/#1872 — indicateur discret du niveau de confiance
+            // paie du pays quand le payload expose le bloc `compliance` ;
+            // rien affiché sinon (rétro-compatible avec les backends
+            // antérieurs).
+            if (balance.compliance != null) ...[
+              const SizedBox(height: 12),
+              PayrollCompliancePill(
+                compliance: balance.compliance!,
+                countryCode: balance.country,
+              ),
+            ],
           ],
         ),
       ),
@@ -557,4 +568,3 @@ class _MoneyLine extends StatelessWidget {
     );
   }
 }
-
