@@ -18,7 +18,8 @@ class PayrollCountryConfigSeeder extends Seeder
 {
     /**
      * Date d'effet des barèmes par pays. Les pays seedés avec les taux des
-     * CGI 2024 (Côte d'Ivoire #1825, Cameroun #1821) → effective_from =
+     * CGI 2024 (Côte d'Ivoire #1825, Cameroun #1821, Burkina Faso, Mali
+     * — issue #1829) → effective_from =
      * 2024-01-01 ; les autres pays gardent 2026-01-01 (comportement
      * historique).
      *
@@ -26,6 +27,8 @@ class PayrollCountryConfigSeeder extends Seeder
      */
     private const EFFECTIVE_FROM_BY_COUNTRY = [
         'CI' => '2024-01-01',
+        'BF' => '2024-01-01',
+        'ML' => '2024-01-01',
     ];
 
     public function run(): void
@@ -46,6 +49,14 @@ class PayrollCountryConfigSeeder extends Seeder
             // Côte d'Ivoire (CEDEAO) — règles pilotes ITSAS/CN/CNSS (issue #1825),
             // seedées avec les taux du CGI 2024 (effective_from = 2024-01-01).
             new CedeaoPayrollRules('CI'),
+            // Burkina Faso + Mali (CEDEAO) — règles pilotes IUTS/ITS + CNSS/INPS
+            // (issue #1829).
+            new CedeaoPayrollRules('BF'),
+            new CedeaoPayrollRules('ML'),
+            // CM (#1821) : barèmes IRPP CGI 2024 + CNPS (pilot) seedés comme
+            // les autres pays — les autres membres CEMAC restent placeholder
+            // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
+            (new CemacPayrollRules)->forMemberCountry('CM'),
         ];
 
         foreach ($rules as $countryRules) {
@@ -64,8 +75,12 @@ class PayrollCountryConfigSeeder extends Seeder
                         'type' => $contribution['type'],
                         'rate' => $contribution['rate'],
                         'cap' => $contribution['cap'],
-                        'effective_from' => '2026-01-01',
+                        'effective_from' => $effectiveFrom,
                         'effective_to' => null,
+                        // Issue #1813 : la config nationale de référence est
+                        // officielle → active (contourne le workflow de
+                        // validation réservé aux modifications runtime).
+                        'status' => SocialContribution::STATUS_ACTIVE,
                     ]
                 );
             }
@@ -84,11 +99,11 @@ class PayrollCountryConfigSeeder extends Seeder
                         'fixed_deduction' => $slab['fixed_deduction'],
                         'effective_from' => '2026-01-01',
                         'effective_to' => null,
+                        // Issue #1813 : config nationale officielle → active.
+                        'status' => TaxSlab::STATUS_ACTIVE,
                     ]
                 );
             }
         }
     }
 }
-
-
