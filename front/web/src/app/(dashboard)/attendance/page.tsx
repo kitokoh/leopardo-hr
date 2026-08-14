@@ -79,7 +79,7 @@ export default function AttendancePage() {
   return (
     <ModulePageShell
       title="Pointage du jour"
-      subtitle="Etat temps reel depuis lâ€™API RH. La page sâ€™adapte aux comptes manager ou employe selon le payload backend."
+      subtitle="Etat temps reel depuis l’API RH. La page s’adapte aux comptes manager ou employe selon le payload backend."
       accentClassName="bg-gradient-to-br from-warning/10 via-white to-white"
     >
       {error ? (

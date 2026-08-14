@@ -30,7 +30,7 @@ const testimonials = [
     name: 'Fatima Zahra Idrissi',
     role: 'Responsable Paie',
     company: 'GreenEnergy SARL',
-    industry: 'Ã‰nergie',
+    industry: 'Énergie',
     employees: '85 employés',
     quote: 'Les bulletins de paie PDF générés automatiquement et les exports SEPA nous font gagner 3 jours par mois. L\'interface est intuitive même pour notre équipe non-technique.',
     rating: 5,

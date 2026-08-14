@@ -159,7 +159,7 @@
               <option value="loyal">{{ $t('users.filters.segment.loyal', 'Loyaux') }}</option>
               <option value="potential">{{ $t('users.filters.segment.potential', 'Potentiels') }}</option>
               <option value="new">{{ $t('users.filters.segment.new', 'Nouveaux') }}</option>
-              <option value="at-risk">{{ $t('users.filters.segment.atRisk', 'Ã€ risque') }}</option>
+              <option value="at-risk">{{ $t('users.filters.segment.atRisk', 'À risque') }}</option>
             </select>
           </div>
         </div>
@@ -525,7 +525,7 @@ function editUser(user) {
 }
 
 async function deleteUser(user) {
-  if (confirm(t('users.confirm.delete', 'ÃŠtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
+  if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
@@ -551,7 +551,7 @@ function handleUserCreated() {
 }
 
 function handleUserUpdated() {
-  toast.success(t('users.toast.updated', 'Utilisateur mis Ã  jour'))
+  toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
   showEditModal.value = false
   loadUsers()
 }

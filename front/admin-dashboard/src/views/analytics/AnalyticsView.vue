@@ -73,7 +73,7 @@
       <MetricCard
         title="LTV Moyen"
         :value="analytics.avgLTV"
-        prefix="â‚¬"
+        prefix="€"
         :trend="analytics.ltvTrend"
         icon="CurrencyEuroIcon"
         color="purple"
@@ -81,7 +81,7 @@
       <MetricCard
         title="CAC"
         :value="analytics.cac"
-        prefix="â‚¬"
+        prefix="€"
         :trend="analytics.cacTrend"
         icon="UserPlusIcon"
         color="blue"
@@ -110,9 +110,9 @@
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Performance du cycle de vie client</p>
           </div>
           <select class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:ring-brand-500">
-            <option>Inscription â†’ Activation</option>
-            <option>Activation â†’ Abonnement</option>
-            <option>Essai â†’ Payant</option>
+            <option>Inscription → Activation</option>
+            <option>Activation → Abonnement</option>
+            <option>Essai → Payant</option>
           </select>
         </div>
         <FunnelChart :data="analytics.funnelData" />
@@ -126,7 +126,7 @@
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prédiction de Churn</h3>
           <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800 dark:text-red-300">
-            {{ analytics.churnPrediction.riskUsers }} Ã  risque
+            {{ analytics.churnPrediction.riskUsers }} à risque
           </span>
         </div>
         <ChurnPredictionWidget :data="analytics.churnPrediction" />
@@ -319,10 +319,10 @@ async function loadSegmentationData() {
 
   analytics.segmentationData = [
     { segment: 'Champions', users: 450, value: 'Très élevée', color: '#10B981' },
-    { segment: 'Loyaux', users: 680, value: 'Ã‰levée', color: '#3B82F6' },
+    { segment: 'Loyaux', users: 680, value: 'Élevée', color: '#3B82F6' },
     { segment: 'Potentiels', users: 320, value: 'Moyenne', color: '#F59E0B' },
     { segment: 'Nouveaux', users: 890, value: 'Faible', color: '#8B5CF6' },
-    { segment: 'Ã€ risque', users: 120, value: 'Critique', color: '#EF4444' }
+    { segment: 'À risque', users: 120, value: 'Critique', color: '#EF4444' }
   ]
 }
 
@@ -376,7 +376,7 @@ async function loadInsights() {
 
 async function updateAnalytics() {
   await loadAnalytics()
-  toast.success('Analytics mis Ã  jour')
+  toast.success('Analytics mis à jour')
 }
 
 async function refreshSegmentation() {

@@ -132,7 +132,7 @@
     <div v-else-if="activeTab === 'pipeline'" class="card animate-slide-up" style="animation-delay: 0.1s">
       <div class="card-header flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-lg font-bold text-slate-900 dark:text-white">
-          Pipeline{{ selectedJob ? ' â€” ' + selectedJob.title : '' }}
+          Pipeline{{ selectedJob ? ' — ' + selectedJob.title : '' }}
         </h2>
         <select v-if="jobs.length > 0" v-model="selectedJobId" class="form-select">
           <option value="">Tous les postes</option>
@@ -167,7 +167,7 @@
                 type="button"
                 @click.stop="updateApplicantStatus(item, nextStage(item.status))"
               >
-                Avancer â†’
+                Avancer →
               </button>
             </div>
           </template>
@@ -271,7 +271,7 @@ const applicantColumns = [
   { key: 'last_name', label: 'Nom', sortable: true },
   { key: 'email', label: 'Email', sortable: true },
   { key: 'job_title', label: 'Poste', sortable: true },
-  { key: 'status', label: 'Ã‰tape', sortable: true },
+  { key: 'status', label: 'Étape', sortable: true },
   { key: 'applied_at', label: 'Date', sortable: true },
 ]
 
@@ -351,7 +351,7 @@ async function publishJob(job) {
   jobActionInFlight.value = job.id
   try {
     await api.post(`/v1/recruitment/jobs/${job.id}/publish`)
-    toast.success(`Â« ${job.title} Â» est maintenant publié.`)
+    toast.success(`« ${job.title} » est maintenant publié.`)
     await fetchData()
   } catch {
     toast.error('Impossible de publier ce poste.')
@@ -364,7 +364,7 @@ async function closeJob(job) {
   jobActionInFlight.value = job.id
   try {
     await api.post(`/v1/recruitment/jobs/${job.id}/close`)
-    toast.success(`Â« ${job.title} Â» est maintenant fermé.`)
+    toast.success(`« ${job.title} » est maintenant fermé.`)
     await fetchData()
   } catch {
     toast.error('Impossible de fermer ce poste.')
@@ -385,7 +385,7 @@ async function updateApplicantStatus(applicant, status) {
     await api.patch(`/v1/recruitment/applicants/${applicant.id}/status`, { status })
   } catch {
     applicant.status = previousStatus
-    toast.error('Impossible de mettre Ã  jour le candidat.')
+    toast.error('Impossible de mettre à jour le candidat.')
   }
 }
 
