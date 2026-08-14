@@ -25,22 +25,22 @@
   },
   "locales": {
     "fr": {
-      "checksum": "48d867099462095716c8c517ced114c953c9e1dfbe82beaac404152a78c1e9f5",
+      "checksum": "5a4dc5ed6298bf0f0c47f13e8be9350594e662905cced57ce7f40a8a3610e89c",
       "version": "1.0.0",
       "updated_at": "2026-05-07T20:45:00Z"
     },
     "ar": {
-      "checksum": "929bccbdf231c564358b4189552c9cc1aac38b99607d3f44b7164ef7a702e89e",
+      "checksum": "1056a72e75df923c7745f0707c635c848aecd8443c3684ac1b972de826c06760",
       "version": "1.0.0",
       "updated_at": "2026-05-07T20:45:00Z"
     },
     "tr": {
-      "checksum": "58ae69be34785f16c86fddc7c144880c8d9c7d001a44d727683c30ac0845b304",
+      "checksum": "3f75507303f58f2ceafcb8f8ce69023cb703d3d2567fda443b8d92dd495aed5c",
       "version": "1.0.0",
       "updated_at": "2026-05-07T20:45:00Z"
     },
     "en": {
-      "checksum": "f9ad574fd6b5108e6225585ad74c77c89e8ce0d412d536d8e88bcf58bea7307a",
+      "checksum": "da560ef2319c811f0b292242428a2deeb7122a3e7217105246009d57568ca6b4",
       "version": "1.0.0",
       "updated_at": "2026-05-07T20:45:00Z"
     }
