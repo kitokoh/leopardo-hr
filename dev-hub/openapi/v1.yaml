@@ -16039,6 +16039,18 @@ components:
         fixed_deduction: { type: number, minimum: 0 }
         effective_from: { type: string, format: date }
         effective_to: { type: string, format: date, nullable: true }
+    SocialContributionInput:
+      type: object
+      required: [country_code, name, code, type, rate, effective_from]
+      properties:
+        country_code: { type: string }
+        name: { type: string }
+        code: { type: string }
+        type: { type: string, enum: [employee, employer] }
+        rate: { type: number, minimum: 0, maximum: 100 }
+        cap: { type: number, nullable: true, minimum: 0 }
+        effective_from: { type: string, format: date }
+        effective_to: { type: string, format: date, nullable: true }
     TaxSlab:
       type: object
       properties:

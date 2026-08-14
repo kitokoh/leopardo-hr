@@ -21,6 +21,7 @@ use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistCont
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
 use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
 use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
@@ -306,6 +307,12 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab');
         Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults']);
         Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+
+        // Issue #1815 — cotisations sociales nationales (CRUD admin).
+        Route::get('/social-contributions', [SocialContributionAdminController::class, 'index']);
+        Route::post('/social-contributions', [SocialContributionAdminController::class, 'store']);
+        Route::put('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'update'])->whereNumber('socialContribution');
+        Route::delete('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'destroy'])->whereNumber('socialContribution');
 
         // Issue #1813 — validation des modifications de taux légaux
         // (approbation/rejet réservés au platform_admin).

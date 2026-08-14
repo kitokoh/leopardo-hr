@@ -382,3 +382,7 @@ DELETE v1admin/tax-slabs/{param}
 POST v1admin/tax-slabs/reset-defaults
 POST v1admin/payroll/simulate
 POST v1payroll/simulate
+GET v1admin/social-contributions
+POST v1admin/social-contributions
+PUT v1admin/social-contributions/{param}
+DELETE v1admin/social-contributions/{param}

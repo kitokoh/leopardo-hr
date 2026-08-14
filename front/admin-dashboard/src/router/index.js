@@ -153,6 +153,15 @@ const routes = [
         }
       },
       {
+        path: '/settings/payroll/social-contributions',
+        name: 'social-contributions',
+        component: () => import('@/views/settings/SocialContributionsView.vue'),
+        meta: {
+          title: 'Cotisations sociales',
+          icon: 'BanknotesIcon'
+        }
+      },
+      {
         path: '/settings/payroll/tax-slabs',
         name: 'tax-slabs',
         component: () => import('@/views/settings/TaxSlabsView.vue'),

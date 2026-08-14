@@ -50,9 +50,10 @@ class PayrollSimulationController extends Controller
             'slabs_override.*.max' => ['nullable', 'numeric', 'min:0'],
             'slabs_override.*.rate' => ['required_with:slabs_override', 'numeric', 'min:0', 'max:100'],
             'slabs_override.*.fixed_deduction' => ['sometimes', 'numeric', 'min:0'],
+            'ignore_caps' => ['sometimes', 'boolean'],
         ]);
 
-        /** @var array{gross_salary: float|string, country_code: string, slabs_override?: array<int, array{min: float|string, max?: float|string|null, rate: float|string, fixed_deduction?: float|string}>} $validated */
+        /** @var array{gross_salary: float|string, country_code: string, slabs_override?: array<int, array{min: float|string, max?: float|string|null, rate: float|string, fixed_deduction?: float|string}>, ignore_caps?: bool} $validated */
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
 
@@ -69,6 +70,9 @@ class PayrollSimulationController extends Controller
 
             $rules->withTaxSlabs($slabs);
         }
+
+        // Issue #1815 : comparaison « avec/sans plafond légal ».
+        $rules->withCapsEnabled(! (bool) ($validated['ignore_caps'] ?? false));
 
         /** @var array{employee: float, employer: float} $social */
         $social = $rules->calculateSocialCharges($gross);
