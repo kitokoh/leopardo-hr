@@ -31,6 +31,19 @@ class CorsAndTrustedProxyTest extends TestCase
         }
     }
 
+    public function test_cors_whitelist_includes_admin_dev_servers(): void
+    {
+        // Issue #1769 : le dev server du dashboard admin (Vite, port 3001)
+        // appelle l'API en URL absolue (hors proxy) → il doit être whitelisté,
+        // sinon le navigateur bloque le login en local (seul localhost:3000
+        // via FRONTEND_URL était autorisé). Ajouté dans #1785, verrouillé ici
+        // par un test de non-régression.
+        $origins = config('cors.allowed_origins');
+
+        $this->assertIsArray($origins);
+        $this->assertContains('http://localhost:3000', $origins);
+        $this->assertContains('http://localhost:3001', $origins);
+    }
     public function test_trusts_x_forwarded_for(): void
     {
         // Render is the single edge proxy in front of this app; the request's
