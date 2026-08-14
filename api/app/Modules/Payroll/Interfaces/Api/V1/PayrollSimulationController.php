@@ -116,6 +116,10 @@ class PayrollSimulationController extends Controller
             'data' => [
                 'gross' => $gross,
                 'country_code' => $countryCode,
+                // Issue #1872 : niveau de confiance + avertissement structuré
+                // (une simulation pilote/placeholder n'est PAS un bulletin
+                // certifié — l'UI doit l'afficher avant le premier calcul).
+                'compliance' => $rules->compliance(),
                 'social_employee' => $social['employee'],
                 'social_employer' => $social['employer'],
                 'tax_base' => $taxBase,

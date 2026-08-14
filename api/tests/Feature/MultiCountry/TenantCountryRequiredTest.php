@@ -58,6 +58,13 @@ class TenantCountryRequiredTest extends TestCase
         $this->assertTrue($dz['available']);
         $this->assertContains($dz['confidence'], ['pilot', 'placeholder', 'production', 'unknown']);
 
+        // Issue #1872 — bloc de conformité structuré sur le registre.
+        $this->assertSame($dz['confidence'], $dz['compliance']['level']);
+        $this->assertNotSame('', $dz['compliance']['warning']);
+        $this->assertNotSame('', $dz['compliance']['warning_localized']);
+        $this->assertArrayHasKey('source', $dz['compliance']);
+        $this->assertArrayHasKey('verified_at', $dz['compliance']);
+
         // Pays référencé sans règles de paie (ex. US) : disponible = false.
         $us = $countries->get('US');
         $this->assertNotNull($us);

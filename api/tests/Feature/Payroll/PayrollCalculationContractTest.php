@@ -71,6 +71,12 @@ class PayrollCalculationContractTest extends TestCase
         $this->assertSame('CI', $contract['country_code']);
         $this->assertSame('XOF', $contract['currency']);
         $this->assertSame('pilot', $contract['confidence_level']);
+
+        // Issue #1872 — bloc de conformité structuré dans le contrat.
+        $this->assertSame('pilot', $contract['compliance']['level']);
+        $this->assertNotSame('', $contract['compliance']['warning']);
+        $this->assertArrayHasKey('source', $contract['compliance']);
+        $this->assertArrayHasKey('verified_at', $contract['compliance']);
         $this->assertEquals(16000.0, $contract['social_employee']);
         $this->assertEquals(484000.0, $contract['tax_base']);
         $this->assertEquals(47973.33, $contract['income_tax']);

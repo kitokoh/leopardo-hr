@@ -122,6 +122,44 @@ interface CountryRulesInterface
     public function complianceWarning(): string;
 
     /**
+     * Issue #1872 — référence sourcée des règles (ex. chemin du référentiel
+     * de conformité `docs/payroll/*_COMPLIANCE.md`, loi/décret cité), ou
+     * null quand aucune source légale n'est encore documentée.
+     */
+    public function complianceSource(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Issue #1872 — date de vérification experte des règles (ISO 8601), ou
+     * null tant qu'aucun expert-comptable n'a validé les taux (tous les
+     * pays sont `pilot`/`placeholder` à ce jour — suivi #1904).
+     */
+    public function complianceVerifiedAt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Issue #1872 — bloc structuré de conformité exposé aux API : niveau de
+     * confiance, avertissement, source et date de vérification. Consommé par
+     * le cockpit, la simulation, le bulletin et les exports pour ne jamais
+     * présenter une règle pilote/placeholder comme une paie certifiée.
+     *
+     * @return array{level: string, warning: string, source: string|null, verified_at: string|null}
+     */
+    public function compliance(): array
+    {
+        return [
+            'level' => $this->confidenceLevel(),
+            'warning' => $this->complianceWarning(),
+            'source' => null,
+            'verified_at' => null,
+        ];
+    }
+
+    /**
      * Standard legal weekly working-hours threshold beyond which overtime
      * applies by default, absent a company-specific schedule override (see
      * Schedule::overtime_threshold_weekly for the per-company setting this

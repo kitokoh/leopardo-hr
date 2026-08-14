@@ -185,6 +185,24 @@ class PayrollCountryRulesTest extends TestCase
                 strtolower($rules->complianceWarning()),
                 $rules->countryCode().': complianceWarning should be explicit about its confidenceLevel'
             );
+
+            // Issue #1872 — bloc structuré exposé aux API.
+            $compliance = $rules->compliance();
+            self::assertSame($rules->confidenceLevel(), $compliance['level'], $rules->countryCode().': compliance.level');
+            self::assertNotSame('', $compliance['warning'], $rules->countryCode().': compliance.warning');
+            self::assertArrayHasKey('source', $compliance, $rules->countryCode().': compliance.source');
+            self::assertArrayHasKey('verified_at', $compliance, $rules->countryCode().': compliance.verified_at');
+            // La source est documentée pour les pays ayant un référentiel
+            // de conformité (docs/payroll/*_COMPLIANCE.md) — les pays pilot
+            // sans référentiel dédié (MA/TN/TR) gardent null tant que leur
+            // doc n'existe pas (cf. AbstractCountryRules::COMPLIANCE_DOCS).
+            $countriesWithComplianceDoc = ['BF', 'CG', 'CI', 'CM', 'DZ', 'GA', 'ML', 'SN'];
+            if (in_array($rules->countryCode(), $countriesWithComplianceDoc, true)) {
+                self::assertNotNull($compliance['source'], $rules->countryCode().': country with compliance doc must cite its source');
+                self::assertStringContainsString('COMPLIANCE.md', (string) $compliance['source']);
+            }
+            // Aucun pays n'est encore validé par expert (tous pilot/placeholder).
+            self::assertNull($compliance['verified_at'], $rules->countryCode().': verified_at must stay null until expert sign-off (#1904)');
         }
     }
 

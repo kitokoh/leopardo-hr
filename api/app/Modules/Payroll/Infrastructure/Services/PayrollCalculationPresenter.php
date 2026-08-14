@@ -72,6 +72,10 @@ class PayrollCalculationPresenter
             'rules_version' => $rules->rulesVersion(),
             'confidence_level' => $rules->confidenceLevel(),
             'rounding_policy' => self::ROUNDING_POLICY,
+            // Issue #1872 — bloc structuré (niveau, avertissement, source,
+            // date de vérification) pour ne jamais confondre pilot/placeholder
+            // avec une paie certifiée.
+            'compliance' => $rules->compliance(),
             'gross' => round($gross, 2),
             'social_employee' => $breakdown['social']['employee'],
             'tax_base' => round($breakdown['taxable_gross'], 2),

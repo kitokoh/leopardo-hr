@@ -8,4 +8,8 @@ return [
     'rate_delete_draft_only' => "Only a draft row can be deleted.",
     'rate_country_unsupported' => "Unsupported country.",
     'tax_scale_default_name' => ":country legal tax scale :year",
+    'compliance_warning_production' => "Legally validated for :country payroll use, but always confirm current rates with local counsel before relying on this for statutory filings.",
+    'compliance_warning_pilot' => "Pilot ruleset for :country, sourced from general public labor-code references but not yet legally validated locally. Confirm with local legal/tax counsel before relying on these figures (tax slabs, social contributions, overtime thresholds) for statutory compliance.",
+    'compliance_warning_placeholder' => "Structure-only placeholder for :country: tax/social-contribution figures are not yet researched and must not be used for real payroll runs without replacing them first.",
+    'compliance_warning_unknown' => "No payroll rules available for :country yet.",
 ];

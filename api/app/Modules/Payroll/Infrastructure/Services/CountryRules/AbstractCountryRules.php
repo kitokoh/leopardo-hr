@@ -293,6 +293,41 @@ abstract class AbstractCountryRules implements CountryRulesInterface
         }
     }
 
+    /** Issue #1872 — référentiels de conformité par pays (source des règles). */
+    private const COMPLIANCE_DOCS = [
+        'BF' => 'docs/payroll/BF_COMPLIANCE.md',
+        'CG' => 'docs/payroll/CG_COMPLIANCE.md',
+        'CI' => 'docs/payroll/CI_COMPLIANCE.md',
+        'CM' => 'docs/payroll/CM_COMPLIANCE.md',
+        'DZ' => 'docs/payroll/DZ_COMPLIANCE.md',
+        'GA' => 'docs/payroll/GA_COMPLIANCE.md',
+        'ML' => 'docs/payroll/ML_COMPLIANCE.md',
+        'SN' => 'docs/payroll/SN_COMPLIANCE.md',
+    ];
+
+    public function complianceSource(): ?string
+    {
+        return self::COMPLIANCE_DOCS[strtoupper($this->countryCode())] ?? null;
+    }
+
+    public function complianceVerifiedAt(): ?string
+    {
+        // Aucun pays n'est encore validé par un expert-comptable (tous les
+        // pays sont pilot/placeholder — suivi #1904) : la date reste null
+        // tant que la fiche de validation n'est pas signée dans la doc.
+        return null;
+    }
+
+    public function compliance(): array
+    {
+        return [
+            'level' => $this->confidenceLevel(),
+            'warning' => $this->complianceWarning(),
+            'source' => $this->complianceSource(),
+            'verified_at' => $this->complianceVerifiedAt(),
+        ];
+    }
+
     /**
      * PA2-COUNTRY-006: default compliance disclaimer shared by every
      * country implementation, derived from confidenceLevel() so it stays

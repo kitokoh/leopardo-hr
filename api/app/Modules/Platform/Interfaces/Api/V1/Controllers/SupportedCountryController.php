@@ -32,12 +32,20 @@ class SupportedCountryController extends Controller
             $code = $country['country'];
 
             try {
-                $confidence = $this->payrollCalculator->getRules($code)->confidenceLevel();
+                $rules = $this->payrollCalculator->getRules($code);
+                $confidence = $rules->confidenceLevel();
+                $compliance = $rules->compliance();
                 $available = true;
             } catch (UnsupportedCountryRulesException) {
                 // Pays référencé mais sans règles de paie dédiées (ex. GB/US) :
                 // indisponible pour un calcul, pas une erreur.
                 $confidence = 'unknown';
+                $compliance = [
+                    'level' => 'unknown',
+                    'warning' => __('payroll.compliance_warning_placeholder'),
+                    'source' => null,
+                    'verified_at' => null,
+                ];
                 $available = false;
             }
 
@@ -49,6 +57,17 @@ class SupportedCountryController extends Controller
                 'timezone' => $country['timezone'],
                 'confidence' => $confidence,
                 'available' => $available,
+                // Issue #1872 : avertissement localisé + source + vérification.
+                'compliance' => [
+                    'level' => $compliance['level'],
+                    'warning' => $compliance['warning'],
+                    'warning_localized' => __(
+                        'payroll.compliance_warning_'.$compliance['level'],
+                        ['country' => $country['label']],
+                    ),
+                    'source' => $compliance['source'],
+                    'verified_at' => $compliance['verified_at'],
+                ],
             ];
         }
 
