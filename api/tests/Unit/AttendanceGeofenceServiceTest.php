@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use PHPUnit\Framework\TestCase;
 
@@ -42,4 +42,3 @@ class AttendanceGeofenceServiceTest extends TestCase
         $this->assertSame('company_metadata', $outside['source']);
     }
 }
-

@@ -23,7 +23,7 @@ class PushNotificationServiceTest extends TestCase
     {
         Config::set('services.firebase.project_id', null);
 
-        $service = new PushNotificationService();
+        $service = new PushNotificationService;
         $result = $service->sendToTokens(['token1'], 'Title', 'Body');
 
         $this->assertEquals(0, $result);
@@ -35,7 +35,7 @@ class PushNotificationServiceTest extends TestCase
             'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send' => Http::response(['name' => 'messages/123'], 200),
         ]);
 
-        $service = new PushNotificationService();
+        $service = new PushNotificationService;
         $result = $service->sendToTokens(['token1', 'token2'], 'Test Title', 'Test Body', ['key' => 'value']);
 
         $this->assertEquals(2, $result);
@@ -56,7 +56,7 @@ class PushNotificationServiceTest extends TestCase
                 ->push(['name' => 'messages/456'], 200),
         ]);
 
-        $service = new PushNotificationService();
+        $service = new PushNotificationService;
 
         // We expect 1 success out of 2 tokens
         $result = $service->sendToTokens(['invalid-token', 'valid-token'], 'Title', 'Body');

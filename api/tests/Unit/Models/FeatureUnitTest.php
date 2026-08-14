@@ -150,4 +150,3 @@ class FeatureUnitTest extends TestCase
         $this->assertEquals('features', $feature->getTable());
     }
 }
-

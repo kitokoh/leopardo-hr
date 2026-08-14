@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Core\Tenant\Domain\Models\Company;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -17,7 +17,7 @@ class EnsureTenantContextTest extends TestCase
 
     public function test_it_skips_jobs_that_do_not_implement_tenant_scoped_job(): void
     {
-        $middleware = new EnsureTenantContext();
+        $middleware = new EnsureTenantContext;
 
         $job = new class
         {
@@ -33,7 +33,7 @@ class EnsureTenantContextTest extends TestCase
 
     public function test_it_skips_context_setup_when_tenant_company_id_is_null(): void
     {
-        $middleware = new EnsureTenantContext();
+        $middleware = new EnsureTenantContext;
 
         $job = new class implements TenantScopedJob
         {
@@ -57,7 +57,7 @@ class EnsureTenantContextTest extends TestCase
     {
         $company = Company::factory()->create();
 
-        $middleware = new EnsureTenantContext();
+        $middleware = new EnsureTenantContext;
 
         $job = new class($company->id) implements TenantScopedJob
         {
@@ -88,7 +88,7 @@ class EnsureTenantContextTest extends TestCase
 
     public function test_it_releases_the_job_when_the_company_no_longer_exists(): void
     {
-        $middleware = new EnsureTenantContext();
+        $middleware = new EnsureTenantContext;
 
         $job = new class implements TenantScopedJob
         {
@@ -119,4 +119,3 @@ class EnsureTenantContextTest extends TestCase
         $this->assertSame(30, $job->releaseDelay);
     }
 }
-

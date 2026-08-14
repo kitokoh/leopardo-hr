@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Payroll;
 
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -117,7 +119,7 @@ class SenegalRulesUnitTest extends TestCase
      */
     public function test_golden_sn_net_with_max_ir_trimf(): void
     {
-        $calculator = new \App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+        $calculator = new PayrollCalculator;
 
         // Brut 60 000 — IPRES salariale 5,6 % = 3 360 ; IR = 0 (annuel
         // 463 680 < 630 000, abattement 30 % du brut) ; TRIMF 2 700 →
@@ -145,7 +147,7 @@ class SenegalRulesUnitTest extends TestCase
      */
     public function test_other_countries_remain_additive(): void
     {
-        $ci = new \App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules('CI');
+        $ci = new CedeaoPayrollRules('CI');
 
         self::assertSame(4000.0, $ci->combineMinimumFiscalTax(3000.0, 1000.0));
     }
