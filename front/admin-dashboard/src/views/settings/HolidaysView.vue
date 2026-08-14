@@ -76,7 +76,7 @@
     </div>
 
     <!-- Modal création/édition -->
-    <div v-if="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="modalOpen = false">
+    <div v-if="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="closeModal()">
       <div class="glass-card w-full max-w-md p-6">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
           {{ editing ? $t('holidays.modal.editTitle', 'Modifier le jour férié') : $t('holidays.modal.newTitle', 'Nouveau jour férié') }}
@@ -108,7 +108,7 @@
             </label>
           </div>
           <div class="flex justify-end gap-3 pt-2">
-            <button type="button" class="btn-secondary" @click="modalOpen = false">{{ $t('holidays.cancel', 'Annuler') }}</button>
+            <button type="button" class="btn-secondary" @click="closeModal()">{{ $t('holidays.cancel', 'Annuler') }}</button>
             <button type="submit" class="btn-primary" :disabled="saving">
               {{ saving ? $t('holidays.saving', 'Enregistrement…') : $t('holidays.save', 'Enregistrer') }}
             </button>
@@ -162,6 +162,10 @@ function openCreate() {
   editing.value = null
   Object.assign(form, { name: '', date: `${year.value}-01-01`, holiday_type: 'fixed', is_recurring: false })
   modalOpen.value = true
+}
+
+function closeModal() {
+  modalOpen.value = false
 }
 
 function openEdit(h) {
