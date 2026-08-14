@@ -227,7 +227,10 @@ class PayrollSimulationController extends Controller
         $input = ['gross_salary' => $gross, 'has_slabs_override' => $hasSlabsOverride];
 
         try {
-            return $this->payrollCalculator->getRules($countryCode);
+            // Appel direct au résolveur (comme CotisationSimulationController) :
+            // `getRules()` masque l'exception de contexte pour PHPStan (dead catch
+            // catch.neverThrown) alors que `resolve()` la déclare explicitement.
+            return $this->payrollCalculator->rulesResolver()->resolve($countryCode);
         } catch (UnsupportedCountryRulesException $exception) {
             $this->auditRecorder->recordSimulation(
                 $correlationId,
