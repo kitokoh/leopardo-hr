@@ -148,6 +148,8 @@ class FrontendApiContractTest extends TestCase
             'admin hr reports' => ['GET', 'api/v1/admin/hr-reports'],
             'admin marketing oauth config get' => ['GET', 'api/v1/admin/platform/marketing/oauth-config'],
             'admin marketing oauth config update' => ['PUT', 'api/v1/admin/platform/marketing/oauth-config'],
+            'manager cnss ci declaration' => ['GET', 'api/v1/payroll-runs/{payrollRun}/declarations/cnss-ci'],
+            'manager ipres sn declaration' => ['GET', 'api/v1/payroll-runs/{payrollRun}/declarations/ipres-sn'],
             'manager cnps cm declaration' => ['GET', 'api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm'],
             'manager payroll run regularize' => ['POST', 'api/v1/payroll-runs/{payrollRun}/regularize'],
             'manager payroll run regularizations' => ['GET', 'api/v1/payroll-runs/{payrollRun}/regularizations'],
