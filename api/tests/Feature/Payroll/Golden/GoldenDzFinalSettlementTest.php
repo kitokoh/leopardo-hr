@@ -21,7 +21,7 @@ class GoldenDzFinalSettlementTest extends TestCase
             // [base, years, proratedDays, working, leaveDays, ref12, notice, expected total]
             'départ mi-mois, 5 ans, 15 j congés' => [60000.0, 5.0, 10.0, 22.0, 15.0, 720000.0, 0.0, 368181.82],
             'aucune ancienneté, mois complet'    => [60000.0, 0.0, 22.0, 22.0, 0.0, 720000.0, 0.0, 60000.0],
-            'avec préavis non effectué'          => [60000.0, 2.0, 22.0, 22.0, 0.0, 720000.0, 30.0, 261818.18],
+            'avec préavis non effectué'          => [60000.0, 2.0, 22.0, 22.0, 0.0, 720000.0, 22.0, 240000.0],  // #1943 : préavis 22 j OUVRÉS = 1 mois exact
         ];
     }
 

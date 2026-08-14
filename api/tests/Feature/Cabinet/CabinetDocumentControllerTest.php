@@ -7,6 +7,7 @@ namespace Tests\Feature\Cabinet;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -160,21 +161,31 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
-        $this->assertSame('Bulletin mars 2026.pdf', $document->fresh()->name);
+
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('Bulletin mars 2026.pdf', $fresh->name);
     }
 
     public function test_read_only_document_cannot_be_moved(): void
     {
         Sanctum::actingAs($this->manager);
 
+        $folder = CabinetFolder::create([
+            'company_id' => $this->company->id,
+            'name' => 'Dossier cible',
+        ]);
         $document = $this->makeDocument(readOnly: true);
 
         $response = $this->patchJson('/api/v1/cabinet/documents/' . $document->id . '/move', [
-            'folder_id' => 1,
+            'folder_id' => $folder->id,
         ]);
 
         $response->assertForbidden();
-        $this->assertNull($document->fresh()->folder_id);
+
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertNull($fresh->folder_id);
     }
 
     public function test_read_only_document_cannot_have_notes_updated(): void
@@ -188,7 +199,10 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
-        $this->assertNull($document->fresh()->notes);
+
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertNull($fresh->notes);
     }
 
     public function test_normal_document_can_be_renamed_and_moved(): void
@@ -202,6 +216,9 @@ class CabinetDocumentControllerTest extends TestCase
         ]);
 
         $response->assertOk();
-        $this->assertSame('Nouveau nom.pdf', $document->fresh()->name);
+
+        $fresh = $document->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('Nouveau nom.pdf', $fresh->name);
     }
 }

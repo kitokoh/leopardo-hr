@@ -100,14 +100,10 @@
               </td>
               <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ s.effective_from }}</td>
               <td class="py-2.5 text-right whitespace-nowrap">
-                <template v-if="s.status === 'draft'">
-                  <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="saving" @click="submitRate(s)">
-                    {{ $t('tax_rates.submit') }}
-                  </button>
-                </template>
-                <button class="btn-secondary py-1 px-2.5" :disabled="saving" @click="showHistory(s)">
-                  {{ $t('tax_rates.history') }}
-                </button>
+                <!-- #1929 : submit/history sont des actions TENANT (manager) —
+                     pas d'endpoint /admin équivalent ; le super-admin approuve
+                     ou rejette depuis la liste « En attente ». -->
+                <span class="text-xs text-slate-400 dark:text-slate-500">{{ $t('tax_rates.status_only') }}</span>
               </td>
             </tr>
             <tr v-if="rates.length === 0">
@@ -134,7 +130,7 @@
             <div>
               <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="rate-country">{{ $t('tax_rates.th_country') }}</label>
               <select id="rate-country" v-model="form.country_code" class="form-input" required>
-                <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.label }}</option>
+                <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t(cc.labelKey) }}</option>
               </select>
             </div>
           </div>
@@ -239,13 +235,13 @@ function t(key, fallback = '') {
 }
 
 const supportedCountries = [
-  { code: 'DZ', label: 'Algérie' },
-  { code: 'CM', label: 'Cameroun' },
-  { code: 'CI', label: "Côte d'Ivoire" },
-  { code: 'SN', label: 'Sénégal' },
-  { code: 'MA', label: 'Maroc' },
-  { code: 'TN', label: 'Tunisie' },
-  { code: 'FR', label: 'France' },
+  { code: 'DZ', labelKey: 'common.countries.DZ' },
+  { code: 'CM', labelKey: 'common.countries.CM' },
+  { code: 'CI', labelKey: 'common.countries.CI' },
+  { code: 'SN', labelKey: 'common.countries.SN' },
+  { code: 'MA', labelKey: 'common.countries.MA' },
+  { code: 'TN', labelKey: 'common.countries.TN' },
+  { code: 'FR', labelKey: 'common.countries.FR' },
 ]
 
 const isPlatformAdmin = ref(false)
@@ -273,8 +269,8 @@ async function loadRates() {
   loading.value = true
   try {
     const [slabs, contributions] = await Promise.all([
-      api.get('/tax-slabs'),
-      api.get('/social-contributions'),
+      api.get('/admin/tax-slabs'),
+      api.get('/admin/social-contributions'),
     ])
     rates.value = [
       ...(slabs.data?.data || []).map((r) => ({ ...r, table: 'tax_slabs' })),
@@ -331,26 +327,12 @@ async function createRate() {
       payload.type = 'employee'
       payload.cap = null
     }
-    await api.post(`/${form.table === 'tax_slabs' ? 'tax-slabs' : 'social-contributions'}`, payload)
+    await api.post(`/admin/${form.table === 'tax_slabs' ? 'tax-slabs' : 'social-contributions'}`, payload)
     createOpen.value = false
     toast.success(t('tax_rates.saved'))
     await loadRates()
   } catch (err) {
     toast.error(err?.response?.data?.message || t('tax_rates.save_error'))
-  } finally {
-    saving.value = false
-  }
-}
-
-async function submitRate(item) {
-  saving.value = true
-  try {
-    const base = item.table === 'tax_slabs' ? 'tax-slabs' : 'social-contributions'
-    await api.put(`/${base}/${item.id}/submit`)
-    toast.success(t('tax_rates.submitted'))
-    await Promise.all([loadRates(), loadPending()])
-  } catch (err) {
-    toast.error(err?.response?.data?.message || t('tax_rates.submit_error'))
   } finally {
     saving.value = false
   }
@@ -394,17 +376,6 @@ async function rejectItem() {
     toast.error(err?.response?.data?.message || t('tax_rates.reject_error'))
   } finally {
     acting.value = false
-  }
-}
-
-async function showHistory(item) {
-  const base = item.table === 'tax_slabs' ? 'tax-slabs' : 'social-contributions'
-  try {
-    const { data } = await api.get(`/${base}/${item.id}/history`)
-    historyItems.value = data.data || []
-    historyOpen.value = true
-  } catch (err) {
-    toast.error(err?.response?.data?.message || t('tax_rates.history_error'))
   }
 }
 
@@ -464,9 +435,10 @@ function formatDate(iso) {
 }
 
 onMounted(async () => {
-  // Détection du rôle plateforme : le cockpit expose un flag via /auth/me.
+  // Détection du rôle plateforme : endpoint super-admin (le cockpit est en
+  // super_admin_api ; /auth/me est tenant → 401 → purge de session, #1929).
   try {
-    const { data } = await api.get('/auth/me')
+    const { data } = await api.get('/platform/auth/me')
     isPlatformAdmin.value = Boolean(data?.data?.role === 'super_admin' || data?.data?.is_platform_admin)
   } catch {
     isPlatformAdmin.value = false
