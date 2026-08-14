@@ -86,7 +86,7 @@ class TaxSlabAdminControllerTest extends TestCase
             ->first();
 
         $this->assertNotNull($updated, 'la mise à jour admin doit être tracée');
-        $this->assertSame(10.0, (float) $updated->previous_value['rate']);
+        $this->assertSame(10.0, (float) ($updated->previous_value['rate'] ?? 0.0));
         $this->assertSame(12.0, (float) $updated->new_value['rate']);
 
         $this->deleteJson("/api/v1/admin/tax-slabs/{$id}")->assertStatus(204);
