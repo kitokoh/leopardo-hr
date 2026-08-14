@@ -189,6 +189,20 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     abstract protected function defaultTaxSlabs(): array;
 
     /**
+     * Barème légal de référence (source légale), indépendant de la base :
+     * retourne `defaultTaxSlabs()` — les valeurs ancrées dans le code par
+     * pays (CGI, codes du travail). Issue #2003 : le seeder doit seeder
+     * depuis cette source, pas depuis `taxSlabs()` qui résout la base AVANT
+     * le code (re-seeder = no-op silencieux quand la base diverge du code).
+     *
+     * @return array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>
+     */
+    public function legalReferenceTaxSlabs(): array
+    {
+        return $this->defaultTaxSlabs();
+    }
+
+    /**
      * Resolves the effective rate (percentage points, e.g. 9.0 for 9%) for a
      * given SocialContribution code as of asOfDate() (or now() when unset),
      * scoped to companyId() with a fallback to the global (company_id IS
@@ -383,6 +397,17 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     public function calculateBracketTax(float $grossSalary): float
     {
         return 0.0;
+    }
+
+    /**
+     * Issue #1934 — défaut ADDITIF : l'impôt et la taxe de minimum fiscal
+     * s'additionnent (CI : IR + CN, etc.). Les pays au mécanisme légal
+     * « max » (Sénégal : le salarié paie le plus élevé de IR/TRIMF,
+     * CGI SN §3) override cette méthode.
+     */
+    public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
+    {
+        return $incomeTax + $bracketTax;
     }
 
     /**

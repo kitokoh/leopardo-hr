@@ -135,3 +135,41 @@ hotfix/*        ← correctifs urgents prod
 > (production) / `develop` (staging) avec push direct déclenchant les déploiements.
 > Ce modèle a été abandonné (migration vers trunk-based) et n'est plus représentatif
 > du fonctionnement actuel du CI/CD ; conservé ici uniquement à titre de contexte.
+
+## Protection de branche main — procédure de merge admin sûre (issue #2011)
+
+### Incident du 2026-08-14 (récidive possible)
+
+Lors d'une vague de merges, la protection de `main` s'est retrouvée vidée
+(`required_status_checks` supprimé, `required_approving_review_count` passé à 0)
+par un outillage de merge qui fait un GET→PUT de la protection et écrase les
+champs non ré-injectés. Conséquence : des merges **sans checks verts** possibles
+sur un repo public.
+
+### Règles à verrouiller
+
+1. **INTERDIT** de modifier `required_status_checks` / `required_pull_request_reviews`
+   depuis un script de merge. Le seul toggle acceptable est `enforce_admins`, et
+   encore : préférer l'API REST `PUT /pulls/{n}/merge` avec un token admin.
+2. Toute bascule temporaire (ex. `enforce_admins=false` pour un merge d'urgence)
+   doit être suivie d'une **restauration canonique** puis d'une **vérification GET**
+   (assertion : strict=true, 5 contexts, reviews=1, enforce_admins=true).
+3. Le canonique vit dans `dev-hub/tools/branch-protection-canonical.json`.
+   Restaurer avec :
+   ```bash
+   curl -X PUT -H "Authorization: Bearer $GITHUB_TOKEN" \
+     -H "Accept: application/vnd.github+json" \
+     https://api.github.com/repos/kitokoh/leopardo-hr/branches/main/protection \
+     -d @dev-hub/tools/branch-protection-canonical.json
+   ```
+4. Garde automatique : workflow `Branch Protection Guard` (toutes les heures +
+   dispatch) exécute `dev-hub/tools/check-branch-protection.sh` et échoue si la
+   protection réelle dévie du canonique. En cas de rouge sur cette garde,
+   restaurer immédiatement avec la commande ci-dessus avant tout autre merge.
+
+### Merge standard (recommandé)
+
+1. PR → checks GitHub Actions requis verts (`gh pr checks <n>`).
+2. `gh pr merge <n> --merge --delete-branch` (ou l'API équivalente).
+3. Vérifier `gh pr view <n> --json state,mergedAt,mergeCommit`.
+4. Supprimer la branche distante (fait par `--delete-branch`) + `git remote prune origin`.
