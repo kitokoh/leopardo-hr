@@ -18,7 +18,7 @@ use Tests\TestCase;
  * mais les tenants BF seedés depuis #1829 gardent 5 tranches en base (le
  * seeder re-seedait depuis `taxSlabs()` = base → no-op silencieux). Cette
  * suite vérifie le backfill de la migration
- * `2026_08_14_000011_backfill_bf_iuts_27_5_slab` et le seeder corrigé
+ * `2026_08_14_000012_backfill_bf_iuts_27_5_slab` et le seeder corrigé
  * (`legalReferenceTaxSlabs()`).
  */
 class BfIutsBackfillTest extends TestCase
@@ -57,7 +57,9 @@ class BfIutsBackfillTest extends TestCase
 
     private function runMigration(): void
     {
-        $migration = require database_path('migrations/tenant/2026_08_14_000011_backfill_bf_iuts_27_5_slab.php');
+        // #1962 : la migration a été renumérotée 000012 (collision de basename
+        // avec le trigger append-only 000011, résolu par la garde anti-collision).
+        $migration = require database_path('migrations/tenant/2026_08_14_000012_backfill_bf_iuts_27_5_slab.php');
         $migration->up();
     }
 
