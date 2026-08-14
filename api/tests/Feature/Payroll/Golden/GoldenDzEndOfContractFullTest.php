@@ -21,6 +21,9 @@ use Tests\TestCase;
  */
 class GoldenDzEndOfContractFullTest extends TestCase
 {
+    /**
+     * @return array<string, array{float, float, float}>
+     */
     public static function noticeProvider(): array
     {
         return [
