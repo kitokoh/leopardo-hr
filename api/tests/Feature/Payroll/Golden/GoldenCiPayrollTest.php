@@ -20,8 +20,9 @@ use Tests\TestCase;
  *
  * Formules CI (CI_COMPLIANCE.md §1-2, réforme ITS 2024 — #1918) :
  *   CNSS salariale   = min(brut, 1 647 315) × 3,2 %
- *   CNSS patronale   = min(brut, cap) × 4,5 % + min(brut, cap) × 5,75 %
- *                      + brut × 2,0 % (AT non plafonné)
+ *   CNSS patronale   = min(brut, 1 647 315) × 4,5 %
+ *                      + min(brut, 70 000) × 5,75 % + min(brut, 70 000) × 2,0 %
+ *                      (famille/AT plafonnées séparément à 70 000, #1913 CNPS)
  *   ITS unifié       = progressif MENSUEL sur le BRUT (art. 119 bis CGI CI,
  *                      ordonnance 2023-718/719 — plus d'abattement, plus de
  *                      CN, plus d'annualisation)
@@ -337,8 +338,8 @@ class GoldenCiPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(3000000.0);
 
         $this->assertSame(52714.08, $charges['employee']);
-        // Patronale : 74 129,18 + 94 720,61 + 60 000 (AT 2 % non plafonné).
-        $this->assertSame(228849.79, $charges['employer']);
+        // Patronale : 74 129,18 + 4 025,00 (famille 70 000 × 5,75 %) + 1 400,00 (AT 70 000 × 2 %), caps #1913.
+        $this->assertSame(79554.18, $charges['employer']);
     }
 
     /**
