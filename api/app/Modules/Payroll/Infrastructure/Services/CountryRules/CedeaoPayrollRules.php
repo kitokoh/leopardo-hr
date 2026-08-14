@@ -88,6 +88,21 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
+        if ($this->memberCountryCode === 'CI') {
+            // CNSS Côte d'Ivoire (issue #1825) : retraite salarié 3,2 % +
+            // retraite patronal 4,5 % + famille patronal 5,75 % plafonnés à
+            // 1 647 315 XOF/mois, AT patronal 2,0 % non plafonné (taux pilote).
+            return [
+                ['name' => 'CNSS Retraite Salariale', 'code' => 'CNSS_CI_RET_EMP', 'type' => 'employee', 'rate' => 3.2, 'cap' => 1647315.0],
+                ['name' => 'CNSS Retraite Patronale', 'code' => 'CNSS_CI_RET_PAT', 'type' => 'employer', 'rate' => 4.5, 'cap' => 1647315.0],
+                ['name' => 'CNSS Prestations Familiales Patronale', 'code' => 'CNSS_CI_FAM_PAT', 'type' => 'employer', 'rate' => 5.75, 'cap' => 1647315.0],
+                ['name' => 'CNSS Risques Professionnels Patronale', 'code' => 'CNSS_CI_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
+            ];
+        }
+
+        // Placeholder générique pour les autres membres UEMOA (ML, BF, BJ,
+        // TG, NE) tant que leurs issues pays n'ont pas livré de taux légaux
+        // validés (BF/ML : #1829).
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNSS_CEDEAO_EMP', 'type' => 'employee', 'rate' => 3.6, 'cap' => null],
             ['name' => 'CNPS/CNSS Patronale (retraite/famille/AT)', 'code' => 'CNSS_CEDEAO_PAT', 'type' => 'employer', 'rate' => 16.4, 'cap' => null],
@@ -96,6 +111,19 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
+        if ($this->memberCountryCode === 'CI') {
+            // ITSAS Côte d'Ivoire (CGI 2024, art. 116-120) — tranches ANNUELLES
+            // (cf. docs/payroll/CI_COMPLIANCE.md §1) : calculateIncomeTax()
+            // annualise l'assiette mensuelle avant d'appliquer ce barème.
+            return [
+                ['min' => 0, 'max' => 600000, 'rate' => 0, 'fixed_deduction' => 0],
+                ['min' => 600001, 'max' => 2000000, 'rate' => 2, 'fixed_deduction' => 0],
+                ['min' => 2000001, 'max' => 5000000, 'rate' => 21, 'fixed_deduction' => 0],
+                ['min' => 5000001, 'max' => 10000000, 'rate' => 24.5, 'fixed_deduction' => 0],
+                ['min' => 10000001, 'max' => null, 'rate' => 29, 'fixed_deduction' => 0],
+            ];
+        }
+
         // Conservative placeholder progressive IGR-style schedule, common
         // shape across UEMOA members. confidenceLevel() below explicitly
         // marks this as 'placeholder', not a legally validated figure per
@@ -114,20 +142,44 @@ class CedeaoPayrollRules extends AbstractCountryRules
         $annualTaxable = $grossTaxable * $annualBasis;
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
+        if ($this->memberCountryCode === 'CI') {
+            // CI (issue #1825) : calculateIncomeTax() ne retourne que l'ITSAS
+            // (CGI 2024 art. 116-120) ; la Contribution Nationale (1,5 % sur
+            // le brut > 50 000) est calculée séparément par
+            // calculateBracketTax() sur le BRUT réel, puis additionnée dans
+            // le bulletin via la ligne « Taxe de minimum fiscal »
+            // (docs/payroll/CI_COMPLIANCE.md §2-§3). Impôt total mensuel =
+            // ITSAS + CN.
+            return round($tax / $annualBasis, 2);
+        }
+
         return round($tax / $annualBasis, 2);
     }
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        // ZONE-INFRA (#1820): Côte d'Ivoire (CI) statutory CNSS ceiling
-        // 1 647 315 XOF/month is applied via computeContribution(); the
-        // other five CEDEAO members stay on the placeholder (uncapped)
-        // rates until their own member-state issues land (BF/ML: #1829).
-        $cap = $this->memberCountryCode === 'CI' ? 1647315.0 : null;
+        if ($this->memberCountryCode === 'CI') {
+            // CNSS Côte d'Ivoire (issue #1825) : retraite 3,2 % salarié et
+            // 4,5 % patronal + famille 5,75 % patronal plafonnés à
+            // 1 647 315 XOF/mois, AT 2,0 % patronal non plafonné
+            // (docs/payroll/CI_COMPLIANCE.md §4).
+            return [
+                'employee' => $this->computeContribution($grossSalary, 'CNSS_CI_RET_EMP', 3.2, 1647315.0),
+                'employer' => round(
+                    $this->computeContribution($grossSalary, 'CNSS_CI_RET_PAT', 4.5, 1647315.0)
+                    + $this->computeContribution($grossSalary, 'CNSS_CI_FAM_PAT', 5.75, 1647315.0)
+                    + $this->computeContribution($grossSalary, 'CNSS_CI_AT_PAT', 2.0, null),
+                    2
+                ),
+            ];
+        }
+
+        $employeeRate = $this->resolveContributionRate('CNSS_CEDEAO_EMP', 3.6);
+        $employerRate = $this->resolveContributionRate('CNSS_CEDEAO_PAT', 16.4);
 
         return [
-            'employee' => $this->computeContribution($grossSalary, 'CNSS_CEDEAO_EMP', 3.6, $cap),
-            'employer' => $this->computeContribution($grossSalary, 'CNSS_CEDEAO_PAT', 16.4, $cap),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 
@@ -170,7 +222,76 @@ class CedeaoPayrollRules extends AbstractCountryRules
 
     public function confidenceLevel(): string
     {
-        return 'placeholder';
+        // Côte d'Ivoire (CI) : ITSAS/CN/CNSS implémentés depuis les sources
+        // légales publiques (CGI 2024 art. 116-120, CNSS) — niveau 'pilot'
+        // (issue #1825) tant qu'un expert-comptable OHADA-CI n'a pas validé
+        // les chiffres. Les autres membres UEMOA restent 'placeholder'
+        // jusqu'à leurs issues pays (BF/ML : #1829).
+        return $this->memberCountryCode === 'CI' ? 'pilot' : 'placeholder';
+    }
+
+    /**
+     * ZONE-INFRA (#1820/#1825) : abattement frais professionnels ivoirien
+     * (CGI 2024, art. 116) — 20 % du brut, NON plafonné. Appliqué par
+     * PayrollCalculator::calculateSlip() sur l'assiette imposable.
+     *
+     * @return array{rate: float, cap: float|null}
+     */
+    public function professionalExpensesDeduction(): array
+    {
+        if ($this->memberCountryCode === 'CI') {
+            return ['rate' => 20.0, 'cap' => null];
+        }
+
+        return parent::professionalExpensesDeduction();
+    }
+
+    /**
+     * ZONE-INFRA (#1820/#1825) : Contribution Nationale ivoirienne (CGI 2024
+     * art. 116-120) — 1,5 % sur la part du BRUT mensuel excédant 50 000 XOF
+     * (seuil annuel 600 000 XOF) :
+     *   CN mensuelle = max(0, brut − 50 000) × 0,015.
+     * Calculée séparément de l'ITSAS (docs/payroll/CI_COMPLIANCE.md §3) et
+     * portée dans le bulletin par PayrollCalculator (ligne « Taxe de minimum
+     * fiscal ») — impôt total mensuel = ITSAS + CN.
+     */
+    public function calculateBracketTax(float $grossSalary): float
+    {
+        if ($this->memberCountryCode === 'CI') {
+            return round(max(0.0, $grossSalary - 50000.0) * 0.015, 2);
+        }
+
+        return parent::calculateBracketTax($grossSalary);
+    }
+
+    /**
+     * Issue #1825 : le 13ème mois est une pratique généralisée en Côte
+     * d'Ivoire via les conventions de branche (obligatoire dans la plupart)
+     * — thirteenthMonthMandatory() = true pour CI. PayrollCalculator
+     * l'injecte en ligne earning du mois de décembre (mécanisme ZONE-INFRA
+     * #1820, traitement 'fully_taxable').
+     */
+    public function thirteenthMonthMandatory(): bool
+    {
+        return $this->memberCountryCode === 'CI';
+    }
+
+    /**
+     * Préavis ivoirien (Code du travail, art. 18) — issue #1825,
+     * docs/payroll/CI_COMPLIANCE.md §8. L'interface n'expose que
+     * l'ancienneté (pas la catégorie) : paliers implémentés au niveau
+     * employé/technicien (le plus courant) — < 5 ans : 1 mois ; ≥ 5 ans :
+     * 2 mois. Ouvriers (8/15 j) et cadres (3 mois) documentés dans le
+     * référentiel ; la prise en compte de la catégorie du contrat est un
+     * suivi.
+     */
+    public function noticePeriodDays(float $yearsOfService): float
+    {
+        if ($this->memberCountryCode === 'CI') {
+            return $yearsOfService < 5.0 ? 30.0 : 60.0;
+        }
+
+        return parent::noticePeriodDays($yearsOfService);
     }
 
     /**
@@ -203,8 +324,25 @@ class CedeaoPayrollRules extends AbstractCountryRules
      *
      * @return array<int, array{up_to_hours: float|null, multiplier: float}>
      */
+    /**
+     * Issue #1825 : heures supplémentaires ivoiriennes (Code du travail,
+     * art. 21) — 40-48 h : +15 % ; 48-54 h : +35 % ; nuit/dimanche > 54 h :
+     * +50 % (paliers hebdomadaires modélisés en largeurs 8 h / 14 h). Les
+     * autres membres UEMOA conservent le palier placeholder 1.15/1.35
+     * commun (confidenceLevel() = 'placeholder').
+     *
+     * @return array<int, array{up_to_hours: float|null, multiplier: float}>
+     */
     public function overtimeRateTiers(): array
     {
+        if ($this->memberCountryCode === 'CI') {
+            return [
+                ['up_to_hours' => 8.0, 'multiplier' => 1.15],
+                ['up_to_hours' => 14.0, 'multiplier' => 1.35],
+                ['up_to_hours' => null, 'multiplier' => 1.50],
+            ];
+        }
+
         return [
             ['up_to_hours' => 8.0, 'multiplier' => 1.15],
             ['up_to_hours' => null, 'multiplier' => 1.35],

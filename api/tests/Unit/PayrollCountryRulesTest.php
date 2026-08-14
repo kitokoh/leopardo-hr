@@ -319,8 +319,15 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            self::assertSame('placeholder', $rules->confidenceLevel());
-            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            // Issue #1825 : CI est passé au niveau 'pilot' (ITSAS + CN +
+            // CNSS) ; les autres membres UEMOA restent 'placeholder'.
+            $expectedConfidence = $memberCode === 'CI' ? 'pilot' : 'placeholder';
+            self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
+            if ($memberCode === 'CI') {
+                self::assertCount(5, $rules->taxSlabs());
+            } else {
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            }
             self::assertNotEmpty($rules->socialContributions());
         }
     }
