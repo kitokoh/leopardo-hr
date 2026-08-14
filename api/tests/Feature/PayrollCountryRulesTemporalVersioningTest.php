@@ -47,6 +47,9 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             $table->decimal('fixed_deduction', 14, 2)->default(0);
             $table->date('effective_from');
             $table->date('effective_to')->nullable();
+            // ADMIN-PAIE (#1813) : statut du workflow de validation — seules
+            // les lignes `active` entrent dans les calculs.
+            $table->string('status', 30)->default('active');
             $table->timestampsTz();
 
             $table->index(['country_code', 'effective_from']);
@@ -63,6 +66,8 @@ class PayrollCountryRulesTemporalVersioningTest extends TestCase
             $table->decimal('cap', 14, 2)->nullable();
             $table->date('effective_from');
             $table->date('effective_to')->nullable();
+            // ADMIN-PAIE (#1813) : statut du workflow de validation.
+            $table->string('status', 30)->default('active');
             $table->timestampsTz();
 
             $table->unique(['company_id', 'code', 'effective_from'], 'social_contributions_company_code_effective_unique');

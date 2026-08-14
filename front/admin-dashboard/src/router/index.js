@@ -290,9 +290,9 @@ const routes = [
       {
         path: '/settings/payroll/tax-rates',
         name: 'payroll-tax-rates',
-        component: () => import('@/views/settings/TaxRatesView.vue'),
+        component: () => import('../views/settings/TaxRatesView.vue'),
         meta: {
-          title: 'Taux légaux',
+          title: 'taxRates.nav.title',
           icon: 'ScaleIcon'
         }
       }

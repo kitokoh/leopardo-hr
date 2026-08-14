@@ -298,5 +298,98 @@
   "attendance": {
     "sending_to_server": "جار إرسال {label} إلى الخادم...",
     "retry_after_failure": "{label}. حاول مرة أخرى."
+  },
+  "taxRates": {
+    "nav": {
+      "title": "Legal rates"
+    },
+    "page": {
+      "title": "Legal rates — validation",
+      "subtitle": "Validation workflow for tax bracket and social contribution changes (issue #1813). HR/accountants create and submit; only the platform admin approves or rejects. Every transition is recorded in an immutable audit trail."
+    },
+    "loading": "Loading…",
+    "cols": {
+      "company": "Company",
+      "country": "Country",
+      "name": "Name",
+      "bracket": "Bracket",
+      "rate": "Rate",
+      "effective": "Effective",
+      "actions": "Actions",
+      "type": "Type",
+      "cap": "Cap",
+      "status": "Status"
+    },
+    "pending": {
+      "title": "⏳ Pending validation",
+      "refresh": "Refresh",
+      "slabs": "Tax brackets",
+      "contributions": "Social contributions",
+      "approve": "Approve",
+      "reject": "Reject",
+      "noSlabs": "No pending tax bracket.",
+      "noContributions": "No pending contribution.",
+      "empty": "✅ Nothing pending — all changes have been processed."
+    },
+    "all": {
+      "title": "Tax brackets — all rows",
+      "status": "Status",
+      "all": "All",
+      "empty": "No tax bracket."
+    },
+    "history": {
+      "title": "📜 Change history (immutable audit trail)",
+      "date": "Date",
+      "table": "Table",
+      "record": "Record",
+      "action": "Action",
+      "actor": "Actor",
+      "reason": "Reason",
+      "empty": "No audit entry."
+    },
+    "historyActions": {
+      "created": "Created",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "superseded": "Superseded"
+    },
+    "status": {
+      "active": "🟢 Active",
+      "pending": "🟡 Pending",
+      "draft": "⚪ Draft",
+      "superseded": "🔵 Superseded"
+    },
+    "reject": {
+      "title": "Reject the change",
+      "reason": "Reason (required)",
+      "placeholder": "E.g.: rate inconsistent with the official schedule…",
+      "cancel": "Cancel",
+      "submit": "Reject"
+    },
+    "confirm": {
+      "approve": "Approve the change?"
+    },
+    "success": {
+      "approved": "Change approved — now active for payroll calculations.",
+      "rejected": "Change rejected — returned to draft."
+    },
+    "errors": {
+      "loadPending": "Unable to load pending validations.",
+      "loadSlabs": "Unable to load tax brackets.",
+      "loadHistory": "Unable to load history.",
+      "approve": "Unable to approve.",
+      "reject": "Unable to reject."
+    }
+  },
+  "countries": {
+    "DZ": "Algeria",
+    "MA": "Morocco",
+    "TN": "Tunisia",
+    "SN": "Senegal",
+    "CM": "Cameroon",
+    "CI": "Côte d'Ivoire",
+    "BF": "Burkina Faso",
+    "ML": "Mali"
   }
 }

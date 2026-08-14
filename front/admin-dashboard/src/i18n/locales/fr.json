@@ -298,5 +298,98 @@
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
     "retry_after_failure": "{label}. Reessayez."
+  },
+  "taxRates": {
+    "nav": {
+      "title": "Taux légaux"
+    },
+    "page": {
+      "title": "Taux légaux — validation",
+      "subtitle": "Workflow de validation des modifications de barèmes fiscaux et cotisations sociales (issue #1813). Les RH/comptables créent et soumettent ; seul le platform admin approuve ou rejette. Chaque transition est tracée dans un audit trail immuable."
+    },
+    "loading": "Chargement…",
+    "cols": {
+      "company": "Entreprise",
+      "country": "Pays",
+      "name": "Nom",
+      "bracket": "Tranche",
+      "rate": "Taux",
+      "effective": "Effectif",
+      "actions": "Actions",
+      "type": "Type",
+      "cap": "Plafond",
+      "status": "Statut"
+    },
+    "pending": {
+      "title": "⏳ En attente de validation",
+      "refresh": "Actualiser",
+      "slabs": "Barèmes fiscaux",
+      "contributions": "Cotisations sociales",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "noSlabs": "Aucun barème en attente.",
+      "noContributions": "Aucune cotisation en attente.",
+      "empty": "✅ Rien en attente — toutes les modifications ont été traitées."
+    },
+    "all": {
+      "title": "Barèmes fiscaux — toutes les lignes",
+      "status": "Statut",
+      "all": "Tous",
+      "empty": "Aucun barème."
+    },
+    "history": {
+      "title": "📜 Historique des modifications (audit trail immuable)",
+      "date": "Date",
+      "table": "Table",
+      "record": "Enregistrement",
+      "action": "Action",
+      "actor": "Acteur",
+      "reason": "Motif",
+      "empty": "Aucune entrée d'audit."
+    },
+    "historyActions": {
+      "created": "Création",
+      "submitted": "Soumission",
+      "approved": "Approbation",
+      "rejected": "Rejet",
+      "superseded": "Remplacée"
+    },
+    "status": {
+      "active": "🟢 Active",
+      "pending": "🟡 En attente",
+      "draft": "⚪ Brouillon",
+      "superseded": "🔵 Remplacée"
+    },
+    "reject": {
+      "title": "Rejeter la modification",
+      "reason": "Motif (obligatoire)",
+      "placeholder": "Ex. : taux incohérent avec le barème officiel…",
+      "cancel": "Annuler",
+      "submit": "Rejeter"
+    },
+    "confirm": {
+      "approve": "Approuver la modification ?"
+    },
+    "success": {
+      "approved": "Modification approuvée — désormais active pour les calculs de paie.",
+      "rejected": "Modification rejetée — retournée en brouillon."
+    },
+    "errors": {
+      "loadPending": "Impossible de charger les validations en attente.",
+      "loadSlabs": "Impossible de charger les barèmes.",
+      "loadHistory": "Impossible de charger l'historique.",
+      "approve": "Impossible d'approuver.",
+      "reject": "Impossible de rejeter."
+    }
+  },
+  "countries": {
+    "DZ": "Algérie",
+    "MA": "Maroc",
+    "TN": "Tunisie",
+    "SN": "Sénégal",
+    "CM": "Cameroun",
+    "CI": "Côte d'Ivoire",
+    "BF": "Burkina Faso",
+    "ML": "Mali"
   }
 }
