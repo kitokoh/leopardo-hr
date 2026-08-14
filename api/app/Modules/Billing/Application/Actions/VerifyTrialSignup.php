@@ -59,11 +59,19 @@ class VerifyTrialSignup
         $payload = $companyRequest->signup_payload ?? [];
         $companyName = (string) ($companyRequest->company_name ?? '');
 
-        $country = strtoupper(trim($payload['country'] ?? 'DZ'));
-        if (strlen($country) !== 2) {
-            $country = 'DZ';
+        // MULTI-PAYS (#1867/#1950) : le pays vient du signup validé (règle
+        // SupportedCountry) — résolution STRICTE, aucun fallback silencieux
+        // vers DZ (invariant 10). Un payload hérité sans pays valide → 422.
+        $country = strtoupper(trim((string) ($payload['country'] ?? '')));
+        $countryDefaults = CountryDefaults::find($country);
+        if ($countryDefaults === null) {
+            return [
+                'success' => false,
+                'error' => 'INVALID_COUNTRY',
+                'message' => 'Le pays du signup est invalide ou non supporté. Veuillez recommencer l\'inscription.',
+                'status' => 422,
+            ];
         }
-        $countryDefaults = CountryDefaults::for($country);
 
         $trialPlan = $this->resolveTrialPlan();
         if (! $trialPlan) {

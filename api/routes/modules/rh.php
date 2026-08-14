@@ -51,12 +51,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
     Route::get('/employees/{employee}/end-of-contract', [EndOfContractController::class, 'settlement'])->whereNumber('employee');
     Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');
-    Route::post('/employees/import', [EmployeeImportController::class, 'import']);
+    // MULTI-PAYS (#1952) : l'import d'employés crée des écritures RH — même
+    // garde pays que store/update (#1867).
+    Route::post('/employees/import', [EmployeeImportController::class, 'import'])->middleware('tenant.country');
     Route::get('/employees/import-template', [EmployeeImportController::class, 'template']);
     Route::get('/me/qr-profile', [OnboardingQrController::class, 'employeeProfile']);
     Route::get('/company/qr-onboarding', [OnboardingQrController::class, 'companyOnboarding']);
     Route::post('/company/qr-onboarding/scan-employee', [OnboardingQrController::class, 'scanEmployee']);
-    Route::post('/company/qr-onboarding/create-employee', [OnboardingQrController::class, 'createEmployeeFromQr']);
+    // MULTI-PAYS (#1952) : le QR onboarding crée un employé — même garde pays.
+    Route::post('/company/qr-onboarding/create-employee', [OnboardingQrController::class, 'createEmployeeFromQr'])->middleware('tenant.country');
     Route::post('/me/company-qr/scan', [OnboardingQrController::class, 'scanCompany']);
 
     // ── Estimations ───────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-05-07T20:45:00Z",
+  "_updated_at": "2026-08-14T14:30:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -72,7 +72,21 @@
         "en-GB": "English (United Kingdom)"
       }
     },
-    "or": "or"
+    "or": "or",
+    "countries": {
+      "DZ": "Algeria",
+      "CM": "Cameroon",
+      "CI": "Côte d'Ivoire",
+      "SN": "Senegal",
+      "MA": "Morocco",
+      "TN": "Tunisia",
+      "FR": "France",
+      "TR": "Türkiye",
+      "CG": "Congo",
+      "GA": "Gabon",
+      "BF": "Burkina Faso",
+      "ML": "Mali"
+    }
   },
   "modules": {
     "attendance": "Attendance",
@@ -507,7 +521,19 @@
     "sim_tax": "Tax",
     "sim_net": "Net",
     "sim_base": "Base",
-    "sim_slab_tax": "Bracket tax"
+    "sim_slab_tax": "Bracket tax",
+    "load_error": "Failed to load the tax brackets.",
+    "save_error": "Failed to save the bracket.",
+    "saved": "Bracket updated.",
+    "created": "Bracket created.",
+    "deleted": "Bracket deleted.",
+    "delete_error": "Failed to delete.",
+    "delete_confirm": "Delete bracket \"{name}\"?",
+    "reset_confirm": "Reset to the legal default values? Current brackets will be replaced.",
+    "reset_done": "Brackets reset.",
+    "reset_error": "Reset failed.",
+    "default_name": "{country} legal bracket",
+    "sim_error": "Simulation failed."
   },
   "social_contrib": {
     "title": "Social contributions by country",
@@ -540,6 +566,13 @@
     "sim_employee": "Employee contributions",
     "sim_employer": "Employer contributions",
     "sim_tax": "Tax",
-    "total_cost": "Total employer cost"
+    "total_cost": "Total employer cost",
+    "load_error": "Failed to load the contributions.",
+    "save_error": "Failed to save the contribution.",
+    "saved": "Contribution updated.",
+    "created": "Contribution created.",
+    "deleted": "Contribution deleted.",
+    "delete_error": "Failed to delete.",
+    "delete_confirm": "Delete contribution \"{name}\"?"
   }
 }

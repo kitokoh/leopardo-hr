@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
@@ -119,7 +121,24 @@ class PlatformCompanyController extends Controller
         ]);
 
         $validated['sector'] = trim((string) ($validated['sector'] ?? '')) ?: 'Non precise';
-        $countryDefaults = CountryDefaults::for($validated['country']);
+        // MULTI-PAYS (#1867/#1950) : pays obligatoire et supporté — résolution
+        // STRICTE (CountryDefaults::find), aucun fallback silencieux vers DZ
+        // (invariant 10). Le code est normalisé en majuscules avant lookup.
+        $validated['country'] = strtoupper(trim($validated['country']));
+        $countryDefaults = CountryDefaults::find($validated['country']);
+        if ($countryDefaults === null) {
+            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => $message,
+                    'errors' => ['country' => [$message]],
+                ], 422);
+            }
+
+            return back()
+                ->withInput()
+                ->withErrors(['country' => $message]);
+        }
         $validated['country'] = $countryDefaults['country'];
         $validated['language'] = strtolower($validated['language'] ?? $countryDefaults['language']);
         $validated['currency'] = strtoupper($validated['currency'] ?? $countryDefaults['currency']);
@@ -255,6 +274,89 @@ class PlatformCompanyController extends Controller
             ->route('platform.companies.edit', ['company' => $company->id])
             ->with('status', 'Societe mise a jour.');
     }
+
+    /**
+     * MULTI-PAYS (#1867/#1952) — réparation/choix du pays légal d'un tenant
+     * par le super-admin (chemin de sortie pour les tenants legacy créés sans
+     * pays). INVARIANT 9 : refusé dès que des données de paie existent
+     * (PayrollRun ou SalaryStructure) — sauf procédure administrative
+     * documentée (les données doivent être purgées/exportées d'abord).
+     */
+    public function updateCountry(Request $request, string $companyId): RedirectResponse|JsonResponse
+    {
+        DB::statement('SET search_path TO public');
+
+        $company = Company::query()->findOrFail($companyId);
+
+        $validated = $request->validate([
+            'country' => ['required', 'string', 'size:2'],
+        ]);
+
+        $countryDefaults = CountryDefaults::find($validated['country']);
+        if ($countryDefaults === null) {
+            $message = 'Le pays est invalide ou non supporte ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => $message,
+                    'errors' => ['country' => [$message]],
+                ], 422);
+            }
+
+            return back()->withInput()->withErrors(['country' => $message]);
+        }
+
+        // INVARIANT 9 : verrouillage du pays après création de données de paie.
+        // Les tables `payroll_runs`/`salary_structures` vivent dans le schéma
+        // du TENANT (pas dans public) : bascule sur le search_path du tenant
+        // pour le check, puis RESTAURATION en `finally` (une session restée
+        // sur le schéma tenant fuirait vers les requêtes suivantes — même
+        // garde que `withTenantSearchPath()` de PlatformCompanyHealthService).
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $previousSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
+        $hasPayrollData = false;
+        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+        try {
+            $hasPayrollData = PayrollRun::query()->where('company_id', $company->id)->exists()
+                || SalaryStructure::query()->where('company_id', $company->id)->exists();
+        } finally {
+            DB::statement('SET search_path TO '.$previousSearchPath);
+        }
+
+        if ($hasPayrollData) {
+            $message = 'Le pays d'un tenant avec des donnees de paie (runs ou structures salariales) ne peut pas etre modifie (invariant 9). Purge/export prealable requis.';
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => $message,
+                    'errors' => ['country' => [$message]],
+                ], 422);
+            }
+
+            return back()->withInput()->withErrors(['country' => $message]);
+        }
+
+        $company->country = $countryDefaults['country'];
+        // La devise/fuseau/langue suivent le pays (réparation cohérente).
+        $company->currency = strtoupper($countryDefaults['currency']);
+        $company->timezone = $countryDefaults['timezone'];
+        $company->language = strtolower($countryDefaults['language']);
+        $company->save();
+
+        if ($request->expectsJson()) {
+            return new JsonResponse([
+                'data' => [
+                    'company' => $company->fresh(),
+                ],
+            ]);
+        }
+
+        return redirect()
+            ->route('platform.companies.edit', ['company' => $company->id])
+            ->with('status', 'Pays du tenant mis a jour.');
+    }
+
 
     /**
      * Renvoie l invitation du manager principal de la societe.

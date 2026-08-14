@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
+use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -571,6 +572,117 @@ class CotisationSimulationTest extends TestCase
         $this->assertEquals(136500.0, $data['taxable_gross']);
         $this->assertEquals(30850.0, $data['income_tax']);
         $this->assertEquals(105650.0, $data['net_salary']);
+    }
+
+    /**
+     * Issue #1924 — la simulation TENANT transmet le company_id au presenter :
+     * le bloc `contract` reflète les overrides de cotisations entreprise
+     * (SocialContribution company-scoped) comme le bulletin réel. Sans
+     * override, on reste sur les taux pays (fallback).
+     */
+    public function test_simulation_contract_reflects_company_scoped_contribution_override(): void
+    {
+        // Entreprise avec override CNAS salariale DZ 9 % → 12 % (company-scoped).
+        $company = Company::factory()->create();
+        SocialContribution::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'name' => 'CNAS Salariale (override entreprise)',
+            'code' => 'CNAS_EMP',
+            'type' => 'employee',
+            'rate' => 12.0,
+            'cap' => null,
+            'effective_from' => '2024-01-01',
+            'effective_to' => null,
+            'status' => 'active',
+        ]);
+
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($manager);
+
+        /** @var array<string, mixed> $data */
+        $data = $this->postJson('/api/v1/cotisation-simulation', [
+            'gross_salary' => 60000,
+            'country_code' => 'DZ',
+        ])->assertOk()->json('data');
+
+        // 12 % de 60 000 = 7 200 (au lieu des 5 400 du taux pays 9 %).
+        $this->assertEquals(7200.0, $data['total_employee_deduction']);
+        $this->assertEquals(7200.0, $data['contract']['social_employee']);
+        // Le patronal (26 %, pas d'override) reste inchangé.
+        $this->assertEquals(15600.0, $data['total_employer_cost']);
+        $this->assertEquals(15600.0, $data['contract']['social_employer']);
+        // Cohérence globale : contract == champs de premier niveau.
+        $this->assertEquals($data['total_employee_deduction'], $data['contract']['social_employee']);
+        $this->assertEquals($data['net_salary'], $data['contract']['net_salary']);
+        $this->assertEquals($data['total_cost_employer'], $data['contract']['total_cost']);
+
+        // Contrôle : entreprise SANS override → taux pays (9 % → 5 400).
+        $plainCompany = Company::factory()->create();
+        $plainManager = Employee::factory()->create([
+            'company_id' => $plainCompany->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($plainManager);
+
+        /** @var array<string, mixed> $plainData */
+        $plainData = $this->postJson('/api/v1/cotisation-simulation', [
+            'gross_salary' => 60000,
+            'country_code' => 'DZ',
+        ])->assertOk()->json('data');
+
+        $this->assertEquals(5400.0, $plainData['total_employee_deduction']);
+        $this->assertEquals(5400.0, $plainData['contract']['social_employee']);
+    }
+
+    /**
+     * Issue #1924 — cohérence du payload API : pour un même brut/pays, les
+     * champs de premier niveau et le bloc `contract` sont identiques
+     * (mêmes montants, mêmes arrondis) — la promesse « simulation == bulletin »
+     * du contrat de calcul (#1869).
+     */
+    public function test_simulation_payload_top_level_matches_contract_block(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($manager);
+
+        /** @var array<string, mixed> $data */
+        $data = $this->postJson('/api/v1/cotisation-simulation', [
+            'gross_salary' => 60000,
+            'country_code' => 'DZ',
+        ])->assertOk()->json('data');
+
+        $contract = $data['contract'];
+
+        $this->assertEquals($data['country_code'], $contract['country_code']);
+        $this->assertEquals($data['gross_salary'], $contract['gross']);
+        $this->assertEquals($data['total_employee_deduction'], $contract['social_employee']);
+        $this->assertEquals($data['total_employer_cost'], $contract['social_employer']);
+        $this->assertEquals($data['taxable_gross'], $contract['tax_base']);
+        $this->assertEquals($data['income_tax'], $contract['income_tax']);
+        $this->assertEquals($data['bracket_tax'], $contract['bracket_tax']);
+        $this->assertEquals($data['net_salary'], $contract['net_salary']);
+        $this->assertEquals($data['total_cost_employer'], $contract['total_cost']);
+
+        // Valeurs dorées DZ 60 000 (même golden que le bulletin).
+        $this->assertEquals(5400.0, $contract['social_employee']);
+        $this->assertEquals(54600.0, $contract['tax_base']);
+        $this->assertEquals(7042.0, $contract['income_tax']);
+        $this->assertEquals(47558.0, $contract['net_salary']);
+        $this->assertEquals(75600.0, $contract['total_cost']);
     }
 
     /**
