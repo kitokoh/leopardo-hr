@@ -83,6 +83,7 @@
 | Conformité par niveau de confiance (API) | ✅ | #1872 | bloc compliance + garde placeholder auditée |
 | Conformité par niveau de confiance (clients) | ✅ | #2116/#2143 | Web App badge + mobile employee/manager |
 | ITS unifié CI 2024 | ✅ | #1918 | réforme art. 119 bis (ordonnance 2023-718/719) |
+| RICF CI (réduction charges de famille) | ✅ | #2117 | art. 120 CGI, parts fiscales `family_parts` (1-5) |
 | Merge queue GitHub | ✅ | #2032 | triggers merge_group sur les 5 checks requis |
 | Garde anti-collision migrations | ✅ | #1962 | basenames dupliqués détectés en CI |
 
