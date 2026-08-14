@@ -298,4 +298,72 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     {
         return 1.0;
     }
+
+    /**
+     * ZONE-INFRA (#1820): single helper to compute a social contribution
+     * with its statutory cap applied, used by every country's
+     * calculateSocialCharges() so the cap logic (base = min(gross, cap))
+     * lives in exactly one place instead of being re-implemented per
+     * country (which is how caps get forgotten and bugs ship to
+     * production). The rate and cap are resolved from the
+     * `social_contributions` table when present (effective dating,
+     * company overrides) with the provided defaults as fallback.
+     */
+    protected function computeContribution(
+        float $grossSalary,
+        string $code,
+        float $defaultRate,
+        ?float $defaultCap
+    ): float {
+        $rate = $this->resolveContributionRate($code, $defaultRate);
+        $cap = $this->resolveContributionCap($code, $defaultCap);
+        $base = $cap !== null ? min($grossSalary, $cap) : $grossSalary;
+
+        return round($base * $rate / 100, 2);
+    }
+
+    /**
+     * ZONE-INFRA (#1820): default = no professional-expenses deduction.
+     * Countries with a legal abatement (CM 30 % capped 350 000 XAF,
+     * CI, SN...) override this and apply it inside calculateIncomeTax().
+     *
+     * @return array{rate: float, cap: float|null}
+     */
+    public function professionalExpensesDeduction(): array
+    {
+        return ['rate' => 0.0, 'cap' => null];
+    }
+
+    /**
+     * ZONE-INFRA (#1820): default = no minimum bracket tax.
+     */
+    public function calculateBracketTax(float $grossSalary): float
+    {
+        return 0.0;
+    }
+
+    /**
+     * ZONE-INFRA (#1820): default = 13th month not legally mandatory
+     * (contractual practice only, matching historic behaviour).
+     */
+    public function thirteenthMonthMandatory(): bool
+    {
+        return false;
+    }
+
+    /**
+     * ZONE-INFRA (#1820): default = fully taxable like ordinary pay.
+     */
+    public function thirteenthMonthTaxTreatment(): string
+    {
+        return 'fully_taxable';
+    }
+
+    /**
+     * ZONE-INFRA (#1820): default = no family allowance.
+     */
+    public function familyAllowancePerChild(): float
+    {
+        return 0.0;
+    }
 }
