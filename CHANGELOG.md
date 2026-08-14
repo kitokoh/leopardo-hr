@@ -3,6 +3,9 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ### Added
+### Added
+
+- **fix(payroll): déclarations CNSS CI / IPRES SN — `employees.cnss_ci_matricule`, `ipres_matricule`, `ipres_category` ajoutés au `$fillable` et au PHPDoc de `Employee` (suivi review #1830).** Les colonnes existaient en base (migration `000007`) mais le modèle ne les remplissait pas : la protection de mass-assignment ignorait silencieusement ces attributs, les matricules des CSV CNSS CI et IPRES/CSS SN étaient donc toujours vides en production. `CiSnDeclarationTest` redevient vert (les valeurs de matricules sont enfin persistées).
 
 - **fix(payroll): abattement frais pro CI appliqué sur le BRUT réel — 20 % (CGI CI art. 116-120, alignement #1893).** `CedeaoPayrollRules::calculateIncomeTax()` appliquait l'abattement sur la base après CNSS (≈ 19,4 % du brut au lieu de 20 %) ; il utilise désormais `$grossForAbatement` (brut réel transmis par le moteur). Golden CI (#1826) recalculés à la main depuis les sources légales : SMIG 75 000 → ITSAS 152,00 (au lieu de 161,60) ; 100 000 → 536,00 ; 200 000 → 2 072,00 ; 400 000 → 31 845,33 ; 700 000 → 84 462,00 ; provider tranches 0/2/21/24,5/29 % aligné. `CI_COMPLIANCE.md` §2 inchangé (décrivait déjà la formule légale).
 
