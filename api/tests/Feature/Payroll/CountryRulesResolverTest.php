@@ -187,26 +187,6 @@ class CountryRulesResolverTest extends TestCase
             {
                 return '';
             }
-            public function complianceSource(): string
-            {
-                return 'docs/payroll/TEST_COMPLIANCE.md';
-            }
-
-            public function verificationDate(): ?string
-            {
-                return null;
-            }
-
-
-            public function complianceSource(): string
-            {
-                return 'docs/payroll/_TEST_COMPLIANCE.md';
-            }
-
-            public function verificationDate(): ?string
-            {
-                return null;
-            }
 
             public function complianceSource(): string
             {
@@ -409,26 +389,6 @@ class CountryRulesResolverTest extends TestCase
             public function complianceWarning(): string
             {
                 return '';
-            }
-            public function complianceSource(): string
-            {
-                return 'docs/payroll/TEST_COMPLIANCE.md';
-            }
-
-            public function verificationDate(): ?string
-            {
-                return null;
-            }
-
-
-            public function complianceSource(): string
-            {
-                return 'docs/payroll/_TEST_COMPLIANCE.md';
-            }
-
-            public function verificationDate(): ?string
-            {
-                return null;
             }
 
             public function complianceSource(): string
