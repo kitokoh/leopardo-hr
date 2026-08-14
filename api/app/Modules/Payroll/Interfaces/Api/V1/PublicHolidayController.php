@@ -9,9 +9,13 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
+use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Issue #1811 — CRUD jours fériés par pays.
@@ -63,6 +67,7 @@ class PublicHolidayController extends Controller
     {
         $data = $this->validatePayload($request);
         $data['company_id'] = $this->companyScope($request);
+        $this->assertUnique($data);
         $data['created_by'] = $request->user()?->id;
 
         $holiday = PublicHoliday::create($data);
@@ -85,6 +90,7 @@ class PublicHolidayController extends Controller
 
         $data = $this->validatePayload($request);
         $data['company_id'] = $holiday->company_id; // inchangé : le scope est verrouillé
+        $this->assertUnique($data, (int) $holiday->id);
 
         $holiday->update($data);
 
@@ -162,18 +168,75 @@ class PublicHolidayController extends Controller
      */
     private function validatePayload(Request $request): array
     {
-        $validated = $request->validate([
-            'country_code' => ['required', 'string', 'size:2'],
+        // Issue #1937 : pays allowlisté (registre #1867) + normalisé, year
+        // recoupé avec date, month_day requis si récurrent et cohérent.
+        $validator = Validator::make($request->all(), [
+            'country_code' => ['required', 'string', 'size:2', Rule::in(array_column(CountryDefaults::all(), 'country'))],
             'name' => ['required', 'string', 'max:120'],
             'date' => ['required', 'date'],
             'year' => ['required', 'integer', 'min:2020', 'max:2100'],
             'is_recurring' => ['sometimes', 'boolean'],
-            'month_day' => ['nullable', 'string', 'max:5', 'regex:/^\d{2}-\d{2}$/'],
+            'month_day' => ['nullable', 'required_if:is_recurring,true', 'string', 'max:5', 'regex:/^\d{2}-\d{2}$/'],
             'holiday_type' => ['required', Rule::in(['fixed', 'islamic', 'christian', 'custom'])],
         ]);
 
+        $validator->after(function (\Illuminate\Validation\Validator $v): void {
+            $data = $v->getData();
+            $date = isset($data['date']) ? Carbon::parse((string) $data['date']) : null;
+            $year = (int) ($data['year'] ?? 0);
+
+            // Recoupement date ↔ year : une date de 2026 ne peut pas porter
+            // year=2025 (ligne invisible dans la lecture par année sinon).
+            if ($date !== null && $date->year !== $year) {
+                $v->errors()->add('year', 'The year must match the year of the date.');
+            }
+
+            // month_day (si fourni avec is_recurring) doit correspondre à la
+            // date : férié récurrent stocké avec sa première occurrence.
+            // (Lecture booléenne robuste : la règle `boolean` accepte la chaîne
+            // "false"/"0" — un test sur la valeur brute serait un faux positif.)
+            $isRecurring = filter_var($data['is_recurring'] ?? false, FILTER_VALIDATE_BOOLEAN);
+            if ($date !== null && $isRecurring && isset($data['month_day']) && $data['month_day'] !== '') {
+                if ((string) $data['month_day'] !== $date->format('m-d')) {
+                    $v->errors()->add('month_day', 'The month_day must match the month and day of the date.');
+                }
+            }
+        });
+
         /** @var array{country_code: string, name: string, date: string, year: int, is_recurring: bool, month_day: string|null, holiday_type: string} $validated */
+        $validated = $validator->validate();
+
+        // Normalisation : pays en MAJUSCULES (une ligne 'dz' serait invisible
+        // sinon — la lecture uppercasse).
+        $validated['country_code'] = strtoupper((string) $validated['country_code']);
+
         return $validated;
+    }
+
+    /**
+     * Issue #1937 — unicité (country_code, year, date, company_id) : un férié
+     * national (company_id NULL) comme un férié d'entreprise. 422 propre AVANT
+     * la contrainte DB (migration 000009).
+     *
+     * @param  array{country_code: string, year: int, date: string, company_id: string|null}  $data
+     */
+    private function assertUnique(array $data, ?int $ignoreId = null): void
+    {
+        $query = PublicHoliday::query()
+            ->where('country_code', $data['country_code'])
+            ->where('year', $data['year'])
+            ->where('date', $data['date'])
+            ->where('company_id', $data['company_id']);
+
+        if ($ignoreId !== null) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        if ($query->exists()) {
+            throw ValidationException::withMessages([
+                'date' => 'A public holiday already exists for this country, year, date and company.',
+            ]);
+        }
     }
 
     /**

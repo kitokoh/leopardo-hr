@@ -131,7 +131,7 @@ class PayrollCalculatorEdgeCasesTest extends TestCase
             unpaidLeaveDays: 5.0,
             referenceGross12Months: 720000.0,
             severanceMonthsPerYear: 1.0,
-            noticeDays: 30.0,
+            noticeDays: 22.0, // #1943 : préavis en jours OUVRÉS (1 mois = 22)
         );
 
         $this->assertArrayHasKey('prorated_pay', $result);
@@ -139,8 +139,8 @@ class PayrollCalculatorEdgeCasesTest extends TestCase
         $this->assertArrayHasKey('notice_pay', $result);
         $this->assertArrayHasKey('severance', $result);
         $this->assertArrayHasKey('total', $result);
-        // préavis 30 jours calendaires : 60000 * (30/22) = 81818,18
-        $this->assertSame(81818.18, $result['notice_pay']);
+        // préavis 22 jours ouvrés (#1943) : 60000 * (22/22) = 60000 = 1 mois exact
+        $this->assertSame(60000.0, $result['notice_pay']);
         // ancienneté 3 ans : 60000 * 3 * 1 = 180000
         $this->assertSame(180000.0, $result['severance']);
     }
