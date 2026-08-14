@@ -5,6 +5,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/widgets/payroll_compliance_pill.dart';
 import 'package:leopardo_core/models/payment_document.dart';
 import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
@@ -192,6 +193,16 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                                 label: 'Valide',
                                 color: AppColors.success,
                                 icon: Icons.check_circle,
+                              ),
+                            ),
+                          // Issue #2143 — indicateur de conformité paie
+                          // (rétro-compatible : rien si le bloc est absent).
+                          if (payroll.compliance != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: PayrollCompliancePill(
+                                compliance: payroll.compliance!,
+                                countryCode: payroll.countryCode,
                               ),
                             ),
                         ],

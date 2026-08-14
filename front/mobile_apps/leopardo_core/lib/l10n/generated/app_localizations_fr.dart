@@ -138,6 +138,42 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonOr => 'ou';
 
   @override
+  String get commonCountriesDz => 'Algérie';
+
+  @override
+  String get commonCountriesCm => 'Cameroun';
+
+  @override
+  String get commonCountriesCi => 'Côte d\'Ivoire';
+
+  @override
+  String get commonCountriesSn => 'Sénégal';
+
+  @override
+  String get commonCountriesMa => 'Maroc';
+
+  @override
+  String get commonCountriesTn => 'Tunisie';
+
+  @override
+  String get commonCountriesFr => 'France';
+
+  @override
+  String get commonCountriesTr => 'Turquie';
+
+  @override
+  String get commonCountriesCg => 'Congo';
+
+  @override
+  String get commonCountriesGa => 'Gabon';
+
+  @override
+  String get commonCountriesBf => 'Burkina Faso';
+
+  @override
+  String get commonCountriesMl => 'Mali';
+
+  @override
   String get modulesAttendance => 'Pointage';
 
   @override
@@ -631,5 +667,725 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String attendanceRetryAfterFailure(Object label) {
     return '$label. Reessayez.';
+  }
+
+  @override
+  String get holidaysPageTitle => 'Jours fériés par pays';
+
+  @override
+  String get holidaysPageSubtitle =>
+      'Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812) alimentent automatiquement les bulletins de paie de tous les pays concernés.';
+
+  @override
+  String get holidaysCountry => 'Pays';
+
+  @override
+  String get holidaysYear => 'Année';
+
+  @override
+  String get holidaysAdd => 'Ajouter un jour férié';
+
+  @override
+  String get holidaysThDate => 'Date';
+
+  @override
+  String get holidaysThName => 'Nom';
+
+  @override
+  String get holidaysThType => 'Type';
+
+  @override
+  String get holidaysThScope => 'Portée';
+
+  @override
+  String get holidaysThActions => 'Actions';
+
+  @override
+  String get holidaysScopeNational => 'National';
+
+  @override
+  String get holidaysScopeCompany => 'Entreprise';
+
+  @override
+  String get holidaysEdit => 'Modifier';
+
+  @override
+  String get holidaysDelete => 'Supprimer';
+
+  @override
+  String holidaysEmpty(Object country, Object year) {
+    return 'Aucun jour férié pour $country / $year.';
+  }
+
+  @override
+  String get holidaysModalEdittitle => 'Modifier le jour férié';
+
+  @override
+  String get holidaysModalNewtitle => 'Nouveau jour férié';
+
+  @override
+  String get holidaysNameLabel => 'Nom';
+
+  @override
+  String get holidaysDateLabel => 'Date';
+
+  @override
+  String get holidaysTypeLabel => 'Type';
+
+  @override
+  String get holidaysTypeFixed => 'Fixe';
+
+  @override
+  String get holidaysTypeIslamic => 'Islamique';
+
+  @override
+  String get holidaysTypeChristian => 'Chrétien';
+
+  @override
+  String get holidaysTypeCustom => 'Personnalisé';
+
+  @override
+  String get holidaysRecurring => 'Récurent chaque année';
+
+  @override
+  String get holidaysCancel => 'Annuler';
+
+  @override
+  String get holidaysSaving => 'Enregistrement…';
+
+  @override
+  String get holidaysSave => 'Enregistrer';
+
+  @override
+  String get holidaysErrorsLoad => 'Impossible de charger les jours fériés.';
+
+  @override
+  String get holidaysErrorsSave => 'Impossible d\'enregistrer le jour férié.';
+
+  @override
+  String get holidaysErrorsDelete => 'Impossible de supprimer.';
+
+  @override
+  String get holidaysSuccessSaved => 'Jour férié enregistré.';
+
+  @override
+  String get holidaysSuccessDeleted => 'Jour férié supprimé.';
+
+  @override
+  String get holidaysConfirmDelete => 'Supprimer « :name » ?';
+
+  @override
+  String get holidaysNavTitle => 'Jours fériés';
+
+  @override
+  String get holidaysEditTitle => 'Modifier le jour férié';
+
+  @override
+  String get holidaysAddTitle => 'Nouveau jour férié';
+
+  @override
+  String get holidaysLoadError => 'Impossible de charger les jours fériés.';
+
+  @override
+  String get holidaysSaved => 'Jour férié enregistré.';
+
+  @override
+  String get holidaysSaveError => 'Impossible d\'enregistrer le jour férié.';
+
+  @override
+  String get holidaysDeleted => 'Jour férié supprimé.';
+
+  @override
+  String get holidaysDeleteError => 'Impossible de supprimer.';
+
+  @override
+  String get holidaysCountriesDz => 'Algérie';
+
+  @override
+  String get holidaysCountriesCm => 'Cameroun';
+
+  @override
+  String get holidaysCountriesCi => 'Côte d\'Ivoire';
+
+  @override
+  String get holidaysCountriesSn => 'Sénégal';
+
+  @override
+  String get holidaysCountriesMa => 'Maroc';
+
+  @override
+  String get holidaysCountriesTn => 'Tunisie';
+
+  @override
+  String get holidaysIslamicTitle => 'Fêtes islamiques';
+
+  @override
+  String get holidaysIslamicSubtitle =>
+      'Dates mobiles du calendrier hégirien (Aïd, Maouloud, Tamkharit…) saisies par année. Elles s\'appliquent automatiquement aux pays CEMAC/CEDEAO + DZ/MA/TN.';
+
+  @override
+  String holidaysIslamicConfirm(Object year) {
+    return 'Confirmer $year';
+  }
+
+  @override
+  String holidaysIslamicBannerUnconfirmed(Object count, Object year) {
+    return '$count fête(s) islamique(s) non confirmée(s) pour $year — vérifiez les dates avant la clôture de paie.';
+  }
+
+  @override
+  String get holidaysIslamicThName => 'Fête';
+
+  @override
+  String get holidaysIslamicThDate => 'Date grégorienne';
+
+  @override
+  String get holidaysIslamicThDuration => 'Durée';
+
+  @override
+  String get holidaysIslamicThCountries => 'Pays';
+
+  @override
+  String get holidaysIslamicThStatus => 'Statut';
+
+  @override
+  String get holidaysIslamicThActions => 'Actions';
+
+  @override
+  String holidaysIslamicDurationDays(Object count) {
+    return '$count jour(s)';
+  }
+
+  @override
+  String get holidaysIslamicStatusConfirmed => 'Confirmé';
+
+  @override
+  String get holidaysIslamicStatusApproximate => 'Approximatif';
+
+  @override
+  String get holidaysIslamicEdit => 'Modifier';
+
+  @override
+  String holidaysIslamicEmpty(Object year) {
+    return 'Aucune fête islamique enregistrée pour $year.';
+  }
+
+  @override
+  String holidaysIslamicModalTitle(Object name) {
+    return 'Modifier $name';
+  }
+
+  @override
+  String get holidaysIslamicLabelDate => 'Date grégorienne';
+
+  @override
+  String get holidaysIslamicLabelDuration => 'Durée (jours)';
+
+  @override
+  String get holidaysIslamicLabelConfirmed => 'Date confirmée (officielle)';
+
+  @override
+  String get holidaysIslamicLoadError =>
+      'Erreur lors du chargement du calendrier islamique.';
+
+  @override
+  String holidaysIslamicConfirmDialog(Object year) {
+    return 'Confirmer toutes les dates islamiques de $year ?';
+  }
+
+  @override
+  String get holidaysIslamicSaved => 'Fête islamique enregistrée.';
+
+  @override
+  String get holidaysIslamicSaveError => 'Erreur lors de l\'enregistrement.';
+
+  @override
+  String get holidaysIslamicConfirmError =>
+      'Erreur lors de la confirmation des dates.';
+
+  @override
+  String holidaysIslamicConfirmYearSuccess(Object count) {
+    return '$count date(s) confirmée(s).';
+  }
+
+  @override
+  String holidaysIslamicDeleteConfirmDialog(Object name) {
+    return 'Supprimer « $name » ?';
+  }
+
+  @override
+  String get taxRatesTitle => 'Taux légaux — validation';
+
+  @override
+  String get taxRatesSubtitle =>
+      'Barèmes fiscaux et cotisations sociales utilisés par le moteur de paie. Toute modification passe par un workflow de validation à double signature (comptable → platform admin) avec audit trail immuable.';
+
+  @override
+  String get taxRatesPendingTitle => 'En attente de validation';
+
+  @override
+  String get taxRatesPendingEmpty =>
+      'Aucune modification en attente de validation.';
+
+  @override
+  String get taxRatesRatesTitle => 'Taux en vigueur';
+
+  @override
+  String get taxRatesRatesSubtitle =>
+      'Seules les lignes actives sont utilisées dans les bulletins.';
+
+  @override
+  String get taxRatesRatesEmpty => 'Aucun taux enregistré.';
+
+  @override
+  String get taxRatesPropose => 'Proposer une modification';
+
+  @override
+  String get taxRatesThType => 'Type';
+
+  @override
+  String get taxRatesThName => 'Intitulé';
+
+  @override
+  String get taxRatesThCountry => 'Pays';
+
+  @override
+  String get taxRatesThRate => 'Taux';
+
+  @override
+  String get taxRatesThEffective => 'Effet au';
+
+  @override
+  String get taxRatesThStatus => 'Statut';
+
+  @override
+  String get taxRatesThActions => 'Actions';
+
+  @override
+  String get taxRatesThAction => 'Action';
+
+  @override
+  String get taxRatesThActor => 'Acteur';
+
+  @override
+  String get taxRatesThReason => 'Motif';
+
+  @override
+  String get taxRatesThDate => 'Date';
+
+  @override
+  String get taxRatesTypeSlab => 'Barème';
+
+  @override
+  String get taxRatesTypeContribution => 'Cotisation';
+
+  @override
+  String get taxRatesStatusActive => '🟢 Active';
+
+  @override
+  String get taxRatesStatusPending => '🟡 En attente';
+
+  @override
+  String get taxRatesStatusDraft => '⚪ Brouillon';
+
+  @override
+  String get taxRatesStatusSuperseded => '🔴 Remplacée';
+
+  @override
+  String get taxRatesSubmit => 'Soumettre';
+
+  @override
+  String get taxRatesHistory => 'Historique';
+
+  @override
+  String get taxRatesApprove => 'Approuver';
+
+  @override
+  String get taxRatesReject => 'Rejeter';
+
+  @override
+  String get taxRatesModalTitle => 'Proposer une modification de taux';
+
+  @override
+  String get taxRatesLegalRef => 'Référence légale';
+
+  @override
+  String get taxRatesLegalRefRequired =>
+      'La référence légale est obligatoire (elle est tracée dans l\'historique).';
+
+  @override
+  String get taxRatesCancel => 'Annuler';
+
+  @override
+  String get taxRatesSaving => 'Enregistrement…';
+
+  @override
+  String get taxRatesSave => 'Enregistrer';
+
+  @override
+  String get taxRatesRejectModalTitle => 'Rejeter la modification';
+
+  @override
+  String get taxRatesRejectReason => 'Motif du rejet (obligatoire)';
+
+  @override
+  String get taxRatesHistoryTitle => 'Historique des modifications';
+
+  @override
+  String get taxRatesHistoryEmpty => 'Aucune entrée d\'historique.';
+
+  @override
+  String get taxRatesHistoryCreated => 'Créé';
+
+  @override
+  String get taxRatesHistorySubmitted => 'Soumis';
+
+  @override
+  String get taxRatesHistoryApproved => 'Approuvé';
+
+  @override
+  String get taxRatesHistoryRejected => 'Rejeté';
+
+  @override
+  String get taxRatesHistorySuperseded => 'Remplacé';
+
+  @override
+  String get taxRatesClose => 'Fermer';
+
+  @override
+  String get taxRatesLoadError => 'Impossible de charger les taux.';
+
+  @override
+  String get taxRatesSaved => 'Proposition enregistrée.';
+
+  @override
+  String get taxRatesSaveError => 'Impossible d\'enregistrer la proposition.';
+
+  @override
+  String get taxRatesSubmitted => 'Modification soumise pour validation.';
+
+  @override
+  String get taxRatesSubmitError => 'Impossible de soumettre la modification.';
+
+  @override
+  String get taxRatesApproved => 'Modification approuvée et active.';
+
+  @override
+  String get taxRatesApproveError => 'Impossible d\'approuver la modification.';
+
+  @override
+  String get taxRatesRejected => 'Modification rejetée (retour en brouillon).';
+
+  @override
+  String get taxRatesRejectError => 'Impossible de rejeter la modification.';
+
+  @override
+  String get taxRatesHistoryError => 'Impossible de charger l\'historique.';
+
+  @override
+  String get taxRatesStatusOnly => 'Lecture seule (action tenant)';
+
+  @override
+  String get taxSlabsTitle => 'Barèmes fiscaux par pays';
+
+  @override
+  String get taxSlabsSubtitle =>
+      'Barèmes IRG/IRPP/ITSAS utilisés par le moteur de paie. Gestion nationale (platform admin), simulateur d\'impact en temps réel, sans persistance.';
+
+  @override
+  String get taxSlabsThCountry => 'Pays';
+
+  @override
+  String get taxSlabsScope => 'Portée';
+
+  @override
+  String get taxSlabsScopeNational => 'National';
+
+  @override
+  String get taxSlabsScopeCompany => 'Spécifique entreprise';
+
+  @override
+  String get taxSlabsNationalNote =>
+      'portée nationale — les overrides entreprise restent côté tenant';
+
+  @override
+  String get taxSlabsThMin => 'Tranche min';
+
+  @override
+  String get taxSlabsThMax => 'Tranche max';
+
+  @override
+  String get taxSlabsThRate => 'Taux';
+
+  @override
+  String get taxSlabsThDeduction => 'Déduction fixe';
+
+  @override
+  String get taxSlabsThEffective => 'Effet au';
+
+  @override
+  String get taxSlabsThActions => 'Actions';
+
+  @override
+  String get taxSlabsEdit => 'Modifier';
+
+  @override
+  String get taxSlabsDelete => 'Supprimer';
+
+  @override
+  String get taxSlabsAdd => 'Ajouter une tranche';
+
+  @override
+  String get taxSlabsReset => 'Réinitialiser aux valeurs légales';
+
+  @override
+  String get taxSlabsEmpty => 'Aucune tranche enregistrée pour ce pays.';
+
+  @override
+  String get taxSlabsEditTitle => 'Modifier la tranche';
+
+  @override
+  String get taxSlabsAddTitle => 'Ajouter une tranche';
+
+  @override
+  String get taxSlabsLegalRef => 'Référence légale';
+
+  @override
+  String get taxSlabsCancel => 'Annuler';
+
+  @override
+  String get taxSlabsSaving => 'Enregistrement…';
+
+  @override
+  String get taxSlabsSave => 'Enregistrer';
+
+  @override
+  String get taxSlabsSimulatorTitle => 'Simulateur d\'impact';
+
+  @override
+  String get taxSlabsSimulatorSubtitle =>
+      'Saisissez un salaire brut : le calcul (cotisations, assiette, impôt par tranche, net, coût employeur) est exécuté par le moteur de paie réel, sans rien persister.';
+
+  @override
+  String get taxSlabsSimGross => 'Salaire brut';
+
+  @override
+  String get taxSlabsSimCompare => 'Salaire à comparer';
+
+  @override
+  String get taxSlabsSimRun => 'Simuler';
+
+  @override
+  String get taxSlabsSimRunning => 'Calcul…';
+
+  @override
+  String get taxSlabsSimSocial => 'Cotisations (salariales)';
+
+  @override
+  String get taxSlabsSimTax => 'Impôt';
+
+  @override
+  String get taxSlabsSimNet => 'Net';
+
+  @override
+  String get taxSlabsSimBase => 'Assiette';
+
+  @override
+  String get taxSlabsSimSlabTax => 'Impôt tranche';
+
+  @override
+  String get taxSlabsLoadError => 'Impossible de charger le barème.';
+
+  @override
+  String get taxSlabsSaveError => 'Impossible d\'enregistrer la tranche.';
+
+  @override
+  String get taxSlabsSaved => 'Tranche mise à jour.';
+
+  @override
+  String get taxSlabsCreated => 'Tranche créée.';
+
+  @override
+  String get taxSlabsDeleted => 'Tranche supprimée.';
+
+  @override
+  String get taxSlabsDeleteError => 'Impossible de supprimer.';
+
+  @override
+  String taxSlabsDeleteConfirm(Object name) {
+    return 'Supprimer la tranche « $name » ?';
+  }
+
+  @override
+  String get taxSlabsResetConfirm =>
+      'Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.';
+
+  @override
+  String get taxSlabsResetDone => 'Barème réinitialisé.';
+
+  @override
+  String get taxSlabsResetError => 'Réinitialisation impossible.';
+
+  @override
+  String taxSlabsDefaultName(Object country) {
+    return '$country tranche légale';
+  }
+
+  @override
+  String get taxSlabsSimError => 'Simulation impossible.';
+
+  @override
+  String get socialContribTitle => 'Cotisations sociales par pays';
+
+  @override
+  String get socialContribSubtitle =>
+      'CNPS, CNSS, IPRES, CNAS… — taux, plafonds et types (salariale/patronale) par pays. Gestion nationale + simulateur avec/sans plafond et comparateur 2 pays.';
+
+  @override
+  String get socialContribThCountry => 'Pays';
+
+  @override
+  String get socialContribThOrg => 'Organisme';
+
+  @override
+  String get socialContribThCode => 'Code';
+
+  @override
+  String get socialContribThType => 'Type';
+
+  @override
+  String get socialContribThRate => 'Taux';
+
+  @override
+  String get socialContribThCap => 'Plafond';
+
+  @override
+  String get socialContribThEffective => 'Effet au';
+
+  @override
+  String get socialContribThActions => 'Actions';
+
+  @override
+  String get socialContribTypeAll => 'Tous';
+
+  @override
+  String get socialContribTypeEmployee => 'Salariale';
+
+  @override
+  String get socialContribTypeEmployer => 'Patronale';
+
+  @override
+  String get socialContribAdd => 'Ajouter une cotisation';
+
+  @override
+  String get socialContribEdit => 'Modifier';
+
+  @override
+  String get socialContribDelete => 'Supprimer';
+
+  @override
+  String get socialContribEmpty =>
+      'Aucune cotisation enregistrée pour ce pays.';
+
+  @override
+  String get socialContribAddTitle => 'Ajouter une cotisation';
+
+  @override
+  String get socialContribEditTitle => 'Modifier la cotisation';
+
+  @override
+  String get socialContribCancel => 'Annuler';
+
+  @override
+  String get socialContribSaving => 'Enregistrement…';
+
+  @override
+  String get socialContribSave => 'Enregistrer';
+
+  @override
+  String get socialContribSimTitle => 'Simulateur & comparateur';
+
+  @override
+  String get socialContribSimSubtitle =>
+      'Saisissez un brut : décomposition salariale/patronale, impôt et coût total employeur, pour deux pays côte à côte (avec ou sans plafond légal).';
+
+  @override
+  String get socialContribSimGross => 'Salaire brut';
+
+  @override
+  String get socialContribCompareCountry => 'Pays comparé';
+
+  @override
+  String get socialContribIgnoreCaps => 'Sans plafond légal';
+
+  @override
+  String get socialContribSimEmployee => 'Cotisations salariales';
+
+  @override
+  String get socialContribSimEmployer => 'Cotisations patronales';
+
+  @override
+  String get socialContribSimTax => 'Impôt';
+
+  @override
+  String get socialContribTotalCost => 'Coût total employeur';
+
+  @override
+  String get socialContribLoadError => 'Impossible de charger les cotisations.';
+
+  @override
+  String get socialContribSaveError =>
+      'Impossible d\'enregistrer la cotisation.';
+
+  @override
+  String get socialContribSaved => 'Cotisation mise à jour.';
+
+  @override
+  String get socialContribCreated => 'Cotisation créée.';
+
+  @override
+  String get socialContribDeleted => 'Cotisation supprimée.';
+
+  @override
+  String get socialContribDeleteError => 'Suppression impossible.';
+
+  @override
+  String socialContribDeleteConfirm(Object name) {
+    return 'Supprimer « $name » ?';
+  }
+
+  @override
+  String get payrollConfidenceLabel => 'Confiance des règles de paie';
+
+  @override
+  String get payrollConfidenceLevelProduction => 'Production';
+
+  @override
+  String get payrollConfidenceLevelPilot => 'Pilote';
+
+  @override
+  String get payrollConfidenceLevelPlaceholder => 'Maquette';
+
+  @override
+  String get payrollConfidenceLevelUnknown => 'Inconnu';
+
+  @override
+  String payrollConfidenceProductionMessage(Object country) {
+    return 'Règles validées et utilisées en production pour $country. Confirmez toujours les taux en vigueur auprès d\'un conseil local avant de vous appuyer sur ces montants pour des déclarations obligatoires.';
+  }
+
+  @override
+  String payrollConfidencePilotMessage(Object country) {
+    return 'Règles pilotes pour $country : montants issus de références publiques générales (code du travail) mais non encore validés juridiquement sur place. Confirmez avec un conseil juridique ou fiscal local avant de vous appuyer sur ces chiffres (tranches d\'impôt, cotisations sociales, seuils d\'heures supplémentaires) pour vos obligations légales.';
+  }
+
+  @override
+  String payrollConfidencePlaceholderMessage(Object country) {
+    return 'Maquette sans valeurs pour $country : les montants d\'impôt et de cotisations sociales ne sont pas encore documentés et ne doivent pas être utilisés pour de vrais cycles de paie tant qu\'ils n\'ont pas été remplacés.';
+  }
+
+  @override
+  String payrollConfidenceUnknownMessage(Object country) {
+    return 'Aucune règle de paie n\'est disponible pour $country : le calcul de paie n\'est pas disponible pour ce pays.';
   }
 }
