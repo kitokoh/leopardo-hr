@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TrainingCourseResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Http\Resources\Api\V1\TrainingSessionResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
@@ -293,5 +293,34 @@ class TrainingController extends Controller
 
         return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
     }
-}
 
+    // ── All sessions / enrollments (tenant scope, admin dashboard) ─────────
+
+    public function allSessions(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        return TrainingSessionResource::collection(
+            TrainingSession::query()
+                ->where('company_id', $actor->company_id)
+                ->with(['course:id,title,category,type,duration_hours', 'trainer:id,first_name,last_name'])
+                ->orderByDesc('start_date')
+                ->paginate($request->integer('per_page', 15))
+        )->response();
+    }
+
+    public function allEnrollments(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        return TrainingEnrollmentResource::collection(
+            TrainingEnrollment::query()
+                ->where('company_id', $actor->company_id)
+                ->with(['session.course:id,title,category,type,duration_hours', 'employee:id,first_name,last_name'])
+                ->orderByDesc('created_at')
+                ->paginate($request->integer('per_page', 15))
+        )->response();
+    }
+}

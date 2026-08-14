@@ -19,8 +19,10 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
 use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
 use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabAdminController;
@@ -32,8 +34,6 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
-use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
-use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
@@ -47,6 +47,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
@@ -290,6 +291,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
         Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
         Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);
+        Route::get('/users', [PlatformUsersController::class, 'index']);
         Route::post('/dashboard/alerts/{alertKey}/dismiss', [PlatformAdminDashboardController::class, 'dismissAlert'])
             ->where('alertKey', '[A-Za-z0-9\-_]+');
 

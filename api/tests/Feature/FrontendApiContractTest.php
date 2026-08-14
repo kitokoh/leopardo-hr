@@ -55,6 +55,8 @@ class FrontendApiContractTest extends TestCase
             'mobile absence detail' => ['GET', 'api/v1/absences/{absence}'],
             'mobile absence cancel' => ['DELETE', 'api/v1/absences/{absence}'],
             'mobile leave balances' => ['GET', 'api/v1/me/leave-balances'],
+            'mobile my training enrollments' => ['GET', 'api/v1/me/training-enrollments'],
+            'mobile my vehicles' => ['GET', 'api/v1/me/vehicles'],
             'mobile salary advances list' => ['GET', 'api/v1/salary-advances'],
             'mobile salary advance create' => ['POST', 'api/v1/salary-advances'],
             'mobile salary advance detail' => ['GET', 'api/v1/salary-advances/{salaryAdvance}'],
