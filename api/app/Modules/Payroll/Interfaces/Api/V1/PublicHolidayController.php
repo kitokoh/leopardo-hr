@@ -36,6 +36,9 @@ class PublicHolidayController extends Controller
         $countryCode = strtoupper((string) $request->string('country_code', 'DZ'));
         $year = $request->integer('year', (int) now()->year);
 
+        // Issue #1917 : Policy Laravel (super-admin ou principal).
+        $this->authorize('viewAny', PublicHoliday::class);
+
         $companyId = $this->companyScope($request);
 
         $query = PublicHoliday::query()
@@ -65,6 +68,9 @@ class PublicHolidayController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        // Issue #1917 : Policy Laravel (super-admin ou principal).
+        $this->authorize('create', PublicHoliday::class);
+
         $data = $this->validatePayload($request);
         $data['company_id'] = $this->companyScope($request);
         $this->assertUnique($data);
@@ -86,7 +92,8 @@ class PublicHolidayController extends Controller
     {
         /** @var PublicHoliday $holiday */
         $holiday = PublicHoliday::query()->findOrFail($publicHoliday);
-        $this->authorizeWrite($request, $holiday);
+        // Issue #1917 : Policy Laravel (super-admin, ou principal sur ses fériés).
+        $this->authorize('update', $holiday);
 
         $data = $this->validatePayload($request);
         $data['company_id'] = $holiday->company_id; // inchangé : le scope est verrouillé
@@ -109,7 +116,8 @@ class PublicHolidayController extends Controller
     {
         /** @var PublicHoliday $holiday */
         $holiday = PublicHoliday::query()->findOrFail($publicHoliday);
-        $this->authorizeWrite($request, $holiday);
+        // Issue #1917 : Policy Laravel (super-admin, ou principal sur ses fériés).
+        $this->authorize('delete', $holiday);
 
         $countryCode = $holiday->country_code;
         $year = (int) $holiday->year;
@@ -139,25 +147,6 @@ class PublicHolidayController extends Controller
 
         if ($user instanceof Employee && $user->isPrincipal()) {
             return $user->company_id;
-        }
-
-        abort(403, __('errors.FORBIDDEN'));
-    }
-
-    private function authorizeWrite(Request $request, PublicHoliday $holiday): void
-    {
-        $user = $request->user();
-
-        if ($user instanceof SuperAdmin) {
-            return;
-        }
-
-        // principal : uniquement ses fériés d'entreprise ; jamais un national.
-        if ($user instanceof Employee
-            && $user->isPrincipal()
-            && $holiday->company_id !== null
-            && $holiday->company_id === $user->company_id) {
-            return;
         }
 
         abort(403, __('errors.FORBIDDEN'));
