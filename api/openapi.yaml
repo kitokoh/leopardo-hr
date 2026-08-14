@@ -8296,7 +8296,7 @@ paths:
     post:
       tags: ["Payroll Engine"]
       summary: "Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"
-      description: "Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782) : memes taux, caps, baremes et abattements que les vrais bulletins. Reponse complete : cotisations + impôt + net reel (income_tax, net_salary)."
+      description: "Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782). Issue #1869 : la simulation et le bulletin passent par le meme noyau de calcul (computeNetBreakdown) — resultats identiques pour un meme brut ; reponse complete et explicable : cotisations + assiette + impot + taxe de minimum fiscal + net + cout employeur, avec pays, devise, identifiant des regles et politique d'arrondi (docs/payroll/CALCULATION_CONTRACT.md)."
       operationId: simulateCotisations
       requestBody:
         required: true
@@ -8312,7 +8312,7 @@ paths:
                 gross_salary: { type: number, minimum: 0 }
       responses:
         "200":
-          description: "Simulation des cotisations et net estime"
+          description: "Simulation des cotisations et net estime (contrat complet issue #1869)"
           content:
             application/json:
               schema:
@@ -8322,6 +8322,11 @@ paths:
                     type: object
                     properties:
                       country_code: { type: string }
+                      currency: { type: string }
+                      rules_identifier: { type: string }
+                      rules_as_of: { type: string, format: date }
+                      confidence_level: { type: string, enum: [production, pilot, placeholder] }
+                      rounding_policy: { type: string }
                       gross_salary: { type: number }
                       employee_contributions:
                         type: array
@@ -8331,6 +8336,7 @@ paths:
                             name: { type: string }
                             code: { type: string }
                             rate: { type: number }
+                            cap: { type: [number, "null"] }
                             amount: { type: number }
                       employer_contributions:
                         type: array
@@ -8340,11 +8346,14 @@ paths:
                             name: { type: string }
                             code: { type: string }
                             rate: { type: number }
+                            cap: { type: [number, "null"] }
                             amount: { type: number }
                       total_employee_deduction: { type: number }
                       total_employer_cost: { type: number }
                       taxable_gross: { type: number }
                       income_tax: { type: number }
+                      bracket_tax: { type: number }
+                      total_deductions: { type: number }
                       net_before_tax: { type: number }
                       net_salary: { type: number }
                       total_cost_employer: { type: number }

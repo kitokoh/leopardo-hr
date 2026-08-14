@@ -122,6 +122,11 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
+            public function withTaxSlabs(array $slabs): static
+            {
+                return $this;
+            }
+
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
@@ -286,6 +291,11 @@ class CountryRulesResolverTest extends TestCase
             public function taxSlabs(): array
             {
                 return [];
+            }
+
+            public function withTaxSlabs(array $slabs): static
+            {
+                return $this;
             }
 
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
