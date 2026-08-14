@@ -802,3 +802,11 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
   perimee qui REVERTIRAIT main : verifier la direction du diff).
 - Ne jamais merger une branche dont l'approche a ete remplacee sur main (ex. barème
   ITSAS CI annuel remplace par l'ITS 2024 unifie, art. 119 bis).
+
+## Lecon 2026-08-14 — Campagne QA fonctionnelle multi-agents (convergence sur les memes correctifs)
+
+- **Plusieurs agents convergent sur les MEMES fixes** (ex. PHPStan 43 erreurs, golden CI SMIG 8 800,00) : avant de pousser un correctif, faire `git fetch origin` et comparer `git log origin/main` — si un commit recouvre deja le changement, NE PAS dupliquer : rebaser et ne garder que le reliquat. Les doubles fixes creent des conflits de merge inutiles (observé : golden CI SMIG corrigé 2× dans la meme session).
+- **Ne jamais lancer deux processus `artisan test` en parallele sur la meme base `leopardo_test`** : deadlocks PostgreSQL (`40P01`), courses de migration (`23505 pg_type_typname_nsp_index`), faux rouges en cascade. Recréer la base (`DROP/CREATE leopardo_test`) avant un run propre.
+- **Les goldens paie sont la source de verite des montants** : quand un test unitaire contredit un golden, c'est le test unitaire qui est perime (aligner sur le golden + la doc `docs/payroll/{CC}_COMPLIANCE.md`), jamais l'inverse. Exemple : CNSS CI famille/AT plafonnees a 70 000 (guide CNPS, #1913) — les goldens CI/SN portaient encore les valeurs non plafonnees.
+- **Le preavis CI est au niveau employe/technicien** (CI_COMPLIANCE.md §8) : `< 5 ans 30 j / ≥ 5 ans 60 j`, cadres 90 j, ouvriers 8/15 j — le palier 90 j par anciennete (≥ 10 ans) n'est PAS documente et a ete retire du moteur (issue #2289). La categorie vient de `employees.ipres_category` via `EndOfContractService`.
+- **Le login admin ne doit plus contenir de `href="#"`** : « Mot de passe oublie » n'existe pas en self-service super-admin (ops : `php artisan super-admin:reset-password`) ; « Support » = `mailto:support@leopardo-rh.com` (email canonique vitrine).
