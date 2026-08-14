@@ -22,8 +22,8 @@ use Tests\TestCase;
  *   CNSS salariale   = min(brut, 1 647 315) × 3,2 %
  *   CNSS patronale   = min(brut, cap) × 4,5 % + min(brut, cap) × 5,75 %
  *                      + brut × 2,0 % (AT non plafonné)
- *   Assiette ITSAS   = (brut − CNSS salariale) × 0,80 (abattement 20 %,
- *                      non plafonné — appliqué sur base après CNSS, pilot)
+ *   Assiette ITSAS   = brut − CNSS salariale − abattement 20 % du BRUT
+ *                      (non plafonné — formule légale, fix #1893)
  *   ITSAS annuel     = progressif sur 12 mois (tranches annuelles) → /12
  *   CN               = max(0, brut − 50 000) × 1,5 %
  *   Impôt total      = ITSAS mensuel + CN mensuelle
@@ -39,10 +39,10 @@ class GoldenCiPayrollTest extends TestCase
     {
         // Calcul manuel (CI_COMPLIANCE.md §1-3), brut = SMIG 75 000 XOF :
         //   CNSS salariale = 75 000 × 3,2 % = 2 400
-        //   Base ITSAS = (75 000 − 2 400) × 0,80 = 58 080 → annuel 696 960
-        //   Tranches : 600 000 × 0 % + 96 960 × 2 % = 1 939,20 → ITSAS mensuel 161,60
+        //   Base ITSAS = 75 000 − 2 400 − abattement 20 % du BRUT (15 000)
+        //     = 57 600 → annuel 691 200 → 91 200 × 2 % = 1 824 → ITSAS 152,00
         //   CN = (75 000 − 50 000) × 1,5 % = 375
-        //   Impôt total = 536,60 · Net = 75 000 − 2 400 − 536,60 = 72 063,40
+        //   Impôt total = 527,00 · Net = 75 000 − 2 400 − 527,00 = 72 073,00
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(75000.0);
@@ -51,83 +51,83 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame(9187.50, $charges['employer']);
 
         $taxBase = 75000.0 - $charges['employee'];
-        $itsas = $rules->calculateIncomeTax($taxBase);
+        $itsas = $rules->calculateIncomeTax($taxBase, 12, 75000.0);
         $cn = $rules->calculateBracketTax(75000.0);
 
-        $this->assertSame(161.60, $itsas);
+        $this->assertSame(152.00, $itsas);
         $this->assertSame(375.0, $cn);
-        $this->assertSame(72063.40, 75000.0 - $charges['employee'] - $itsas - $cn);
+        $this->assertSame(72073.00, 75000.0 - $charges['employee'] - $itsas - $cn);
     }
 
     public function test_golden_ci_ouvrier_100000(): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §1), brut 100 000 XOF :
-        //   CNSS salariale = 3 200 · Base ITSAS = 96 800 × 0,80 = 77 440
-        //   → annuel 929 280 → 2 % sur 329 280 = 6 585,60 → ITSAS 548,80
-        //   CN = 50 000 × 1,5 % = 750 · Net = 100 000 − 3 200 − 1 298,80 = 95 501,20
+        //   CNSS salariale = 3 200 · Base ITSAS = 100 000 − 3 200 − 20 000
+        //     = 76 800 → annuel 921 600 → 321 600 × 2 % = 6 432 → ITSAS 536,00
+        //   CN = 50 000 × 1,5 % = 750 · Net = 100 000 − 3 200 − 1 286,00 = 95 514,00
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(100000.0);
-        $itsas = $rules->calculateIncomeTax(100000.0 - $charges['employee']);
+        $itsas = $rules->calculateIncomeTax(100000.0 - $charges['employee'], 12, 100000.0);
         $cn = $rules->calculateBracketTax(100000.0);
 
         $this->assertSame(3200.0, $charges['employee']);
-        $this->assertSame(548.80, $itsas);
+        $this->assertSame(536.00, $itsas);
         $this->assertSame(750.0, $cn);
-        $this->assertSame(95501.20, 100000.0 - $charges['employee'] - $itsas - $cn);
+        $this->assertSame(95514.00, 100000.0 - $charges['employee'] - $itsas - $cn);
     }
 
     public function test_golden_ci_employe_200000(): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §1 — exemple documenté), brut 200 000 :
-        //   CNSS salariale = 6 400 · Base = 193 600 × 0,80 = 154 880
-        //   → annuel 1 858 560 → 1 258 560 × 2 % = 25 171,20 → ITSAS 2 097,60
-        //   CN = 150 000 × 1,5 % = 2 250 · Impôt total = 4 347,60 (conforme doc)
+        //   CNSS salariale = 6 400 · Base ITSAS = 200 000 − 6 400 − 40 000
+        //     = 153 600 → annuel 1 843 200 → 1 243 200 × 2 % = 24 864 → ITSAS 2 072,00
+        //   CN = 150 000 × 1,5 % = 2 250 · Impôt total = 4 322,00
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(200000.0);
-        $itsas = $rules->calculateIncomeTax(200000.0 - $charges['employee']);
+        $itsas = $rules->calculateIncomeTax(200000.0 - $charges['employee'], 12, 200000.0);
         $cn = $rules->calculateBracketTax(200000.0);
 
         $this->assertSame(6400.0, $charges['employee']);
-        $this->assertSame(2097.60, $itsas);
+        $this->assertSame(2072.00, $itsas);
         $this->assertSame(2250.0, $cn);
-        $this->assertSame(4347.60, $itsas + $cn);
+        $this->assertSame(4322.00, $itsas + $cn);
     }
 
     public function test_golden_ci_technicien_400000(): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §1), brut 400 000 :
-        //   CNSS salariale = 12 800 · Base = 387 200 × 0,80 = 309 760
-        //   → annuel 3 717 120 → 600k×0 % + 1,4M×2 % = 28 000
-        //     + (3 717 120 − 2 000 000) × 21 % = 360 595,20 → total 388 595,20
-        //   → ITSAS mensuel 32 382,93 · CN = 350 000 × 1,5 % = 5 250
+        //   CNSS salariale = 12 800 · Base ITSAS = 400 000 − 12 800 − 80 000
+        //     = 307 200 → annuel 3 686 400 → 28 000 (2 % sur 1,4M)
+        //     + (3 686 400 − 2 000 000) × 21 % = 354 144 → total 382 144
+        //   → ITSAS mensuel 31 845,33 · CN = 350 000 × 1,5 % = 5 250
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(400000.0);
-        $itsas = $rules->calculateIncomeTax(400000.0 - $charges['employee']);
+        $itsas = $rules->calculateIncomeTax(400000.0 - $charges['employee'], 12, 400000.0);
         $cn = $rules->calculateBracketTax(400000.0);
 
         $this->assertSame(12800.0, $charges['employee']);
-        $this->assertSame(32382.93, $itsas);
+        $this->assertSame(31845.33, $itsas);
         $this->assertSame(5250.0, $cn);
     }
 
     public function test_golden_ci_cadre_700000(): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §1), brut 700 000 :
-        //   CNSS salariale = 22 400 · Base = 677 600 × 0,80 = 542 080
-        //   → annuel 6 504 960 → 28 000 (2 %) + 630 000 (21 % sur 3M)
-        //     + (6 504 960 − 5 000 000) × 24,5 % = 368 715,20 → 1 026 715,20
-        //   → ITSAS mensuel 85 559,60 · CN = 650 000 × 1,5 % = 9 750
+        //   CNSS salariale = 22 400 · Base ITSAS = 700 000 − 22 400 − 140 000
+        //     = 537 600 → annuel 6 451 200 → 28 000 (2 %) + 630 000 (21 % sur 3M)
+        //     + (6 451 200 − 5 000 000) × 24,5 % = 355 544 → 1 013 544
+        //   → ITSAS mensuel 84 462,00 · CN = 650 000 × 1,5 % = 9 750
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(700000.0);
-        $itsas = $rules->calculateIncomeTax(700000.0 - $charges['employee']);
+        $itsas = $rules->calculateIncomeTax(700000.0 - $charges['employee'], 12, 700000.0);
         $cn = $rules->calculateBracketTax(700000.0);
 
         $this->assertSame(22400.0, $charges['employee']);
-        $this->assertSame(85559.60, $itsas);
+        $this->assertSame(84462.00, $itsas);
         $this->assertSame(9750.0, $cn);
     }
 
@@ -177,27 +177,28 @@ class GoldenCiPayrollTest extends TestCase
     #[DataProvider('itsasProvider')]
     public function test_golden_ci_itsas_progressive(float $gross, float $cnss, float $expectedItsas): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §1) : assiette = (gross − cnss) × 0,80,
-        // ITSAS = progressif annuel / 12 sur les tranches CGI CI art. 116-120.
+        // Calcul manuel (CI_COMPLIANCE.md §1) : assiette = gross − cnss −
+        // abattement 20 % du BRUT (fix #1893), ITSAS = progressif annuel / 12
+        // sur les tranches CGI CI art. 116-120.
         $rules = $this->rules();
 
-        $this->assertSame($expectedItsas, $rules->calculateIncomeTax($gross - $cnss));
+        $this->assertSame($expectedItsas, $rules->calculateIncomeTax($gross - $cnss, 12, $gross));
     }
 
     public static function itsasProvider(): array
     {
         return [
             'tranche 0 % (annuel ≤ 600k)'     => [50000.0, 1600.0, 0.0],
-            // (150 000 − 4 800) × 0,8 = 116 160 → annuel 1 393 920 → 2 % sur 793 920
-            // = 15 878,40 → mensuel 1 323,20
-            'tranche 2 % (600k–2M)'           => [150000.0, 4800.0, 1323.20],
-            // (300 000 − 9 600) × 0,8 = 232 320 → annuel 2 787 840 → 28 000 (2 %)
-            // + 787 840 × 21 % = 165 446,40 → 193 446,40 → mensuel 16 120,53
-            'tranche 21 % (2M–5M)'            => [300000.0, 9600.0, 16120.53],
-            'tranche 24,5 % (5M–10M)'         => [700000.0, 22400.0, 85559.60],
-            // (1 200 000 − 38 400) × 0,8 = 929 280 → annuel 11 151 360 → 28 000
-            // + 630 000 + 1 225 000 + 1 151 360 × 29 % = 2 216 894,40 → 184 741,20
-            'tranche 29 % (> 10M)'            => [1200000.0, 38400.0, 184741.20],
+            // 150 000 − 4 800 − 30 000 (20 % du brut) = 115 200 → annuel 1 382 400
+            // → 2 % sur 782 400 = 15 648 → mensuel 1 304,00
+            'tranche 2 % (600k–2M)'           => [150000.0, 4800.0, 1304.00],
+            // 300 000 − 9 600 − 60 000 = 230 400 → annuel 2 764 800 → 28 000 (2 %)
+            // + 764 800 × 21 % = 160 608 → 188 608 → mensuel 15 717,33
+            'tranche 21 % (2M–5M)'            => [300000.0, 9600.0, 15717.33],
+            'tranche 24,5 % (5M–10M)'         => [700000.0, 22400.0, 84462.00],
+            // 1 200 000 − 38 400 − 240 000 = 921 600 → annuel 11 059 200 → 28 000
+            // + 630 000 + 1 225 000 + 1 059 200 × 29 % = 2 190 168 → mensuel 182 514,00
+            'tranche 29 % (> 10M)'            => [1200000.0, 38400.0, 182514.00],
         ];
     }
 

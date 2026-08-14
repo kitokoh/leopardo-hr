@@ -18,13 +18,15 @@ class PayrollCountryConfigSeeder extends Seeder
 {
     /**
      * Date d'effet des barèmes par pays. Les pays seedés avec les taux des
-     * CGI 2024 (Burkina Faso, Mali — issue #1829) → effective_from =
+     * CGI 2024 (Côte d'Ivoire #1825, Cameroun #1821, Burkina Faso, Mali
+     * — issue #1829) → effective_from =
      * 2024-01-01 ; les autres pays gardent 2026-01-01 (comportement
      * historique).
      *
      * @var array<string, string>
      */
     private const EFFECTIVE_FROM_BY_COUNTRY = [
+        'CI' => '2024-01-01',
         'BF' => '2024-01-01',
         'ML' => '2024-01-01',
     ];
@@ -44,6 +46,9 @@ class PayrollCountryConfigSeeder extends Seeder
             new FrancePayrollRules,
             new TurkeyPayrollRules,
             new SenegalPayrollRules,
+            // Côte d'Ivoire (CEDEAO) — règles pilotes ITSAS/CN/CNSS (issue #1825),
+            // seedées avec les taux du CGI 2024 (effective_from = 2024-01-01).
+            new CedeaoPayrollRules('CI'),
             // Burkina Faso + Mali (CEDEAO) — règles pilotes IUTS/ITS + CNSS/INPS
             // (issue #1829).
             new CedeaoPayrollRules('BF'),
@@ -52,10 +57,6 @@ class PayrollCountryConfigSeeder extends Seeder
             // les autres pays — les autres membres CEMAC restent placeholder
             // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1824...).
             (new CemacPayrollRules)->forMemberCountry('CM'),
-            // CI (#1825) : barèmes ITSAS + CNSS ivoiriens (pilot) seedés comme
-            // les autres pays — les autres membres CEDEAO restent placeholder
-            // (pas de barèmes légaux à seed) jusqu'à leurs issues (#1829...).
-            (new CedeaoPayrollRules)->forMemberCountry('CI'),
         ];
 
         foreach ($rules as $countryRules) {
