@@ -197,6 +197,12 @@ class DemoCompanySeeder extends Seeder
             $allEmployeeIds = array_merge($allEmployeeIds, $employeeIds);
             $activeEmployeeIds = $this->activeEmployeeIds($companyId, $allEmployeeIds);
 
+            // Issue #1777 : sans salary_structure, la paie démo produit 0
+            // bulletin en silence (le moteur ignore les employés sans
+            // structure). On crée une structure par employé actif (base = son
+            // salaire) + un composant prime, affectée via salary_structure_id.
+            $this->createSalaryStructures($companyId, $config, $activeEmployeeIds);
+
             $this->seedAttendanceLogs($companyId, $activeEmployeeIds);
             $absenceTypeIds = $this->createAbsenceTypes($companyId);
             $this->seedAbsences($companyId, $employeeIds, $absenceTypeIds, $managerIds['rh']);
@@ -495,6 +501,63 @@ SQL);
             ->pluck('id')
             ->map(fn ($id) => (int) $id)
             ->all();
+    }
+
+    /**
+     * Issue #1777 : crée une structure salariale par employé actif
+     * (base = son `salary_base`) + un composant prime, et affecte
+     * `employees.salary_structure_id` — sinon le moteur de paie ignore tous
+     * les employés (0 bulletin en silence, run clôturable à vide).
+     */
+    private function createSalaryStructures(string $companyId, array $config, array $activeEmployeeIds): void
+    {
+        if ($activeEmployeeIds === []) {
+            return;
+        }
+
+        $countryCode = strtoupper((string) ($config['country'] ?? 'DZ'));
+        $currency = (string) ($config['currency'] ?? 'DZD');
+
+        $employees = DB::table($this->sharedTable('employees'))
+            ->where('company_id', $companyId)
+            ->whereIn('id', $activeEmployeeIds)
+            ->get(['id', 'salary_base']);
+
+        foreach ($employees as $employee) {
+            $structureId = DB::table($this->sharedTable('salary_structures'))->insertGetId([
+                'company_id' => $companyId,
+                'name' => 'Structure '.$countryCode.' employe #'.$employee->id,
+                'base_salary' => (float) $employee->salary_base,
+                'currency' => $currency,
+                'country_code' => $countryCode,
+                'frequency' => 'monthly',
+                'active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::table($this->sharedTable('salary_components'))->insert([
+                'company_id' => $companyId,
+                'salary_structure_id' => $structureId,
+                'name' => 'Prime de rendement',
+                'code' => 'PRIME_PERF',
+                'type' => 'earning',
+                'calculation_type' => 'percentage_of_base',
+                'amount' => 0,
+                'percentage' => 5,
+                'formula' => null,
+                'is_taxable' => true,
+                'is_recurring' => true,
+                'order' => 1,
+                'active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::table($this->sharedTable('employees'))
+                ->where('id', $employee->id)
+                ->update(['salary_structure_id' => $structureId]);
+        }
     }
 
     private function createAbsenceTypes(string $companyId): array
