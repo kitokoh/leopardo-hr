@@ -6,6 +6,7 @@ use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -97,7 +98,11 @@ class PayrollCountryConfigSeeder extends Seeder
                         'max_amount' => $slab['max'],
                         'rate' => $slab['rate'],
                         'fixed_deduction' => $slab['fixed_deduction'],
-                        'effective_from' => '2026-01-01',
+                        // Issue #1932 : le barème est seedé avec le
+                        // effective_from annoncé par le name (« 2024 » pour
+                        // BF/ML/CI/CM) — pas une date en dur 2026-01-01 qui
+                        // casserait le recalcul rétroactif asOf().
+                        'effective_from' => $effectiveFrom,
                         'effective_to' => null,
                         // Issue #1813 : config nationale officielle → active.
                         'status' => TaxSlab::STATUS_ACTIVE,
