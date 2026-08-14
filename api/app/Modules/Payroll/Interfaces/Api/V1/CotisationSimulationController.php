@@ -90,7 +90,7 @@ class CotisationSimulationController extends Controller
         // confirmation explicite ; l'acceptation est AUDITÉE (tenant, pays,
         // acteur) — jamais de secrets ni de données biométriques.
         if ($rules->confidenceLevel() === 'placeholder') {
-            $acknowledged = (bool) ($validated['acknowledge_placeholder'] ?? false);
+            $acknowledged = $request->boolean('acknowledge_placeholder');
             if (! $acknowledged) {
                 return response()->json([
                     'message' => __('payroll.placeholder_acknowledge_required', ['country' => $countryCode]),
