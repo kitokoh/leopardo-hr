@@ -46,9 +46,12 @@ class QaHardeningEndpointsTest extends TestCase
         parent::tearDown();
     }
 
+    /** @return array{Company, Employee} */
     private function tenantFixture(): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         return [$company, $manager];
@@ -86,6 +89,7 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_employee_lists_own_training_enrollments_with_mobile_shape(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $enrollment = $this->createTrainingEnrollment($employee);
 
@@ -102,10 +106,13 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_training_enrollments_are_tenant_isolated(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $this->createTrainingEnrollment($employee);
 
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create(['company_id' => $otherCompany->id, 'status' => 'active']);
         $this->createTrainingEnrollment($otherEmployee);
 
@@ -130,6 +137,7 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_employee_lists_own_vehicles(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
 
         Vehicle::query()->create([
@@ -162,6 +170,7 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_me_vehicles_returns_empty_list_for_employee_without_vehicle(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
 
         Sanctum::actingAs($employee);
@@ -172,9 +181,12 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_me_vehicles_are_tenant_isolated(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
 
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create(['company_id' => $otherCompany->id, 'status' => 'active']);
         Vehicle::query()->create([
             'company_id' => $otherCompany->id,
@@ -195,6 +207,7 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_manager_lists_all_tenant_sessions(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $this->createTrainingEnrollment($employee);
 
@@ -209,6 +222,7 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_manager_lists_all_tenant_enrollments(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $this->createTrainingEnrollment($employee);
 
@@ -224,10 +238,13 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_training_lists_are_tenant_isolated(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $this->createTrainingEnrollment($employee);
 
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create(['company_id' => $otherCompany->id, 'status' => 'active']);
         $this->createTrainingEnrollment($otherEmployee);
 
@@ -266,7 +283,9 @@ class QaHardeningEndpointsTest extends TestCase
     public function test_webhook_test_is_tenant_isolated(): void
     {
         [$company, $manager] = $this->tenantFixture();
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $otherManager */
         $otherManager = Employee::factory()->create(['company_id' => $otherCompany->id, 'status' => 'active', 'manager_role' => 'principal']);
 
         $endpoint = WebhookEndpoint::query()->create([
@@ -294,6 +313,7 @@ class QaHardeningEndpointsTest extends TestCase
         ]);
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
+        /** @var Company $company */
         $company = Company::factory()->create(['name' => 'TECHCORP ALGERIE']);
         Employee::factory()->create([
             'company_id' => $company->id,
