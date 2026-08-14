@@ -91,12 +91,23 @@ T1, hypothèse pilote : brut > 432 000 ⇒ régime cadres) :
 **3 % sur la masse salariale brute** (charge patronale uniquement, non
 plafonnée) — `CFCE_SN_PAT`.
 
+> **Périmètre de déclaration (#2014)** : la CFCE ne figure PAS dans la
+> déclaration mensuelle IPRES/CSS (CSV `IpresDeclarationGenerator`) — elle est
+> déclarée via son propre canal (déclaration CFCE). Le patronal du bulletin
+> l'inclut ; le CSV ne la déclare pas : divergence attendue, documentée §11.
+
 ## 6. CSS — Caisse de Sécurité Sociale
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
 | Prestations familiales patronale | 3,0 % | employeur | aucun |
 | Accidents du travail patronale | 1,0 % | employeur | aucun (pilote, variable) |
+
+> **Périmètre de déclaration (#2014)** : CSS AT (1 %, variable selon le
+> secteur) n'est pas inclus dans la déclaration mensuelle IPRES/CSS (CSV) —
+> elle fait l'objet d'une déclaration CSS dédiée (taux selon l'activité
+> principale). CSS famille : le générateur CSV la plafonne au plafond T1
+> (432 000) alors que le moteur ne la plafonne pas (Q3 — voir §11).
 
 ## 7. Abattement frais professionnels
 
@@ -125,6 +136,43 @@ documenter/test.
 Fixes : 1ᵉʳ janvier, 4 avril, 1ᵉʳ mai, 15 août, 1ᵉʳ novembre, 25 décembre +
 fêtes islamiques mobiles (Korité, Tabaski, Gamou, Taamhrit) via table
 `islamic_calendar` (#1812). Gestion dynamique via #1811.
+
+## 11. Déclarations mensuelles — périmètre du CSV IPRES/CSS (décision #2014)
+
+Le CSV généré par `IpresDeclarationGenerator` est la déclaration **mensuelle
+IPRES/CSS** (retraite T1/T2 + prestations familiales CSS). Périmètre décidé
+et documenté :
+
+| Composante | Bulletin (moteur) | CSV IPRES/CSS | Raison |
+|---|---|---|---|
+| IPRES T1 (8,4 % patronal, plaf. 432 000) | ✅ | ✅ | déclaration IPRES |
+| IPRES T2 cadres (3,6 %, tranche 432 k–2 160 k) | ✅ | ✅ | déclaration IPRES |
+| CSS famille (3,0 %) | ✅ (non plafonné) | ✅ **plafonné 432 000** | Q3 — à trancher expert |
+| CSS AT (1,0 %) | ✅ | ❌ | déclaration CSS dédiée (taux selon risque) |
+| CFCE (3,0 %) | ✅ | ❌ | déclaration CFCE dédiée |
+
+**Conséquence** : `total_patronal` du CSV < `employer_contributions` du
+bulletin **par conception** — le bulletin porte toutes les charges
+patronales, le CSV uniquement le périmètre de cette déclaration. La
+réconciliation exacte est verrouillée par
+`BulletinDeclarationReconciliationTest` (test SN cadre) :
+`employer_contributions = périmètre déclaré + CSS AT 1 % + CFCE 3 % + écart
+CSS famille (plafond)`.
+
+**Questions ouvertes expert-comptable (#1912, bloquant avant production)** :
+
+1. **Q1 — CSS AT** : doit-elle figurer dans la déclaration mensuelle ou
+   reste-t-elle séparée (annuelle/trimestrielle selon le risque) ?
+2. **Q2 — CFCE** : ce fichier ou la déclaration CFCE dédiée (trimestrielle) ?
+3. **Q3 — CSS famille** : plafonnée au plafond IPRES T1 (432 000, comportement
+   CSV) ou non plafonnée (comportement moteur) ? Les deux restent en l'état
+   tant que la source officielle (CSS, art. 139 Code de la sécurité sociale)
+   n'a pas confirmé — l'écart est documenté et verrouillé par le test.
+
+Source consultée (non concluante, page en cours d'édition) :
+eRegulations Sénégal, procédure 103/64 (« Paiement des cotisations à la
+CSS », plafond affiché 63 000 CFA incohérent avec le SMIG/IPRES — à
+ré-évaluer).
 
 ## Procédure de mise à jour des taux
 

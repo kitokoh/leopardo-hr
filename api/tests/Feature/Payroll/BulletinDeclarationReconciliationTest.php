@@ -260,13 +260,32 @@ class BulletinDeclarationReconciliationTest extends TestCase
             $charges['employee'],
         );
         // total_patronal déclaré (T1 + T2 + CSS famille) — cohérent avec le moteur
-        // sur les mêmes composantes (AT 1 % + CFCE 3 % hors périmètre CSV).
+        // sur les mêmes composantes.
         $declaredPatronal = (float) $row[12];
         $enginePatronalDeclaredScope = round(
             $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $t1Base * 3.0 / 100,
             2,
         );
         $this->assertEquals($enginePatronalDeclaredScope, $declaredPatronal);
-        $this->assertLessThan($charges['employer'], $declaredPatronal); // AT+CFCE exclus
+
+        // Décision #2014 — périmètre de la déclaration IPRES/CSS mensuelle :
+        // T1 + T2 + CSS famille (plafonnée au plafond T1 432 000 par le
+        // générateur). CSS AT (1 %) et CFCE (3 %) sont déclarés par des
+        // canaux distincts (AT : déclaration CSS selon le risque ; CFCE :
+        // déclaration dédiée) → exclus du total_patronal CSV PAR CONCEPTION
+        // (plus de assertLessThan : la divergence est un périmètre, pas une
+        // erreur). Réconciliation EXACTE bulletin ↔ CSV :
+        //   employer_contributions (bulletin) = périmètre déclaré + CSS AT 1 %
+        //     + CFCE 3 % + écart CSS famille (moteur non plafonné vs CSV
+        //     plafonné T1 — question Q3 ouverte, SN_COMPLIANCE.md §11,
+        //     validation expert #1912).
+        $this->assertEquals(
+            $enginePatronalDeclaredScope
+                + round($gross * 1.0 / 100, 2)   // CSS AT 1 % (hors CSV)
+                + round($gross * 3.0 / 100, 2)   // CFCE 3 % (hors CSV)
+                + round($gross * 3.0 / 100, 2)   // CSS famille moteur (non plafonné)
+                - round($t1Base * 3.0 / 100, 2), // CSS famille CSV (plafonné T1)
+            $charges['employer'],
+        );
     }
 }
