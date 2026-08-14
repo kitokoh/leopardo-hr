@@ -18,7 +18,10 @@ permissions:
 
 concurrency:
   group: web-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Même logique que tests.yml : les runs push sur main ne doivent pas être
+  # annulés (le gate de déploiement attend leur conclusion), seule l'annulation
+  # des runs PR est conservée.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   PLAYWRIGHT_HTML_REPORT: playwright-report

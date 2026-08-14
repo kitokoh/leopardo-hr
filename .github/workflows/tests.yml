@@ -27,7 +27,12 @@ env:
 
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue CI/CD : sur main, un push ne doit PAS annuler le run tests en cours —
+  # le workflow Deploy (deploy-main.yml) attend la conclusion `success` du run
+  # push sur main ; avec cancel-in-progress:true, chaque nouveau push annulait
+  # le run précédent → aucun run tests ne se terminait → jamais de déploiement.
+  # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   detect-changes:
