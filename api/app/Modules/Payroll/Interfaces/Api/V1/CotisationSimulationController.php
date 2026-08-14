@@ -4,100 +4,30 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Simulation de cotisations sociales et d'impôt sur le revenu.
+ *
+ * Issue #1782 : ce contrôleur ne duplique PLUS aucune table de taux.
+ * La source de vérité unique est le moteur de paie
+ * (`PayrollCalculator::getRules()` → `CountryRulesInterface`), qui résout
+ * DZ, MA, TN, FR, TR, SN, CEMAC×6, CEDEAO×6 et CA avec les mêmes règles que
+ * les vrais bulletins — taux, caps, barèmes et abattements compris.
+ *
+ * La logique reproduit fidèlement `PayrollCalculator::calculateSlip()` :
+ *   1. cotisations sociales (`calculateSocialCharges`, valeurs définitives) ;
+ *   2. assiette fiscale = brut − cotisations salariales ;
+ *   3. impôt progressif (`calculateIncomeTax`, mêmes barèmes que le bulletin) ;
+ *   4. net réel = brut − cotisations salariales − impôt.
+ */
 class CotisationSimulationController extends Controller
 {
-    private const COUNTRY_RATES = [
-        'DZ' => [
-            'employee' => ['cnas' => 0.09],
-            'employer' => ['cnas' => 0.26],
-            'irg_brackets' => [
-                ['min' => 0, 'max' => 20000, 'rate' => 0],
-                ['min' => 20001, 'max' => 40000, 'rate' => 0.20],
-                ['min' => 40001, 'max' => 80000, 'rate' => 0.30],
-                ['min' => 80001, 'max' => 160000, 'rate' => 0.35],
-                ['min' => 160001, 'max' => PHP_INT_MAX, 'rate' => 0.40],
-            ],
-        ],
-        'MA' => [
-            'employee' => ['cnss' => 0.0448, 'amo' => 0.0226],
-            'employer' => ['cnss' => 0.0898, 'amo' => 0.0340],
-            'ir_brackets' => [
-                ['min' => 0, 'max' => 30000, 'rate' => 0],
-                ['min' => 30001, 'max' => 50000, 'rate' => 0.10],
-                ['min' => 50001, 'max' => 60000, 'rate' => 0.20],
-                ['min' => 60001, 'max' => 80000, 'rate' => 0.30],
-                ['min' => 80001, 'max' => 180000, 'rate' => 0.34],
-                ['min' => 180001, 'max' => PHP_INT_MAX, 'rate' => 0.38],
-            ],
-        ],
-        'FR' => [
-            'employee' => ['securite_sociale' => 0.0705, 'csg_crds' => 0.097],
-            'employer' => ['securite_sociale' => 0.1530, 'assurance_chomage' => 0.0405],
-            'pas_brackets' => [
-                ['min' => 0, 'max' => 10777, 'rate' => 0],
-                ['min' => 10778, 'max' => 27478, 'rate' => 0.11],
-                ['min' => 27479, 'max' => 78570, 'rate' => 0.30],
-                ['min' => 78571, 'max' => 168994, 'rate' => 0.41],
-                ['min' => 168995, 'max' => PHP_INT_MAX, 'rate' => 0.45],
-            ],
-        ],
-        'TN' => [
-            'employee' => ['cnss' => 0.0918],
-            'employer' => ['cnss' => 0.1657],
-            'irpp_brackets' => [
-                ['min' => 0, 'max' => 5000, 'rate' => 0],
-                ['min' => 5001, 'max' => 20000, 'rate' => 0.26],
-                ['min' => 20001, 'max' => 30000, 'rate' => 0.28],
-                ['min' => 30001, 'max' => 50000, 'rate' => 0.32],
-                ['min' => 50001, 'max' => PHP_INT_MAX, 'rate' => 0.35],
-            ],
-        ],
-        'TR' => [
-            'employee' => ['sgk' => 0.14],
-            'employer' => ['sgk' => 0.2050],
-            'gelir_brackets' => [
-                ['min' => 0, 'max' => 110000, 'rate' => 0.15],
-                ['min' => 110001, 'max' => 230000, 'rate' => 0.20],
-                ['min' => 230001, 'max' => 870000, 'rate' => 0.27],
-                ['min' => 870001, 'max' => 3000000, 'rate' => 0.35],
-                ['min' => 3000001, 'max' => PHP_INT_MAX, 'rate' => 0.40],
-            ],
-        ],
-        'SN' => [
-            'employee' => ['ipres' => 0.056],
-            'employer' => ['ipres' => 0.084, 'css' => 0.07],
-            'ir_brackets' => [
-                ['min' => 0, 'max' => 630000, 'rate' => 0],
-                ['min' => 630001, 'max' => 1500000, 'rate' => 0.20],
-                ['min' => 1500001, 'max' => 4000000, 'rate' => 0.30],
-                ['min' => 4000001, 'max' => 8000000, 'rate' => 0.35],
-                ['min' => 8000001, 'max' => PHP_INT_MAX, 'rate' => 0.37],
-            ],
-        ],
-    ];
-
-    /**
-     * CEMAC (PA2-COUNTRY-007) shares the same CNPS/CNSS-style rates and
-     * placeholder progressive schedule across all six member states
-     * (see CemacPayrollRules), so every member code maps to one shared
-     * rate table instead of duplicating it six times.
-     */
-    private const CEMAC_RATES = [
-        'employee' => ['cnps_cnss' => 0.042],
-        'employer' => ['cnps_cnss' => 0.162],
-        'irpp_brackets' => [
-            ['min' => 0, 'max' => 500000, 'rate' => 0],
-            ['min' => 500001, 'max' => 1000000, 'rate' => 0.10],
-            ['min' => 1000001, 'max' => 2500000, 'rate' => 0.20],
-            ['min' => 2500001, 'max' => 5000000, 'rate' => 0.30],
-            ['min' => 5000001, 'max' => PHP_INT_MAX, 'rate' => 0.35],
-        ],
-    ];
+    public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
 
     public function simulate(Request $request): JsonResponse
     {
@@ -113,38 +43,42 @@ class CotisationSimulationController extends Controller
             'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
         ]);
 
+        /** @var array{gross_salary: float|string, country_code: string} $validated */
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
-        $rates = self::COUNTRY_RATES[$countryCode]
-            ?? (in_array($countryCode, \App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules::MEMBER_COUNTRY_CODES, true) ? self::CEMAC_RATES : self::COUNTRY_RATES['DZ']);
+
+        $rules = $this->payrollCalculator->getRules($countryCode);
+
+        /** @var array{employee: float, employer: float} $social */
+        $social = $rules->calculateSocialCharges($gross);
+
+        $taxableGross = round($gross - $social['employee'], 2);
+        // Même appel que PayrollCalculator::calculateSlip() : le 2e paramètre
+        // (annualBasis) a un défaut de 12 dans le contrat et toutes les règles.
+        $incomeTax = $rules->calculateIncomeTax($taxableGross);
+        $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
 
         $employeeContributions = [];
-        $totalEmployeeRate = 0.0;
-        foreach ($rates['employee'] as $name => $rate) {
-            $amount = round($gross * $rate, 2);
-            $employeeContributions[] = [
-                'name' => $name,
-                'rate' => $rate,
-                'amount' => $amount,
-            ];
-            $totalEmployeeRate += $rate;
-        }
-
         $employerContributions = [];
-        $totalEmployerRate = 0.0;
-        foreach ($rates['employer'] as $name => $rate) {
-            $amount = round($gross * $rate, 2);
-            $employerContributions[] = [
-                'name' => $name,
-                'rate' => $rate,
-                'amount' => $amount,
-            ];
-            $totalEmployerRate += $rate;
-        }
+        foreach ($rules->socialContributions() as $contribution) {
+            // Base plafonnée quand la règle déclare un cap (sinon brut entier).
+            $base = $contribution['cap'] === null
+                ? $gross
+                : min($gross, (float) $contribution['cap']);
 
-        $totalEmployeeDeduction = round($gross * $totalEmployeeRate, 2);
-        $totalEmployerCost = round($gross * $totalEmployerRate, 2);
-        $netBeforeTax = round($gross - $totalEmployeeDeduction, 2);
+            $item = [
+                'name' => $contribution['name'],
+                'code' => $contribution['code'],
+                'rate' => $contribution['rate'],
+                'amount' => round($base * (float) $contribution['rate'] / 100, 2),
+            ];
+
+            if ($contribution['type'] === 'employee') {
+                $employeeContributions[] = $item;
+            } else {
+                $employerContributions[] = $item;
+            }
+        }
 
         return response()->json([
             'data' => [
@@ -152,10 +86,15 @@ class CotisationSimulationController extends Controller
                 'gross_salary' => $gross,
                 'employee_contributions' => $employeeContributions,
                 'employer_contributions' => $employerContributions,
-                'total_employee_deduction' => $totalEmployeeDeduction,
-                'total_employer_cost' => $totalEmployerCost,
-                'net_before_tax' => $netBeforeTax,
-                'total_cost_employer' => round($gross + $totalEmployerCost, 2),
+                'total_employee_deduction' => $social['employee'],
+                'total_employer_cost' => $social['employer'],
+                'taxable_gross' => $taxableGross,
+                'income_tax' => $incomeTax,
+                // Rétro-compatible : brut − cotisations salariales (sans impôt).
+                'net_before_tax' => round($gross - $social['employee'], 2),
+                // Net réel = brut − cotisations salariales − impôt (issue #1782).
+                'net_salary' => $netSalary,
+                'total_cost_employer' => round($gross + $social['employer'], 2),
             ],
         ]);
     }
