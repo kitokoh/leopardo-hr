@@ -184,8 +184,8 @@ class IslamicCalendarServiceTest extends TestCase
         $this->seedCalendar();
 
         // Admin : la liste complète (confirmées + non confirmées) reste
-        // visible pour permettre la validation.
-        $this->assertCount(5, $this->service()->getHolidaysForCountry('DZ', 2026));
+        // visible pour permettre la validation (DZ : 4 fêtes — pas de tahmarit).
+        $this->assertCount(4, $this->service()->getHolidaysForCountry('DZ', 2026));
 
         // Paie : aucune date non confirmée ne ressort.
         $this->assertSame([], $this->service()->resolveForPayroll('DZ', 2026));
