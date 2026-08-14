@@ -314,9 +314,7 @@ async function createRate() {
       name: form.name,
       rate: form.rate,
       effective_from: form.effective_from,
-      // La référence légale est tracée dans l'historique (nom de la ligne).
-      // Le nom du brouillon porte la référence légale : « Nom (réf. légale) ».
-      ...(form.legal_reference ? {} : {}),
+      legal_reference: form.legal_reference.trim() || null,
     }
     if (form.table === 'tax_slabs') {
       payload.min_amount = 0

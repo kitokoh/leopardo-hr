@@ -6,22 +6,21 @@
 
       <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Analytics Avancées</h1>
+          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Analytics Plateforme</h1>
           <p class="text-slate-500 dark:text-slate-400 font-medium">
-            Indicateurs réels de la plateforme — utilisateurs, entreprises, revenus et santé système.
+            Indicateurs reels du cockpit super-admin (issue #2185)
           </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-4">
           <button
-            @click="loadAnalytics"
+            @click="loadAll"
             :disabled="isLoading"
-            class="btn-secondary py-2.5 disabled:opacity-50"
+            class="btn-secondary py-2.5"
           >
-            <ArrowPathIcon class="h-5 w-5 mr-2" :class="{ 'animate-spin': isLoading }" />
+            <ArrowPathIcon :class="['h-5 w-5 mr-2', isLoading ? 'animate-spin' : '']" />
             Actualiser
           </button>
-
           <button
             @click="exportReport"
             class="btn-secondary py-2.5"
@@ -33,605 +32,219 @@
       </div>
     </div>
 
-    <!-- Key Metrics Overview -->
+    <!-- Key Metrics Overview (donnees reelles /admin/dashboard/stats) -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <MetricCard
-        title="Taux de Croissance"
-        :value="analytics.growthRate"
-        suffix="%"
-        :trend="analytics.growthTrend"
-        icon="TrendingUpIcon"
+        title="Utilisateurs"
+        :value="String(stats.totalUsers ?? 0)"
+        :trend="newUsersTrend"
+        icon="UsersIcon"
+        color="blue"
+      />
+      <MetricCard
+        title="Entreprises"
+        :value="String(stats.totalCompanies ?? 0)"
+        :trend="newCompaniesTrend"
+        icon="BuildingOfficeIcon"
         color="green"
       />
       <MetricCard
-        title="Taux de Churn"
-        :value="analytics.churnRate"
-        suffix="%"
-        :trend="analytics.churnTrend"
-        icon="TrendingDownIcon"
-        color="red"
-      />
-      <MetricCard
-        title="LTV Moyen"
-        :value="analytics.avgLTV"
-        prefix="€"
-        :trend="analytics.ltvTrend"
-        icon="CurrencyEuroIcon"
+        title="Abonnements actifs"
+        :value="String(stats.activeSubscriptions ?? 0)"
+        :trend="monthlyRevenueLabel"
+        icon="CreditCardIcon"
         color="purple"
       />
       <MetricCard
-        title="CAC"
-        :value="analytics.cac"
-        prefix="€"
-        :trend="analytics.cacTrend"
-        icon="UserPlusIcon"
-        color="blue"
+        title="Tickets support ouverts"
+        :value="String(stats.supportTickets ?? 0)"
+        :trend="systemHealthLabel"
+        icon="LifebuoyIcon"
+        color="amber"
       />
     </div>
 
-    <!-- Advanced Charts -->
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 animate-slide-up" style="animation-delay: 0.1s">
-      <!-- Cohort Analysis -->
-      <div class="card p-8">
-        <div class="flex items-center justify-between mb-8">
-          <div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Analyse de Cohortes</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Rétention des utilisateurs par mois</p>
-          </div>
-          <InformationCircleIcon class="h-6 w-6 text-slate-400 cursor-help" />
-        </div>
-        <CohortChart :data="analytics.cohortData" />
-      </div>
-
-      <!-- Funnel Analysis -->
-      <div class="card p-8">
-        <div class="flex items-center justify-between mb-8">
-          <div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Entonnoir de Conversion</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Performance du cycle de vie client</p>
-          </div>
-          <select class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:ring-brand-500">
-            <option>Inscription → Activation</option>
-            <option>Activation → Abonnement</option>
-            <option>Essai → Payant</option>
-          </select>
-        </div>
-        <FunnelChart :data="analytics.funnelData" />
-      </div>
-    </div>
-
-    <!-- Predictive Analytics -->
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 animate-slide-up" style="animation-delay: 0.2s">
-      <!-- Churn Prediction -->
-      <div class="card p-8 border-t-4 border-t-red-500">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prédiction de Churn</h3>
-          <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800 dark:text-red-300">
-            {{ analytics.churnPrediction.riskUsers }} à risque
-          </span>
-        </div>
-        <ChurnPredictionWidget :data="analytics.churnPrediction" />
-      </div>
-
-      <!-- Revenue Forecast -->
-      <div class="card p-8 border-t-4 border-t-brand-500">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prévision Revenus</h3>
-          <span class="text-xs font-bold text-slate-500 dark:text-slate-400">3 PROCHAINS MOIS</span>
-        </div>
-        <RevenueForecastWidget :data="analytics.revenueForecast" />
-      </div>
-
-      <!-- Feature Adoption -->
-      <div class="card p-8 border-t-4 border-t-cyan-500">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Adoption Fonctionnalités</h3>
-        </div>
-        <FeatureAdoptionWidget :data="analytics.featureAdoption" />
-      </div>
-    </div>
-
-    <!-- Segmentation Analysis -->
-    <div class="card p-8 animate-slide-up" style="animation-delay: 0.3s">
-      <div class="flex items-center justify-between mb-8">
+    <!-- Activite recente (donnees reelles /admin/dashboard/activities) -->
+    <div class="card p-8 animate-slide-up" style="animation-delay: 0.1s">
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Segmentation Utilisateurs</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Répartition stratégique de la base</p>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Activité récente</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">25 derniers événements plateforme</p>
         </div>
-        <div class="flex items-center space-x-3">
-          <select
-            v-model="selectedSegmentation"
-            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:ring-brand-500"
-          >
-            <option value="behavior">Comportement</option>
-            <option value="value">Valeur</option>
-            <option value="engagement">Engagement</option>
-            <option value="geography">Géographie</option>
-          </select>
+      </div>
+      <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
+        Chargement...
+      </div>
+      <div v-else-if="activities.length === 0" class="py-12 text-center">
+        <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
+        <p class="mt-3 text-sm font-medium text-slate-500">Aucune activité récente</p>
+      </div>
+      <ul v-else class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
+        <li v-for="activity in activities" :key="activity.id" class="py-4 flex items-start justify-between gap-4">
+          <div class="flex items-start space-x-3">
+            <div class="mt-0.5 h-2.5 w-2.5 rounded-full bg-brand-500 flex-shrink-0"></div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ activity.message }}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ activity.type }}</p>
+            </div>
+          </div>
+          <span class="text-xs font-medium text-slate-400 whitespace-nowrap">{{ formatDate(activity.created_at) }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Alertes plateforme (donnees reelles /admin/dashboard/alerts) -->
+    <div class="card p-8 animate-slide-up" style="animation-delay: 0.2s">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Alertes plateforme</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Problèmes d'infrastructure et risques abonnements</p>
+        </div>
+      </div>
+      <div v-if="alerts.length === 0" class="py-8 text-center">
+        <CheckCircleIcon class="mx-auto h-10 w-10 text-emerald-400" />
+        <p class="mt-3 text-sm font-medium text-slate-500">Aucune alerte active</p>
+      </div>
+      <div v-else class="space-y-3">
+        <div
+          v-for="alert in alerts"
+          :key="alert.id"
+          :class="[
+            'rounded-xl border p-4 flex items-start justify-between gap-4',
+            alert.level === 'critical'
+              ? 'border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/20'
+              : alert.level === 'warning'
+                ? 'border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20'
+                : 'border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40'
+          ]"
+        >
+          <div class="flex items-start space-x-3">
+            <ExclamationTriangleIcon :class="['h-5 w-5 mt-0.5', alert.level === 'critical' ? 'text-red-500' : alert.level === 'warning' ? 'text-amber-500' : 'text-slate-400']" />
+            <div>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ alert.title }}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ alert.description }}</p>
+            </div>
+          </div>
           <button
-            @click="refreshSegmentation"
-            class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            @click="dismissAlert(alert.id)"
+            class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           >
-            <ArrowPathIcon class="h-4 w-4" />
+            Ignorer
           </button>
         </div>
       </div>
-      <UserSegmentationChart :data="analytics.segmentationData" :type="selectedSegmentation" />
     </div>
 
-    <!-- Performance Benchmarks -->
-    <div class="card p-8 animate-slide-up" style="animation-delay: 0.4s">
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Benchmarks Sectoriels</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Comparaison avec la moyenne du secteur</p>
-        </div>
-      </div>
-      <BenchmarkChart :data="analytics.benchmarkData" />
+    <!-- Sections non disponibles (etat honnete — pas de backend) -->
+    <div class="card p-8 border-dashed border-2 border-slate-200 dark:border-slate-800">
+      <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-2">Analyses avancées (cohortes, funnels, prédictions, segmentation, benchmarks)</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400">
+        Les cohortes, entonnoirs, prédictions de churn et benchmarks ne sont pas encore servis par un endpoint backend. Les données affichées ici sont limitées aux agrégats réels du cockpit (stats, activités, alertes). Vague QA 2026-08-14 — suppression des données fabriquées.
+      </p>
     </div>
-
-    <!-- Insights & Recommendations -->
-    <div class="card p-8 animate-slide-up" style="animation-delay: 0.5s">
-      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Insights & Recommandations</h3>
-      <div class="space-y-4">
-        <InsightCard
-          v-for="insight in analytics.insights"
-          :key="insight.id"
-          :insight="insight"
-          @action="handleInsightAction"
-        />
-      </div>
-
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Nouveaux Utilisateurs (Aujourd'hui)"
-          :value="stats.newUsersToday"
-          icon="UserPlusIcon"
-          color="indigo"
-        />
-        <MetricCard
-          title="Nouvelles Entreprises (Aujourd'hui)"
-          :value="stats.newCompaniesToday"
-          icon="ChartBarIcon"
-          color="yellow"
-        />
-        <MetricCard
-          title="Tickets Support Ouverts"
-          :value="stats.supportTickets"
-          icon="ChartBarIcon"
-          color="red"
-        />
-        <MetricCard
-          title="Santé Système"
-          :value="healthLabel[stats.systemHealth] || 'Inconnu'"
-          :color="healthColor[stats.systemHealth] || 'blue'"
-          icon="TrendingUpIcon"
-        />
-      </div>
-
-      <!-- Activité récente + alertes (endpoints réels) -->
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 animate-slide-up" style="animation-delay: 0.1s">
-        <!-- Recent activity (GET /admin/dashboard/activities) -->
-        <section class="card">
-          <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
-            <div>
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white">Activité Récente</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Dernières actions plateforme</p>
-            </div>
-          </div>
-          <div class="max-h-96 overflow-y-auto divide-y divide-slate-200/50 dark:divide-slate-800/50">
-            <div
-              v-for="activity in activities"
-              :key="activity.id"
-              class="flex items-start justify-between gap-4 px-6 py-4"
-            >
-              <div class="min-w-0">
-                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ activity.message }}</p>
-                <p class="mt-0.5 text-xs text-slate-400">{{ formatTime(activity.created_at) }}</p>
-              </div>
-              <span class="flex-shrink-0 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                {{ activity.type }}
-              </span>
-            </div>
-            <div v-if="activities.length === 0" class="p-8 text-center">
-              <p class="text-sm font-medium text-slate-400">Aucune activité récente.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- System alerts (GET /admin/dashboard/alerts) -->
-        <section class="card">
-          <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
-            <div>
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white">Alertes Système</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Alertes actives détectées par la plateforme</p>
-            </div>
-          </div>
-          <div class="max-h-96 overflow-y-auto divide-y divide-slate-200/50 dark:divide-slate-800/50">
-            <div
-              v-for="alert in alerts"
-              :key="alert.id"
-              class="flex items-start justify-between gap-4 px-6 py-4"
-            >
-              <div class="min-w-0">
-                <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ alert.message }}</p>
-                <div class="mt-1 flex items-center gap-2">
-                  <span
-                    :class="[
-                      'rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest',
-                      alert.level === 'critical'
-                        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                        : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                    ]"
-                  >
-                    {{ alertLevelLabel[alert.level] || alert.level }}
-                  </span>
-                  <span class="text-xs text-slate-400">{{ formatTime(alert.created_at) }}</span>
-                </div>
-              </div>
-              <button
-                @click="dismissAlert(alert)"
-                title="Ignorer l'alerte"
-                class="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
-              >
-                <XMarkIcon class="h-4 w-4" />
-              </button>
-            </div>
-            <div v-if="alerts.length === 0" class="p-8 text-center">
-              <p class="text-sm font-medium text-slate-400">Aucune alerte active.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- Advanced Charts — aucun endpoint backend pour le moment : états « non disponible » explicites -->
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 animate-slide-up" style="animation-delay: 0.2s">
-        <!-- Cohort Analysis -->
-        <div class="card p-8">
-          <div class="flex items-center justify-between mb-8">
-            <div>
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white">Analyse de Cohortes</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Rétention des utilisateurs par mois</p>
-            </div>
-            <InformationCircleIcon class="h-6 w-6 text-slate-400 cursor-help" />
-          </div>
-          <div class="flex flex-col items-center justify-center py-12 text-center">
-            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-          </div>
-        </div>
-
-        <!-- Funnel Analysis -->
-        <div class="card p-8">
-          <div class="flex items-center justify-between mb-8">
-            <div>
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white">Entonnoir de Conversion</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Performance du cycle de vie client</p>
-            </div>
-            <InformationCircleIcon class="h-6 w-6 text-slate-400 cursor-help" />
-          </div>
-          <div class="flex flex-col items-center justify-center py-12 text-center">
-            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Predictive Analytics -->
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 animate-slide-up" style="animation-delay: 0.3s">
-        <!-- Churn Prediction -->
-        <div class="card p-8 border-t-4 border-t-red-500">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prédiction de Churn</h3>
-          </div>
-          <div class="flex flex-col items-center justify-center py-12 text-center">
-            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-          </div>
-        </div>
-
-        <!-- Revenue Forecast -->
-        <div class="card p-8 border-t-4 border-t-brand-500">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prévision Revenus</h3>
-          </div>
-          <div class="flex flex-col items-center justify-center py-12 text-center">
-            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-          </div>
-        </div>
-
-        <!-- Feature Adoption -->
-        <div class="card p-8 border-t-4 border-t-cyan-500">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Adoption Fonctionnalités</h3>
-          </div>
-          <div class="flex flex-col items-center justify-center py-12 text-center">
-            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Segmentation Analysis -->
-      <div class="card p-8 animate-slide-up" style="animation-delay: 0.4s">
-        <div class="flex items-center justify-between mb-8">
-          <div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Segmentation Utilisateurs</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Répartition stratégique de la base</p>
-          </div>
-        </div>
-        <div class="flex flex-col items-center justify-center py-12 text-center">
-          <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-          <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-          <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-        </div>
-      </div>
-
-      <!-- Performance Benchmarks -->
-      <div class="card p-8 animate-slide-up" style="animation-delay: 0.5s">
-        <div class="flex items-center justify-between mb-8">
-          <div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Benchmarks Sectoriels</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Comparaison avec la moyenne du secteur</p>
-          </div>
-        </div>
-        <div class="flex flex-col items-center justify-center py-12 text-center">
-          <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-          <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-          <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-        </div>
-      </div>
-
-      <!-- Insights & Recommendations -->
-      <div class="card p-8 animate-slide-up" style="animation-delay: 0.6s">
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Insights & Recommandations</h3>
-        <div class="flex flex-col items-center justify-center py-12 text-center">
-          <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
-          <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
-          <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
-        </div>
-      </div>
-    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import {
   DocumentArrowDownIcon,
   ArrowPathIcon,
   InformationCircleIcon,
-  XMarkIcon
+  ArrowPathIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
-import api from '@/services/api'
-import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import api from '@/services/api.js'
 
-// Components
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
 
-// Reactive state
 const isLoading = ref(false)
-const errorMessage = ref('')
-const lastUpdated = ref(null)
-
-// Données réelles — GET /api/v1/admin/dashboard/stats
 const stats = reactive({
   totalUsers: 0,
   totalCompanies: 0,
   activeSubscriptions: 0,
-  monthlyRevenue: 0,
+  monthlyRevenue: null,
   newUsersToday: 0,
   newCompaniesToday: 0,
   supportTickets: 0,
-  systemHealth: 'good'
+  systemHealth: null
 })
-
-// Données réelles — GET /api/v1/admin/dashboard/activities
 const activities = ref([])
-
-// Données réelles — GET /api/v1/admin/dashboard/alerts
 const alerts = ref([])
 
-const healthLabel = {
-  good: 'Bon',
-  warning: 'Attention',
-  error: 'Erreur'
-}
+const monthlyRevenueLabel = ref('')
+const newUsersTrend = computed(() => `+${stats.newUsersToday ?? 0} aujourd'hui`)
+const newCompaniesTrend = computed(() => `+${stats.newCompaniesToday ?? 0} aujourd'hui`)
+const systemHealthLabel = computed(() => (stats.systemHealth ? `Health: ${stats.systemHealth}` : ''))
 
-const healthColor = {
-  good: 'green',
-  warning: 'yellow',
-  error: 'red'
-}
+onMounted(loadAll)
 
-const alertLevelLabel = {
-  critical: 'Critique',
-  warning: 'Avertissement',
-  info: 'Info'
-}
-
-onMounted(async () => {
-  await loadAnalytics()
-})
-
-// Méthodes
-async function loadAnalytics() {
+async function loadAll() {
   isLoading.value = true
-  errorMessage.value = ''
-
   try {
-    const [statsResponse, activitiesResponse, alertsResponse] = await Promise.all([
+    const [statsRes, activitiesRes, alertsRes] = await Promise.all([
       api.get('/admin/dashboard/stats'),
       api.get('/admin/dashboard/activities'),
       api.get('/admin/dashboard/alerts')
     ])
-
-    Object.assign(stats, statsResponse.data || {})
-    activities.value = activitiesResponse.data?.data || []
-    alerts.value = alertsResponse.data?.data || []
-    lastUpdated.value = new Date()
+    Object.assign(stats, statsRes.data || {})
+    activities.value = activitiesRes.data?.data || []
+    alerts.value = alertsRes.data?.data || []
+    if (stats.monthlyRevenue) {
+      monthlyRevenueLabel.value = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(stats.monthlyRevenue)
+    } else {
+      monthlyRevenueLabel.value = ''
+    }
   } catch (error) {
     console.error('Failed to load analytics:', error)
-    errorMessage.value = 'Erreur lors du chargement des analytics. Réessayez plus tard.'
-    toast.error('Erreur lors du chargement des analytics')
+    toast.error("Erreur lors du chargement des analytics")
   } finally {
     isLoading.value = false
   }
 }
 
-async function loadCohortData() {
-  // Simulate cohort analysis data
-  await new Promise(resolve => setTimeout(resolve, 500))
-
-  analytics.cohortData = [
-    { month: 'Jan 2026', week0: 100, week1: 85, week2: 72, week3: 65, week4: 58 },
-    { month: 'Fév 2026', week0: 100, week1: 88, week2: 75, week3: 68, week4: 62 },
-    { month: 'Mar 2026', week0: 100, week1: 90, week2: 78, week3: 71, week4: 65 },
-    { month: 'Avr 2026', week0: 100, week1: 87, week2: 74, week3: 67, week4: 60 }
-  ]
-}
-
-async function loadFunnelData() {
-  // Simulate funnel data
-  await new Promise(resolve => setTimeout(resolve, 300))
-
-  analytics.funnelData = [
-    { stage: 'Visiteurs', value: 10000, conversion: 100 },
-    { stage: 'Inscriptions', value: 2500, conversion: 25 },
-    { stage: 'Activations', value: 1800, conversion: 72 },
-    { stage: 'Essais', value: 900, conversion: 50 },
-    { stage: 'Abonnements', value: 450, conversion: 50 }
-  ]
-}
-
-async function loadSegmentationData() {
-  // Simulate segmentation data
-  await new Promise(resolve => setTimeout(resolve, 400))
-
-  analytics.segmentationData = [
-    { segment: 'Champions', users: 450, value: 'Très élevée', color: '#10B981' },
-    { segment: 'Loyaux', users: 680, value: 'Élevée', color: '#3B82F6' },
-    { segment: 'Potentiels', users: 320, value: 'Moyenne', color: '#F59E0B' },
-    { segment: 'Nouveaux', users: 890, value: 'Faible', color: '#8B5CF6' },
-    { segment: 'À risque', users: 120, value: 'Critique', color: '#EF4444' }
-  ]
-}
-
-async function loadBenchmarkData() {
-  // Simulate benchmark data
-  await new Promise(resolve => setTimeout(resolve, 350))
-
-  analytics.benchmarkData = [
-    { metric: 'Taux de conversion', our: 12.5, industry: 8.2, status: 'above' },
-    { metric: 'Churn mensuel', our: 3.2, industry: 5.1, status: 'above' },
-    { metric: 'LTV/CAC ratio', our: 13.6, industry: 11.8, status: 'above' },
-    { metric: 'Time to value', our: 7, industry: 12, status: 'above' },
-    { metric: 'Support satisfaction', our: 4.2, industry: 3.8, status: 'above' }
-  ]
-}
-
-async function loadInsights() {
-  // Simulate AI-generated insights
-  await new Promise(resolve => setTimeout(resolve, 600))
-
-  analytics.insights = [
-    {
-      id: 1,
-      type: 'opportunity',
-      title: 'Opportunité d\'amélioration du onboarding',
-      description: 'Les utilisateurs qui complètent le tutoriel ont 3x plus de chances de s\'abonner.',
-      impact: 'high',
-      action: 'Optimiser le parcours d\'onboarding',
-      confidence: 0.89
-    },
-    {
-      id: 2,
-      type: 'warning',
-      title: 'Baisse d\'engagement détectée',
-      description: 'Les utilisateurs du segment "Entreprises 50-100" montrent une baisse d\'activité de 15%.',
-      impact: 'medium',
-      action: 'Lancer une campagne de réengagement',
-      confidence: 0.76
-    },
-    {
-      id: 3,
-      type: 'success',
-      title: 'Performance exceptionnelle',
-      description: 'Le taux de conversion mobile a augmenté de 25% ce mois-ci.',
-      impact: 'positive',
-      action: 'Analyser les facteurs de succès',
-      confidence: 0.95
-    }
-  ]
-}
-
-async function updateAnalytics() {
-  await loadAnalytics()
-  toast.success('Analytics mis à jour')
-}
-
-async function refreshSegmentation() {
-  isLoading.value = true
-  await loadSegmentationData()
-  isLoading.value = false
-  toast.success('Segmentation actualisée')
-}
-
-async function exportReport() {
+async function dismissAlert(alertKey) {
   try {
-    const reportData = {
-      exported_at: new Date().toISOString(),
-      stats: { ...stats },
-      activities: activities.value,
-      alerts: alerts.value
-    }
-
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `analytics-report-${Date.now()}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-
-    toast.success('Rapport exporté avec succès')
+    await api.post(`/admin/dashboard/alerts/${alertKey}/dismiss`)
+    alerts.value = alerts.value.filter(a => a.id !== alertKey)
+    toast.success('Alerte ignorée')
   } catch (error) {
-    console.error('Export failed:', error)
-    toast.error('Erreur lors de l\'export')
+    console.error('Dismiss alert failed:', error)
+    toast.error("Erreur lors de l'ignorance de l'alerte")
   }
 }
 
-function formatTime(value) {
-  if (!value) return '—'
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return '—'
-
-  const now = new Date()
-  const diff = now - date
-
-  if (diff < 60000) return 'À l\'instant'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  return date.toLocaleString(toIntlLocale(localeStore.current), {
+function formatDate(date) {
+  if (!date) return '-'
+  return new Date(date).toLocaleString('fr-FR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+async function exportReport() {
+  try {
+    const csvContent = "data:text/csv;charset=utf-8," +
+      "Type,Message,Date\n" +
+      activities.value.map(a => `${a.type || ''},${String(a.message || '').replace(/,/g, ';')},${a.created_at || ''}`).join('\n')
+    const link = document.createElement("a")
+    link.setAttribute("href", encodeURI(csvContent))
+    link.setAttribute("download", "analytics-activities.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    toast.success('Export terminé')
+  } catch (error) {
+    console.error('Export failed:', error)
+    toast.error("Erreur lors de l'export")
+  }
 }
 </script>

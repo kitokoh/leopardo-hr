@@ -280,193 +280,33 @@ async function loadNotificationObservability() {
 }
 
 async function loadAutomatedTasks() {
-  // Mock automated tasks
-  automatedTasks.value = [
-    {
-      id: 1,
-      name: 'Sauvegarde quotidienne',
-      description: 'Sauvegarde automatique de la base de données',
-      schedule: '0 2 * * *',
-      enabled: true,
-      lastRun: new Date(Date.now() - 3600000),
-      nextRun: new Date(Date.now() + 82800000),
-      status: 'success'
-    },
-    {
-      id: 2,
-      name: 'Nettoyage des logs',
-      description: 'Suppression des logs de plus de 30 jours',
-      schedule: '0 3 * * 0',
-      enabled: true,
-      lastRun: new Date(Date.now() - 86400000 * 2),
-      nextRun: new Date(Date.now() + 86400000 * 5),
-      status: 'success'
-    },
-    {
-      id: 3,
-      name: 'Mise à jour des certificats',
-      description: 'Renouvellement automatique des certificats SSL',
-      schedule: '0 4 1 * *',
-      enabled: true,
-      lastRun: new Date(Date.now() - 86400000 * 15),
-      nextRun: new Date(Date.now() + 86400000 * 15),
-      status: 'pending'
-    }
-  ]
+  // Pas d'API de taches planifiees — liste vide honnete (vague QA 2026-08-14)
+  automatedTasks.value = []
 }
 
 async function loadBackups() {
-  // Mock backups
-  backups.value = [
-    {
-      id: 1,
-      name: 'backup-2026-05-02-02-00',
-      type: 'full',
-      size: '2.4 GB',
-      createdAt: new Date(Date.now() - 3600000),
-      status: 'completed'
-    },
-    {
-      id: 2,
-      name: 'backup-2026-05-01-02-00',
-      type: 'full',
-      size: '2.3 GB',
-      createdAt: new Date(Date.now() - 86400000),
-      status: 'completed'
-    },
-    {
-      id: 3,
-      name: 'backup-2026-04-30-02-00',
-      type: 'incremental',
-      size: '450 MB',
-      createdAt: new Date(Date.now() - 86400000 * 2),
-      status: 'completed'
-    }
-  ]
+  // Pas d'API de sauvegardes — liste vide honnete (vague QA 2026-08-14)
+  backups.value = []
 }
 
 async function loadSecurityAlerts() {
-  // Mock security alerts
-  securityAlerts.value = [
-    {
-      id: 1,
-      type: 'suspicious_login',
-      severity: 'medium',
-      message: 'Tentative de connexion depuis une IP inhabituelle',
-      details: 'IP: 192.168.1.100 • Utilisateur: admin@example.com',
-      timestamp: new Date(Date.now() - 1800000),
-      status: 'open'
-    },
-    {
-      id: 2,
-      type: 'rate_limit_exceeded',
-      severity: 'low',
-      message: 'Limite de taux dépassée pour l\'API',
-      details: 'Endpoint: /api/users • IP: 10.0.0.50',
-      timestamp: new Date(Date.now() - 3600000),
-      status: 'investigating'
-    }
-  ]
+  // Pas d'API dediee — liste vide honnete (vague QA 2026-08-14)
+  securityAlerts.value = []
 }
 
 async function loadApiTests() {
-  // Mock API tests
-  apiTests.value = [
-    {
-      id: 1,
-      name: 'Test authentification',
-      method: 'POST',
-      endpoint: '/api/auth/login',
-      lastRun: new Date(Date.now() - 1800000),
-      status: 'passed',
-      responseTime: 145
-    },
-    {
-      id: 2,
-      name: 'Test liste utilisateurs',
-      method: 'GET',
-      endpoint: '/api/users',
-      lastRun: new Date(Date.now() - 900000),
-      status: 'passed',
-      responseTime: 89
-    },
-    {
-      id: 3,
-      name: 'Test création entreprise',
-      method: 'POST',
-      endpoint: '/api/companies',
-      lastRun: new Date(Date.now() - 2700000),
-      status: 'failed',
-      responseTime: 0,
-      error: 'Timeout after 5000ms'
-    }
-  ]
+  // Pas d'API de tests — liste vide honnete (vague QA 2026-08-14)
+  apiTests.value = []
 }
 
 async function loadSystemConfig() {
-  // Mock system configuration
-  systemConfig.value = {
-    general: {
-      siteName: 'Leopardo RH',
-      timezone: 'Europe/Paris',
-      language: 'fr',
-      maintenanceMode: false
-    },
-    security: {
-      sessionTimeout: 3600,
-      maxLoginAttempts: 5,
-      passwordMinLength: 8,
-      twoFactorRequired: false
-    },
-    performance: {
-      cacheEnabled: true,
-      cacheTtl: 300,
-      compressionEnabled: true,
-      rateLimitEnabled: true
-    },
-    notifications: {
-      emailEnabled: true,
-      smsEnabled: false,
-      pushEnabled: true,
-      webhookEnabled: true
-    }
-  }
+  // Pas d'API de configuration systeme — etat vide honnete (vague QA 2026-08-14)
+  systemConfig.value = null
 }
 
 async function loadLoadBalancerNodes() {
-  // Mock load balancer nodes
-  loadBalancerNodes.value = [
-    {
-      id: 1,
-      name: 'api-node-1',
-      ip: '10.0.1.10',
-      status: 'healthy',
-      connections: 145,
-      cpu: 45,
-      memory: 67,
-      responseTime: 89
-    },
-    {
-      id: 2,
-      name: 'api-node-2',
-      ip: '10.0.1.11',
-      status: 'healthy',
-      connections: 132,
-      cpu: 52,
-      memory: 71,
-      responseTime: 92
-    },
-    {
-      id: 3,
-      name: 'api-node-3',
-      ip: '10.0.1.12',
-      status: 'draining',
-      connections: 23,
-      cpu: 15,
-      memory: 34,
-      responseTime: 78
-    }
-  ]
+  // Pas d'API de load balancer — liste vide honnete (vague QA 2026-08-14)
+  loadBalancerNodes.value = []
 }
 
 function startMetricsRefresh() {
@@ -507,17 +347,28 @@ async function runHealthCheck() {
   isRunningHealthCheck.value = true
 
   try {
-    const response = await api.get('/health/ready')
-    healthCheck.value = response.data
-    healthCheckTimestamp.value = new Date()
+    // Health check reel (endpoints publics /health/live + /health/ready)
+    const [live, ready] = await Promise.all([
+      api.get('/health/live').catch(() => null),
+      api.get('/health/ready').catch(() => null)
+    ])
 
-    // Update system status
-    systemStatus.overall = 'healthy'
-    systemStatus.database = 'healthy'
-    systemStatus.api = 'healthy'
-    systemStatus.websocket = 'healthy'
+    const liveOk = live !== null && live.status === 200
+    const readyOk = ready !== null && ready.status === 200
 
-    toast.success('Health check terminé • Tous les services sont opérationnels')
+    systemStatus.overall = liveOk && readyOk ? 'healthy' : 'degraded'
+    systemStatus.api = liveOk ? 'healthy' : 'unreachable'
+    systemStatus.database = readyOk ? 'healthy' : 'degraded'
+    systemStatus.websocket = 'unknown'
+    systemStatus.overallDetails = liveOk && readyOk
+      ? 'Liveness + readiness OK'
+      : `Liveness ${liveOk ? 'OK' : 'KO'} / Readiness ${readyOk ? 'OK' : 'KO'}`
+
+    if (liveOk && readyOk) {
+      toast.success('Health check terminé — tous les services sont opérationnels')
+    } else {
+      toast.error('Health check : liveness/readiness en échec — voir détails ci-dessus')
+    }
   } catch (error) {
     healthCheck.value = error.response?.data || {
       status: 'fail',
@@ -532,18 +383,8 @@ async function runHealthCheck() {
 }
 
 async function toggleMaintenanceMode() {
-  try {
-    systemStatus.maintenanceMode = !systemStatus.maintenanceMode
-
-    if (systemStatus.maintenanceMode) {
-      toast.warning('Mode maintenance activé')
-    } else {
-      toast.success('Mode maintenance désactivé')
-    }
-  } catch (error) {
-    console.error('Failed to toggle maintenance mode:', error)
-    toast.error('Erreur lors du changement de mode')
-  }
+  // Pas d'endpoint backend de maintenance — etat honnete (vague QA 2026-08-14)
+  toast.warning('Action non disponible : aucun endpoint backend de maintenance n\'est exposé')
 }
 
 function refreshMetrics() {

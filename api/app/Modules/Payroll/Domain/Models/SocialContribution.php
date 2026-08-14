@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $company_id
  * @property string $country_code
  * @property string $name
+ * @property string|null $legal_reference
  * @property string $code
  * @property string $type
  * @property float $rate
@@ -50,7 +51,7 @@ class SocialContribution extends Model
     ];
 
     protected $fillable = [
-        'company_id', 'country_code', 'name', 'code', 'type',
+        'company_id', 'country_code', 'name', 'code', 'legal_reference', 'type',
         'rate', 'cap', 'effective_from', 'effective_to',
         'status', 'submitted_by', 'validated_by', 'validated_at', 'rejection_reason',
     ];

@@ -68,6 +68,10 @@
           </div>
         </form>
 
+        <div v-if="hrReportError" class="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {{ hrReportError }}
+        </div>
+
         <div v-if="hrReportResult" class="mt-6">
           <div class="overflow-x-auto rounded-md border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
@@ -127,6 +131,7 @@ const exportHistory = ref([])
 const historyLoading = ref(false)
 const hrReportResult = ref(null)
 const generatingReport = ref(false)
+const hrReportError = ref('')
 
 const hrReport = reactive({
   type: 'headcount',
@@ -168,11 +173,13 @@ async function downloadReport(report) {
 
 async function generateHrReport() {
   generatingReport.value = true
+  hrReportError.value = ''
   try {
     const res = await api.get('/admin/hr-reports', { params: hrReport })
     hrReportResult.value = res.data.data || res.data || null
-  } catch {
+  } catch (err) {
     hrReportResult.value = null
+    hrReportError.value = err?.response?.data?.message || 'Impossible de générer le rapport HR (endpoint indisponible).'
   } finally {
     generatingReport.value = false
   }
