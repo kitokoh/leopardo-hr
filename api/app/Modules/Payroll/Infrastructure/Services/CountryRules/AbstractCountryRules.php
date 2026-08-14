@@ -103,7 +103,12 @@ abstract class AbstractCountryRules implements CountryRulesInterface
                 return null;
             }
 
-            $base = TaxSlab::query()->forCountry($this->countryCode())->effective($this->asOfDate);
+            // Issue #1813 : seules les lignes ACTIVES participent aux calculs
+            // (draft/pending_validation/superseded sont ignorées).
+            $base = TaxSlab::query()
+                ->forCountry($this->countryCode())
+                ->active()
+                ->effective($this->asOfDate);
 
             if ($this->companyId !== null) {
                 $companySlabs = (clone $base)->where('company_id', $this->companyId)->orderBy('min_amount')->get();
@@ -197,6 +202,7 @@ abstract class AbstractCountryRules implements CountryRulesInterface
 
             $base = SocialContribution::query()
                 ->forCountry($this->countryCode())
+                ->active()
                 ->where('code', $code)
                 ->effective($this->asOfDate);
 

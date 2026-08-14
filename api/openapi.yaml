@@ -1197,6 +1197,90 @@ paths:
           $ref: "#/components/responses/Error403"
 
 
+  /admin/rate-validation/pending:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les modifications de taux en attente de validation — issue #1813"
+      operationId: listPendingRateValidation
+      responses:
+        "200":
+          description: "Barèmes + cotisations en pending_validation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RateValidationItem"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/rate-validation/{table}/{id}/approve:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Approuver une modification de taux (platform_admin) — issue #1813"
+      operationId: approveRateValidation
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema: { type: string, enum: [tax_slabs, social_contributions] }
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Ligne active, ancienne ligne superseded"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RateValidationItem"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/rate-validation/{table}/{id}/reject:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Rejeter une modification de taux avec motif (platform_admin) — issue #1813"
+      operationId: rejectRateValidation
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema: { type: string, enum: [tax_slabs, social_contributions] }
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        "200":
+          description: "Ligne retournée en draft avec motif"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RateValidationItem"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
   /admin/dashboard/stats:
     get:
       tags: ["Platform"]
@@ -7320,6 +7404,56 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /tax-slabs/{taxSlab}/submit:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Soumettre une tranche d'impot pour validation (manager) — issue #1813"
+      operationId: submitTaxSlab
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Tranche soumise (pending_validation)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaxSlab"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /tax-slabs/{taxSlab}/history:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Historique immuable des modifications d'une tranche (manager) — issue #1813"
+      operationId: taxSlabHistory
+      parameters:
+        - name: taxSlab
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Audit trail (tax_rate_change_log, append-only)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
   /social-contributions:
     get:
       tags: ["Payroll Engine"]
@@ -7439,6 +7573,56 @@ paths:
           $ref: "#/components/responses/Error403"
         "404":
           $ref: "#/components/responses/Error404"
+
+  /social-contributions/{socialContribution}/submit:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Soumettre une regle de cotisation pour validation (manager) — issue #1813"
+      operationId: submitSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Cotisation soumise (pending_validation)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /social-contributions/{socialContribution}/history:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Historique immuable des modifications d'une cotisation (manager) — issue #1813"
+      operationId: socialContributionHistory
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Audit trail (tax_rate_change_log, append-only)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaxRateChangeLog"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
 
   /social-declarations/cnas-dz:
     post:
@@ -15597,6 +15781,35 @@ components:
           type: string
           format: date-time
 
+    TaxRateChangeLog:
+      type: object
+      properties:
+        id: { type: integer }
+        table_name: { type: string, enum: [tax_slabs, social_contributions] }
+        record_id: { type: integer }
+        action: { type: string, enum: [created, submitted, approved, rejected, superseded] }
+        actor_id: { type: integer }
+        actor_role: { type: string }
+        previous_value: { type: object, nullable: true }
+        new_value: { type: object }
+        reason: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+    RateValidationItem:
+      type: object
+      properties:
+        id: { type: integer }
+        table: { type: string, enum: [tax_slabs, social_contributions] }
+        company_id: { type: string, nullable: true }
+        country_code: { type: string }
+        name: { type: string }
+        rate: { type: number }
+        status: { type: string, enum: [draft, pending_validation, active, superseded] }
+        submitted_by: { type: integer, nullable: true }
+        validated_by: { type: integer, nullable: true }
+        validated_at: { type: string, nullable: true }
+        rejection_reason: { type: string, nullable: true }
+        effective_from: { type: string, format: date }
+        effective_to: { type: string, nullable: true }
     TaxSlab:
       type: object
       properties:

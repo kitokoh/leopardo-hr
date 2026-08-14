@@ -19,6 +19,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
@@ -295,5 +296,13 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
+
+        // Issue #1813 — validation des modifications de taux légaux
+        // (approbation/rejet réservés au platform_admin).
+        Route::get('/rate-validation/pending', [RateValidationAdminController::class, 'pending']);
+        Route::put('/rate-validation/{table}/{id}/approve', [RateValidationAdminController::class, 'approve'])
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
+        Route::put('/rate-validation/{table}/{id}/reject', [RateValidationAdminController::class, 'reject'])
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
     });
 });

@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaxSlabResource;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class TaxSlabController extends Controller
 {
+    public function __construct(private readonly TaxRateValidationService $validation) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -62,7 +66,13 @@ class TaxSlabController extends Controller
             'fixed_deduction' => $validated['fixed_deduction'] ?? 0,
             'effective_from' => $validated['effective_from'],
             'effective_to' => $validated['effective_to'] ?? null,
+            // Issue #1813 : toute création passe par le workflow de validation
+            // (status = draft ; l'approbation d'un platform_admin est requise
+            // pour que la ligne soit utilisée dans les calculs).
+            'status' => TaxSlab::STATUS_DRAFT,
         ]);
+
+        $this->validation->logCreated($slab, $actor);
 
         return (new TaxSlabResource($slab))
             ->response()
@@ -79,6 +89,12 @@ class TaxSlabController extends Controller
         // Tenant isolation: reject cross-company access.
         if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
             abort(404);
+        }
+
+        // Issue #1813 : une ligne soumise/active ne se modifie plus directement —
+        // on propose une nouvelle modification (draft) via le workflow.
+        if ($taxSlab->status !== TaxSlab::STATUS_DRAFT) {
+            abort(409, 'Une ligne soumise, active ou remplacée ne peut plus être modifiée — proposez une nouvelle modification.');
         }
 
         $validated = $request->validate([
@@ -115,9 +131,65 @@ class TaxSlabController extends Controller
             abort(404);
         }
 
+        // Issue #1813 : seules les lignes draft peuvent être supprimées.
+        if ($taxSlab->status !== TaxSlab::STATUS_DRAFT) {
+            abort(409, 'Seule une ligne en brouillon peut être supprimée.');
+        }
+
         $taxSlab->delete();
 
         return response()->json(['message' => 'Tax slab deleted successfully.']);
     }
-}
 
+    /**
+     * Soumet une ligne draft pour validation par un platform_admin.
+     */
+    public function submit(Request $request, TaxSlab $taxSlab): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        try {
+            $this->validation->submit($taxSlab, $actor);
+        } catch (\DomainException $e) {
+            abort(422, $e->getMessage());
+        }
+
+        return (new TaxSlabResource($taxSlab->refresh()))->response();
+    }
+
+    /**
+     * Historique immuable des modifications d'une ligne (audit trail).
+     */
+    public function history(Request $request, TaxSlab $taxSlab): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ((string) $taxSlab->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => $this->validation->history($taxSlab)
+                ->map(fn (TaxRateChangeLog $log): array => [
+                    'id' => $log->id,
+                    'action' => $log->action,
+                    'actor_id' => $log->actor_id,
+                    'actor_role' => $log->actor_role,
+                    'previous_value' => $log->previous_value,
+                    'new_value' => $log->new_value,
+                    'reason' => $log->reason,
+                    'created_at' => $log->created_at?->toIso8601String(),
+                ]),
+        ]);
+    }
+}
