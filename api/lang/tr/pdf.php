@@ -169,4 +169,6 @@ return [
     'cert_made_in' => 'Düzenlenme yeri:',
     'cert_on_date' => ', tarih:',
     'cert_position_fallback' => 'çalışan',
+
+    'payslip_regularization_banner' => 'DÜZELTME BORDROSU — :run numaralı ödemeyi düzeltir',
 ];

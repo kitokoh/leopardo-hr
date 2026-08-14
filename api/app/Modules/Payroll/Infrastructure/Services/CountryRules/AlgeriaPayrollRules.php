@@ -23,6 +23,15 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
+        // Issue #1819 — ASSURANCE CHÔMAGE DZ : AUCUNE cotisation salariale ni
+        // patronale applicable au secteur privé. L'allocation chômage
+        // algérienne (LF 2022, art. 189 ; décrets exécutifs n° 22-70 du
+        // 10/02/2022 et n° 26-87 du 21/01/2026) bénéficie aux primo-demandeurs
+        // d'emploi inscrits à l'ANEM et est financée par le budget de l'État
+        // (≈ 420 Mds DZD en LF 2026), pas par les entreprises. La CNAC
+        // (décret exécutif n° 94-188) finance la création d'activités des
+        // demandeurs d'emploi — ce n'est pas une assurance chômage cotisée.
+        // → pas de codes AC_DZ_EMP / AC_DZ_PAT (docs/payroll/DZ_COMPLIANCE.md §7).
         return [
             ['name' => 'CNAS Salariale', 'code' => 'CNAS_EMP', 'type' => 'employee', 'rate' => 9.0, 'cap' => null],
             ['name' => 'CNAS Patronale', 'code' => 'CNAS_PAT', 'type' => 'employer', 'rate' => 26.0, 'cap' => null],
@@ -41,7 +50,7 @@ class AlgeriaPayrollRules extends AbstractCountryRules
         ];
     }
 
-    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
+    public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
         $tax = $this->calculateProgressiveTax($grossTaxable, $this->taxSlabs());
 
@@ -143,9 +152,21 @@ class AlgeriaPayrollRules extends AbstractCountryRules
      * docs/payroll/DZ_COMPLIANCE.md §7 mais NON verrouillées tant qu'un
      * expert comptable DZ ne les a pas validées (confidenceLevel='pilot').
      */
+    /**
+     * Issue #1819 — Préavis DZ (délai-congé de licenciement).
+     *
+     * La Loi n° 90-11 du 21/04/1990 ne fixe PAS de durée légale ferme : elle
+     * renvoie aux conventions collectives / au règlement intérieur (pendant le
+     * délai-congé, le travailleur dispose de 2 h/jour cumulables et rémunérées
+     * pour rechercher un emploi, art. 73-4). L'usage dominant en pratique
+     * algérienne, retenu ici comme valeur par défaut paramétrable :
+     *   1 mois (30 j) si ancienneté < 10 ans, 2 mois (60 j) si ≥ 10 ans.
+     * (cf. docs/payroll/DZ_COMPLIANCE.md §7 — confidenceLevel reste 'pilot',
+     * validation expert comptable DZ requise avant passage en 'production'.)
+     */
     public function noticePeriodDays(float $yearsOfService): float
     {
-        return 0.0;
+        return $yearsOfService >= 10.0 ? 60.0 : 30.0;
     }
 
     /**

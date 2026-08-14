@@ -29,8 +29,13 @@ class SocialContributionResource extends JsonResource
             'cap' => $this->cap,
             'effective_from' => $this->effective_from->toDateString(),
             'effective_to' => $this->effective_to?->toDateString(),
+            // Issue #1813 — workflow de validation des taux légaux.
+            'status' => $this->status,
+            'submitted_by' => $this->submitted_by,
+            'validated_by' => $this->validated_by,
+            'validated_at' => $this->validated_at?->toIso8601String(),
+            'rejection_reason' => $this->rejection_reason,
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }
-

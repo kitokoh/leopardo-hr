@@ -169,4 +169,6 @@ return [
     'cert_made_in' => 'Made in',
     'cert_on_date' => ', on',
     'cert_position_fallback' => 'employee',
+
+    'payslip_regularization_banner' => 'REGULARIZATION PAYSLIP — corrects run #:run',
 ];
