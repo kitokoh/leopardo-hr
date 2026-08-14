@@ -173,6 +173,7 @@ class CabinetDocumentControllerTest extends TestCase
 
         $folder = CabinetFolder::create([
             'company_id' => $this->company->id,
+            'employee_id' => $this->manager->id,
             'name' => 'Dossier cible',
         ]);
         $document = $this->makeDocument(readOnly: true);
