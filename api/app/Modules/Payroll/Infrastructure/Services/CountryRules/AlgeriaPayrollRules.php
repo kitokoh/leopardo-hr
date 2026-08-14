@@ -23,15 +23,18 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
-        // Issue #1819 — ASSURANCE CHÔMAGE DZ : AUCUNE cotisation salariale ni
-        // patronale applicable au secteur privé. L'allocation chômage
-        // algérienne (LF 2022, art. 189 ; décrets exécutifs n° 22-70 du
-        // 10/02/2022 et n° 26-87 du 21/01/2026) bénéficie aux primo-demandeurs
-        // d'emploi inscrits à l'ANEM et est financée par le budget de l'État
-        // (≈ 420 Mds DZD en LF 2026), pas par les entreprises. La CNAC
-        // (décret exécutif n° 94-188) finance la création d'activités des
-        // demandeurs d'emploi — ce n'est pas une assurance chômage cotisée.
-        // → pas de codes AC_DZ_EMP / AC_DZ_PAT (docs/payroll/DZ_COMPLIANCE.md §7).
+        // Issue #1819/#1943 — ASSURANCE CHÔMAGE DZ : le régime contributif
+        // CNAC (décret législatif n° 94-11, art. 94-188 ; décrets exécutifs
+        // n° 22-70 du 10/02/2022 et n° 26-87 du 21/01/2026) couvre les
+        // salariés du secteur privé licenciés pour motif économique, financé
+        // par 1 % patron + 0,5 % salarié — DÉJÀ inclus dans les agrégats
+        // CNAS ci-dessous (9 % / 26 %). L'allocation chômage des
+        // primo-demandeurs (ANEM, 13 000 DZD/mois) est financée par le budget
+        // de l'État, pas par les entreprises.
+        // → PAS de lignes AC_DZ_EMP / AC_DZ_PAT séparées (double cotisation) ;
+        //   le cadrage « AC inclus dans CNAS » est documenté dans
+        //   docs/payroll/DZ_COMPLIANCE.md §7 et verrouillé par le golden test
+        //   GoldenDzEndOfContractFullTest (issue #1943).
         return [
             ['name' => 'CNAS Salariale', 'code' => 'CNAS_EMP', 'type' => 'employee', 'rate' => 9.0, 'cap' => null],
             ['name' => 'CNAS Patronale', 'code' => 'CNAS_PAT', 'type' => 'employer', 'rate' => 26.0, 'cap' => null],
@@ -153,20 +156,27 @@ class AlgeriaPayrollRules extends AbstractCountryRules
      * expert comptable DZ ne les a pas validées (confidenceLevel='pilot').
      */
     /**
-     * Issue #1819 — Préavis DZ (délai-congé de licenciement).
+     * Issue #1819/#1943 — Préavis DZ (délai-congé de licenciement).
      *
      * La Loi n° 90-11 du 21/04/1990 ne fixe PAS de durée légale ferme : elle
      * renvoie aux conventions collectives / au règlement intérieur (pendant le
      * délai-congé, le travailleur dispose de 2 h/jour cumulables et rémunérées
      * pour rechercher un emploi, art. 73-4). L'usage dominant en pratique
      * algérienne, retenu ici comme valeur par défaut paramétrable :
-     *   1 mois (30 j) si ancienneté < 10 ans, 2 mois (60 j) si ≥ 10 ans.
-     * (cf. docs/payroll/DZ_COMPLIANCE.md §7 — confidenceLevel reste 'pilot',
-     * validation expert comptable DZ requise avant passage en 'production'.)
+     *   1 mois si ancienneté < 10 ans, 2 mois si ≥ 10 ans.
+     *
+     * #1943 (revue lead) — unité : l'indemnité compensatrice de préavis =
+     * rémunération de la période de préavis (Loi 90-11 art. 98). Le moteur
+     * paie `base × noticeDays / workingDays` avec workingDays = jours OUVRÉS
+     * (22). Renvoyer des jours CALENDAIRES (30/60) surpaierait ~36 %
+     * (30/22 = 1,36× le salaire mensuel). On renvoie donc des jours OUVRÉS :
+     *   1 mois ≈ 22 j ouvrés, 2 mois ≈ 44 j ouvrés → base × 22/22 = 1 mois
+     *   exact. (cf. docs/payroll/DZ_COMPLIANCE.md §7 — confidenceLevel reste
+     *   'pilot', validation expert comptable DZ requise avant 'production'.)
      */
     public function noticePeriodDays(float $yearsOfService): float
     {
-        return $yearsOfService >= 10.0 ? 60.0 : 30.0;
+        return $yearsOfService >= 10.0 ? 44.0 : 22.0;
     }
 
     /**

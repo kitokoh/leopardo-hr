@@ -94,6 +94,8 @@
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const props = defineProps({
   countryCode: { type: String, required: true },
@@ -102,6 +104,17 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'changed'])
 
 const toast = useToast()
+const localeStore = useLocaleStore()
+
+/** Traduction avec interpolation {var} — convention catalogue i18n (#1916). */
+function t(key, vars = {}) {
+  let msg = translate(localeStore.current, key, key)
+  for (const [k, v] of Object.entries(vars)) {
+    msg = msg.replace(`{${k}}`, String(v))
+  }
+  return msg
+}
+
 const slabs = ref([])
 const busy = ref(false)
 const formOpen = ref(false)
@@ -129,7 +142,7 @@ async function load() {
     })
     slabs.value = data.data || []
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible de charger le barème.')
+    toast.error(err?.response?.data?.message || t('tax_slabs.load_error'))
   } finally {
     busy.value = false
   }
@@ -138,7 +151,7 @@ async function load() {
 function openCreate() {
   editing.value = null
   Object.assign(form, {
-    name: `${props.countryCode} tranche légale`,
+    name: t('tax_slabs.default_name', { country: props.countryCode }),
     min_amount: null,
     max_amount: null,
     rate: null,
@@ -179,46 +192,46 @@ async function saveSlab() {
     }
     if (editing.value) {
       await api.put(`/admin/tax-slabs/${editing.value.id}`, payload)
-      toast.success('Tranche mise à jour.')
+      toast.success(t('tax_slabs.saved'))
     } else {
       await api.post('/admin/tax-slabs', payload)
-      toast.success('Tranche créée.')
+      toast.success(t('tax_slabs.created'))
     }
     formOpen.value = false
     await load()
     emit('changed', slabs.value)
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible d’enregistrer la tranche.')
+    toast.error(err?.response?.data?.message || t('tax_slabs.save_error'))
   } finally {
     busy.value = false
   }
 }
 
 async function removeSlab(slab) {
-  if (!window.confirm(`Supprimer la tranche « ${slab.name} » ?`)) return
+  if (!window.confirm(t('tax_slabs.delete_confirm', { name: slab.name }))) return
   busy.value = true
   try {
     await api.delete(`/admin/tax-slabs/${slab.id}`)
-    toast.success('Tranche supprimée.')
+    toast.success(t('tax_slabs.deleted'))
     await load()
     emit('changed', slabs.value)
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Impossible de supprimer.')
+    toast.error(err?.response?.data?.message || t('tax_slabs.delete_error'))
   } finally {
     busy.value = false
   }
 }
 
 async function confirmReset() {
-  if (!window.confirm('Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.')) return
+  if (!window.confirm(t('tax_slabs.reset_confirm'))) return
   busy.value = true
   try {
     await api.post('/admin/tax-slabs/reset-defaults', { country_code: props.countryCode })
-    toast.success('Barème réinitialisé.')
+    toast.success(t('tax_slabs.reset_done'))
     await load()
     emit('changed', slabs.value)
   } catch (err) {
-    toast.error(err?.response?.data?.message || 'Réinitialisation impossible.')
+    toast.error(err?.response?.data?.message || t('tax_slabs.reset_error'))
   } finally {
     busy.value = false
   }

@@ -34,6 +34,14 @@ class EndOfContractService
     /**
      * Solde de tout compte à une date donnée (défaut : aujourd'hui).
      *
+     * @param  array{departure_reason?: string|null, notice_served?: bool}  $context
+     *         Issue #1943 — conditionnement du préavis : l'indemnité
+     *         compensatrice n'est due que si l'employeur licencie un CDI
+     *         (hors faute lourde) et dispense du préavis. Sans contexte
+     *         explicite, le défaut est PRUDENT : pas de préavis calculé
+     *         (un CDD à terme naturel, une démission ou une faute lourde ne
+     *         doivent jamais payer de préavis — surpaie silencieuse sinon).
+     *
      * @return array{
      *   employee_id: int,
      *   end_date: string,
@@ -46,7 +54,7 @@ class EndOfContractService
      *   breakdown: array{prorated_pay: float, leave_indemnity: float, notice_pay: float, severance: float, total: float}
      * }
      */
-    public function settlement(Employee $employee, ?Carbon $endDate = null): array
+    public function settlement(Employee $employee, ?Carbon $endDate = null, array $context = []): array
     {
         $endDate = $endDate ?? $this->resolveEndDate($employee);
         $monthlyBase = $this->monthlyBase($employee);
@@ -68,6 +76,10 @@ class EndOfContractService
 
         $rules = $this->calculator->getRules($countryCode);
 
+        // Issue #1943 — le préavis est conditionné au contexte de départ
+        // (CDI + licenciement hors faute lourde + préavis non effectué).
+        $noticeDays = $this->resolveNoticeDays($rules, $employee, $context, $yearsOfService);
+
         $breakdown = $this->calculator->computeFinalSettlement(
             monthlyBase: $monthlyBase,
             yearsOfService: $yearsOfService,
@@ -76,7 +88,7 @@ class EndOfContractService
             unpaidLeaveDays: $unpaidLeaveDays,
             referenceGross12Months: $referenceGross,
             severanceMonthsPerYear: $rules->severanceMonthsPerYear($yearsOfService),
-            noticeDays: $rules->noticePeriodDays($yearsOfService),
+            noticeDays: $noticeDays,
         );
 
         return [
@@ -103,6 +115,58 @@ class EndOfContractService
             'months_of_service' => $this->monthsOfService($employee, $endDate),
             'settlement' => $this->settlement($employee, $endDate),
         ];
+    }
+
+    /**
+     * Issue #1943 — résout les jours de préavis APPLICABLES au départ.
+     *
+     * L'indemnité compensatrice de préavis n'est due que si l'employeur
+     * licencie un CDI (hors faute lourde) et dispense du préavis (Loi 90-11
+     * art. 98). Elle n'est PAS due pour :
+     *  - un CDD à terme naturel (le contrat s'achève, aucun préavis) ;
+     *  - une démission (le préavis est à la charge du salarié, pas payé) ;
+     *  - une faute lourde (aucun préavis, art. 83/88) ;
+     *  - un préavis réellement effectué (rien à compenser).
+     *
+     * Défaut sans contexte : 0 (prudent — on ne paye pas un préavis dont on
+     * ne connaît pas le cadre). Les appelants qui connaissent le contexte
+     * passent `departure_reason` (dismissal/redundancy/economic → préavis dû)
+     * et `notice_served=false`.
+     *
+     * @param  array{departure_reason?: string|null, notice_served?: bool}  $context
+     */
+    private function resolveNoticeDays(
+        \App\Modules\Payroll\Domain\Contracts\CountryRulesInterface $rules,
+        Employee $employee,
+        array $context,
+        float $yearsOfService
+    ): float {
+        // Préavis effectué → rien à compenser.
+        if (($context['notice_served'] ?? false) === true) {
+            return 0.0;
+        }
+
+        // Contrat : seul un CDI (licenciement) peut générer un préavis dû par
+        // l'employeur. CDD/Stage/Consultant → 0.
+        $contractType = strtoupper((string) ($employee->contract_type ?? ''));
+        if ($contractType !== 'CDI') {
+            return 0.0;
+        }
+
+        // Motif : licenciement hors faute lourde → préavis ; démission, fin de
+        // CDD, faute lourde, accord mutuel → 0.
+        $reason = strtolower((string) ($context['departure_reason'] ?? ''));
+        if ($reason === '') {
+            // Contexte absent : prudent → pas de préavis (l'appelant doit
+            // préciser le motif pour activer l'indemnité).
+            return 0.0;
+        }
+
+        if (in_array($reason, ['dismissal', 'redundancy', 'economic', 'layoff', 'licenciement', 'licenciement-economique'], true)) {
+            return $rules->noticePeriodDays($yearsOfService);
+        }
+
+        return 0.0;
     }
 
     private function monthlyBase(Employee $employee): float

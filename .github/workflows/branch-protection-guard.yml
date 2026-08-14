@@ -1,0 +1,39 @@
+name: Branch Protection Guard
+
+# Issue #2011 — incident 2026-08-14 : la protection de main a été vidée
+# (checks requis + reviews supprimés) par un outillage de merge. Cette garde
+# vérifie sur schedule + dispatch + pull_request que la protection RÉELLE de
+# main est identique au canonique committé, et échoue sinon.
+
+on:
+  schedule:
+    - cron: "0 * * * *" # toutes les heures
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'dev-hub/tools/check-branch-protection.sh'
+      - 'dev-hub/tools/branch-protection-canonical.json'
+      - '.github/workflows/branch-protection-guard.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: branch-protection-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check branch protection (issue #2011)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Verify main protection matches canonical
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dev-hub/tools/check-branch-protection.sh kitokoh/leopardo-hr main

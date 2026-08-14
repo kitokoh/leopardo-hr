@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-05-07T20:45:00Z",
+  "_updated_at": "2026-08-14T14:30:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -72,7 +72,21 @@
         "en-GB": "Ingilizce (Birlesik Krallik)"
       }
     },
-    "or": "veya"
+    "or": "veya",
+    "countries": {
+      "DZ": "Cezayir",
+      "CM": "Kamerun",
+      "CI": "Fildişi Sahili",
+      "SN": "Senegal",
+      "MA": "Fas",
+      "TN": "Tunus",
+      "FR": "Fransa",
+      "TR": "Türkiye",
+      "CG": "Kongo",
+      "GA": "Gabon",
+      "BF": "Burkina Faso",
+      "ML": "Mali"
+    }
   },
   "modules": {
     "attendance": "Puantaj",
@@ -469,7 +483,8 @@
     "approve_error": "Değişiklik onaylanamadı.",
     "rejected": "Değişiklik reddedildi (taslağa döndü).",
     "reject_error": "Değişiklik reddedilemedi.",
-    "history_error": "Geçmiş yüklenemedi."
+    "history_error": "Geçmiş yüklenemedi.",
+    "status_only": "Salt okuma (tenant işlemi)"
   },
   "tax_slabs": {
     "title": "Ülkeye göre vergi dilimleri",
@@ -506,7 +521,19 @@
     "sim_tax": "Vergi",
     "sim_net": "Net",
     "sim_base": "Matrah",
-    "sim_slab_tax": "Dilim vergisi"
+    "sim_slab_tax": "Dilim vergisi",
+    "load_error": "Vergi dilimi yüklenemedi.",
+    "save_error": "Dilim kaydedilemedi.",
+    "saved": "Dilim güncellendi.",
+    "created": "Dilim oluşturuldu.",
+    "deleted": "Dilim silindi.",
+    "delete_error": "Silinemedi.",
+    "delete_confirm": "«{name}» dilimi silinsin mi?",
+    "reset_confirm": "Yasal varsayılan değerlere sıfırlansın mı? Mevcut dilimler değiştirilecek.",
+    "reset_done": "Dilim sıfırlandı.",
+    "reset_error": "Sıfırlanamadı.",
+    "default_name": "{country} yasal dilimi",
+    "sim_error": "Simülasyon yapılamadı."
   },
   "social_contrib": {
     "title": "Ülkeye göre sosyal katkılar",
@@ -539,6 +566,13 @@
     "sim_employee": "Çalışan katkıları",
     "sim_employer": "İşveren katkıları",
     "sim_tax": "Vergi",
-    "total_cost": "Toplam işveren maliyeti"
+    "total_cost": "Toplam işveren maliyeti",
+    "load_error": "Katkılar yüklenemedi.",
+    "save_error": "Katkı kaydedilemedi.",
+    "saved": "Katkı güncellendi.",
+    "created": "Katkı oluşturuldu.",
+    "deleted": "Katkı silindi.",
+    "delete_error": "Silinemedi.",
+    "delete_confirm": "«{name}» silinsin mi?"
   }
 }

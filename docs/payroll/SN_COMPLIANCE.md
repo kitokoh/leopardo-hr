@@ -60,9 +60,14 @@ la ligne « Taxe de minimum fiscal ») :
 | 350 001 – 700 000 | 18 000 |
 | > 700 000 | 36 000 |
 
-⚠️ Le mécanisme légal « le salarié paie le plus élevé de IR / TRIMF »
-(max(IR, TRIMF)) est un raffinement à valider avec l'expert SN — dans le
-périmètre de l'issue #1827, les deux lignes coexistent dans le bulletin.
+✅ **Mécanisme légal implémenté (issue #1934)** : le salarié paie le **plus
+élevé de IR / TRIMF** — `max(IR, TRIMF)` (le TRIMF est un minimum
+représentatif de l'impôt). Implémenté au niveau de la règle SN
+(`combineMinimumFiscalTax()`, défaut moteur = additif pour les autres pays).
+Le bulletin n'affiche que la ligne gagnante (explicabilité : somme des
+lignes = total déduit). Ex. brut 100 000 XOF : IR 2 380 < TRIMF 5 400 →
+retenue fiscale 5 400 (au lieu de 7 780 cumulés avant #1934) ; brut
+250 000 : IR 25 300 > TRIMF 9 000 → retenue 25 300.
 
 ## 4. IPRES — Régime Général T1
 
