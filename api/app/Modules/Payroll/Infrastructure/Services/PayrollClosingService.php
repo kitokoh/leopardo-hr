@@ -172,11 +172,41 @@ class PayrollClosingService
         }
 
         return DB::transaction(function () use ($run, $actor, $reason): PayrollRun {
+            // TOCTOU (#1942, revue lead) : le check « régularisation active »
+            // doit vivre dans la MÊME transaction que l'update, APRÈS avoir
+            // pris le verrou pessimiste sur la ligne — `createRegularization`
+            // verrouille l'original via lockForUpdate, les deux chemins se
+            // sérialisent ainsi sur la même ligne. Sans ce verrou, un
+            // déverrouillage concurrent pouvait passer le check puis laisser
+            // une régularisation active s'écrire sur un original « validated ».
+            /** @var PayrollRun|null $lockedRun */
+            $lockedRun = PayrollRun::query()
+                ->lockForUpdate()
+                ->find($run->id);
+
+            if ($lockedRun === null) {
+                throw new \RuntimeException('Le run original n\'existe plus.');
+            }
+
+            if ($lockedRun->status !== PayrollRun::STATUS_LOCKED) {
+                throw $lockedRun->status === PayrollRun::STATUS_VALIDATED
+                    ? new PayrollRunLockedException('Le run a déjà été déverrouillé.')
+                    : new \RuntimeException('L\'état du run a changé entre la lecture et le déverrouillage.');
+            }
+
+            // Invariant « l'original n'est jamais modifié » (#1818) : un
+            // original avec des régularisations actives ne peut PAS être
+            // déverrouillé (le delta serait calculé sur un original en
+            // cours de mutation).
+            if ((new PayrollRegularizationService)->hasActiveRegularizations($lockedRun)) {
+                throw new PayrollRunHasRegularizationsException;
+            }
+
             // Capturer les valeurs pré-déverrouillage AVANT l'update : après
             // update/refresh, locked_by/locked_at sont null (l'audit trail
             // avant/après serait faux).
-            $lockedBy = $run->locked_by;
-            $lockedAt = $run->locked_at;
+            $lockedBy = $lockedRun->locked_by;
+            $lockedAt = $lockedRun->locked_at;
 
             $updated = PayrollRun::query()
                 ->whereKey($run->id)
@@ -188,10 +218,7 @@ class PayrollClosingService
                 ]);
 
             if ($updated === 0) {
-                $fresh = $run->fresh();
-                throw $fresh?->status === PayrollRun::STATUS_LOCKED
-                    ? new PayrollRunLockedException('L\'état du run a changé entre la lecture et le déverrouillage.')
-                    : new \RuntimeException('L\'état du run a changé entre la lecture et le déverrouillage.');
+                throw new \RuntimeException('L\'état du run a changé entre la lecture et le déverrouillage.');
             }
 
             $run->refresh();
