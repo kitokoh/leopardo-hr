@@ -106,6 +106,20 @@
 
 ---
 
+## Vague Durcissement QA — Audit fonctionnel 2026-08-14
+
+Feature : `.specify/features/qa-hardening-wave-2026-08-14/` — audit fonctionnel complet (web, admin-dashboard, mobile, spec-kit) — issues #2167–#2171
+
+| Issue | Tâche | État | Branche |
+|-------|-------|------|---------|
+| #2167 | US1 Actions rapides + « Voir toute l'activité » + carte Leo IA branchées sur de vraies actions (web) | 🔄 | `fix/2167-web-dashboard-dead-actions` |
+| #2168 | US1 Bouton œil détail bulletin (`/dashboard/payroll`) → panneau de détail fonctionnel | 🔄 | `fix/2168-payroll-slip-detail` |
+| #2169 | US2 LoginView admin — 3 liens `href="#"` → destinations réelles | 🔄 | `fix/2169-admin-login-dead-links` |
+| #2170 | US3 Contrat mobile — app `hr` (`leopardo_hr`) ajoutée + validateur vert | 🔄 | `fix/2170-mobile-contract-hr` |
+| #2171 | US4 Hygiène spec-kit — `multi-pays-wave/tasks.md` rafraîchi (T018/T021/T022 cochés) + ce registre | 🔄 | `docs/2171-speckit-tasks-refresh` |
+
+---
+
 ## Conventions de mise à jour de ce fichier
 
 - À chaque merge qui change l'état d'un pays ou d'un module → mettre à jour ce registre

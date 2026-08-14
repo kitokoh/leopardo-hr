@@ -32,12 +32,12 @@
 
 - [ ] T016 [P2] US4 Onboarding TG placeholder→pilot (playbook #1875) — issue #2121
 - [ ] T017 [P3] US1 Golden tests MA/TN (≥ 3 par pays, sourcés) — issue #2122
-- [ ] T018 [P2] US1 Préavis SN par catégorie (8 j / 1 m / 3 m) — issue #2123
+- [x] T018 [P2] US1 Préavis SN par catégorie (8 j / 1 m / 3 m) (Closes #2123)
 - [ ] T019 [P2] US3 RICF CI art. 120 / abattement DGI GA / CNAC DZ — réponse expert (issue #2124)
 - [ ] T020 [P2] US1 Fiche validation SN signée → `confidenceLevel()` SN → `production` (issue #1912, bloqué externe)
 
 ## Phase 5: Convergence
 
-- [ ] T021 Actualiser `.specify/constitution.md` §VIII (tableau Statut cible) — ajouter un renvoi vers `docs/payroll/VALIDATION_EXPERTE.md` pour le statut RÉEL des pays (DZ/FR `pilot` dans le code vs `production` cible au tableau ; la ligne SN doit rester `pilot` jusqu'à signature #1912) (contradicts: Constitution VIII vs code)
-- [ ] T022 Miroiter la constitution réelle dans `.specify/memory/constitution.md` (actuellement template non rempli) — les runs `/speckit-converge` liront alors les principes MUST/SHOULD du projet au lieu de les ignorer (missing: Constitution I-VIII)
+- [x] T021 Actualiser `.specify/constitution.md` §VIII (tableau Statut cible) — ajouter un renvoi vers `docs/payroll/VALIDATION_EXPERTE.md` pour le statut RÉEL des pays (DZ/FR `pilot` dans le code vs `production` cible au tableau ; la ligne SN doit rester `pilot` jusqu'à signature #1912) (contradicts: Constitution VIII vs code) (#2129)
+- [x] T022 Miroiter la constitution réelle dans `.specify/memory/constitution.md` (actuellement template non rempli) — les runs `/speckit-converge` liront alors les principes MUST/SHOULD du projet au lieu de les ignorer (missing: Constitution I-VIII) (#2129)
 - [ ] T023 Corriger la section dupliquée « Procédure de mise à jour des taux » dans `docs/payroll/SN_COMPLIANCE.md` (présente deux fois à l'identique, fin de fichier) (unrequested) — **couvert par PR #2115** (restaure §12 + dé-doublonne)
