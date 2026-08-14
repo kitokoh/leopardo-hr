@@ -20,11 +20,14 @@ use Illuminate\Http\Request;
  * DZ, MA, TN, FR, TR, SN, CEMAC×6, CEDEAO×6 et CA avec les mêmes règles que
  * les vrais bulletins — taux, caps, barèmes et abattements compris.
  *
- * La logique reproduit fidèlement `PayrollCalculator::calculateSlip()` :
- *   1. cotisations sociales (`calculateSocialCharges`, valeurs définitives) ;
- *   2. assiette fiscale = brut − cotisations salariales ;
- *   3. impôt progressif (`calculateIncomeTax`, mêmes barèmes que le bulletin) ;
- *   4. net réel = brut − cotisations salariales − impôt.
+ * Issue #1869 : la simulation et le bulletin passent par le MÊME noyau de
+ * calcul (`PayrollCalculator::computeNetBreakdown()`), ce qui garantit des
+ * résultats identiques pour un même brut et un même contexte de règles.
+ * La réponse expose :
+ *   - au niveau racine, les champs historiques (rétro-compatibles) ;
+ *   - sous `contract`, le contrat complet et explicable (pays, devise,
+ *     identifiant/version des règles, période, politique d'arrondi,
+ *     bracket_tax, retenues totales…) — docs/payroll/CALCULATION_CONTRACT.md.
  */
 class CotisationSimulationController extends Controller
 {
@@ -51,17 +54,13 @@ class CotisationSimulationController extends Controller
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];
 
+        // Pays inconnu → 422 explicite (UnsupportedCountryRulesException,
+        // rendue par le handler d'exceptions avec un message métier clair).
         $rules = $this->payrollCalculator->getRules($countryCode);
 
-        /** @var array{employee: float, employer: float} $social */
-        $social = $rules->calculateSocialCharges($gross);
-
-        $taxableGross = round($gross - $social['employee'], 2);
-        // Même appel que PayrollCalculator::calculateSlip() : le 3e paramètre
-        // (grossForAbatement) = brut réel pour l'abattement frais pro légal
-        // (CM/CI — 30 %/20 % du brut, cf. #1821/#1825).
-        $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $gross);
-        $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
+        // Issue #1869 — mêmes appels métier que PayrollCalculator::calculateSlip().
+        $breakdown = $this->payrollCalculator->computeNetBreakdown($gross, $rules);
+        $social = $breakdown['social'];
 
         $employeeContributions = [];
         $employerContributions = [];
@@ -75,6 +74,7 @@ class CotisationSimulationController extends Controller
                 'name' => $contribution['name'],
                 'code' => $contribution['code'],
                 'rate' => $contribution['rate'],
+                'cap' => $contribution['cap'],
                 'amount' => round($base * (float) $contribution['rate'] / 100, 2),
             ];
 
@@ -87,21 +87,23 @@ class CotisationSimulationController extends Controller
 
         return response()->json([
             'data' => [
+                // ── Champs historiques (rétro-compatibles) ───────────────────
                 'country_code' => $countryCode,
                 'gross_salary' => $gross,
                 'employee_contributions' => $employeeContributions,
                 'employer_contributions' => $employerContributions,
                 'total_employee_deduction' => $social['employee'],
                 'total_employer_cost' => $social['employer'],
-                'taxable_gross' => $taxableGross,
-                'income_tax' => $incomeTax,
+                'taxable_gross' => round($breakdown['taxable_gross'], 2),
+                'income_tax' => $breakdown['income_tax'],
+                'bracket_tax' => $breakdown['bracket_tax'],
+                'total_deductions' => round($breakdown['base_deductions'], 2),
                 // Rétro-compatible : brut − cotisations salariales (sans impôt).
                 'net_before_tax' => round($gross - $social['employee'], 2),
-                // Net réel = brut − cotisations salariales − impôt (issue #1782).
-                'net_salary' => $netSalary,
-                'total_cost_employer' => round($gross + $social['employer'], 2),
-                // MULTI-PAYS (#1869) : contrat de calcul complet et explicable
-                // (pays, devise, période des règles, version de barème).
+                // Net réel = brut − retenues totales (issue #1782 + #1869).
+                'net_salary' => $breakdown['net_salary'],
+                'total_cost_employer' => $breakdown['total_cost'],
+                // ── Contrat complet et explicable (issue #1869) ──────────────
                 'contract' => $this->presenter->present($countryCode, $gross),
             ],
         ]);
