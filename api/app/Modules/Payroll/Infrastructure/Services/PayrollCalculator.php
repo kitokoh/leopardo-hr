@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
@@ -15,7 +16,6 @@ use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Domain\Models\SalaryComponent;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
-use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Carbon\Carbon;
@@ -214,8 +214,32 @@ class PayrollCalculator
 
         // Jours d'absence (payés ou non) retirés des jours travaillés ;
         // les congés payés sont compensés par l'indemnité (F-07).
-        $leaveDays = $inputs['paid_leave_days'] + $inputs['unpaid_leave_days'];
-        $worked['actual_days_worked'] = max(0.0, $worked['actual_days_worked'] - $leaveDays);
+        //
+        // F-20 (#1919) : quand la présence RÉELLE est renseignée
+        // (has_attendance_data = true), le décompte des jours distincts vient
+        // des logs de présence — les jours de congé y sont DÉJÀ exclus
+        // (statuts 'leave' non comptés, absence = pas de log de présence).
+        // Re-soustraire les congés ici DOUBLE-déduirait : 17 jours présents +
+        // 5 jours de congé payé → 12/22 payés au lieu de 22/22
+        // (sous-paiement silencieux, revue lead #1816).
+        //  - congés PAYÉS : payés via l'indemnité F-07 (ligne earning) ;
+        //  - congés SANS SOLDE : absents du décompte (non payés) — aucune
+        //    déduction supplémentaire nécessaire.
+        // Le décompte réel est plafonné aux jours ouvrés standards : les
+        // pointages week-end/heures sup ne gonflent pas la base (l'HS est
+        // payée séparément via overtime_hours).
+        // Le fallback (sans logs, has_attendance_data = false) conserve le
+        // comportement historique : le prorata contrat inclut les jours de
+        // congé → déduction nécessaire (compensée par l'indemnité F-07).
+        if ($worked['has_attendance_data']) {
+            $worked['actual_days_worked'] = min(
+                (float) $worked['working_days'],
+                max(0.0, $worked['actual_days_worked'])
+            );
+        } else {
+            $leaveDays = $inputs['paid_leave_days'] + $inputs['unpaid_leave_days'];
+            $worked['actual_days_worked'] = max(0.0, $worked['actual_days_worked'] - $leaveDays);
+        }
         $worked['overtime_hours'] = $inputs['overtime_hours'];
 
         $basePaid = $this->computeProratedBase($baseSalary, $worked['working_days'], $worked['actual_days_worked']);
@@ -532,23 +556,30 @@ class PayrollCalculator
         }
 
         // F-20 (#1816) — compter les jours distincts avec au moins 1 log
-        // valide (source réelle de présence). Garde défensive sur la table :
-        // sans elle, les golden tests purs et environnements sans migration
-        // tenant retomberaient sur une QueryException au lieu du fallback.
+        // valide (source réelle de présence). #1919 : seuls les statuts de
+        // PRÉSENCE (ontime/late) attestent un jour travaillé — les statuts
+        // absent/leave/holiday/incomplete sont exclus (l'enum réel de
+        // attendance_logs.status n'a pas cancelled/rejected). Garde défensive
+        // sur la table : sans elle, les golden tests purs et environnements
+        // sans migration tenant retomberaient sur une QueryException au lieu
+        // du fallback.
         $distinctDays = 0;
         if (Schema::hasTable('attendance_logs')) {
             $distinctDays = (int) AttendanceLog::query()
                 ->where('company_id', $run->company_id)
                 ->where('employee_id', $employee->id)
                 ->whereBetween('date', [$run->period_start, $run->period_end])
-                ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+                ->whereNotIn('status', ['absent', 'leave', 'holiday', 'incomplete'])
                 ->distinct('date')
                 ->count('date');
         }
 
         $hasAttendanceData = $distinctDays > 0;
+        // #1919 : le décompte réel est plafonné aux jours ouvrés standards —
+        // les pointages week-end/heures sup ne gonflent pas la base (l'HS est
+        // payée séparément via overtime_hours).
         $actualDays = $hasAttendanceData
-            ? (float) $distinctDays
+            ? min($workingDays, (float) $distinctDays)
             : $this->contractProrata($periodStart, $periodEnd, $overlapStart, $overlapEnd, $workingDays);
 
         return [

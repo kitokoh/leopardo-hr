@@ -69,7 +69,9 @@ class IslamicCalendarSeeder extends Seeder
 
         if ($rows !== []) {
             DB::table('islamic_calendar')->insert($rows);
-            $this->command->info(sprintf('IslamicCalendarSeeder : %d dates islamiques insérées (approximatives).', count($rows)));
+            // Null-safe : le seeder peut être appelé hors contexte artisan
+            // (tests, orchestrateur) — $this->command est alors null.
+            $this->command?->info(sprintf('IslamicCalendarSeeder : %d dates islamiques insérées (approximatives).', count($rows)));
         }
     }
 }
