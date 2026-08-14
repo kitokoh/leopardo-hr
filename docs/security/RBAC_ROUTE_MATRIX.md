@@ -141,3 +141,4 @@ New `api.manager` middleware (`EnsureApiManagerMiddleware`) enforces route-level
 | HR extended self-service `/me/*` | none (auth+tenant) | R | R | R | R | R | R | Own contracts/trainings/loans. |
 | Contracts/Recruitment/Training/Loans CRUD | `api.manager` | RW | RW | RW | RW | RW | - | Any manager. |
 | Reports/Webhooks/Audit/Predictions | `api.manager` + controller policies where present | R | R | R | R | R | - | Any tenant manager can access report surfaces covered by existing feature tests. |
+| Payroll engine `/payroll-runs/{run}/declarations/cnss-ci|ipres-sn` (#1830) | R | - | - | RW | - | - | CEDEAO #1830 : déclarations sociales CI (CNSS, plafond 1 647 315 XOF) et SN (IPRES/CSS, T1 432k + T2 cadres) en CSV, réservées aux managers principal/comptable ; 422 si pays du run incohérent ; 404 cross-tenant. Tests : `CiSnDeclarationTest`. |

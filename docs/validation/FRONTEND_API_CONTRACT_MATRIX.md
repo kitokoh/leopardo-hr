@@ -129,3 +129,5 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 - `front/zkteco-kiosk` accepte une base API avec ou sans `/api/v1`.
 - Les exports admin passent par Axios authentifie afin de conserver le bearer token sur Cloudflare Pages.
 - Une route critique supprimee ou renommee doit mettre a jour cette matrice, les appels frontend, la spec OpenAPI si exposee et le test contractuel.
+| Manager web/mobile | CNSS Côte d'Ivoire — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnss-ci` | manager principal/comptable | `CiSnDeclarationTest` |
+| Manager web/mobile | IPRES/CSS Sénégal — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/ipres-sn` | manager principal/comptable | `CiSnDeclarationTest` |

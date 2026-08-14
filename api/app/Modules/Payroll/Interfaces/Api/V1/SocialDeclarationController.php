@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
 use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class SocialDeclarationController extends Controller
 {
@@ -285,6 +289,72 @@ class SocialDeclarationController extends Controller
         ]);
     }
 
+    /**
+     * CEDEAO (#1830) — déclaration CNSS mensuelle Côte d'Ivoire (CSV).
+     * 422 si le run n'est pas un run CI.
+     */
+    public function generateCnssCiDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'CI') {
+            return response()->json(['message' => 'Ce run ne concerne pas la Côte d\'Ivoire (CNSS CI).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_ci_declaration');
+
+        $generator = new CnssDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNSS_CI_DAS_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEDEAO (#1830) — déclaration IPRES/CSS mensuelle Sénégal (CSV).
+     * 422 si le run n'est pas un run SN.
+     */
+    public function generateIpresSnDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'SN') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Sénégal (IPRES/CSS).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.ipres_sn_declaration');
+
+        $generator = new IpresDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('IPRES_SN_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
     private function companyRegistrationNumber(?Company $company): string
     {
         if ($company === null) {
@@ -311,4 +381,3 @@ class SocialDeclarationController extends Controller
         return $value === null ? '' : (string) $value;
     }
 }
-

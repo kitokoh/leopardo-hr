@@ -6759,7 +6759,61 @@ paths:
         "422":
           description: "Validated runs cannot be cancelled"
 
-  /payroll-runs/{payrollRun}/summary:
+  /payroll-runs/{payrollRun}/declarations/cnss-ci:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"
+      description: "CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75 %, AT 2 %, totaux) + TOTAUX. 422 si le run n'est pas CI. RBAC manager ; 404 cross-tenant."
+      operationId: downloadCnssCiDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CI"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/ipres-sn:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"
+      description: "CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 3 %) + TOTAUX. 422 si le run n'est pas SN. RBAC manager ; 404 cross-tenant."
+      operationId: downloadIpresSnDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV IPRES/CSS SN"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/regularize:
     get:
       tags: ["Payroll"]
       summary: "Resume de la session de paie"
