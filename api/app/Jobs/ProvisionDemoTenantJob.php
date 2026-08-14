@@ -22,14 +22,15 @@ class ProvisionDemoTenantJob implements ShouldQueue
     public function __construct(
         public readonly string $email,
         public readonly string $companyName,
+        public readonly string $country,
     ) {}
 
     public function handle(ProvisionGuidedTrial $provisioner): void
     {
-        Log::info('ProvisionDemoTenantJob started', ['company_name' => $this->companyName, 'email' => $this->email]);
+        Log::info('ProvisionDemoTenantJob started', ['company_name' => $this->companyName, 'email' => $this->email, 'country' => $this->country]);
 
         try {
-            $result = $provisioner->execute($this->email, $this->companyName);
+            $result = $provisioner->execute($this->email, $this->companyName, $this->country);
             
             // TODO: Generate magic link and send email to the user
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);

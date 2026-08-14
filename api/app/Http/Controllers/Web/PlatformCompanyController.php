@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Rules\SupportedCountry;
 
 class PlatformCompanyController extends Controller
 {
@@ -101,7 +102,7 @@ class PlatformCompanyController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'slug' => ['nullable', 'string', 'max:100', Rule::unique('companies', 'slug')],
             'sector' => ['nullable', 'string', 'max:100'],
-            'country' => ['required', 'string', 'size:2'],
+            'country' => ['required', 'string', 'size:2', new SupportedCountry],
             'city' => ['required', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:150', Rule::unique('companies', 'email')],
@@ -119,8 +120,12 @@ class PlatformCompanyController extends Controller
         ]);
 
         $validated['sector'] = trim((string) ($validated['sector'] ?? '')) ?: 'Non precise';
-        $countryDefaults = CountryDefaults::for($validated['country']);
-        $validated['country'] = $countryDefaults['country'];
+        // #1950 : pays validé (SupportedCountry) — find() ne peut plus renvoyer
+        // de fallback DZ silencieux ; le défaut sert uniquement langue/devise/tz.
+        $countryDefaults = CountryDefaults::find($validated['country']);
+        if ($countryDefaults === null) {
+            abort(422, 'Pays non supporté : '.$validated['country']);
+        }
         $validated['language'] = strtolower($validated['language'] ?? $countryDefaults['language']);
         $validated['currency'] = strtoupper($validated['currency'] ?? $countryDefaults['currency']);
         $validated['timezone'] = $validated['timezone'] ?? $countryDefaults['timezone'];

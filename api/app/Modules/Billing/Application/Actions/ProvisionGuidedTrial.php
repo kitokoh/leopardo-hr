@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Support\CountryDefaults;
 
 class ProvisionGuidedTrial
 {
@@ -20,19 +21,27 @@ class ProvisionGuidedTrial
     ) {}
 
     /** @return array<string, mixed> */
-    public function execute(string $email, string $companyName): array
+    public function execute(string $email, string $companyName, string $country): array
     {
         $slug = Str::slug($companyName);
         if (!$slug) {
             $slug = 'sandbox-' . Str::random(6);
         }
 
-        return DB::transaction(function () use ($email, $companyName, $slug): array {
+        // MULTI-PAYS (#1867/#1950) : le pays est TRANSMIS par l'appelant
+        // (validé en amont) — plus aucun repli silencieux DZ. Les défauts
+        // langue/devise/fuseau sont résolus depuis le pays validé ; un code
+        // inconnu échoue fort (l'invariant 10 du spec MULTI_PAYS_RULES_ENGINE
+        // interdit la déduction d'une valeur par défaut implicite).
+        $countryDefaults = CountryDefaults::find($country)
+            ?? throw new \InvalidArgumentException('Pays de provisioning invalide : '.$country);
+
+        return DB::transaction(function () use ($email, $companyName, $slug, $country, $countryDefaults): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
                 'sector' => 'Non précisé',
-                'country' => 'DZ',
+                'country' => $country,
                 'city' => 'Non précisé',
                 'email' => $email,
                 'plan_id' => $this->resolveTrialPlanId(),
@@ -41,9 +50,9 @@ class ProvisionGuidedTrial
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
                 'subscription_end' => now()->addDays(14)->toDateString(),
-                'language' => 'fr',
-                'timezone' => 'Africa/Algiers',
-                'currency' => 'DZD',
+                'language' => $countryDefaults['language'],
+                'timezone' => $countryDefaults['timezone'],
+                'currency' => $countryDefaults['currency'],
                 'metadata' => [
                     'provisioned_by' => 'guided_trial',
                     'is_sandbox' => true,

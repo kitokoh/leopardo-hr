@@ -177,9 +177,13 @@ class PlatformCompanyRequestController extends Controller
             abort(422, 'Un email de contact est requis pour approuver cette demande.');
         }
 
-        $country = strtoupper((string) ($companyRequest->country ?: 'DZ'));
-        if (strlen($country) !== 2) {
-            $country = 'DZ';
+        // MULTI-PAYS (#1867/#1950) : le pays de la demande d'approbation est
+        // vérifié dans le registre — plus de fallback silencieux DZ (un
+        // super-admin saisissant un code inconnu doit voir une erreur, pas
+        // créer un tenant au mauvais pays).
+        $country = strtoupper(trim((string) ($companyRequest->country ?? '')));
+        if (CountryDefaults::find($country) === null) {
+            abort(422, 'Le pays de cette demande est invalide ou absent ('.$country.'). Corrigez la demande avant de l\'approuver.');
         }
 
         $result = $this->companyProvisioningService->provisionSharedCompany([

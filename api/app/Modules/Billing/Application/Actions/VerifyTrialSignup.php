@@ -59,11 +59,25 @@ class VerifyTrialSignup
         $payload = $companyRequest->signup_payload ?? [];
         $companyName = (string) ($companyRequest->company_name ?? '');
 
-        $country = strtoupper(trim($payload['country'] ?? 'DZ'));
-        if (strlen($country) !== 2) {
-            $country = 'DZ';
+        // MULTI-PAYS (#1867/#1950) : le pays provient du signup validé
+        // (required + SupportedCountry) — plus AUCUN repli silencieux DZ :
+        // un code absent/inconnu échoue explicitement (l'approbateur devra
+        // corriger la demande), jamais un tenant créé dans le mauvais pays.
+        $country = strtoupper(trim((string) ($payload['country'] ?? '')));
+        $countryDefaults = CountryDefaults::find($country);
+        if ($countryDefaults === null) {
+            Log::error('SelfServiceTrial: signup_payload sans pays valide — provisioning refusé.', [
+                'company_request' => $companyRequest->id,
+                'country' => $country,
+            ]);
+
+            return [
+                'success' => false,
+                'error' => 'INVALID_COUNTRY',
+                'message' => 'Le pays du signup est invalide ou absent — corrigez la demande avant de l\'approuver.',
+                'status' => 422,
+            ];
         }
-        $countryDefaults = CountryDefaults::for($country);
 
         $trialPlan = $this->resolveTrialPlan();
         if (! $trialPlan) {

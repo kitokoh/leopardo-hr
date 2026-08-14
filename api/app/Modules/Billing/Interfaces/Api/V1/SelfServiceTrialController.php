@@ -65,7 +65,10 @@ class SelfServiceTrialController extends Controller
         }
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
-            ProvisionDemoTenantJob::dispatch($email, $validated['company']);
+            // MULTI-PAYS (#1867/#1950) : le pays VALIDÉ (required +
+            // SupportedCountry) est transmis au job — plus jamais de sandbox
+            // DZ silencieux pour un prospect CI/SN/…
+            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country']);
 
             return new JsonResponse([
                 'success' => true,
