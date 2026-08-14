@@ -1,0 +1,295 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Payroll\Golden;
+
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\TestCase;
+
+/**
+ * Programme CEDEAO — #1828 : golden tests paie Sénégal (SN).
+ *
+ * Méthodologie : valeur en dur calculée À LA MAIN dans le commentaire de
+ * chaque test, jamais reprise du code. Référence légale : docs/payroll/
+ * SN_COMPLIANCE.md (CGI Sénégal, IPRES, CSS, Code du travail).
+ * Statut : PILOT — valeurs à valider par expert-comptable sénégalais.
+ *
+ * Formules SN (SN_COMPLIANCE.md §1-7) :
+ *   IPRES T1 salariale  = min(brut, 432 000) × 5,6 %      (plafond T1)
+ *   IPRES T1 patronale  = min(brut, 432 000) × 8,4 %
+ *   IPRES T2 cadres     = (min(brut, 2 160 000) − 432 000) × 2,4 % (sal.)
+ *                        / × 3,6 % (pat.), si brut > 432 000
+ *   CSS familiale 3 % + AT 1 % + CFCE 3 % (patronal, non plafonnés)
+ *   IR      = progressif annuel / 12 sur assiette = (brut − IPRES sal.) × 0,70
+ *   (abattement 30 % appliqué par SenegalPayrollRules::calculateIncomeTax)
+ *   TRIMF   = forfait mensuel par tranche de brut (6 tranches)
+ */
+class GoldenSnPayrollTest extends TestCase
+{
+    private function rules(): SenegalPayrollRules
+    {
+        return new SenegalPayrollRules;
+    }
+
+    public function test_golden_sn_smig_58900(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §3), brut = SMIG 58 900 XOF :
+        //   TRIMF tranche 25 001–75 000 → 2 700
+        //   IPRES salariale = 58 900 × 5,6 % = 3 298,40 (sous plafond T1)
+        //   Patronal = 4 947,60 (T1) + 1 767 + 589 + 1 767 (CSS/AT/CFCE) = 9 070,60
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(58900.0);
+
+        $this->assertSame(3298.40, $charges['employee']);
+        $this->assertSame(9070.60, $charges['employer']);
+        $this->assertSame(2700.0, $rules->calculateBracketTax(58900.0));
+    }
+
+    public function test_golden_sn_ouvrier_100000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §1-3), brut 100 000 :
+        //   IPRES salariale = 5 600 · Assiette IR = (100 000 − 5 600) = 94 400,
+        //   abattement 30 % appliqué par calculateIncomeTax → 66 080 → annuel 792 960
+        //   TRIMF tranche 75 001–150 000 → 5 400
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(100000.0);
+
+        $this->assertSame(5600.0, $charges['employee']);
+        $this->assertSame(15400.0, $charges['employer']);
+
+        $base = 100000.0 - $charges['employee'];
+        $this->assertSame(2716.0, $rules->calculateIncomeTax($base));
+        $this->assertSame(5400.0, $rules->calculateBracketTax(100000.0));
+    }
+
+    public function test_golden_sn_employe_250000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §1-3), brut 250 000 :
+        //   IPRES salariale = 14 000 · Assiette IR = 236 000 (abattement 30 %
+        //   → annuel 1 982 400 → 20 % sur 870 000 = 174 000
+        //     + 30 % sur 482 400 = 144 720 → 318 720 → IR 26 560,00
+        //   TRIMF tranche 150 001–350 000 → 9 000 · CFCE = 250 000 × 3 % = 7 500
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(250000.0);
+
+        $this->assertSame(14000.0, $charges['employee']);
+        $this->assertSame(38500.0, $charges['employer']);
+
+        $base = 250000.0 - $charges['employee'];
+        $this->assertSame(26560.0, $rules->calculateIncomeTax($base));
+        $this->assertSame(9000.0, $rules->calculateBracketTax(250000.0));
+    }
+
+    public function test_golden_sn_plafond_ipres_t1_432000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §4), brut = plafond T1 432 000 :
+        //   IPRES salariale = 432 000 × 5,6 % = 24 192 (T1 max, pas de T2)
+        //   TRIMF tranche 350 001–700 000 → 18 000
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(432000.0);
+
+        $this->assertSame(24192.0, $charges['employee']);
+        $this->assertSame(66528.0, $charges['employer']);
+        $this->assertSame(18000.0, $rules->calculateBracketTax(432000.0));
+    }
+
+    public function test_golden_sn_cadre_t1_t2_600000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §4/§4bis), brut 600 000 :
+        //   T1 = 24 192 · T2 = (600 000 − 432 000) × 2,4 % = 4 032
+        //   → salariale 28 224 · Patronal : 36 288 (T1) + 6 048 (T2)
+        //     + 18 000 + 6 000 + 18 000 (CSS/AT/CFCE) = 84 336
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(600000.0);
+
+        $this->assertSame(28224.0, $charges['employee']);
+        $this->assertSame(84336.0, $charges['employer']);
+    }
+
+    public function test_golden_sn_cadre_moyen_t2_1000000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §4bis), brut 1 000 000 :
+        //   T2 = (1 000 000 − 432 000) × 2,4 % = 13 632 → salariale 37 824
+        //   TRIMF > 700 000 → 36 000
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(1000000.0);
+
+        $this->assertSame(37824.0, $charges['employee']);
+        $this->assertSame(126736.0, $charges['employer']);
+        $this->assertSame(36000.0, $rules->calculateBracketTax(1000000.0));
+    }
+
+    public function test_golden_sn_cadre_haut_t2_max_2160000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §4bis), brut = plafond T2 2 160 000 :
+        //   T2 = (2 160 000 − 432 000) × 2,4 % = 41 472 → salariale 65 664
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(2160000.0);
+
+        $this->assertSame(65664.0, $charges['employee']);
+        $this->assertSame(249696.0, $charges['employer']);
+    }
+
+    public function test_golden_sn_haut_salaire_t2_plafonne_3000000(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §4bis), brut 3 000 000 :
+        //   T2 plafonné à 2 160 000 → salariale identique à 2 160 000 (65 664)
+        //   Patronal : 36 288 + 62 208 (T2) + 90 000 + 30 000 + 90 000 = 308 496
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(3000000.0);
+
+        $this->assertSame(65664.0, $charges['employee']);
+        $this->assertSame(308496.0, $charges['employer']);
+    }
+
+    #[DataProvider('trimfProvider')]
+    public function test_golden_sn_trimf_transches(float $gross, float $expectedTrimf): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §3) : TRIMF forfaitaire par tranche
+        // de brut mensuel (900 / 2 700 / 5 400 / 9 000 / 18 000 / 36 000).
+        $rules = $this->rules();
+
+        $this->assertSame($expectedTrimf, $rules->calculateBracketTax($gross));
+    }
+
+    public static function trimfProvider(): array
+    {
+        return [
+            'tranche 1 (≤ 25k)'     => [25000.0, 900.0],
+            'tranche 2 (25k-75k)'   => [75000.0, 2700.0],
+            'tranche 3 (75k-150k)'  => [150000.0, 5400.0],
+            'tranche 4 (150k-350k)' => [350000.0, 9000.0],
+            'tranche 5 (350k-700k)' => [700000.0, 18000.0],
+            'tranche 6 (> 700k)'    => [800000.0, 36000.0],
+        ];
+    }
+
+    public function test_golden_sn_cfce_employeur(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §5) : CFCE = 3 % de la masse brute,
+        // charge patronale uniquement — 250 000 × 3 % = 7 500.
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(250000.0);
+
+        // Patronal = T1 21 000 + CSS 7 500 + AT 2 500 + CFCE 7 500 = 38 500.
+        $this->assertSame(38500.0, $charges['employer']);
+    }
+
+    public function test_golden_sn_abattement_30_pct(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §7) : abattement frais pro 30 % du
+        // brut, non plafonné.
+        $rules = $this->rules();
+
+        $abatement = $rules->professionalExpensesDeduction();
+
+        $this->assertSame(30.0, $abatement['rate']);
+        $this->assertNull($abatement['cap']);
+    }
+
+    public function test_golden_sn_ir_tranche_40_pct(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §1), brut 3 000 000 :
+        //   IPRES salariale 65 664 → assiette = 3 000 000 − 65 664 (abattement 30 %
+        //   = 2 054 035,20 → annuel 24 648 422,40 → 40 % au-delà de 13 500 000.
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(3000000.0);
+        $base = 3000000.0 - $charges['employee'];
+
+        $this->assertSame(734864.08, $rules->calculateIncomeTax($base));
+    }
+
+    public function test_golden_sn_prorata_entree_10(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md) : prorata entrée le 10 → 22 × 22/31
+        // = 15,61 j (mécanique F-05). Base 250 000 × 15,61/22 = 177 386,36.
+        $this->assertSame(177386.36, (new PayrollCalculator())->computeProratedBase(250000.0, 22.0, 15.61));
+    }
+
+    public function test_golden_sn_hs_tiers(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md / Code du travail) : +15 % les 8
+        // premières h, jusqu'à +40 % au-delà ou de nuit.
+        $rules = $this->rules();
+
+        $this->assertSame([
+            ['up_to_hours' => 8.0, 'multiplier' => 1.15],
+            ['up_to_hours' => null, 'multiplier' => 1.40],
+        ], $rules->overtimeRateTiers());
+
+        $this->assertSame(40.0, $rules->overtimeThresholdWeeklyHours());
+    }
+
+    public function test_golden_sn_preavis_employe(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §8) : préavis pilote au niveau
+        // employé/technicien = 30 jours (8 j ouvriers / 3 mois cadres
+        // documentés, non implémentés).
+        $rules = $this->rules();
+
+        $this->assertSame(30.0, $rules->noticePeriodDays(1.0));
+        $this->assertSame(30.0, $rules->noticePeriodDays(10.0));
+    }
+
+    public function test_golden_sn_minimum_wage_currency_timezone(): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md) : SMIG 58 900 XOF, XOF/BCEAO,
+        // timezone Dakar.
+        $rules = $this->rules();
+
+        $this->assertSame(58900.0, $rules->minimumWage());
+        $this->assertSame('XOF', $rules->currency());
+        $this->assertSame('Africa/Dakar', $rules->timezone());
+    }
+
+    public function test_golden_sn_cnss_employee_zero_on_zero_salary(): void
+    {
+        // Calcul manuel : pas de salaire → pas de cotisations ni impôt.
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges(0.0);
+
+        $this->assertSame(0.0, $charges['employee']);
+        $this->assertSame(0.0, $charges['employer']);
+        $this->assertSame(0.0, $rules->calculateIncomeTax(0.0));
+        $this->assertSame(900.0, $rules->calculateBracketTax(0.0)); // tranche 1 forfaitaire
+    }
+
+    #[DataProvider('irProvider')]
+    public function test_golden_sn_ir_progressive(float $gross, float $expectedIr): void
+    {
+        // Calcul manuel (SN_COMPLIANCE.md §1-2) : IR progressif annuel / 12
+        // sur assiette = (brut − IPRES salariale) ; l'abattement 30 % est appliqué
+        $rules = $this->rules();
+
+        $charges = $rules->calculateSocialCharges($gross);
+        $base = $gross - $charges['employee'];
+
+        $this->assertSame($expectedIr, $rules->calculateIncomeTax($base));
+    }
+
+    public static function irProvider(): array
+    {
+        return [
+            'tranche 20 % (annuel 792 960)' => [100000.0, 2716.0],
+            'tranche 30 % (annuel 1 982 400)' => [250000.0, 26560.0],
+            'tranche 35 % (annuel 4 802 918,40)' => [600000.0, 100418.45],
+            'tranche 37 % (annuel 8 082 278,40)' => [1000000.0, 196203.58],
+            'tranche 40 % (annuel 17 592 422,40)' => [2160000.0, 499664.08],
+            'tranche 40 % (annuel 24 648 422,40)' => [3000000.0, 734864.08],
+        ];
+    }
+}
