@@ -18,6 +18,17 @@ const baseUser = {
   manager_role: 'principal',
   language: 'fr',
   is_rtl: false,
+  // Le layout (dashboard)/layout.tsx ouvre OnboardingWizard en overlay plein
+  // écran quand company.metadata.onboarding_completed !== true pour un manager —
+  // sans ce flag, le wizard bloque tous les clics de la spec.
+  company: {
+    id: 'company-1',
+    name: 'TechCorp Algerie SARL',
+    language: 'fr',
+    timezone: 'Africa/Algiers',
+    currency: 'DZD',
+    metadata: { onboarding_completed: true },
+  },
 };
 
 const slipsList = {
