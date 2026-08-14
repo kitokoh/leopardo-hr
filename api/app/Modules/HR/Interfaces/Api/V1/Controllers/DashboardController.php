@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
- 
-use App\Http\Controllers\Controller;
+
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
+use App\Http\Controllers\Controller;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -139,8 +140,10 @@ class DashboardController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
-        $month = $request->input('month', now()->format('Y-m'));
-        $periodStart = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $monthInput = $request->input('month', now()->format('Y-m'));
+        $month = is_string($monthInput) ? $monthInput : now()->format('Y-m');
+        $periodStart = Carbon::createFromFormat('Y-m', $month) ?? now();
+        $periodStart = $periodStart->startOfMonth();
         $periodEnd = $periodStart->copy()->endOfMonth();
 
         $turnover = DB::table('employees')
@@ -181,9 +184,15 @@ class DashboardController extends Controller
      */
     public function adminSummary(Request $request): JsonResponse
     {
+        /** @var Employee $employee */
         $employee = $request->user();
         $summary = $this->summary($request);
-        $summaryData = json_decode($summary->getContent(), true);
+        $summaryContent = $summary->getContent();
+        /** @var array{data: array<string, mixed>}|null $summaryData */
+        $summaryData = is_string($summaryContent) ? json_decode($summaryContent, true) : null;
+        if (! is_array($summaryData)) {
+            $summaryData = ['data' => []];
+        }
 
         // Enrich with role counts
         $roleCounts = Employee::where('company_id', $employee->company_id)
@@ -231,13 +240,21 @@ class DashboardController extends Controller
             ->where('status', 'active');
 
         if (! in_array($manager->manager_role, ['principal', 'rh'], true)) {
-            $query->where(function ($scope) use ($manager): void {
+            $query->where(function (Builder $scope) use ($manager): void {
                 $scope->where('manager_id', $manager->id)
                     ->orWhere('id', $manager->id);
             });
         }
 
-        return $query->pluck('id')->map(fn ($id): int => (int) $id)->values()->all();
+        /** @var list<int> $ids */
+        $ids = $query->pluck('id')
+            ->map(function (mixed $id): int {
+                return is_numeric($id) ? (int) $id : 0;
+            })
+            ->values()
+            ->all();
+
+        return $ids;
     }
 
     private function managerTeamScope(Employee $manager): string
@@ -278,7 +295,7 @@ class DashboardController extends Controller
             ->where('company_id', $companyId)
             ->whereIn('employee_id', $employeeIds)
             ->where('date', $today)
-            ->where(function ($query): void {
+            ->where(function (Builder $query): void {
                 $query->where('late_minutes', '>', 0)
                     ->orWhere('status', 'late');
             })
@@ -320,4 +337,3 @@ class DashboardController extends Controller
             ->count();
     }
 }
-
