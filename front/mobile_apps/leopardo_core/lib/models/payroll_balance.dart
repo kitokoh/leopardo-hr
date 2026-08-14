@@ -17,6 +17,10 @@ class PayrollBalance {
   final int? paySlipId;
   final String? paySlipStatus;
   final bool receiptAvailable;
+  // Issue #2143/#1872 — bloc de conformité paie du pays (niveau, message,
+  // source légale, date de vérification). Null si le backend ne l'expose
+  // pas encore (rétro-compatible : aucun affichage, pas d'erreur).
+  final PayrollCompliance? compliance;
 
   const PayrollBalance({
     required this.employeeId,
@@ -37,11 +41,13 @@ class PayrollBalance {
     this.paySlipId,
     this.paySlipStatus,
     this.receiptAvailable = false,
+    this.compliance,
   });
 
   factory PayrollBalance.fromJson(Map<String, dynamic> json) {
     final period = _asMap(json['period']);
     final paySlip = _asMap(json['pay_slip']);
+    final complianceJson = _asMap(json['compliance']);
 
     return PayrollBalance(
       employeeId: _asInt(json['employee_id']),
@@ -66,6 +72,8 @@ class PayrollBalance {
       paySlipId: _nullableInt(paySlip['id']),
       paySlipStatus: paySlip['status']?.toString(),
       receiptAvailable: paySlip['receipt_available'] == true,
+      // #2143 : null si le bloc compliance est absent du payload.
+      compliance: complianceJson.isEmpty ? null : PayrollCompliance.fromJson(complianceJson),
     );
   }
 
@@ -129,6 +137,36 @@ class PayrollMobileSummary {
       // PA2-PAY-010: team-wide overtime totals for the manager dashboard.
       overtimeHours: PayrollBalance._asDouble(totals['overtime_hours']),
       overtimePay: PayrollBalance._asDouble(totals['overtime_pay']),
+    );
+  }
+}
+
+/// Issue #2143/#1872 — bloc de conformité paie d'un pays exposé par
+/// l'API (niveau production/pilot/placeholder, message localisé, source
+/// légale, date de vérification experte). Par défaut : rien d'affiché
+/// quand le payload ne le porte pas (rétro-compatible).
+class PayrollCompliance {
+  final String level;
+  final String warning;
+  final String warningKey;
+  final String source;
+  final String? verificationDate;
+
+  const PayrollCompliance({
+    required this.level,
+    required this.warning,
+    required this.warningKey,
+    required this.source,
+    this.verificationDate,
+  });
+
+  factory PayrollCompliance.fromJson(Map<String, dynamic> json) {
+    return PayrollCompliance(
+      level: (json['level'] ?? 'pilot').toString(),
+      warning: (json['warning'] ?? '').toString(),
+      warningKey: (json['warning_key'] ?? '').toString(),
+      source: (json['source'] ?? '').toString(),
+      verificationDate: json['verification_date']?.toString(),
     );
   }
 }

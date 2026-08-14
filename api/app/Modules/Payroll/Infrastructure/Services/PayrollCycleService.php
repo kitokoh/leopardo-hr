@@ -12,6 +12,7 @@ use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Exceptions\PayrollBalanceUnavailableException;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -175,7 +176,6 @@ class PayrollCycleService
 
         $cycle = $this->getCurrentCycle($company);
         $settings = $this->payrollSettings($company);
-
         /** @var PayrollRun|null $payrollRun */
         $payrollRun = PayrollRun::query()
             ->where('company_id', $employee->company_id)
@@ -227,6 +227,11 @@ class PayrollCycleService
                 'cycle' => $settings['pay_cycle'],
             ],
             'currency' => $company->currency,
+            // Issue #2143/#1872 — bloc conformité structuré (niveau,
+            // message, source légale, date de vérification experte) exposé
+            // aux clients mobiles. Rétro-compatible : les clients qui ne le
+            // lisent pas ignorent la clé.
+            'compliance' => $this->complianceBlock($company),
             'gross_due' => round($grossDue, 2),
             'advances' => round($advances, 2),
             'paid' => round($paid, 2),
@@ -235,6 +240,27 @@ class PayrollCycleService
             'overtime_pay' => round($overtimePay, 2),
             'next_payment_date' => $this->nextPaymentDate($company, $cycle, $settings)->toDateString(),
             'pay_slip' => $paySlipPayload,
+        ];
+    }
+
+    /**
+     * Issue #2143/#1872 — bloc de conformité du pays du solde : niveau
+     * (production/pilot/placeholder), avertissement localisé, source légale
+     * et date de vérification experte. Mêmes valeurs que le contrat de
+     * calcul (PayrollCalculationPresenter), résolues via CountryRulesResolver.
+     *
+     * @return array{level: string, warning: string, warning_key: string, source: string, verification_date: string|null}
+     */
+    private function complianceBlock(Company $company): array
+    {
+        $rules = (new CountryRulesResolver)->resolve((string) $company->country);
+
+        return [
+            'level' => $rules->confidenceLevel(),
+            'warning' => $rules->complianceWarning(),
+            'warning_key' => 'payroll.compliance_warning_'.$rules->confidenceLevel(),
+            'source' => $rules->complianceSource(),
+            'verification_date' => $rules->verificationDate(),
         ];
     }
 

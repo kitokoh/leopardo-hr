@@ -541,6 +541,17 @@ class _SummaryCard extends StatelessWidget {
                                     fontSize: 11,
                                   ),
                                 ),
+                              // Issue #2143/#1872 — pastille discrète du
+                              // niveau de confiance paie du pays (présente
+                              // seulement si le payload l'expose).
+                              if (item.compliance != null)
+                                Text(
+                                  _confidenceLabel(item.compliance!.level),
+                                  style: AppTypography.caption.copyWith(
+                                    color: _confidenceColor(item.compliance!.level),
+                                    fontSize: 11,
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -610,3 +621,19 @@ class _MoneyLine extends StatelessWidget {
   }
 }
 
+
+  // Issue #2143/#1872 — libellé + couleur du niveau de confiance paie
+  // (production/pilot/placeholder), convention inline des écrans mobiles
+  // (pas de chaîne hardcodée dans les ARB — même style que le reste de
+  // l'écran).
+  String _confidenceLabel(String level) => switch (level) {
+        'production' => 'Conformite paie : production',
+        'placeholder' => 'Conformite paie : placeholder',
+        _ => 'Conformite paie : pilot',
+      };
+
+  Color _confidenceColor(String level) => switch (level) {
+        'production' => AppColors.success,
+        'placeholder' => AppColors.danger,
+        _ => AppColors.warning,
+      };

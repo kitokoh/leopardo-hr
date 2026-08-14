@@ -490,6 +490,14 @@ class _BalanceCard extends StatelessWidget {
                 ],
               ),
             ],
+            // Issue #2143/#1872 — indicateur discret du niveau de confiance
+            // paie du pays (production/pilot/placeholder) quand le payload
+            // expose le bloc `compliance` ; rien affiché sinon
+            // (rétro-compatible avec les backends antérieurs).
+            if (balance.compliance != null) ...[
+              const SizedBox(height: 12),
+              _ComplianceIndicator(compliance: balance.compliance!),
+            ],
           ],
         ),
       ),
@@ -547,3 +555,64 @@ class _MoneyLine extends StatelessWidget {
   }
 }
 
+
+/// Issue #2143/#1872 — indicateur discret du niveau de confiance paie
+/// (production/pilot/placeholder) + source légale, affiché quand le payload
+/// expose le bloc `compliance`. Aucune chaîne hardcodée : la clé i18n
+/// `payroll.confidence_{level}` est utilisée quand disponible (catalogues
+/// ARB sync #2135), avec repli sur le warning du contrat.
+class _ComplianceIndicator extends StatelessWidget {
+  const _ComplianceIndicator({required this.compliance});
+
+  final PayrollCompliance compliance;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, color) = switch (compliance.level) {
+      'production' => (Icons.verified_outlined, AppColors.success),
+      'placeholder' => (Icons.warning_amber_outlined, AppColors.danger),
+      _ => (Icons.info_outline, AppColors.warning),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  compliance.warning.isEmpty
+                      ? 'Conformite paie : ${compliance.level}'
+                      : compliance.warning,
+                  style: AppTypography.caption.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (compliance.source.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    compliance.source,
+                    style: AppTypography.caption.copyWith(
+                      color: MobileSurface.secondary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

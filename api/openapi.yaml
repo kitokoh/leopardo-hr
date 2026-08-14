@@ -16418,6 +16418,24 @@ components:
         currency:
           type: string
           example: DZD
+        compliance:
+          type: object
+          nullable: true
+          description: "Issue #2143/#1872 - bloc de conformite paie du pays (niveau, avertissement localise, source legale, date de verification experte). Absent sur les backends anterieurs (retro-compatible)."
+          properties:
+            level:
+              type: string
+              enum: [production, pilot, placeholder]
+            warning:
+              type: string
+            warning_key:
+              type: string
+            source:
+              type: string
+            verification_date:
+              type: string
+              format: date
+              nullable: true
         gross_due:
           type: number
           format: float
