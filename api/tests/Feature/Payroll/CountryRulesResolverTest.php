@@ -202,6 +202,11 @@ class CountryRulesResolverTest extends TestCase
                 return 0.0;
             }
 
+            public function flatPayrollTaxLabel(): string
+            {
+                return '';
+            }
+
             public function thirteenthMonthMandatory(): bool
             {
                 return false;
@@ -371,6 +376,11 @@ class CountryRulesResolverTest extends TestCase
             public function calculateBracketTax(float $grossSalary): float
             {
                 return 0.0;
+            }
+
+            public function flatPayrollTaxLabel(): string
+            {
+                return '';
             }
 
             public function thirteenthMonthMandatory(): bool

@@ -128,10 +128,13 @@ class CotisationSimulationTest extends TestCase
         /** @var array<string, mixed> $data */
         $data = $response->json('data');
 
+        // Taux CI légaux (#1825/#1893) : CNSS retraite 3,2 % salarié,
+        // patronal 4,5 + 5,75 + 2,0 = 12,25 % — surtout PAS les taux DZ
+        // (9 % / 26 %).
         $this->assertSame('CI', $data['country_code']);
-        $this->assertEquals(3600.0, $data['total_employee_deduction']);
-        $this->assertEquals(16400.0, $data['total_employer_cost']);
-        $this->assertEquals(96400.0, $data['net_before_tax']);
+        $this->assertEquals(3200.0, $data['total_employee_deduction']);
+        $this->assertEquals(12250.0, $data['total_employer_cost']);
+        $this->assertEquals(96800.0, $data['net_before_tax']);
     }
 
     /**
@@ -304,12 +307,15 @@ class CotisationSimulationTest extends TestCase
     }
 
     /**
-     * Contrat CI (CEDEAO, brut 100 000) — calcul manuel :
-     *   CNSS 3,6 % = 3 600 ; patronale 16,4 % = 16 400 ;
-     *   assiette = 96 400 ; annualisée = 1 156 800 → tranche 0–600 000 : 0,
-     *   600 001–1 200 000 : 12 % sur 556 800 = 66 816 → /12 = 5 568 ;
-     *   bracket_tax = 0 ; net = 100 000 − 3 600 − 5 568 = 90 832 ;
-     *   coût = 100 000 + 16 400 = 116 400.
+     * Contrat CI (CEDEAO, brut 100 000) — calcul manuel (CI #1825/#1893) :
+     *   CNSS retraite salariale 3,2 % = 3 200 ;
+     *   assiette = 100 000 − 3 200 = 96 800 ;
+     *   abattement frais pro 20 % sur le brut = 20 000 ;
+     *   base annuelle = (96 800 − 20 000) × 12 = 921 600 ;
+     *   ITSAS : 0–600 000 : 0 · 600 001–921 600 : 321 600 × 2 % = 6 432 → /12 = 536 ;
+     *   Contribution Nationale = (100 000 − 50 000) × 1,5 % = 750 ;
+     *   net = 100 000 − 3 200 − 536 − 750 = 95 514 ;
+     *   coût = 100 000 + 12 250 = 112 250.
      */
     public function test_contract_ci_cedeao_full_breakdown(): void
     {
@@ -333,16 +339,21 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('CI', $data['country_code']);
         $this->assertSame('XOF', $data['contract']['currency']);
         $this->assertSame('CedeaoPayrollRules', $data['contract']['rules_identifier']);
-        $this->assertSame('placeholder', $data['contract']['confidence_level']);
+        $this->assertSame('pilot', $data['contract']['confidence_level']);
 
-        $this->assertEquals(3600.0, $data['total_employee_deduction']);
-        $this->assertEquals(16400.0, $data['total_employer_cost']);
-        $this->assertEquals(96400.0, $data['taxable_gross']);
-        $this->assertEquals(5568.0, $data['income_tax']);
-        $this->assertEquals(0.0, $data['bracket_tax']);
-        $this->assertEquals(9168.0, $data['total_deductions']);
-        $this->assertEquals(90832.0, $data['net_salary']);
-        $this->assertEquals(116400.0, $data['total_cost_employer']);
+        $this->assertEquals(3200.0, $data['total_employee_deduction']);
+        $this->assertEquals(12250.0, $data['total_employer_cost']);
+        $this->assertEquals(96800.0, $data['taxable_gross']);
+        $this->assertEquals(536.0, $data['income_tax']);
+        $this->assertEquals(750.0, $data['bracket_tax']);
+        $this->assertEquals(4486.0, $data['total_deductions']);
+        $this->assertEquals(95514.0, $data['net_salary']);
+        $this->assertEquals(112250.0, $data['total_cost_employer']);
+
+        // Le contrat imbriqué expose les mêmes montants (cohérence).
+        $this->assertEquals(3200.0, $data['contract']['social_employee']);
+        $this->assertEquals(750.0, $data['contract']['bracket_tax']);
+        $this->assertEquals(95514.0, $data['contract']['net_salary']);
     }
 
     /**
