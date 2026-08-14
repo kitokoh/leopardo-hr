@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ZktecoController extends Controller
 {
@@ -53,7 +56,47 @@ class ZktecoController extends Controller
         $company = currentCompany();
         $device = $this->zktecoService->registerDevice($company->id, $validated);
 
-        return new JsonResponse(['data' => $device], 201);
+        // Sécurité #2216 : token de device généré à l'enregistrement, retourné
+        // UNE SEULE FOIS en clair, stocké hashé côté serveur. Le client doit
+        // l'envoyer en en-tête X-Device-Token sur heartbeat/sync-attendance.
+        $plainToken = Str::random(48);
+        $device->update(['sync_token_hash' => Hash::make($plainToken)]);
+
+        return new JsonResponse([
+            'data' => $device->fresh(),
+            'device_token' => $plainToken,
+        ], 201);
+    }
+
+    /**
+     * Sécurité #2216 — rotation du token d'un device (manager uniquement).
+     * L'ancien token est immédiatement révoqué.
+     */
+    public function regenerateToken(Request $request, int $id): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($actor->isManager(), 403, 'FORBIDDEN');
+
+        $company = currentCompany();
+        $device = ZktecoDevice::query()
+            ->where('company_id', $company->id)
+            ->findOrFail($id);
+
+        $plainToken = Str::random(48);
+        $device->update(['sync_token_hash' => Hash::make($plainToken)]);
+
+        Log::channel('audit')->info('zkteco_token.rotated', [
+            'device_id' => $device->id,
+            'serial_number' => $device->serial_number,
+            'company_id' => $company->id,
+            'actor_id' => $actor->id,
+        ]);
+
+        return new JsonResponse([
+            'data' => $device->fresh(),
+            'device_token' => $plainToken,
+        ]);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -118,9 +161,7 @@ class ZktecoController extends Controller
 
     public function heartbeat(Request $request, string $serialNumber): JsonResponse
     {
-        $device = ZktecoDevice::query()
-            ->where('serial_number', $serialNumber)
-            ->firstOrFail();
+        $device = $this->resolveAuthorizedDevice($request, $serialNumber);
 
         $this->zktecoService->heartbeat($device);
 
@@ -143,9 +184,7 @@ class ZktecoController extends Controller
             'records.*.badge_number' => ['nullable', 'string'],
         ]);
 
-        $device = ZktecoDevice::query()
-            ->where('serial_number', $serialNumber)
-            ->firstOrFail();
+        $device = $this->resolveAuthorizedDevice($request, $serialNumber);
 
         $syncLog = $this->zktecoService->pullAttendance($device, $validated['records']);
 
@@ -157,6 +196,43 @@ class ZktecoController extends Controller
                 'status' => $syncLog->status,
             ],
         ], 201);
+    }
+
+    /**
+     * Sécurité #2216 — résout le device par serial PUIS vérifie le token
+     * X-Device-Token (hashé au repos). Fail-closed : un device sans token
+     * configuré est rejeté (DEVICE_TOKEN_NOT_SET) jusqu'à rotation par le
+     * manager. Les échecs sont journalisés sur le canal 'audit'.
+     */
+    private function resolveAuthorizedDevice(Request $request, string $serialNumber): ZktecoDevice
+    {
+        $device = ZktecoDevice::query()
+            ->where('serial_number', $serialNumber)
+            ->firstOrFail();
+
+        $token = (string) $request->header('X-Device-Token', '');
+
+        if (empty($device->sync_token_hash)) {
+            Log::channel('audit')->warning('zkteco_auth.not_configured', [
+                'serial_number' => $serialNumber,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            abort(401, 'DEVICE_TOKEN_NOT_SET');
+        }
+
+        if ($token === '' || ! Hash::check($token, (string) $device->sync_token_hash)) {
+            Log::channel('audit')->warning('zkteco_auth.failed', [
+                'serial_number' => $serialNumber,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            abort(401, 'INVALID_DEVICE_TOKEN');
+        }
+
+        return $device;
     }
 
     public function pushUsers(Request $request, string $serialNumber): JsonResponse
@@ -196,4 +272,3 @@ class ZktecoController extends Controller
         return new JsonResponse(['data' => $logs]);
     }
 }
-
