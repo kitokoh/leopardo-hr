@@ -1003,3 +1003,19 @@ CREATE TABLE IF NOT EXISTS public.edge_licenses (
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
+
+-- Cockpit super-admin (contrat SPA admin, issue #1764)
+CREATE TABLE IF NOT EXISTS public.platform_alert_dismissals (
+    id bigserial PRIMARY KEY,
+    alert_key varchar(120) NOT NULL UNIQUE,
+    dismissed_by bigint NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.platform_oauth_configs (
+    provider varchar(40) PRIMARY KEY,
+    client_id varchar(255) NULL,
+    client_secret_encrypted text NULL,
+    redirect_uri varchar(500) NULL,
+    updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

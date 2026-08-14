@@ -21,6 +21,7 @@ return [
 
     'allowed_origins' => array_filter([
         env('FRONTEND_URL', 'http://localhost:3000'),
+        'http://localhost:3001',
         env('APP_URL', 'http://localhost'),
         // Production origins
         'https://gestionemployerbackend.onrender.com',

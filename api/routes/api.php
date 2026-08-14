@@ -25,13 +25,18 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
@@ -262,5 +267,33 @@ Route::prefix('v1')->group(function (): void {
             Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
             Route::delete('/{nodeId}', [EdgeNodeController::class, 'revokeNode']);
         });
+    });
+    // Admin cockpit (super-admin) — contrat SPA front/admin-dashboard.
+    // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
+    // création côté API des routes manquantes (décision produit).
+    Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+        Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
+        Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
+        Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);
+        Route::post('/dashboard/alerts/{alertKey}/dismiss', [PlatformAdminDashboardController::class, 'dismissAlert'])
+            ->where('alertKey', '[A-Za-z0-9\-_]+');
+
+        // Edge nodes : réutilisation du contrôleur EdgeSync existant
+        // (listAllNodes / forceSync / revokeNode) — alias des routes
+        // /platform/edge/nodes pour le contrat SPA /admin/edge-nodes.
+        Route::get('/edge-nodes', [EdgeNodeController::class, 'listAllNodes']);
+        Route::post('/edge-nodes/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
+        Route::post('/edge-nodes/{nodeId}/revoke', [EdgeNodeController::class, 'revokeNode']);
+
+        Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index']);
+        Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
+            ->whereNumber('conversation');
+
+        Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
+
+        Route::get('/hr-reports', [PlatformHrReportController::class, 'generate']);
+
+        Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
+        Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
     });
 });

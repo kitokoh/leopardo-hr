@@ -116,6 +116,58 @@ class LeopardoClient:
         """Rejeter une absence (manager)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def get_admin_ai_conversations(self, **kwargs):
+        """Conversations IA cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/ai/conversations", **kwargs)
+
+    def get_admin_ai_conversations_by_conversation_messages(self, **kwargs):
+        """Messages d'une conversation IA (super-admin)"""
+        return self.request("GET", "/admin/ai/conversations/{conversation}/messages", **kwargs)
+
+    def get_admin_dashboard_activities(self, **kwargs):
+        """Activites recentes plateforme (cockpit super-admin)"""
+        return self.request("GET", "/admin/dashboard/activities", **kwargs)
+
+    def get_admin_dashboard_alerts(self, **kwargs):
+        """Alertes systeme du cockpit super-admin"""
+        return self.request("GET", "/admin/dashboard/alerts", **kwargs)
+
+    def post_admin_dashboard_alerts_by_alertkey_dismiss(self, **kwargs):
+        """Masquer une alerte du cockpit (persiste le dismiss)"""
+        return self.request("POST", "/admin/dashboard/alerts/{alertKey}/dismiss", **kwargs)
+
+    def get_admin_dashboard_stats(self, **kwargs):
+        """Statistiques globales du cockpit super-admin"""
+        return self.request("GET", "/admin/dashboard/stats", **kwargs)
+
+    def get_admin_edge_nodes(self, **kwargs):
+        """Lister les nœuds Edge de tous les tenants (super-admin)"""
+        return self.request("GET", "/admin/edge-nodes", **kwargs)
+
+    def post_admin_edge_nodes_by_nodeid_revoke(self, **kwargs):
+        """Révoquer un nœud Edge et sa licence (super-admin)"""
+        return self.request("POST", "/admin/edge-nodes/{nodeId}/revoke", **kwargs)
+
+    def post_admin_edge_nodes_by_nodeid_sync(self, **kwargs):
+        """Forcer la synchronisation d'un nœud Edge (super-admin)"""
+        return self.request("POST", "/admin/edge-nodes/{nodeId}/sync", **kwargs)
+
+    def get_admin_fleet_alerts(self, **kwargs):
+        """Alertes flotte cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/fleet/alerts", **kwargs)
+
+    def get_admin_hr_reports(self, **kwargs):
+        """Rapports RH cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/hr-reports", **kwargs)
+
+    def get_admin_platform_marketing_oauth_config(self, **kwargs):
+        """Config OAuth marketing (super-admin)"""
+        return self.request("GET", "/admin/platform/marketing/oauth-config", **kwargs)
+
+    def put_admin_platform_marketing_oauth_config(self, **kwargs):
+        """Enregistrer la config OAuth d'un provider marketing"""
+        return self.request("PUT", "/admin/platform/marketing/oauth-config", **kwargs)
+
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
         return self.request("GET", "/ai/analytics/costs", **kwargs)

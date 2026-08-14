@@ -353,3 +353,22 @@ POST user/google-signin
 POST user/login
 POST user/logout
 POST user/register
+
+## api.php — cockpit super-admin /admin/* (issue #1764) — 13 route(s)
+## Documentées dans api/openapi.yaml (contract SPA front/admin-dashboard) ;
+## allowlistées car le parseur statique concatène les préfixes imbriqués
+## sans séparateur (`v1`+`admin` → `v1admin/...`) et ne peut donc pas
+## matcher les chemins `/admin/*` documentés (même quirk que v1platform/*).
+GET v1admin/dashboard/stats
+GET v1admin/dashboard/activities
+GET v1admin/dashboard/alerts
+POST v1admin/dashboard/alerts/{param}/dismiss
+GET v1admin/edge-nodes
+POST v1admin/edge-nodes/{param}/sync
+POST v1admin/edge-nodes/{param}/revoke
+GET v1admin/ai/conversations
+GET v1admin/ai/conversations/{param}/messages
+GET v1admin/fleet/alerts
+GET v1admin/hr-reports
+GET v1admin/platform/marketing/oauth-config
+PUT v1admin/platform/marketing/oauth-config
