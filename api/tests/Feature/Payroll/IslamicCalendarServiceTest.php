@@ -25,7 +25,7 @@ class IslamicCalendarServiceTest extends TestCase
         return new IslamicCalendarService(Cache::store());
     }
 
-    private function seedCalendar(): void
+    private function seedCalendar(bool $confirmed = false): void
     {
         $rows = [
             ['eid_al_fitr', 2026, '2026-03-20', 1],
@@ -42,7 +42,7 @@ class IslamicCalendarServiceTest extends TestCase
                 'gregorian_date' => $date,
                 'duration_days' => $duration,
                 'source' => 'computed',
-                'confirmed' => false,
+                'confirmed' => $confirmed,
             ]);
         }
     }
@@ -83,7 +83,9 @@ class IslamicCalendarServiceTest extends TestCase
 
     public function test_duration_days_applied(): void
     {
-        $this->seedCalendar();
+        // #1930 : le calcul (resolveForPayroll) ne consomme que les dates
+        // confirmées — on seed un calendrier confirmé pour tester les durées.
+        $this->seedCalendar(confirmed: true);
 
         // CM : Aïd el-Adha fêté 2 jours → 2026-05-27 ET 2026-05-28 chômés.
         $cm = $this->service()->resolveForPayroll('CM', 2026);
@@ -158,7 +160,9 @@ class IslamicCalendarServiceTest extends TestCase
 
     public function test_working_days_uses_islamic_calendar_via_public_service(): void
     {
-        $this->seedCalendar();
+        // #1930 : seules les dates confirmées entrent dans le calcul des jours
+        // ouvrés — un calendrier non confirmé ne doit RIEN retirer (fallback).
+        $this->seedCalendar(confirmed: true);
 
         // Semaine du 2026-05-25 au 2026-05-29 (lun→ven, repos sam/dim).
         // CM : 27 et 28 chômés (Aïd 2 jours) → 3 jours ouvrés.
@@ -171,5 +175,39 @@ class IslamicCalendarServiceTest extends TestCase
             );
 
         $this->assertSame(3.0, $days);
+    }
+
+    public function test_unconfirmed_dates_excluded_from_payroll_resolution(): void
+    {
+        // Issue #1930 [P1] — les dates approximatives (confirmed = false,
+        // source 'computed' du seeder) ne doivent PAS alimenter la paie.
+        $this->seedCalendar();
+
+        // Admin : la liste complète (confirmées + non confirmées) reste
+        // visible pour permettre la validation.
+        $this->assertCount(5, $this->service()->getHolidaysForCountry('DZ', 2026));
+
+        // Paie : aucune date non confirmée ne ressort.
+        $this->assertSame([], $this->service()->resolveForPayroll('DZ', 2026));
+
+        // Un admin confirme l'année → les dates entrent dans le calcul.
+        $this->service()->confirmYear(2026, 42);
+        $resolved = $this->service()->resolveForPayroll('DZ', 2026);
+        $this->assertCount(5, $resolved);
+        $this->assertContains('2026-03-20', array_column($resolved, 'date'));
+
+        // Confirmée de façon ciblée : seule cette fête entre dans le calcul.
+        IslamicCalendar::query()->delete();
+        $this->service()->update('eid_al_fitr', 2026, [
+            'gregorian_date' => '2026-03-20',
+            'duration_days' => 1,
+            'confirmed' => true,
+            'source' => 'manual',
+            'confirmed_by' => 7,
+        ]);
+
+        $partial = $this->service()->resolveForPayroll('DZ', 2026);
+        $this->assertCount(1, $partial);
+        $this->assertSame('2026-03-20', $partial[0]['date']);
     }
 }
