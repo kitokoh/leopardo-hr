@@ -6311,6 +6311,12 @@ paths:
                         timezone: { type: string }
                         confidence: { type: string, enum: [production, pilot, placeholder, unknown] }
                         available: { type: boolean }
+                        compliance_warning_key: { type: [string, "null"] }
+                        compliance_warning: { type: [string, "null"], description: "Avertissement de conformité localisé (issue #1872)" }
+                        legal_sources:
+                          type: array
+                          items: { type: string }
+                        verified_at: { type: [string, "null"], format: date, description: "Date de validation experte (#1904/#1912) — null tant que non validé" }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -8487,6 +8493,17 @@ paths:
                           slab_version: { type: string }
                           confidence_level: { type: string, enum: [production, pilot, placeholder] }
                           rounding_policy: { type: string }
+                          compliance:
+                            type: object
+                            description: "Bloc conformité (issue #1872) — niveau, avertissement localisé, sources, date de vérification experte."
+                            properties:
+                              confidence_level: { type: string, enum: [production, pilot, placeholder] }
+                              warning_key: { type: string }
+                              warning: { type: string }
+                              sources:
+                                type: array
+                                items: { type: string }
+                              verified_at: { type: [string, "null"], format: date }
                           gross: { type: number }
                           social_employee: { type: number }
                           tax_base: { type: number }

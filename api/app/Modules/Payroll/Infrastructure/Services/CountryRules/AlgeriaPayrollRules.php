@@ -106,6 +106,16 @@ class AlgeriaPayrollRules extends AbstractCountryRules
         return 'placeholder: no official Algerian public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
+    /**
+     * Issue #1872 — références légales DZ (docs/payroll/DZ_COMPLIANCE.md).
+     *
+     * @return list<string>
+     */
+    public function legalSources(): array
+    {
+        return ['Loi de finances en vigueur', 'CNAS'];
+    }
+
     public function confidenceLevel(): string
     {
         return 'pilot';

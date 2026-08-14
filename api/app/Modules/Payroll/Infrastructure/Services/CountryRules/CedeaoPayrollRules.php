@@ -404,6 +404,22 @@ class CedeaoPayrollRules extends AbstractCountryRules
             'until PA2-COUNTRY-012 delivers a real source.';
     }
 
+    /**
+     * Issue #1872 — références légales des membres CEDEAO (fiches
+     * docs/payroll/{CI,BF,ML}_COMPLIANCE.md).
+     *
+     * @return list<string>
+     */
+    public function legalSources(): array
+    {
+        return match ($this->memberCountryCode) {
+            'CI' => ['CGI Côte d\'Ivoire 2024 (ord. 2023-718/719, art. 119 bis)', 'CNSS CI', 'Code du travail CI'],
+            'BF' => ['CGI Burkina Faso 2024', 'CNSS BF', 'Code du travail OHADA'],
+            'ML' => ['CGI Mali 2024', 'INPS', 'Code du travail'],
+            default => [],
+        };
+    }
+
     public function confidenceLevel(): string
     {
         // CI (#1825) : barèmes ITSAS CGI 2024 + CNSS + CN + préavis

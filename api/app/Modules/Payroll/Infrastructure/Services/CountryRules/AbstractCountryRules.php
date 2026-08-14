@@ -320,6 +320,41 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * Issue #1872 — clé i18n de l'avertissement de conformité, dérivée du
+     * niveau de confiance (production → message léger de prudence ; pilot →
+     * non validé localement ; placeholder → ne pas utiliser en paie réelle).
+     */
+    public function complianceWarningKey(): string
+    {
+        return match ($this->confidenceLevel()) {
+            'production' => 'payroll.compliance_warning_production',
+            'placeholder' => 'payroll.compliance_warning_placeholder',
+            default => 'payroll.compliance_warning_pilot',
+        };
+    }
+
+    /**
+     * Issue #1872 — références légales documentées de la juridiction.
+     * Les pays pilotes de la vague Afrique (#1820→#1830) la surchargent
+     * depuis leur fiche docs/payroll/*_COMPLIANCE.md.
+     *
+     * @return list<string>
+     */
+    public function legalSources(): array
+    {
+        return [];
+    }
+
+    /**
+     * Issue #1872 — date de vérification experte (null par défaut tant que
+     * #1904/#1912 n'ont pas livré la validation).
+     */
+    public function complianceVerifiedAt(): ?string
+    {
+        return null;
+    }
+
+    /**
      * Calculates progressive tax for slabs declared with inclusive human-readable
      * bounds such as 0-5000, 5001-20000.
      *

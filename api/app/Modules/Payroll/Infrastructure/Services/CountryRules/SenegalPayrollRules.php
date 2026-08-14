@@ -172,6 +172,16 @@ class SenegalPayrollRules extends AbstractCountryRules
         return 'placeholder: no official Senegalese public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
     }
 
+    /**
+     * Issue #1872 — références légales SN (docs/payroll/SN_COMPLIANCE.md).
+     *
+     * @return list<string>
+     */
+    public function legalSources(): array
+    {
+        return ['CGI Sénégal', 'IPRES', 'CSS', 'Code du travail'];
+    }
+
     public function confidenceLevel(): string
     {
         return 'pilot';

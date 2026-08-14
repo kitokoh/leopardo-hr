@@ -8,4 +8,7 @@ return [
     'rate_delete_draft_only' => "Only a draft row can be deleted.",
     'rate_country_unsupported' => "Unsupported country.",
     'tax_scale_default_name' => ":country legal tax scale :year",
+    'compliance_warning_pilot' => "Pilot ruleset for :country — sourced from public references but not locally validated yet. Have a local expert confirm the figures (tax slabs, contributions, thresholds) before any statutory use.",
+    'compliance_warning_placeholder' => "Structure-only placeholder for :country — tax/social figures are not yet researched and must not be used for real payroll until replaced.",
+    'compliance_warning_production' => "Legally validated ruleset for :country — always confirm current rates with local counsel before statutory filings.",
 ];

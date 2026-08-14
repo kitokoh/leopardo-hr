@@ -72,6 +72,15 @@ class PayrollCalculationPresenter
             'rules_version' => $rules->rulesVersion(),
             'confidence_level' => $rules->confidenceLevel(),
             'rounding_policy' => self::ROUNDING_POLICY,
+            // Issue #1872 — bloc conformité structuré pour web/mobile :
+            // avertissement localisé + sources + date de vérification experte.
+            'compliance' => [
+                'confidence_level' => $rules->confidenceLevel(),
+                'warning_key' => $rules->complianceWarningKey(),
+                'warning' => __($rules->complianceWarningKey(), ['country' => $rules->countryCode()]),
+                'sources' => $rules->legalSources(),
+                'verified_at' => $rules->complianceVerifiedAt(),
+            ],
             'gross' => round($gross, 2),
             'social_employee' => $breakdown['social']['employee'],
             'tax_base' => round($breakdown['taxable_gross'], 2),

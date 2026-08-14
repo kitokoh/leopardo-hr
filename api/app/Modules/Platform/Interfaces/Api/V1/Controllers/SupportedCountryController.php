@@ -32,23 +32,31 @@ class SupportedCountryController extends Controller
             $code = $country['country'];
 
             try {
-                $confidence = $this->payrollCalculator->getRules($code)->confidenceLevel();
+                $rules = $this->payrollCalculator->getRules($code);
                 $available = true;
             } catch (UnsupportedCountryRulesException) {
                 // Pays référencé mais sans règles de paie dédiées (ex. GB/US) :
                 // indisponible pour un calcul, pas une erreur.
-                $confidence = 'unknown';
+                $rules = null;
                 $available = false;
             }
 
+            // Issue #1872 — avertissement de conformité exposé aux clients
+            // web/mobile : niveau de confiance, message localisé, sources et
+            // date de vérification experte (null tant que #1904/#1912 n'ont
+            // pas validé).
             $registry[] = [
                 'country' => $code,
                 'label' => $country['label'],
                 'language' => $country['language'],
                 'currency' => $country['currency'],
                 'timezone' => $country['timezone'],
-                'confidence' => $confidence,
+                'confidence' => $rules?->confidenceLevel() ?? 'unknown',
                 'available' => $available,
+                'compliance_warning_key' => $rules?->complianceWarningKey() ?? null,
+                'compliance_warning' => $rules !== null ? __($rules->complianceWarningKey(), ['country' => $code]) : null,
+                'legal_sources' => $rules?->legalSources() ?? [],
+                'verified_at' => $rules?->complianceVerifiedAt() ?? null,
             ];
         }
 

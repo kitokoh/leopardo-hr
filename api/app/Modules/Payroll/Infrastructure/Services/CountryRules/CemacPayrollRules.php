@@ -351,6 +351,22 @@ class CemacPayrollRules extends AbstractCountryRules
             'until PA2-COUNTRY-012 delivers a real source.';
     }
 
+    /**
+     * Issue #1872 — références légales des membres CEMAC (fiches
+     * docs/payroll/{CM,GA,CG}_COMPLIANCE.md).
+     *
+     * @return list<string>
+     */
+    public function legalSources(): array
+    {
+        return match ($this->memberCountryCode) {
+            'CM' => ['CGI Cameroun 2024 (art. 68)', 'Code du travail 92/007', 'CNPS Cameroun'],
+            'GA' => ['DGI Gabon', 'CNSS Gabon', 'Code du travail'],
+            'CG' => ['DGI Congo', 'CNSS Congo', 'Code du travail'],
+            default => [],
+        };
+    }
+
     public function confidenceLevel(): string
     {
         // CM (#1821), GA et CG (#1824) passent en 'pilot' : barèmes IRPP/CNSS

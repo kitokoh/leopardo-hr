@@ -122,6 +122,28 @@ interface CountryRulesInterface
     public function complianceWarning(): string;
 
     /**
+     * Clé i18n du message d'avertissement de conformité (issue #1872) —
+     * pilot / placeholder / production. La traduction est faite côté API
+     * (lang()) pour garder la couche domaine langue-agnostique.
+     */
+    public function complianceWarningKey(): string;
+
+    /**
+     * Références légales documentées de la juridiction (issue #1872) —
+     * ex. « CGI Côte d'Ivoire 2024 (art. 119 bis) ». Vide tant que la
+     * fiche pays (docs/payroll/*_COMPLIANCE.md) ne les liste pas.
+     *
+     * @return list<string>
+     */
+    public function legalSources(): array;
+
+    /**
+     * Date de dernière vérification des taux par un expert (issue #1872).
+     * null tant que la validation experte n'a pas eu lieu (#1904/#1912).
+     */
+    public function complianceVerifiedAt(): ?string;
+
+    /**
      * Standard legal weekly working-hours threshold beyond which overtime
      * applies by default, absent a company-specific schedule override (see
      * Schedule::overtime_threshold_weekly for the per-company setting this
