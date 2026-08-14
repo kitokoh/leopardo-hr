@@ -1280,7 +1280,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/me/pay-slips/{paySlip}", options);
     },
 
-    /** URL de telechargement de mon bulletin archive dans le Cabinet */
+    /** Telecharger mon bulletin archive dans le Cabinet (PDF) */
     archivedMyPaySlipDocument(options = {}) {
       return request("GET", "/me/pay-slips/{paySlip}/document", options);
     },

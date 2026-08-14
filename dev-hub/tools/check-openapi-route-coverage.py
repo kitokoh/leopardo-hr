@@ -176,6 +176,27 @@ def load_allowlist() -> set[str]:
     return entries
 
 
+def canonical_spec_path(path: str) -> str | None:
+    """Forme canonique d'un chemin pour la comparaison à openapi.yaml.
+
+    Le spec omet le préfixe de version : les `servers` listés portent
+    `/api/v1` et les chemins documentés commencent directement par la
+    ressource (`/admin/...`, pas `/v1/admin/...`). Le parseur compose donc
+    `v1admin/...` (préfixes imbriqués concaténés sans séparateur + version) ;
+    cette fonction rétablit la forme documentée (`/admin/...`).
+
+    Renvoie None si le chemin ne commence pas par un préfixe de version
+    (les routes sans préfixe `v1` sont comparées telles quelles).
+    """
+    m = re.match(r"^v\d+", path)
+    if not m:
+        return None
+    stripped = path[m.end():]
+    if not stripped.startswith("/"):
+        stripped = "/" + stripped
+    return stripped
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", action="store_true", help="sortie JSON")
@@ -191,9 +212,16 @@ def main() -> int:
         key = f"{r['method'].upper()} {r['path']}"
         if (r["method"], r["path"]) in openapi_ops:
             covered += 1
-        else:
-            r["key"] = key
-            uncovered.append(r)
+            continue
+        # Issue #1926 — le spec omet le préfixe de version : un chemin
+        # composé `v1admin/rate-validation/pending` est documenté sous
+        # `/admin/rate-validation/pending` (voir canonical_spec_path).
+        canonical = canonical_spec_path(r["path"])
+        if canonical is not None and (r["method"], canonical) in openapi_ops:
+            covered += 1
+            continue
+        r["key"] = key
+        uncovered.append(r)
 
     new_uncovered = [r for r in uncovered if r["key"] not in allowlist]
 
