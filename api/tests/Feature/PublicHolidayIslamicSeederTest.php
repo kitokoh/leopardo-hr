@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
+use Illuminate\Support\Facades\Artisan;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\IslamicCalendarSeeder;
 use Database\Seeders\PublicHolidaySeeder;
@@ -27,7 +28,7 @@ class PublicHolidayIslamicSeederTest extends TestCase
 
     public function test_public_holiday_seeder_populates_fixed_holidays_and_is_idempotent(): void
     {
-        (new PublicHolidaySeeder)->run();
+        (new PublicHolidaySeeder())->run();
 
         foreach (['DZ', 'CM', 'CI', 'SN'] as $countryCode) {
             $this->assertGreaterThan(
@@ -40,13 +41,13 @@ class PublicHolidayIslamicSeederTest extends TestCase
         $dzCount = PublicHoliday::where('country_code', 'DZ')->count();
 
         // Idempotence : un second run ne duplique rien.
-        (new PublicHolidaySeeder)->run();
+        (new PublicHolidaySeeder())->run();
         $this->assertSame($dzCount, PublicHoliday::where('country_code', 'DZ')->count());
     }
 
     public function test_islamic_calendar_seeder_populates_dates_and_is_idempotent(): void
     {
-        (new IslamicCalendarSeeder)->run();
+        (new IslamicCalendarSeeder())->run();
 
         $this->assertGreaterThan(
             0,
@@ -60,7 +61,7 @@ class PublicHolidayIslamicSeederTest extends TestCase
 
         $total = DB::table('islamic_calendar')->count();
 
-        (new IslamicCalendarSeeder)->run();
+        (new IslamicCalendarSeeder())->run();
         $this->assertSame($total, DB::table('islamic_calendar')->count());
     }
 
@@ -68,7 +69,8 @@ class PublicHolidayIslamicSeederTest extends TestCase
     {
         // Reproduit la commande de production :
         //   php artisan db:seed --class=DatabaseSeeder --force
-        $this->artisan('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true]);
+        $exitCode = Artisan::call('db:seed', ['--class' => DatabaseSeeder::class, '--force' => true]);
+        $this->assertSame(0, $exitCode);
 
         // Après le seed de prod, les fériés et dates islamiques existent.
         $this->assertGreaterThan(0, PublicHoliday::count());

@@ -122,8 +122,6 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-<<<<<<< Updated upstream
-=======
             public function withTaxSlabs(array $slabs): static
             {
                 return $this;
@@ -134,7 +132,6 @@ class CountryRulesResolverTest extends TestCase
                 return '';
             }
 
->>>>>>> Stashed changes
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
@@ -301,19 +298,6 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-<<<<<<< Updated upstream
-=======
-            public function withTaxSlabs(array $slabs): static
-            {
-                return $this;
-            }
-
-            public function flatPayrollTaxLabel(): string
-            {
-                return '';
-            }
-
->>>>>>> Stashed changes
             public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
             {
                 return 0.0;
