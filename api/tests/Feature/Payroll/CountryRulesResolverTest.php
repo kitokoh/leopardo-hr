@@ -227,16 +227,16 @@ class CountryRulesResolverTest extends TestCase
             }
 
             /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
+             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
              */
             /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
+             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
              */
             /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
+             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
              */
             /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
+             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
              */
             public function withTaxSlabs(array $slabs): static
             {
@@ -398,7 +398,7 @@ class CountryRulesResolverTest extends TestCase
             }
 
             /**
-             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>|null  $slabs
+             * @param  array<int, array{min: float|int, max: float|int|null, rate: float|int, fixed_deduction: float|int}>  $slabs
              */
             public function withTaxSlabs(array $slabs): static
             {
