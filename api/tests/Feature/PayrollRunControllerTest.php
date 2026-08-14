@@ -352,6 +352,46 @@ class PayrollRunControllerTest extends TestCase
         $this->getJson("/api/v1/payroll-runs/{$otherRun->id}")->assertNotFound();
         $this->postJson("/api/v1/payroll-runs/{$otherRun->id}/cancel")->assertNotFound();
     }
+
+    // ── #1951 : « pays supporté » = registre ET règles de paie ─────────────
+
+    public function test_run_creation_rejects_country_without_payroll_rules(): void
+    {
+        // GB/US sont dans le registre de display (CountryDefaults) mais n'ont
+        // AUCUNE règle de paie — le run doit être refusé dès la validation
+        // (422) au lieu d'échouer au calcul (UnsupportedCountryRulesException).
+        $company = Company::factory()->create(['country' => 'GB', 'currency' => 'GBP', 'timezone' => 'Europe/London']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'GB',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ])->assertStatus(422);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'US',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ])->assertStatus(422);
+    }
+
+    public function test_run_creation_accepts_country_with_rules(): void
+    {
+        // #1951 : CI (CEDEAO, règles résolubles) accepté — le contrat partagé
+        // du moteur remplace la liste in: hardcodée.
+        $company = Company::factory()->create(['country' => 'CI', 'currency' => 'XOF', 'timezone' => 'Africa/Abidjan']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'CI',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ])->assertCreated()
+            ->assertJsonPath('data.country_code', 'CI');
+    }
 }
-
-
