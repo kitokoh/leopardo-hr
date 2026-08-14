@@ -113,8 +113,10 @@ class PayrollCycleIntegrationTest extends TestCase
 
     public function test_payroll_run_scoped_to_tenant(): void
     {
-        $companyA = Company::factory()->create(['name' => 'Company A']);
-        $companyB = Company::factory()->create(['name' => 'Company B']);
+        // #1905 : le pays légal du tenant doit correspondre au country_code
+        // du run — la factory tire un pays aléatoire sinon (test flaky).
+        $companyA = Company::factory()->create(['name' => 'Company A', 'country' => 'DZ', 'currency' => 'DZD']);
+        $companyB = Company::factory()->create(['name' => 'Company B', 'country' => 'DZ', 'currency' => 'DZD']);
 
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
