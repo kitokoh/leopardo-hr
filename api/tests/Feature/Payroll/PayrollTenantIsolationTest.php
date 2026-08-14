@@ -6,6 +6,7 @@ namespace Tests\Feature\Payroll;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -38,15 +39,28 @@ class PayrollTenantIsolationTest extends TestCase
     {
         parent::setUp();
 
-        $this->companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $companyA */
+        $companyA = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
-        $this->managerA = Employee::factory()->manager()->create(['company_id' => $this->companyA->id]);
-        $this->managerB = Employee::factory()->manager()->create(['company_id' => $this->companyB->id]);
+        /** @var Employee $managerA */
+        $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        /** @var Employee $managerB */
+        $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
+
+        $this->companyA = $companyA;
+        $this->companyB = $companyB;
+        $this->managerA = $managerA;
+        $this->managerB = $managerB;
     }
 
+    /**
+     * @return array{run: PayrollRun, slip: PaySlip, structure: SalaryStructure, taxSlab: TaxSlab}
+     */
     private function seedPayrollData(Company $company): array
     {
+        /** @var PayrollRun $run */
         $run = PayrollRun::create([
             'company_id' => $company->id,
             'country_code' => 'DZ',
@@ -57,8 +71,10 @@ class PayrollTenantIsolationTest extends TestCase
             'total_net' => 75000,
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
+        /** @var PaySlip $slip */
         $slip = PaySlip::create([
             'payroll_run_id' => $run->id,
             'company_id' => $company->id,
@@ -76,6 +92,7 @@ class PayrollTenantIsolationTest extends TestCase
             'status' => 'validated',
         ]);
 
+        /** @var SalaryStructure $structure */
         $structure = SalaryStructure::create([
             'company_id' => $company->id,
             'name' => 'Grille A',
@@ -86,6 +103,7 @@ class PayrollTenantIsolationTest extends TestCase
             'active' => true,
         ]);
 
+        /** @var TaxSlab $taxSlab */
         $taxSlab = TaxSlab::create([
             'company_id' => $company->id,
             'country_code' => 'DZ',
@@ -189,5 +207,49 @@ class PayrollTenantIsolationTest extends TestCase
         $response = $this->getJson('/api/v1/me/pay-slips')->assertOk();
         $ids = collect(data_get($response->json('data'), '*.id'));
         $this->assertTrue($ids->contains($dataA['slip']->id) === false);
+    }
+
+    public function test_archived_cabinet_payslip_is_scoped_to_company(): void
+    {
+        // Issue #1817 : le CabinetDocument archivé porte le company_id du run
+        // (UUID tenant, plus la clé legacy 0), et l'endpoint
+        // GET /me/pay-slips/{slip}/document ne résout que le document du
+        // même tenant que le bulletin.
+        $dataA = $this->seedPayrollData($this->companyA);
+
+        $document = CabinetDocument::create([
+            'company_id' => $this->companyA->id,
+            'employee_id' => $dataA['slip']->employee_id,
+            'name' => 'Bulletin de paie 06/2026',
+            'original_name' => 'bulletin.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 1234,
+            'disk' => 'local',
+            'path' => sprintf(
+                'payslips/%s/2026/06/slip_%d_%d.pdf',
+                $this->companyA->id,
+                $dataA['slip']->employee_id,
+                $dataA['run']->id
+            ),
+            'document_type' => CabinetDocument::TYPE_PAYSLIP,
+            'read_only' => true,
+        ]);
+
+        // Le document est scopé au bon tenant (UUID), pas à la clé legacy.
+        $this->assertSame($this->companyA->id, $document->company_id);
+
+        /** @var Employee $employeeA */
+        $employeeA = Employee::query()->find($dataA['slip']->employee_id);
+        $this->assertInstanceOf(Employee::class, $employeeA);
+
+        // L'employé du tenant A accède à SON document archivé.
+        Sanctum::actingAs($employeeA);
+        $this->getJson('/api/v1/me/pay-slips/'.$dataA['slip']->id.'/document')
+            ->assertOk()
+            ->assertJsonPath('data.document_id', $document->id);
+
+        // Un manager du tenant B ne voit rien du tenant A (404).
+        Sanctum::actingAs($this->managerB);
+        $this->getJson('/api/v1/me/pay-slips/'.$dataA['slip']->id.'/document')->assertNotFound();
     }
 }

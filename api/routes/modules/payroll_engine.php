@@ -34,6 +34,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/pay-slips', [PaySlipController::class, 'myPaySlips']);
     Route::get('/me/pay-slips/{paySlip}', [PaySlipController::class, 'myPaySlipDetail'])->whereNumber('paySlip');
     Route::get('/me/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
+    Route::get('/me/pay-slips/{paySlip}/document', [PaySlipController::class, 'archivedDocument'])->whereNumber('paySlip');
     Route::get('/me/payment-documents', [PaymentDocumentController::class, 'myDocuments']);
     Route::get('/me/payment-documents/{paymentDocument}/download', [PaymentDocumentController::class, 'download'])->whereNumber('paymentDocument');
     Route::post('/payment-confirmations/{paymentItem}/confirm', [PaymentBatchController::class, 'confirm'])->whereNumber('paymentItem');

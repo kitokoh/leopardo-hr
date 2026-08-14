@@ -76,7 +76,10 @@ class CabinetService
         $path = $file->store($storagePath, 'local');
 
         return CabinetDocument::create([
-            'company_id' => $this->legacyCompanyKey($owner),
+            // Issue #1817 : cabinet_documents.company_id est désormais un UUID
+            // tenant (même convention qu'audit_logs/payroll) — on stocke le
+            // vrai company_id de l'employé au lieu de la clé legacy (0).
+            'company_id' => $owner->company_id,
             'employee_id' => $owner->id,
             'folder_id' => $data['folder_id'] ?? null,
             'name' => $data['name'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),

@@ -28,6 +28,12 @@ use Illuminate\Support\Carbon;
  */
 class CabinetDocument extends Model
 {
+    /**
+     * Issue #1817 — type de document pour les bulletins archivés
+     * automatiquement après clôture du run de paie.
+     */
+    public const TYPE_PAYSLIP = 'payslip';
+
     protected $table = 'cabinet_documents';
 
     protected $fillable = [
@@ -41,12 +47,15 @@ class CabinetDocument extends Model
         'disk',
         'path',
         'notes',
+        'document_type',
+        'read_only',
     ];
 
     protected $casts = [
-        'company_id' => 'integer',
+        'company_id' => 'string',
         'employee_id' => 'integer',
         'size' => 'integer',
+        'read_only' => 'boolean',
     ];
 
     /**

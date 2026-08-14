@@ -6075,6 +6075,37 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/pay-slips/{paySlip}/document:
+    get:
+      tags: ["Me"]
+      summary: "URL de telechargement de mon bulletin archive dans le Cabinet"
+      description: "Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Cet endpoint retourne l'URL de telechargement securise de ce document."
+      operationId: archivedMyPaySlipDocument
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "URL du document archive"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      document_id: { type: integer }
+                      url: { type: string }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/balance:
     get:
       tags: ["Me"]

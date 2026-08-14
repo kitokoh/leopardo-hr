@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -205,6 +206,57 @@ class PaySlipController extends Controller
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    /**
+     * Issue #1817 — URL de téléchargement sécurisé du bulletin archivé dans le
+     * Cabinet employé (CabinetDocument document_type = payslip, read_only).
+     *
+     * Self-service uniquement : l'employé ne voit que SES bulletins, et le
+     * document résolu est scopé à son company_id (isolation tenant). Le
+     * téléchargement lui-même est autorisé par le contrôleur Cabinet
+     * (propriétaire du document), qui refusera toute suppression (read_only).
+     */
+    public function archivedDocument(Request $request, PaySlip $paySlip): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($paySlip->employee_id !== $actor->id || $paySlip->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if (! in_array($paySlip->status, ['validated', 'sent'], true)) {
+            abort(404);
+        }
+
+        $document = CabinetDocument::query()
+            ->where('company_id', $paySlip->company_id)
+            ->where('employee_id', $paySlip->employee_id)
+            ->where('document_type', CabinetDocument::TYPE_PAYSLIP)
+            ->where('path', 'like', sprintf(
+                'payslips/%s/%%/%%/slip_%d_%d.pdf',
+                $paySlip->company_id,
+                $paySlip->employee_id,
+                $paySlip->payroll_run_id
+            ))
+            ->latest('id')
+            ->first();
+
+        if ($document === null) {
+            abort(404);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.document_url', $paySlip, [
+            'scope' => 'self_service',
+            'cabinet_document_id' => $document->id,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'document_id' => $document->id,
+                'url' => url('api/v1/cabinet/documents/'.$document->id.'/download'),
+            ],
         ]);
     }
 
