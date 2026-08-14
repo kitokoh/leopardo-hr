@@ -31,6 +31,7 @@ export default function ContractsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   const loadContracts = useCallback(async () => {
     setLoading(true);
@@ -78,7 +79,14 @@ export default function ContractsPage() {
 
   const downloadPdf = async (id: number) => {
     try {
-      const res = await apiFetch(`/contracts/${id}/pdf`);
+      setDownloadError(null);
+      // Issue #2224 : le backend expose `/contracts/{contract}/generate-pdf`
+      // (l'ancien `/contracts/{id}/pdf` n'existe pas → 404 silencieux).
+      const res = await apiFetch(`/contracts/${id}/generate-pdf`);
+      if (!res.ok) {
+        setDownloadError(`Telechargement impossible (erreur ${res.status}).`);
+        return;
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -87,7 +95,7 @@ export default function ContractsPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      // handle error
+      setDownloadError('Telechargement impossible. Reessayez plus tard.');
     }
   };
 
@@ -104,6 +112,12 @@ export default function ContractsPage() {
       subtitle="Gestion des contrats employes : suivi des statuts, echeances et export PDF, branche directement sur l'API RH."
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
+      {downloadError && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>{downloadError}</span>
+        </div>
+      )}
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {statCards.map((stat, i) => (
           <motion.div
