@@ -107,7 +107,7 @@ class NotifyTaxRateValidation
     {
         /** @var int|null $submittedBy */
         $submittedBy = $model->submitted_by ?? null;
-        if ($submittedBy === null || $model->company_id === null) {
+        if ($submittedBy === null || $model->getAttribute('company_id') === null) {
             return;
         }
 

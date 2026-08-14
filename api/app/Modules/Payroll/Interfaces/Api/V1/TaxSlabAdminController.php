@@ -66,15 +66,13 @@ class TaxSlabAdminController extends Controller
 
         $countryCode = strtoupper($validated['country_code']);
         $effectiveFrom = (string) $validated['effective_from'];
-        $effectiveTo = isset($validated['effective_to']) && $validated['effective_to'] !== null
-            ? (string) $validated['effective_to']
-            : null;
+        $effectiveTo = isset($validated['effective_to']) ? (string) $validated['effective_to'] : null;
 
         // Issue #1923 — garde d'unicité avant création (doublon actif).
         $this->assertNoOverlappingActiveSlab(
             $countryCode,
             (float) $validated['min_amount'],
-            isset($validated['max_amount']) && $validated['max_amount'] !== null ? (float) $validated['max_amount'] : null,
+            isset($validated['max_amount']) ? (float) $validated['max_amount'] : null,
             $effectiveFrom,
             $effectiveTo,
         );
@@ -113,11 +111,6 @@ class TaxSlabAdminController extends Controller
 
         $validated = $this->validatePayload($request, partial: true);
 
-        // Normalisation pays (le guard d'unicité compare en majuscules).
-        if (array_key_exists('country_code', $validated)) {
-            $validated['country_code'] = strtoupper((string) $validated['country_code']);
-        }
-
         // Issue #1923 — la garde d'unicité porte sur l'identité/window APRÈS
         // fusion (update partiel : les champs absents gardent leur valeur).
         $merged = array_merge([
@@ -128,12 +121,17 @@ class TaxSlabAdminController extends Controller
             'effective_to' => $slab->effective_to?->toDateString(),
         ], $validated);
 
+        // Normalisation pays (le guard d'unicité compare en majuscules) —
+        // APRÈS fusion : country_code est toujours défini (défaut : valeur
+        // courante du barème), pas de lecture directe d'une clé absente.
+        $merged['country_code'] = strtoupper((string) $merged['country_code']);
+
         $this->assertNoOverlappingActiveSlab(
             strtoupper((string) $merged['country_code']),
             (float) $merged['min_amount'],
-            isset($merged['max_amount']) && $merged['max_amount'] !== null ? (float) $merged['max_amount'] : null,
+            $merged['max_amount'] !== null ? (float) $merged['max_amount'] : null,
             (string) $merged['effective_from'],
-            isset($merged['effective_to']) && $merged['effective_to'] !== null ? (string) $merged['effective_to'] : null,
+            $merged['effective_to'] !== null ? (string) $merged['effective_to'] : null,
             exceptId: (int) $slab->id,
         );
 
@@ -266,7 +264,7 @@ class TaxSlabAdminController extends Controller
     }
 
     /**
-     * @return array{country_code: string, name: string, min_amount: float, max_amount: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null}
+     * @return array{country_code: string, name: string, min_amount: float, max_amount?: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null}
      */
     private function validatePayload(Request $request, bool $partial = false): array
     {
@@ -288,7 +286,7 @@ class TaxSlabAdminController extends Controller
 
         $validated = $request->validate($rules);
 
-        /** @var array{country_code: string, name: string, min_amount: float, max_amount: float|null, rate: float, fixed_deduction: float, effective_from: string, effective_to: string|null} $validated */
+        /** @var array{country_code: string, name: string, min_amount: float, max_amount?: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null} $validated */
         return $validated;
     }
 
