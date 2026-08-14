@@ -316,6 +316,24 @@ class PayrollCalculator
         ];
 
         $taxableGross = $grossEarnings - $social['employee'];
+
+        // ZONE-INFRA (#1820/#1821) : abattement frais professionnels légal
+        // (ex. CM 30 % du brut plafonné 350 000 XAF/mois, art. 68 CGI
+        // Cameroun) appliqué sur l'assiette imposable quand la règle pays le
+        // définit — cf. docs/payroll/CM_COMPLIANCE.md §4. Les pays sans
+        // abattement légal (rate = 0, défaut) gardent le comportement
+        // historique assiette = brut − cotisations salariales.
+        if ($rules instanceof AbstractCountryRules) {
+            $professionalExpenses = $rules->professionalExpensesDeduction();
+            if ($professionalExpenses['rate'] > 0.0) {
+                $abatement = min(
+                    $grossEarnings * $professionalExpenses['rate'] / 100,
+                    $professionalExpenses['cap'] ?? PHP_FLOAT_MAX
+                );
+                $taxableGross = max(0.0, $taxableGross - $abatement);
+            }
+        }
+
         $incomeTax = $rules->calculateIncomeTax($taxableGross);
 
         $lines[] = [

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\FrancePayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
@@ -15,6 +16,17 @@ use Illuminate\Support\Facades\Schema;
 
 class PayrollCountryConfigSeeder extends Seeder
 {
+    /**
+     * Date d'effet des barèmes par pays. Le Cameroun (CM) est seedé avec les
+     * taux du CGI 2024 (issue #1821) → effective_from = 2024-01-01 ; les
+     * autres pays gardent 2026-01-01 (comportement historique).
+     *
+     * @var array<string, string>
+     */
+    private const EFFECTIVE_FROM_BY_COUNTRY = [
+        'CM' => '2024-01-01',
+    ];
+
     public function run(): void
     {
         if (! Schema::hasTable('tax_slabs') || ! Schema::hasTable('social_contributions')) {
@@ -30,10 +42,13 @@ class PayrollCountryConfigSeeder extends Seeder
             new FrancePayrollRules,
             new TurkeyPayrollRules,
             new SenegalPayrollRules,
+            // Cameroun (CEMAC) — règles pilotes IRPP/CNPS (issue #1821).
+            new CemacPayrollRules('CM'),
         ];
 
         foreach ($rules as $countryRules) {
             $countryCode = $countryRules->countryCode();
+            $effectiveFrom = self::EFFECTIVE_FROM_BY_COUNTRY[$countryCode] ?? '2026-01-01';
 
             foreach ($countryRules->socialContributions() as $contribution) {
                 SocialContribution::updateOrCreate(
@@ -47,7 +62,7 @@ class PayrollCountryConfigSeeder extends Seeder
                         'type' => $contribution['type'],
                         'rate' => $contribution['rate'],
                         'cap' => $contribution['cap'],
-                        'effective_from' => '2026-01-01',
+                        'effective_from' => $effectiveFrom,
                         'effective_to' => null,
                     ]
                 );
@@ -58,14 +73,14 @@ class PayrollCountryConfigSeeder extends Seeder
                     [
                         'company_id' => null,
                         'country_code' => $countryCode,
-                        'name' => $countryCode.' payroll tax 2026',
+                        'name' => $countryCode.' payroll tax '.substr($effectiveFrom, 0, 4),
                         'min_amount' => $slab['min'],
                     ],
                     [
                         'max_amount' => $slab['max'],
                         'rate' => $slab['rate'],
                         'fixed_deduction' => $slab['fixed_deduction'],
-                        'effective_from' => '2026-01-01',
+                        'effective_from' => $effectiveFrom,
                         'effective_to' => null,
                     ]
                 );

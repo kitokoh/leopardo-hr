@@ -255,8 +255,16 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            self::assertSame('placeholder', $rules->confidenceLevel());
-            self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            // Issue #1821 : CM est passé au niveau 'pilot' (IRPP CGI 2024 +
+            // CNPS) ; les autres membres CEMAC restent 'placeholder'.
+            $expectedConfidence = $memberCode === 'CM' ? 'pilot' : 'placeholder';
+            self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
+            if ($memberCode === 'CM') {
+                self::assertSame('pilot', $rules->confidenceLevel());
+                self::assertCount(4, $rules->taxSlabs());
+            } else {
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
+            }
             self::assertNotEmpty($rules->socialContributions());
         }
     }

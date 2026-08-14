@@ -13,6 +13,14 @@ namespace App\Modules\Payroll\Infrastructure\Services\CountryRules;
  * sub-code instead of duplicating six near-identical classes
  * (PA2-COUNTRY-007).
  *
+ * Cameroon (CM) — the zone's flagship market (issue #1821) — has moved to
+ * 'pilot' with legal rates from the CGI 2024 (IRPP art. 68, 4 annual
+ * brackets, centimes additionnels ×1.10, professional-expenses abatement
+ * 30 % capped 350 000 XAF/month), CNPS 2024 contribution rates (4,2 % /
+ * 4,2 % / 7,0 % / 2,0 % capped at 750 000 XAF/month) and Code du travail
+ * (loi 92/007) notice periods (art. 34). The other five member states
+ * remain 'placeholder' until their own country issues land (GA/CG: #1824).
+ *
  * `country_code` columns (tax_slabs, social_contributions, payroll_runs...)
  * are `varchar(2)`, so the zone-wide label "CEMAC" is never persisted as a
  * country code: every usable instance is scoped to one of
@@ -77,6 +85,22 @@ class CemacPayrollRules extends AbstractCountryRules
 
     public function socialContributions(): array
     {
+        if ($this->memberCountryCode === 'CM') {
+            // CNPS Cameroun (issue #1821) : vieillesse 4,2 % salarié + 4,2 %
+            // patronal plafonnés à 750 000 XAF/mois, prestations familiales
+            // 7,0 % patronal plafonnées, risques professionnels 2,0 % patronal
+            // non plafonné (taux pilote, variable selon secteur).
+            return [
+                ['name' => 'CNPS Vieillesse Salariale', 'code' => 'CNPS_CM_VIE_EMP', 'type' => 'employee', 'rate' => 4.2, 'cap' => 750000.0],
+                ['name' => 'CNPS Vieillesse Patronale', 'code' => 'CNPS_CM_VIE_PAT', 'type' => 'employer', 'rate' => 4.2, 'cap' => 750000.0],
+                ['name' => 'CNPS Prestations Familiales Patronale', 'code' => 'CNPS_CM_FAM_PAT', 'type' => 'employer', 'rate' => 7.0, 'cap' => 750000.0],
+                ['name' => 'CNPS Risques Professionnels Patronale', 'code' => 'CNPS_CM_AT_PAT', 'type' => 'employer', 'rate' => 2.0, 'cap' => null],
+            ];
+        }
+
+        // Placeholder générique pour les autres membres CEMAC (CF, TD, CG,
+        // GA, GQ) tant que leurs propres issues pays n'ont pas livré de taux
+        // légaux validés (GA/CG : #1824).
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNPS_CEMAC_EMP', 'type' => 'employee', 'rate' => 4.2, 'cap' => null],
             ['name' => 'CNPS/CNSS Patronale (pension/famille/AT)', 'code' => 'CNPS_CEMAC_PAT', 'type' => 'employer', 'rate' => 16.2, 'cap' => null],
@@ -85,6 +109,18 @@ class CemacPayrollRules extends AbstractCountryRules
 
     protected function defaultTaxSlabs(): array
     {
+        if ($this->memberCountryCode === 'CM') {
+            // IRPP Cameroun (CGI 2024, art. 68) — tranches ANNUELLES
+            // (cf. docs/payroll/CM_COMPLIANCE.md §1) : calculateIncomeTax()
+            // annualise l'assiette mensuelle avant d'appliquer ce barème.
+            return [
+                ['min' => 0, 'max' => 2000000, 'rate' => 10, 'fixed_deduction' => 0],
+                ['min' => 2000001, 'max' => 3000000, 'rate' => 15, 'fixed_deduction' => 0],
+                ['min' => 3000001, 'max' => 5000000, 'rate' => 25, 'fixed_deduction' => 0],
+                ['min' => 5000001, 'max' => null, 'rate' => 35, 'fixed_deduction' => 0],
+            ];
+        }
+
         // Conservative placeholder progressive IRPP-style schedule, common
         // shape across CEMAC members. confidenceLevel() below explicitly
         // marks this as 'placeholder', not a legally validated figure per
@@ -103,20 +139,40 @@ class CemacPayrollRules extends AbstractCountryRules
         $annualTaxable = $grossTaxable * $annualBasis;
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
+        if ($this->memberCountryCode === 'CM') {
+            // CM (CGI 2024, art. 68) : IRPP annuel ramené au mois, puis
+            // centimes additionnels communaux = IRPP × 1,10 (issue #1821,
+            // docs/payroll/CM_COMPLIANCE.md §2).
+            return round(($tax / $annualBasis) * 1.10, 2);
+        }
+
         return round($tax / $annualBasis, 2);
     }
 
     public function calculateSocialCharges(float $grossSalary): array
     {
-        // ZONE-INFRA (#1820): Cameroon (CM) statutory CNPS ceiling
-        // 750 000 XAF/month is applied via computeContribution(); the other
-        // five CEMAC members stay on the placeholder (uncapped) rates until
-        // their own member-state issues land (GA/CG: #1824).
-        $cap = $this->memberCountryCode === 'CM' ? 750000.0 : null;
+        if ($this->memberCountryCode === 'CM') {
+            // CNPS Cameroun (issue #1821) : vieillesse salariale 4,2 % et
+            // patronale 4,2 % plafonnées à 750 000 XAF/mois, prestations
+            // familiales patronales 7,0 % plafonnées, risques professionnels
+            // patronaux 2,0 % non plafonnés (docs/payroll/CM_COMPLIANCE.md §3).
+            return [
+                'employee' => $this->computeContribution($grossSalary, 'CNPS_CM_VIE_EMP', 4.2, 750000.0),
+                'employer' => round(
+                    $this->computeContribution($grossSalary, 'CNPS_CM_VIE_PAT', 4.2, 750000.0)
+                    + $this->computeContribution($grossSalary, 'CNPS_CM_FAM_PAT', 7.0, 750000.0)
+                    + $this->computeContribution($grossSalary, 'CNPS_CM_AT_PAT', 2.0, null),
+                    2
+                ),
+            ];
+        }
+
+        $employeeRate = $this->resolveContributionRate('CNPS_CEMAC_EMP', 4.2);
+        $employerRate = $this->resolveContributionRate('CNPS_CEMAC_PAT', 16.2);
 
         return [
-            'employee' => $this->computeContribution($grossSalary, 'CNPS_CEMAC_EMP', 4.2, $cap),
-            'employer' => $this->computeContribution($grossSalary, 'CNPS_CEMAC_PAT', 16.2, $cap),
+            'employee' => round($grossSalary * $employeeRate / 100, 2),
+            'employer' => round($grossSalary * $employerRate / 100, 2),
         ];
     }
 
@@ -159,7 +215,57 @@ class CemacPayrollRules extends AbstractCountryRules
 
     public function confidenceLevel(): string
     {
-        return 'placeholder';
+        // Cameroun (CM) : règles IRPP/CNPS implémentées depuis les sources
+        // légales publiques (CGI 2024, CNPS, Code du travail loi 92/007) —
+        // niveau 'pilot' (issue #1821) tant qu'un expert-comptable local n'a
+        // pas validé les chiffres. Les autres membres CEMAC restent
+        // 'placeholder' tant que leurs issues pays (GA/CG : #1824) n'ont pas
+        // livré de taux légaux.
+        return $this->memberCountryCode === 'CM' ? 'pilot' : 'placeholder';
+    }
+
+    /**
+     * ZONE-INFRA (#1820/#1821) : abattement frais professionnels camerounais
+     * (CGI 2024, art. 68) — 30 % du brut plafonné à 350 000 XAF/mois
+     * (4 200 000 XAF/an). Appliqué par PayrollCalculator::calculateSlip()
+     * sur l'assiette imposable (brut − CNPS salariale − abattement).
+     *
+     * @return array{rate: float, cap: float|null}
+     */
+    public function professionalExpensesDeduction(): array
+    {
+        if ($this->memberCountryCode === 'CM') {
+            return ['rate' => 30.0, 'cap' => 350000.0];
+        }
+
+        return parent::professionalExpensesDeduction();
+    }
+
+    /**
+     * Préavis légal camerounais (Code du travail, loi 92/007, art. 34) —
+     * issue #1821, docs/payroll/CM_COMPLIANCE.md §8 :
+     *   < 6 mois : 15 jours ; 6 mois – 5 ans : 1 mois ;
+     *   5 – 10 ans : 2 mois ; > 10 ans : 3 mois.
+     */
+    public function noticePeriodDays(float $yearsOfService): float
+    {
+        if ($this->memberCountryCode === 'CM') {
+            if ($yearsOfService < 0.5) {
+                return 15.0;
+            }
+
+            if ($yearsOfService < 5.0) {
+                return 30.0;
+            }
+
+            if ($yearsOfService < 10.0) {
+                return 60.0;
+            }
+
+            return 90.0;
+        }
+
+        return parent::noticePeriodDays($yearsOfService);
     }
 
     /**
