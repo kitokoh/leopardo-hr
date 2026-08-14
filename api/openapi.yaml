@@ -7574,6 +7574,22 @@ paths:
                       net_before_tax: { type: number }
                       net_salary: { type: number }
                       total_cost_employer: { type: number }
+                      contract:
+                        type: object
+                        description: "Contrat de calcul complet et explicable (MULTI-PAYS #1869) — mêmes appels métier que le bulletin."
+                        properties:
+                          country_code: { type: string }
+                          currency: { type: string }
+                          gross: { type: number }
+                          social_employee: { type: number }
+                          tax_base: { type: number }
+                          income_tax: { type: number }
+                          other_deductions: { type: number }
+                          net_salary: { type: number }
+                          social_employer: { type: number }
+                          total_cost: { type: number }
+                          rules_period: { type: string, format: date }
+                          slab_version: { type: string }
         "401":
           $ref: "#/components/responses/Error401"
         "403":

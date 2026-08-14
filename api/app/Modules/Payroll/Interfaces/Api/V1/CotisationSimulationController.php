@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculationPresenter;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +28,10 @@ use Illuminate\Http\Request;
  */
 class CotisationSimulationController extends Controller
 {
-    public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
+    public function __construct(
+        private readonly PayrollCalculator $payrollCalculator,
+        private readonly PayrollCalculationPresenter $presenter,
+    ) {}
 
     public function simulate(Request $request): JsonResponse
     {
@@ -95,6 +99,9 @@ class CotisationSimulationController extends Controller
                 // Net réel = brut − cotisations salariales − impôt (issue #1782).
                 'net_salary' => $netSalary,
                 'total_cost_employer' => round($gross + $social['employer'], 2),
+                // MULTI-PAYS (#1869) : contrat de calcul complet et explicable
+                // (pays, devise, période des règles, version de barème).
+                'contract' => $this->presenter->present($countryCode, $gross),
             ],
         ]);
     }
