@@ -2,7 +2,8 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
-## [Unreleased]
+### Added
+- **feat(payroll): Sénégal (SN) — pilot vers prêt pour production : TRIMF + CFCE + IPRES cadres T2 + plafonds (Closes #1827).** `SenegalPayrollRules` : TRIMF 6 tranches forfaitaires via `calculateBracketTax()` (900 → 36 000 XOF, portée dans le bulletin), CFCE 3 % patronal sur masse brute (`CFCE_SN_PAT`), IPRES T1 plafonné à 432 000 XOF/mois (5,6 %/8,4 %) + régime cadres T2 sur tranche 432 001-2 160 000 (2,4 %/3,6 %, hypothèse pilote brut > 432 k), CSS famille 3 % + AT 1 %, abattement frais professionnels 30 % non plafonné, préavis niveau employé (30 j — matrice 8 j/1 m/3 m documentée), `confidenceLevel()` reste `pilot` (validation expert SN requise). Référentiel `docs/payroll/SN_COMPLIANCE.md` créé ; tests unitaires `SenegalRulesUnitTest` (5 cas : TRIMF 6 tranches, CFCE, plafond T1, T2 cadres, abattement) + `PayrollCountryRulesTest` aligné (SN : 56/154).
 
 ### Chore
 - **chore(version): défaut APP_VERSION aligné sur PILOTAGE.md (4.24.0).** `api/config/app.php` gardait le défaut `4.23.5` (commit « Version Sync » #739) alors que le repo est en 4.24.0 depuis la release préparée (#1722) — la prod affichait 4.23.5 dans `/api/v1/health` malgré le nouveau code déployé (Render n'a pas d'APP_VERSION). Le défaut passe à 4.24.0 ; l'env garde la priorité.
