@@ -36,7 +36,6 @@ import 'package:leopardo_employee/features/ai_voice/screens/ai_voice_screen.dart
 import 'package:leopardo_employee/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_employee/features/smart_attendance/screens/smart_attendance_screen.dart';
-import 'package:leopardo_employee/features/smart_attendance/screens/background_permission_onboarding_screen.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/offline_wrapper.dart';
@@ -200,13 +199,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/smart-attendance',
             builder: (context, state) => const SmartAttendanceScreen(),
-          ),
-          GoRoute(
-            path: '/smart-attendance/background-permission',
-            builder: (context, state) {
-              final nextRoute = state.uri.queryParameters['next'];
-              return BackgroundPermissionOnboardingScreen(nextRoute: nextRoute);
-            },
           ),
         ],
       ),
