@@ -352,6 +352,44 @@ class PayrollRunControllerTest extends TestCase
         $this->getJson("/api/v1/payroll-runs/{$otherRun->id}")->assertNotFound();
         $this->postJson("/api/v1/payroll-runs/{$otherRun->id}/cancel")->assertNotFound();
     }
+    // ── Issue #1951 : un pays SANS règles de paie (GB/US au registre
+    // d'affichage mais absents du résolveur) ne peut pas créer de run : 422
+    // à la validation (et non 422/500 au moment du calcul).
+
+    public function test_run_creation_rejects_country_without_payroll_rules(): void
+    {
+        foreach (['GB', 'US'] as $country) {
+            /** @var Company $company */
+            $company = Company::factory()->create(['country' => $country]);
+            /** @var Employee $manager */
+            $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+            Sanctum::actingAs($manager);
+
+            $this->postJson('/api/v1/payroll-runs', [
+                'period_start' => '2026-07-01',
+                'period_end' => '2026-07-31',
+                'country_code' => $country,
+            ])
+                ->assertStatus(422)
+                ->assertJsonValidationErrors('country_code');
+        }
+    }
+
+    public function test_run_creation_accepts_country_with_payroll_rules(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CI']);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'CI',
+        ])->assertStatus(201);
+    }
+
 }
 
 

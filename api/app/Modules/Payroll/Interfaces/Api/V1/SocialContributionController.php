@@ -13,6 +13,7 @@ use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Rules\PayrollSupportedCountry;
 
 class SocialContributionController extends Controller
 {
@@ -55,7 +56,7 @@ class SocialContributionController extends Controller
         // make_social_contributions_code_unique_per_effective_period
         // migration.
         $validated = $request->validate([
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN,CM,CF,TD,CG,GA,GQ,CI,ML,BF,BJ,TG,NE,CA',
+            'country_code' => ['required', 'string', 'size:2', new PayrollSupportedCountry],
             'name' => 'required|string|max:150',
             'code' => [
                 'required',
