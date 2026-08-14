@@ -16,6 +16,8 @@ Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers 
 - Contrats JSON consommes par le mobile
 - Contrats d'auth et de session de la plateforme admin
 
+Note 2026-08-14 : la regle de validation `SupportedCountry` (pays supporte par le moteur de paie) est testee via le chemin d'invocation reel de Laravel (`Validator::make` au lieu d'une closure maison) — couvre `POST /tax-slabs` et `POST /social-contributions` (500 → 422/200 selon pays). Les tests doivent verifier qu'un pays avec regles de paie passe et qu'un pays sans regles (ex. GB/US) est rejete (fix #1951, PR #2088).
+
 ## Roles a couvrir 
 
 1. Super Admin
