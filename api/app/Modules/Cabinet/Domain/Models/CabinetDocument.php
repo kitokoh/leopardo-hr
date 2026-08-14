@@ -41,12 +41,16 @@ class CabinetDocument extends Model
         'disk',
         'path',
         'notes',
+        'read_only',
+        'document_type',
+        'source_id',
     ];
 
     protected $casts = [
         'company_id' => 'integer',
         'employee_id' => 'integer',
         'size' => 'integer',
+        'read_only' => 'boolean',
     ];
 
     /**
