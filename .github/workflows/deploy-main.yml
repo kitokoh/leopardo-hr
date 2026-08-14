@@ -270,16 +270,48 @@ jobs:
           set -euo pipefail
           URL="${API_HEALTHCHECK_URL:-${DEFAULT_API_HEALTHCHECK_URL}}"
 
-          for attempt in {1..30}; do
-            echo "Healthcheck attempt ${attempt}/30 on ${URL}"
-            if curl --fail --silent --show-error "${URL}" | grep -q '"status":"ok"'; then
-              echo "Render deployment healthy."
-              exit 0
+          # Issue #1831 : le healthcheck « ok » ne prouve pas que le NOUVEAU
+          # conteneur a remplacé l'ancien — un build Docker en échec laisse
+          # l'instance précédente répondre (faux succès, prod inchangée).
+          # On mémorise l'uptime de l'instance AVANT le hook, puis on attend
+          # qu'une instance PLUS RÉCENTE (uptime réinitialisé) réponde.
+          baseline="$(curl --fail --silent --show-error "${URL}" \
+            | sed -n 's/.*"uptime_seconds":\([0-9]*\).*/\1/p' || echo 0)"
+          echo "Baseline instance uptime_seconds: ${baseline:-0}"
+          # Baseline non mesurable (0 = instance injoignable au moment du hook) :
+          # on retombe sur le simple healthcheck (on ne peut pas comparer).
+          if [[ -z "${baseline}" || "${baseline}" -eq 0 ]]; then
+            echo "No usable baseline uptime — falling back to plain healthcheck."
+            for attempt in {1..30}; do
+              echo "Healthcheck attempt ${attempt}/30 on ${URL}"
+              if curl --fail --silent --show-error "${URL}" | grep -q '"status":"ok"'; then
+                echo "Render deployment healthy."
+                exit 0
+              fi
+              sleep 20
+            done
+            echo "API healthcheck did not become healthy in time."
+            exit 1
+          fi
+
+          for attempt in {1..60}; do
+            echo "Healthcheck attempt ${attempt}/60 on ${URL}"
+            body="$(curl --fail --silent --show-error "${URL}" || true)"
+            if echo "${body}" | grep -q '"status":"ok"'; then
+              uptime="$(echo "${body}" | sed -n 's/.*"uptime_seconds":\([0-9]*\).*/\1/p' || echo 0)"
+              echo "  instance uptime_seconds: ${uptime:-0} (baseline: ${baseline:-0})"
+              # Une nouvelle instance a forcément un uptime proche de 0 ;
+              # une valeur supérieure à la baseline = toujours l'ancienne.
+              if [[ -n "${uptime}" && "${uptime}" -lt "${baseline:-0}" ]]; then
+                echo "Render deployment healthy (new instance detected)."
+                exit 0
+              fi
+              echo "  healthy but stale instance (uptime >= baseline) — still waiting for the new deploy..."
             fi
             sleep 20
           done
 
-          echo "API healthcheck did not become healthy in time."
+          echo "API healthcheck did not detect the new instance in time (build failure or stale instance)."
           exit 1
 
       - name: Rollback on failure
