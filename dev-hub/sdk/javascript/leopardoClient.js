@@ -175,6 +175,24 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/hr-reports", options);
     },
 
+    /** Lister les fêtes islamiques d'une année (super-admin) */
+    listIslamicCalendar(options = {}) {
+      return request("GET", "/admin/islamic-calendar", options);
+    },
+
+    /** Modifier/confirmer une fête islamique (super-admin) */
+    updateIslamicCalendarHoliday(options = {}) {
+      return request("PUT", "/admin/islamic-calendar/{holidayKey}/{year}", options);
+    },
+
+    /** Confirmer toutes les dates islamiques d'une année (super-admin) */
+    confirmIslamicCalendarYear(options = {}) {
+      return request("POST", "/admin/islamic-calendar/confirm-year/{year}", options);
+    /** Simuler l'impact d'un barème (platform_admin, dry-run) — issue #1814 */
+    simulatePayrollAdmin(options = {}) {
+      return request("POST", "/admin/payroll/simulate", options);
+    },
+
     /** Config OAuth marketing (super-admin) */
     getAdminPlatformMarketingOauthConfig(options = {}) {
       return request("GET", "/admin/platform/marketing/oauth-config", options);
@@ -183,6 +201,64 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Enregistrer la config OAuth d'un provider marketing */
     putAdminPlatformMarketingOauthConfig(options = {}) {
       return request("PUT", "/admin/platform/marketing/oauth-config", options);
+    },
+
+    /** Lister les jours fériés d'un pays/année (super-admin : national + entreprise) */
+    listPublicHolidaysAdmin(options = {}) {
+      return request("GET", "/admin/public-holidays", options);
+    },
+
+    /** Créer un jour férié national (super-admin) */
+    storePublicHolidayAdmin(options = {}) {
+      return request("POST", "/admin/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié (super-admin) */
+    destroyPublicHolidayAdmin(options = {}) {
+      return request("DELETE", "/admin/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié (super-admin) */
+    updatePublicHolidayAdmin(options = {}) {
+      return request("PUT", "/admin/public-holidays/{publicHoliday}", options);
+    /** Approuver une modification de taux (platform_admin) — issue #1813 */
+    approveRateValidation(options = {}) {
+      return request("PUT", "/admin/rate-validation/{table}/{id}/approve", options);
+    },
+
+    /** Rejeter une modification de taux avec motif (platform_admin) — issue #1813 */
+    rejectRateValidation(options = {}) {
+      return request("PUT", "/admin/rate-validation/{table}/{id}/reject", options);
+    },
+
+    /** Lister les modifications de taux en attente de validation — issue #1813 */
+    listPendingRateValidation(options = {}) {
+      return request("GET", "/admin/rate-validation/pending", options);
+    },
+
+    /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
+    listAdminTaxSlabs(options = {}) {
+      return request("GET", "/admin/tax-slabs", options);
+    },
+
+    /** Créer une tranche nationale (platform_admin) — issue #1814 */
+    storeAdminTaxSlab(options = {}) {
+      return request("POST", "/admin/tax-slabs", options);
+    },
+
+    /** Supprimer une tranche nationale (platform_admin) — issue #1814 */
+    destroyAdminTaxSlab(options = {}) {
+      return request("DELETE", "/admin/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Modifier une tranche nationale (platform_admin) — issue #1814 */
+    updateAdminTaxSlab(options = {}) {
+      return request("PUT", "/admin/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814 */
+    resetAdminTaxSlabs(options = {}) {
+      return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
     /** Couts IA par periode */
@@ -1440,6 +1516,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll/mobile-summary", options);
     },
 
+    /** Simuler l'impact d'un barème (manager, dry-run) — issue #1814 */
+    simulatePayroll(options = {}) {
+      return request("POST", "/payroll/simulate", options);
+    },
+
     /** Connexion super-admin */
     postPlatformAuthLogin(options = {}) {
       return request("POST", "/platform/auth/login", options);
@@ -1623,6 +1704,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre a jour un projet */
     putProjectsByProject(options = {}) {
       return request("PUT", "/projects/{project}", options);
+    },
+
+    /** Lister les jours fériés du pays (manager principal : nationaux + entreprise) */
+    listPublicHolidays(options = {}) {
+      return request("GET", "/public-holidays", options);
+    },
+
+    /** Créer un jour férié d'entreprise (manager principal) */
+    storePublicHoliday(options = {}) {
+      return request("POST", "/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié d'entreprise (manager principal) */
+    destroyPublicHoliday(options = {}) {
+      return request("DELETE", "/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié d'entreprise (manager principal) */
+    updatePublicHoliday(options = {}) {
+      return request("PUT", "/public-holidays/{publicHoliday}", options);
     },
 
     /** Envoyer une notification push de test a un employe */
@@ -1910,6 +2011,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/social-contributions/{socialContribution}", options);
     },
 
+    /** Historique immuable des modifications d'une cotisation (manager) — issue #1813 */
+    socialContributionHistory(options = {}) {
+      return request("GET", "/social-contributions/{socialContribution}/history", options);
+    },
+
+    /** Soumettre une regle de cotisation pour validation (manager) — issue #1813 */
+    submitSocialContribution(options = {}) {
+      return request("PUT", "/social-contributions/{socialContribution}/submit", options);
+    },
+
     /** Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs */
     generateCnasDzDeclaration(options = {}) {
       return request("POST", "/social-declarations/cnas-dz", options);
@@ -2013,6 +2124,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier une tranche d'impot (manager) */
     updateTaxSlab(options = {}) {
       return request("PUT", "/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Historique immuable des modifications d'une tranche (manager) — issue #1813 */
+    taxSlabHistory(options = {}) {
+      return request("GET", "/tax-slabs/{taxSlab}/history", options);
+    },
+
+    /** Soumettre une tranche d'impot pour validation (manager) — issue #1813 */
+    submitTaxSlab(options = {}) {
+      return request("PUT", "/tax-slabs/{taxSlab}/submit", options);
     },
 
     /** Synchroniser les devices Traccar */

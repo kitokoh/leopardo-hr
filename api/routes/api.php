@@ -19,6 +19,10 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
@@ -27,6 +31,8 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
+use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
+use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
@@ -295,5 +301,41 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
+
+        // Public holidays (issue #1811) — super-admin : CRUD fériés nationaux.
+        Route::get('/public-holidays', [PublicHolidayController::class, 'index']);
+        Route::post('/public-holidays', [PublicHolidayController::class, 'store']);
+        Route::put('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'update'])->whereNumber('publicHoliday');
+        Route::delete('/public-holidays/{publicHoliday}', [PublicHolidayController::class, 'destroy'])->whereNumber('publicHoliday');
+
+        // Islamic calendar (issue #1812) — super-admin : dates mobiles des
+        // fêtes islamiques (Aïd, Maouloud, Tamkharit…) par année.
+        Route::get('/islamic-calendar', [IslamicCalendarController::class, 'index']);
+        Route::post('/islamic-calendar/confirm-year/{year}', [IslamicCalendarController::class, 'confirmYear'])->whereNumber('year');
+        Route::put('/islamic-calendar/{holidayKey}/{year}', [IslamicCalendarController::class, 'update'])
+            ->whereIn('holidayKey', ['eid_al_fitr', 'eid_al_adha', 'mawlid', 'tahmarit', 'muharram'])
+            ->whereNumber('year');
+
+        // Issue #1814 — barèmes fiscaux nationaux (CRUD admin) + simulation.
+        Route::get('/tax-slabs', [TaxSlabAdminController::class, 'index']);
+        Route::post('/tax-slabs', [TaxSlabAdminController::class, 'store']);
+        Route::put('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'update'])->whereNumber('taxSlab');
+        Route::delete('/tax-slabs/{taxSlab}', [TaxSlabAdminController::class, 'destroy'])->whereNumber('taxSlab');
+        Route::post('/tax-slabs/reset-defaults', [TaxSlabAdminController::class, 'resetDefaults']);
+        Route::post('/payroll/simulate', [PayrollSimulationController::class, 'simulate']);
+
+        // Issue #1815 — cotisations sociales nationales (CRUD admin).
+        Route::get('/social-contributions', [SocialContributionAdminController::class, 'index']);
+        Route::post('/social-contributions', [SocialContributionAdminController::class, 'store']);
+        Route::put('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'update'])->whereNumber('socialContribution');
+        Route::delete('/social-contributions/{socialContribution}', [SocialContributionAdminController::class, 'destroy'])->whereNumber('socialContribution');
+
+        // Issue #1813 — validation des modifications de taux légaux
+        // (approbation/rejet réservés au platform_admin).
+        Route::get('/rate-validation/pending', [RateValidationAdminController::class, 'pending']);
+        Route::put('/rate-validation/{table}/{id}/approve', [RateValidationAdminController::class, 'approve'])
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
+        Route::put('/rate-validation/{table}/{id}/reject', [RateValidationAdminController::class, 'reject'])
+            ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
     });
 });

@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
 use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class SocialDeclarationController extends Controller
 {
@@ -285,6 +288,43 @@ class SocialDeclarationController extends Controller
         ]);
     }
 
+    /**
+     * CEMAC/CM (#1823) — déclaration CNPS mensuelle Cameroun (format DAS) :
+     * CSV téléchargeable, une ligne par bulletin validé du run + totaux.
+     */
+    public function generateCnpsCmDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        // RBAC resserré : la déclaration CNPS DAS est réservée aux managers
+        // principal/comptable (pas n'importe quel manager).
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        // Garde pays : la déclaration CNPS CM ne s'applique qu'aux runs
+        // camerounais (CEMAC/CM #1823).
+        if ($payrollRun->country_code !== 'CM') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Cameroun (CNPS CM).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnps_cm_declaration');
+
+        $generator = new CnpsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNPS_CM_DAS_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
     private function companyRegistrationNumber(?Company $company): string
     {
         if ($company === null) {
@@ -311,4 +351,3 @@ class SocialDeclarationController extends Controller
         return $value === null ? '' : (string) $value;
     }
 }
-

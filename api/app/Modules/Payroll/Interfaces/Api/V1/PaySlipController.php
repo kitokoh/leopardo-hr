@@ -8,12 +8,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Storage;
 
 class PaySlipController extends Controller
@@ -242,5 +244,45 @@ class PaySlipController extends Controller
             'total_slips' => $slips->count(),
         ]);
     }
-}
 
+
+    /**
+     * Issue #1817 — téléchargement sécurisé du bulletin archivé dans le
+     * Cabinet employé (document_type = payslip, read_only). Retourne le
+     * document archivé si présent, sinon le PDF généré standard.
+     */
+    public function document(Request $request, PaySlip $paySlip): Response|StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $isOwner = $paySlip->employee_id === $actor->id && $paySlip->company_id === $actor->company_id;
+        $isManager = $paySlip->company_id === $actor->company_id && $actor->isManager();
+
+        if (! $isOwner && ! $isManager) {
+            abort(404);
+        }
+
+        /** @var CabinetDocument|null $document */
+        $document = CabinetDocument::query()
+            ->where('employee_id', $paySlip->employee_id)
+            ->where('document_type', 'payslip')
+            ->where('source_id', $paySlip->id)
+            ->latest('id')
+            ->first();
+
+        if ($document === null) {
+            // Pas encore archivé (run non clôturé) → repli sur le PDF standard.
+            return $this->downloadPdf($request, $paySlip, app(PaySlipPdfGenerator::class));
+        }
+
+        $disk = Storage::disk($document->disk);
+        if (! $disk->exists($document->path)) {
+            abort(404, 'Document archivé introuvable.');
+        }
+
+        return $disk->download($document->path, $document->original_name, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+}

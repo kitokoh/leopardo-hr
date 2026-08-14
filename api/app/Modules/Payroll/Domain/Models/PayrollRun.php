@@ -31,21 +31,38 @@ use Illuminate\Support\Carbon;
  * @property string|null $locked_by
  * @property Carbon|null $locked_at
  * @property string|null $notes
+ * @property string $type
+ * @property int|null $original_run_id
+ * @property string|null $reason
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class PayrollRun extends Model
 {
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_CALCULATING = 'calculating';
+
     public const STATUS_PROCESSING = 'processing'; // async batch job in progress
+
     public const STATUS_CALCULATED = 'calculated';
+
     public const STATUS_VALIDATED = 'validated';
+
     public const STATUS_PAID = 'paid';
+
     public const STATUS_LOCKED = 'locked';
+
     public const STATUS_CANCELLED = 'cancelled';
+
     public const STATUS_ERROR = 'error'; // async batch job failed
+
+    public const TYPE_STANDARD = 'standard';
+
+    public const TYPE_REGULARIZATION = 'regularization';
+
     use BelongsToCompany;
 
     protected $fillable = [
@@ -53,6 +70,7 @@ class PayrollRun extends Model
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',
         'employee_count', 'calculated_at', 'validated_by', 'validated_at',
         'paid_at', 'locked_by', 'locked_at', 'notes',
+        'type', 'original_run_id', 'reason',
     ];
 
     protected $casts = [
@@ -85,6 +103,18 @@ class PayrollRun extends Model
     public function bankExports(): HasMany
     {
         return $this->hasMany(BankExport::class, 'payroll_run_id');
+    }
+
+    /** @return HasMany<PayrollRun, $this> */
+    public function regularizations(): HasMany
+    {
+        return $this->hasMany(PayrollRun::class, 'original_run_id');
+    }
+
+    /** @return BelongsTo<PayrollRun, $this> */
+    public function originalRun(): BelongsTo
+    {
+        return $this->belongsTo(PayrollRun::class, 'original_run_id');
     }
 
     /**
