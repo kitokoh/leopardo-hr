@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -36,7 +35,7 @@ class TaxRateValidationService
     /**
      * Soumission pour validation (RH/comptable) : draft → pending_validation.
      */
-    public function submit(Model $rate, Employee $actor): Model
+    public function submit(TaxSlab|SocialContribution $rate, Employee $actor): TaxSlab|SocialContribution
     {
         $this->assertSupported($rate);
 
@@ -44,7 +43,7 @@ class TaxRateValidationService
             throw new RuntimeException('Seule une ligne brouillon (draft) peut être soumise pour validation.');
         }
 
-        return DB::transaction(function () use ($rate, $actor): Model {
+        return DB::transaction(function () use ($rate, $actor): TaxSlab|SocialContribution {
             $previous = $this->snapshot($rate);
 
             $rate->update([
@@ -62,7 +61,7 @@ class TaxRateValidationService
     /**
      * Trace la création d'une ligne (action 'created' dans le log immuable).
      */
-    public function recordCreated(Model $rate, Employee $actor): void
+    public function recordCreated(TaxSlab|SocialContribution $rate, Employee $actor): void
     {
         $this->assertSupported($rate);
 
@@ -76,7 +75,7 @@ class TaxRateValidationService
      *
      * @param  int  $adminId  id du SuperAdmin connecté
      */
-    public function approve(Model $rate, int $adminId): Model
+    public function approve(TaxSlab|SocialContribution $rate, int $adminId): TaxSlab|SocialContribution
     {
         $this->assertSupported($rate);
 
@@ -84,7 +83,7 @@ class TaxRateValidationService
             throw new RuntimeException('Seule une ligne en attente de validation peut être approuvée.');
         }
 
-        return DB::transaction(function () use ($rate, $adminId): Model {
+        return DB::transaction(function () use ($rate, $adminId): TaxSlab|SocialContribution {
             $previous = $this->snapshot($rate);
 
             $rate->update([
@@ -104,7 +103,7 @@ class TaxRateValidationService
     /**
      * Rejet (platform admin) : pending_validation → draft, motif obligatoire.
      */
-    public function reject(Model $rate, int $adminId, string $reason): Model
+    public function reject(TaxSlab|SocialContribution $rate, int $adminId, string $reason): TaxSlab|SocialContribution
     {
         $this->assertSupported($rate);
 
@@ -117,7 +116,7 @@ class TaxRateValidationService
             throw new RuntimeException('Un motif de rejet est obligatoire (audit trail).');
         }
 
-        return DB::transaction(function () use ($rate, $adminId, $reason): Model {
+        return DB::transaction(function () use ($rate, $adminId, $reason): TaxSlab|SocialContribution {
             $previous = $this->snapshot($rate);
 
             $rate->update([
@@ -135,7 +134,7 @@ class TaxRateValidationService
     /**
      * Historique immuable d'une ligne (ordonné du plus récent au plus ancien).
      */
-    public function history(Model $rate): Collection
+    public function history(TaxSlab|SocialContribution $rate): Collection
     {
         $this->assertSupported($rate);
 
@@ -156,7 +155,7 @@ class TaxRateValidationService
      * tranches d'un même barème partagent la même effective_from → elles ne
      * sont pas touchées (seule une NOUVELLE version datée les supplante).
      */
-    private function supersedeOlderVersions(Model $rate, int $adminId): void
+    private function supersedeOlderVersions(TaxSlab|SocialContribution $rate, int $adminId): void
     {
         $query = $rate->newQuery()
             ->forCountry($rate->country_code)
@@ -183,13 +182,13 @@ class TaxRateValidationService
     }
 
     private function log(
-        Model $rate,
+        TaxSlab|SocialContribution $rate,
         string $action,
         ?int $actorId,
         string $actorRole,
         array $previous,
         ?string $reason = null,
-        ?Model $supersedingRate = null
+        TaxSlab|SocialContribution|null $supersedingRate = null
     ): void {
         TaxRateChangeLog::create([
             'table_name' => $rate->getTable(),
@@ -208,7 +207,7 @@ class TaxRateValidationService
     /**
      * @return array<string, mixed>
      */
-    private function snapshot(Model $rate): array
+    private function snapshot(TaxSlab|SocialContribution $rate): array
     {
         return [
             'company_id' => $rate->company_id,
@@ -224,9 +223,9 @@ class TaxRateValidationService
         ];
     }
 
-    private function assertSupported(Model $rate): void
+    private function assertSupported(TaxSlab|SocialContribution $rate): void
     {
-        if (! isset(self::TABLE_LABELS[$rate->getTable()]) || ! ($rate instanceof TaxSlab || $rate instanceof SocialContribution)) {
+        if (! isset(self::TABLE_LABELS[$rate->getTable()])) {
             throw new RuntimeException('Modèle non supporté par le workflow de validation des taux.');
         }
     }
