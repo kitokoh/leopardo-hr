@@ -386,6 +386,17 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * Issue #1934 — défaut ADDITIF : l'impôt et la taxe de minimum fiscal
+     * s'additionnent (CI : IR + CN, etc.). Les pays au mécanisme légal
+     * « max » (Sénégal : le salarié paie le plus élevé de IR/TRIMF,
+     * CGI SN §3) override cette méthode.
+     */
+    public function combineMinimumFiscalTax(float $incomeTax, float $bracketTax): float
+    {
+        return $incomeTax + $bracketTax;
+    }
+
+    /**
      * ZONE-INFRA (#1820): default label of the flat-tax deduction line —
      * "Taxe de minimum fiscal". Countries using the same mechanism for a
      * differently-named flat tax (CI's Contribution Nationale, #1825)
