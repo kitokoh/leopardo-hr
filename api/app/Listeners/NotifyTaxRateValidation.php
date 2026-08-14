@@ -35,8 +35,25 @@ class NotifyTaxRateValidation
 
     public function handleTaxRateSubmitted(TaxRateSubmitted $event): void
     {
+        // Contrat du listener (docblock) : les notifications/emails ne doivent
+        // JAMAIS casser la transition — toute erreur (table de notifications
+        // absente sur un environnement partiel, SMTP down, etc.) est journalisée
+        // et avalée (écart 1 #1923 : le listener était mort ; en l'activant,
+        // on le blinde pour qu'il reste best-effort).
+        try {
+            $this->doHandleSubmitted($event);
+        } catch (\Throwable $e) {
+            Log::warning('tax-rate.notification-failed', [
+                'event' => 'submitted',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function doHandleSubmitted(TaxRateSubmitted $event): void
+    {
         $label = $this->label($event->model);
-        $title = sprintf('Validation de taux demandée — %s', $label);
+        $title = __('payroll.rate_notif_title_submitted', ['label' => $label]);
 
         Log::info('tax-rate.submitted', [
             'table' => $event->model->getTable(),
@@ -45,29 +62,48 @@ class NotifyTaxRateValidation
         ]);
 
         foreach (SuperAdmin::query()->get() as $admin) {
-            $this->emailBestEffort($admin->email, $title, sprintf(
-                'Un %s de taux légal (%s) attend votre validation dans l’interface admin.',
-                $event->model instanceof TaxSlab ? 'barème fiscal' : 'taux de cotisation',
-                $label,
-            ));
+            $this->emailBestEffort($admin->email, $title, __('payroll.rate_notif_body_submitted', [
+                'kind' => $event->model instanceof TaxSlab
+                    ? __('payroll.rate_notif_kind_slab')
+                    : __('payroll.rate_notif_kind_contribution'),
+                'label' => $label,
+            ]));
         }
     }
 
     public function handleTaxRateApproved(TaxRateApproved $event): void
     {
-        $this->notifySubmitter($event->model, 'approuvée', sprintf(
-            'Votre modification de taux légal (%s) a été approuvée et est active.',
-            $this->label($event->model),
-        ));
+        try {
+            $this->notifySubmitter(
+                $event->model,
+                __('payroll.rate_notif_verb_approved'),
+                __('payroll.rate_notif_body_approved', ['label' => $this->label($event->model)]),
+            );
+        } catch (\Throwable $e) {
+            Log::warning('tax-rate.notification-failed', [
+                'event' => 'approved',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function handleTaxRateRejected(TaxRateRejected $event): void
     {
-        $this->notifySubmitter($event->model, 'rejetée', sprintf(
-            'Votre modification de taux légal (%s) a été rejetée : %s',
-            $this->label($event->model),
-            $event->reason,
-        ));
+        try {
+            $this->notifySubmitter(
+                $event->model,
+                __('payroll.rate_notif_verb_rejected'),
+                __('payroll.rate_notif_body_rejected', [
+                    'label' => $this->label($event->model),
+                    'reason' => $event->reason,
+                ]),
+            );
+        } catch (\Throwable $e) {
+            Log::warning('tax-rate.notification-failed', [
+                'event' => 'rejected',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -91,7 +127,7 @@ class NotifyTaxRateValidation
             $this->sendNotification->handle(
                 (int) $submitter->id,
                 'tax_rate_validation',
-                sprintf('Modification de taux %s', $verb),
+                __('payroll.rate_notif_subject', ['verb' => $verb]),
                 $body,
                 ['table' => $model->getTable(), 'record_id' => $model->getKey()],
             );
@@ -102,7 +138,7 @@ class NotifyTaxRateValidation
             ]);
         }
 
-        $this->emailBestEffort($submitter->email, sprintf('Modification de taux %s', $verb), $body);
+        $this->emailBestEffort($submitter->email, __('payroll.rate_notif_subject', ['verb' => $verb]), $body);
     }
 
     private function emailBestEffort(string $to, string $subject, string $body): void

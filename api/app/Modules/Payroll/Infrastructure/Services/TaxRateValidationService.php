@@ -14,6 +14,7 @@ use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Issue #1813 — Workflow de validation des modifications de taux légaux.
@@ -48,24 +49,31 @@ class TaxRateValidationService
         $this->assertTable($model);
 
         if ($model->status !== TaxSlab::STATUS_DRAFT) {
-            throw new \DomainException(sprintf(
-                'Seule une ligne en brouillon peut être soumise (statut actuel : %s).',
-                (string) $model->status,
-            ));
+            throw new \DomainException(__('payroll.rate_submit_draft_only', ['status' => (string) $model->status]));
         }
 
-        $previous = TaxRateChangeLog::snapshot($model);
-        $model->forceFill([
-            'status' => TaxSlab::STATUS_PENDING,
-            'submitted_by' => $actor->id,
-            'rejection_reason' => null,
-        ])->save();
+        // Écart 3 (#1923) : statut + log en transaction — un échec
+        // intermédiaire ne doit pas laisser un état incohérent. L'event est
+        // dispatché APRÈS le commit : le listener (notifications/emails) fait
+        // des lectures/écritures DB — un échec best-effort ne doit pas
+        // aborter la transaction (PostgreSQL aborte toute la transaction sur
+        // la première erreur, même catchée).
+        $submitted = DB::transaction(function () use ($model, $actor): Model {
+            $previous = TaxRateChangeLog::snapshot($model);
+            $model->forceFill([
+                'status' => TaxSlab::STATUS_PENDING,
+                'submitted_by' => $actor->id,
+                'rejection_reason' => null,
+            ])->save();
 
-        $this->log($model, TaxRateChangeLog::ACTION_SUBMITTED, (int) $actor->id, 'employee', $previous);
+            $this->log($model, TaxRateChangeLog::ACTION_SUBMITTED, (int) $actor->id, 'employee', $previous);
 
-        TaxRateSubmitted::dispatch($model, $actor);
+            return $model->refresh();
+        });
 
-        return $model;
+        TaxRateSubmitted::dispatch($submitted, $actor);
+
+        return $submitted;
     }
 
     /**
@@ -81,37 +89,40 @@ class TaxRateValidationService
         $this->assertTable($model);
 
         if ($model->status !== TaxSlab::STATUS_PENDING) {
-            throw new \DomainException(sprintf(
-                'Seule une ligne en attente de validation peut être approuvée (statut actuel : %s).',
-                (string) $model->status,
-            ));
+            throw new \DomainException(__('payroll.rate_approve_pending_only', ['status' => (string) $model->status]));
         }
 
-        $previous = TaxRateChangeLog::snapshot($model);
+        // Écart 3 (#1923) : supersede + statut + log en transaction ; event
+        // dispatché APRÈS commit (même raison que submit).
+        $approved = DB::transaction(function () use ($model, $actor): Model {
+            $previous = TaxRateChangeLog::snapshot($model);
 
-        // L'ancienne ligne active de même identité devient superseded.
-        foreach ($this->activeIdenticalRows($model) as $oldRow) {
-            $oldPrevious = TaxRateChangeLog::snapshot($oldRow);
-            $oldRow->forceFill([
-                'status' => TaxSlab::STATUS_SUPERSEDED,
+            // L'ancienne ligne active de même identité devient superseded.
+            foreach ($this->activeIdenticalRows($model) as $oldRow) {
+                $oldPrevious = TaxRateChangeLog::snapshot($oldRow);
+                $oldRow->forceFill([
+                    'status' => TaxSlab::STATUS_SUPERSEDED,
+                    'validated_by' => $actor->id,
+                    'validated_at' => now(),
+                ])->save();
+
+                $this->log($oldRow, TaxRateChangeLog::ACTION_SUPERSEDED, (int) $actor->id, 'platform_admin', $oldPrevious);
+            }
+
+            $model->forceFill([
+                'status' => TaxSlab::STATUS_ACTIVE,
                 'validated_by' => $actor->id,
                 'validated_at' => now(),
             ])->save();
 
-            $this->log($oldRow, TaxRateChangeLog::ACTION_SUPERSEDED, (int) $actor->id, 'platform_admin', $oldPrevious);
-        }
+            $this->log($model, TaxRateChangeLog::ACTION_APPROVED, (int) $actor->id, 'platform_admin', $previous);
 
-        $model->forceFill([
-            'status' => TaxSlab::STATUS_ACTIVE,
-            'validated_by' => $actor->id,
-            'validated_at' => now(),
-        ])->save();
+            return $model->refresh();
+        });
 
-        $this->log($model, TaxRateChangeLog::ACTION_APPROVED, (int) $actor->id, 'platform_admin', $previous);
+        TaxRateApproved::dispatch($approved, $actor);
 
-        TaxRateApproved::dispatch($model, $actor);
-
-        return $model;
+        return $approved;
     }
 
     /**
@@ -126,29 +137,34 @@ class TaxRateValidationService
         $this->assertTable($model);
 
         if ($model->status !== TaxSlab::STATUS_PENDING) {
-            throw new \DomainException(sprintf(
-                'Seule une ligne en attente de validation peut être rejetée (statut actuel : %s).',
-                (string) $model->status,
-            ));
+            throw new \DomainException(__('payroll.rate_reject_pending_only', ['status' => (string) $model->status]));
         }
 
         if (trim($reason) === '') {
-            throw new \DomainException('Un motif de rejet est obligatoire.');
+            throw new \DomainException(__('payroll.rate_reject_reason_required'));
         }
 
-        $previous = TaxRateChangeLog::snapshot($model);
-        $model->forceFill([
-            'status' => TaxSlab::STATUS_DRAFT,
-            'validated_by' => $actor->id,
-            'validated_at' => now(),
-            'rejection_reason' => trim($reason),
-        ])->save();
+        // Écart 3 + 4 (#1923) : transaction ; un REJET ne tamponne PAS
+        // validated_by/validated_at (ces champs signifient « approuvé ») —
+        // la trace d'audit reste dans tax_rate_change_log (action REJECTED),
+        // la ligne revient en draft avec le motif. Event après commit.
+        $rejected = DB::transaction(function () use ($model, $actor, $reason): Model {
+            $previous = TaxRateChangeLog::snapshot($model);
+            $model->forceFill([
+                'status' => TaxSlab::STATUS_DRAFT,
+                'validated_by' => null,
+                'validated_at' => null,
+                'rejection_reason' => trim($reason),
+            ])->save();
 
-        $this->log($model, TaxRateChangeLog::ACTION_REJECTED, (int) $actor->id, 'platform_admin', $previous, trim($reason));
+            $this->log($model, TaxRateChangeLog::ACTION_REJECTED, (int) $actor->id, 'platform_admin', $previous, trim($reason));
 
-        TaxRateRejected::dispatch($model, $actor, trim($reason));
+            return $model->refresh();
+        });
 
-        return $model;
+        TaxRateRejected::dispatch($rejected, $actor, trim($reason));
+
+        return $rejected;
     }
 
     /**
