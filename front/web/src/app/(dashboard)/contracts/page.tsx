@@ -79,14 +79,7 @@ export default function ContractsPage() {
 
   const downloadPdf = async (id: number) => {
     try {
-      setDownloadError(null);
-      // Issue #2224 : le backend expose `/contracts/{contract}/generate-pdf`
-      // (l'ancien `/contracts/{id}/pdf` n'existe pas → 404 silencieux).
       const res = await apiFetch(`/contracts/${id}/generate-pdf`);
-      if (!res.ok) {
-        setDownloadError(`Telechargement impossible (erreur ${res.status}).`);
-        return;
-      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
