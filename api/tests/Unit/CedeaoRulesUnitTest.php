@@ -16,7 +16,8 @@ use PHPUnit\Framework\TestCase;
  *     supprime l'ancien ITSAS annuel (0/2/21/24,5/29 %) et la CN 1,5 %
  *     (fusionnés dans l'ITS unique, #1918)
  *   - CNSS : retraite 3,2 % salarié + 4,5 % patronal, famille 5,75 %
- *     patronal (plafond 1 647 315 XOF/mois), AT 2,0 % patronal non plafonné
+ *     patronal (plafond retraite 1 647 315 XOF/mois), famille/AT plafonnées
+ *     séparément à 70 000 (#1913, guide CNPS)
  *   - 13ème mois obligatoire (conventions de branche OHADA-CI)
  *   - Préavis Code du travail CI art. 18 (palier ancienneté, pilote)
  *   - Les autres membres UEMOA (ML/BF/BJ/TG/NE) restent inchangés
@@ -84,7 +85,7 @@ class CedeaoRulesUnitTest extends TestCase
     public function test_ci_cnss_cap_at_1647315(): void
     {
         // Brut 2 000 000 XOF > plafond retraite 1 647 315 ; famille et AT
-        // plafonnées à 70 000 par branche (#1913) :
+        // plafonnées séparément à 70 000 (#1913, guide CNPS) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
         //   patronale : 1 647 315 × 4,5 % = 74 129,18
         //             + 70 000 × 5,75 % = 4 025,00
@@ -98,13 +99,16 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_ci_cnss_below_cap_uses_full_gross(): void
     {
-        // Brut 200 000 < plafond → assiette pleine (CI_COMPLIANCE.md §3) :
+        // Brut 200 000 — retraite assise sur le brut (< 1 647 315), famille/AT
+        // plafonnées à 70 000 (#1913) :
         //   salariale : 200 000 × 3,2 % = 6 400,00
-        //   patronale : 200 000 × (4,5 % + 5,75 % + 2,0 %) = 24 500,00
+        //   patronale : 200 000 × 4,5 % = 9 000,00
+        //             + 70 000 × 5,75 % = 4 025,00 + 70 000 × 2,0 % = 1 400,00
+        //             = 14 425,00
         $charges = $this->rules()->calculateSocialCharges(200000.0);
 
         $this->assertSame(6400.0, $charges['employee']);
-        $this->assertSame(24500.0, $charges['employer']);
+        $this->assertSame(14425.0, $charges['employer']);
     }
 
     public function test_ci_social_contributions_list_uses_legal_codes(): void

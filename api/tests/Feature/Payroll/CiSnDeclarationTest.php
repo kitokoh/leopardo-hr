@@ -104,10 +104,10 @@ class CiSnDeclarationTest extends TestCase
         $this->assertContains('total_salarial', $header);
         $this->assertContains('total_patronal', $header);
 
-        // Calcul manuel (issue #1830) — brut 400 000 XOF :
+        // Calcul manuel (issues #1830 + #1913) — brut 400 000 XOF :
         //   retraite salariale 3,2 % = 12 800 · retraite patronale 4,5 % = 18 000
-        //   famille 5,75 % = 23 000 · AT 2 % = 8 000
-        //   total salarial 12 800 · total patronal 49 000
+        //   famille 5,75 % plafonnée à 70 000 = 4 025 · AT 2 % plafonné à 70 000 = 1 400
+        //   total salarial 12 800 · total patronal 23 425
         $row = str_getcsv($lines[1]);
         $this->assertSame('CNSS-CI-001', $row[0]);
         $this->assertSame('Kouassi', $row[1]);
@@ -116,15 +116,15 @@ class CiSnDeclarationTest extends TestCase
         $this->assertSame('400000.00', $row[4]);
         $this->assertSame('12800.00', $row[5]);
         $this->assertSame('18000.00', $row[6]);
-        $this->assertSame('23000.00', $row[7]);
-        $this->assertSame('8000.00', $row[8]);
+        $this->assertSame('4025.00', $row[7]);
+        $this->assertSame('1400.00', $row[8]);
         $this->assertSame('12800.00', $row[9]);
-        $this->assertSame('49000.00', $row[10]);
+        $this->assertSame('23425.00', $row[10]);
 
         // Totaux cohérents.
         $totals = (new CnssDeclarationGenerator)->totals($run);
         $this->assertSame(12800.0, $totals['retraite_emp']);
-        $this->assertSame(49000.0, $totals['total_pat']);
+        $this->assertSame(23425.0, $totals['total_pat']);
         $this->assertSame(1, $totals['slip_count']);
     }
 
@@ -145,9 +145,9 @@ class CiSnDeclarationTest extends TestCase
         $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
         $row = str_getcsv($lines[1]);
 
-        // Calcul manuel (issue #1830 + #1913) — plafonds par branche :
-        //   retraite = min(2 000 000, 1 647 315) ; famille et AT plafonnées
-        //   à 70 000 (guide CNPS employeur, #1913) :
+        // Calcul manuel (issues #1830/#1898 + #1913) — assiette plafonnée pour
+        // retraite = min(2 000 000, 1 647 315), famille et AT plafonnées à 70 000
+        // (guide CNPS, #1913 — aligné moteur calculateSocialCharges) :
         //   retraite salariale = 1 647 315 × 3,2 % = 52 714,08
         //   retraite patronale = 1 647 315 × 4,5 % = 74 129,18
         //   famille = 70 000 × 5,75 % = 4 025,00 · AT = 70 000 × 2 % = 1 400,00
@@ -163,10 +163,11 @@ class CiSnDeclarationTest extends TestCase
 
     public function test_ci_totals_row_matches_line_sums_above_cap(): void
     {
-        // Régression #1922 : le total AT était calculé sur l'assiette PLAFONNÉE
-        // dans totals() alors que les lignes utilisaient le brut réel (2,0 %
-        // non plafonné, cf. #1898) → la ligne TOTAUX ne valait pas la somme
-        // des lignes dès que le brut dépassait 1 647 315 XOF.
+        // Régression #1922 + #1913 : le total AT était calculé sur l'assiette
+        // PLAFONNÉE dans totals() alors que les lignes utilisaient le brut réel
+        // → la ligne TOTAUX ne valait pas la somme des lignes. Depuis #1913,
+        // famille et AT sont plafonnées à 70 000 (CNPS) sur les lignes ET totals()
+        // → la somme des lignes vaut le total (propriété conservée).
         $run = $this->makeRun('CI');
 
         /** @var Employee $above */
@@ -190,21 +191,20 @@ class CiSnDeclarationTest extends TestCase
         $csv = (new CnssDeclarationGenerator)->generate($run);
         $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
 
-        // Lignes : AT = 70 000 × 2 % = 1 400,00 (plafonné #1913) · 400 000 × 2 % = 8 000,00
+        // Lignes : AT = 70 000 × 2 % = 1 400,00 (cap #1913) pour chaque ligne.
         $this->assertSame('1400.00', str_getcsv($lines[1])[8]);
-        $this->assertSame('8000.00', str_getcsv($lines[2])[8]);
+        $this->assertSame('1400.00', str_getcsv($lines[2])[8]);
 
-        // TOTAUX : AT = 9 400,00 (somme des lignes — le plafond 70 000 est
-        // appliqué PAR LIGNE, pas sur l'agrégat).
+        // TOTAUX : AT = 2 800,00 (somme des lignes, aligné sur le cap #1913).
         $totalsRow = str_getcsv($lines[3]);
         $this->assertSame('TOTAL', $totalsRow[0]);
-        $this->assertSame('9400.00', $totalsRow[8]);
-        $this->assertSame('128554.18', $totalsRow[10]); // 79 554,18 + 49 000,00
+        $this->assertSame('2800.00', $totalsRow[8]);
+        $this->assertSame('102979.18', $totalsRow[10]); // 79 554,18 + 23 425,00
 
         // totals() doit être aligné sur les lignes.
         $totals = (new CnssDeclarationGenerator)->totals($run);
-        $this->assertSame(9400.0, $totals['at_pat']);
-        $this->assertSame(128554.18, $totals['total_pat']);
+        $this->assertSame(2800.0, $totals['at_pat']);
+        $this->assertSame(102979.18, $totals['total_pat']);
         $this->assertSame(2, $totals['slip_count']);
     }
 
