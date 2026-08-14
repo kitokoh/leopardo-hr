@@ -414,4 +414,101 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame(7200.0, (float) $slip->total_deductions);
         $this->assertSame(92800.0, (float) $slip->net_salary);
     }
+    public function test_golden_ci_ricf_scale_art_120(): void
+    {
+        // RICF — calcul manuel (CGI CI art. 120, réforme ord. 2023-718/719,
+        // effet 01/01/2024, CI_COMPLIANCE.md §1) : réduction d'impôt pour
+        // charges de famille imputable sur l'ITS brut, 11 000 XOF/mois par
+        // demi-part au-delà de 1 part, plafonnée à 44 000 (5 parts) :
+        //   1 part → 0 · 1,5 → 5 500 · 2 → 11 000 · 2,5 → 16 500 ·
+        //   3 → 22 000 · 3,5 → 27 500 · 4 → 33 000 · 4,5 → 38 500 ·
+        //   5 → 44 000.
+        $rules = $this->rules();
+
+        $this->assertSame(0.0, $rules->familyTaxReduction(1.0));
+        $this->assertSame(5500.0, $rules->familyTaxReduction(1.5));
+        $this->assertSame(11000.0, $rules->familyTaxReduction(2.0));
+        $this->assertSame(16500.0, $rules->familyTaxReduction(2.5));
+        $this->assertSame(22000.0, $rules->familyTaxReduction(3.0));
+        $this->assertSame(27500.0, $rules->familyTaxReduction(3.5));
+        $this->assertSame(33000.0, $rules->familyTaxReduction(4.0));
+        $this->assertSame(38500.0, $rules->familyTaxReduction(4.5));
+        $this->assertSame(44000.0, $rules->familyTaxReduction(5.0));
+        // Plafond légal : le nombre de parts ne peut pas dépasser 5.
+        $this->assertSame(44000.0, $rules->familyTaxReduction(6.0));
+        // Défaut 1 part (célibataire sans enfant) → aucune réduction.
+        $this->assertSame(0.0, $rules->familyTaxReduction());
+        // Les autres membres CEDEAO (BF) n'ont pas de RICF implémentée.
+        $this->assertSame(0.0, (new CedeaoPayrollRules('BF'))->familyTaxReduction(3.0));
+    }
+
+    public function test_golden_ci_ricf_marie_1_enfant_brut_100000(): void
+    {
+        // Calcul manuel (#2117) : brut 100 000, 2,5 parts (marié 1 enfant) :
+        //   CNSS salariale = 100 000 × 3,2 % = 3 200
+        //   ITS brut 2024 = (100 000 − 75 000) × 16 % = 4 000
+        //   RICF (art. 120) = 11 000 × (2,5 − 1) = 16 500 → imputable sur
+        //     l'impôt brut → ITS net = max(0, 4 000 − 16 500) = 0
+        //   Net = 100 000 − 3 200 − 0 = 96 800
+        $rules = $this->rules();
+
+        $this->assertSame(16500.0, $rules->familyTaxReduction(2.5));
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(100000.0, $rules, 2.5);
+
+        $this->assertSame(0.0, $breakdown['income_tax']);
+        $this->assertSame(96800.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_ci_ricf_4_parts_brut_400000(): void
+    {
+        // Calcul manuel (#2117) : brut 400 000, 4 parts (ex. marié 4 enfants
+        //   à charge : base marié 2 + 0,5 × 4 enfants = 4) :
+        //   CNSS salariale = 12 800
+        //   ITS brut 2024 = 165 000 × 16 % + 160 000 × 21 % = 60 000
+        //   RICF (art. 120) = 11 000 × (4 − 1) = 33 000
+        //   ITS net = 60 000 − 33 000 = 27 000
+        //   Net = 400 000 − 12 800 − 27 000 = 360 200
+        $rules = $this->rules();
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(400000.0, $rules, 4.0);
+
+        $this->assertSame(27000.0, $breakdown['income_tax']);
+        $this->assertSame(360200.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_ci_ricf_parts_max_brut_3m(): void
+    {
+        // Calcul manuel (#2117) : brut 3 000 000, 5 parts (plafond légal) :
+        //   CNSS salariale = 3 000 000 × 3,2 % = 96 000 (plafond retraite
+        //     1 647 315 non atteint)
+        //   ITS brut 2024 = 165 000×16 % + 560 000×21 % + 1 600 000×24 %
+        //     + 600 000×28 % = 696 000
+        //   RICF (art. 120) = 44 000 (plafond)
+        //   ITS net = 696 000 − 44 000 = 652 000
+        //   Net = 3 000 000 − 96 000 − 652 000 = 2 252 000
+        $rules = $this->rules();
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(3000000.0, $rules, 5.0);
+
+        $this->assertSame(652000.0, $breakdown['income_tax']);
+        $this->assertSame(2252000.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_ci_ricf_default_1_part_no_change(): void
+    {
+        // Calcul manuel (#2117) : brut 500 000, défaut 1 part (célibataire
+        // sans enfant, family_parts null) → RICF 0 → comportement IDENTIQUE
+        // au moteur avant #2117 (ITS 81 000, net 403 000 — verrouillé par
+        // PayrollCalculationContractTest).
+        $rules = $this->rules();
+
+        $this->assertSame(0.0, $rules->familyTaxReduction());
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(500000.0, $rules);
+
+        $this->assertSame(81000.0, $breakdown['income_tax']);
+        $this->assertSame(403000.0, $breakdown['net_salary']);
+    }
+
 }

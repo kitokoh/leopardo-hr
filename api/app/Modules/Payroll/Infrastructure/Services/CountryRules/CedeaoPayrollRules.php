@@ -160,10 +160,11 @@ class CedeaoPayrollRules extends AbstractCountryRules
         // 240 001–800 000 : 21 % · 800 001–2 400 000 : 24 % ·
         // 2 400 001–8 000 000 : 28 % · > 8 000 000 : 32 %. L'ancien ITSAS
         // annuel (0/2/21/24,5/29 % — CGI art. 116-120 pré-réforme) et la
-        // Contribution Nationale (1,5 %) sont supprimés/fusionnés. RICF
-        // (réduction pour charges de famille, art. 120) non appliquée : les
-        // données familiales (parts) ne sont pas encore portées par le
-        // moteur — défaut 0 (célibataire 1 part). À valider expert (#1904).
+        // Contribution Nationale (1,5 %) sont supprimés/fusionnés. La RICF
+        // (réduction pour charges de famille, art. 120) est appliquée APRÈS
+        // l'impôt brut (familyTaxReduction(), #2117) — défaut 1 part
+        // (célibataire sans enfant) → réduction nulle. À valider expert
+        // (#1904/#2124).
         if ($this->memberCountryCode === 'CI') {
             return [
                 ['min' => 0, 'max' => 75000, 'rate' => 0, 'fixed_deduction' => 0],
@@ -285,6 +286,36 @@ class CedeaoPayrollRules extends AbstractCountryRules
         }
 
         return parent::calculateBracketTax($grossSalary);
+    }
+
+    /**
+     * CI (#2117) — RICF : réduction d'impôt pour charges de famille
+     * imputable sur l'ITS brut (CGI CI art. 120, réforme ord.
+     * 2023-718/719, effet 01/01/2024). Barème MENSUEL par parts :
+     *   1 part → 0 · 1,5 → 5 500 · 2 → 11 000 · 2,5 → 16 500 ·
+     *   3 → 22 000 · 3,5 → 27 500 · 4 → 33 000 · 4,5 → 38 500 ·
+     *   5 parts → 44 000 (plafond légal).
+     * Soit 11 000 XOF/mois par demi-part au-delà de 1 part, plafonné à
+     * 44 000. Parts : célibataire/divorcé/veuf sans enfant = 1 · marié
+     * sans enfant = 2 · +0,5 part par enfant à charge (majoration à
+     * +1 part pour enfant infirme) · plafond 5 parts (art. 120 al. 2).
+     * Situation de famille au 1er janvier de l'année d'acquisition du
+     * revenu (art. 120 al. 2). `family_parts` est porté par `employees`
+     * (défaut 1 part = réduction nulle → aucun changement de comportement
+     * pour les bulletins sans données familiales).
+     *
+     * Défaut CI (`family_parts` absent) : 1 part → 0,00 — les golden
+     * existants (ITS 2024 sans RICF) restent valides.
+     */
+    public function familyTaxReduction(float $familyParts = 1.0): float
+    {
+        if ($this->memberCountryCode !== 'CI') {
+            return 0.0;
+        }
+
+        $parts = max(1.0, (float) $familyParts);
+
+        return round(min(44000.0, 11000.0 * ($parts - 1.0)), 2);
     }
 
     /**
