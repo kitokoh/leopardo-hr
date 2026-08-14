@@ -161,6 +161,89 @@ class CiSnDeclarationTest extends TestCase
         $this->assertSame('208849.79', $row[10]);
     }
 
+    public function test_ci_totals_row_matches_line_sums_above_cap(): void
+    {
+        // Régression #1922 : le total AT était calculé sur l'assiette PLAFONNÉE
+        // dans totals() alors que les lignes utilisaient le brut réel (2,0 %
+        // non plafonné, cf. #1898) → la ligne TOTAUX ne valait pas la somme
+        // des lignes dès que le brut dépassait 1 647 315 XOF.
+        $run = $this->makeRun('CI');
+
+        /** @var Employee $above */
+        $above = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'first_name' => 'Aya',
+            'last_name' => 'Kouassi',
+            'cnss_ci_matricule' => 'CNSS-CI-001',
+        ]);
+        $this->addValidatedSlip($run, $above, 2000000.0);
+
+        /** @var Employee $below */
+        $below = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'first_name' => 'Ibrahima',
+            'last_name' => 'Sanogo',
+            'cnss_ci_matricule' => 'CNSS-CI-002',
+        ]);
+        $this->addValidatedSlip($run, $below, 400000.0);
+
+        $csv = (new CnssDeclarationGenerator)->generate($run);
+        $lines = array_values(array_filter(explode("\n", $csv), fn ($l) => trim($l) !== ''));
+
+        // Lignes : AT = 2 000 000 × 2 % = 40 000,00 · 400 000 × 2 % = 8 000,00
+        $this->assertSame('40000.00', str_getcsv($lines[1])[8]);
+        $this->assertSame('8000.00', str_getcsv($lines[2])[8]);
+
+        // TOTAUX : AT = 48 000,00 (somme des lignes, PAS min(brut, cap) × 2 %).
+        $totalsRow = str_getcsv($lines[3]);
+        $this->assertSame('TOTAL', $totalsRow[0]);
+        $this->assertSame('48000.00', $totalsRow[8]);
+        $this->assertSame('257849.79', $totalsRow[10]); // 208 849,79 + 49 000,00
+
+        // totals() doit être aligné sur les lignes.
+        $totals = (new CnssDeclarationGenerator)->totals($run);
+        $this->assertSame(48000.0, $totals['at_pat']);
+        $this->assertSame(257849.79, $totals['total_pat']);
+        $this->assertSame(2, $totals['slip_count']);
+    }
+
+    public function test_csv_prevents_formula_injection_ci_and_sn(): void
+    {
+        // Régression #1922 : un nom/matricule commençant par =, +, -, @, tab
+        // ou saut de ligne ne doit JAMAIS être interprété comme formule par
+        // Excel/LibreOffice — préfixe ' neutralisant appliqué.
+        $runCi = $this->makeRun('CI');
+        /** @var Employee $emp */
+        $emp = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'first_name' => '=1+1',
+            'last_name' => '@SUM(A1:A9)',
+            'cnss_ci_matricule' => '+CMD',
+        ]);
+        $this->addValidatedSlip($runCi, $emp, 400000.0);
+
+        $csvCi = (new CnssDeclarationGenerator)->generate($runCi);
+        $linesCi = array_values(array_filter(explode("\n", $csvCi), fn ($l) => trim($l) !== ''));
+        $rowCi = str_getcsv($linesCi[1]);
+        $this->assertSame("'=1+1", $rowCi[2]);
+        $this->assertSame("'@SUM(A1:A9)", $rowCi[1]);
+        $this->assertSame("'+CMD", $rowCi[0]);
+
+        $runSn = $this->makeRun('SN');
+        $emp->update([
+            'ipres_matricule' => '-2+3',
+            'ipres_category' => 'cadre',
+            'last_name' => 'Dia',
+            'first_name' => 'Moussa',
+        ]);
+        $this->addValidatedSlip($runSn, $emp, 500000.0);
+
+        $csvSn = (new IpresDeclarationGenerator)->generate($runSn);
+        $linesSn = array_values(array_filter(explode("\n", $csvSn), fn ($l) => trim($l) !== ''));
+        $rowSn = str_getcsv($linesSn[1]);
+        $this->assertSame("'-2+3", $rowSn[0]);
+    }
+
     // ── IPRES/CSS Sénégal ───────────────────────────────────────────────
 
     public function test_sn_csv_general_employee(): void
