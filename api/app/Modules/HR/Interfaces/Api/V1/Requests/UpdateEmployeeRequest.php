@@ -119,6 +119,34 @@ class UpdateEmployeeRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // Issue #1765 (chemin PUT — même classe de TypeError que le POST :
+        // UpdateEmployeeDTO::$salary_base int|float, ?bool biometric_*) :
+        // normalisation des champs numériques et booléens AVANT la validation.
+        foreach (['salary_base', 'hourly_rate'] as $numericField) {
+            $value = $this->input($numericField);
+
+            if ($value !== null && $value !== '' && is_numeric($value)) {
+                $this->merge([$numericField => (float) $value]);
+            }
+        }
+
+        $scheduleId = $this->input('schedule_id');
+        if ($scheduleId !== null && $scheduleId !== '' && is_numeric($scheduleId)) {
+            $this->merge(['schedule_id' => (int) $scheduleId]);
+        }
+
+        foreach (['biometric_face_enabled', 'biometric_fingerprint_enabled'] as $boolField) {
+            $value = $this->input($boolField);
+
+            if (is_bool($value) || (is_int($value) && in_array($value, [0, 1], true))) {
+                continue;
+            }
+
+            if (in_array($value, ['1', '0', 'true', 'false', 'on', 'off', 'yes', 'no'], true)) {
+                $this->merge([$boolField => filter_var($value, FILTER_VALIDATE_BOOLEAN)]);
+            }
+        }
+
         if (DB::getDriverName() !== 'pgsql') {
             return;
         }
