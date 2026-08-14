@@ -126,6 +126,39 @@ Fixes : 1ᵉʳ janvier, 4 avril, 1ᵉʳ mai, 15 août, 1ᵉʳ novembre, 25 déce
 fêtes islamiques mobiles (Korité, Tabaski, Gamou, Taamhrit) via table
 `islamic_calendar` (#1812). Gestion dynamique via #1811.
 
+## Fiche de validation expert-comptable SN (issue #1912)
+
+> **Statut : EN ATTENTE D'EXPERT** — cette fiche liste TOUTES les valeurs à
+> valider par un expert-comptable sénégalais avant bascule
+> `confidenceLevel() → production`. La revue documentaire agent (2026-08-14)
+> a vérifié la cohérence code ↔ docs ↔ sources publiques ; elle ne remplace
+> PAS la validation humaine requise. Ticket de suivi : #1912.
+
+| # | Valeur | Implémenté | Source documentaire | Statut |
+|---|---|---|---|---|
+| 1 | IR — barème annuel 6 tranches (0/20/30/35/37/40 %) | ✅ | CGI Sénégal | à valider expert |
+| 2 | TRIMF — 6 tranches forfaitaires (900 → 36 000 XOF) + `max(IR, TRIMF)` | ✅ (#1934) | CGI Sénégal | à valider expert |
+| 3 | IPRES T1 — 5,6 % / 8,4 %, plafond 432 000 XOF | ✅ | IPRES | à valider expert |
+| 4 | IPRES T2 cadres — 2,4 % / 3,6 % sur tranche 432 001–2 160 000 | ✅ (#1827) | IPRES | à valider expert |
+| 5 | CSS famille patronale 3 % (plafond 63 000 XOF/mois, eRegulations) | ✅ (#1913/#2045) | CSS / eRegulations | à valider expert |
+| 6 | CSS AT patronale 1 % (plafond 63 000 XOF/mois) | ✅ (#1913/#2045) | CSS — variable selon secteur | à valider expert |
+| 7 | CFCE 3 % (non plafonné) | ✅ | CGI Sénégal | à valider expert |
+| 8 | Abattement frais pro 30 % du BRUT (non plafonné) | ✅ (#1847/#1828) | CGI Sénégal | à valider expert |
+| 9 | SMIG 58 900 XOF/mois | ✅ | — | à valider |
+| 10 | Préavis (8 j / 1 m / 3 m) — niveau employé | ✅ (pilot) | Code du travail | à valider expert |
+| 11 | Périmètre déclaration IPRES/CSS (T1/T2 + CSS famille ; AT + CFCE déclarés séparément) | ✅ documenté (#2014) | IPRES/CSS | à valider expert |
+
+**Points bloquants identifiés par la revue :**
+- `max(IR, TRIMF)` : confirmation que le TRIMF est un MINIMUM (le mécanisme
+  « plus élevé des deux » est implémenté depuis #1934) ;
+- IPRES T2 : confirmation de la tranche 432 001–2 160 000 et de
+  l'application au régime cadres ;
+- CSS AT : taux variable selon le secteur (1 % = défaut pilote) ;
+- abattement 30 % non plafonné : confirmation du plafond éventuel.
+
+**Procédure de validation :** chaque ligne cochée par l'expert + signature +
+date → mettre à jour cette fiche, puis basculer `confidenceLevel() → production`.
+
 ## Procédure de mise à jour des taux
 
 1. Valider les nouveaux taux avec un expert-comptable sénégalais.
