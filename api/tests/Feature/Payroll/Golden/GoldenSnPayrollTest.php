@@ -23,8 +23,9 @@ use Tests\TestCase;
  *   IPRES T2 cadres     = (min(brut, 2 160 000) − 432 000) × 2,4 % (sal.)
  *                        / × 3,6 % (pat.), si brut > 432 000
  *   CSS familiale 3 % + AT 1 % + CFCE 3 % (patronal, non plafonnés)
- *   IR      = progressif annuel / 12 sur assiette = (brut − IPRES sal.) × 0,70
- *   (abattement 30 % appliqué par SenegalPayrollRules::calculateIncomeTax)
+ *   IR      = progressif annuel / 12 sur assiette = (brut − IPRES sal.)
+ *            − abattement 30 % du BRUT (non plafonné), appliqué par
+ *            SenegalPayrollRules::calculateIncomeTax (SN_COMPLIANCE §1/§6)
  *   TRIMF   = forfait mensuel par tranche de brut (6 tranches)
  */
 class GoldenSnPayrollTest extends TestCase
