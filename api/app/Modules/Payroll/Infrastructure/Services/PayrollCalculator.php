@@ -100,7 +100,9 @@ class PayrollCalculator
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
 
-        $baseDeductions = $social['employee'] + $incomeTax + $bracketTax;
+        // Issue #1934 — la règle pays décide de la combinaison IR/taxe de
+        // minimum fiscal (défaut : additive ; SN : max(IR, TRIMF)).
+        $baseDeductions = $social['employee'] + $rules->combineMinimumFiscalTax($incomeTax, $bracketTax);
 
         return [
             'social' => $social,
@@ -363,30 +365,46 @@ class PayrollCalculator
             'order' => $order++,
         ];
 
+        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
+        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
+        // ajoutée quand la règle pays la définit (> 0). Le libellé de ligne
+        // est fourni par la règle pays (CI #1825 : « Contribution Nationale
+        // (CN) » au lieu de « Taxe de minimum fiscal »).
+        $incomeTax = $breakdown['income_tax'];
+        $bracketTax = $breakdown['bracket_tax'];
+        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
+
+        // Issue #1934 — mécanisme légal « max(IR, TRIMF) » (Sénégal) : la
+        // règle combine les deux via combineMinimumFiscalTax(). Quand la
+        // combinaison n'est pas additive, on n'affiche que la ligne gagnante
+        // pour que le bulletin reste explicable (somme des lignes de
+        // déduction = total déduit).
+        $shownIncomeTax = $incomeTax;
+        $shownBracketTax = $bracketTax;
+        if ($rules->combineMinimumFiscalTax($incomeTax, $bracketTax) !== $incomeTax + $bracketTax) {
+            if ($incomeTax >= $bracketTax) {
+                $shownBracketTax = 0.0;
+            } else {
+                $shownIncomeTax = 0.0;
+            }
+        }
+
         $lines[] = [
             'name' => 'Impot sur le revenu',
             'type' => 'deduction',
             'base_amount' => $breakdown['taxable_gross'],
             'rate' => null,
-            'amount' => $breakdown['income_tax'],
+            'amount' => $shownIncomeTax,
             'order' => $order++,
         ];
 
-        // ZONE-INFRA (#1820) — taxe de minimum fiscal (TRIMF SN, minimum
-        // fiscal CI...) : déduction forfaitaire par tranche sur le brut,
-        // ajoutée quand la règle pays la définit (> 0). Elle s'ajoute aux
-        // déductions totales via la boucle générique ci-dessous. Le libellé
-        // de ligne est fourni par la règle pays (CI #1825 : « Contribution
-        // Nationale (CN) » au lieu de « Taxe de minimum fiscal »).
-        $bracketTax = $breakdown['bracket_tax'];
-        $bracketTaxLabel = $rules->flatPayrollTaxLabel();
-        if ($bracketTax > 0.0) {
+        if ($shownBracketTax > 0.0) {
             $lines[] = [
                 'name' => $bracketTaxLabel,
                 'type' => 'deduction',
                 'base_amount' => $grossEarnings,
                 'rate' => null,
-                'amount' => $bracketTax,
+                'amount' => $shownBracketTax,
                 'order' => $order++,
             ];
         }
