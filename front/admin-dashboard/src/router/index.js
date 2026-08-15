@@ -219,8 +219,7 @@ const routes = [
         component: () => import('@/views/training/TrainingView.vue'),
         meta: {
           title: 'Formations',
-          icon: 'AcademicCapIcon',
-          requiresTenant: true
+          icon: 'AcademicCapIcon'
         }
       },
       {
@@ -239,8 +238,7 @@ const routes = [
         component: () => import('@/views/chat/ChatView.vue'),
         meta: {
           title: 'Chat IA',
-          icon: 'SparklesIcon',
-          requiresTenant: true
+          icon: 'SparklesIcon'
         }
       },
       {
@@ -249,8 +247,7 @@ const routes = [
         component: () => import('@/views/webhooks/WebhooksView.vue'),
         meta: {
           title: 'Webhooks',
-          icon: 'LinkIcon',
-          requiresTenant: true
+          icon: 'LinkIcon'
         }
       },
       {

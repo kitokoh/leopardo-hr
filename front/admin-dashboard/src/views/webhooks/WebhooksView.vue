@@ -113,9 +113,11 @@
 </template>
 
 <script setup>
+const toast = useToast()
 import { ref, onMounted } from 'vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
+import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
@@ -195,8 +197,10 @@ async function saveWebhook() {
     }
     closeModal()
     fetchData()
+    toast.success('Webhook enregistré')
   } catch (err) {
     console.warn('Failed to save webhook', err)
+    toast.error("Erreur lors de l'enregistrement du webhook")
   } finally {
     saving.value = false
   }
@@ -205,8 +209,10 @@ async function saveWebhook() {
 async function testWebhook(id) {
   try {
     await api.post(`/admin/webhooks/${id}/test`) // #2634
+    toast.success('Webhook testé')
   } catch (err) {
     console.warn('Failed to test webhook', err)
+    toast.error('Erreur lors du test du webhook')
   }
 }
 
@@ -215,8 +221,10 @@ async function deleteWebhook(id) {
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()
+    toast.success('Webhook supprimé')
   } catch (err) {
     console.warn('Failed to delete webhook', err)
+    toast.error('Erreur lors de la suppression du webhook')
   }
 }
 
