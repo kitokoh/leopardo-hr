@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -39,14 +40,25 @@ jobs:
         run: |
           composer update guzzlehttp/psr7 phpseclib/phpseclib guzzlehttp/guzzle --no-interaction --prefer-dist
 
-      - name: Commit updated composer.lock
+      - name: Open PR with updated composer.lock
+        # Issue #3534 : plus de push direct sur la branche (bypass des 5 checks
+        # requis + de l'historique de revue) — le workflow ouvre une PR.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.email "bot@kiloclaw.ai"
           git config user.name "KiloClaw [bot]"
           git add api/composer.json api/composer.lock
           if git diff --cached --quiet; then
             echo "Nothing to commit"
-          else
-            git commit -m "fix(ci): regenerate composer.lock for security dependencies [skip ci]"
-            git push
+            exit 0
           fi
+          branch="chore/composer-lock-regen-$(date -u +%Y%m%d-%H%M%S)"
+          git checkout -b "$branch"
+          git commit -m "fix(ci): regenerate composer.lock for security dependencies"
+          git push -u origin "$branch"
+          gh pr create \
+            --title "fix(ci): composer.lock régénéré (dépendances sécurité)" \
+            --body "Régénéré par le workflow \`fix-composer-lock.yml\` (workflow_dispatch). Revue + checks requis avant merge — aucun push direct sur la branche protégée (issue #3534)." \
+            --base "${{ github.ref_name }}" \
+            --head "$branch"
