@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "multi-tenant",
     "RH multilingue",
   ],
-  manifest: "/manifest.json",
+  manifest: "/manifest",
   metadataBase: new URL(siteUrl),
   icons: {
     icon: [

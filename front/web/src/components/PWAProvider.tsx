@@ -1,8 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 const safeLog = (..._args: unknown[]) => {};
+
+const UPDATE_MESSAGES: Record<AppLocale, string> = {
+  fr: 'Une nouvelle version est disponible. Rechargez la page.',
+  en: 'A new version is available. Reload the page.',
+  tr: 'Yeni bir sürüm mevcut. Sayfayı yeniden yükleyin.',
+  ar: 'يتوفر إصدار جديد. أعد تحميل الصفحة.',
+};
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -29,7 +37,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   const notifyUpdate = () => {
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Leopardo', {
-        body: 'Une nouvelle version est disponible. Rechargez la page.',
+        body: UPDATE_MESSAGES[getPreferredLocale()],
         icon: '/icon-192.png',
         badge: '/icon-192.png',
       });
