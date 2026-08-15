@@ -14,6 +14,8 @@ import 'package:leopardo_employee/features/attendance/providers/attendance_provi
 import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
+import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 DateTime attendanceHistoryMonthKey(DateTime value) {
   return DateTime(value.year, value.month);
@@ -139,13 +141,13 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 (day) => _buildDayRow(
                   day,
                   canDirectEdit: canDirectEdit,
-                  currency: attState.summary?.currency ?? 'DZD',
+                  currency: attState.summary?.currency ?? '',
                 ),
               ),
               const SizedBox(height: 10),
               _buildWeekSummary(
                 week,
-                currency: attState.summary?.currency ?? 'DZD',
+                currency: attState.summary?.currency ?? '',
               ),
             ],
           ),
@@ -535,7 +537,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ],
         ),
         Text(
-          DateFormat('EEEE d MMMM yyyy', 'fr_FR').format(_now),
+          DateFormat('EEEE d MMMM yyyy', deviceIntlDateLocale).format(_now),
           style: const TextStyle(fontSize: 12, color: _muted),
         ),
       ],
@@ -605,7 +607,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final statusColor = _statusColor(log);
     final gain = state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
-    final currency = state.summary?.currency ?? 'DZD';
+    final currency = state.summary?.currency ?? '';
     final sessionsCount =
         int.tryParse(state.daySummary?['sessions_count']?.toString() ?? '') ??
             state.todaySessions.length;
@@ -673,7 +675,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               ),
               const Spacer(),
               Text(
-                '${gain.toStringAsFixed(0)} $currency',
+                '${gain.toStringAsFixed(0)}${currencySuffix(currency)}',
                 style: const TextStyle(
                   color: AppColors.rh,
                   fontSize: 16,
@@ -798,7 +800,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                           day.isAbsent
                               ? 'Absent'
                               : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
-                                  '${day.lateMinutes > 0 ? ' Â· +${day.lateMinutes} min' : ''}',
+                                  '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
                       ],
@@ -818,8 +820,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       const SizedBox(height: 2),
                       Text(
                         day.isAbsent
-                            ? '0 $currency'
-                            : '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
+                            ? '0${currencySuffix(currency)}'
+                            : '${day.estimatedEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
                         style: TextStyle(
                           fontSize: 10,
                           color: day.isAbsent ? _soft : AppColors.rh,
@@ -895,7 +897,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             color: AppColors.mobileDarkTextSoft,
           ),
           _WeekStat(
-            value: '${totalEarnings.toStringAsFixed(0)} $currency',
+            value: '${totalEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
             label: 'Gain estime',
             color: AppColors.rh,
           ),
@@ -1041,7 +1043,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                     title: 'Details de la journee',
                     subtitle: DateFormat(
                       'EEEE d MMMM yyyy',
-                      'fr_FR',
+                      deviceIntlDateLocale,
                     ).format(day.date),
                   ),
                   if (dayAnomalies.isNotEmpty) ...[
@@ -1083,7 +1085,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         child: _DetailMetric(
                           label: 'Gain estime',
                           value:
-                              '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
+                              '${day.estimatedEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
                           color: AppColors.rh,
                         ),
                       ),
@@ -1132,9 +1134,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ? 'Aujourd hui'
           : index == 1
               ? 'Hier'
-              : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
+              : _capitalize(DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
-          '$labelPrefix - ${DateFormat('d MMM', 'fr_FR').format(date)}';
+          '$labelPrefix - ${DateFormat('d MMM', deviceIntlDateLocale).format(date)}';
       return AttendanceDaySummary.fromLogs(
         date: date,
         dayLabel: label,
@@ -1992,8 +1994,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       SnackBar(
         content: Text(
           widget.canDirectEdit
-              ? 'Pointage du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} modifie.'
-              : 'Demande du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
+              ? 'Pointage du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} modifie.'
+              : 'Demande du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
@@ -2032,7 +2034,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Modifier le ${DateFormat('EEEE d MMMM', 'fr_FR').format(widget.targetDate)}',
+              'Modifier le ${DateFormat('EEEE d MMMM', deviceIntlDateLocale).format(widget.targetDate)}',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

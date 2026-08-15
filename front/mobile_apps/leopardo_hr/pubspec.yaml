@@ -36,6 +36,7 @@ dependencies:
     path: ../leopardo_core
 
   flutter_animate: ^4.5.2
+  sentry_flutter: ^8.9.0
   google_sign_in: ^7.2.0
   cached_network_image: ^3.4.1
 
@@ -48,7 +49,6 @@ dev_dependencies:
   json_serializable: ^6.14.1
 
 flutter:
-  generate: true
   uses-material-design: true
 
   assets:

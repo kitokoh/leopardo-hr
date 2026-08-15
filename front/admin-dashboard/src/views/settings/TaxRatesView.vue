@@ -181,42 +181,6 @@
       </div>
     </div>
 
-    <!-- Modal : historique -->
-    <div v-if="historyOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="closeHistory">
-      <div class="glass-card w-full max-w-2xl p-6">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">{{ $t('tax_rates.history_title') }}</h2>
-        <div class="max-h-96 overflow-y-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500 dark:text-slate-400">
-                <th class="py-2 pr-4 font-semibold">{{ $t('tax_rates.th_action') }}</th>
-                <th class="py-2 pr-4 font-semibold">{{ $t('tax_rates.th_actor') }}</th>
-                <th class="py-2 pr-4 font-semibold">{{ $t('tax_rates.th_reason') }}</th>
-                <th class="py-2 font-semibold">{{ $t('tax_rates.th_date') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="h in historyItems" :key="h.id" class="border-b border-slate-100 dark:border-slate-800">
-                <td class="py-2.5 pr-4">
-                  <span class="px-2 py-0.5 rounded-full text-xs font-semibold" :class="historyBadge(h.action)">
-                    {{ historyLabel(h.action) }}
-                  </span>
-                </td>
-                <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ h.actor_role }} #{{ h.actor_id }}</td>
-                <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ h.reason || '—' }}</td>
-                <td class="py-2.5 text-slate-700 dark:text-slate-300">{{ formatDate(h.created_at) }}</td>
-              </tr>
-              <tr v-if="historyItems.length === 0">
-                <td colspan="4" class="py-8 text-center text-slate-400">{{ $t('tax_rates.history_empty') }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="flex justify-end pt-3">
-          <button type="button" class="btn-secondary" @click="closeHistory">{{ $t('tax_rates.close') }}</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -226,6 +190,8 @@ import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useToast } from 'vue-toastification'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
+const supportedCountries = useSupportedCountries()
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -234,26 +200,14 @@ function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
 
-const supportedCountries = [
-  { code: 'DZ', labelKey: 'common.countries.DZ' },
-  { code: 'CM', labelKey: 'common.countries.CM' },
-  { code: 'CI', labelKey: 'common.countries.CI' },
-  { code: 'SN', labelKey: 'common.countries.SN' },
-  { code: 'MA', labelKey: 'common.countries.MA' },
-  { code: 'TN', labelKey: 'common.countries.TN' },
-  { code: 'FR', labelKey: 'common.countries.FR' },
-]
-
 const isPlatformAdmin = ref(false)
 const rates = ref([])
 const pendingItems = ref([])
-const historyItems = ref([])
 const loading = ref(false)
 const saving = ref(false)
 const acting = ref(false)
 const createOpen = ref(false)
 const rejectOpen = ref(false)
-const historyOpen = ref(false)
 const rejectTarget = ref(null)
 const rejectReason = ref('')
 const form = reactive({
@@ -377,10 +331,6 @@ async function rejectItem() {
   }
 }
 
-function closeHistory() {
-  historyOpen.value = false
-}
-
 function statusBadge(status) {
   const map = {
     active: 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300',
@@ -399,31 +349,7 @@ function statusLabel(status) {
     superseded: t('tax_rates.status_superseded'),
   }
   return map[status] || status
-}
-
-function historyBadge(action) {
-  const map = {
-    created: 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300',
-    submitted: 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300',
-    approved: 'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300',
-    rejected: 'bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300',
-    superseded: 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300',
-  }
-  return map[action] || map.created
-}
-
-function historyLabel(action) {
-  const map = {
-    created: t('tax_rates.history_created'),
-    submitted: t('tax_rates.history_submitted'),
-    approved: t('tax_rates.history_approved'),
-    rejected: t('tax_rates.history_rejected'),
-    superseded: t('tax_rates.history_superseded'),
-  }
-  return map[action] || action
-}
-
-function formatDate(iso) {
+}function formatDate(iso) {
   if (!iso) return '—'
   try {
     return new Date(iso).toLocaleString(localeStore.current === 'fr' ? 'fr-FR' : localeStore.current)

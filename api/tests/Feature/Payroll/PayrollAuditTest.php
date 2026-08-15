@@ -176,9 +176,8 @@ class PayrollAuditTest extends TestCase
         $this->assertSame('11111111-2222-3333-4444-555555555555', $response->headers->get('X-Correlation-ID'));
         $this->assertSame('11111111-2222-3333-4444-555555555555', $response->headers->get('X-Request-Id'));
 
-        /** @var PayrollCalculationAudit $audit */
         $audit = PayrollCalculationAudit::query()->where('correlation_id', '11111111-2222-3333-4444-555555555555')->first();
-        $this->assertNotNull($audit, 'L\'audit doit reprendre le correlation_id du header.');
+        $this->assertInstanceOf(PayrollCalculationAudit::class, $audit);
         $this->assertSame(PayrollCalculationAudit::STATUS_SUCCESS, $audit->status);
     }
 

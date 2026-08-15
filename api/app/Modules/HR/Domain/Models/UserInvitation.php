@@ -39,12 +39,9 @@ class UserInvitation extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'company_id',
         'schema_name',
         'employee_id',
         'email',
-        'role',
-        'manager_role',
         'invited_by_type',
         'invited_by_email',
         'token_hash',

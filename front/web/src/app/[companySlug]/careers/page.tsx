@@ -1,8 +1,9 @@
+import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Briefcase, MapPin, Clock, ArrowRight, Rss } from 'lucide-react';
-import { Navbar } from '@/modules/vitrine/components/Navbar';
+import { CareersNavbar } from './CareersNavbar';
 import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: CareersPortalPageProps): Prom
   return generateSEOMetadata({
     title: `Carrieres${displayName ? ` - ${displayName}` : ''} - ${jobs.length} offre${jobs.length > 1 ? 's' : ''} d'emploi`,
     description: `Decouvrez les offres d'emploi ouvertes chez ${displayName || 'cette entreprise'} et postulez en ligne en quelques minutes.`,
-    canonical: `https://gestionemployer-backend.vercel.app/${companySlug}/careers`,
+    canonical: `${SITE_URL}/${companySlug}/careers`,
     ogType: 'website',
     ogImage: company?.logo_url ?? undefined,
   });
@@ -55,7 +56,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
-      <Navbar isDark={false} onToggleDark={() => {}} />
+      <CareersNavbar />
 
       <JsonLd
         data={{
@@ -64,7 +65,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
           itemListElement: jobs.map((job, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            url: `https://gestionemployer-backend.vercel.app/${companySlug}/careers/jobs/${job.id}`,
+            url: `${SITE_URL}/${companySlug}/careers/jobs/${job.id}`,
           })),
         }}
       />

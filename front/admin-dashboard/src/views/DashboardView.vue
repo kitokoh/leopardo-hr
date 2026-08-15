@@ -85,8 +85,8 @@
                       <BuildingOfficeIcon class="h-full w-full text-slate-400" />
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-bold text-slate-900 dark:text-white">{{ item.name }}</div>
-                      <div class="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{{ item.slug }}</div>
+                      <div class="text-sm font-bold text-slate-900 dark:text-white">{{ item.company.name }}</div>
+                      <div class="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{{ item.company.slug }}</div>
                     </div>
                   </div>
                 </td>
@@ -106,10 +106,10 @@
                   <span :class="riskClass(item.risk_level)">{{ riskLabel(item.risk_level) }}</span>
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-sm font-black text-slate-950 dark:text-white">
-                  {{ formatCurrency(item.mrr_eur, 'EUR') }}
+                  {{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                  <router-link :to="`/companies/${item.id}`" class="text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 font-bold">
+                  <router-link :to="`/companies/${item.company.id}`" class="text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 font-bold">
                     Détails
                   </router-link>
                 </td>
@@ -130,8 +130,8 @@
           <div v-for="request in pendingCompanyRequests" :key="request.id" class="p-6 transition-colors hover:bg-white/5 dark:hover:bg-slate-900/5">
             <div class="flex items-start justify-between">
               <div class="space-y-1">
-                <h3 class="text-sm font-bold text-slate-950 dark:text-white uppercase tracking-tight">{{ request.name }}</h3>
-                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ request.manager_email }}</p>
+                <h3 class="text-sm font-bold text-slate-950 dark:text-white uppercase tracking-tight">{{ request.company_name }}</h3>
+                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ request.email }}</p>
                 <div class="pt-1 flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                   <GlobeAltIcon class="mr-1.5 h-3 w-3" />
                   {{ request.city }}, {{ request.country }}
@@ -332,7 +332,7 @@ const workflowCards = computed(() => [
   {
     title: 'Préparer intégrations partenaires',
     description: 'Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.',
-    action: 'Ouvrir webhooks',
+    action: 'Ouvrir les webhooks',
     to: '/webhooks',
     badge: 'API',
     badgeClass: 'rounded-lg bg-cyan-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
