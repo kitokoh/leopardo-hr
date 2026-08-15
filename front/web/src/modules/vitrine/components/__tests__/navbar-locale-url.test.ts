@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest'
 import { buildLocaleUrl } from '../Navbar'
 
 describe('buildLocaleUrl', () => {
