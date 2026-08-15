@@ -217,14 +217,6 @@ function formatRelative(iso) {
   return formatDate(iso);
 }
 
-function formatDuration(iso) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins} min`;
-  const hrs = Math.floor(mins / 60);
-  return `${hrs} h ${mins % 60} min`;
-}
-
 onMounted(() => {
   refresh();
   refreshTimer = setInterval(refresh, 60_000);

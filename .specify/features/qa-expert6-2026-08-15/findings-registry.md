@@ -24,3 +24,34 @@
   mojibake 0, migrations collisions → corrigé, manifest mobile → rouge (couvert #3209).
 - Black-box : voir spec US4 (endpoints staging).
 - Scans anti-régression : 0 dd/dump, 0 apiClient.dio, 0 withOpacity, 0 href="#", 0 await runApp.
+
+---
+
+# Session 2 (suite) — Audit global 360° 2026-08-15 après-midi
+
+## Nouveaux constats
+
+| ID | Surface | Sévérité | Constat | Issue | PR |
+|---|---|---|---|---|---|
+| F6-07 | Admin | P1 | Route morte `/users/:id` → `UserDetailView.vue` (vue supprimée en 17541e5c, réintroduite par un merge de conflit) — `vite build` admin cassé sur main | #3280 (rouverte par régression) | #3711 (mergé) |
+| F6-08 | Admin | P1 | `AnalyticsView.vue` : `localeStore.current` utilisé sans `const localeStore = useLocaleStore()` (mergé via #3700) — ReferenceError runtime | — | #3711 (mergé) |
+| F6-09 | API | P1 | Collisions préfixes migrations 2026-08-15 : public 000004/000006 ×2, tenant 000001 ×2 + doublon strict public 000007 (copie de 000004) — garde #1962 rouge | #1962 (relancée) | #3712 (mergé) |
+| F6-10 | Ops | P1 | Prod API v4.23.5 stale : queue driver `sync`, `/api-explorer` 500, `/demo-users` 404 — confirmé live (déjà #2627/#2632/#3259/#3452/#3562) | réaffirmé | — |
+| F6-11 | CI | P2 | Gardes hygiène dev-hub (app-version-sync, env-example-parity) jamais câblées en CI | #3708 (déjà couvert par PR #3713) | #3713 |
+
+## Implémentations de cette session
+
+| ID | Issue | PR | Statut |
+|---|---|---|---|
+| T-3284 | #3284 — 9 routes GoRouter mortes app HR | #3715 | ouverte |
+| T-3149 | #3149 — SocialDeclarationService (556→503 l.) | #3720 | ouverte |
+
+## Preuves de tests
+
+- `vite build` admin : exit 0 après retrait route morte + déclaration localeStore.
+- `npm run lint` admin : 0 erreur.
+- `check-migration-basename-collisions.sh` : ✅ après renumérotation.
+- `check-app-version-sync.sh` / `check-env-example-parity.sh` : ✅ sur main.
+- Vitrine `next build` : exit 0 (73 pages SSG).
+- OpenAPI : 0 nouveau drift (121 gaps, tous en allowlist).
+- Anti-régression : 0 `href="#"`, 0 `leopardo.local`, 0 résidu « 30 jours », 0 `DZD` hardcodé.
