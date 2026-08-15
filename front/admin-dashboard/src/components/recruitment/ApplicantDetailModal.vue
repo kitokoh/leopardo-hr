@@ -160,7 +160,7 @@ const stageStatusMap = {
 
 const interviewStatusMap = {
   scheduled: { label: 'Planifie', color: 'blue' },
-  completed: { label: 'Termine', color: 'green' },
+  completed: { label: 'Terminé', color: 'green' },
   cancelled: { label: 'Annule', color: 'gray' },
 }
 
