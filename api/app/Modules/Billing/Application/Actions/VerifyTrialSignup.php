@@ -187,7 +187,7 @@ class VerifyTrialSignup
                 'tenancy_type' => 'shared',
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays(30)->toDateString(),
+                'subscription_end' => now()->addDays(14)->toDateString(),
                 'language' => $payload['language'],
                 'timezone' => $payload['timezone'],
                 'currency' => $payload['currency'],
@@ -271,7 +271,7 @@ class VerifyTrialSignup
                     'attendance' => true,
                     'mobile_apps' => true,
                 ], JSON_THROW_ON_ERROR),
-                'trial_days' => 30,
+                'trial_days' => 14,
                 'is_active' => true,
             ]);
 
