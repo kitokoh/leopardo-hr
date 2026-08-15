@@ -176,6 +176,20 @@
         </form>
       </div>
     </div>
+
+    <!-- QA #3937 : dialog de suppression (remplace confirm() natif) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('social_contrib.delete_title', 'Supprimer cette cotisation ?') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('social_contrib.delete_confirm', { name: deleteTarget?.name || '' }) }}
+        </p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">{{ $t('social_contrib.cancel', 'Annuler') }}</button>
+          <button class="btn-danger" @click="confirmRemoveItem">{{ $t('social_contrib.delete') }}</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -282,8 +296,20 @@ async function save() {
   }
 }
 
-async function removeItem(item) {
-  if (!window.confirm(t('social_contrib.delete_confirm', { name: item.name }))) return
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
+function removeItem(item) {
+  // QA #3937 : confirm() natif → dialog in-app (i18n, non bloquant).
+  deleteTarget.value = item
+  deleteOpen.value = true
+}
+
+async function confirmRemoveItem() {
+  const item = deleteTarget.value
+  if (!item) return
+  deleteOpen.value = false
+  deleteTarget.value = null
   busy.value = true
   try {
     await api.delete(`/admin/social-contributions/${item.id}`)

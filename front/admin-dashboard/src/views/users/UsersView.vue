@@ -197,6 +197,20 @@
         </div>
       </div>
     </div>
+
+    <!-- QA #3937 : dialog de suppression (remplace confirm() natif — i18n, non bloquant) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('users.confirm.deleteTitle', 'Supprimer cet utilisateur ?') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', deleteTarget?.name || '') }}
+        </p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">{{ t('users.impersonation.cancel', 'Annuler') }}</button>
+          <button class="btn-danger" @click="confirmDeleteUser">{{ t('users.bulkPanel.delete', 'Supprimer') }}</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -461,18 +475,29 @@ function closeImpersonate() {
   impersonationResult.value = null
 }
 
-async function deleteUser(user) {
-  if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
-    try {
-      // Issue #2714 — désactivation RÉELLE via l'endpoint dédié (jamais de
-      // suppression physique : DELETE /platform/users/{id} détruit le compte).
-      await api.post(`/platform/users/${user.id}/deactivate`)
-      toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
-      await loadUsers()
-    } catch (error) {
-      console.error('Delete failed:', error)
-      toast.error(t('users.toast.deleteError', 'Erreur lors de la suppression'))
-    }
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
+function deleteUser(user) {
+  // QA #3937 : confirm() natif (non i18n, bloque le rendu) → dialog in-app.
+  deleteTarget.value = user
+  deleteOpen.value = true
+}
+
+async function confirmDeleteUser() {
+  const user = deleteTarget.value
+  if (!user) return
+  deleteOpen.value = false
+  deleteTarget.value = null
+  try {
+    // Issue #2714 — désactivation RÉELLE via l'endpoint dédié (jamais de
+    // suppression physique : DELETE /platform/users/{id} détruit le compte).
+    await api.post(`/platform/users/${user.id}/deactivate`)
+    toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
+    await loadUsers()
+  } catch (error) {
+    console.error('Delete failed:', error)
+    toast.error(t('users.toast.deleteError', 'Erreur lors de la suppression'))
   }
 }
 

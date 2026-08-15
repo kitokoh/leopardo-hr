@@ -92,7 +92,7 @@
           <select v-model="islamicYear" class="form-input min-w-28" @change="loadIslamicCalendar">
             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
           </select>
-          <button class="btn-secondary" :disabled="saving || unconfirmedCount === 0" @click="confirmYear">
+          <button class="btn-secondary" :disabled="saving || unconfirmedCount === 0" @click="requestYearConfirm">
             ✅ {{ t('holidays.islamic.confirm', { year: islamicYear }) }}
           </button>
         </div>
@@ -217,6 +217,34 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- QA #3937 : dialog de suppression (remplace confirm() natif) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('holidays.delete_title', 'Supprimer ce jour férié ?') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('holidays.islamic.delete_confirm_dialog', { name: deleteTarget?.name || '' }) }}
+        </p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">{{ $t('holidays.cancel') }}</button>
+          <button class="btn-danger" @click="confirmRemoveHoliday">{{ $t('holidays.delete', 'Supprimer') }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QA #3937 : dialog de confirmation d'année (remplace confirm() natif) -->
+    <div v-if="yearConfirmOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="yearConfirmOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('holidays.islamic.confirm_year_title', 'Confirmer l’année') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('holidays.islamic.confirm_dialog', { year: islamicYear }) }}
+        </p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="yearConfirmOpen = false">{{ $t('holidays.cancel') }}</button>
+          <button class="btn-danger" @click="confirmYear">{{ t('holidays.islamic.confirm', { year: islamicYear }) }}</button>
+        </div>
       </div>
     </div>
   </div>
@@ -352,8 +380,20 @@ async function saveHoliday() {
   }
 }
 
-async function removeHoliday(h) {
-  if (!window.confirm(t('holidays.islamic.delete_confirm_dialog', { name: h.name }))) return
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
+function removeHoliday(h) {
+  // QA #3937 : confirm() natif → dialog in-app (i18n, non bloquant).
+  deleteTarget.value = h
+  deleteOpen.value = true
+}
+
+async function confirmRemoveHoliday() {
+  const h = deleteTarget.value
+  if (!h) return
+  deleteOpen.value = false
+  deleteTarget.value = null
   saving.value = true
   try {
     await api.delete(`/admin/public-holidays/${h.id}`)
@@ -396,8 +436,15 @@ async function saveIslamicEntry() {
   }
 }
 
+const yearConfirmOpen = ref(false)
+
+function requestYearConfirm() {
+  // QA #3937 : confirm() natif → dialog in-app.
+  yearConfirmOpen.value = true
+}
+
 async function confirmYear() {
-  if (!window.confirm(t('holidays.islamic.confirm_dialog', { year: islamicYear.value }))) return
+  yearConfirmOpen.value = false
   saving.value = true
   try {
     const { data } = await api.post(`/admin/islamic-calendar/confirm-year/${islamicYear.value}`)

@@ -36,7 +36,7 @@
       <button class="btn-primary" :disabled="busy" @click="openCreate">
         {{ $t('tax_slabs.add') }}
       </button>
-      <button class="btn-secondary" :disabled="busy" @click="confirmReset">
+      <button class="btn-secondary" :disabled="busy" @click="requestReset">
         {{ $t('tax_slabs.reset') }}
       </button>
     </div>
@@ -85,6 +85,32 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- QA #3937 : dialog de suppression (remplace confirm() natif) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('tax_slabs.delete_title', 'Supprimer cette tranche ?') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('tax_slabs.delete_confirm', { name: deleteTarget?.name || '' }) }}
+        </p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">{{ $t('tax_slabs.cancel') }}</button>
+          <button class="btn-danger" @click="confirmRemoveSlab">{{ $t('tax_slabs.delete') }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QA #3937 : dialog de reset (remplace confirm() natif) -->
+    <div v-if="resetOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="resetOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ t('tax_slabs.reset_title', 'Réinitialiser les barèmes ?') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ t('tax_slabs.reset_confirm') }}</p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="resetOpen = false">{{ $t('tax_slabs.cancel') }}</button>
+          <button class="btn-danger" @click="confirmReset">{{ t('tax_slabs.reset') }}</button>
+        </div>
       </div>
     </div>
   </div>
@@ -208,8 +234,20 @@ async function saveSlab() {
   }
 }
 
-async function removeSlab(slab) {
-  if (!window.confirm(t('tax_slabs.delete_confirm', { name: slab.name }))) return
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
+function removeSlab(slab) {
+  // QA #3937 : confirm() natif → dialog in-app (i18n, non bloquant).
+  deleteTarget.value = slab
+  deleteOpen.value = true
+}
+
+async function confirmRemoveSlab() {
+  const slab = deleteTarget.value
+  if (!slab) return
+  deleteOpen.value = false
+  deleteTarget.value = null
   busy.value = true
   try {
     await api.delete(`/admin/tax-slabs/${slab.id}`)
@@ -223,8 +261,15 @@ async function removeSlab(slab) {
   }
 }
 
+const resetOpen = ref(false)
+
+function requestReset() {
+  // QA #3937 : confirm() natif → dialog in-app.
+  resetOpen.value = true
+}
+
 async function confirmReset() {
-  if (!window.confirm(t('tax_slabs.reset_confirm'))) return
+  resetOpen.value = false
   busy.value = true
   try {
     await api.post('/admin/tax-slabs/reset-defaults', { country_code: props.countryCode })
