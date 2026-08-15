@@ -39,8 +39,14 @@ class WebhookTestEndpointTest extends TestCase
 
     private function makeEndpoint(string $url = 'https://example.com/hook', ?string $companyId = null): WebhookEndpoint
     {
+        if ($companyId === null) {
+            /** @var \App\Core\Tenant\Domain\Models\Company $company */
+            $company = Company::factory()->create();
+            $companyId = $company->id;
+        }
+
         return WebhookEndpoint::create([
-            'company_id' => $companyId ?? Company::factory()->create()->id,
+            'company_id' => $companyId,
             'url' => $url,
             'events' => ['employee.created'],
             'secret' => 'test-secret',
@@ -50,7 +56,9 @@ class WebhookTestEndpointTest extends TestCase
 
     public function test_webhook_test_posts_payload_and_records_delivery(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $endpoint = $this->makeEndpoint(companyId: $company->id);
 
@@ -87,7 +95,9 @@ class WebhookTestEndpointTest extends TestCase
 
     public function test_webhook_test_reports_error_status_when_target_fails(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $endpoint = $this->makeEndpoint(companyId: $company->id);
 
@@ -112,7 +122,9 @@ class WebhookTestEndpointTest extends TestCase
 
     public function test_webhook_test_422_when_url_not_public_https(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $endpoint = $this->makeEndpoint(url: 'http://10.0.0.5/hook', companyId: $company->id);
 
@@ -126,7 +138,9 @@ class WebhookTestEndpointTest extends TestCase
 
     public function test_webhook_test_404_for_cross_tenant_endpoint(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $ownCompany */
         $ownCompany = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $ownCompany->id]);
         $otherEndpoint = $this->makeEndpoint();
 
@@ -139,7 +153,9 @@ class WebhookTestEndpointTest extends TestCase
 
     public function test_webhook_test_forbidden_for_non_principal_manager(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $endpoint = $this->makeEndpoint(companyId: $company->id);
 

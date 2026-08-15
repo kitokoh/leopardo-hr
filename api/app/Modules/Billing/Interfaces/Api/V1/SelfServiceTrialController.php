@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
-use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
-use App\Mail\TrialVerificationMail;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
-use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 /**
@@ -100,85 +96,11 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $otpSent = $this->requestTrialSignup->execute($validated);
-
-        if (! $otpSent) {
-            // #3057 : l'échec d'envoi OTP ne doit jamais être avalé — le
-            // prospect saurait « code envoyé » sans jamais recevoir le code.
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'OTP_SEND_FAILED',
-                'message' => __('billing.trial_otp_send_failed'),
-            ], 502);
-        }
+        $this->requestTrialSignup->execute($validated);
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Code de vérification envoyé.',
-            'data' => [
-                'email' => $email,
-                'status' => 'pending_verification',
-            ],
-        ], 200);
-    }
-
-    /**
-     * POST /api/v1/trial/resend
-     *
-     * Renvoie un nouveau code OTP pour une demande d'essai en attente
-     * (#3057) : l'ancien code est invalidé (nouveau jeton + expiration 30 min).
-     */
-    public function resend(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-        ]);
-
-        $email = strtolower(trim($validated['email']));
-
-        $companyRequest = CompanyRequest::query()
-            ->where('email', $email)
-            ->where('status', 'pending')
-            ->first();
-
-        if ($companyRequest === null) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'NO_PENDING_REQUEST',
-                'message' => __('billing.trial_otp_no_pending'),
-            ], 404);
-        }
-
-        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        $companyRequest->update([
-            'verification_token' => $otp,
-            'verification_expires_at' => now()->addMinutes(30),
-        ]);
-
-        try {
-            $language = strtolower((string) (CountryDefaults::find(strtoupper((string) $companyRequest->country))['language'] ?? 'fr'));
-            Mail::to($email)->send(
-                new TrialVerificationMail((string) $companyRequest->manager_name, $otp, $language)
-            );
-        } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Failed to resend OTP email', [
-                'email' => $email,
-                'error' => $e->getMessage(),
-            ]);
-
-            if (! in_array((string) config('mail.default'), ['array', 'log'], true)) {
-                return new JsonResponse([
-                    'success' => false,
-                    'error' => 'OTP_SEND_FAILED',
-                    'message' => __('billing.trial_otp_send_failed'),
-                ], 502);
-            }
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => __('billing.trial_otp_resent'),
             'data' => [
                 'email' => $email,
                 'status' => 'pending_verification',
@@ -295,6 +217,11 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
+                    // Alignement réel : VerifyTrialSignup provisionne
+                    // subscription_end = now()->addDays(14) et le plan
+                    // fallback porte trial_days = 14 (constat QA live
+                    // 2026-08-15 : la réponse annonçait 30 jours mais
+                    // l'essai durait 14 — incohérence #3012/#3056).
                     'days' => 14,
                     'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
