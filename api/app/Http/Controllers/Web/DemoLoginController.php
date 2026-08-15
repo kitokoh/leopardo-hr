@@ -31,7 +31,9 @@ class DemoLoginController extends Controller
     {
         $hash = hash('sha256', $token);
 
-        $employee = Employee::query()
+        // #3727 : lookup cross-tenant volontaire (token de démo hashé, aucune
+        // connaissance du tenant avant résolution) — opt-out explicite du scope.
+        $employee = Employee::withoutGlobalScopes()
             ->where('status', 'active')
             ->where('extra_data->'.self::TOKEN_HASH_KEY, $hash)
             ->first();

@@ -25,18 +25,20 @@ use Illuminate\Support\Facades\Log;
  *
  * Sans compagnie courante (`current_company` non liée au conteneur), le scope
  * NE SAUTE PLUS en silence : en contexte HTTP il lève
- * `MissingTenantContextException` (403) pour éviter les requêtes
- * « toutes compagnies » ; en console (jobs/commandes/tests) il journalise un
- * warning structuré et conserve l'ancien comportement.
+ * `MissingTenantContextException` (403, code `MISSING_TENANT_CONTEXT`) pour
+ * éviter les requêtes « toutes compagnies » ; en console (jobs/commandes/tests)
+ * il journalise un warning structuré et conserve l'ancien comportement.
  *
- * Les accès cross-tenant légitimes (super-admin plateforme, jobs qui
- * implémentent `TenantScopedJob`, commandes de maintenance) doivent passer
- * explicitement par `->withoutGlobalScopes('company')` — jamais supposer le
- * skip silencieux.
+ * Deux voies légitimes pour une requête sans `current_company` :
+ *   1. le caller contraint lui-même `company_id` (ex. routes publiques careers,
+ *      relations `hasMany` dont la clé étrangère est `*.company_id`) ;
+ *   2. opt-out explicite `->withoutGlobalScopes('company')` pour les accès
+ *      cross-tenant volontaires (super-admin plateforme, jobs `TenantScopedJob`,
+ *      lookups pré-tenant login/démo/trial) — jamais supposer le skip silencieux.
  *
- * Comportement surchargeable : `config('tenant.fail_closed_scope')` — true
- * force le fail-closed partout, false le désactive (défaut : HTTP fail-closed,
- * console tolérante).
+ * Comportement surchargeable : `config('tenancy.fail_closed_without_context')`
+ * (env `TENANT_FAIL_CLOSED_WITHOUT_CONTEXT`) — true force le fail-closed
+ * partout, false le désactive (défaut : HTTP fail-closed, console tolérante).
  */
 trait BelongsToCompany
 {
@@ -51,6 +53,14 @@ trait BelongsToCompany
                     $currentCompany->id
                 );
 
+                return;
+            }
+
+            // Pas de contexte tenant : la requête DOIT être scopée explicitement
+            // par le caller (contrainte company_id) ou opt-out via
+            // withoutGlobalScopes('company'). Sinon échec explicite — jamais de
+            // requête cross-tenant silencieuse (#3727).
+            if (self::queryConstrainsCompany($builder)) {
                 return;
             }
 
@@ -78,7 +88,7 @@ trait BelongsToCompany
 
     private static function tenantScopeShouldFailClosed(): bool
     {
-        $configured = config('tenant.fail_closed_scope');
+        $configured = config('tenancy.fail_closed_without_context');
 
         if ($configured !== null) {
             return (bool) $configured;
@@ -88,5 +98,48 @@ trait BelongsToCompany
         // fail-closed. Console (jobs, commandes, tests) reste tolérante pour
         // ne pas casser les traitements sans tenant.
         return ! app()->runningInConsole();
+    }
+
+    /**
+     * Détecte une contrainte `company_id` explicite dans la requête
+     * (ou la clé étrangère d'une relation `hasMany`, ex. `employees.company_id`).
+     */
+    private static function queryConstrainsCompany(Builder $builder): bool
+    {
+        $wheres = $builder->getQuery()->wheres ?? [];
+
+        foreach ($wheres as $where) {
+            if (self::whereConstrainsCompany($where)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<string, mixed>  $where
+     */
+    private static function whereConstrainsCompany(array $where): bool
+    {
+        $column = $where['column'] ?? null;
+
+        if (is_string($column) && str_ends_with($column, 'company_id')) {
+            return true;
+        }
+
+        if (($where['type'] ?? '') === 'Nested') {
+            $nested = $where['query'] ?? null;
+
+            if ($nested instanceof \Illuminate\Database\Query\Builder) {
+                foreach ($nested->wheres ?? [] as $nestedWhere) {
+                    if (self::whereConstrainsCompany($nestedWhere)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
