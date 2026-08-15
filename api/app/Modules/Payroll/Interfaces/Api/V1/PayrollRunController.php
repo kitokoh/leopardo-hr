@@ -126,7 +126,7 @@ class PayrollRunController extends Controller
                 'run_id' => $payrollRun->id,
                 'company_id' => $payrollRun->company_id,
                 'country_code' => $payrollRun->country_code,
-                'period' => $payrollRun->period_start?->toDateString(),
+                'period' => $payrollRun->period_start->toDateString(),
                 'error' => $e->getMessage(),
             ]);
 

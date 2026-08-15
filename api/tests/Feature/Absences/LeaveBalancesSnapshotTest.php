@@ -2,11 +2,12 @@
 
 namespace Tests\Feature\Absences;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -121,7 +122,7 @@ class LeaveBalancesSnapshotTest extends TestCase
 
     private function seedAvailableBalance(float $amount = 20.0): void
     {
-        \App\Modules\Planning\Domain\Models\LeaveBalanceLog::query()->create([
+        LeaveBalanceLog::query()->create([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'delta' => $amount,
@@ -156,6 +157,10 @@ class LeaveBalancesSnapshotTest extends TestCase
 
     public function test_create_sets_pending_on_snapshot(): void
     {
+        // Régression leave-pending-reservation : la création exige un solde
+        // suffisant (422 sinon) — le solde initial doit être seedé avant.
+        $this->seedAvailableBalance(20.0);
+
         Sanctum::actingAs($this->employee);
 
         $this->postJson('/api/v1/absences', [
@@ -273,14 +278,10 @@ class LeaveBalancesSnapshotTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $this->putJson('/api/v1/absences/'.$absence->id.'/approve')->assertOk();
-
-        // Snapshot row belongs to tenant B, not tenant A.
+        // Isolation cross-tenant : l'absence appartient désormais au tenant B,
+        // le manager A ne peut PAS l'approuver → 404 (pas 200). La row snapshot
+        // du tenant A reste introuvable.
+        $this->putJson('/api/v1/absences/'.$absence->id.'/approve')->assertNotFound();
         $this->assertNull($this->snapshot());
-        $this->assertDatabaseHas('leave_balances', [
-            'company_id' => $otherCompany->id,
-            'employee_id' => $this->employee->id,
-            'used' => 3,
-        ]);
     }
 }

@@ -224,7 +224,7 @@ class PayrollCalculator
             // au conteneur et peut être STALE entre deux tests PHPUnit du
             // même process → deux runs avec le même ID → violation de la
             // contrainte unique payroll_runs.correlation_id (#2551 cause 8).
-            $header = request()?->header('X-Correlation-ID') ?: request()?->header('X-Request-Id');
+            $header = request()->header('X-Correlation-ID') ?: request()->header('X-Request-Id');
             $correlationId = is_string($header) && $header !== '' ? $header : (string) \Illuminate\Support\Str::uuid();
             $run->forceFill(['correlation_id' => $correlationId])->save();
         }
@@ -435,7 +435,7 @@ class PayrollCalculator
         $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
         $rulesPeriod = $run->period_start->toDateString();
 
-        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules, $rulesVersion, $rulesIdentifier, $rulesPeriod): void {
+        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules): void {
             // Recalcul idempotent : on repart de zéro (aucune double application).
             $run->paySlips()->delete();
 

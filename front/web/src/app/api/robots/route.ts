@@ -41,7 +41,6 @@ Disallow: /
 
 # Sitemap location
 Sitemap: ${siteUrl}/sitemap.xml
-Sitemap: ${siteUrl}/api/sitemap
 
 # Cache control
 Cache-control: max-age=86400

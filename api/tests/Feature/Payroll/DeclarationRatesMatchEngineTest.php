@@ -34,7 +34,7 @@ class DeclarationRatesMatchEngineTest extends TestCase
             $constants = (new ReflectionClass($class))->getConstants();
 
             foreach ($constants as $name => $_) {
-                $this->assertNotMatchesRegularExpression(
+                $this->assertDoesNotMatchRegularExpression(
                     '/^(RATE_|.*_CAP$)/',
                     $name,
                     "{$class}::{$name} duplique un taux/plafond — lire les taux depuis les règles pays (#2539).",
@@ -42,7 +42,7 @@ class DeclarationRatesMatchEngineTest extends TestCase
             }
         }
 
-        $this->assertTrue(true); // la boucle ci-dessus échoue si une constante dupliquée réapparaît
+        // La boucle ci-dessus échoue si une constante dupliquée réapparaît — pas d'assertion supplémentaire requise.
     }
 
     /**
@@ -61,6 +61,7 @@ class DeclarationRatesMatchEngineTest extends TestCase
     ): void {
         $generatorValue = (new ReflectionClass($generatorClass))->getConstant($constant);
 
+        /** @var \App\Modules\Payroll\Domain\Contracts\CountryRulesInterface $rules */
         $rules = new $rulesClass($memberCountryCode);
         $contrib = null;
         foreach ($rules->socialContributions() as $entry) {

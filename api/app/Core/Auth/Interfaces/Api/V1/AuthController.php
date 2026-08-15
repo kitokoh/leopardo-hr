@@ -57,7 +57,10 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        $result = $this->registerAction->execute($request->validated());
+        /** @var array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string} $validated */
+        $validated = $request->validated();
+
+        $result = $this->registerAction->execute($validated);
 
         return (new EmployeeResource($result['employee']))
             ->additional([

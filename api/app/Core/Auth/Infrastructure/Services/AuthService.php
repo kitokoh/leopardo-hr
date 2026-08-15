@@ -45,12 +45,17 @@ readonly class AuthService
                     $employeeSchema = $lookupSchema;
                 }
 
-                /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->with('company')
-                    ->where('company_id', $lookup->company_id)
-                    ->where('id', $lookup->employee_id)
-                    ->first();
+                // #2652 : un lookup peut pointer vers un schéma tenant absent ou
+                // partiellement migré (ex. démo désactivée en production). Ne jamais
+                // requêter une table inexistante → traité comme « aucun employé ».
+                if ($employeeSchema === null || $this->tenantEmployeesTableExists($employeeSchema)) {
+                    /** @var Employee|null $employee */
+                    $employee = Employee::withoutGlobalScopes()
+                        ->with('company')
+                        ->where('company_id', $lookup->company_id)
+                        ->where('id', $lookup->employee_id)
+                        ->first();
+                }
             }
 
             if (! $employee) {
@@ -69,11 +74,23 @@ readonly class AuthService
                     ->first();
                 $employee?->syncUserLookup();
             }
+        } catch (QueryException $e) {
+            // #2652 : une résolution d'employé ne doit jamais faire échouer le login
+            // en 500 (schéma absent, table partiellement migrée). On journalise en
+            // warning structuré et on retombe sur la réponse 401 propre.
+            Log::warning('auth.login_employee_resolution_failed', [
+                'email' => $email,
+                'message' => $e->getMessage(),
+            ]);
+            $employee = null;
+            $employeeSchema = null;
+        }
 
-            if (! $employee) {
-                throw new InvalidCredentialsException;
-            }
+        if (! $employee) {
+            throw new InvalidCredentialsException;
+        }
 
+        try {
             if ($employeeSchema !== null) {
                 $this->setTenantSearchPath($employeeSchema);
             }
@@ -219,13 +236,16 @@ readonly class AuthService
                         $employeeSchema = $lookupSchema;
                     }
 
-                    /** @var Employee|null $employee */
-                    $employee = Employee::withoutGlobalScopes()
-                        ->with('company')
-                        ->where('company_id', $lookup->company_id)
-                        ->where('id', $lookup->employee_id)
-                        ->where('email', $email)
-                        ->first();
+                    // #2652 : même garde que login() — schéma tenant absent ⇒ « aucun employé ».
+                    if ($employeeSchema === null || $this->tenantEmployeesTableExists($employeeSchema)) {
+                        /** @var Employee|null $employee */
+                        $employee = Employee::withoutGlobalScopes()
+                            ->with('company')
+                            ->where('company_id', $lookup->company_id)
+                            ->where('id', $lookup->employee_id)
+                            ->where('email', $email)
+                            ->first();
+                    }
                 }
             }
 
@@ -236,11 +256,21 @@ readonly class AuthService
                     $this->setTenantSearchPath($employeeSchema);
                 }
             }
+        } catch (QueryException $e) {
+            // #2652 : jamais de 500 sur résolution d'employé (schéma absent/migré partiel).
+            Log::warning('auth.login_via_email_employee_resolution_failed', [
+                'email' => $email,
+                'message' => $e->getMessage(),
+            ]);
+            $employee = null;
+            $employeeSchema = null;
+        }
 
-            if (! $employee) {
-                throw new InvalidCredentialsException;
-            }
+        if (! $employee) {
+            throw new InvalidCredentialsException;
+        }
 
+        try {
             if ($employeeSchema !== null) {
                 $this->setTenantSearchPath($employeeSchema);
             }

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useReducer, useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
@@ -27,6 +27,8 @@ import { Card } from '@/modules/vitrine/components/common/Card';
 import { signupFormSchema, SignupFormData } from '@/modules/vitrine/lib/validation';
 import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer, initialFormState } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import type { AppLocale } from '@/lib/i18n';
 
 interface SignupFormProps {
   page?: string;
@@ -46,12 +48,334 @@ const TRIAL_POLL_MAX_ATTEMPTS = 12;
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
 
+type SignupFormCopy = {
+  badge: string; title: string; subtitle: string;
+  labelEmail: string; placeholderEmail: string;
+  labelCompany: string; placeholderCompany: string;
+  labelRole: string; rolePlaceholder: string;
+  roleFounder: string; roleManager: string; roleHr: string; roleOperations: string; roleOther: string;
+  labelTeamSize: string; teamPlaceholder: string;
+  labelPhone: string; placeholderPhone: string;
+  operationsNote: string;
+  agreePrefix: string; termsLink: string; privacyLink: string; agreeSuffix: string;
+  submitLabel: string; submittingLabel: string;
+  codeHint: string; haveAccount: string; loginCta: string;
+  back: string; otpTitle: string; otpSentTo: string;
+  otpInvalidLength: string; otpInvalidCode: string; otpVerifyError: string;
+  verifyLabel: string; verifyingLabel: string; codeValidity: string; trackStatus: string;
+  pendingTitle: string; pendingFallback: string; pendingNote: string;
+  readyTitle: string; readySubtitle: string; accessCta: string;
+  copyLink: string; linkCopied: string; linkEmailed: string;
+  failedTitle: string; failedBody: string;
+  timeoutTitle: string; timeoutBody: string; refreshStatus: string;
+  preparingTitle: string; preparingBody: string; statusFor: string; statusEvery5s: string;
+  successTitle: string; emailVerified: string; credsLabel: string;
+  fieldEmail: string; fieldPassword: string; copyPasswordTitle: string; copied: string;
+  credsSentByEmail: string; credsEmailed: string; trialNote: string; trialNoteSuffix: string;
+  downloadApp: string; changePasswordNote: string; defaultError: string;
+};
+
+const signupFormCopy: Record<AppLocale, SignupFormCopy> = {
+  fr: {
+    badge: 'Essai gratuit 30 jours',
+    title: 'Tester Leopardo avec votre entreprise',
+    subtitle: "Créez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.",
+    labelEmail: 'Email professionnel',
+    placeholderEmail: 'vous@entreprise.com',
+    labelCompany: 'Entreprise',
+    placeholderCompany: 'Nom de votre entreprise',
+    labelRole: 'Votre rôle',
+    rolePlaceholder: 'Choisir',
+    roleFounder: 'Fondateur / dirigeant',
+    roleManager: 'Manager',
+    roleHr: 'RH',
+    roleOperations: 'Opérations terrain',
+    roleOther: 'Autre',
+    labelTeamSize: 'Taille équipe',
+    teamPlaceholder: 'Choisir',
+    labelPhone: 'Téléphone (optionnel)',
+    placeholderPhone: '+213 555 000 000',
+    operationsNote: "Nous préparerons un parcours axé terrain : pointage, tâches, kiosk et suivi d'équipe.",
+    agreePrefix: "J'accepte les",
+    termsLink: "conditions d'utilisation",
+    privacyLink: 'politique de confidentialité',
+    agreeSuffix: 'et la',
+    submitLabel: 'Recevoir mon code de vérification',
+    submittingLabel: 'Envoi du code...',
+    codeHint: 'Un code à 6 chiffres sera envoyé à votre email pour confirmer votre identité.',
+    haveAccount: 'Vous avez déjà un compte ?',
+    loginCta: 'Se connecter',
+    back: 'Retour',
+    otpTitle: 'Vérifiez votre email',
+    otpSentTo: 'Nous avons envoyé un code de vérification à 6 chiffres à :',
+    otpInvalidLength: 'Veuillez entrer les 6 chiffres du code.',
+    otpInvalidCode: 'Code invalide ou expiré.',
+    otpVerifyError: 'Erreur lors de la vérification. Veuillez réessayer.',
+    verifyLabel: 'Vérifier et créer mon espace',
+    verifyingLabel: 'Vérification en cours...',
+    codeValidity: 'Le code est valide pendant 30 minutes. Vérifiez vos spams si vous ne le trouvez pas.',
+    trackStatus: "Suivre l'état de mon espace",
+    pendingTitle: "Demande d'essai reçue",
+    pendingFallback: "Demande d'essai reçue. Notre équipe vous contacte sous 24h ouvrables.",
+    pendingNote: "Notre système de création d'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.",
+    readyTitle: 'Votre espace est prêt !',
+    readySubtitle: 'Le sandbox de démonstration est provisionné. Accédez-y directement :',
+    accessCta: 'Accéder à mon espace',
+    copyLink: 'Copier le lien',
+    linkCopied: 'Lien copié !',
+    linkEmailed: "Votre lien d'accès a également été envoyé par email.",
+    failedTitle: 'Création interrompue',
+    failedBody: "Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.",
+    timeoutTitle: 'Création toujours en cours',
+    timeoutBody: "Votre espace est en cours de préparation. Nous vous enverrons le lien d'accès par email dès qu'il sera prêt.",
+    refreshStatus: 'Rafraîchir le statut',
+    preparingTitle: 'Préparation de votre espace',
+    preparingBody: 'Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.',
+    statusFor: 'Pour :',
+    statusEvery5s: 'Statut vérifié toutes les 5 secondes.',
+    successTitle: 'Votre espace est prêt !',
+    emailVerified: 'Votre adresse email a bien été vérifiée.',
+    credsLabel: 'Identifiants de connexion',
+    fieldEmail: 'Email',
+    fieldPassword: 'Mot de passe',
+    copyPasswordTitle: 'Copier le mot de passe',
+    copied: 'Copié !',
+    credsSentByEmail: 'Ces identifiants ont aussi été envoyés par email à',
+    credsEmailed: 'Vos identifiants de connexion viennent de vous être envoyés par email.',
+    trialNote: 'Essai gratuit de',
+    trialNoteSuffix: 'aucune carte bancaire requise',
+    downloadApp: "Télécharger l'app",
+    changePasswordNote: 'Changez votre mot de passe dès la première connexion.',
+    defaultError: 'Une erreur est survenue',
+  },
+  en: {
+    badge: 'Free 30-day trial',
+    title: 'Try Leopardo with your company',
+    subtitle: 'Create your trial workspace in 2 minutes. No credit card required.',
+    labelEmail: 'Work email',
+    placeholderEmail: 'you@company.com',
+    labelCompany: 'Company',
+    placeholderCompany: 'Your company name',
+    labelRole: 'Your role',
+    rolePlaceholder: 'Select',
+    roleFounder: 'Founder / CEO',
+    roleManager: 'Manager',
+    roleHr: 'HR',
+    roleOperations: 'Field operations',
+    roleOther: 'Other',
+    labelTeamSize: 'Team size',
+    teamPlaceholder: 'Select',
+    labelPhone: 'Phone (optional)',
+    placeholderPhone: '+1 555 000 0000',
+    operationsNote: 'We will prepare a field-focused setup: attendance, tasks, kiosk and team monitoring.',
+    agreePrefix: 'I accept the',
+    termsLink: 'terms of use',
+    privacyLink: 'privacy policy',
+    agreeSuffix: 'and the',
+    submitLabel: 'Get my verification code',
+    submittingLabel: 'Sending code...',
+    codeHint: 'A 6-digit code will be sent to your email to confirm your identity.',
+    haveAccount: 'Already have an account?',
+    loginCta: 'Sign in',
+    back: 'Back',
+    otpTitle: 'Verify your email',
+    otpSentTo: 'We sent a 6-digit verification code to:',
+    otpInvalidLength: 'Please enter the 6 digits of the code.',
+    otpInvalidCode: 'Invalid or expired code.',
+    otpVerifyError: 'An error occurred during verification. Please try again.',
+    verifyLabel: 'Verify and create my workspace',
+    verifyingLabel: 'Verifying...',
+    codeValidity: 'The code is valid for 30 minutes. Check your spam folder if you cannot find it.',
+    trackStatus: 'Track my workspace status',
+    pendingTitle: 'Trial request received',
+    pendingFallback: 'Trial request received. Our team will contact you within 24 business hours.',
+    pendingNote: 'Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.',
+    readyTitle: 'Your workspace is ready!',
+    readySubtitle: 'The demo sandbox is provisioned. Access it directly:',
+    accessCta: 'Access my workspace',
+    copyLink: 'Copy link',
+    linkCopied: 'Link copied!',
+    linkEmailed: 'Your access link was also sent by email.',
+    failedTitle: 'Creation interrupted',
+    failedBody: 'An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.',
+    timeoutTitle: 'Still being created',
+    timeoutBody: 'Your workspace is being prepared. We will email you the access link as soon as it is ready.',
+    refreshStatus: 'Refresh status',
+    preparingTitle: 'Preparing your workspace',
+    preparingBody: 'We are provisioning your demo sandbox. This usually takes less than 30 seconds.',
+    statusFor: 'For:',
+    statusEvery5s: 'Status checked every 5 seconds.',
+    successTitle: 'Your workspace is ready!',
+    emailVerified: 'Your email address has been verified.',
+    credsLabel: 'Sign-in credentials',
+    fieldEmail: 'Email',
+    fieldPassword: 'Password',
+    copyPasswordTitle: 'Copy password',
+    copied: 'Copied!',
+    credsSentByEmail: 'These credentials were also sent by email to',
+    credsEmailed: 'Your sign-in credentials were just sent by email.',
+    trialNote: 'Free trial of',
+    trialNoteSuffix: 'no credit card required',
+    downloadApp: 'Download the app',
+    changePasswordNote: 'Change your password on first sign-in.',
+    defaultError: 'Something went wrong',
+  },
+  tr: {
+    badge: '30 günlük ücretsiz deneme',
+    title: "Leopardo'yu şirketinizle deneyin",
+    subtitle: 'Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.',
+    labelEmail: 'İş e-postası',
+    placeholderEmail: 'siz@sirket.com',
+    labelCompany: 'Şirket',
+    placeholderCompany: 'Şirketinizin adı',
+    labelRole: 'Rolünüz',
+    rolePlaceholder: 'Seçin',
+    roleFounder: 'Kurucu / Yönetici',
+    roleManager: 'Yönetici',
+    roleHr: 'İK',
+    roleOperations: 'Saha operasyonları',
+    roleOther: 'Diğer',
+    labelTeamSize: 'Ekip boyutu',
+    teamPlaceholder: 'Seçin',
+    labelPhone: 'Telefon (isteğe bağlı)',
+    placeholderPhone: '+90 555 000 0000',
+    operationsNote: 'Sahaya odaklı bir kurulum hazırlayacağız: yoklama, görevler, kiosk ve ekip takibi.',
+    agreePrefix: 'Kabul ediyorum:',
+    termsLink: 'kullanım koşulları',
+    privacyLink: 'gizlilik politikası',
+    agreeSuffix: 've',
+    submitLabel: 'Doğrulama kodumu al',
+    submittingLabel: 'Kod gönderiliyor...',
+    codeHint: 'Kimliğinizi doğrulamak için e-postanıza 6 haneli bir kod gönderilecek.',
+    haveAccount: 'Zaten hesabınız var mı?',
+    loginCta: 'Giriş yap',
+    back: 'Geri',
+    otpTitle: 'E-postanızı doğrulayın',
+    otpSentTo: '6 haneli doğrulama kodunu şu adrese gönderdik:',
+    otpInvalidLength: 'Lütfen kodun 6 hanesini girin.',
+    otpInvalidCode: 'Geçersiz veya süresi dolmuş kod.',
+    otpVerifyError: 'Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.',
+    verifyLabel: 'Doğrula ve alanımı oluştur',
+    verifyingLabel: 'Doğrulanıyor...',
+    codeValidity: 'Kod 30 dakika geçerlidir. Bulamazsanız spam klasörünü kontrol edin.',
+    trackStatus: 'Alanımın durumunu takip et',
+    pendingTitle: 'Deneme talebi alındı',
+    pendingFallback: 'Deneme talebi alındı. Ekibimiz 24 iş saati içinde sizinle iletişime geçecek.',
+    pendingNote: 'Anlık alan oluşturma hizmetimiz geçici olarak kullanılamıyor (sunucu yeniden başlatıldı). Talebiniz kaydedildi: Leopardo ekibinden biri 24 iş saati içinde size uygun erişimle e-posta gönderecek.',
+    readyTitle: 'Alanınız hazır!',
+    readySubtitle: 'Demo sandbox hazır. Doğrudan erişin:',
+    accessCta: 'Alanıma eriş',
+    copyLink: 'Bağlantıyı kopyala',
+    linkCopied: 'Bağlantı kopyalandı!',
+    linkEmailed: 'Erişim bağlantınız e-postayla da gönderildi.',
+    failedTitle: 'Oluşturma kesintiye uğradı',
+    failedBody: 'Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.',
+    timeoutTitle: 'Oluşturma hâlâ sürüyor',
+    timeoutBody: 'Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.',
+    refreshStatus: 'Durumu yenile',
+    preparingTitle: 'Alanınız hazırlanıyor',
+    preparingBody: 'Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.',
+    statusFor: 'İçin:',
+    statusEvery5s: 'Durum her 5 saniyede bir kontrol edilir.',
+    successTitle: 'Alanınız hazır!',
+    emailVerified: 'E-posta adresiniz doğrulandı.',
+    credsLabel: 'Giriş bilgileri',
+    fieldEmail: 'E-posta',
+    fieldPassword: 'Parola',
+    copyPasswordTitle: 'Parolayı kopyala',
+    copied: 'Kopyalandı!',
+    credsSentByEmail: 'Bu bilgiler e-postayla da gönderildi:',
+    credsEmailed: 'Giriş bilgileriniz e-postayla gönderildi.',
+    trialNote: 'Ücretsiz deneme:',
+    trialNoteSuffix: 'kredi kartı gerekmez',
+    downloadApp: 'Uygulamayı indir',
+    changePasswordNote: 'İlk girişte parolanızı değiştirin.',
+    defaultError: 'Bir hata oluştu',
+  },
+  ar: {
+    badge: 'تجربة مجانية لمدة 30 يومًا',
+    title: 'جرّب Leopardo مع شركتك',
+    subtitle: 'أنشئ مساحة تجربتك في دقيقتين. لا حاجة لبطاقة ائتمانية.',
+    labelEmail: 'البريد المهني',
+    placeholderEmail: 'you@company.com',
+    labelCompany: 'الشركة',
+    placeholderCompany: 'اسم شركتك',
+    labelRole: 'دورك',
+    rolePlaceholder: 'اختر',
+    roleFounder: 'مؤسس / مدير عام',
+    roleManager: 'مدير',
+    roleHr: 'موارد بشرية',
+    roleOperations: 'عمليات ميدانية',
+    roleOther: 'أخرى',
+    labelTeamSize: 'حجم الفريق',
+    teamPlaceholder: 'اختر',
+    labelPhone: 'الهاتف (اختياري)',
+    placeholderPhone: '+213 555 000 000',
+    operationsNote: 'سنُعد مسارًا ميدانيًا: الحضور، المهام، الكشك ومتابعة الفريق.',
+    agreePrefix: 'أوافق على',
+    termsLink: 'شروط الاستخدام',
+    privacyLink: 'سياسة الخصوصية',
+    agreeSuffix: 'و',
+    submitLabel: 'استلام رمز التحقق',
+    submittingLabel: 'جارٍ إرسال الرمز...',
+    codeHint: 'سيتم إرسال رمز من 6 أرقام إلى بريدك لتأكيد هويتك.',
+    haveAccount: 'لديك حساب بالفعل؟',
+    loginCta: 'تسجيل الدخول',
+    back: 'رجوع',
+    otpTitle: 'تحقق من بريدك الإلكتروني',
+    otpSentTo: 'أرسلنا رمز تحقق من 6 أرقام إلى:',
+    otpInvalidLength: 'يرجى إدخال الأرقام الستة للرمز.',
+    otpInvalidCode: 'رمز غير صالح أو منتهي الصلاحية.',
+    otpVerifyError: 'حدث خطأ أثناء التحقق. يرجى المحاولة مرة أخرى.',
+    verifyLabel: 'تحقق وأنشئ مساحتي',
+    verifyingLabel: 'جارٍ التحقق...',
+    codeValidity: 'الرمز صالح لمدة 30 دقيقة. تحقق من البريد العشوائي إذا لم تجده.',
+    trackStatus: 'تتبع حالة مساحتي',
+    pendingTitle: 'تم استلام طلب التجربة',
+    pendingFallback: 'تم استلام طلب التجربة. سيتواصل معك فريقنا خلال 24 ساعة عمل.',
+    pendingNote: 'خدمة الإنشاء الفوري غير متاحة مؤقتًا (إعادة تشغيل الخادم). تم تسجيل طلبك: سيتواصل معك أحد أعضاء فريق Leopardo عبر البريد خلال 24 ساعة عمل مع وصول مناسب لسياقك.',
+    readyTitle: 'مساحتك جاهزة!',
+    readySubtitle: 'تم تجهيز بيئة العرض. يمكنك الوصول مباشرة:',
+    accessCta: 'الوصول إلى مساحتي',
+    copyLink: 'نسخ الرابط',
+    linkCopied: 'تم نسخ الرابط!',
+    linkEmailed: 'تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.',
+    failedTitle: 'تم إيقاف الإنشاء',
+    failedBody: 'حدث خطأ أثناء إنشاء مساحتك. سيتواصل معك فريقنا عبر البريد خلال 24 ساعة عمل بوصول مناسب.',
+    timeoutTitle: 'لا يزال الإنشاء جاريًا',
+    timeoutBody: 'مساحتك قيد التجهيز. سنرسل لك رابط الوصول عبر البريد فور جاهزيته.',
+    refreshStatus: 'تحديث الحالة',
+    preparingTitle: 'تجهيز مساحتك',
+    preparingBody: 'نقوم بتجهيز بيئة العرض. يستغرق هذا عادة أقل من 30 ثانية.',
+    statusFor: 'إلى:',
+    statusEvery5s: 'يتم التحقق من الحالة كل 5 ثوانٍ.',
+    successTitle: 'مساحتك جاهزة!',
+    emailVerified: 'تم التحقق من بريدك الإلكتروني بنجاح.',
+    credsLabel: 'بيانات تسجيل الدخول',
+    fieldEmail: 'البريد الإلكتروني',
+    fieldPassword: 'كلمة المرور',
+    copyPasswordTitle: 'نسخ كلمة المرور',
+    copied: 'تم النسخ!',
+    credsSentByEmail: 'تم إرسال هذه البيانات أيضًا عبر البريد إلى',
+    credsEmailed: 'تم إرسال بيانات تسجيل الدخول إليك عبر البريد.',
+    trialNote: 'تجربة مجانية لمدة',
+    trialNoteSuffix: 'لا حاجة لبطاقة ائتمانية',
+    downloadApp: 'تحميل التطبيق',
+    changePasswordNote: 'غيّر كلمة مرورك عند أول تسجيل دخول.',
+    defaultError: 'حدث خطأ ما',
+  },
+};
+
+
 export function SignupForm({
   page = '/signup',
   onSuccess,
   onError,
   className = '',
 }: SignupFormProps) {
+  const { locale } = useVitrineLocale();
+  const c = signupFormCopy[locale] ?? signupFormCopy.fr;
+
   const {
     register,
     handleSubmit,
@@ -59,7 +383,7 @@ export function SignupForm({
     reset,
     watch,
   } = useForm<SignupFormData>({
-    resolver: zodResolver(signupFormSchema),
+    resolver: zodResolver(signupFormSchema(locale)),
     mode: 'onBlur',
   });
 
@@ -204,7 +528,7 @@ export function SignupForm({
           // showing a verification screen for a code that was never sent.
           setPendingMessage(
             response.message ||
-              "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables."
+              "c.pendingFallback"
           );
           setCurrentStep('pending');
         } else {
@@ -220,7 +544,7 @@ export function SignupForm({
         onError?.(response.error || response.message);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
+      const errorMessage = error instanceof Error ? error.message : c.defaultError;
       dispatch({
         type: 'SUBMIT_ERROR',
         payload: { message: errorMessage },
@@ -267,7 +591,7 @@ export function SignupForm({
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
-      setOtpError('Veuillez entrer les 6 chiffres du code.');
+      setOtpError('c.otpInvalidLength');
       return;
     }
 
@@ -283,10 +607,10 @@ export function SignupForm({
         reset();
         onSuccess?.({} as SignupFormData);
       } else {
-        setOtpError(response.message || 'Code invalide ou expire.');
+        setOtpError(response.message || 'c.otpInvalidCode');
       }
     } catch (error) {
-      setOtpError('Erreur lors de la verification. Veuillez reessayer.');
+      setOtpError('c.otpVerifyError');
     } finally {
       setIsVerifying(false);
     }
@@ -309,14 +633,14 @@ export function SignupForm({
           >
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
               <Sparkles className="h-3.5 w-3.5" />
-              Essai gratuit 30 jours
+              {c.badge}
             </div>
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-              Tester Leopardo avec votre entreprise
+              {c.title}
             </h2>
             <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Creez votre espace d&apos;essai en 2 minutes. Aucune carte bancaire requise.
+              {c.subtitle}
             </p>
 
             {formState.isError && (
@@ -334,9 +658,9 @@ export function SignupForm({
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <Input
-                label="Email professionnel"
+                label={c.labelEmail}
                 type="email"
-                placeholder="vous@entreprise.com"
+                placeholder={c.placeholderEmail}
                 icon={<Mail className="h-4 w-4" />}
                 error={errors.email?.message}
                 required
@@ -344,9 +668,9 @@ export function SignupForm({
               />
 
               <Input
-                label="Entreprise"
+                label={c.labelCompany}
                 type="text"
-                placeholder="Nom de votre entreprise"
+                placeholder={c.placeholderCompany}
                 icon={<Building2 className="h-4 w-4" />}
                 error={errors.company?.message}
                 required
@@ -356,7 +680,7 @@ export function SignupForm({
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Votre role
+                    {c.labelRole}
                   </span>
                   <select
                     className={selectClassName}
@@ -364,12 +688,12 @@ export function SignupForm({
                     aria-describedby={errors.role ? 'signup-role-error' : undefined}
                     {...register('role')}
                   >
-                    <option value="">Choisir</option>
-                    <option value="founder">Fondateur / dirigeant</option>
-                    <option value="manager">Manager</option>
-                    <option value="hr">RH</option>
-                    <option value="operations">Operations terrain</option>
-                    <option value="other">Autre</option>
+                    <option value="">{c.rolePlaceholder}</option>
+                    <option value="founder">{c.roleFounder}</option>
+                    <option value="manager">{c.roleManager}</option>
+                    <option value="hr">{c.roleHr}</option>
+                    <option value="operations">{c.roleOperations}</option>
+                    <option value="other">{c.roleOther}</option>
                   </select>
                   {errors.role && (
                     <p id="signup-role-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -381,7 +705,7 @@ export function SignupForm({
                 <label className="block">
                   <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                     <Users className="h-4 w-4" />
-                    Taille equipe
+                    {c.labelTeamSize}
                   </span>
                   <select
                     className={selectClassName}
@@ -405,9 +729,9 @@ export function SignupForm({
               </div>
 
               <Input
-                label="Telephone (optionnel)"
+                label={c.labelPhone}
                 type="tel"
-                placeholder="+213 555 000 000"
+                placeholder={c.placeholderPhone}
                 icon={<Phone className="h-4 w-4" />}
                 error={errors.phone?.message}
                 {...register('phone')}
@@ -415,7 +739,7 @@ export function SignupForm({
 
               {role === 'operations' && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-                  Nous preparerons un parcours axe terrain : pointage, taches, kiosk et suivi d&apos;equipe.
+                  {c.operationsNote}
                 </div>
               )}
 
@@ -429,13 +753,13 @@ export function SignupForm({
                   {...register('agreeToTerms')}
                 />
                 <label htmlFor="agreeToTerms" className="text-sm text-slate-600 dark:text-slate-400">
-                  J&apos;accepte les{' '}
+                  {c.agreePrefix}{' '}
                   <Link href="/terms" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                    conditions d&apos;utilisation
+                    {c.termsLink}
                   </Link>{' '}
-                  et la{' '}
+                  {c.agreeSuffix}{' '}
                   <Link href="/privacy" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                    politique de confidentialite
+                    {c.privacyLink}
                   </Link>
                 </label>
               </div>
@@ -453,17 +777,17 @@ export function SignupForm({
                 loading={formState.isSubmitting}
                 disabled={formState.isSubmitting}
               >
-                {formState.isSubmitting ? 'Envoi du code...' : 'Recevoir mon code de verification'}
+                {formState.isSubmitting ? c.submittingLabel : c.submitLabel}
               </Button>
 
               <p className="rounded-xl bg-transparent px-4 py-3 text-center text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-                Un code a 6 chiffres sera envoye a votre email pour confirmer votre identite.
+                {c.codeHint}
               </p>
 
               <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-                Vous avez deja un compte?{' '}
+                {c.haveAccount}{' '}
                 <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                  Se connecter
+                  {c.loginCta}
                 </Link>
               </p>
             </form>
@@ -492,7 +816,7 @@ export function SignupForm({
               className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             >
               <ArrowLeft className="h-4 w-4" />
-              Retour
+              {c.back}
             </button>
 
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
@@ -500,10 +824,10 @@ export function SignupForm({
             </div>
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-              Verifiez votre email
+              {c.otpTitle}
             </h2>
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Nous avons envoye un code de verification a 6 chiffres a :
+              {c.otpSentTo}
             </p>
             <p className="mb-6 text-sm font-bold text-emerald-600 dark:text-emerald-400">
               {pendingEmail}
@@ -551,11 +875,11 @@ export function SignupForm({
               disabled={isVerifying || otpValues.join('').length !== 6}
               onClick={handleVerify}
             >
-              {isVerifying ? 'Verification en cours...' : 'Verifier et creer mon espace'}
+              {isVerifying ? c.verifyingLabel : c.verifyLabel}
             </Button>
 
             <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-              Le code est valide pendant 30 minutes. Verifiez vos spams si vous ne le trouvez pas.
+              {c.codeValidity}
             </p>
 
             {trialToken && (
@@ -565,7 +889,7 @@ export function SignupForm({
                 className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
               >
                 <Rocket className="h-4 w-4" />
-                Suivre l&apos;etat de mon espace
+                {c.trackStatus}
               </button>
             )}
           </motion.div>
@@ -588,7 +912,7 @@ export function SignupForm({
             </div>
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-              Demande d&apos;essai recue
+              {c.pendingTitle}
             </h2>
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
               {pendingMessage}
@@ -643,10 +967,10 @@ export function SignupForm({
                   <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Votre espace est pret !
+                  {c.readyTitle}
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Le sandbox de demonstration est provisionne. Accedez-y directement :
+                  {c.readySubtitle}
                 </p>
                 {trialLoginUrl ? (
                   <div className="space-y-3">
@@ -655,7 +979,7 @@ export function SignupForm({
                       className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700"
                     >
                       <LogIn className="h-4 w-4" />
-                      Acceder a mon espace
+                      {c.accessCta}
                     </a>
                     <button
                       type="button"
@@ -669,12 +993,12 @@ export function SignupForm({
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-slate-700 dark:text-slate-400"
                     >
                       <ClipboardCopy className="h-3.5 w-3.5" />
-                      {copied ? 'Lien copie !' : 'Copier le lien'}
+                      {copied ? c.linkCopied : c.copyLink}
                     </button>
                   </div>
                 ) : (
                   <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Votre lien d&apos;acces a egalement ete envoye par email.
+                    {c.linkEmailed}
                   </p>
                 )}
               </>
@@ -684,11 +1008,11 @@ export function SignupForm({
                   <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
                 </div>
                 <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Creation interrompue
+                  {c.failedTitle}
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Une erreur est survenue lors de la creation de votre espace. Notre equipe
-                  vous contactera par email sous 24h ouvrables avec un acces adapte.
+                  {c.failedBody}
+                   
                 </p>
               </>
             ) : trialTimedOut ? (
@@ -697,11 +1021,11 @@ export function SignupForm({
                   <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
                 </div>
                 <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Creation toujours en cours
+                  {c.timeoutTitle}
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Votre espace est en cours de preparation. Nous vous enverrons le lien
-                  d&apos;acces par email des qu&apos;il sera pret.
+                  {c.timeoutBody}
+                   
                 </p>
                 <Button
                   type="button"
@@ -713,7 +1037,7 @@ export function SignupForm({
                     setTrialStatus('pending');
                   }}
                 >
-                  Rafraichir le statut
+                  {c.refreshStatus}
                 </Button>
               </>
             ) : (
@@ -722,14 +1046,14 @@ export function SignupForm({
                   <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
                 </div>
                 <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Preparation de votre espace
+                  {c.preparingTitle}
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Nous provisionnons votre sandbox de demonstration. Cela prend
-                  generalement moins de 30 secondes.
+                  {c.preparingBody}
+                   
                 </p>
                 <p className="text-xs text-slate-400 dark:text-slate-500">
-                  {pendingEmail ? `Pour : ${pendingEmail}` : 'Statut verifie toutes les 5 secondes.'}
+                  {pendingEmail ? `${c.statusFor} ${pendingEmail}` : c.statusEvery5s}
                 </p>
               </>
             )}
@@ -759,23 +1083,23 @@ export function SignupForm({
                   <div className="flex items-center gap-2 text-center justify-center mb-3">
                     <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      Votre adresse email a bien été vérifiée.
+                      {c.emailVerified}
                     </p>
                   </div>
                   {provisionedData?.manager ? (
                     <>
                       <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                        Identifiants de connexion
+                        {c.credsLabel}
                       </p>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-600 dark:text-slate-300">Email</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">{c.fieldEmail}</span>
                           <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">
                             {provisionedData.manager.email}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm text-slate-600 dark:text-slate-300">Mot de passe</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-300">{c.fieldPassword}</span>
                           <div className="flex items-center gap-2">
                             <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-900 dark:bg-slate-700 dark:text-white">
                               {provisionedData.manager.temp_password}
@@ -784,34 +1108,34 @@ export function SignupForm({
                               type="button"
                               onClick={() => copyPassword(provisionedData.manager!.temp_password)}
                               className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-                              title="Copier le mot de passe"
+                              title={c.copyPasswordTitle}
                             >
                               <ClipboardCopy className="h-4 w-4" />
                             </button>
                           </div>
                         </div>
                         {copied && (
-                          <p className="text-right text-xs font-medium text-emerald-600">Copie !</p>
+                          <p className="text-right text-xs font-medium text-emerald-600">{c.copied}</p>
                         )}
                       </div>
                       <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                        Ces identifiants ont aussi ete envoyes par email a {provisionedData.manager.email}.
+                        {c.credsSentByEmail} {provisionedData.manager.email}.
                       </p>
                     </>
                   ) : (
                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                      Vos identifiants de connexion viennent de vous etre envoyes par email.
+                      {c.credsEmailed}
                     </p>
                   )}
                 </div>
 
                 {provisionedData?.trial && (
                   <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-                    Essai gratuit de{' '}
+                    {c.trialNote}{' '}
                     <span className="font-bold text-emerald-600">
                       {provisionedData.trial.days} jours
                     </span>{' '}
-                    — aucune carte bancaire requise.
+                    — {c.trialNoteSuffix}
                   </p>
                 )}
 
@@ -828,12 +1152,12 @@ export function SignupForm({
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-transparent dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     <Download className="h-4 w-4" />
-                    Telecharger l&apos;app
+                    {c.downloadApp}
                   </Link>
                 </div>
 
                 <p className="text-center text-xs text-slate-400 dark:text-slate-500">
-                  Changez votre mot de passe des la premiere connexion.
+                  {c.changePasswordNote}
                 </p>
               </div>
             </div>
