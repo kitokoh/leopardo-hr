@@ -21,6 +21,8 @@ class StoreRegistrationRequest extends FormRequest
             'email' => ['required', 'email', 'unique:employees,email', 'max:150'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'device_name' => ['nullable', 'string', 'max:100'],
+            // Issue #2617 : inscription réservée aux invitations valides.
+            'invitation_token' => ['required', 'string', 'max:64'],
         ];
     }
 }
