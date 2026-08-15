@@ -13,6 +13,7 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -60,6 +61,11 @@ class AbsenceService
             'proof_path' => $proofPath,
         ]);
 
+        // QA #2329 : le snapshot leave_balances (servi par /me/leave-balances)
+        // doit refleter la demande en attente. La chaine leave_balance_logs
+        // reste la source de verite du solde disponible.
+        $this->adjustLeaveBalanceSnapshot($absence, 'pending', (float) $daysCount);
+
         AbsenceRequested::dispatch($absence);
 
         return $absence;
@@ -97,6 +103,10 @@ class AbsenceService
                     $absence->id,
                     $newBalance
                 );
+
+                // QA #2329 : approbation → pending decharge, used incremente.
+                $this->adjustLeaveBalanceSnapshot($absence, 'pending', -(float) $absence->days_count);
+                $this->adjustLeaveBalanceSnapshot($absence, 'used', (float) $absence->days_count);
             }
 
             $absence->update([
@@ -136,6 +146,12 @@ class AbsenceService
                     $absence->id,
                     $newBalance
                 );
+
+                // QA #2329 : rejet d'une absence approuvee → used restaure.
+                $this->adjustLeaveBalanceSnapshot($absence, 'used', -(float) $absence->days_count);
+            } elseif ($absence->status === 'pending') {
+                // QA #2329 : rejet d'une demande en attente → pending decharge.
+                $this->adjustLeaveBalanceSnapshot($absence, 'pending', -(float) $absence->days_count);
             }
 
             $absence->update([
@@ -158,6 +174,9 @@ class AbsenceService
         }
 
         $absence->update(['status' => 'cancelled']);
+
+        // QA #2329 : annulation d'une demande en attente → pending decharge.
+        $this->adjustLeaveBalanceSnapshot($absence, 'pending', -(float) $absence->days_count);
 
         return $absence->fresh();
     }
@@ -183,6 +202,35 @@ class AbsenceService
         }
 
         return $query->exists();
+    }
+
+    /**
+     * QA #2329 — synchronise le snapshot `leave_balances` (servi par
+     * GET /me/leave-balances et /leave-balances) avec le cycle de vie des
+     * absences. La chaîne `leave_balance_logs` reste la source de verite du
+     * solde disponible ; ce snapshot expose les compteurs used/pending.
+     *
+     * @param  'pending'|'used'  $field
+     */
+    private function adjustLeaveBalanceSnapshot(Absence $absence, string $field, float $delta): void
+    {
+        if ($absence->absenceType === null || ! $absence->absenceType->deducts_leave) {
+            return;
+        }
+
+        $year = (int) Carbon::parse($absence->start_date)->format('Y');
+
+        $snapshot = LeaveBalance::firstOrCreate(
+            [
+                'company_id' => $absence->company_id,
+                'employee_id' => $absence->employee_id,
+                'absence_type_id' => $absence->absence_type_id,
+                'year' => $year,
+            ],
+            ['balance' => 0, 'used' => 0, 'pending' => 0]
+        );
+
+        $snapshot->increment($field, $delta);
     }
 
     private function logBalanceChange(int $employeeId, int|string|null $companyId, float $delta, string $reason, int $referenceId, float $balanceAfter): LeaveBalanceLog
