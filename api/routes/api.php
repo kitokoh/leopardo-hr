@@ -299,6 +299,13 @@ Route::prefix('v1')->group(function (): void {
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
     // création côté API des routes manquantes (décision produit).
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+        // Issue #2624 : impersonation super-admin aussi sous /admin (le SPA
+        // admin-dashboard consomme /admin/*) — réutilise le contrôleur
+        // platform existant (PA2-ADM-006).
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+
         Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
         Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
         Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);
