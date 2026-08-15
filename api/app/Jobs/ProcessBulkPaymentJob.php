@@ -126,6 +126,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
         // permettre le retry de CE slip uniquement.
         $claimPrefix = "bulk_pay:slip:{$run->id}:";
         $redis = Redis::connection('default');
+        $redisUnavailable = false;
 
         foreach ($slips as $slip) {
             try {
@@ -133,14 +134,19 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                 try {
                     $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
                 } catch (Throwable $redisError) {
-                    // Redis indisponible : on traite sans garde (comportement
-                    // historique) mais on le trace pour l'observabilité.
-                    Log::warning('ProcessBulkPaymentJob: Redis claim unavailable, processing without guard', [
+                    // #3857 : FAIL-CLOSED. Sans claim NX, un job concurrent
+                    // (retry queue, second dispatch) re-traiterait des slips
+                    // déjà payés → double déclaration de paiement. On ABORTE
+                    // le lot entier : rien n'est marqué payé après ce point,
+                    // le job échoue et la queue retry rejouera proprement une
+                    // fois Redis revenu ($tries=3).
+                    Log::error('ProcessBulkPaymentJob: Redis claim unavailable — batch aborted (fail-closed)', [
                         'payroll_run_id' => $run->id,
                         'pay_slip_id' => $slip->id,
                         'error' => $redisError->getMessage(),
                     ]);
-                    $claimed = true;
+                    $redisUnavailable = true;
+                    break;
                 }
 
                 if (! $claimed) {
@@ -174,6 +180,21 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
             $done++;
             $this->updateProgress($done, 'processing', $total, $failures);
+        }
+
+        if ($redisUnavailable) {
+            // Fail-closed : libérer le claim du run pour permettre un
+            // redispatch propre, puis échouer le job (retry $tries=3 avec
+            // backoff par défaut de la queue).
+            try {
+                $redis->del("bulk_pay:run:{$run->id}");
+            } catch (Throwable) {
+                // non bloquant
+            }
+
+            throw new \RuntimeException(
+                "ProcessBulkPaymentJob: batch aborted — Redis claim coordinator unavailable (payroll_run_id: {$run->id})."
+            );
         }
 
         $succeeded = $total - count($failures);
