@@ -144,7 +144,7 @@ class NotificationControllerTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->patchJson("/api/v1/notifications/{$first->id}/read")
+        $this->putJson("/api/v1/notifications/{$first->id}/read")
             ->assertOk()
             ->assertJsonPath('data.is_read', true);
 
@@ -157,7 +157,7 @@ class NotificationControllerTest extends TestCase
             'event_name' => 'notification_read',
         ]);
 
-        $this->postJson('/api/v1/notifications/mark-all-read')
+        $this->putJson('/api/v1/notifications/read-all')
             ->assertOk()
             ->assertJsonPath('message', 'All notifications marked as read.');
 

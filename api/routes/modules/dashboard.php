@@ -31,8 +31,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // Notifications — all authenticated employees
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread', [NotificationController::class, 'unread']);
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
-    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
+    // Mutations notifications : canonique dans routes/modules/rh.php
+    // (PUT /notifications/read-all + PUT /notifications/{notification}/read,
+    // verbes alignés sur les clients mobile/web/admin — voir #3167). Les
+    // anciens verbes POST /mark-all-read et PATCH /{id}/read ont été retirés
+    // (aucun appelant, tests migrés vers le canonique).
 
     // Exports — managers only (principal, rh, comptable)
     Route::middleware('api.manager:principal,rh,comptable')->group(function (): void {
