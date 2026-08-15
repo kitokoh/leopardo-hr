@@ -39,11 +39,21 @@ return [
         'https://www.leopardo-rh.com',
         'https://app.leopardo-rh.com',
         'https://admin.leopardo-rh.com',
+        // Issue #2333 : le panneau admin est déployé sur Cloudflare Pages
+        // (leo-admin.pages.dev — cf. PILOTAGE.md) ; ADMIN_DASHBOARD_URL
+        // n'est pas renseignée sur Render, donc l'origine réelle est listée
+        // en dur, et les previews Pages sont couvertes par le pattern
+        // `https://*.pages.dev` ci-dessous.
+        'https://leo-admin.pages.dev',
         env('ADMIN_DASHBOARD_URL'),
         env('CORS_EXTRA_ORIGIN'),
     ]),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // Issue #2333 : previews/déploiements Cloudflare Pages du dashboard
+        // admin (chaque preview a son propre sous-domaine *.pages.dev).
+        'https://*.pages.dev',
+    ],
 
     // Explicit allow-list instead of '*': defence-in-depth so that a future
     // debug-time addition of '*' to allowed_origins (a classic CORS-debugging
