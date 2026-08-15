@@ -21,6 +21,7 @@
             "front/web/src/app/(landing)/signup/page.tsx",
             "front/web/src/modules/vitrine/components/forms/SignupForm.tsx",
             "front/web/src/app/api/forms/signup/route.ts",
+            "front/web/src/app/api/forms/trial-status/route.ts",
             "front/web/e2e/marketing-funnel.spec.ts"
           ],
           "requiredTokens": [
@@ -29,6 +30,7 @@
             "passwordCaptured: false",
             "hero_email_trial",
             "/api/forms/signup",
+            "/api/forms/trial-status",
             "a[href*=\"/auth/signup\"]"
           ]
         },
