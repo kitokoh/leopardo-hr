@@ -44,7 +44,12 @@ class MarketingLeadController extends Controller
     {
         $configuredSecret = (string) config('services.marketing_lead_webhook.secret', '');
 
-        if ($configuredSecret !== '') {
+        if ($configuredSecret === '') {
+            // Issue #2688 (QA 2026-08-15) — fail-open documenté : si le secret
+            // n'est pas configuré, l'ingestion reste ouverte (comportement
+            // historique) mais un warning bruyant signale le risque en prod.
+            Log::warning('Marketing lead ingest: shared secret is NOT configured — endpoint is fail-open. Set services.marketing_lead_webhook.secret.');
+        } else {
             $providedSecret = (string) $request->header('X-Marketing-Lead-Token', '');
 
             if (! hash_equals($configuredSecret, $this->extractBearerOrHeader($request, $providedSecret))) {
