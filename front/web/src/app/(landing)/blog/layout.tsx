@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
@@ -10,7 +11,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.blog.keywords,
   ogImage: pageMetadata.blog.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/blog',
+  canonical: `${SITE_URL}/blog`,
 });
 
 export default function BlogLayout({

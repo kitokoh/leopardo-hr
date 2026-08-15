@@ -149,11 +149,12 @@ class PayrollTenantIsolationTest extends TestCase
         Sanctum::actingAs($this->managerB);
 
         $this->getJson('/api/v1/tax-slabs')->assertOk()->assertJsonMissing(['id' => $dataA['taxSlab']->id]);
-        // Les endpoints admin barèmes sont réservés au SuperAdmin
-        // (assertPlatformAdmin → 403) ; un manager tenant ne doit ni lire
-        // ni modifier la ligne d'un autre tenant.
-        $this->putJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}", ['rate' => 99])->assertForbidden();
-        $this->deleteJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}")->assertForbidden();
+        // Les endpoints admin barèmes sont réservés au SuperAdmin. Un manager
+        // tenant reçoit 404 (anti-énumération : le modèle est scopé par tenant,
+        // le slab étranger n'est pas résolu — Constitution §II « assert 404
+        // cross-tenant »). Un SuperAdmin sans permission recevrait 403.
+        $this->putJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}", ['rate' => 99])->assertNotFound();
+        $this->deleteJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}")->assertNotFound();
     }
 
     public function test_payroll_runs_list_is_scoped_to_current_tenant(): void

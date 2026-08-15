@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware\AI;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Closure;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Http\Request;
@@ -14,6 +15,19 @@ class AITenantInjector
         $user = $request->user();
         if (! $user || ! $user->company_id) {
             abort(403, 'AI requires a valid company context.');
+        }
+
+        // Sécurité #2635 : mêmes gardes que le login (AuthService) — un employé
+        // suspendu ou une société suspendue/expirée ne peut pas utiliser l'IA.
+        if ($user->status !== 'active') {
+            abort(403, 'ACCOUNT_SUSPENDED');
+        }
+
+        if ($user instanceof Employee) {
+            $company = $user->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                abort(403, 'COMPANY_SUSPENDED');
+            }
         }
 
         $request->attributes->set('ai_company_id', $user->company_id);
