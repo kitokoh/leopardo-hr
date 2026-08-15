@@ -256,8 +256,9 @@ class GoldenCiPayrollTest extends TestCase
     public function test_golden_ci_preavis(float $years, float $expectedDays): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18) :
-        //  niveau employé/technicien (pilot) : < 5 ans → 30 j · ≥ 5 ans → 60 j.
-        //  Cadres → 90 j et ouvriers → 8/15 j (catégorie via ipres_category).
+        //  niveau employé/technicien (pilot) : < 5 ans → 22 j · ≥ 5 ans → 44 j
+        //  (JOURS OUVRÉS #2219 — ex 30/60 j calendaires).
+        //  Cadres → 66 j et ouvriers → 6/11 j (catégorie via ipres_category).
         $rules = $this->rules();
 
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
@@ -267,9 +268,9 @@ class GoldenCiPayrollTest extends TestCase
     public function test_golden_ci_preavis_par_categorie(string $category, float $years, float $expectedDays): void
     {
         // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18) :
-        //  ouvriers : < 5 ans → 8 j · ≥ 5 ans → 15 j
-        //  employés/techniciens : < 5 ans → 30 j · ≥ 5 ans → 60 j
-        //  cadres : 90 j (3 mois) quelle que soit l'ancienneté
+        //  ouvriers : < 5 ans → 6 j · ≥ 5 ans → 11 j (JOURS OUVRÉS #2219, ex 8/15)
+        //  employés/techniciens : < 5 ans → 22 j · ≥ 5 ans → 44 j (ex 30/60)
+        //  cadres : 66 j (3 mois) quelle que soit l'ancienneté (ex 90)
         //  — la catégorie est portée par employees.ipres_category (#2264).
         $rules = $this->rules();
 
@@ -282,16 +283,17 @@ class GoldenCiPayrollTest extends TestCase
     public static function preavisParCategorieProvider(): array
     {
         // CI_COMPLIANCE.md §8 (Code du travail art. 18, implémenté #2372) :
-        //  ouvriers 8/15 j · employés/techniciens 30/60 j · cadres 90 j.
+        //  ouvriers 6/11 j · employés/techniciens 22/44 j · cadres 66 j
+        //  (JOURS OUVRÉS #2219, conversion 30→22 / 60→44 / 90→66 / 8→6 / 15→11).
         return [
-            'ouvrier moins de 5 ans' => ['ouvrier', 2.0, 8.0],
-            'ouvrier 5 ans et plus' => ['ouvrier', 7.0, 15.0],
-            'worker 10 ans' => ['worker', 10.0, 15.0],
-            'employe moins de 5 ans' => ['employee', 2.0, 30.0],
-            'employe 5 ans et plus' => ['employee', 7.0, 60.0],
-            'technicien 12 ans' => ['technician', 12.0, 60.0],
-            'cadre 2 ans' => ['cadre', 2.0, 90.0],
-            'cadre 15 ans' => ['cadre', 15.0, 90.0],
+            'ouvrier moins de 5 ans' => ['ouvrier', 2.0, 6.0],
+            'ouvrier 5 ans et plus' => ['ouvrier', 7.0, 11.0],
+            'worker 10 ans' => ['worker', 10.0, 11.0],
+            'employe moins de 5 ans' => ['employee', 2.0, 22.0],
+            'employe 5 ans et plus' => ['employee', 7.0, 44.0],
+            'technicien 12 ans' => ['technician', 12.0, 44.0],
+            'cadre 2 ans' => ['cadre', 2.0, 66.0],
+            'cadre 15 ans' => ['cadre', 15.0, 66.0],
         ];
     }
 
@@ -301,9 +303,9 @@ class GoldenCiPayrollTest extends TestCase
     public static function preavisProvider(): array
     {
         return [
-            'moins de 5 ans' => [2.0, 30.0],
-            '5 à 10 ans' => [7.0, 60.0],
-            '10 ans et plus' => [12.0, 60.0],
+            'moins de 5 ans' => [2.0, 22.0],
+            '5 à 10 ans' => [7.0, 44.0],
+            '10 ans et plus' => [12.0, 44.0],
         ];
     }
 
@@ -499,19 +501,19 @@ class GoldenCiPayrollTest extends TestCase
     public function test_golden_ci_ricf_parts_max_brut_3m(): void
     {
         // Calcul manuel (#2117) : brut 3 000 000, 5 parts (plafond légal) :
-        //   CNSS salariale = 3 000 000 × 3,2 % = 96 000 (plafond retraite
-        //     1 647 315 non atteint)
+        //   CNSS salariale = min(3 000 000, 1 647 315) × 3,2 % = 52 714,08
+        //     (le plafond retraite 1 647 315 EST atteint — #1913)
         //   ITS brut 2024 = 165 000×16 % + 560 000×21 % + 1 600 000×24 %
         //     + 600 000×28 % = 696 000
         //   RICF (art. 120) = 44 000 (plafond)
         //   ITS net = 696 000 − 44 000 = 652 000
-        //   Net = 3 000 000 − 96 000 − 652 000 = 2 252 000
+        //   Net = 3 000 000 − 52 714,08 − 652 000 = 2 295 285,92
         $rules = $this->rules();
 
         $breakdown = (new PayrollCalculator)->computeNetBreakdown(3000000.0, $rules, 5.0);
 
         $this->assertSame(652000.0, $breakdown['income_tax']);
-        $this->assertSame(2252000.0, $breakdown['net_salary']);
+        $this->assertSame(2295285.92, $breakdown['net_salary']);
     }
 
     public function test_golden_ci_ricf_default_1_part_no_change(): void

@@ -52,7 +52,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
                     ]);
             }
 
-            // TODO: Generate magic link and send email to the user
+            // Issue #2620 : magic link envoyé au manager après provisioning
+            // réussi (token 72 h à usage unique, hash stocké sur extra_data).
+            if (isset($result['manager']) && $result['manager'] instanceof \App\Core\Auth\Domain\Models\Employee) {
+                $this->issueDemoAccess($result['manager']);
+            }
+
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 
         } catch (\Throwable $e) {
@@ -70,38 +75,4 @@ class ProvisionDemoTenantJob implements ShouldQueue
         }
     }
 
-    /**
-     * @param  \App\Core\Auth\Domain\Models\Employee  $manager
-     */
-    private function issueDemoAccess(\App\Core\Auth\Domain\Models\Employee $manager): void
-    {
-        $token = Str::random(48);
-        $expiresAt = now()->addHours(72);
-
-        $extraData = $manager->extra_data ?? [];
-        $extraData['demo_access_token_hash'] = hash('sha256', $token);
-        $extraData['demo_access_token_expires_at'] = $expiresAt->toIso8601String();
-        $manager->update(['extra_data' => $extraData]);
-
-        $magicUrl = rtrim((string) config('app.url'), '/').'/demo-login/'.$token;
-
-        // Best-effort : un échec d'envoi (mailer non configuré) ne doit pas
-        // faire échouer le provisioning — le lien est loggé pour support.
-        try {
-            Mail::to($this->email)->send(new CommunicationMail(
-                subjectLine: __('emails.demo_access_subject'),
-                bodyText: __('emails.demo_access_body', ['url' => $magicUrl]),
-            ));
-        } catch (\Throwable $exception) {
-            Log::warning('Demo access email could not be sent', [
-                'email' => $this->email,
-                'error' => $exception->getMessage(),
-            ]);
-        }
-
-        Log::info('Demo magic link issued', [
-            'company_id' => $manager->company_id,
-            'expires_at' => $expiresAt->toIso8601String(),
-        ]);
-    }
 }

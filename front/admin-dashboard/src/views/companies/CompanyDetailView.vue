@@ -327,6 +327,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n'
+import { useLocaleStore } from '@/stores/locale'
 import { Switch } from '@headlessui/vue'
 import {
   ArrowLeftIcon,
@@ -348,7 +350,6 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
-import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const route = useRoute()
@@ -416,6 +417,7 @@ async function loadCompany() {
   } catch (error) {
     console.error('Failed to load company detail:', error)
     errorMessage.value = 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.'
+    toast.error(translate(localeStore.current, 'companies.toast.load_failed', 'companies.toast.load_failed'))
   } finally {
     isLoading.value = false
   }
@@ -438,6 +440,7 @@ async function loadSupportTickets() {
   } catch (error) {
     console.error('Failed to load support tickets for company:', error)
     supportTickets.value = []
+    toast.error(translate(localeStore.current, 'companies.toast.tickets_failed', 'companies.toast.tickets_failed'))
   } finally {
     isSupportLoading.value = false
   }
@@ -453,6 +456,7 @@ async function saveSubscription() {
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
+    toast.error(translate(localeStore.current, 'companies.toast.subscription_failed', 'companies.toast.subscription_failed'))
   } finally {
     isSavingSubscription.value = false
   }
@@ -470,6 +474,7 @@ async function saveFeatures() {
     originalFeatures.value = { ...featuresForm.value }
   } catch (error) {
     console.error('Failed to save features:', error)
+    toast.error(translate(localeStore.current, 'companies.toast.features_failed', 'companies.toast.features_failed'))
   } finally {
     isSavingFeatures.value = false
   }

@@ -54,6 +54,7 @@ const docCategories = [
       { title: 'Leopardo Employee', desc: 'Pointage, demandes, bulletin, notifications push', href: '/docs#sdk-overview' },
       { title: 'Leopardo Manager', desc: 'Equipe, horaires, taches, approbations', href: '/docs#sdk-overview' },
       { title: 'Platform Admin', desc: 'Super-admin : creation tenant, supervision', href: '/docs#sdk-overview' },
+      { title: 'Installer les applications', desc: 'Android / iOS, distribution, versions', href: '/docs#mobile-install' },
       { title: 'Notifications push (FCM)', desc: 'Configurer Firebase Cloud Messaging', href: '/docs#sdk-overview' },
     ],
   },
@@ -73,10 +74,10 @@ const docCategories = [
     icon: Webhook,
     color: 'pink',
     items: [
-      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-intro' },
+      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-overview' },
       { title: 'Evenements disponibles', desc: 'attendance.*, leave.*, salary_advance.*, payroll.*', href: '/docs#webhooks-events' },
-      { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-overview' },
-      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-testing' },
+      { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-security' },
+      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-overview' },
     ],
   },
   {
@@ -108,7 +109,7 @@ const docCategories = [
     items: [
       { title: 'Roles & permissions', desc: 'Principal, RH, Employe, Super Admin, RBAC', href: '/docs#api-quickstart' },
       { title: 'Multi-tenant', desc: 'Architecture par schema PostgreSQL', href: '/docs#api-quickstart' },
-      { title: 'Securite & RGPD', desc: 'Chiffrement, audit trail, conformite', href: '/docs#api-quickstart' },
+      { title: 'Securite & RGPD', desc: 'Chiffrement, audit trail, conformite', href: '/docs#security' },
       { title: 'Deploiement', desc: 'Docker, Render, Vercel, variables env', href: '/docs#api-quickstart' },
     ],
   },
@@ -290,7 +291,7 @@ export default function DocsPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400">Recevez les evenements RH directement dans vos systemes</p>
             </div>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div id="webhooks-events" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { group: 'Pointage', events: ['attendance.checked_in', 'attendance.checked_out', 'attendance.auto_closed'] },
               { group: 'Absences', events: ['leave.requested', 'leave.approved', 'leave.rejected'] },

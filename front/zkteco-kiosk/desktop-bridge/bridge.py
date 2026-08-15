@@ -385,6 +385,29 @@ class BridgeHandler(BaseHTTPRequestHandler):
             content_type = "application/json; charset=utf-8"
 
         body = target.read_bytes()
+
+        # Issue #2750 — injecter la config cloud dans les pages HTML servies :
+        # `app.js` lit `window.__KIOSK_API_BASE / __KIOSK_DEVICE_CODE /
+        # __KIOSK_TOKEN`. Sans injection, le device code est vide et les
+        # fonctions cloud (employee-info, announcements, leave-balance,
+        # qr-punch) appellent `/api/v1/kiosks//…` → 404 (déploiement
+        # documenté http://127.0.0.1:8037/index.html).
+        if target.suffix == ".html":
+            injected = (
+                "<script>\n"
+                "window.__KIOSK_API_BASE = "
+                + json.dumps(CONFIG.get("apiBaseUrl", ""))
+                + ";\n"
+                "window.__KIOSK_DEVICE_CODE = "
+                + json.dumps(CONFIG.get("deviceCode", ""))
+                + ";\n"
+                "window.__KIOSK_TOKEN = "
+                + json.dumps(CONFIG.get("kioskToken", ""))
+                + ";\n"
+                "</script>"
+            ).encode("utf-8")
+            body = body.replace(b"</head>", injected + b"</head>", 1)
+
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
