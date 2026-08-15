@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Platform;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\Sanctum;
+use Tests\RefreshTenantDatabase;
+use Tests\TestCase;
+
+/**
+ * Issue #2311 — POST /admin/ai/chat : l'envoi d'un message depuis la
+ * console super-admin doit répondre (plus de 404 silencieux), sans écrire
+ * dans une conversation d'un tenant (isolation cross-tenant).
+ */
+class PlatformAdminAiChatTest extends TestCase
+{
+    use RefreshTenantDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        /** @var SuperAdmin $superAdmin */
+        $superAdmin = SuperAdmin::query()->create([
+            'name' => 'Platform Admin',
+            'email' => 'admin-ai-chat@leopardo.test',
+            'password_hash' => Hash::make('password123'),
+        ]);
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+    }
+
+    public function test_chat_requires_message(): void
+    {
+        $this->postJson('/api/v1/admin/ai/chat', [])->assertUnprocessable();
+        $this->postJson('/api/v1/admin/ai/chat', ['message' => '   '])->assertUnprocessable();
+    }
+
+    public function test_chat_without_conversation_returns_structured_reply(): void
+    {
+        $response = $this->postJson('/api/v1/admin/ai/chat', [
+            'message' => 'Bonjour, qui sont mes employés ?',
+        ])->assertOk();
+
+        $response->assertJsonPath('conversation_id', null);
+        $response->assertJsonPath('response', __('platform.admin_chat_unavailable'));
+    }
+
+    public function test_chat_unknown_conversation_returns_404(): void
+    {
+        $this->postJson('/api/v1/admin/ai/chat', [
+            'message' => 'Bonjour',
+            'conversation_id' => 999_999,
+        ])->assertNotFound();
+    }
+
+    public function test_chat_with_existing_conversation_does_not_write_to_tenant(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        // La table ai_conversations vit dans le schéma tenant partagé.
+        $conversationId = DB::table('shared_tenants.ai_conversations')->insertGetId([
+            'company_id' => $company->id,
+            'user_id' => $employee->id,
+            'title' => 'Conversation existante',
+            'messages' => json_encode([['role' => 'user', 'content' => 'Bonjour', 'created_at' => now()->toISOString()]]),
+            'token_count' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $before = DB::table('shared_tenants.ai_conversations')->where('id', $conversationId)->value('messages');
+
+        $this->postJson('/api/v1/admin/ai/chat', [
+            'message' => 'Réponse de la console',
+            'conversation_id' => $conversationId,
+        ])->assertOk();
+
+        // Aucune écriture dans la conversation du tenant (isolation).
+        $after = DB::table('shared_tenants.ai_conversations')->where('id', $conversationId)->value('messages');
+        $this->assertSame($before, $after);
+    }
+}
