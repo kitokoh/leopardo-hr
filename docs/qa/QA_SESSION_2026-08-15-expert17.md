@@ -26,9 +26,11 @@ implémentation des issues non verrouillées, `main` VERT.
 | #3822 `flutter test` pour toutes les apps livrées en CI | #3980 | CI mobile | ✅ MERGED, issue fermée |
 | #3931 `useRouter()` dans handler → TypeError recherche header | #3994 | admin | ✅ MERGED, issue fermée |
 | #3932 `pushUnavailable` jamais défini → fausse alerte rouge permanente | #4001 | admin | ✅ MERGED, issue fermée |
-| #3919 [P1] triple schéma de prix vitrine (affiché 79 € ≠ facturé 99 €) | #4049 | web | ⏳ CI |
-| #3933 `card-lg` inexistante → toasts sans fond | #4057 | admin | ⏳ CI |
-| #3938 enveloppe API GrowthDashboard non normalisée | #4060 | admin | ⏳ CI |
+| #3919 [P1] triple schéma de prix vitrine (affiché 79 € ≠ facturé 99 €) | #4049 + #4083 (résiduel FAQ) | web | ✅ MERGED ×2, issue fermée |
+| #3933 `card-lg` inexistante → toasts sans fond | #4057 | admin | ✅ MERGED |
+| #3938 enveloppe API GrowthDashboard non normalisée | #4060 | admin | ✅ MERGED |
+| #4091 déconnexion client bloquée par l'appel API (~70 s) | #4094 | web | ⏳ CI |
+| #4095 e2e actions rapides (doublons, liens gated, regex ASCII) | #4097 | web | ⏳ CI |
 
 ### Issues fermées avec preuve code (protocole #2512) — 6
 
@@ -53,6 +55,25 @@ implémentation des issues non verrouillées, `main` VERT.
   (env parity, migrations, orphan interfaces, strict types, canonical domains).
 - openapi route coverage : 121 routes non couvertes, toutes allowlistées
   (drift 0). Vitrine : tsc/eslint/jest 471/471, build OK, ~20 pages 200.
+
+## Audit e2e runtime (constat neuf — campagne 99 tests chromium sur main propre)
+
+- **8-9 échecs = backend prod périmé, PAS le code vitrine** : probe live
+  `POST /api/v1/trial/signup` → **500 « Server Error » en 61,2 s** (preuve
+  postée sur #3259) ; `GET /api/v1/supported-countries` → 404 ; `health` → 200.
+  Les suites signup/demo/marketing-funnel échouent donc en local ET en CI
+  (marketing-funnel tourne dans web-marketing-ci). Correctif sur main, non
+  déployé — famine déploiement #3545.
+- **1 vrai bug code trouvé et corrigé** : `auth/logout` ne redirigeait
+  qu'après `apiFetch` (jusqu'à ~70 s) → #4091, e2e `manager-workday-smoke`
+  repassé 1/1 vert.
+- **1 vrai bug de test corrigé** : `dashboard-quick-actions` (doublons
+  `a[href="/employees"]`, lien sidebar `/reports` désactivé par feature gate,
+  regex `/message envoye a l.equipe/i` ne matchant plus l'accentué) → #4095,
+  e2e 4/4 verts.
+- **1 flake dev-only** : test démo (/demo) timeout 120 s en dev quand la route
+  n'est pas compilée (probe manuelle : navigation OK en <2 s une fois chaude ;
+  en CI la cible est un build, pas un dev server).
 
 ## Méthode
 
