@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -355,5 +356,82 @@ class PaySlipControllerTest extends TestCase
 
         return [$run, $slip];
     }
-}
 
+    /**
+     * Issue #3946 — « Envoyer les bulletins » était un no-op : seul le statut
+     * passait à `sent`. Depuis le fix, une notification push réelle est
+     * déclenchée par employé (même canal que GeneratePaySlipPdfJob).
+     */
+    public function test_send_slips_marks_sent_and_dispatches_push_notification(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        [$run, $slipA] = $this->payrollSlip($company, $employee, [
+            'run_status' => 'validated',
+            'status' => 'calculated',
+        ]);
+        $employeeB = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => fake()->unique()->safeEmail(),
+            'preferred_language' => 'ar',
+        ]);
+        $this->payrollSlip($company, $employeeB, [
+            'run' => $run,
+            'status' => 'validated',
+        ]);
+
+        $push = $this->mock(PushNotificationService::class);
+        $push->shouldReceive('sendToEmployee')
+            ->twice()
+            ->withArgs(function (Employee $target, string $title, string $body, array $data): bool {
+                return $data['type'] === 'pay_slip_sent'
+                    && $data['pay_slip_id'] > 0
+                    && $title !== ''
+                    && $body !== '';
+            })
+            ->andReturn(1);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/send-slips")
+            ->assertOk()
+            ->assertJsonPath('sent_count', 2)
+            ->assertJsonPath('notified_count', 2)
+            ->assertJsonPath('total_slips', 2);
+
+        $this->assertSame('sent', $slipA->fresh()->status);
+    }
+
+    public function test_send_slips_forbidden_for_non_manager(): void
+    {
+        [$company, , $employee] = $this->payrollActor();
+        [$run] = $this->payrollSlip($company, $employee, ['run_status' => 'validated', 'status' => 'calculated']);
+
+        Sanctum::actingAs($employee);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/send-slips")
+            ->assertForbidden();
+    }
+
+    public function test_send_slips_returns_404_for_foreign_tenant_run(): void
+    {
+        [$companyA, $managerA] = $this->payrollActor();
+        [$companyB, , $employeeB] = $this->payrollActor();
+        [$runB] = $this->payrollSlip($companyB, $employeeB, ['run_status' => 'validated', 'status' => 'calculated']);
+
+        Sanctum::actingAs($managerA);
+
+        $this->postJson("/api/v1/payroll-runs/{$runB->id}/send-slips")
+            ->assertNotFound();
+    }
+
+    public function test_send_slips_rejects_unvalidated_run(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        [$run] = $this->payrollSlip($company, $employee, ['run_status' => 'calculated', 'status' => 'calculated']);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/send-slips")
+            ->assertStatus(422);
+    }
+}
