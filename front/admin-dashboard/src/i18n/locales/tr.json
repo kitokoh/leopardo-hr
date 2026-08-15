@@ -255,7 +255,8 @@
       "exportInProgress": "Disa aktarim yapiliyor...",
       "exportDone": "Disa aktarim tamamlandi",
       "exportError": "Disa aktarim basarisiz oldu",
-      "selectionExportDone": "Secim disa aktarimi tamamlandi"
+      "selectionExportDone": "Secim disa aktarimi tamamlandi",
+      "bulkDone": "{count} kullanıcı güncellendi."
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
@@ -263,7 +264,8 @@
     "errors": {
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
-      "fix_fields": "Lütfen kırmızı alanları düzeltin"
+      "fix_fields": "Lütfen kırmızı alanları düzeltin",
+      "password_min": "Şifre en az 8 karakter olmalıdır."
     },
     "impersonation": {
       "title": "Bir çalışanı taklit et",

@@ -255,7 +255,8 @@
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
       "exportError": "Erreur lors de l'export",
-      "selectionExportDone": "Export de la selection termine"
+      "selectionExportDone": "Export de la selection termine",
+      "bulkDone": "{count} utilisateur(s) mis à jour."
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
@@ -263,7 +264,8 @@
     "errors": {
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
-      "fix_fields": "Veuillez corriger les champs en rouge"
+      "fix_fields": "Veuillez corriger les champs en rouge",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères."
     },
     "impersonation": {
       "title": "Impersonner un employé",

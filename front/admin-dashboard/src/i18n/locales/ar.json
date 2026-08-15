@@ -255,7 +255,8 @@
       "exportInProgress": "التصدير قيد التنفيذ...",
       "exportDone": "تم التصدير",
       "exportError": "فشل التصدير",
-      "selectionExportDone": "تم تصدير التحديد"
+      "selectionExportDone": "تم تصدير التحديد",
+      "bulkDone": "تم تحديث {count} مستخدم(ين)."
     },
     "confirm": {
       "delete": "هل انت متأكد من رغبتك في حذف :name؟"
@@ -263,7 +264,8 @@
     "errors": {
       "name_required": "الاسم الكامل مطلوب.",
       "password_required": "كلمة المرور مطلوبة.",
-      "fix_fields": "يرجى تصحيح الحقول المميزة"
+      "fix_fields": "يرجى تصحيح الحقول المميزة",
+      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل."
     },
     "impersonation": {
       "title": "انتحال صفة موظف",
