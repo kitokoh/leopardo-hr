@@ -12,6 +12,7 @@ import 'package:leopardo_core/models/app_notification.dart';
 import 'package:leopardo_core/models/evaluation.dart';
 import 'package:leopardo_core/models/payroll_record.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class ModulesScreen extends ConsumerStatefulWidget {
   const ModulesScreen({super.key});
@@ -705,7 +706,7 @@ class _PayrollsTab extends ConsumerWidget {
 
   String _monthName(int month) {
     if (month < 1 || month > 12) return 'Mois $month';
-    return DateFormat.MMMM('fr_FR').format(DateTime(2026, month));
+    return DateFormat.MMMM(deviceIntlDateLocale).format(DateTime(2026, month));
   }
 
   String _payrollLabel(String status) => switch (status) {

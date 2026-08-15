@@ -11,6 +11,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'app.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,7 +88,7 @@ Future<void> _openOfflineCache() async {
 }
 
 Future<void> _initializeLocales() async {
-  await initializeDateFormatting('fr_FR', null);
+  await initializeDateFormatting(deviceIntlDateLocale, null);
   await initializeDateFormatting('fr_CA', null);
   await initializeDateFormatting('fr_BE', null);
   await initializeDateFormatting('ar', null);

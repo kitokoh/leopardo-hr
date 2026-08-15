@@ -22,7 +22,8 @@ class NotificationRepository {
   Future<void> markAllAsRead() async {
     await apiClient.requestWithRetry<void>(
       '/notifications/read-all',
-      method: 'POST',
+      // #3401 : canonique = PUT (rh.php) — POST → 405.
+      method: 'PUT',
       timeoutOverride: const Duration(seconds: 12),
     );
   }
