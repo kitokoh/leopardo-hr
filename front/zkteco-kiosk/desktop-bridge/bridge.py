@@ -213,7 +213,12 @@ class SyncEngine:
     def __init__(self, config: dict, store: LocalStore) -> None:
         self.config = config
         self.store = store
-        self.api_base_url = config.get("apiBaseUrl", "").rstrip("/")
+        # Normalisation miroir de app.js (issue #3590) : une config sans
+        # suffixe /api/v1 fonctionne pour l'UI mais 404 toute la sync bridge.
+        base = config.get("apiBaseUrl", "").rstrip("/")
+        if base and not base.endswith("/api/v1"):
+            base = f"{base}/api/v1"
+        self.api_base_url = base
         self.device_code = config.get("deviceCode", "")
         self.kiosk_token = config.get("kioskToken", "")
 
@@ -281,8 +286,10 @@ class SyncEngine:
         }
 
     def online_status(self) -> tuple[bool, str]:
+        # Issue #3590 : la sonde de connectivité ne doit pas télécharger le
+        # roster complet (pollé toutes les 15 s par l'UI) — /health suffit.
         try:
-            self._request("GET", f"/kiosks/{self.device_code}/roster")
+            self._request("GET", "/health")
             return True, ""
         except Exception as error:
             return False, str(error)

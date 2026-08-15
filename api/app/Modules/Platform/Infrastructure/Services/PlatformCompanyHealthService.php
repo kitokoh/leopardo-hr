@@ -90,7 +90,7 @@ class PlatformCompanyHealthService
                         'country' => $company->country,
                         'currency' => $company->currency,
                         'timezone' => $company->timezone,
-                        'created_at' => optional($company->created_at)->toIso8601String(),
+                        'created_at' => $company->created_at?->toIso8601String(),
                     ],
                     'plan' => $this->plan($company),
                     'features' => [
