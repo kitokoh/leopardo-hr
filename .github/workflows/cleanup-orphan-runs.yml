@@ -4,6 +4,13 @@ name: CI Queue — Orphan Runs Cleanup
 # (branches de PR mergées/fermées et supprimées) — jusqu'à 470+ runs queued,
 # aucun check requis ne démarre, aucun merge possible.
 #
+# WORKFLOW CANONIQUE (consolidation 2026-08-15) : il remplace les trois PRs
+# concurrentes #2463/#2464/#2468 qui avaient chacune ajouté un workflow de
+# nettoyage (actions-queue-cleanup.yml, ci-cleanup.yml, cleanup-orphan-runs.yml)
+# — trois crons qui tournaient en parallèle pour le même objectif. Un seul
+# workflow + un seul script (dev-hub/tools/cancel-orphan-runs.sh) est conservé ;
+# les doublons ont été supprimés.
+#
 # Ce workflow annule automatiquement les runs `queued`/`in_progress` dont la
 # branche head n'existe plus (ni branche vivante, ni PR ouverte, ni main) :
 #   - en cron (toutes les 6 h) : file nettoyée en continu ;
@@ -16,8 +23,8 @@ name: CI Queue — Orphan Runs Cleanup
 
 on:
   schedule:
-    # Toutes les 6 h à :17 (décalé des top-of-hour des autres crons).
-    - cron: "17 */6 * * *"
+    # Toutes les 2 h à :17 (décalé des top-of-hour des autres crons).
+    - cron: "17 */2 * * *"
   workflow_dispatch:
   pull_request:
     types: [closed]
