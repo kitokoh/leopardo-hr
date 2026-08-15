@@ -210,29 +210,3 @@ class WebhookController extends Controller
 
         return response()->json(['message' => 'Webhook delivery re-queued.'], 202);
     }
-
-    /**
-     * Envoie un événement de test `webhook.test` vers un endpoint (bouton
-     * « Tester » du cockpit admin). La delivery est tracée comme les autres.
-     */
-    public function test(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
-        if ($webhookEndpoint->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $webhookEndpoint->update(['failure_count' => 0, 'active' => true]);
-
-        DispatchWebhook::dispatch($webhookEndpoint, 'webhook.test', [
-            'test' => true,
-            'message' => 'Test de webhook depuis le cockpit Leopardo RH',
-        ]);
-
-        return response()->json(['message' => 'Webhook test event dispatched.'], 202);
-    }
-}
