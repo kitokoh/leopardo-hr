@@ -13,6 +13,7 @@ export interface BlogGridProps {
   };
   posts: BlogCardProps[];
   categories?: string[];
+  initialCategory?: string | null;
   itemsPerPage?: number;
   showPagination?: boolean;
   showFilters?: boolean;
@@ -37,9 +38,10 @@ export function BlogGrid({
   nextLabel = 'Suivant',
   dateLocale = 'fr-FR',
   readingTimeLabel = 'min de lecture',
+  initialCategory = null,
 }: BlogGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
 
   // Filter posts
   const filteredPosts = useMemo(() => {
