@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.caseStudies.keywords,
   ogImage: pageMetadata.caseStudies.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/case-studies',
+  canonical: `${SITE_URL}/case-studies`,
 });
 
 export default function CaseStudiesLayout({
