@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'public_holidays_admin_only' => 'Yalnızca bir süper yönetici veya müdür resmî tatilleri yönetebilir.',
+    'public_holidays_company_only' => 'Bir müdür yalnızca kendi şirketinin resmî tatillerini değiştirebilir.',
     'calculation_failed' => 'Maaş hesaplama başarısız oldu. Ayrıntılar günlüklerde.',
     'zero_slips_generated' => "Maaş bordrosu oluşturulmadı: maaş hesaplamadan önce bu ülke için en az bir aktif maaş yapısı olduğundan emin olun.",
     'rate_edit_locked' => "Gönderilmiş, aktif veya değiştirilmiş bir satır düzenlenemez — yeni bir değişiklik önerin.",

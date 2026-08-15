@@ -12,69 +12,56 @@ test.describe('Conversion Funnel E2E Tests', () => {
   });
 
   test.describe('Signup Conversion Funnel', () => {
-    test('should complete signup flow from landing page', async ({ page }) => {
+    // #2823/#2648 : le signup est un essai guidé sans mot de passe (v4.16.250).
+    test('should complete guided-trial signup flow from landing page', async ({ page }) => {
       // Step 1: User sees hero section with signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
+      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit"), a[href="/signup"]').first();
       await expect(signupCTA).toBeVisible();
 
       // Step 2: User clicks signup CTA
       await signupCTA.click();
+      await page.waitForURL('**/signup');
 
-      // Step 3: User sees signup form
-      const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
+      // Step 3: User sees the guided-trial form (email only — no password)
+      const emailInput = page.locator('input[type="email"]').first();
       await expect(emailInput).toBeVisible();
-      await expect(passwordInput).toBeVisible();
+      await expect(page.locator('input[type="password"]')).toHaveCount(0);
 
-      // Step 4: User fills in email and password
-      await emailInput.fill('test@example.com');
-      await passwordInput.fill('ValidPassword123!');
-
-      // Step 5: User clicks submit
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
+      // Step 4: User fills in email and submits
+      await emailInput.fill('e2e-conversion@example.com');
+      const submitButton = page
+        .locator('button:has-text("Recevoir mon code"), button:has-text("Get my verification code"), button[type="submit"]')
+        .first();
+      await expect(submitButton).toBeEnabled();
       await submitButton.click();
 
-      // Step 6: User sees success message or is redirected
-      // (This would depend on actual implementation)
-      await page.waitForTimeout(1000);
+      // Step 5: User reaches the verification step or a readable state
+      // (OTP si le backend répond, sinon message d'attente honnête)
+      await page.waitForTimeout(2500);
+      const otpOrState = page.locator('text=/code de vérification|vérifiez votre email|demande|request|pending/i').first();
+      await expect(otpOrState).toBeVisible({ timeout: 8000 });
     });
 
     test('should show validation errors for invalid email', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
+      await page.goto('/signup');
 
-      // Fill in invalid email
-      const emailInput = page.locator('input[type="email"]');
+      const emailInput = page.locator('input[type="email"]').first();
       await emailInput.fill('invalid-email');
 
-      // Try to submit
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
+      const submitButton = page
+        .locator('button:has-text("Recevoir mon code"), button:has-text("Get my verification code"), button[type="submit"]')
+        .first();
       await submitButton.click();
 
-      // Should see error message
-      const errorMessage = page.locator('text=/invalid|email/i');
+      const errorMessage = page.locator('text=/email|e-mail/i').first();
       await expect(errorMessage).toBeVisible({ timeout: 5000 });
     });
 
-    test('should show validation errors for weak password', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
+    test('should not require a password on the guided-trial form', async ({ page }) => {
+      await page.goto('/signup');
 
-      // Fill in email and weak password
-      const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
-      await emailInput.fill('test@example.com');
-      await passwordInput.fill('weak');
-
-      // Try to submit
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
-      await submitButton.click();
-
-      // Should see error message
-      const errorMessage = page.locator('text=/password|character|length/i');
-      await expect(errorMessage).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('input[type="email"]').first()).toBeVisible();
+      await expect(page.locator('input[type="password"]')).toHaveCount(0);
     });
   });
 
