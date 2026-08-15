@@ -7864,12 +7864,12 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
-  /payroll-runs/{payrollRun}/declarations/cnss-ga:
+  /payroll-runs/{payrollRun}/declarations/cnss-bf:
     get:
       tags: ["Payroll Engine"]
-      summary: "Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155)"
-      description: "CSV gabonais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XAF, retraite salariale/patronale 2,5 %/5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas GA."
-      operationId: downloadCnssGaDeclaration
+      summary: "Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"
+      description: "CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale 7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas BF."
+      operationId: downloadCnssBfDeclaration
       parameters:
         - name: payrollRun
           in: path
@@ -7877,7 +7877,7 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "Fichier CSV CNSS GA"
+          description: "Fichier CSV CNSS BF"
           content:
             text/csv:
               schema:
@@ -7891,12 +7891,12 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /payroll-runs/{payrollRun}/declarations/cnss-cg:
+  /payroll-runs/{payrollRun}/declarations/inps-ml:
     get:
       tags: ["Payroll Engine"]
-      summary: "Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155)"
-      description: "CSV congolais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 2 500 000 XAF, retraite salariale/patronale 4,0 %/8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas CG."
-      operationId: downloadCnssCgDeclaration
+      summary: "Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"
+      description: "CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale 4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas ML."
+      operationId: downloadInpsMlDeclaration
       parameters:
         - name: payrollRun
           in: path
@@ -7904,7 +7904,7 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "Fichier CSV CNSS CG"
+          description: "Fichier CSV INPS ML"
           content:
             text/csv:
               schema:
