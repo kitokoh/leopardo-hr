@@ -137,11 +137,13 @@ test.describe('Marketing funnel preview', () => {
     const newsletterInput = footer.locator('input[type="email"]');
     const newsletterButton = footer.locator('button[type="submit"]');
 
-    // Wait for the input to be attached+visible first (auto-retries through
-    // hydration re-renders), then scroll — scrollIntoViewIfNeeded on a
-    // detached element throws "Element is not attached to the DOM".
+    // Wait for the input to be visible, then laisse le re-rendu post-
+    // hydratation se stabiliser (les navigateurs headless n'envoient pas
+    // d'Accept-Language → SSR fr → bascule fr→en côté client → le <main>
+    // est remplacé une fois ; scrollIntoViewIfNeeded sur l'ancien nœud
+    // lève « Element is not attached to the DOM »).
     await newsletterInput.waitFor({ state: 'visible', timeout: 15_000 });
-    await newsletterInput.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1500);
 
     await newsletterInput.fill(email);
     const [newsletterResponse] = await Promise.all([

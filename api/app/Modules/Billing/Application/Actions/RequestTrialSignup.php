@@ -21,7 +21,7 @@ class RequestTrialSignup
     /**
      * @param  array<string, mixed>  $validated
      */
-    public function execute(array $validated): void
+    public function execute(array $validated): bool
     {
         $email = strtolower(trim($validated['email']));
 
@@ -45,12 +45,21 @@ class RequestTrialSignup
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
-            // Allow testing in local/staging without mailer failing the request
+            // Issue #3057 : ne jamais répondre « code envoyé » si le mail a
+            // échoué — la demande est conservée mais le client doit le savoir
+            // (état honnête, pas d'écran OTP pour un code jamais parti).
+            return false;
         }
+
+        return true;
     }
 
     public function findExistingManager(string $email): ?Employee
     {
+        // Issue #2678 — une erreur DB ne doit pas être confondue avec
+        // « aucun manager existant » (sinon l'entreprise peut être créée deux
+        // fois) : seules les recherches sans résultat renvoient null, les
+        // erreurs remontent.
         try {
             if (DB::getDriverName() === 'pgsql') {
                 DB::statement('SET search_path TO shared_tenants, public');
@@ -60,8 +69,6 @@ class RequestTrialSignup
                 ->where('email', $email)
                 ->where('role', 'manager')
                 ->first();
-        } catch (\Throwable) {
-            return null;
         } finally {
             if (DB::getDriverName() === 'pgsql') {
                 DB::statement('SET search_path TO public');
@@ -156,9 +163,14 @@ class RequestTrialSignup
                 'signup_payload' => $validated,
             ]);
         } catch (\Throwable $e) {
+            // Issue #2678 — ne pas avaler l'échec : sans CompanyRequest, le
+            // verify échouera (OTP sans demande en attente) et l'utilisateur
+            // reste dans un demi-état. L'échec fait échouer le signup.
             Log::error('SelfServiceTrial: Failed to create pending CompanyRequest record', [
                 'error' => $e->getMessage(),
             ]);
+
+            throw $e;
         }
     }
 }

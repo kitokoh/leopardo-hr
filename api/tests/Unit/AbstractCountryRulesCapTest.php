@@ -9,6 +9,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use PHPUnit\Framework\TestCase;
+use Tests\Support\SnPayrollFixtures;
 
 /**
  * ZONE-INFRA (#1820) — mécanismes transversaux Afrique sub-saharienne.

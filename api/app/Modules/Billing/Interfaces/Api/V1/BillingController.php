@@ -9,11 +9,13 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\InvoiceResource;
 use App\Http\Resources\Api\V1\SubscriptionResource;
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -47,7 +49,7 @@ class BillingController extends Controller
         }
 
         $validated = $request->validate([
-            'plan' => 'required|in:starter,business,enterprise',
+            'plan' => ['required', \Illuminate\Validation\Rule::in(PlanCode::values())],
             'payment_method' => 'nullable|in:stripe,bank_transfer,manual',
         ]);
 
@@ -131,7 +133,7 @@ class BillingController extends Controller
 
         $invoices = Invoice::where('company_id', $user->company_id)
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return InvoiceResource::collection($invoices)->response();
     }
@@ -184,7 +186,7 @@ class BillingController extends Controller
         $company = Company::findOrFail($user->company_id);
 
         $validated = $request->validate([
-            'plan' => 'required|in:starter,business,enterprise',
+            'plan' => ['required', \Illuminate\Validation\Rule::in(PlanCode::values())],
             'success_url' => 'required|url|max:500',
             'cancel_url' => 'required|url|max:500',
         ]);
@@ -211,6 +213,11 @@ class BillingController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
+            Log::error('Échec création session checkout Stripe', [
+                'company_id' => $company->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return new JsonResponse([
                 'error' => 'CHECKOUT_FAILED',
                 'message' => 'Impossible de créer la session de paiement.',
@@ -255,6 +262,11 @@ class BillingController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
+            Log::error('Échec ouverture portail Stripe', [
+                'company_id' => $company->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return new JsonResponse([
                 'error' => 'PORTAL_FAILED',
                 'message' => 'Impossible d\'accéder au portail de facturation.',

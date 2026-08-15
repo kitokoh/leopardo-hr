@@ -4,7 +4,7 @@
  * Validates: Requirements 2.1, 2.2
  */
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 
 export interface PageMetadata {
   title: string;
@@ -32,7 +32,7 @@ export const landingMetadata: PageMetadata = {
     'pointage numérique',
     'gestion absences',
   ],
-  ogImage: `${siteUrl}/og/landing.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/`,
   robots: 'index, follow',
 };
@@ -51,7 +51,7 @@ export const emploiesMetadata: PageMetadata = {
     'logiciel RH',
     'paie employés',
   ],
-  ogImage: `${siteUrl}/og/employes.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/employes`,
   robots: 'index, follow',
 };
@@ -70,7 +70,7 @@ export const documentsMetadata: PageMetadata = {
     'archivage conformité',
     'RGPD documents',
   ],
-  ogImage: `${siteUrl}/og/documents.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/documents`,
   robots: 'index, follow',
 };
@@ -89,7 +89,7 @@ export const comptabiliteMetadata: PageMetadata = {
     'bulletins de paie',
     'conformité paie',
   ],
-  ogImage: `${siteUrl}/og/comptabilite.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/comptabilite`,
   robots: 'index, follow',
 };
@@ -108,7 +108,7 @@ export const marketingMetadata: PageMetadata = {
     'campagnes email',
     'marketing automation',
   ],
-  ogImage: `${siteUrl}/og/marketing.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/marketing`,
   robots: 'index, follow',
 };
@@ -119,14 +119,14 @@ export const marketingMetadata: PageMetadata = {
 export const pricingMetadata: PageMetadata = {
   title: 'Tarification Transparente | Plans Flexibles',
   description:
-    'Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 14 jours.',
+    'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.',
   keywords: [
     'prix logiciel RH',
     'tarification paie',
     'coût gestion employés',
     'plans pricing',
   ],
-  ogImage: `${siteUrl}/og/pricing.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/pricing`,
   robots: 'index, follow',
 };
@@ -139,7 +139,7 @@ export const aboutMetadata: PageMetadata = {
   description:
     'Découvrez notre mission, équipe et valeurs. Nous aidons les PME à gérer leurs employés simplement.',
   keywords: ['à propos', 'équipe', 'mission', 'valeurs'],
-  ogImage: `${siteUrl}/og/about.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/about`,
   robots: 'index, follow',
 };
@@ -158,7 +158,7 @@ export const blogMetadata: PageMetadata = {
     'tendances RH',
     'automatisation RH',
   ],
-  ogImage: `${siteUrl}/og/blog.png`,
+  ogImage: `${siteUrl}/og/default.png`,
   canonical: `${siteUrl}/blog`,
   robots: 'index, follow',
 };
@@ -177,7 +177,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'RH pour startup',
       'conseils RH',
     ],
-    ogImage: `${siteUrl}/og/blog/guide-rh-startup.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/guide-complet-rh-startup`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -195,7 +195,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'logiciel paie',
       'automatisation RH',
     ],
-    ogImage: `${siteUrl}/og/blog/automatiser-paie.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/automatiser-paie-2024`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -213,7 +213,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'absence travail',
       'logiciel RH',
     ],
-    ogImage: `${siteUrl}/og/blog/gestion-absences.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/gestion-absences-efficace`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -231,7 +231,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'automatisation RH',
       'efficacité RH',
     ],
-    ogImage: `${siteUrl}/og/blog/productivite-rh.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/productivite-rh-outils`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -249,7 +249,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'insights RH',
       'gestion RH',
     ],
-    ogImage: `${siteUrl}/og/blog/tendances-rh-2024.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/tendances-rh-2024`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -267,7 +267,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'futur RH',
       'automatisation IA',
     ],
-    ogImage: `${siteUrl}/og/blog/ia-rh.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/ia-rh-futur`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -285,7 +285,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'conformité paie',
       'gestion paie',
     ],
-    ogImage: `${siteUrl}/og/blog/checklist-paie.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/checklist-paie-2024`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -303,7 +303,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'template planning',
       'gestion planning',
     ],
-    ogImage: `${siteUrl}/og/blog/planning-employes.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/modele-planning-employes`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -321,7 +321,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'protection données',
       'sécurité documents',
     ],
-    ogImage: `${siteUrl}/og/blog/rgpd-documents.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/conformite-rgpd-documents`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -339,7 +339,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'marketing employés',
       'engagement RH',
     ],
-    ogImage: `${siteUrl}/og/blog/email-marketing-rh.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/blog/email-marketing-rh`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -362,7 +362,7 @@ export const guidesMetadata: Record<string, PageMetadata> = {
       'gestion RH',
       'conseils RH',
     ],
-    ogImage: `${siteUrl}/og/guides/rh-startup.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/guides/rh-startup`,
     robots: 'index, follow',
   },
@@ -377,7 +377,7 @@ export const guidesMetadata: Record<string, PageMetadata> = {
       'conformité paie',
       'gestion paie',
     ],
-    ogImage: `${siteUrl}/og/guides/checklist-paie.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/guides/checklist-paie`,
     robots: 'index, follow',
   },
@@ -392,7 +392,7 @@ export const guidesMetadata: Record<string, PageMetadata> = {
       'template Excel',
       'gestion planning',
     ],
-    ogImage: `${siteUrl}/og/guides/planning-employes.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     canonical: `${siteUrl}/guides/planning-employes`,
     robots: 'index, follow',
   },
