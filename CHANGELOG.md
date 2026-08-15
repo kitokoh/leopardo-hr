@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(ci): gardes d’hygiène câblées dans architecture-check (Closes #3708).** Ajout du job bloquant `hygiene-guards` sur pull requests, `main` et merge queue : synchronisation `APP_VERSION`, parité `config/` ↔ `.env.example` et contrôle des domaines first-party enregistrés. Toute dérive échoue désormais explicitement en CI.
+
 - **fix(mobile): Smart Attendance utilise des query parameters et un décodage paginé sûr (Closes #3291).** Les apps manager et HR ne castent plus directement `data` en liste.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.

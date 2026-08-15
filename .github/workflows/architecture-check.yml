@@ -226,6 +226,24 @@ jobs:
 
           dev-hub/tools/check-phpstan-baseline-delta.sh "${base_sha}" "${head_sha}" api
 
+  hygiene-guards:
+    name: Hygiene guards — versions, env et domaines
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Check APP_VERSION synchronisation
+        run: bash dev-hub/tools/check-app-version-sync.sh api
+
+      - name: Check .env.example parity
+        run: bash dev-hub/tools/check-env-example-parity.sh api
+
+      - name: Check canonical first-party domains
+        run: bash dev-hub/tools/check-canonical-domains.sh
+
   frontend-lint:
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
