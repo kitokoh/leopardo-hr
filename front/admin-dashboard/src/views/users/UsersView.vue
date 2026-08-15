@@ -232,9 +232,14 @@ async function loadUsers() {
   isLoading.value = true
   try {
     // QA #2238 : données réelles via l'API /platform/users (issue #2229).
+    // Le contrat API expose active/deactivated/suspended ; l'UI admin utilise
+    // active/inactive/suspended/pending → mapping bidirectionnel ci-dessous.
     const params = {}
     if (searchQuery.value) params.search = searchQuery.value
-    if (filters.status) params.status = filters.status
+    if (filters.status) {
+      const apiStatus = { inactive: 'deactivated' }[filters.status] || filters.status
+      if (apiStatus !== 'pending') params.status = apiStatus // 'pending' n'existe pas côté API
+    }
     params.per_page = 100
 
     const res = await api.get('/platform/users', { params })
@@ -243,7 +248,7 @@ async function loadUsers() {
       id: user.id,
       name: user.name,
       email: user.email,
-      status: user.status,
+      status: user.status === 'deactivated' ? 'inactive' : user.status,
       role: 'admin',
       segment: null,
       company: null,
@@ -335,13 +340,23 @@ async function deleteUser(user) {
   }
 }
 
+// Génère un mot de passe temporaire sûr (16 caractères) pour la création
+// d'un utilisateur plateforme (exigence API : ≥ 12 caractères).
+function generateTemporaryPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*'
+  const bytes = new Uint32Array(16)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, b => chars[b % chars.length]).join('')
+}
+
 async function handleUserCreated(user) {
   try {
-    // QA #2238 : création réelle via l'API.
+    // QA #2238 : création réelle via l'API /platform/users (mot de passe ≥ 12
+    // caractères requis côté API — généré ici si la modal a coché l'option).
     await api.post('/platform/users', {
       name: user.name,
       email: user.email,
-      password: user.password || user.generatedPassword || 'ChangeMe123!'
+      password: user.password || generateTemporaryPassword()
     })
     toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
   } catch (error) {

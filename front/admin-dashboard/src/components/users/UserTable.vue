@@ -132,11 +132,18 @@
                 <EyeIcon class="h-4 w-4" />
               </button>
               <button
-                @click="$emit('impersonate', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200"
-                title="Se connecter en tant que"
+                @click="$emit('edit', user)"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
+                title="Modifier"
               >
-                <UserIcon class="h-4 w-4" />
+                <PencilIcon class="h-4 w-4" />
+              </button>
+              <button
+                @click="$emit('delete', user)"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
+                title="Supprimer"
+              >
+                <TrashIcon class="h-4 w-4" />
               </button>
             </div>
           </td>
@@ -152,7 +159,8 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
   EyeIcon,
-  UserIcon,
+  PencilIcon,
+  TrashIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
 import { useLocaleStore } from '@/stores/locale'
@@ -175,7 +183,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['select', 'select-all', 'view', 'impersonate'])
+defineEmits(['select', 'select-all', 'view', 'edit', 'delete'])
 
 // Sorting
 const sortBy = ref('name')

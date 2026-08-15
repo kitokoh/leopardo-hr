@@ -19,6 +19,9 @@
                 <h3 class="text-lg font-medium leading-6 text-gray-900">
                   Créer un nouvel utilisateur
                 </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  Compte super-admin de la plateforme (API <code class="text-xs">/platform/users</code>).
+                </p>
                 <div class="mt-4 space-y-4">
                   <!-- Name -->
                   <FormField id="name" label="Nom complet" required :error="fieldErrors.name" v-slot="{ ariaInvalid, describedBy }">
@@ -48,86 +51,27 @@
                     />
                   </FormField>
 
-                  <!-- Role -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Rôle *
-                    </label>
-                    <select
-                      v-model="form.role"
-                      required
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                      <option value="">Sélectionner un rôle</option>
-                      <option value="admin">Administrateur</option>
-                      <option value="manager">Manager</option>
-                      <option value="employee">Employé</option>
-                      <option value="hr">RH</option>
-                    </select>
-                  </div>
-
-                  <!-- Company -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Entreprise
-                    </label>
-                    <select
-                      v-model="form.companyId"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                      <option value="">Sélectionner une entreprise</option>
-                      <option v-for="company in companies" :key="company.id" :value="company.id">
-                        {{ company.name }}
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- Status -->
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">
-                      Statut initial
-                    </label>
-                    <select
-                      v-model="form.status"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    >
-                      <option value="active">Actif</option>
-                      <option value="pending">En attente</option>
-                      <option value="inactive">Inactif</option>
-                    </select>
-                  </div>
-
-                  <!-- Send invitation -->
-                  <div class="flex items-center">
-                    <input
-                      v-model="form.sendInvitation"
-                      type="checkbox"
-                      class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <label class="ml-2 block text-sm text-gray-700">
-                      Envoyer un email d'invitation
-                    </label>
-                  </div>
-
                   <!-- Generate password -->
                   <div class="flex items-center">
                     <input
+                      id="generatePassword"
                       v-model="form.generatePassword"
                       type="checkbox"
                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
-                    <label class="ml-2 block text-sm text-gray-700">
+                    <label for="generatePassword" class="ml-2 block text-sm text-gray-700">
                       Générer un mot de passe temporaire
                     </label>
                   </div>
 
                   <!-- Custom password -->
-                  <FormField v-if="!form.generatePassword" id="password" label="Mot de passe" required :error="fieldErrors.password" v-slot="{ ariaInvalid, describedBy }">
+                  <FormField v-if="!form.generatePassword" id="password" label="Mot de passe (min. 12 caractères)" required :error="fieldErrors.password" v-slot="{ ariaInvalid, describedBy }">
                     <input
                       id="password"
                       v-model="form.password"
                       type="password"
                       :required="!form.generatePassword"
+                      minlength="12"
                       :aria-invalid="ariaInvalid"
                       :aria-describedby="describedBy"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -172,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { UserPlusIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import { useLocaleStore } from '@/stores/locale'
@@ -185,7 +129,6 @@ const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const isLoading = ref(false)
-const companies = ref([])
 const attempted = ref(false)
 
 // S-6 (#1666) : feedback inline par champ (aria-invalid + aria-describedby).
@@ -198,8 +141,8 @@ const fieldErrors = computed(() => {
   } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
     errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
   }
-  if (!form.generatePassword && !form.password) {
-    errors.password = t('users.errors.password_required', 'Le mot de passe est requis.')
+  if (!form.generatePassword && (!form.password || form.password.length < 12)) {
+    errors.password = t('users.errors.password_min', 'Le mot de passe doit contenir au moins 12 caractères.')
   }
   return errors
 })
@@ -208,29 +151,9 @@ const fieldErrors = computed(() => {
 const form = reactive({
   name: '',
   email: '',
-  role: '',
-  companyId: '',
-  status: 'active',
   password: '',
-  sendInvitation: true,
   generatePassword: true
 })
-
-onMounted(async () => {
-  await loadCompanies()
-})
-
-// Methods
-async function loadCompanies() {
-  // Mock companies data
-  companies.value = [
-    { id: 1, name: 'Acme Corp' },
-    { id: 2, name: 'TechStart Inc' },
-    { id: 3, name: 'Global Solutions' },
-    { id: 4, name: 'Innovation Labs' },
-    { id: 5, name: 'Digital Dynamics' }
-  ]
-}
 
 async function handleSubmit() {
   attempted.value = true
@@ -242,48 +165,13 @@ async function handleSubmit() {
   isLoading.value = true
 
   try {
-    // Validate form
-    if (!form.name || !form.email || !form.role) {
-      toast.error('Veuillez remplir tous les champs obligatoires')
-      return
-    }
-
-    if (!form.generatePassword && !form.password) {
-      toast.error('Veuillez saisir un mot de passe ou activer la génération automatique')
-      return
-    }
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Create user object
-    const newUser = {
-      id: Date.now(),
+    // La création réelle est faite par UsersView (POST /platform/users) :
+    // la modal émet uniquement le payload — pas de fausse simulation.
+    emit('created', {
       name: form.name,
       email: form.email,
-      role: form.role,
-      status: form.status,
-      company: companies.value.find(c => c.id === parseInt(form.companyId)),
-      createdAt: new Date(),
-      lastLoginAt: null,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=random`
-    }
-
-    // Success feedback
-    let message = 'Utilisateur créé avec succès'
-    if (form.sendInvitation) {
-      message += ' • Email d\'invitation envoyé'
-    }
-    if (form.generatePassword) {
-      message += ' • Mot de passe temporaire généré'
-    }
-
-    toast.success(message)
-    emit('created', newUser)
-
-  } catch (error) {
-    console.error('Failed to create user:', error)
-    toast.error('Erreur lors de la création de l\'utilisateur')
+      password: form.generatePassword ? '' : form.password
+    })
   } finally {
     isLoading.value = false
   }
