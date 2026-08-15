@@ -31,12 +31,12 @@ export default function PricingLayout({
     {
       question: 'Contrat long terme?',
       answer:
-        'Nous proposons des contrats mensuels ou annuels. Les contrats annuels bénéficient d\'une réduction de 20%.',
+        'Nous proposons des contrats mensuels ou annuels. Les contrats annuels bénéficient d\'une réduction de 17%.',
     },
     {
       question: 'Support client disponible?',
       answer:
-        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Operations et Enterprise.',
+        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Business et Enterprise.',
     },
     {
       question: 'Données sécurisées?',
