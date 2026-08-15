@@ -51,6 +51,21 @@ class UserEmployeeLinkController extends Controller
             ], 409);
         }
 
+        // Issue #3065 : l'employee_id doit appartenir à l'entreprise de
+        // l'acteur — jamais de lien vers un employé d'une autre société
+        // (404 anti-énumération, même règle que les autres endpoints).
+        $employeeExists = Employee::query()
+            ->where('company_id', $manager->company_id)
+            ->where('id', $validated['employee_id'])
+            ->exists();
+
+        if (! $employeeExists) {
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'Aucun employe trouve dans votre entreprise.',
+            ], 404);
+        }
+
         $link = UserEmployeeLink::create([
             'user_id' => $user->id,
             'employee_id' => $validated['employee_id'],

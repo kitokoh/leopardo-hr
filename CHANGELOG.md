@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 ### Fixed
+- **fix(api): POST /employees/link-user — employee_id validé dans l'entreprise de l'acteur (Closes #3065).** Un manager pouvait lier un compte à un employé d'une AUTRE société (id deviné) : la FK cross-tenant n'était pas vérifiée. Désormais l'employé doit appartenir à la société du manager (404 anti-énumération sinon). Suite `UserEmployeeLinkCrossTenantTest` (foreign 404, own 201, non-manager 403).
+- **fix(api): signature QR onboarding fail-closed (Closes #3060).** Le fallback `leopardo-local-onboarding-key` codé en dur rendait les QR forgeables si APP_KEY était vide. Désormais clé vide = refus de signer/vérifier (RuntimeException), plus jamais de clé connue publiquement.
 - **fix(api): GET /employees/{id}/leave-balances gardé par rôle (Closes #3055).** La copie Absence de LeavePolicyController n'avait aucune garde : un employé lisait les soldes de n'importe quel collègue (confirmé live). Désormais un employé non-manager ne lit que ses propres soldes (403 sinon), les managers lisent ceux de leur entreprise — même règle que la copie Planning. Nouvelle suite `LeaveBalancesRoleGuardTest` (self OK, collègue 403, manager OK, cross-tenant 403).
 - **fix(kiosk): état non configuré localisé quand apiBaseUrl ou deviceCode manque (Closes #2911).** La borne n’essaie plus d’appeler une URL `/api/v1/kiosks/` invalide : les actions distantes sont désactivées et un message d’installation est affiché en FR/EN/TR/AR.
 ### Added
