@@ -12,11 +12,12 @@ class SocialPostRepository {
   }
 
   Future<Map<String, dynamic>> createPost(Map<String, dynamic> data) async {
-    final response = await apiClient.requestWithRetry('/marketing/posts', method: 'POST', data: data);
+    // QA #3007 : POST non-idempotent — 0 retry (évite les doublons sur timeout).
+    final response = await apiClient.requestWithRetry('/marketing/posts', method: 'POST', data: data, maxRetriesOverride: 0);
     return extractDataMap(response.data);
   }
 
   Future<void> publishPost(String postId) async {
-    await apiClient.requestWithRetry('/marketing/posts/$postId/publish', method: 'POST');
+    await apiClient.requestWithRetry('/marketing/posts/$postId/publish', method: 'POST', maxRetriesOverride: 0);
   }
 }

@@ -22,7 +22,10 @@ class _EditorialCalendarScreenState extends ConsumerState<EditorialCalendarScree
   List<Map<String, dynamic>> _getEventsForDay(DateTime day, List<Map<String, dynamic>> posts) {
     return posts.where((post) {
       if (post['scheduled_at'] == null) return false;
-      final postDate = DateTime.parse(post['scheduled_at']);
+      // QA #3008 : tryParse — une date non-ISO (API tierce/corrompue) ne doit
+      // pas faire crasher le calendrier.
+      final postDate = DateTime.tryParse(post['scheduled_at']);
+      if (postDate == null) return false;
       return postDate.year == day.year && postDate.month == day.month && postDate.day == day.day;
     }).toList();
   }
