@@ -216,6 +216,8 @@ function enabledFeatures(plan) {
 }
 
 function formatFeatureLabel(feature) {
+  // Clés réelles des plans : api/database/seeders/PlanSeeder.php (features JSON)
+  // + modules FeatureFlag (Company::KNOWN_MODULES).
   const labels = {
     rh: 'RH',
     finance: 'Finance',
@@ -224,7 +226,20 @@ function formatFeatureLabel(feature) {
     tracking: 'Suivi',
     planning: 'Planning',
     training: 'Formations',
-    cabinet: 'Documents'
+    cabinet: 'Documents',
+    biometric: 'Pointage biométrique',
+    tasks: 'Tâches',
+    advanced_reports: 'Rapports avancés',
+    excel_export: 'Export Excel',
+    bank_export: 'Export bancaire',
+    billing_auto: 'Facturation auto',
+    multi_managers: 'Multi-managers',
+    photo_attendance: 'Pointage photo',
+    api_public: 'API publique',
+    evaluations: 'Évaluations',
+    schema_isolation: 'Isolation schéma',
+    muhasebe: 'Muhasebe',
+    leo_ai: 'Leo IA'
   }
   return labels[feature] || feature.toUpperCase()
 }

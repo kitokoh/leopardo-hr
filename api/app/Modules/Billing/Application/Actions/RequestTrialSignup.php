@@ -21,7 +21,7 @@ class RequestTrialSignup
     /**
      * @param  array<string, mixed>  $validated
      */
-    public function execute(array $validated): void
+    public function execute(array $validated): bool
     {
         $email = strtolower(trim($validated['email']));
 
@@ -45,8 +45,13 @@ class RequestTrialSignup
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
-            // Allow testing in local/staging without mailer failing the request
+            // Issue #3057 : ne jamais répondre « code envoyé » si le mail a
+            // échoué — la demande est conservée mais le client doit le savoir
+            // (état honnête, pas d'écran OTP pour un code jamais parti).
+            return false;
         }
+
+        return true;
     }
 
     public function findExistingManager(string $email): ?Employee

@@ -44,7 +44,8 @@ const contactCopy: Record<string, {
 }> = {
   fr: {
     hero: { headline: 'Contactez-nous', subheadline: 'Notre équipe est là pour répondre à toutes vos questions', cta1: 'Envoyer un message', cta2: 'Demander une démo', badge: 'Contact' },
-    info: { title: 'Informations', email: 'Email', phone: 'Téléphone', address: 'Adresse', hours: 'Horaires', responseTime: '{copy.info.responseTime}' },
+    info: { title: 'Informations', email: 'Email', phone: 'Téléphone', address: 'Adresse', hours: 'Horaires', responseTime: 'Temps de réponse moyen : moins de 24 h' },
+
     form: { name: 'Nom complet', email: 'Email', company: 'Entreprise', subject: 'Sujet', subjectPlaceholder: 'Choisir un sujet', message: 'Message', send: 'Envoyer le message', sending: 'Envoi en cours...', successTitle: 'Message envoyé !', successBody: 'Notre équipe vous répondra sous 24h.', errorSend: 'Erreur lors de l\'envoi', errorGeneric: 'Une erreur est survenue. Veuillez réessayer.' },
   },
   en: {

@@ -51,7 +51,6 @@ class SmartAttendanceRepository {
         'longitude': longitude,
         'accuracy': accuracy,
       },
-      // #3010 : POST non-idempotent — pas de retry (double événement GPS).
       maxRetriesOverride: 0,
       timeoutOverride: _writeTimeout,
     );

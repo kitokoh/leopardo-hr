@@ -159,6 +159,51 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, child) => ManagerMainShell(child: child),
         routes: [
           GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          // Issue #3205 — routes modules/quick actions restaurées : le manifeste
+          // MobileExperienceService les sert toujours et l'UI les pousse
+          // (context.push sur module.route / action.route). La PR #3117 les
+          // avait retirées par erreur (régression #2212 — garde CI rouge).
+          GoRoute(
+            path: '/modules',
+            builder: (context, state) => const ModulesHubScreen(),
+          ),
+          GoRoute(
+            path: '/absences',
+            builder: (context, state) => const AbsenceListScreen(),
+          ),
+          GoRoute(
+            path: '/salary-advances',
+            builder: (context, state) => const SalaryAdvanceListScreen(),
+          ),
+          GoRoute(
+            path: '/payrolls',
+            builder: (context, state) => const PayrollListScreen(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) => const NotificationListScreen(),
+          ),
+          GoRoute(
+            path: '/evaluations',
+            builder: (context, state) => const EvaluationListScreen(),
+          ),
+          GoRoute(
+            path: '/attendance',
+            builder: (context, state) => const AttendanceScreen(),
+          ),
+          GoRoute(
+            path: '/history',
+            builder: (context, state) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: '/me/monthly',
+            builder: (context, state) => const MonthlySummaryScreen(),
+          ),
+          GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
+          GoRoute(
+            path: '/tasks',
+            builder: (context, state) => const TaskListScreen(),
+          ),
           GoRoute(
             path: '/cabinet',
             builder: (context, state) => const CabinetScreen(),
@@ -166,13 +211,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           // Issue #2748 — l'écran Cabinet pousse /cabinet/folder/{id}
           // (même convention que employee/HR) : la route 3 segments
           // manquait ici → GoError au tap sur un dossier.
+          // T121/#3004 : garde int.tryParse — deep-link non numérique → écran
+          // vide plutôt qu'un crash FormatException (route déclarée UNE fois).
           GoRoute(
             path: '/cabinet/folder/:folderId',
             builder: (context, state) {
               final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
               if (folderId == null) {
-                // T121 : deep-link avec folderId non numérique → écran vide
-                // plutôt qu'un crash int.parse.
                 return const Scaffold(body: SizedBox.shrink());
               }
               final folderName = state.extra as String?;

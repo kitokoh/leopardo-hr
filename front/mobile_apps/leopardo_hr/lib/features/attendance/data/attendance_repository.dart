@@ -21,11 +21,7 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _readTimeout,
     );
-    // #3406 : garde TypeError sur payload non-Map (corps d'erreur).
-    final raw = response.data is Map
-        ? (response.data as Map).cast<String, dynamic>()
-        : const <String, dynamic>{};
-    return decodeTodayResponse(raw);
+    return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
   Future<AttendanceLog> checkIn({
@@ -544,14 +540,8 @@ class AttendanceCorrection {
       id: _asInt(json['id']),
       employeeName: employee['name']?.toString() ?? 'Employe',
       date: json['date']?.toString() ?? '',
-      // #3402 : garde tryParse (miroir manager #3157) — une correction sans
-      // heure de pointage (ou une valeur non ISO) ne doit pas crasher l'écran.
-      requestedCheckIn:
-          DateTime.tryParse(json['requested_check_in']?.toString() ?? '') ??
-              DateTime.utc(1970),
-      requestedCheckOut: json['requested_check_out'] != null
-          ? DateTime.tryParse(json['requested_check_out'].toString())
-          : null,
+      requestedCheckIn: DateTime.tryParse(json['requested_check_in']?.toString() ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0),
+      requestedCheckOut: DateTime.tryParse(json['requested_check_out']?.toString() ?? ''),
       reason: json['reason']?.toString() ?? '',
       status: json['status']?.toString() ?? 'pending',
     );

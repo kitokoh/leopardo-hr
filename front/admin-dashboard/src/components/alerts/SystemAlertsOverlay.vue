@@ -39,9 +39,10 @@
     </div>
   </div>
 
-  <!-- Connection status banner -->
+  <!-- Connection status banner (masqué quand le push n'est pas configuré :
+       état neutre, pas une panne — issue #3269) -->
   <div
-    v-if="!realtimeStore.isConnected"
+    v-if="!realtimeStore.isConnected && !realtimeStore.pushUnavailable"
     class="fixed inset-x-0 top-0 z-30"
     :class="{
       'mt-16': showCriticalAlert
