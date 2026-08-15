@@ -122,17 +122,6 @@ class UserAuthRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getCompanyRequests() async {
-    final response = await apiClient.requestWithRetry(
-      '/user/company-requests',
-      useUserSession: true,
-      timeoutOverride: const Duration(seconds: 12),
-    );
-    return extractDataList(
-      response.data,
-    ).whereType<Map>().map((item) => item.cast<String, dynamic>()).toList();
-  }
-
   Future<Map<String, dynamic>> submitCompanyRequest({
     required String companyName,
     required String email,
