@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Rapports RH cross-tenant pour le super-admin (contrat SPA admin,
@@ -69,8 +71,12 @@ class PlatformHrReportController extends Controller
             $rows[] = ['Statut' => 'TOTAL', 'Effectif' => $total];
 
             return ['columns' => ['Statut', 'Effectif'], 'rows' => $rows];
-        } catch (\Throwable) {
-            return ['columns' => ['Statut', 'Effectif'], 'rows' => []];
+        } catch (\Throwable $e) {
+            Log::error('Platform HR report data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform HR report data is temporarily unavailable.');
         }
     }
 
@@ -103,8 +109,12 @@ class PlatformHrReportController extends Controller
             }
 
             return ['columns' => ['Mois', 'Embauches', 'Departs', 'Effectif net'], 'rows' => $rows];
-        } catch (\Throwable) {
-            return ['columns' => ['Mois', 'Embauches', 'Departs', 'Effectif net'], 'rows' => []];
+        } catch (\Throwable $e) {
+            Log::error('Platform HR report data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform HR report data is temporarily unavailable.');
         }
     }
 
@@ -126,8 +136,12 @@ class PlatformHrReportController extends Controller
                 ->all();
 
             return ['columns' => ['Type', 'Jours'], 'rows' => $rows];
-        } catch (\Throwable) {
-            return ['columns' => ['Type', 'Jours'], 'rows' => []];
+        } catch (\Throwable $e) {
+            Log::error('Platform HR report data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform HR report data is temporarily unavailable.');
         }
     }
 
@@ -155,8 +169,12 @@ class PlatformHrReportController extends Controller
                 ->all();
 
             return ['columns' => ['Mois', 'Bulletins', 'Brut', 'Net'], 'rows' => $rows];
-        } catch (\Throwable) {
-            return ['columns' => ['Mois', 'Bulletins', 'Brut', 'Net'], 'rows' => []];
+        } catch (\Throwable $e) {
+            Log::error('Platform HR report data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform HR report data is temporarily unavailable.');
         }
     }
 
@@ -183,8 +201,12 @@ class PlatformHrReportController extends Controller
                 ->all();
 
             return ['columns' => ['Formation', 'Inscrits', 'Completes'], 'rows' => $rows];
-        } catch (\Throwable) {
-            return ['columns' => ['Formation', 'Inscrits', 'Completes'], 'rows' => []];
+        } catch (\Throwable $e) {
+            Log::error('Platform HR report data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform HR report data is temporarily unavailable.');
         }
     }
 }

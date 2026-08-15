@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -51,8 +52,8 @@ class PayrollAuditController extends Controller
             $query->where('country_code', strtoupper((string) $request->string('country_code')));
         }
 
-        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, PayrollCalculationAudit> $audits */
-        $audits = $query->orderByDesc('id')->paginate($request->integer('per_page', 15));
+        /** @var LengthAwarePaginator<int, PayrollCalculationAudit> $audits */
+        $audits = $query->orderByDesc('id')->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return response()->json([
             'data' => array_map(
@@ -94,9 +95,6 @@ class PayrollAuditController extends Controller
         ]);
     }
 
-    /**
-     * @return Employee|SuperAdmin
-     */
     private function actor(Request $request): Employee|SuperAdmin
     {
         $user = $request->user();
@@ -107,7 +105,7 @@ class PayrollAuditController extends Controller
 
         // Inatteignable en pratique (routes derrière auth:sanctum /
         // auth:super_admin_api + api.manager) — garde défensive.
-        throw new AuthenticationException();
+        throw new AuthenticationException;
     }
 
     /**

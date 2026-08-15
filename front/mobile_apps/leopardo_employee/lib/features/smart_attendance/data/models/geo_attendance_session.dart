@@ -32,9 +32,10 @@ class GeoAttendanceSession {
     return GeoAttendanceSession(
       id: (json['id'] as num).toInt(),
       status: (json['status'] as String?) ?? 'detected',
-      startedAt: DateTime.parse(json['started_at'] as String),
+      startedAt: DateTime.tryParse(json['started_at']?.toString() ?? '') ??
+          DateTime.utc(1970),
       endedAt: json['ended_at'] != null
-          ? DateTime.parse(json['ended_at'] as String)
+          ? DateTime.tryParse(json['ended_at'].toString())
           : null,
       durationSeconds: (json['duration_seconds'] as num?)?.toInt(),
       durationFormatted: json['duration_formatted'] as String?,

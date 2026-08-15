@@ -24,6 +24,23 @@ class BulkPaymentControllerTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // QA #2997 — les claims Redis `bulk_pay:*` ont un TTL de 6 h et les
+        // IDs de payroll_run sont réutilisés entre runs de test : sans purge,
+        // un run déjà claimé par un test précédent bloque le suivant (409).
+        // NB : avec predis + préfixe, keys() retourne des clés déjà préfixées
+        // (un del() ré-appliquerait le préfixe → échec silencieux). flushdb est
+        // fiable et sûr : la suite tourne en séquentiel dans un job CI dédié.
+        try {
+            \Illuminate\Support\Facades\Redis::connection('default')->flushdb();
+        } catch (\Throwable) {
+            // Redis indisponible : les tests continuent (garde non bloquante).
+        }
+    }
+
     public function test_manager_can_bulk_pay_a_selected_subset_of_pay_slips(): void
     {
         Bus::fake();
@@ -125,5 +142,29 @@ class BulkPaymentControllerTest extends TestCase
         ]);
 
         return [$company, $manager, $run, $slipA, $slipB];
+    }
+
+    public function test_double_dispatch_is_rejected_with_409(): void
+    {
+        // QA #2997 — garde ATOMIQUE (SET NX) : un second dispatch pendant un
+        // bulk-pay en cours est refusé en 409 (avant : fenêtre TOCTOU entre
+        // le get et le dispatch → deux jobs pouvaient traiter les mêmes slips).
+        Bus::fake();
+
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        // 1er dispatch → accepté (claim posé en Redis, statut 'starting')
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertAccepted()
+            ->assertJsonPath('status', 'accepted');
+
+        // 2e dispatch immédiat → 409 (claim déjà posé)
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertStatus(409)
+            ->assertJsonPath('message', 'Bulk payment already in progress.');
+
+        // Un seul job dispatché au total
+        Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);
     }
 }

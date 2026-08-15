@@ -57,8 +57,10 @@ class MonthlySummary {
       name: (json['name'] ?? '') as String,
       year: json['year'] is num ? (json['year'] as num).toInt() : null,
       month: json['month'] is num ? (json['month'] as num).toInt() : null,
-      periodFrom: DateTime.parse(period['from'] as String),
-      periodTo: DateTime.parse(period['to'] as String),
+      periodFrom: DateTime.tryParse(period['from']?.toString() ?? '') ??
+          DateTime.utc(1970),
+      periodTo: DateTime.tryParse(period['to']?.toString() ?? '') ??
+          DateTime.utc(1970),
       workingDays: (period['working_days'] as num).toInt(),
       daysPresent: (period['days_present'] as num).toInt(),
       daysAbsent: (period['days_absent'] as num).toInt(),
@@ -100,7 +102,8 @@ class MonthlyBreakdownEntry {
 
   factory MonthlyBreakdownEntry.fromJson(Map<String, dynamic> json) {
     return MonthlyBreakdownEntry(
-      date: DateTime.parse(json['date'] as String),
+      date: DateTime.tryParse(json['date']?.toString() ?? '') ??
+          DateTime.utc(1970),
       hours: MonthlySummary._d(json['hours']),
       overtimeHours: MonthlySummary._d(json['overtime_hours']),
       baseGain: MonthlySummary._d(json['base_gain']),

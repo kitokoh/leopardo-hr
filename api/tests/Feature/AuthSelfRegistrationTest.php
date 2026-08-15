@@ -45,6 +45,7 @@ class AuthSelfRegistrationTest extends TestCase
     private function createInvitation(string $email, ?string $token = 'valid-token-123'): string
     {
         // Issue #2617 : l'inscription nécessite une invitation valide.
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         DB::table('public.user_invitations')->insert([
@@ -57,14 +58,14 @@ class AuthSelfRegistrationTest extends TestCase
             'manager_role' => null,
             'invited_by_type' => 'platform',
             'invited_by_email' => 'admin@leopardo-rh.com',
-            'token_hash' => hash('sha256', $token),
+            'token_hash' => hash('sha256', (string) $token),
             'expires_at' => now()->addDays(7),
             'accepted_at' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return $token;
+        return (string) $token;
     }
 
     public function test_registration_requires_a_valid_invitation(): void
@@ -122,9 +123,10 @@ class AuthSelfRegistrationTest extends TestCase
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
             'password_hash' => 'secret',
-            'role' => 'ordinary',
-            'status' => 'active',
         ]);
+        $employee->role = 'ordinary';
+        $employee->status = 'active';
+        $employee->save();
 
         $response = $this->actingAs($employee, 'sanctum')
             ->postJson('/api/v1/company-requests', [

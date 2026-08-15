@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Tenant\Domain\Models;
 
-use App\Core\Auth\Domain\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
@@ -18,7 +18,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $two_fa_secret
  * @property Carbon|null $last_login_at
  * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class SuperAdmin extends Authenticatable
 {
@@ -31,15 +32,26 @@ class SuperAdmin extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'status',
         'password_hash',
-        'two_fa_secret',
         'last_login_at',
     ];
 
     protected $hidden = [
         'password_hash',
         'two_fa_secret',
+    ];
+
+    /**
+     * Les colonnes created_at / last_login_at sont gérées manuellement
+     * ($timestamps = false) mais doivent être castées en Carbon : la
+     * sérialisation admin (PlatformUserController::serialize) appelle
+     * ->toIso8601String() — sans cast, PostgreSQL renvoie une string et
+     * l'endpoint /platform/users (et /admin/users) crashe en 500
+     * (constat QA live 2026-08-15).
+     */
+    protected $casts = [
+        'last_login_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function getAuthPassword(): string

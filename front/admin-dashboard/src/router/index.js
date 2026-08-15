@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n/index.js'
 import NProgress from 'nprogress'
 import { useToast } from 'vue-toastification'
 import 'nprogress/nprogress.css'
@@ -394,9 +396,11 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // Mettre à jour le titre de la page
+  // Mettre à jour le titre de la page dans la locale active.
   if (to.meta.title) {
-    document.title = `${to.meta.title} - Leopardo RH Admin`
+    const localeStore = useLocaleStore()
+    const title = translate(localeStore.current, to.meta.title, to.meta.title)
+    document.title = `${title} - Leopardo RH Admin`
   }
 
   next()
