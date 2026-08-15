@@ -37,6 +37,8 @@ Route::prefix('api/v1/edge')->group(function (): void {
         ->middleware('throttle:60,1');
     Route::get('/download/Caddyfile.edge', [EdgeDownloadController::class, 'caddyfile'])
         ->middleware('throttle:60,1');
+    Route::get('/download/sha256.txt', [EdgeDownloadController::class, 'sha256'])
+        ->middleware('throttle:60,1');
     Route::get('/download/env-example', [EdgeController::class, 'downloadEnvExample'])
         ->middleware('throttle:60,1');
     Route::get('/license-public-key', [EdgeDownloadController::class, 'licensePublicKey'])
