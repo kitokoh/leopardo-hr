@@ -44,6 +44,11 @@ readonly class UserAuthService
             throw new AccountLockedException($user->locked_until);
         }
 
+        if ($user->status !== 'active') {
+            // Issue #2618 : compte suspendu = aucun token émis (fail-closed).
+            throw new \App\Exceptions\AccountSuspendedException;
+        }
+
         if (! Hash::check($password, $user->password_hash)) {
             $user->increment('failed_login_attempts');
             if ($user->failed_login_attempts >= 5) {
@@ -77,6 +82,11 @@ readonly class UserAuthService
         }
 
         if ($user) {
+            if ($user->status !== 'active') {
+                // Issue #2618 : compte suspendu = aucun token émis (fail-closed).
+                throw new \App\Exceptions\AccountSuspendedException;
+            }
+
             $user->update([
                 'google_id' => $googleId,
                 'avatar_url' => $avatarUrl ?? $user->avatar_url,
