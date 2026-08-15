@@ -74,13 +74,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  const blogPages: MetadataRoute.Sitemap = [...postsBySlug.values()].map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: post.date ? new Date(post.date) : today,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-    alternates: localizedAlternates(`/blog/${post.slug}`),
-  }));
+  const blogPages: MetadataRoute.Sitemap = enableBlog
+    ? [...postsBySlug.values()].map((post) => ({
+        url: `${siteUrl}/blog/${post.slug}`,
+        lastModified: post.date ? new Date(post.date) : today,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+        alternates: localizedAlternates(`/blog/${post.slug}`),
+      }))
+    : [];
 
   return [...staticPages, ...blogPages];
 }

@@ -131,10 +131,11 @@ const PLAN_CONFIG = {
     isFree: false,
   },
   enterprise: {
-    label: 'Scale',
+    label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
+    custom: true,
     priceMonthly: 299,
     priceAnnual: 239,
     savings: 720,
@@ -151,10 +152,11 @@ const PLAN_CONFIG = {
     isFree: false,
   },
   scale: {
-    label: 'Scale',
+    label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
+    custom: true,
     priceMonthly: 299,
     priceAnnual: 239,
     savings: 720,
@@ -257,6 +259,7 @@ function PlanSummaryCard({
 }) {
   const cfg = PLAN_CONFIG[plan];
   const Icon = cfg.icon;
+  const isCustomPlan = 'custom' in cfg && cfg.custom === true;
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
 
   return (
@@ -279,12 +282,21 @@ function PlanSummaryCard({
           </div>
         ) : (
           <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-white/70 text-sm">EUR</span>
-              <span className="text-white font-black text-5xl">{price}</span>
-              <span className="text-white/70 text-sm">/mois</span>
-            </div>
-            {billing === 'annual' && (
+            {isCustomPlan ? (
+              <div>
+                <span className="text-white font-black text-4xl">Sur devis</span>
+                <p className="text-white/80 text-sm mt-1">
+                  Offre personnalisée pour 500+ employés — contactez notre équipe.
+                </p>
+              </div>
+            ) : (
+              <div className="flex items-baseline gap-1">
+                <span className="text-white/70 text-sm">EUR</span>
+                <span className="text-white font-black text-5xl">{price}</span>
+                <span className="text-white/70 text-sm">/mois</span>
+              </div>
+            )}
+            {billing === 'annual' && !isCustomPlan && (
               <p className="text-white/70 text-xs mt-1">
                 Facturé annuellement — économisez EUR {cfg.savings}/an
               </p>
@@ -1178,6 +1190,7 @@ function CheckoutInner() {
 
   const cfg = PLAN_CONFIG[plan];
   const isFree = cfg.isFree;
+  const isCustom = 'custom' in cfg && cfg.custom === true;
   const totalSteps = isFree ? 2 : 3;
   const stepLabels = isFree
     ? ['Récapitulatif', 'Créer mon compte']
@@ -1218,10 +1231,31 @@ function CheckoutInner() {
             Retour aux tarifs
           </Link>
 
-          <StepIndicator step={step} total={totalSteps} stepLabels={stepLabels} />
+          {isCustom ? (
+            <div className="rounded-3xl border border-violet-200 dark:border-violet-800 bg-white dark:bg-slate-900 p-10 text-center shadow-xl">
+              <Building2 className="w-12 h-12 mx-auto text-violet-500 mb-4" />
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                Leopardo Enterprise
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 max-w-xl mx-auto mb-6">
+                Offre personnalisée pour les groupes multi-pays : SSO SAML/OIDC, schéma
+                PostgreSQL isolé, audit trail immuable, account manager dédié et SLA.
+                Contactez notre équipe pour un devis adapté à votre organisation.
+              </p>
+              <Link
+                href="/contact?topic=enterprise"
+                className="inline-flex items-center gap-2 rounded-full bg-violet-600 px-8 py-3.5 text-white font-semibold hover:bg-violet-700 transition-colors"
+              >
+                Planifier une démo / Demander un devis
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ) : (
+            <>
+              <StepIndicator step={step} total={totalSteps} stepLabels={stepLabels} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
-            {/* Left — Wizard */}
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
+                {/* Left — Wizard */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50 border border-slate-200 dark:border-slate-800">
               <AnimatePresence mode="wait">
                 {step === 0 && (
@@ -1267,8 +1301,10 @@ function CheckoutInner() {
               <PlanSummaryCard plan={plan} billing={billing} onChangeBilling={setBilling} />
               <TrustBadges />
             </div>
+              </div>
+            </>
+          )}
           </div>
-        </div>
       </main>
 
       <Footer />

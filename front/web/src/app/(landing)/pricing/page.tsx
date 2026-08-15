@@ -161,10 +161,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
         { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
         { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 30 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
-        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Starter : email sous 48h. Business : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
+        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Pilot : email sous 48h. Operations : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
-        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Business. Sur Free et Starter, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
+        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Free et Pilot, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
       ],
     },
     cta: {
@@ -271,10 +271,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
         { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 30 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
         { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 30 more days. No automatic billing without your consent.', category: 'Trial' },
-        { id: 'support', question: 'What support is available?', answer: 'Free: community. Starter: email within 48h. Business: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
+        { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
-        { id: 'api', question: 'Is the API available on the Free plan?', answer: 'REST API and webhooks are available from the Business plan. On Free / Starter you can export data as CSV/Excel.', category: 'Technical' },
+        { id: 'api', question: 'Is the API available on the Free plan?', answer: 'REST API and webhooks are available from the Operations plan. On Free / Pilot you can export data as CSV/Excel.', category: 'Technical' },
       ],
     },
     cta: {
@@ -381,10 +381,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
         { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
         { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 30 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
-        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Starter: 48 saatte e-posta. Business: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
+        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Pilot: 48 saatte e-posta. Operations: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
         { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
-        { id: 'api', question: 'Free planda API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Business planından itibaren kullanılabilir. Free ve Starter\'da verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
+        { id: 'api', question: 'Free planda API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Operations planından itibaren kullanılabilir. Free ve Pilot\'ta verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
       ],
     },
     cta: {
@@ -491,10 +491,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
         { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
         { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 30 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
-        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Starter: بريد إلكتروني خلال 48 ساعة. Business: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
+        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Pilot: بريد إلكتروني خلال 48 ساعة. Operations: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
-        { id: 'api', question: 'هل API متاح في خطة Free؟', answer: 'REST API والـ Webhooks متاحة من خطة Business. في Free وStarter يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
+        { id: 'api', question: 'هل API متاح في خطة Free؟', answer: 'REST API والـ Webhooks متاحة من خطة Operations. في Free وPilot يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
       ],
     },
     cta: {
@@ -644,7 +644,7 @@ export default function PricingPage() {
     // Free plan → direct account creation, no payment
     if (plan.price === '0') return '/checkout?plan=free';
     // Enterprise → contact
-    if (!showsCurrency(plan.price)) return '/contact?type=enterprise';
+    if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment
     if (plan.popular) return '/checkout?plan=business';
     return '/checkout?plan=starter';
@@ -715,7 +715,7 @@ export default function PricingPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Link>
             <Link
-              href="/contact?type=enterprise"
+              href="/contact?topic=enterprise"
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
               <MessageCircle className="w-5 h-5" />
@@ -1243,7 +1243,7 @@ export default function PricingPage() {
               </span>
             </Link>
             <Link
-              href="/contact?type=enterprise"
+              href="/contact?topic=enterprise"
               className="group flex items-center gap-2.5 px-10 py-4 bg-white/10 text-white font-bold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm text-base"
             >
               <Building2 className="w-5 h-5" />

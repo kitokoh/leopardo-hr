@@ -14,7 +14,7 @@ const LOCALE_EVENT = 'vitrine-locale-changed'
 // résout pas — DNS mort). Configurable via NEXT_PUBLIC_SITE_URL.
 const DEMO_APP_URL = process.env.NEXT_PUBLIC_SITE_URL
   ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '')}/dashboard`
-  : 'https://gestionemployer-backend.vercel.app/dashboard'
+  : `${process.env.NEXT_PUBLIC_SITE_URL || ''}/dashboard`
 
 type LocaleOption = {
   value: AppLocale

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { pageMetadata } from '@/modules/vitrine/lib/seo';
+import { canonicalUrl, pageMetadata } from '@/modules/vitrine/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.about.title,
@@ -8,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.about.keywords,
   ogImage: pageMetadata.about.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/about',
+  canonical: canonicalUrl('/about'),
 });
 
 export default function AboutLayout({

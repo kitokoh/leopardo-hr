@@ -4,6 +4,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
+/** Build a canonical URL from the configured site URL. */
+export function canonicalUrl(path: string): string {
+  return `${siteUrl}${path}`;
+}
+
 export interface SEOMetadata {
   title: string;
   description: string;
