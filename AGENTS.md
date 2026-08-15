@@ -71,6 +71,22 @@ Protocol OBLIGATOIRE avant de commencer a coder :
 4. **Fermeture des doublons** : toute PR dupliquee sur une meme issue est
    fermee avec un commentaire de renvoi vers la PR canonique (1 PR = 1 issue).
 
+## Garde post-merge `Closes #` (issue #2512)
+
+Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou
+Fixes/Resolves) dans le **body** ne ferme JAMAIS l'issue au merge : elle
+reste ouverte même une fois le correctif livré. Règles :
+
+- Le mot-clé `Closes #N` doit être dans le **body** de la PR (le titre seul
+  est fragile : GitHub ne le traite pas toujours).
+- Les mentions entre parenthèses `(#1234)` ou dans le contexte ne ferment
+  rien — si l'issue doit être close, ajouter `Closes #1234` dans le body.
+- Garde de détection : `dev-hub/tools/check-issues-left-open-by-merged-prs.sh
+  <owner/repo>` liste les issues référencées par des PRs mergées mais restées
+  ouvertes sans PR en cours (rapport non bloquant — fermeture manuelle avec
+  preuve code : commentaire + état closed).
+- Fallback : fermeture manuelle avec vérification du code sur main.
+
 ## Regles obligatoires
 
 - **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
