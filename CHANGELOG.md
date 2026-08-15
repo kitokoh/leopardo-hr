@@ -342,6 +342,7 @@ Nouvelle suite `tests/Feature/CrossTenantIndexIsolationTest` (7 tests) verrouill
 
 - **fix(auth): garde SSRF sur les endpoints OIDC (Closes #3242).** Les URLs authorize/token/JWKS sont filtrées à l’écriture et revalidées avant chaque appel sortant contre les hôtes privés, réservés ou non résolvables.
 
+- **fix(web): disponibilité Desktop Windows/macOS rendue explicite (Closes #3257).** La page Download et ses quatre locales proposent un accès pilote sur demande au lieu de promettre un installateur ou un client inclus inexistant.
 - **fix(web): JSON-LD pricing aligné sur les quatre plans (Closes #3260).** Les offres structurées proviennent désormais de pricing.ts ; Enterprise est décrit sur devis sans prix inventé.
 
 - **fix(web): fallbacks mobiles rendus explicites (Closes #3258).** Android et iOS affichent désormais le statut réel du lien — store configuré, build testeur ou inscription — dans le texte et l’accessibilité.
