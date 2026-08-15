@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Jobs\ProvisionDemoTenantJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Tests\RefreshTenantDatabase;
@@ -47,7 +48,7 @@ class TrialProvisioningStatusTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Queue::assertPushed(\App\Jobs\ProvisionDemoTenantJob::class);
+        Queue::assertPushed(ProvisionDemoTenantJob::class);
     }
 
     public function test_status_returns_pending_before_provisioning(): void
@@ -88,6 +89,10 @@ class TrialProvisioningStatusTest extends TestCase
 
     public function test_status_returns_failed_with_generic_message(): void
     {
+        // Le défaut app est « en » (.env.example) — fixer la locale FR pour
+        // asserter le message générique quelle que soit la config d'env.
+        $this->withHeader('Accept-Language', 'fr');
+
         DB::table('trial_provisionings')->insert([
             'email' => 'prospect@demo.com',
             'provisioning_token' => str_repeat('c', 64),

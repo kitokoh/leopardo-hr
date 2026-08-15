@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test'
 
+// QA 2026-08-15 (#2658) : ce spec exécute un VRAI login super-admin contre un
+// backend. En CI locale (web-ci, webServer 127.0.0.1 sans backend) il échouait
+// systématiquement. Il ne s'exécute que si E2E_BACKEND_URL pointe une API
+// réelle (staging/prod) — sinon skip explicite.
+const hasRealBackend = Boolean(process.env.E2E_BACKEND_URL)
+const isLocal = !process.env.BASE_URL && !process.env.PLAYWRIGHT_BASE_URL
+test.describe.configure({ mode: 'serial' })
+test.beforeEach(async () => {
+  test.skip(!hasRealBackend || isLocal, 'Nécessite un backend réel (E2E_BACKEND_URL)')
+})
+
 /**
  * Issue #1815 — Page cotisations sociales : chargement + simulateur comparateur.
  * Nécessite le login super-admin démo.

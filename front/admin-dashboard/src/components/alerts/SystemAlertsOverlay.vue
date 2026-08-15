@@ -208,16 +208,10 @@ function viewSystemAlerts() {
 }
 
 async function disableMaintenanceMode() {
-  try {
-    // Simulate API call to disable maintenance mode
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    isMaintenanceMode.value = false
-    toast.success('Mode maintenance désactivé')
-  } catch (error) {
-    console.error('Failed to disable maintenance mode:', error)
-    toast.error('Erreur lors de la désactivation du mode maintenance')
-  }
+  // #2641 : pas d'endpoint backend dédié (maintenance gérée côté infra/ops) —
+  // état « non disponible » honnête (règle cockpit : jamais d'action factice).
+  toast.warning('Gestion du mode maintenance non disponible depuis la console')
+  isMaintenanceMode.value = false
 }
 
 // Expose methods for external control
