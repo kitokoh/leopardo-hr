@@ -9,7 +9,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
   fr: [
     {
       question: 'Combien de temps faut-il pour deployer Leopardo RH ?',
-      answer: "Le deploiement standard prend moins de 24 heures. Votre equipe peut commencer a utiliser la plateforme des le premier jour avec notre onboarding guide.",
+      answer: "Le déploiement standard prend moins de 24 heures. Votre équipe peut commencer a utiliser la plateforme des le premier jour avec notre onboarding guide.",
     },
     {
       question: 'Est-ce que Leopardo RH fonctionne hors ligne ?',
@@ -20,7 +20,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
       answer: 'Nous supportons la biometrie faciale, les empreintes, NFC, QR code, geolocalisation et les bornes ZKTeco.',
     },
     {
-      question: 'Mes donnees sont-elles securisees ?',
+      question: 'Mes donnees sont-elles sécurisées ?',
       answer: 'Oui. Chiffrement AES-256 au repos, TLS 1.3 en transit, 2FA, audit trail complet et hebergement conforme.',
     },
     {

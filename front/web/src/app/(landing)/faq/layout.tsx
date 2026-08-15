@@ -22,7 +22,7 @@ export default function FaqLayout({
       answer: 'Oui, un essai guide gratuit de 14 jours est disponible sans carte bancaire.',
     },
     {
-      question: 'Mes donnees sont-elles securisees ?',
+      question: 'Mes donnees sont-elles sécurisées ?',
       answer: 'Oui, toutes les donnees sont chiffrees (AES-256) et isolees par entreprise (multi-tenant).',
     },
     {

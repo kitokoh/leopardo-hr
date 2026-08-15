@@ -172,14 +172,14 @@ const signupFormCopy: Record<AppLocale, SignupFormCopy> = {
     termsLink: 'terms of use',
     privacyLink: 'privacy policy',
     agreeSuffix: 'and the',
-    submitLabel: 'Get my verification code',
+    submitLabel: 'Get my vérification code',
     submittingLabel: 'Sending code...',
     codeHint: 'A 6-digit code will be sent to your email to confirm your identity.',
     haveAccount: 'Already have an account?',
     loginCta: 'Sign in',
     back: 'Back',
     otpTitle: 'Verify your email',
-    otpSentTo: 'We sent a 6-digit verification code to:',
+    otpSentTo: 'We sent a 6-digit vérification code to:',
     otpInvalidLength: 'Please enter the 6 digits of the code.',
     otpInvalidCode: 'Invalid or expired code.',
     otpVerifyError: 'An error occurred during verification. Please try again.',
@@ -525,7 +525,7 @@ export function SignupForm({
         if (response.provisioned === false) {
           // Backend could not send an OTP right now (e.g. cold-start timeout).
           // The lead was still captured, so tell the user honestly instead of
-          // showing a verification screen for a code that was never sent.
+          // showing a vérification screen for a code that was never sent.
           setPendingMessage(
             response.message ||
               "c.pendingFallback"
@@ -795,7 +795,7 @@ export function SignupForm({
         )}
 
         {/* ═══════════════════════════════════════ */}
-        {/* STEP 2: OTP Verification                */}
+        {/* STEP 2: OTP Vérification                */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'otp' && (
           <motion.div
@@ -922,15 +922,15 @@ export function SignupForm({
             </p>
 
             <div className="rounded-xl bg-transparent px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-              Notre systeme de creation d&apos;espace instantane est momentanement
+              Notre système de creation d&apos;espace instantane est momentanement
               indisponible (redemarrage serveur). Votre demande est bien
               enregistree : une personne de l&apos;equipe Leopardo vous contactera
-              par email sous 24h ouvrables avec un acces adapte a votre
+              par email sous 24h ouvrables avec un accès adapte a votre
               contexte.
             </div>
 
             <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
-              Vous avez deja un compte?{' '}
+              Vous avez déjà un compte?{' '}
               <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                 Se connecter
               </Link>

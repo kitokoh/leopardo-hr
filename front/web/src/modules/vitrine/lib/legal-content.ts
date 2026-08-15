@@ -25,7 +25,7 @@ export type LegalPageCopy = {
 const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
   fr: {
     privacy: {
-      eyebrow: 'Conformite et donnees RH',
+      eyebrow: 'Conformité et donnees RH',
       title: 'Politique de confidentialite',
       intro:
         'Leopardo RH traite des donnees RH sensibles pour aider les entreprises a piloter le pointage, la paie, les absences et les workflows terrain. Cette page explique notre approche de protection, de transparence et de controle.',
@@ -43,8 +43,8 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Finalites',
           body: [
-            'Les traitements servent a securiser l acces, executer les processus RH, produire les rapports, notifier les utilisateurs, auditer les actions et maintenir la plateforme.',
-            'Les donnees ne sont pas revendues. Les acces internes sont limites aux besoins de support, securite, exploitation et conformite.',
+            'Les traitements servent a securiser l accès, executer les processus RH, produire les rapports, notifier les utilisateurs, auditer les actions et maintenir la plateforme.',
+            'Les donnees ne sont pas revendues. Les accès internes sont limites aux besoins de support, sécurité, exploitation et conformite.',
           ],
         },
         {
@@ -55,16 +55,16 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           ],
         },
         {
-          title: 'Securite',
+          title: 'Sécurité',
           body: [
-            'Leopardo RH applique l isolation multi-tenant, le controle d acces par roles, la journalisation des acces sensibles et une logique de moindre privilege.',
-            'Les clients restent responsables de la configuration de leurs utilisateurs, de leurs politiques internes et de la verification des obligations locales.',
+            'Leopardo RH applique l isolation multi-tenant, le controle d accès par roles, la journalisation des accès sensibles et une logique de moindre privilege.',
+            'Les clients restent responsables de la configuration de leurs utilisateurs, de leurs politiques internes et de la vérification des obligations locales.',
           ],
         },
       ],
       contact: {
         title: 'Contact confidentialite',
-        body: 'Pour une demande de confidentialite ou de conformite, contactez notre equipe avec le nom de votre entreprise et le contexte de la demande.',
+        body: 'Pour une demande de confidentialite ou de conformité, contactez notre équipe avec le nom de votre entreprise et le contexte de la demande.',
         email: 'privacy@leopardo-rh.com',
       },
     },
@@ -72,43 +72,43 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'Conditions de service',
       title: 'Conditions generales d utilisation',
       intro:
-        'Ces conditions encadrent l utilisation de Leopardo RH par les entreprises, administrateurs, managers, employes, kiosques et integrateurs autorises.',
+        'Ces conditions encadrent l utilisation de Leopardo RH par les entreprises, administrateurs, managers, employés, kiosques et integrateurs autorises.',
       updatedAt: 'Derniere mise a jour : 14 mai 2026',
       backLabel: 'Retour a l accueil',
       languageLabel: 'Langue du document',
       sections: [
         {
-          title: 'Acces a la plateforme',
+          title: 'Accès a la plateforme',
           body: [
-            'L acces est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l administration de la plateforme.',
-            'Chaque utilisateur doit proteger ses identifiants, respecter les permissions accordees et signaler toute activite suspecte.',
+            'L accès est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l administration de la plateforme.',
+            'Chaque utilisateur doit proteger ses identifiants, respecter les permissions accordees et signaler toute activité suspecte.',
           ],
         },
         {
           title: 'Usage acceptable',
           body: [
             'La plateforme doit etre utilisee pour des processus RH legitimes : pointage, paie, absences, documents, notifications, reporting, support et operations associees.',
-            'Il est interdit de contourner la securite, d extraire massivement des donnees sans autorisation ou d utiliser le service pour surveiller des personnes hors cadre legal.',
+            'Il est interdit de contourner la sécurité, d extraire massivement des donnees sans autorisation ou d utiliser le service pour surveiller des personnes hors cadre legal.',
           ],
         },
         {
           title: 'Responsabilites client',
           body: [
-            'Le client configure ses roles, ses workflows, ses regles RH, ses contenus et ses obligations de conformite locales.',
+            'Le client configure ses roles, ses workflows, ses règles RH, ses contenus et ses obligations de conformité locales.',
             'Les integrations, exports et imports doivent etre verifies avant usage en production, surtout lorsqu ils alimentent la paie ou des documents officiels.',
           ],
         },
         {
           title: 'Disponibilite et evolution',
           body: [
-            'Leopardo RH peut faire evoluer les modules, APIs et interfaces pour ameliorer la securite, la performance et la valeur produit.',
+            'Leopardo RH peut faire evoluer les modules, APIs et interfaces pour ameliorer la sécurité, la performance et la valeur produit.',
             'Les operations critiques de maintenance, migration ou incident sont traitees selon les procedures d exploitation et de support en vigueur.',
           ],
         },
       ],
       contact: {
         title: 'Contact service',
-        body: 'Pour une question contractuelle ou une demande liee au service, contactez notre equipe avec votre identifiant entreprise.',
+        body: 'Pour une question contractuelle ou une demande liee au service, contactez notre équipe avec votre identifiant entreprise.',
         email: 'support@leopardo-rh.com',
       },
     },

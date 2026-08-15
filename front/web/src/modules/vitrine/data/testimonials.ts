@@ -28,7 +28,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Mehdi Benali',
       role: 'CEO',
       company: 'Atlas Digital',
-      content: "L'interface est intuitive et le support est excellent. Nos equipes l'ont adoptee tres vite.",
+      content: "L'interface est intuitive et le support est excellent. Nos équipes l'ont adoptee tres vite.",
       rating: 5,
     },
     {

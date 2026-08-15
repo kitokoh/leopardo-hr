@@ -188,7 +188,7 @@ export const pageMetadata = {
   changelog: {
     title: "Journal des versions | Leopardo RH",
     description:
-      "Decouvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
+      "Découvrez les dernières évolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
     keywords: [
       "changelog Leopardo",
       "nouveautes RH",
@@ -206,17 +206,17 @@ export const pageMetadata = {
       "documentation API RH",
       "integration Leopardo",
       "webhooks paie",
-      "API gestion employes",
+      "API gestion employés",
     ],
     ogImage: `${siteUrl}/og/docs.png`,
   },
 
   download: {
-    title: "Telecharger Leopardo RH | Windows, macOS, Android, iOS",
+    title: "Télécharger Leopardo RH | Windows, macOS, Android, iOS",
     description:
       "Telechargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
     keywords: [
-      "telecharger Leopardo RH",
+      "télécharger Leopardo RH",
       "application pointage mobile",
       "client desktop ZKTeco",
       "app RH Android iOS",
@@ -227,7 +227,7 @@ export const pageMetadata = {
   contact: {
     title: "Contactez-nous | Support et Ventes Leopardo RH",
     description:
-      "Une question sur Leopardo RH ? Contactez notre equipe commerciale ou support par email, telephone ou formulaire.",
+      "Une question sur Leopardo RH ? Contactez notre équipe commerciale ou support par email, telephone ou formulaire.",
     keywords: [
       "contact Leopardo RH",
       "support RH SaaS",
@@ -240,11 +240,11 @@ export const pageMetadata = {
   faq: {
     title: "Questions Frequentes | FAQ Leopardo RH",
     description:
-      "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, securite, integrations et support.",
+      "Réponses aux questions les plus posées sur Leopardo RH : tarifs, essai gratuit, sécurité, integrations et support.",
     keywords: [
       "FAQ Leopardo RH",
       "questions logiciel RH",
-      "aide gestion employes",
+      "aide gestion employés",
       "support paie SaaS",
     ],
     ogImage: `${siteUrl}/og/faq.png`,
@@ -253,7 +253,7 @@ export const pageMetadata = {
   testimonials: {
     title: "Temoignages Clients | Avis sur Leopardo RH",
     description:
-      "Decouvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
+      "Découvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
     keywords: [
       "temoignages Leopardo RH",
       "avis clients logiciel RH",
@@ -303,9 +303,9 @@ export const pageMetadata = {
   },
 
   careers: {
-    title: "Carrieres | Rejoignez l'Equipe Leopardo RH",
+    title: "Carrieres | Rejoignez l'Équipe Leopardo RH",
     description:
-      "Decouvrez nos offres d'emploi et rejoignez l'equipe qui construit la plateforme RH de reference pour les PME.",
+      "Découvrez nos offres d'emploi et rejoignez l'équipe qui construit la plateforme RH de reference pour les PME.",
     keywords: [
       "carrieres Leopardo RH",
       "emploi logiciel RH",
@@ -318,18 +318,18 @@ export const pageMetadata = {
   mobile: {
     title: "Applications Mobiles | Leopardo RH sur Android et iOS",
     description:
-      "Applications mobiles Leopardo RH pour employes, managers et administrateurs : pointage, absences et validation en mobilite.",
+      "Applications mobiles Leopardo RH pour employés, managers et administrateurs : pointage, absences et validation en mobilite.",
     keywords: [
       "application mobile RH",
       "pointage mobile Android iOS",
       "app manager RH",
-      "app employe pointage",
+      "app employé pointage",
     ],
     ogImage: `${siteUrl}/og/mobile.png`,
   },
 
   signup: {
-    title: "Essai Guide Gratuit | Decouvrez Leopardo RH",
+    title: "Essai Guide Gratuit | Découvrez Leopardo RH",
     description:
       "Demandez votre essai guide gratuit de Leopardo RH : aucun mot de passe requis, un espace de demonstration provisionne automatiquement.",
     keywords: [
