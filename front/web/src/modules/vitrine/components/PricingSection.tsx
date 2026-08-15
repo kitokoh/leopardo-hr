@@ -18,8 +18,11 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :
   // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
   const name = (planName ?? '').toLowerCase()
+  // #3329 : le CTA « Lancer un pilote gratuit » ne doit pas mener à un
+  // checkout avec carte — le parcours Pilot passe par l'essai guidé /signup
+  // (cohérent avec /pricing, source=pricing_pilot → home_pilot ici).
+  if (name.includes('pilot')) return '/signup?source=home_pilot'
   const planKey = name.includes('free') ? 'free'
-    : name.includes('pilot') ? 'starter'
     : name.includes('operations') ? 'business'
     : name.includes('scale') || name.includes('enterprise') ? 'enterprise'
     : 'starter'
