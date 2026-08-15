@@ -134,6 +134,30 @@ class DashboardControllerTest extends TestCase
             ->assertJsonPath('data.absence_rate', 33.3);
     }
 
+    public function test_kpi_invalid_calendar_month_falls_back_to_current_month(): void
+    {
+        [$company, $manager] = $this->tenantFixture();
+        Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/dashboard/kpi?month=2026-13')
+            ->assertOk()
+            ->assertJsonPath('data.month', now()->format('Y-m'));
+    }
+
+    public function test_kpi_malformed_month_falls_back_to_current_month(): void
+    {
+        [$company, $manager] = $this->tenantFixture();
+        Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/dashboard/kpi?month=not-a-month')
+            ->assertOk()
+            ->assertJsonPath('data.month', now()->format('Y-m'));
+    }
+
     public function test_manager_digest_uses_real_today_data_and_is_company_scoped(): void
     {
         [$company, $manager] = $this->tenantFixture();
