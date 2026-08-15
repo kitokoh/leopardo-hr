@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
+use App\Support\I18nCatalog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class PaySlipController extends Controller
 {
@@ -228,25 +233,60 @@ class PaySlipController extends Controller
         }
 
         $slips = $payrollRun->paySlips()
-            ->with('employee:id,first_name,last_name,email')
+            ->with('employee:id,first_name,last_name,email,preferred_language')
             ->whereIn('status', ['calculated', 'validated'])
             ->get();
 
+        /** @var PushNotificationService $pushService */
+        $pushService = app(PushNotificationService::class);
+
         $sent = 0;
+        $notified = 0;
         foreach ($slips as $slip) {
-            if (! empty($slip->employee->email)) {
-                $slip->update(['status' => 'sent']);
-                $sent++;
+            $employee = $slip->employee;
+            if ($employee === null || empty($employee->email)) {
+                continue;
+            }
+
+            $slip->update(['status' => 'sent']);
+            $sent++;
+
+            // Issue #3946 — « Envoyer les bulletins » était un no-op : seul le
+            // statut passait à `sent`, aucun mail/push n'était déclenché.
+            // On notifie l'employé via le canal push existant (PA2-COMM-006,
+            // même clés i18n que GeneratePaySlipPdfJob), dans sa propre locale.
+            try {
+                $previousLocale = App::getLocale();
+                App::setLocale(I18nCatalog::normalizeLocale($employee->preferred_language));
+
+                $pushService->sendToEmployee(
+                    $employee,
+                    (string) trans('notifications.payroll_ready_title'),
+                    (string) trans('notifications.payroll_ready_body_with_period', [
+                        'period' => $payrollRun->period_end->format('M Y'),
+                    ]),
+                    [
+                        'type' => 'pay_slip_sent',
+                        'payroll_run_id' => $payrollRun->id,
+                        'pay_slip_id' => $slip->id,
+                    ],
+                );
+
+                App::setLocale($previousLocale);
+                $notified++;
+            } catch (Throwable $e) {
+                App::setLocale(App::getFallbackLocale());
+                Log::warning("PaySlipController::sendSlips — push notification failed for slip #{$slip->id}: {$e->getMessage()}");
             }
         }
 
         return response()->json([
-            'message' => "{$sent} bulletin(s) marqué(s) comme envoyé(s).",
+            'message' => "{$sent} bulletin(s) envoyé(s), {$notified} notification(s) push déclenchée(s).",
             'sent_count' => $sent,
+            'notified_count' => $notified,
             'total_slips' => $slips->count(),
         ]);
     }
-
 
     /**
      * Issue #1817 — téléchargement sécurisé du bulletin archivé dans le
