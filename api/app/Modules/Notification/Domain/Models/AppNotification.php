@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,6 +44,10 @@ class AppNotification extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Core\Auth\Domain\Models\User::class);
+        // #2436 : user_id stocke un id d'EMPLOYÉ tenant (NotificationDispatcher,
+        // NotifyTaxRateValidation, MarkNotificationsRead) — la relation pointait
+        // vers public.users (User) où les ids ne correspondent jamais. Le canal
+        // moderne écrit via Employee : la relation doit résoudre l'employé.
+        return $this->belongsTo(Employee::class, 'user_id');
     }
 }
