@@ -80,6 +80,18 @@ class TrackingSyncController extends Controller
         $from = Carbon::parse($request->input('from', now()->startOfDay()));
         $to = Carbon::parse($request->input('to', now()));
 
+        // #3369 : bornage de la plage (max 31 jours, from <= to, pas de futur)
+        // pour éviter qu'une plage 1970→now génère un volume massif de trips.
+        if ($from->greaterThan($to)) {
+            return response()->json(['error' => 'INVALID_DATE_RANGE', 'message' => 'INVALID_DATE_RANGE'], 422);
+        }
+        if ($from->lessThan(now()->subDays(31))) {
+            $from = now()->subDays(31);
+        }
+        if ($to->greaterThan(now())) {
+            $to = now();
+        }
+
         $vehicles = Vehicle::where('company_id', $user->company_id)
             ->whereNotNull('traccar_device_id')
             ->get();
@@ -98,7 +110,10 @@ class TrackingSyncController extends Controller
                     continue;
                 }
 
-                VehicleTrip::create([
+                // #3369 : insertOrIgnore + index unique partiel
+                // (company_id, traccar_trip_id) — deux syncs concurrents ne
+                // créent plus de doublons (le exists() seul n'est pas atomique).
+                VehicleTrip::query()->insertOrIgnore([
                     'vehicle_id' => $vehicle->id,
                     'company_id' => $user->company_id,
                     'driver_id' => $vehicle->assigned_driver_id,
