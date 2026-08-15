@@ -136,44 +136,6 @@ class VehicleController extends Controller
         return response()->json(['data' => $position]);
     }
 
-    /**
-     * Sécurité #2217 — véhicules assignés à l'employé connecté (app mobile
-     * employé). Consomme le même format que `position()`.
-     */
-    public function myVehicles(Request $request, TraccarService $traccar): JsonResponse
-    {
-        /** @var Employee $user */
-        $user = $request->user();
-
-        $vehicles = Vehicle::where('company_id', $user->company_id)
-            ->where('assigned_driver_id', $user->id)
-            ->where('status', 'active')
-            ->select(['id', 'plate_number', 'brand', 'model', 'type', 'traccar_device_id', 'assigned_driver_id'])
-            ->get();
-
-        $result = [];
-        foreach ($vehicles as $vehicle) {
-            $position = $vehicle->traccar_device_id !== null
-                ? $traccar->getLastPosition((int) $vehicle->traccar_device_id)
-                : null;
-
-            // Shape aplati aligné sur le modèle mobile `VehiclePosition`
-            // (leopardo_employee / leopardo_hr).
-            $result[] = [
-                'vehicle_id' => $vehicle->id,
-                'plate_number' => $vehicle->plate_number,
-                'brand' => $vehicle->brand,
-                'model' => $vehicle->model,
-                'type' => $vehicle->type,
-                'latitude' => isset($position['latitude']) ? (float) $position['latitude'] : null,
-                'longitude' => isset($position['longitude']) ? (float) $position['longitude'] : null,
-                'speed' => isset($position['speed']) ? (float) $position['speed'] : null,
-                'updated_at' => $position['fixTime'] ?? null,
-            ];
-        }
-
-        return response()->json(['data' => $result]);
-    }
 
     public function trips(Request $request, int $id): JsonResponse
     {
