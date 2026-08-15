@@ -595,5 +595,6 @@
   "navigationTraining": "Eğitimler",
   "navigationUsers": "Kullanıcılar",
   "navigationWebhooks": "Webhooklar",
-  "webhooksConfirmDelete": "Bu webhook silinsin mi?"
+  "webhooksConfirmDelete": "Bu webhook silinsin mi?",
+  "a11ySkipToContent": "Ana içeriğe geç"
 }
