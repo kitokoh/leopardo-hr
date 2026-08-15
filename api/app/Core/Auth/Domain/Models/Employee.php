@@ -137,7 +137,6 @@ class Employee extends Authenticatable implements HasApiTokensContract
     }
 
     protected $fillable = [
-        'company_id',
         'schedule_id',
         'department_id',
         'position_id',
@@ -171,12 +170,8 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'contract_start',
         'contract_end',
         'salary_type',
-        'salary_base',
         'hourly_rate',
-        'role',
-        'manager_role',
         'manager_id',
-        'status',
         'photo_path',
         'biometric_face_enabled',
         'biometric_fingerprint_enabled',
@@ -192,8 +187,6 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'iban',
         'bank_account',
         'national_id',
-        'failed_login_attempts',
-        'locked_until',
         'email_bounced_at',
         'email_bounce_reason',
     ];

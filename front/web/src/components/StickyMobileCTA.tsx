@@ -6,26 +6,30 @@ import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { AppLocale } from '@/lib/i18n';
 
-const copy: Record<AppLocale, { text: string; cta: string; sub: string }> = {
+const copy: Record<AppLocale, { text: string; cta: string; sub: string; closeLabel: string }> = {
   fr: {
     text: 'Essai gratuit',
     cta: 'Démarrer maintenant',
     sub: 'Aucune CB requise · Opérationnel en 5 min',
+    closeLabel: 'Fermer',
   },
   en: {
     text: 'Free trial',
     cta: 'Get started now',
     sub: 'No credit card · Live in 5 minutes',
+    closeLabel: 'Close',
   },
   tr: {
     text: 'Ücretsiz deneme',
     cta: 'Hemen başla',
     sub: 'Kredi kartı gerekmez · 5 dakikada hazır',
+    closeLabel: 'Kapat',
   },
   ar: {
     text: 'تجربة مجانية',
     cta: 'ابدأ الآن',
     sub: 'بدون بطاقة ائتمان · جاهز في 5 دقائق',
+    closeLabel: 'إغلاق',
   },
 };
 
@@ -117,7 +121,7 @@ export function StickyMobileCTA({ locale = 'fr' }: StickyMobileCTAProps) {
               {/* Dismiss */}
               <button
                 onClick={handleDismiss}
-                aria-label="Fermer"
+                aria-label={t.closeLabel}
                 className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

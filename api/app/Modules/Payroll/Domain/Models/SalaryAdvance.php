@@ -60,7 +60,7 @@ class SalaryAdvance extends Model
     protected $table = 'salary_advances';
 
     protected $fillable = [
-        'company_id', 'employee_id', 'amount', 'currency', 'reason', 'status',
+        'company_id', 'employee_id', 'amount', 'currency', 'reason',
         'approved_by', 'decision_comment', 'repayment_months',
         'monthly_deduction', 'amount_remaining', 'repayment_plan',
         // Plan 60 — double validation

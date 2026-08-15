@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { sessionCookieHeader, setSessionCookie } from './session-helpers';
 
 /**
  * Issue #2116 — la Web App affiche le badge de conformité par niveau de
@@ -78,6 +79,7 @@ const complianceSlips = [
 async function mockManagerSession(page: Page) {
   await page.route('**/api/v1/auth/login', async (route) => {
     await route.fulfill({
+        headers: { 'Set-Cookie': sessionCookieHeader },
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
@@ -159,6 +161,8 @@ test.describe('Client web — conformité paie par niveau de confiance (#2116)',
     await mockManagerSession(page);
 
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+    // Issue #2746 — poser le cookie de session avant la soumission (middleware serveur).
+    await setSessionCookie(page);
     await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
     await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
     await page.getByRole('button', { name: /sign in|se connecter/i }).click();
@@ -168,7 +172,7 @@ test.describe('Client web — conformité paie par niveau de confiance (#2116)',
     await expect(page).toHaveURL(/\/payroll$/);
 
     // Colonne conformité présente (clé localisée FR).
-    await expect(page.locator('body')).toContainText('Conformite');
+    await expect(page.locator('body')).toContainText('Conformité');
 
     // Badge « pilot » (CI) — niveau localisé + source en sous-texte.
     const pilotRow = page.locator('tr', { hasText: 'Nadia Kaci' });

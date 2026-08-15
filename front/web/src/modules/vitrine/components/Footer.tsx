@@ -5,9 +5,10 @@ import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
 const SOCIAL_LINKS = [
-  { label: 'X', href: 'https://x.com/leopardo_hr', title: 'X (Twitter)' },
-  { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
+  // Compte X/Twitter @leopardo_hr inexistant (404 constaté 2026-08-15, session
+  // QA expert) — remplacé par GitHub pour garder un lien social vivant.
   { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
+  { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
 ]
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'
@@ -29,13 +30,18 @@ function getFooterHref(sectionIndex: number, linkIndex: number): string {
     '0-3': '/integrations#api',
     '0-4': '/changelog',
     '0-5': '/download',
+    // Audit expert 2026-08-15 (issue #2609) : pages orphelines liées
+    // (étaient absentes de toute navigation, uniquement dans le sitemap).
+    '0-6': '/about',
+    '0-7': '/videos',
     '1-0': '/docs',
     '1-1': '/guides/rh-startup',
     '1-2': '/blog',
     '1-3': '/contact',
     '1-4': '/contact?topic=community',
+    '1-5': '/branding',
     '2-0': '/download#mobile-apps',
-    '2-1': '/download#mobile-apps',
+    '2-1': '/mobile',
     '2-2': '/download#mobile-apps',
     '2-3': '/download#mobile-apps',
     '2-4': '/download#mobile-apps',

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { sessionCookieHeader, setSessionCookie } from './session-helpers';
 
 type AnalyticsWindow = Window & {
   __LEOPARDO_ANALYTICS_EVENTS__?: Array<{
@@ -64,6 +65,17 @@ async function mockDashboardApis(page: Page) {
           },
         ],
       }),
+    });
+  });
+
+  // #3027 : le dashboard appelle aussi /announcements?per_page=1 — sans mock,
+  // la vraie API renvoie 401 → apiFetch redirige vers /auth/login et casse
+  // tous les tests qui lisent le dashboard.
+  await page.route('**/api/v1/announcements**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
     });
   });
 }
@@ -149,6 +161,7 @@ test.describe('Client web auth smoke', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: { 'Set-Cookie': sessionCookieHeader },
         body: JSON.stringify({
           data: managerUser,
           token: 'client-web-token',
@@ -168,6 +181,10 @@ test.describe('Client web auth smoke', () => {
     await mockDashboardApis(page);
 
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+    // Issue #2746 — le middleware serveur exige le cookie httpOnly
+    // `leopardo_token` : le poser avant la soumission du login mocké
+    // (le Set-Cookie de la réponse mockée n'est pas appliqué en Chromium).
+    await setSessionCookie(page);
     await expect(page.getByRole('button', { name: /sign in|se connecter/i })).toBeVisible();
     await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
     await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
@@ -238,6 +255,7 @@ test.describe('Client web auth smoke', () => {
       }));
     });
 
+    await setSessionCookie(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/auth\/login$/);
@@ -275,10 +293,11 @@ test.describe('Client web auth smoke', () => {
       }));
     });
 
+    await setSessionCookie(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/dashboard$/);
-    await expect(page.locator('body')).toContainText('Espace employe');
+    await expect(page.locator('body')).toContainText('Espace employé');
     await expect(page.locator('body')).toContainText('Pointage');
     await expect(page.locator('body')).toContainText('Bulletins');
 
@@ -290,6 +309,7 @@ test.describe('Client web auth smoke', () => {
 
   test('demo account selection emits an analytics event and hydrates credentials', async ({ page }) => {
     await captureAnalytics(page);
+    await mockDemoUsers(page);
 
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: /try a demo account|acces demo|accès démo|demo access/i }).click();
