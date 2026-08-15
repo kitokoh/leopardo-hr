@@ -57,7 +57,7 @@ export default function LandingPage() {
         label: "New"
       }}
       ctaPrimary={{
-        text: "Essai gratuit 14 jours",
+        text: "Essai gratuit 30 jours",
         href: "/auth/login"
       }}
       ctaSecondary={{
