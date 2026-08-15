@@ -332,8 +332,8 @@ const workflowCards = computed(() => [
   {
     title: 'Préparer intégrations partenaires',
     description: 'Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.',
-    action: 'Ouvrir le système',
-    to: '/system',
+    action: 'Ouvrir les webhooks',
+    to: '/webhooks',
     badge: 'API',
     badgeClass: 'rounded-lg bg-cyan-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
   },

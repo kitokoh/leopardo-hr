@@ -10,7 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Cockpit super-admin — contrat SPA front/admin-dashboard (issue #1764).
@@ -89,7 +91,8 @@ class PlatformAdminDashboardController extends Controller
     {
         try {
             return (int) DB::table(self::TENANT_SCHEMA.'.'.$table)->count();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0;
         }
     }
@@ -98,7 +101,8 @@ class PlatformAdminDashboardController extends Controller
     {
         try {
             return (int) DB::table($table)->count();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0;
         }
     }
@@ -107,7 +111,8 @@ class PlatformAdminDashboardController extends Controller
     {
         try {
             return (int) DB::table(self::TENANT_SCHEMA.'.'.$table)->where($column, $value)->count();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0;
         }
     }
@@ -116,7 +121,8 @@ class PlatformAdminDashboardController extends Controller
     {
         try {
             return (int) DB::table($table)->where($column, $value)->count();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0;
         }
     }
@@ -127,7 +133,8 @@ class PlatformAdminDashboardController extends Controller
             return (int) DB::table(self::TENANT_SCHEMA.'.'.$table)
                 ->where('created_at', '>=', Carbon::today()->startOfDay())
                 ->count();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0;
         }
     }
@@ -138,7 +145,8 @@ class PlatformAdminDashboardController extends Controller
             return (int) DB::table($table)
                 ->where('created_at', '>=', Carbon::today()->startOfDay())
                 ->count();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0;
         }
     }
@@ -153,7 +161,8 @@ class PlatformAdminDashboardController extends Controller
                 ->sum('total');
 
             return round((float) $total, 2);
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 0.0;
         }
     }
@@ -162,7 +171,8 @@ class PlatformAdminDashboardController extends Controller
     {
         try {
             DB::selectOne('SELECT 1');
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return 'error';
         }
 
@@ -170,7 +180,8 @@ class PlatformAdminDashboardController extends Controller
         if ($queue === 'redis') {
             try {
                 Redis::connection()->ping();
-            } catch (\Throwable) {
+            } catch (\Throwable $e) {
+                $this->reportDashboardFailure(__FUNCTION__.':redis', $e);
                 return 'warning';
             }
         }
@@ -196,7 +207,8 @@ class PlatformAdminDashboardController extends Controller
                     'created_at' => $row->created_at,
                 ])
                 ->all();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return [];
         }
     }
@@ -217,7 +229,8 @@ class PlatformAdminDashboardController extends Controller
                     'created_at' => $row->created_at,
                 ])
                 ->all();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return [];
         }
     }
@@ -239,7 +252,8 @@ class PlatformAdminDashboardController extends Controller
                     'created_at' => $row->last_sync_at,
                 ])
                 ->all();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return [];
         }
     }
@@ -260,7 +274,8 @@ class PlatformAdminDashboardController extends Controller
                     'created_at' => $row->created_at,
                 ])
                 ->all();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return [];
         }
     }
@@ -272,7 +287,8 @@ class PlatformAdminDashboardController extends Controller
     {
         try {
             return DB::table('platform_alert_dismissals')->pluck('alert_key')->all();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return [];
         }
     }
@@ -288,7 +304,8 @@ class PlatformAdminDashboardController extends Controller
             Redis::connection()->ping();
 
             return null;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return $this->alert('redis_unreachable', 'critical', __('platform.alert_redis_unreachable'));
         }
     }
@@ -307,7 +324,8 @@ class PlatformAdminDashboardController extends Controller
             }
 
             return $this->alert('queue_depth', 'warning', __('platform.alert_queue_depth', ['count' => $depth]));
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return null;
         }
     }
@@ -321,7 +339,8 @@ class PlatformAdminDashboardController extends Controller
             return $failed > 0
                 ? $this->alert('failed_jobs', 'warning', __('platform.alert_failed_jobs', ['count' => $failed]))
                 : null;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return null;
         }
     }
@@ -338,7 +357,8 @@ class PlatformAdminDashboardController extends Controller
             return $count > 0
                 ? $this->alert('licenses_expiring', 'warning', "{$count} licence(s) Edge expirent sous 30 jours.")
                 : null;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return null;
         }
     }
@@ -356,7 +376,8 @@ class PlatformAdminDashboardController extends Controller
             return $count > 0
                 ? $this->alert('trials_expiring', 'warning', __('platform.alert_trials_expiring', ['count' => $count]))
                 : null;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return null;
         }
     }
@@ -373,9 +394,20 @@ class PlatformAdminDashboardController extends Controller
             return $count > 0
                 ? $this->alert('high_priority_tickets', 'warning', __('platform.alert_high_priority_tickets', ['count' => $count]))
                 : null;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
             return null;
         }
+    }
+
+    private function reportDashboardFailure(string $operation, \Throwable $exception): never
+    {
+        Log::error('Platform admin dashboard data source failed', [
+            'operation' => $operation,
+            'exception' => $exception,
+        ]);
+
+        throw new HttpException(503, 'Platform dashboard data is temporarily unavailable.');
     }
 
     /** @return array<string, mixed> */

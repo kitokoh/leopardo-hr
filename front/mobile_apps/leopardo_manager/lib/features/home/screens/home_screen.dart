@@ -16,6 +16,7 @@ import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 final managerDigestProvider = FutureProvider.autoDispose<ManagerDigest>((
   ref,
@@ -179,7 +180,7 @@ class _HeroHeader extends StatelessWidget {
     const text = MobileSurface.text;
     const muted = MobileSurface.muted;
     final dateLabel = DateFormat.EEEE(
-      'fr_FR',
+      deviceIntlDateLocale,
     ).add_d().add_MMMM().format(DateTime.now());
 
     return GlassCard(

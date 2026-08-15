@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Cameras\Infrastructure\Services;
 
-use App\Exceptions\DomainException;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Exceptions\DomainException;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessLog;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Streaming\CameraStreamTokenService;
-use Illuminate\Support\Carbon;
 use App\Rules\NotPrivateUrl;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -29,7 +29,7 @@ class CameraService
     /**
      * Crée une caméra en s'assurant que la limite du plan n'est pas dépassée.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(Company $company, Employee $actor, array $data): Camera
     {
@@ -62,7 +62,7 @@ class CameraService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function update(Camera $camera, Employee $actor, array $data): Camera
     {
@@ -138,7 +138,7 @@ class CameraService
      * Crée un token d'accès tiers (lien public partageable).
      */
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function issueAccessToken(Camera $camera, Employee $actor, array $data): CameraAccessToken
     {
@@ -383,9 +383,10 @@ class CameraService
         }
         // QA #3147 — SSRF : ffprobe est lancé sur l'URL fournie par l'utilisateur.
         // Bloquer les cibles internes (loopback, privées, link-local, réservées)
-        // avant tout accès réseau, y compris après résolution DNS.
+        // avant tout accès réseau, y compris après résolution DNS. Refus métier
+        // `host_not_allowed` (contrat #3147) — distinct de `invalid_url`.
         if ($this->isPrivateRtspTarget($rtspUrl)) {
-            return ['ok' => false, 'error' => 'invalid_url', 'skipped' => false];
+            return ['ok' => false, 'error' => 'host_not_allowed', 'skipped' => false];
         }
 
         // SSRF (issue #3147) : interdire les cibles loopback/privées/réservées
@@ -428,7 +429,7 @@ class CameraService
     }
 
     /**
-     * @param array<string, mixed>|null $metadata
+     * @param  array<string, mixed>|null  $metadata
      */
     public function log(
         ?Company $company,

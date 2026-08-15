@@ -12,6 +12,7 @@ import 'package:leopardo_manager/features/attendance/providers/attendance_provid
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 DateTime attendanceHistoryMonthKey(DateTime value) {
   return DateTime(value.year, value.month);
@@ -352,7 +353,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ],
         ),
         Text(
-          DateFormat('EEEE d MMMM yyyy', 'fr_FR').format(_now),
+          DateFormat('EEEE d MMMM yyyy', deviceIntlDateLocale).format(_now),
           style: const TextStyle(fontSize: 12, color: _muted),
         ),
       ],
@@ -708,9 +709,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ? 'Aujourd hui'
           : index == 1
               ? 'Hier'
-              : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
+              : _capitalize(DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
-          '$labelPrefix - ${DateFormat('d MMM', 'fr_FR').format(date)}';
+          '$labelPrefix - ${DateFormat('d MMM', deviceIntlDateLocale).format(date)}';
       return AttendanceDaySummary.fromLog(
         date: date,
         dayLabel: label,
@@ -889,8 +890,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       SnackBar(
         content: Text(
           widget.canDirectEdit
-              ? 'Pointage du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} modifie.'
-              : 'Demande du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
+              ? 'Pointage du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} modifie.'
+              : 'Demande du ${DateFormat('d MMM', deviceIntlDateLocale).format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
@@ -929,7 +930,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Modifier le ${DateFormat('EEEE d MMMM', 'fr_FR').format(widget.targetDate)}',
+              'Modifier le ${DateFormat('EEEE d MMMM', deviceIntlDateLocale).format(widget.targetDate)}',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

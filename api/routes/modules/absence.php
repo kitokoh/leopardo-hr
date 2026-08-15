@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
-use App\Modules\Absence\Interfaces\Api\V1\Controllers\LeavePolicyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,10 +24,4 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::put('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
         Route::put('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
         Route::delete('/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
-    });
-
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])
-    ->prefix('employees/{employeeId}/leave-balances')
-    ->group(function (): void {
-        Route::get('/', [LeavePolicyController::class, 'balances']);
     });

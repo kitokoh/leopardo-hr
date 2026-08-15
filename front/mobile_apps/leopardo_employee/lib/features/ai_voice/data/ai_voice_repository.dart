@@ -23,6 +23,9 @@ class AiVoiceRepository {
     });
     final response = await apiClient.requestWithRetry(
       '/ai/voice/transcribe',
+      // #3403 : POST non-idempotent — pas de retry automatique (doublon de
+      // transcription / coût IA sur 502/timeout).
+      maxRetriesOverride: 0,
       method: 'POST',
       timeoutOverride: const Duration(seconds: 45),
       data: formData,
@@ -33,6 +36,8 @@ class AiVoiceRepository {
   Future<Uint8List> synthesize(String text) async {
     final response = await apiClient.requestWithRetry<List<int>>(
       '/ai/voice/synthesize',
+      // #3403 : POST non-idempotent — pas de retry automatique.
+      maxRetriesOverride: 0,
       method: 'POST',
       data: {'text': text},
       timeoutOverride: const Duration(seconds: 45),
