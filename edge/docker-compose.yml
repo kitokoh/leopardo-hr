@@ -32,7 +32,9 @@ services:
     networks:
       - leopardo-local
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/api/edge/health"]
+      # #3908 : /api/edge/health n'existe pas — le health endpoint réel de
+      # l'Edge API est versionné : GET /api/v1/edge/health (EdgeController).
+      test: ["CMD", "curl", "-f", "http://localhost/api/v1/edge/health"]
       interval: 30s
       timeout: 10s
       retries: 3
