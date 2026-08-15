@@ -255,7 +255,8 @@
       "exportInProgress": "Export in progress...",
       "exportDone": "Export completed",
       "exportError": "Export failed",
-      "selectionExportDone": "Selection export completed"
+      "selectionExportDone": "Selection export completed",
+      "bulkDone": "Update completed"
     },
     "confirm": {
       "delete": "Are you sure you want to delete :name?"
@@ -263,7 +264,32 @@
     "errors": {
       "name_required": "The full name is required.",
       "password_required": "The password is required.",
-      "fix_fields": "Please fix the highlighted fields"
+      "fix_fields": "Please fix the highlighted fields",
+      "password_min": "Password must be at least 8 characters",
+      "search_no_match": "No page matches your search",
+      "update_failed": "Failed to update user"
+    },
+    "impersonation": {
+      "title": "Impersonate an employee",
+      "subtitle": "Open a session as :name",
+      "reason": "Reason (required, 5 characters minimum)",
+      "reasonMin": "Reason is required (5 characters minimum).",
+      "noLink": "No linked employee on this account — impersonation unavailable.",
+      "start": "Create session",
+      "cancel": "Cancel",
+      "tokenTitle": "Impersonation token (single-use)",
+      "expires": "Expires on :date",
+      "copy": "Copy token",
+      "copied": "Token copied",
+      "created": "Impersonation session created",
+      "error": "Error creating the impersonation session",
+      "done": "Done",
+      "employee": "Linked employee #:id"
+    },
+    "edit": {
+      "title": "Edit user",
+      "status": "Status",
+      "save": "Update"
     }
   },
   "dashboard": {
@@ -276,8 +302,14 @@
     "recent_activity": "Recent activity",
     "recent_activity_hint": "Latest actions from your team",
     "leo_ia_announcement_title": "Congratulations team",
-    "leo_ia_announcement_body": "Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!",
-    "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments."
+    "leo_ia_announcement_body": "Congrats to the whole team for this week's engagement. Keep up the momentum!",
+    "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments.",
+    "leo_presence_insight": "Today, {today} check-in(s) out of {active} active employee(s). Would you like to send a congratulations message to the team?",
+    "leo_presence_empty": "No attendance data available right now. Would you still like to send a congratulations message to the team?",
+    "leo_announcements_count": "{count} announcement(s) published in your company.",
+    "presence_today_title": "Attendance today",
+    "presence_today_summary": "{present} check-in(s) out of {active} active employee(s) today",
+    "presence_today_empty": "No attendance data available."
   },
   "marketing": {
     "oauth": {
@@ -600,7 +632,7 @@
     }
   },
   "signup": {
-    "badge": "Free 30-day trial",
+    "badge": "Free 14-day trial",
     "title": "Try Leopardo with your company",
     "subtitle": "Create your trial workspace in 2 minutes. No credit card required.",
     "labelEmail": "Work email",
@@ -666,6 +698,7 @@
     "credsSentByEmail": "These credentials were also sent by email to",
     "credsEmailed": "Your sign-in credentials were just sent by email.",
     "trialNote": "Free trial of",
+    "trialDaysUnit": "days",
     "trialNoteSuffix": "no credit card required",
     "downloadApp": "Download the app",
     "changePasswordNote": "Change your password on first sign-in.",
@@ -680,6 +713,19 @@
       "employeesRequired": "Select a team size",
       "phoneInvalid": "Invalid phone number",
       "agreeTerms": "You must accept the terms of use"
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Unable to load the company details.",
+      "tickets_failed": "Unable to load the support tickets.",
+      "subscription_failed": "Failed to update the subscription.",
+      "features_failed": "Failed to save the module configuration."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
   }
 }

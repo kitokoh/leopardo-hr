@@ -6,9 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:leopardo_core/core/widgets/leopardo_bottom_nav.dart';
-import 'features/marketing/screens/editorial_calendar_screen.dart';
-import 'features/marketing/screens/post_create_screen.dart';
-import 'features/marketing/screens/stats_dashboard_screen.dart';
+import 'features/marketing/screens/marketing_home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,18 +70,9 @@ final _router = GoRouter(
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => const EditorialCalendarScreen(),
-        ),
-        GoRoute(
-          path: '/stats',
-          builder: (context, state) => const StatsDashboardScreen(),
+          builder: (context, state) => const MarketingHomeScreen(),
         ),
       ],
-    ),
-    // Hors shell : la création de post prend tout l'écran.
-    GoRoute(
-      path: '/create-post',
-      builder: (context, state) => const PostCreateScreen(),
     ),
   ],
 );
@@ -121,9 +110,10 @@ class LeopardoMarketingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Leopardo Marketing',
-      theme: TenantTheme.light(),
-      darkTheme: TenantTheme.dark(),
-      themeMode: ThemeMode.dark, // Default to dark for Glassmorphism
+      theme: TenantTheme.apply(ThemeData.light(), null),
+      darkTheme: TenantTheme.apply(ThemeData.dark(), null),
+      // Issue #3053 : ne pas forcer le dark — suivre le système.
+      themeMode: ThemeMode.system,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
     );

@@ -7,17 +7,23 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TrialWelcomeMail extends Mailable
 {
     use Queueable;
     use SerializesModels;
 
+    public readonly int $trialDays;
+
     public function __construct(
         public readonly Company $company,
         public readonly Employee $manager,
         public readonly string $tempPassword,
-    ) {}
+    ) {
+        $this->trialDays = $this->resolveTrialDays();
+    }
 
     public function build(): self
     {
@@ -36,8 +42,37 @@ class TrialWelcomeMail extends Mailable
                 'manager' => $this->manager,
                 'tempPassword' => $this->tempPassword,
                 'locale' => $locale,
-                'trialDays' => 30,
+                'trialDays' => $this->trialDays,
             ]);
+    }
+
+
+    /**
+     * Durée d'essai réelle affichée dans l'email : dérivée du provisioning
+     * (subscription_start → subscription_end), avec repli sur le plan.
+     */
+    private function resolveTrialDays(): int
+    {
+        $start = $this->company->subscription_start
+            ? Carbon::parse($this->company->subscription_start)->startOfDay()
+            : Carbon::today();
+
+        $end = $this->company->subscription_end
+            ? Carbon::parse($this->company->subscription_end)->startOfDay()
+            : null;
+
+        if ($end !== null && $end->greaterThan($start)) {
+            return (int) $start->diffInDays($end);
+        }
+
+        if ($this->company->plan_id) {
+            $planDays = DB::table('plans')->where('id', $this->company->plan_id)->value('trial_days');
+            if (is_numeric($planDays) && (int) $planDays > 0) {
+                return (int) $planDays;
+            }
+        }
+
+        return 14;
     }
 
     private function resolveSubject(string $locale): string

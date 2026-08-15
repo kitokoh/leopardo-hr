@@ -185,8 +185,7 @@
           ],
           "screenFiles": [
             "lib/features/user_auth/screens/user_home_screen.dart",
-            "lib/features/user_auth/screens/company_request_screen.dart",
-            "lib/features/personal_space/screens/personal_space_screen.dart"
+            "lib/features/user_auth/screens/company_request_screen.dart"
           ],
           "sourceTokens": [
             "context.push('/company-request')",

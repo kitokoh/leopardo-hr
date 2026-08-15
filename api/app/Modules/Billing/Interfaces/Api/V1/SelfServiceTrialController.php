@@ -217,8 +217,13 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
-                    'days' => 30,
-                    'ends_at' => now()->addDays(30)->toIso8601String(),
+                    // Alignement réel : VerifyTrialSignup provisionne
+                    // subscription_end = now()->addDays(14) et le plan
+                    // fallback porte trial_days = 14 (constat QA live
+                    // 2026-08-15 : la réponse annonçait 30 jours mais
+                    // l'essai durait 14 — incohérence #3012/#3056).
+                    'days' => 14,
+                    'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [
                     'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',

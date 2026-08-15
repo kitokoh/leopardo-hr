@@ -16,6 +16,7 @@ import 'package:leopardo_manager/features/team/data/employee_repository.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
+import 'package:leopardo_core/core/utils/currency_format.dart';
 
 /// Ecran "Equipe" — reserve aux managers (principal / RH).
 /// Permet de lister, creer, archiver un employe et de gerer les invitations.
@@ -304,11 +305,11 @@ class _EmployeesTab extends ConsumerWidget {
         'Debut ${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}',
       );
     }
-    final currency = e.currency ?? 'DZD';
+    final currency = e.currency ?? '';
     if (e.salaryType == 'hourly' && e.hourlyRate != null) {
-      parts.add('${e.hourlyRate!.toStringAsFixed(0)} $currency/h');
+      parts.add('${e.hourlyRate!.toStringAsFixed(0)}${currencySuffix(currency)}/h');
     } else if (e.salaryBase != null && e.salaryBase! > 0) {
-      parts.add('${e.salaryBase!.toStringAsFixed(0)} $currency');
+      parts.add('${e.salaryBase!.toStringAsFixed(0)}${currencySuffix(currency)}');
     }
     if (e.scheduleName?.trim().isNotEmpty == true) {
       parts.add('Horaire ${e.scheduleName}');
@@ -787,10 +788,10 @@ class _EmployeeProfileSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = employee.currency ?? 'DZD';
+    final currency = employee.currency ?? '';
     final salary = employee.salaryType == 'hourly'
-        ? '${employee.hourlyRate?.toStringAsFixed(0) ?? '0'} $currency/h'
-        : '${employee.salaryBase?.toStringAsFixed(0) ?? '0'} $currency';
+        ? '${employee.hourlyRate?.toStringAsFixed(0) ?? '0'}${currencySuffix(currency)}/h'
+        : '${employee.salaryBase?.toStringAsFixed(0) ?? '0'}${currencySuffix(currency)}';
 
     return SafeArea(
       child: Padding(
@@ -1228,9 +1229,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
   Widget build(BuildContext context) {
     final schedulesAsync = ref.watch(schedulesProvider);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final currency = ref.watch(authProvider).employee?.currency ??
-        widget.employee.currency ??
-        'DZD';
+    final currency =
+        ref.watch(authProvider).employee?.currency ?? widget.employee.currency ?? '';
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
@@ -1345,7 +1345,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                       ? 'Taux horaire'
                       : 'Salaire de base',
                   suffixText:
-                      _salaryType == 'hourly' ? '$currency/h' : currency,
+                      _salaryType == 'hourly' ? '${currencySuffix(currency)}/h' : currencySuffix(currency),
                 ),
               ),
               const SizedBox(height: 10),
@@ -1509,7 +1509,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final schedulesAsync = ref.watch(schedulesProvider);
-    final currency = ref.watch(authProvider).employee?.currency ?? 'DZD';
+    final currency = ref.watch(authProvider).employee?.currency ?? '';
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: SingleChildScrollView(
@@ -1688,7 +1688,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   style: const TextStyle(color: MobileSurface.text),
                   decoration: InputDecoration(
                     labelText: 'Taux horaire',
-                    suffixText: '$currency/h',
+                    suffixText: '${currencySuffix(currency)}/h',
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
