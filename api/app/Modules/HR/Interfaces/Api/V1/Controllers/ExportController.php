@@ -272,7 +272,7 @@ class ExportController extends Controller
             'format' => $row->format,
             'record_count' => $row->record_count,
             'filename' => $row->filename,
-            'created_at' => $row->created_at?->toIso8601String(),
+            'created_at' => $row->created_at->toIso8601String(),
         ])->all();
 
         return response()->json([

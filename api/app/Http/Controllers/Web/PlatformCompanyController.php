@@ -443,18 +443,6 @@ class PlatformCompanyController extends Controller
             DB::statement('SET search_path TO '.$originalSearchPath);
         }
 
-        if ($hasPayrollData) {
-            $message = 'Le pays d\'un tenant avec des donnees de paie (runs ou structures salariales) ne peut pas etre modifie (invariant 9). Purge/export prealable requis.';
-            if ($request->expectsJson()) {
-                return new JsonResponse([
-                    'message' => $message,
-                    'errors' => ['country' => [$message]],
-                ], 422);
-            }
-
-            return back()->withInput()->withErrors(['country' => $message]);
-        }
-
         // Issue #1873 — toute modification du pays d'un tenant est journalisée
         // (audit trail : avant/après, acteur, IP) pour traçabilité complète.
         $oldCountry = $company->country;

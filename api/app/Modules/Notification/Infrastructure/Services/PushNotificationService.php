@@ -61,6 +61,8 @@ class PushNotificationService
     /**
      * Envoie une notification push à un employé identifié par son id.
      * Retourne 0 si l'employé n'existe pas ou n'a aucun token actif.
+     *
+     * @param  array<string, mixed>  $data
      */
     public function sendToUser(int $userId, string $title, string $body, array $data = []): int
     {

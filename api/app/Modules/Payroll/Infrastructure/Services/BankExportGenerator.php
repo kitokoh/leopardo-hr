@@ -155,7 +155,7 @@ class BankExportGenerator
      * exception claire (fail-closed, plus jamais de placeholder littéral
      * dans un fichier de paiement).
      *
-     * @return array{iban: string, bic: string}
+     * @return string
      */
 
     private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string

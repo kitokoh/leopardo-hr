@@ -511,9 +511,6 @@ class PayrollCalculator
             $run->update([
                 'status' => 'calculated',
                 // Issue #1871 — mêmes règles EFFECTIVES que le run standard :
-                // l'audit lit rules_version/rules_identifier depuis le run.
-                'rules_version' => $rules->rulesVersion(),
-                'rules_identifier' => (new \ReflectionClass($rules))->getShortName(),
                 'rules_period' => $run->period_start->toDateString(),
                 'total_gross' => round($totalGross, 2),
                 'total_deductions' => round($totalDeductions, 2),
