@@ -23,6 +23,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PayrollRunController extends Controller
@@ -111,7 +112,26 @@ class PayrollRunController extends Controller
         }
 
         $payrollRun->update(['status' => 'calculating']);
-        $run = $this->calculator->calculateRun($payrollRun);
+
+        try {
+            $run = $this->calculator->calculateRun($payrollRun);
+        } catch (\Throwable $e) {
+            // Issue #2221 : un échec de calcul ne doit jamais laisser le run
+            // bloqué en `calculating` (recalcul refusé à vie par la garde
+            // ci-dessus). On restaure `draft` et on journalise le détail.
+            $payrollRun->update(['status' => PayrollRun::STATUS_DRAFT]);
+            Log::error('payroll.run.calculation_failed', [
+                'run_id' => $payrollRun->id,
+                'company_id' => $payrollRun->company_id,
+                'country_code' => $payrollRun->country_code,
+                'period' => $payrollRun->period_start->toDateString(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => __('payroll.calculation_failed'),
+            ], 422);
+        }
 
         // Issue #1767 : un calcul à 0 bulletin (ex. aucune structure salariale
         // active pour ce pays) ne doit pas réussir en silence — sinon le run

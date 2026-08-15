@@ -1314,6 +1314,10 @@ trait CreatesMvpSchema
                 $table->date('period_end');
                 $table->char('country_code', 2);
                 $table->string('status', 20)->default('draft');
+                // Issue #2221 : règles effectives persistées sur le run (migration 000009)
+                $table->string('rules_version', 32)->nullable();
+                $table->date('rules_period')->nullable();
+                $table->string('rules_identifier', 150)->nullable();
                 $table->decimal('total_gross', 12, 2)->default(0);
                 $table->decimal('total_deductions', 12, 2)->default(0);
                 $table->decimal('total_net', 12, 2)->default(0);
