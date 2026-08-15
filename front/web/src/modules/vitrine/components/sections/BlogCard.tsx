@@ -17,6 +17,7 @@ export interface BlogCardProps {
   };
   category: string;
   readingTime?: number;
+  archived?: boolean;
   index?: number;
   dateLocale?: string;
   readingTimeLabel?: string;
@@ -31,6 +32,7 @@ export function BlogCard({
   author,
   category,
   readingTime,
+  archived = false,
   index = 0,
   dateLocale = 'fr-FR',
   readingTimeLabel = 'min de lecture',
@@ -64,10 +66,15 @@ export function BlogCard({
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
             {/* Category badge */}
-            <div className="absolute top-4 left-4">
+            <div className="absolute top-4 left-4 flex items-center gap-2">
               <div className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                 {category}
               </div>
+              {archived && (
+                <div className="px-3 py-1 rounded-full bg-amber-500/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+                  Archivé
+                </div>
+              )}
             </div>
           </div>
 

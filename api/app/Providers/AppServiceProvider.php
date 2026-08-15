@@ -220,7 +220,6 @@ class AppServiceProvider extends ServiceProvider
                 ->by('public-careers:'.$request->ip());
         });
 
-
     }
 
     private function resolvePlanLimit(string $plan): int
