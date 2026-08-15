@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(attendance): pointage protégé contre les courses (Closes #2669).** `lockForUpdate` sur la recherche de session ouverte dans une transaction + index unique partiel `(employee_id, date) WHERE check_out IS NULL` (migration `2026_08_15_000004`) — deux check-in parallèles ne créent plus deux sessions ouvertes. `PayrollWorkInputsTest` réaligné sur l'invariant.
 - **fix(api): verbes de notification canoniques — POST mark-all-read / PATCH {id}/read (Closes #2674).** Doublons PUT alignés (alias conservés) ; repos mobiles manager/hr + tests de contrat + `mobile-workflow-contracts.json` mis à jour.
 - **fix(billing): trial signup — échecs non avalés (Closes #2678).** L'échec de création de la `CompanyRequest` fait échouer le signup (OTP sans demande en attente = verify impossible) ; `findExistingManager` ne confond plus une erreur DB avec « aucun manager ».
 - **fix(payroll): indemnité 1/10ᵉ sur `calculated`+`validated` (Closes #2679) + jours de congés clippés sur la période du run (Closes #2672).** Une absence chevauchante (25 janv. → 5 févr.) était comptée en totalité dans janvier ET février (double déduction) ; seules les intersections comptent. Golden tests réalignés.
