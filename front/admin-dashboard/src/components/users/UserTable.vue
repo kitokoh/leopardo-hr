@@ -113,12 +113,12 @@
 
           <!-- Company -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {{ user.company_name || '-' }}
+            {{ user.company?.name || '-' }}
           </td>
 
           <!-- Created At -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {{ formatDate(user.created_at) }}
+            {{ formatDate(user.createdAt ?? user.created_at) }}
           </td>
 
           <!-- Actions -->
@@ -205,8 +205,8 @@ const sortedUsers = computed(() => {
     let bValue = b[sortBy.value]
 
     if (sortBy.value === 'company') {
-      aValue = a.company_name || ''
-      bValue = b.company_name || ''
+      aValue = a.company?.name || ''
+      bValue = b.company?.name || ''
     }
 
     if (sortBy.value === 'created_at') {
