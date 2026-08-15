@@ -21,6 +21,9 @@
 
 > Toute PR ajoute son entrée ici sous la catégorie adaptée (issue #2417) :
 > `### Added` (features), `### Changed`, `### Fixed
+- **fix(mobile): sessions sanctum/user_api séparées — fin de l'écrasement (Closes #2739).** Les deux systèmes d'auth (sanctum /api/v1 et user_api /user/*) partageaient la MÊME clé `auth_token` dans SecureStorage → se connecter à l'un déconnectait l'autre. Clés distinctes (`auth_token_employee` / `auth_token_user`) + migration de lecture (l'ancienne clé reste lue en fallback, purgée au logout). `ApiClient` choisit le jeton selon la session via le flag `useUserSession` (intercepteur + 401 ciblé) ; les 5 appels authentifiés de `user_auth_repository` (me, logout, company-requests ×2, profile) passent sur la session user dans les 3 apps.
+
+`, `### Removed`.
 - **fix(mobile): Google web client ID via --dart-define, plus en dur (Closes #2765).** Le `serverClientId` Google Sign-In était codé en dur dans les 3 apps (employee/manager/hr) : désormais `String.fromEnvironment('GOOGLE_WEB_CLIENT_ID')` avec repli DEBUG uniquement — masqué en release, fourni par le build (--dart-define) comme le DSN Sentry.
 `, `### Removed`.
 - **fix(test): accès onboarding de l'app Employee couvert (Closes #2797).** Les routes `/onboarding-setup/*` sont déjà dans le groupe authentifié du tenant (plus de 403 api.manager — T118), mais aucun test ne le prouvait pour un rôle non-manager : ajout du cas « employee → checklist/progress/complete 200 » dans OnboardingStepControllerTest.`, `### Removed`.
