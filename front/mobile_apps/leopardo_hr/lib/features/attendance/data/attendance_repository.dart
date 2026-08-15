@@ -174,15 +174,6 @@ class AttendanceRepository {
     );
   }
 
-  Future<DailySummary> getDailySummary(int employeeId) async {
-    final response = await apiClient.requestWithRetry(
-      '/employees/$employeeId/daily-summary',
-      maxRetriesOverride: 0,
-      timeoutOverride: _readTimeout,
-    );
-    return DailySummary.fromJson(extractDataMap(response.data));
-  }
-
   Future<DailySummary> getMyDailySummary({DateTime? date}) async {
     final qp = <String, dynamic>{};
     if (date != null) {
@@ -549,10 +540,8 @@ class AttendanceCorrection {
       id: _asInt(json['id']),
       employeeName: employee['name']?.toString() ?? 'Employe',
       date: json['date']?.toString() ?? '',
-      requestedCheckIn: DateTime.parse(json['requested_check_in'].toString()),
-      requestedCheckOut: json['requested_check_out'] != null
-          ? DateTime.parse(json['requested_check_out'].toString())
-          : null,
+      requestedCheckIn: DateTime.tryParse(json['requested_check_in']?.toString() ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0),
+      requestedCheckOut: DateTime.tryParse(json['requested_check_out']?.toString() ?? ''),
       reason: json['reason']?.toString() ?? '',
       status: json['status']?.toString() ?? 'pending',
     );

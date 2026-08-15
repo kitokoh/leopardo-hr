@@ -1,6 +1,7 @@
-﻿'use client';
+'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,7 +24,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
-import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
@@ -50,7 +51,7 @@ const PLAN_CONFIG = {
     employeeLimit: '1-5 employés',
     isFree: true,
   },
-  starter: {
+  pilot: {
     label: 'Pilot',
     icon: Rocket,
     color: 'blue',
@@ -66,11 +67,11 @@ const PLAN_CONFIG = {
       'Apps Employee & Manager',
       'Support email 48h',
     ],
-    trialDays: 30,
+    trialDays: 14,
     employeeLimit: '1-30 employés',
     isFree: false,
   },
-  business: {
+  operations: {
     label: 'Operations',
     icon: Zap,
     color: 'emerald',
@@ -86,7 +87,7 @@ const PLAN_CONFIG = {
       'Exports comptables',
       'Support prioritaire 24h',
     ],
-    trialDays: 30,
+    trialDays: 14,
     employeeLimit: '15-250 employés',
     isFree: false,
   },
@@ -106,13 +107,20 @@ const PLAN_CONFIG = {
       'Schema PostgreSQL isolé',
       'Account manager dédié',
     ],
-    trialDays: 30,
+    trialDays: 14,
     employeeLimit: '250+ employés',
     isFree: false,
   },
 } as const;
 
 type PlanKey = keyof typeof PLAN_CONFIG;
+
+// Anciens slugs de plans (pré #2907) : redirigés vers les clés canoniques.
+const PLAN_ALIASES: Record<string, PlanKey> = {
+  starter: 'pilot',
+  business: 'operations',
+  scale: 'enterprise',
+};
 
 /* ─────────────────────────────────────────────
    CHECKOUT MODE (sandbox = explicit opt-in via NEXT_PUBLIC_CHECKOUT_SANDBOX=true)
@@ -134,12 +142,10 @@ const SANDBOX_CARD = {
    GOOGLE AUTH HREF
 ───────────────────────────────────────────── */
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-      ? directApi
-      : getApiBaseUrl();
-  return `${baseUrl}/auth/google`;
+  // Issue #2725 — même pattern que login (QA #2277) : passer par le proxy
+  // Next.js (même origine) pour que le cookie de session soit posé sur la
+  // vitrine, pas sur l'origine API directe.
+  return '/api/v1/auth/google';
 }
 
 /* ─────────────────────────────────────────────
@@ -662,7 +668,7 @@ function StepFreeAccount({
           phone: data.phone || undefined,
           employees: data.employees || undefined,
           plan: 'free',
-          locale: 'fr',
+          locale: getCurrentLocale(),
         }),
       });
 
@@ -902,7 +908,7 @@ function StepPayment({
           last_name: account.lastName,
           phone: account.phone || undefined,
           employees: account.employees || undefined,
-          locale: 'fr',
+          locale: getCurrentLocale(),
           success_url: successUrl,
           cancel_url: cancelUrl,
         }),
@@ -1119,8 +1125,11 @@ function StepPayment({
 ───────────────────────────────────────────── */
 function CheckoutInner() {
   const searchParams = useSearchParams();
+  // #2907 : clés canoniques free/pilot/operations/enterprise ; les anciens
+  // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
   const rawPlan = (searchParams.get('plan') || 'business') as string;
-  const plan: PlanKey = (rawPlan in PLAN_CONFIG ? rawPlan : 'business') as PlanKey;
+  const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'operations') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 
@@ -1131,7 +1140,7 @@ function CheckoutInner() {
     ? ['Récapitulatif', 'Créer mon compte']
     : ['Récapitulatif', 'Compte', 'Paiement'];
 
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [step, setStep] = useState(0);
   const [billing, setBilling] = useState<'monthly' | 'annual'>(rawBilling ?? 'annual');
   const [account, setAccount] = useState<AccountData>({
@@ -1153,7 +1162,7 @@ function CheckoutInner() {
       dir={direction}
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <main className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">

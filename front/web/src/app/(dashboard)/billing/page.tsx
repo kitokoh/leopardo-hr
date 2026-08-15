@@ -85,24 +85,8 @@ export default function BillingPage() {
   const formatCurrency = (val: number, currency = 'EUR') =>
     new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency }).format(val || 0);
 
-  const handleUpgrade = async (plan: 'starter' | 'business' | 'enterprise') => {
-    setActionLoading(`upgrade-${plan}`);
-    setError(null);
-    try {
-      await apiFetch('/billing/subscription/upgrade', {
-        method: 'POST',
-        body: JSON.stringify({ plan, payment_method: 'manual' }),
-      });
-      await load();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de changer de plan.');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
   const handleCancel = async () => {
-    if (!confirm('Annuler votre abonnement ? Vous perdrez l\'acces aux modules premium a la fin de la periode en cours.')) return;
+    if (!confirm('Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.')) return;
     setActionLoading('cancel');
     setError(null);
     try {
@@ -214,7 +198,7 @@ export default function BillingPage() {
                     <p className="mt-1 text-sm text-slate-500">
                       {subscription.current_period_start && subscription.current_period_end
                         ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
-                        : 'Aucune periode active'}
+                        : 'Aucune période active'}
                     </p>
                   </>
                 ) : (
@@ -230,17 +214,9 @@ export default function BillingPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
-              {(['starter', 'business', 'enterprise'] as const).map((plan) => (
-                <button
-                  key={plan}
-                  onClick={() => handleUpgrade(plan)}
-                  disabled={subscription?.plan === plan || actionLoading === `upgrade-${plan}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-app-border px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent disabled:opacity-40"
-                >
-                  {actionLoading === `upgrade-${plan}` ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  {subscription?.plan === plan ? `${PLAN_LABELS[plan]} (actuel)` : `Passer a ${PLAN_LABELS[plan]}`}
-                </button>
-              ))}
+              {/* #3380 : plus d'upgrade self-service en payment_method manual
+                  (changement de plan sans paiement). Le seul parcours d'upgrade
+                  est « Payer en ligne » ci-dessous (checkout Stripe). */}
               {subscription?.status === 'active' ? (
                 <button
                   onClick={handleCancel}

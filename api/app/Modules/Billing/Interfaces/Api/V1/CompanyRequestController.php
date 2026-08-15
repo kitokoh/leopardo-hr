@@ -133,9 +133,11 @@ class CompanyRequestController extends Controller
                     'password_hash' => $employee->password_hash ?: Hash::make(str()->random(32)),
                     'provider' => 'employee',
                     'preferred_language' => $employee->preferred_language ?? 'fr',
-                    'status' => $employee->status ?? 'active',
                 ]
             );
+        // Issue #3597 : status non mass-assignable — assignation explicite.
+        $user->status = $employee->status ?? 'active';
+        $user->save();
         }
 
         abort(401);

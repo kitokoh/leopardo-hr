@@ -37,28 +37,31 @@
       <MetricCard
         title="Utilisateurs"
         :value="String(stats.totalUsers ?? 0)"
-        :trend="newUsersTrend"
+        :trend="(stats.newUsersToday ?? 0) > 0 ? 'up' : ((stats.newUsersToday ?? 0) < 0 ? 'down' : 'stable')"
+        :trend-label="`+${stats.newUsersToday ?? 0} aujourd'hui`"
         icon="UsersIcon"
         color="blue"
       />
       <MetricCard
         title="Entreprises"
         :value="String(stats.totalCompanies ?? 0)"
-        :trend="newCompaniesTrend"
+        :trend="(stats.newCompaniesToday ?? 0) > 0 ? 'up' : ((stats.newCompaniesToday ?? 0) < 0 ? 'down' : 'stable')"
+        :trend-label="`+${stats.newCompaniesToday ?? 0} aujourd'hui`"
         icon="BuildingOfficeIcon"
         color="green"
       />
       <MetricCard
         title="Abonnements actifs"
         :value="String(stats.activeSubscriptions ?? 0)"
-        :trend="monthlyRevenueLabel"
+        :trend="(stats.monthlyRevenue ?? 0) > 0 ? 'up' : null"
+        :trend-label="monthlyRevenueLabel || undefined"
         icon="CreditCardIcon"
         color="purple"
       />
       <MetricCard
         title="Tickets support ouverts"
         :value="String(stats.supportTickets ?? 0)"
-        :trend="systemHealthLabel"
+        :trend-label="systemHealthLabel || undefined"
         icon="LifebuoyIcon"
         color="amber"
       />
@@ -121,8 +124,8 @@
           <div class="flex items-start space-x-3">
             <ExclamationTriangleIcon :class="['h-5 w-5 mt-0.5', alert.level === 'critical' ? 'text-red-500' : alert.level === 'warning' ? 'text-amber-500' : 'text-slate-400']" />
             <div>
-              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ alert.title }}</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ alert.description }}</p>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ alert.message || alert.title }}</p>
+              <p v-if="alert.description" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ alert.description }}</p>
             </div>
           </div>
           <button
@@ -162,7 +165,6 @@ import { toIntlLocale } from '@/i18n/index.js'
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const toast = useToast()
-const localeStore = useLocaleStore()
 
 const isLoading = ref(false)
 const stats = reactive({
@@ -179,8 +181,6 @@ const activities = ref([])
 const alerts = ref([])
 
 const monthlyRevenueLabel = ref('')
-const newUsersTrend = computed(() => `+${stats.newUsersToday ?? 0} aujourd'hui`)
-const newCompaniesTrend = computed(() => `+${stats.newCompaniesToday ?? 0} aujourd'hui`)
 const systemHealthLabel = computed(() => (stats.systemHealth ? `Health: ${stats.systemHealth}` : ''))
 
 onMounted(loadAll)
@@ -233,9 +233,16 @@ function formatDate(date) {
 
 async function exportReport() {
   try {
+    // Issue #3045 — échappement anti-injection de formule (cellules = + - @),
+    // cohérent avec UsersView (#2700).
+    const escapeCell = (value) => {
+      const str = value === null || value === undefined ? '' : String(value)
+      if (/^[=+\-@]/.test(str)) return `'${str}`
+      return `"${str.replace(/"/g, '""')}"`
+    }
     const csvContent = "data:text/csv;charset=utf-8," +
       "Type,Message,Date\n" +
-      activities.value.map(a => `${a.type || ''},${String(a.message || '').replace(/,/g, ';')},${a.created_at || ''}`).join('\n')
+      activities.value.map(a => [a.type || '', a.message || '', a.created_at || ''].map(escapeCell).join(',')).join('\n')
     const link = document.createElement("a")
     link.setAttribute("href", encodeURI(csvContent))
     link.setAttribute("download", "analytics-activities.csv")

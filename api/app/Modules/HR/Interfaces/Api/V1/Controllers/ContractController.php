@@ -14,6 +14,7 @@ use App\Modules\HR\Domain\Models\ContractAmendment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ContractController extends Controller
@@ -36,7 +37,7 @@ class ContractController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
 
         return ContractResource::collection($query->orderByDesc('start_date')->paginate($perPage))
             ->response();
@@ -51,14 +52,14 @@ class ContractController extends Controller
         }
 
         $validated = $request->validate([
-            'employee_id' => 'required|integer|exists:employees,id',
+            'employee_id' => ['required', 'integer', Rule::exists('employees', 'id')->where('company_id', $actor->company_id)],
             'contract_type' => 'required|in:cdi,cdd,stage,freelance,interim',
             'reference' => 'nullable|string|max:50',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
             'job_title' => 'nullable|string|max:150',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position_id' => 'nullable|integer|exists:positions,id',
+            'department_id' => ['nullable', 'integer', Rule::exists('departments', 'id')->where('company_id', $actor->company_id)],
+            'position_id' => ['nullable', 'integer', Rule::exists('positions', 'id')->where('company_id', $actor->company_id)],
             'base_salary' => 'required|numeric|min:0',
             'currency' => 'nullable|string|max:3',
             'salary_frequency' => 'nullable|in:monthly,hourly,daily',
@@ -122,8 +123,8 @@ class ContractController extends Controller
             'reference' => 'nullable|string|max:50',
             'end_date' => 'nullable|date',
             'job_title' => 'nullable|string|max:150',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position_id' => 'nullable|integer|exists:positions,id',
+            'department_id' => ['nullable', 'integer', Rule::exists('departments', 'id')->where('company_id', $actor->company_id)],
+            'position_id' => ['nullable', 'integer', Rule::exists('positions', 'id')->where('company_id', $actor->company_id)],
             'base_salary' => 'sometimes|numeric|min:0',
             'currency' => 'nullable|string|max:3',
             'salary_frequency' => 'nullable|in:monthly,hourly,daily',

@@ -102,6 +102,29 @@ class SalaryAdvanceWorkflowTest extends TestCase
             ->assertJsonPath('message', 'Advance must be manager-approved before declaring payment.');
     }
 
+    public function test_mark_paid_second_call_is_rejected_no_duplicate_document(): void
+    {
+        // Issue #3429 (classe #2997) : TOCTOU — un double appel mark-paid
+        // (même consécutif, simulé par un 2e appel après le 1er succès) ne
+        // doit produire qu'UN document + UNE écriture ledger.
+        Sanctum::actingAs($this->employee);
+        $created = $this->postJson('/api/v1/salary-advances', ['amount' => 8000])->assertCreated()->json('data');
+        $advanceId = $created['id'];
+
+        Sanctum::actingAs($this->manager);
+        $this->putJson("/api/v1/salary-advances/{$advanceId}/manager-approve")->assertOk();
+
+        $this->putJson("/api/v1/salary-advances/{$advanceId}/mark-paid")->assertOk();
+
+        // 2e appel : l'update conditionnel ne matche plus → 422, pas de doublon.
+        $this->putJson("/api/v1/salary-advances/{$advanceId}/mark-paid")
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Advance must be manager-approved before declaring payment.');
+
+        $this->assertDatabaseCount('payment_documents', 1);
+        $this->assertDatabaseCount('ledger_entries', 1);
+    }
+
     public function test_confirm_received_requires_payment_declared(): void
     {
         Sanctum::actingAs($this->employee);

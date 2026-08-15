@@ -47,12 +47,6 @@ class AgentController extends Controller
                 'description' => 'Anomalies, absences, effectifs de la semaine',
                 'steps' => ['Collecter les anomalies', 'Compter les absences', 'Resume des effectifs', 'Generer le rapport'],
             ],
-            [
-                'id' => 'new_employee_onboarding',
-                'name' => 'Onboarding nouvel employe',
-                'description' => 'Creer le profil, affecter le departement, envoyer les accreditations',
-                'steps' => ['Creer le profil employe', 'Affecter au departement', 'Configurer les acces', 'Envoyer notification'],
-            ],
         ];
 
         return response()->json(['data' => $workflows]);

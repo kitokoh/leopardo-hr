@@ -88,7 +88,7 @@ class SendDripEmails extends Command
         }
 
         $created = $company->created_at->copy()->startOfDay();
-        $subscriptionEnd = $company->subscription_end->copy()->startOfDay();
+        $subscriptionEnd = $company->subscription_end?->copy()->startOfDay();
 
         // Drip 1: Day 3 after signup.
         if ($today->isAfter($created) && (int) $created->diffInDays($today) === 3) {
@@ -96,12 +96,12 @@ class SendDripEmails extends Command
         }
 
         // Drip 2: 3 days before trial expiration.
-        if ($subscriptionEnd->isAfter($today) && (int) $today->diffInDays($subscriptionEnd) === 3) {
+        if ($subscriptionEnd !== null && $subscriptionEnd->isAfter($today) && (int) $today->diffInDays($subscriptionEnd) === 3) {
             return 'expiring';
         }
 
         // Drip 3: expiration day.
-        if ($today->isSameDay($subscriptionEnd)) {
+        if ($subscriptionEnd !== null && $today->isSameDay($subscriptionEnd)) {
             return 'expired';
         }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { Clock, MonitorPlay, PlayCircle, Video } from 'lucide-react';
@@ -33,19 +33,19 @@ const upcomingVideos = [
     category: 'Intégration',
   },
   {
-    title: 'Témoignage client : Atlas Industries',
-    description: 'Comment Atlas Industries gère 350 employés sur 3 pays avec Leopardo RH.',
-    category: 'Témoignage',
+    title: 'Démonstration produit : paie multi-pays',
+    description: 'Parcours illustratif — gestion de la paie et des présences pour une entreprise type de 350 employés répartis sur 3 pays.',
+    category: 'Démonstration',
   },
 ];
 
 export default function VideosPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <HeroSection
         headline="Vidéos & Démos"

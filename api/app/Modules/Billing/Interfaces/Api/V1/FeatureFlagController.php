@@ -6,6 +6,7 @@ namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Http\JsonResponse;
@@ -61,7 +62,7 @@ class FeatureFlagController extends Controller
             ->latest()
             ->first();
 
-        return $subscription ? $subscription->plan : 'trial';
+        return PlanCode::normalize($subscription?->plan ?? PlanCode::Free->value)->value;
     }
 }
 

@@ -33,13 +33,18 @@ class SensitiveWriteEndpointValidationTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
-        /** @var Company $this->company */
-        $this->company = Company::factory()->create();
-        /** @var Company $this->otherCompany */
-        $this->otherCompany = Company::factory()->create();
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        /** @var Employee $this->employee */
-        $this->employee = Employee::factory()->create(['company_id' => $this->company->id]);
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
+        /** @var \App\Core\Tenant\Domain\Models\Company $otherCompany */
+        $otherCompany = Company::factory()->create();
+        $this->otherCompany = $otherCompany;
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+        $this->employee = $employee;
     }
 
     protected function tearDown(): void

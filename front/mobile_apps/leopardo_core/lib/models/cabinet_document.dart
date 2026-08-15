@@ -28,7 +28,8 @@ class CabinetDocument {
       mimeType: (json['mime_type'] ?? 'application/octet-stream') as String,
       size: (json['size'] ?? 0) as int,
       notes: json['notes'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+          DateTime.utc(1970),
     );
   }
 

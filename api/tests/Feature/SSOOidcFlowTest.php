@@ -35,15 +35,17 @@ class SSOOidcFlowTest extends TestCase
         $this->setUpMvpSchema();
         Cache::flush();
 
-        /** @var Company $this->company */
-        $this->company = Company::factory()->create();
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
 
-        /** @var Employee $this->manager */
-        $this->manager = Employee::factory()->create([
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        $manager = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+        $this->manager = $manager;
     }
 
     protected function tearDown(): void
@@ -90,7 +92,8 @@ class SSOOidcFlowTest extends TestCase
         $this->assertIsString($url);
         $this->assertStringStartsWith($this->issuer.'/authorize', $url);
 
-        parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+        $authUrlQuery = parse_url($url, PHP_URL_QUERY);
+        parse_str(is_string($authUrlQuery) ? $authUrlQuery : '', $query);
         $this->assertSame('code', $query['response_type'] ?? null);
         $this->assertSame('leopardo-client', $query['client_id'] ?? null);
         $this->assertNotEmpty($query['state'] ?? '');
@@ -107,9 +110,10 @@ class SSOOidcFlowTest extends TestCase
 
         // Consomme le state de l'authorize.
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         Http::fake([
             $this->issuer.'/token' => Http::response(['id_token' => $this->signIdToken($privateKey, $nonce), 'access_token' => 'at-123'], 200),
@@ -136,9 +140,10 @@ class SSOOidcFlowTest extends TestCase
         $this->seedEmployeeForSso();
 
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         Http::fake([
             $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
@@ -171,9 +176,10 @@ class SSOOidcFlowTest extends TestCase
         $this->seedEmployeeForSso();
 
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         // JWKS servi = AUTRE clé que celle qui signe le token.
         Http::fake([
@@ -193,9 +199,10 @@ class SSOOidcFlowTest extends TestCase
         $this->seedEmployeeForSso();
 
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         Http::fake([
             $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
@@ -214,9 +221,10 @@ class SSOOidcFlowTest extends TestCase
         $this->seedEmployeeForSso();
 
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         Http::fake([
             $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
@@ -235,9 +243,10 @@ class SSOOidcFlowTest extends TestCase
         // Aucun employé SSO seedé.
 
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         Http::fake([
             $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
@@ -255,7 +264,9 @@ class SSOOidcFlowTest extends TestCase
         $this->configureOidc();
         [$privateKey, $jwks] = $this->rsaKeyPair();
 
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
+        /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create([
             'company_id' => $otherCompany->id,
             'email' => 'sso.employee@example.com',
@@ -264,9 +275,10 @@ class SSOOidcFlowTest extends TestCase
         $this->syncLookup($otherEmployee, $otherCompany);
 
         $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
-        parse_str((string) parse_url($authorize, PHP_URL_QUERY), $query);
-        $state = (string) $query['state'];
-        $nonce = (string) $query['nonce'];
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
 
         Http::fake([
             $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
@@ -287,6 +299,7 @@ class SSOOidcFlowTest extends TestCase
 
     private function seedEmployeeForSso(): Employee
     {
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
             'email' => 'sso.employee@example.com',
@@ -346,9 +359,6 @@ class SSOOidcFlowTest extends TestCase
         return [$res, $jwks];
     }
 
-    /**
-     * @param  array<string, mixed>  $extraClaims
-     */
     private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null): string
     {
         $header = $this->base64UrlEncode((string) json_encode([
