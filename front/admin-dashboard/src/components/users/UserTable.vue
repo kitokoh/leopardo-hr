@@ -118,7 +118,7 @@
 
           <!-- Created At -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {{ formatDate(user.created_at) }}
+            {{ formatDate(user.createdAt) }}
           </td>
 
           <!-- Actions -->
@@ -186,7 +186,7 @@ const columns = [
   { key: 'name', label: 'Utilisateur', sortable: true },
   { key: 'status', label: 'Statut', sortable: true },
   { key: 'company', label: 'Entreprise', sortable: true },
-  { key: 'created_at', label: 'Inscription', sortable: true }
+  { key: 'createdAt', label: 'Inscription', sortable: true }
 ]
 
 const isAllSelected = computed(() => {
@@ -209,7 +209,7 @@ const sortedUsers = computed(() => {
       bValue = b.company_name || ''
     }
 
-    if (sortBy.value === 'created_at') {
+    if (sortBy.value === 'createdAt') {
       aValue = aValue ? new Date(aValue) : new Date(0)
       bValue = bValue ? new Date(bValue) : new Date(0)
     }
