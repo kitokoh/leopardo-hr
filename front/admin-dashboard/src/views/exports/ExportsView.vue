@@ -33,7 +33,7 @@
               :disabled="report.downloading"
               @click="downloadReport(report)"
             >
-              {{ report.downloading ? 'Telechargement...' : 'Telecharger' }}
+              {{ report.downloading ? 'Téléchargement…' : 'Télécharger' }}
             </button>
           </div>
         </div>
@@ -118,7 +118,7 @@
       </template>
       <template #row-actions="{ row }">
         <a v-if="row.download_url" :href="row.download_url" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
-          Telecharger
+          Télécharger
         </a>
       </template>
     </DataTable>
@@ -180,9 +180,9 @@ const historyColumns = [
 ]
 
 const exportStatusMap = {
-  completed: { label: 'Termine', color: 'green' },
+  completed: { label: 'Terminé', color: 'green' },
   processing: { label: 'En cours', color: 'yellow' },
-  failed: { label: 'Echec', color: 'red' },
+  failed: { label: 'Échec', color: 'red' },
 }
 
 async function downloadReport(report) {

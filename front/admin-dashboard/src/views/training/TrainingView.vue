@@ -217,7 +217,7 @@ const sessionStatusMap = {
 const enrollmentStatusMap = {
   enrolled: { label: 'Inscrit', color: 'blue' },
   in_progress: { label: 'En cours', color: 'yellow' },
-  completed: { label: 'Termine', color: 'green' },
+  completed: { label: 'Terminé', color: 'green' },
   dropped: { label: 'Abandonne', color: 'red' },
 }
 
