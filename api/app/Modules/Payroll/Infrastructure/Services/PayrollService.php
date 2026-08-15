@@ -34,13 +34,15 @@ class PayrollService
             // Issue #3238 : double soumission concurrente (double-tap, retry) —
             // la contrainte unique (employee_id, period_year, period_month)
             // rattrape la course entre exists() et create().
-            if ($e->errorInfo[1] === 23505) {
+            // 23505 = SQLSTATE unique_violation (pattern PartnerService).
+            if ($e->getCode() === '23505') {
                 throw new PayrollPeriodConflictException($month, $year);
             }
             throw $e;
         }
     }
 
+    /** @param array<string, mixed> $data */
     private function persist(Employee $manager, array $data, int $month, int $year, float $net): Payroll
     {
         return Payroll::create([

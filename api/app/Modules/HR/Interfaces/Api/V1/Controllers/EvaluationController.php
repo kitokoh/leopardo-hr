@@ -131,7 +131,8 @@ class EvaluationController extends Controller
             // Issue #3238 : double soumission concurrente (double-tap, retry) —
             // la contrainte unique (employee_id, period, evaluator_id) rattrape
             // la course entre exists() et create() : on renvoie la même 422.
-            if ($e->errorInfo[1] === 23505) {
+            // 23505 = SQLSTATE unique_violation (pattern PartnerService).
+            if ($e->getCode() === '23505') {
                 return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);
             }
             throw $e;
