@@ -246,57 +246,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/company/branding',
             builder: (context, state) => const CompanyBrandingScreen(),
           ),
-          // Issue #3223 — le manifeste mobile (MobileExperienceService)
-          // sert ces routes aux quick actions/modules Manager : les écrans
-          // existent mais les déclarations GoRouter manquaient depuis le
-          // retrait des routes mortes (#2801) → écran d'erreur au tap.
-          GoRoute(
-            path: '/history',
-            builder: (context, state) => const HistoryScreen(),
-          ),
-          GoRoute(
-            path: '/modules',
-            builder: (context, state) => const ModulesHubScreen(),
-          ),
-          GoRoute(
-            path: '/team',
-            builder: (context, state) => const TeamScreen(),
-          ),
-          GoRoute(
-            path: '/tasks',
-            builder: (context, state) => const TaskListScreen(),
-          ),
-          // Issue #3223 (suite) — modules/quick actions « base » du manifeste :
-          // les screens + imports existent déjà, les déclarations GoRouter
-          // manquaient depuis la restructuration du ShellRoute (#2801).
-          GoRoute(
-            path: '/absences',
-            builder: (context, state) => const AbsenceListScreen(),
-          ),
-          GoRoute(
-            path: '/attendance',
-            builder: (context, state) => const AttendanceScreen(),
-          ),
-          GoRoute(
-            path: '/evaluations',
-            builder: (context, state) => const EvaluationListScreen(),
-          ),
-          GoRoute(
-            path: '/me/monthly',
-            builder: (context, state) => const MonthlySummaryScreen(),
-          ),
-          GoRoute(
-            path: '/notifications',
-            builder: (context, state) => const NotificationListScreen(),
-          ),
-          GoRoute(
-            path: '/payrolls',
-            builder: (context, state) => const PayrollListScreen(),
-          ),
-          GoRoute(
-            path: '/salary-advances',
-            builder: (context, state) => const SalaryAdvanceListScreen(),
-          ),
           GoRoute(
             path: '/manager/attendance',
             builder: (context, state) => const ManagerAttendanceMonitoringScreen(),

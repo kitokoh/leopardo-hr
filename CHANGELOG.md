@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **refactor(mobile-manager): 11 routes GoRoute dupliquées supprimées (Closes #3746).** `/tasks`, `/salary-advances`, `/payrolls`, `/notifications`, `/modules`, `/me/monthly`, `/history`, `/evaluations`, `/attendance`, `/absences`, `/team` étaient déclarés 2× dans le même ShellRoute (artefact #3223/#3205 après #2801) — GoRouter n'utilisait que la 1ʳᵉ. Second bloc retiré, routes `/manager/*` et `/smart-attendance/*` conservées, aucun import mort.
+
 - **docs(spec-kit): audit 360° 2026-08-15 — registre, spec, tasks et 23 issues (T001–T023, #3724–#3746).** Couverture API (OAuth auto-provision, erreurs brutes, race import CSV, scope fail-open), vitrine (e2e no-op, SW pages authentifiées, /mobile, OG guides, a11y FAQ, seo-metadata mort, footer, sync ?lang=), admin (notifications 405, palette, titre onglet, FleetView), mobile/kiosk/edge/CI (App ID HR, Caddyfile.edge, garde branch-protection 403, routes GoRouter dupliquées, builds doublés, perms kiosk.db, bornes bridge). Artifacts : `.specify/features/qa-360-audit-expert-2026-08-15/`.
 
 - **fix(admin/api): UsersView utilise le contrat super-admin pour le détail et l’impersonation (Closes #3268).** `/platform/users` expose la liaison société/employé par email canonique et le dashboard n’interroge plus `/admin/users` avec un ID `super_admins`.
