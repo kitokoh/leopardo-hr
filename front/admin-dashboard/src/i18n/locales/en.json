@@ -585,10 +585,35 @@
       "body": "Click the link below to reset your password."
     }
   },
-  "seo": {
-    "pricing": {
-      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
-    }
+  "auth": {
+    "two_factor_required": "The 2FA code is required.",
+    "manager_login_subtitle": "Manager / HR sign-in",
+    "activate_invitation": "Activate my invitation",
+    "continue_with_google": "Continue with Google",
+    "activate_manager_access": "Activate my manager access",
+    "employee": {
+      "invitation": {
+        "access": "Employee access (invitation)"
+      }
+    },
+    "email_invalid": "Invalid email",
+    "login": {
+      "title": "Sign in"
+    },
+    "personal_account": {
+      "create": "Create a personal account",
+      "explanation": "Personal account: organize your documents, then create or join a company from your space."
+    },
+    "personal_account_link": "Personal account",
+    "employee_login_subtitle": "Employee sign-in",
+    "password_label": "Password",
+    "email_professional_label": "Work email",
+    "password_too_short": "Password too short",
+    "email_required": "Email required",
+    "back_tooltip": "Back",
+    "email_label": "Email",
+    "password_required": "Password required",
+    "try_demo_account": "Try a demo account"
   },
   "marketing": {
     "oauth": {
@@ -622,36 +647,6 @@
       "title": "Marketing OAuth Settings",
       "subtitle": "Connect your social media accounts via Ayrshare"
     }
-  },
-  "auth": {
-    "two_factor_required": "The 2FA code is required.",
-    "manager_login_subtitle": "Manager / HR sign-in",
-    "activate_invitation": "Activate my invitation",
-    "continue_with_google": "Continue with Google",
-    "activate_manager_access": "Activate my manager access",
-    "employee": {
-      "invitation": {
-        "access": "Employee access (invitation)"
-      }
-    },
-    "email_invalid": "Invalid email",
-    "login": {
-      "title": "Sign in"
-    },
-    "personal_account": {
-      "create": "Create a personal account",
-      "explanation": "Personal account: organize your documents, then create or join a company from your space."
-    },
-    "personal_account_link": "Personal account",
-    "employee_login_subtitle": "Employee sign-in",
-    "password_label": "Password",
-    "email_professional_label": "Work email",
-    "password_too_short": "Password too short",
-    "email_required": "Email required",
-    "back_tooltip": "Back",
-    "email_label": "Email",
-    "password_required": "Password required",
-    "try_demo_account": "Try a demo account"
   },
   "platform_login": {
     "email_required": "Email required",
@@ -718,5 +713,25 @@
     "payroll": "Payroll",
     "notifications": "Notifications",
     "evaluations": "Evaluations"
+  },
+  "adminChat": {
+    "title": "Leopardo AI Assistant",
+    "subtitle": "Ask about HR, payroll, recruitment...",
+    "unavailableTitle": "AI assistant unavailable at platform level",
+    "unavailableBody": "The AI chat is not enabled for the super-admin console. Use a supported company workspace to access this assistant.",
+    "unavailableBadge": "Unavailable",
+    "historyEmpty": "No conversations.",
+    "start": "Start a conversation with the AI assistant.",
+    "new": "New conversation",
+    "send": "Send",
+    "placeholder": "Type your message...",
+    "thinking": "Thinking...",
+    "error": "Sorry, an error occurred. Please try again.",
+    "conversation": "Conversation"
+  },
+  "seo": {
+    "pricing": {
+      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
+    }
   }
 }

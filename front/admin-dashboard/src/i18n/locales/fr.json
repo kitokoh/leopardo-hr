@@ -17,6 +17,10 @@
       "nav_title": "Marketing OAuth",
       "subtitle": "Connectez vos comptes réseaux sociaux via Ayrshare",
       "providers": {
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Connexion à l'API Twitter v2"
+        },
         "linkedin": {
           "label": "LinkedIn",
           "description": "Connexion à l'API LinkedIn Marketing"
@@ -24,10 +28,6 @@
         "facebook": {
           "label": "Facebook / Meta",
           "description": "Connexion à l'API Facebook Graph"
-        },
-        "twitter": {
-          "label": "X (Twitter)",
-          "description": "Connexion à l'API Twitter v2"
         }
       }
     }
@@ -732,5 +732,20 @@
       "name_required": "Le nom complet est requis.",
       "fix_fields": "Veuillez corriger les champs en rouge"
     }
+  },
+  "adminChat": {
+    "title": "Assistant IA Leopardo",
+    "subtitle": "Posez vos questions RH, paie, recrutement...",
+    "unavailableTitle": "Assistant IA indisponible au niveau plateforme",
+    "unavailableBody": "Le chat IA n’est pas activé pour la console super-admin. Utilisez un espace entreprise pris en charge pour accéder à cet assistant.",
+    "unavailableBadge": "Indisponible",
+    "historyEmpty": "Aucune conversation.",
+    "start": "Commencez une conversation avec l’assistant IA.",
+    "new": "Nouvelle conversation",
+    "send": "Envoyer",
+    "placeholder": "Tapez votre message...",
+    "thinking": "Réflexion en cours...",
+    "error": "Désolé, une erreur est survenue. Veuillez réessayer.",
+    "conversation": "Conversation"
   }
 }

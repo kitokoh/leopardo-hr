@@ -718,5 +718,20 @@
     "language_saving": "Guncelleniyor...",
     "title": "Profilim",
     "details_title": "Bilgiler"
+  },
+  "adminChat": {
+    "title": "Leopardo Yapay Zekâ Asistanı",
+    "subtitle": "İK, bordro ve işe alım hakkında sorun...",
+    "unavailableTitle": "Yapay zekâ asistanı platform düzeyinde kullanılamıyor",
+    "unavailableBody": "Yapay zekâ sohbeti süper yönetici konsolunda etkin değil. Bu asistana erişmek için desteklenen bir şirket çalışma alanı kullanın.",
+    "unavailableBadge": "Kullanılamıyor",
+    "historyEmpty": "Konuşma yok.",
+    "start": "Yapay zekâ asistanıyla bir konuşma başlatın.",
+    "new": "Yeni konuşma",
+    "send": "Gönder",
+    "placeholder": "Mesajınızı yazın...",
+    "thinking": "Düşünüyor...",
+    "error": "Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.",
+    "conversation": "Konuşma"
   }
 }

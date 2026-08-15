@@ -8,7 +8,7 @@
       ></div>
 
       <!-- Modal panel -->
-      <div class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:align-middle">
+      <div class="inline-block transform overflow-hidden glass-card rounded-xl text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:align-middle">
         <div class="bg-white">
           <!-- Header -->
           <div class="border-b border-gray-200 px-6 py-4">

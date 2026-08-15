@@ -18,24 +18,37 @@ async function fetchJson(url, options = {}) {
   return payload;
 }
 
+// #3586 — le bridge local exige desormais le token de session injecte dans le
+// HTML servi (window.__LOCAL_BRIDGE_TOKEN) via le header X-Local-Bridge-Token.
+// Reserve aux appels `/local/*` : ne jamais l'envoyer vers l'API cloud.
+async function localFetchJson(url, options = {}) {
+  return fetchJson(url, {
+    ...options,
+    headers: {
+      'X-Local-Bridge-Token': window.__LOCAL_BRIDGE_TOKEN || '',
+      ...(options.headers || {}),
+    },
+  });
+}
+
 const statusResult = document.getElementById('statusResult');
 const syncResult = document.getElementById('syncResult');
 const eventsResult = document.getElementById('eventsResult');
 
 async function loadStatus() {
-  const status = await fetchJson('/local/status');
+  const status = await localFetchJson('/local/status');
   statusResult.textContent = JSON.stringify(status.data, null, 2);
 }
 
 async function loadEvents() {
-  const events = await fetchJson('/local/events');
+  const events = await localFetchJson('/local/events');
   eventsResult.textContent = JSON.stringify(events.data, null, 2);
 }
 
 async function runSync(path) {
   try {
     syncResult.textContent = t('admin.sync.inProgress');
-    const payload = await fetchJson(path, { method: 'POST', body: '{}' });
+    const payload = await localFetchJson(path, { method: 'POST', body: '{}' });
     syncResult.textContent = JSON.stringify(payload.data, null, 2);
     await loadStatus();
     await loadEvents();
