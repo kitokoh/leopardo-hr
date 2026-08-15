@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import ComplianceBadge, { type ComplianceBlock } from '@/components/payroll/ComplianceBadge';
 import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { PaySlipDetailModal, type PaySlipDetail } from './_components/PaySlipDetailModal';
 import {
   DollarSign,
   Download,
@@ -97,6 +98,35 @@ export default function PayrollPage() {
       // handle error
     }
   };
+
+  const [detailSlip, setDetailSlip] = useState<PaySlipDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState(false);
+
+  const closeDetail = useCallback(() => {
+    setDetailSlip(null);
+    setDetailLoading(false);
+    setDetailError(false);
+  }, []);
+
+  const openDetail = useCallback(async (slip: PaySlip) => {
+    setDetailSlip(slip);
+    setDetailLoading(true);
+    setDetailError(false);
+    try {
+      const res = await apiFetch(`/pay-slips/${slip.id}`);
+      const payload = await res.json() as { data?: PaySlipDetail };
+      if (payload?.data) {
+        // Ne rouvre pas le modal si l'utilisateur l'a ferme pendant le chargement.
+        setDetailSlip((current) => (current?.id === slip.id ? payload.data : current));
+      }
+    } catch {
+      // Repli sur les donnees de la ligne deja chargees.
+      setDetailError(true);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
 
   const statCards = [
     { label: labels.statTotalGross, value: formatCurrency(runs.reduce((s, r) => s + (r.total_gross || 0), 0)), icon: DollarSign, accent: 'text-emerald-600 bg-emerald-50' },
@@ -199,7 +229,7 @@ export default function PayrollPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.downloadPdf}><Download className="h-4 w-4" /></button>
-                          <button className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.viewDetail}><Eye className="h-4 w-4" /></button>
+                          <button onClick={() => openDetail(slip)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.viewDetail} aria-label={labels.viewDetail}><Eye className="h-4 w-4" /></button>
                         </div>
                       </td>
                     </tr>
@@ -257,6 +287,15 @@ export default function PayrollPage() {
           </div>
         </section>
       )}
+
+      <PaySlipDetailModal
+        slip={detailSlip}
+        loading={detailLoading}
+        error={detailError}
+        labels={labels}
+        formatCurrency={formatCurrency}
+        onClose={closeDetail}
+      />
     </ModulePageShell>
   );
 }
