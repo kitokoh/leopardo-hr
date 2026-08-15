@@ -12,7 +12,22 @@ Composant local installé chez le client pour le fonctionnement **offline-first*
 [SQLite local]
 ```
 
-## Installation rapide
+## Prérequis
+
+- **Docker** (Engine + Compose) sur la machine cible (Linux x86_64).
+- Ports ouverts : `80` (proxy), `7878` (API locale), `7879` (UI locale).
+- Un nœud Edge enregistré dans le dashboard Leopardo → **Paramètres → Edge Nodes** (fournit `node-id` et `token`).
+
+## Installation rapide (commande canonique, issue #3770)
+
+Les assets d'installation sont servis par l'API Leopardo (Render) :
+
+```bash
+curl -fsSL https://gestionemployerbackend.onrender.com/api/v1/edge/install.sh \
+  | sudo bash -s -- --node-id <UUID_DU_NODE> --token <EDGE_TOKEN>
+```
+
+ou, une fois le script téléchargé :
 
 ```bash
 sudo bash install.sh \
@@ -20,7 +35,25 @@ sudo bash install.sh \
   --token   <EDGE_TOKEN>
 ```
 
+Options :
+
+| Option | Défaut | Rôle |
+|--------|--------|------|
+| `--node-id` | requis | UUID du nœud Edge |
+| `--token` | requis | Jeton Edge (bearer, conservé en `600` dans `/opt/leopardo-edge/.env`) |
+| `--cloud` | `https://gestionemployerbackend.onrender.com` | API cloud (Render) — override pour un environnement de recette |
+| `--interval` | `15` | Intervalle de synchronisation (minutes) |
+
 Obtenez le `node-id` et le `token` depuis votre dashboard Leopardo → **Paramètres → Edge Nodes**.
+
+### Vérification d'intégrité
+
+Le script télécharge `docker-compose.yml` et `Caddyfile.edge` depuis l'API
+(`/api/v1/edge/download/*`) et vérifie chaque fichier contre le manifeste
+`/api/v1/edge/download/sha256.txt` avant toute écriture. En cas d'échec de
+hash, l'installation s'arrête (fail-closed) : aucun fichier non vérifié n'est
+installé. Le docker-compose téléchargé pointe par défaut vers
+`https://gestionemployerbackend.onrender.com` (API cloud Render).
 
 ## Services
 

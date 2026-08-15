@@ -3,7 +3,7 @@
 # Leopardo Edge — Installation Script
 # Usage: sudo bash install.sh --node-id <UUID> --token <TOKEN>
 # ============================================================
-set -e
+set -euo pipefail
 
 NODE_ID=""
 TOKEN=""
@@ -49,22 +49,57 @@ INSTALL_DIR="/opt/leopardo-edge"
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
-# Download docker-compose from cloud
-# Audit #1711 : le compose vient du cloud contrôlé par Leopardo — le script
-# d'installation l'exécute en root. Vérifier son intégrité (hash fourni par
-# Leopardo) si le nœud est installé hors supervision.
+# ------------------------------------------------------------------
+# Téléchargement des assets avec vérification d'intégrité
+# (issues #3591, #3770, #3529). Chaque fichier est vérifié contre le
+# manifeste sha256.txt servi par l'API — fail-closed : aucune écriture
+# si un hash ne correspond pas.
+# ------------------------------------------------------------------
+if ! command -v sha256sum &> /dev/null; then
+    echo "❌ sha256sum est requis (paquet coreutils)." >&2
+    exit 1
+fi
+
+verify_download() {
+    # $1 = nom du fichier attendu dans sha256.txt
+    # $2 = fichier local téléchargé
+    local expected_hash
+    expected_hash=$(awk -v f="$1" '$2 == f { print $1 }' sha256.txt)
+    if [[ -z "$expected_hash" ]]; then
+        echo "❌ $1 absent du manifeste d'intégrité servi par $CLOUD_URL." >&2
+        exit 1
+    fi
+    local actual_hash
+    actual_hash=$(sha256sum "$2" | awk '{ print $1 }')
+    if [[ "$actual_hash" != "$expected_hash" ]]; then
+        echo "❌ Vérification d'intégrité échouée pour $1 (attendu $expected_hash, obtenu $actual_hash)." >&2
+        echo "   Abandon — aucun fichier non vérifié n'est installé." >&2
+        exit 1
+    fi
+}
+
+# Manifeste d'intégrité (doit être disponible avant tout téléchargement).
+curl -fsSL "$CLOUD_URL/api/v1/edge/download/sha256.txt" -o sha256.txt
+if [[ ! -s sha256.txt ]] || ! grep -q 'install.sh' sha256.txt; then
+    echo "❌ Manifeste d'intégrité indisponible depuis $CLOUD_URL — installation annulée." >&2
+    exit 1
+fi
+
+# docker-compose.yml (serveur de confiance, vérifié par hash)
 curl -fsSL "$CLOUD_URL/api/v1/edge/download/docker-compose.yml" -o docker-compose.yml
-if [ ! -s docker-compose.yml ]; then
+if [[ ! -s docker-compose.yml ]]; then
     echo "Echec du telechargement du docker-compose depuis $CLOUD_URL" >&2
     exit 1
 fi
-# edge-proxy bind-mounts this file from the install directory. Download it as
-# part of the same trusted bundle and reject a non-Caddy/empty response.
+verify_download "docker-compose.yml" "docker-compose.yml"
+
+# Caddyfile.edge (bind-mounté par edge-proxy ; vérifié par hash + contenu)
 curl -fsSL "$CLOUD_URL/api/v1/edge/download/Caddyfile.edge" -o Caddyfile.edge
-if [ ! -s Caddyfile.edge ] || ! grep -q 'reverse_proxy edge-api:80' Caddyfile.edge || ! grep -q 'reverse_proxy edge-ui:3000' Caddyfile.edge; then
+if [[ ! -s Caddyfile.edge ]] || ! grep -q 'reverse_proxy edge-api:80' Caddyfile.edge || ! grep -q 'reverse_proxy edge-ui:3000' Caddyfile.edge; then
     echo "Echec du telechargement ou de la verification de Caddyfile.edge depuis $CLOUD_URL" >&2
     exit 1
 fi
+verify_download "Caddyfile.edge" "Caddyfile.edge"
 
 # Generate .env
 APP_KEY=$(openssl rand -base64 32)
@@ -82,6 +117,10 @@ chmod 600 .env
 
 # Download license public key
 curl -fsSL "$CLOUD_URL/api/v1/edge/license-public-key" -o license.pub
+if [[ ! -s license.pub ]]; then
+    echo "Echec du telechargement de la cle publique de licence depuis $CLOUD_URL" >&2
+    exit 1
+fi
 
 # Start services
 docker compose pull
