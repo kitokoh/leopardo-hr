@@ -27,6 +27,7 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_list_vehicles(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -50,6 +51,7 @@ class VehicleControllerTest extends TestCase
 
     public function test_per_page_is_capped_at_100(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -79,7 +81,10 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_create_vehicle(): void
     {
+        /** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
@@ -101,6 +106,7 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_update_vehicle(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -124,6 +130,7 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_delete_vehicle(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -159,7 +166,9 @@ class VehicleControllerTest extends TestCase
     public function test_invalid_vehicle_type_returns_validation_error(): void
     {
         /** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
