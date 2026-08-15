@@ -19,7 +19,14 @@ class SSOService
     private const SENSITIVE_FIELDS = ['certificate', 'client_secret'];
 
     /**
-     * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null}
+     * Audit #1694 : la validation des assertions SAML/OIDC n'est pas
+     * implémentée — exposer false tant que le moteur de validation n'existe
+     * pas (les intégrateurs doivent afficher « SSO en cours de déploiement »).
+     */
+    private const VALIDATION_AVAILABLE = false;
+
+    /**
+     * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null, validation_available: bool}
      */
     public function getCompanySSO(string $companyId): array
     {
@@ -33,6 +40,8 @@ class SSOService
                 'enabled' => false,
                 'provider' => null,
                 'config' => null,
+                // Audit #1694 : validation non implémentée.
+                'validation_available' => self::VALIDATION_AVAILABLE,
             ];
         }
 
@@ -56,6 +65,8 @@ class SSOService
                 'provider' => $provider,
                 ...$configData,
             ]),
+            // Audit #1694 : validation non implémentée.
+            'validation_available' => self::VALIDATION_AVAILABLE,
         ];
     }
 
