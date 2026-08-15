@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -55,8 +56,14 @@ Future<void> _safeGoogleSignInInitialize() async {
     await GoogleSignIn.instance.initialize(
       // serverClientId est le web client id (type 3) — obligatoire pour que
       // authenticate() retourne un idToken vérifiable par le backend.
-      serverClientId:
-          '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com',
+      serverClientId: const String.fromEnvironment(
+        'GOOGLE_WEB_CLIENT_ID',
+        // T095 (QA 2026-08-15) : l'ID n'est plus codé en dur — fourni par
+        // --dart-define en build ; repli DEBUG uniquement (masqué en release).
+        defaultValue: kDebugMode
+            ? '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com'
+            : '',
+      ),
     );
   } catch (error, stackTrace) {
     debugPrint('Google Sign-In init skipped: $error');
