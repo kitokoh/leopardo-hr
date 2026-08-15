@@ -192,21 +192,6 @@ export function SignupForm({
         });
 
         setPendingEmail(data.email);
-        // Issue #2469 : conserver le provisioning_token (sessionStorage) pour
-        // permettre le suivi du sandbox même après un refresh de la page.
-        const provisioningTokenValue =
-          typeof response.data?.provisioning_token === 'string'
-            ? (response.data.provisioning_token as string)
-            : null;
-        if (provisioningTokenValue) {
-          setProvisioningToken(provisioningTokenValue);
-          try {
-            window.sessionStorage.setItem(PROVISIONING_TOKEN_KEY, provisioningTokenValue);
-          } catch {
-            // stockage indisponible (mode privé) : le suivi reste possible via
-            // le token en mémoire tant que la page n'est pas rechargée.
-          }
-        }
         dispatch({ type: 'RESET' });
 
         // #2469 : on conserve le token de provisioning (quand le backend en
@@ -569,17 +554,6 @@ export function SignupForm({
               {isVerifying ? 'Verification en cours...' : 'Verifier et creer mon espace'}
             </Button>
 
-            {provisioningToken && (
-              <button
-                type="button"
-                onClick={() => startProvisioningPolling(provisioningToken)}
-                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
-              >
-                <Clock3 className="h-4 w-4" />
-                Suivre l&apos;état de mon espace
-              </button>
-            )}
-
             <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
               Le code est valide pendant 30 minutes. Verifiez vos spams si vous ne le trouvez pas.
             </p>
@@ -757,141 +731,6 @@ export function SignupForm({
                 <p className="text-xs text-slate-400 dark:text-slate-500">
                   {pendingEmail ? `Pour : ${pendingEmail}` : 'Statut verifie toutes les 5 secondes.'}
                 </p>
-              </>
-            )}
-          </motion.div>
-        )}
-
-        {/* ═══════════════════════════════════════ */}
-        {/* STEP 2c: Provisioning status (issue #2469) */}
-        {/* ═══════════════════════════════════════ */}
-        {currentStep === 'provisioning' && (
-          <motion.div
-            key="step-provisioning"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="text-center"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                stopProvisioningPolling();
-                setCurrentStep('otp');
-              }}
-              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Retour
-            </button>
-
-            {provisioningState === 'pending' && (
-              <>
-                <div className="mx-auto mb-4 flex h-16 w-16 animate-pulse items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
-                  <Clock3 className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Votre espace se prepare...
-                </h2>
-                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Nous provisionnons votre sandbox Leopardo. Cette page se met a
-                  jour automatiquement (quelques secondes en general).
-                </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500">
-                  Vous pouvez fermer cette page : le suivi restera disponible
-                  depuis votre demande d&apos;essai.
-                </p>
-              </>
-            )}
-
-            {provisioningState === 'ready' && (
-              <>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
-                  <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Votre espace est pret !
-                </h2>
-                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Votre sandbox Leopardo est pret. Accedez-y directement avec le
-                  lien ci-dessous (un email de confirmation a aussi ete envoye).
-                </p>
-                {provisioningData?.login_url ? (
-                  <>
-                    <Button
-                      type="button"
-                      variant="primary"
-                      size="lg"
-                      fullWidth
-                      onClick={() => {
-                        window.location.href = provisioningData.login_url as string;
-                      }}
-                    >
-                      Acceder a mon espace
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => copyPassword(provisioningData.login_url as string)}
-                      className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
-                    >
-                      <ClipboardCopy className="h-4 w-4" />
-                      {copied ? 'Lien copie !' : 'Copier le lien'}
-                    </button>
-                  </>
-                ) : (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Le lien d&apos;acces vous a ete envoye par email.
-                  </p>
-                )}
-              </>
-            )}
-
-            {provisioningState === 'failed' && (
-              <>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-900/40">
-                  <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
-                </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Une erreur est survenue
-                </h2>
-                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  {provisioningData?.message ||
-                    "La creation de votre espace a rencontre un probleme. Notre equipe vous contactera par email sous 24h ouvrables avec un acces adapte."}
-                </p>
-                <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
-                  Une question ?{' '}
-                  <Link href="/contact" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                    Contactez-nous
-                  </Link>
-                </p>
-              </>
-            )}
-
-            {provisioningState === 'timeout' && (
-              <>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/40">
-                  <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                  Toujours en preparation
-                </h2>
-                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Votre sandbox met plus de temps que prevu. Nous vous enverrons
-                  le lien par email des qu&apos;il sera pret. Vous pouvez aussi
-                  revenir verifier ici.
-                </p>
-                {provisioningToken && (
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="lg"
-                    fullWidth
-                    onClick={() => startProvisioningPolling(provisioningToken)}
-                  >
-                    Verifier a nouveau
-                  </Button>
-                )}
               </>
             )}
           </motion.div>
