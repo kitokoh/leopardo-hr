@@ -215,14 +215,21 @@ class PayrollCalculator
             throw new PayrollRunLockedException('Payroll run is locked (closing done). Unlock with reason first.');
         }
 
-        $correlationId = $run->correlation_id ?? correlation_id();
-        // Corrélation des logs de ce calcul — le fallback correlation_id()
-        // reprend le header X-Correlation-ID/X-Request-Id de la requête
-        // d'origine quand le run n'en a pas encore (issue #1874).
-        Log::withContext(['correlation_id' => $correlationId]);
-        if ($run->correlation_id === null) {
+        $correlationId = $run->correlation_id;
+        if ($correlationId === null) {
+            // Issue #1874 : corrélation requête ↔ calcul — on reprend le
+            // header X-Correlation-ID/X-Request-Id de la REQUÊTE COURANTE
+            // (frais par requête via RequestIdMiddleware), sinon UUID frais.
+            // NB : ne pas utiliser correlation_id() ici — sa valeur est liée
+            // au conteneur et peut être STALE entre deux tests PHPUnit du
+            // même process → deux runs avec le même ID → violation de la
+            // contrainte unique payroll_runs.correlation_id (#2551 cause 8).
+            $header = request()?->header('X-Correlation-ID') ?: request()?->header('X-Request-Id');
+            $correlationId = is_string($header) && $header !== '' ? $header : (string) \Illuminate\Support\Str::uuid();
             $run->forceFill(['correlation_id' => $correlationId])->save();
         }
+        // Corrélation des logs de ce calcul (issue #1874).
+        Log::withContext(['correlation_id' => $correlationId]);
 
         try {
             $result = $this->executeCalculateRun($run);
