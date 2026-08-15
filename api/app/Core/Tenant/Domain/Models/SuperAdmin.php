@@ -13,9 +13,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string $status
  * @property string|null $password_hash
  * @property string|null $two_fa_secret
  * @property Carbon|null $last_login_at
+ * @property Carbon|null $created_at
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class SuperAdmin extends Authenticatable
@@ -29,6 +31,7 @@ class SuperAdmin extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'status',
         'password_hash',
         'two_fa_secret',
         'last_login_at',

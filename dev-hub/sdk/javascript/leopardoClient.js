@@ -1770,6 +1770,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/platform/plans", options);
     },
 
+    /** Lister les utilisateurs plateforme (super-admins) */
+    getPlatformUsers(options = {}) {
+      return request("GET", "/platform/users", options);
+    },
+
+    /** Creer un utilisateur plateforme */
+    postPlatformUsers(options = {}) {
+      return request("POST", "/platform/users", options);
+    },
+
+    /** Desactiver un utilisateur plateforme (jamais de suppression physique) */
+    deletePlatformUsersByUser(options = {}) {
+      return request("DELETE", "/platform/users/{user}", options);
+    },
+
+    /** Detail d'un utilisateur plateforme */
+    getPlatformUsersByUser(options = {}) {
+      return request("GET", "/platform/users/{user}", options);
+    },
+
+    /** Mettre a jour un utilisateur plateforme */
+    patchPlatformUsersByUser(options = {}) {
+      return request("PATCH", "/platform/users/{user}", options);
+    },
+
+    /** Activer un utilisateur plateforme */
+    postPlatformUsersByUserActivate(options = {}) {
+      return request("POST", "/platform/users/{user}/activate", options);
+    },
+
+    /** Desactiver un utilisateur plateforme */
+    postPlatformUsersByUserDeactivate(options = {}) {
+      return request("POST", "/platform/users/{user}/deactivate", options);
+    },
+
+    /** Suspendre un utilisateur plateforme */
+    postPlatformUsersByUserSuspend(options = {}) {
+      return request("POST", "/platform/users/{user}/suspend", options);
+    },
+
     /** Lister les postes */
     getPositions(options = {}) {
       return request("GET", "/positions", options);

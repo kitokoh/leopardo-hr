@@ -1436,6 +1436,38 @@ class LeopardoClient:
         """Lister le catalogue des plans SaaS"""
         return self.request("GET", "/platform/plans", **kwargs)
 
+    def get_platform_users(self, **kwargs):
+        """Lister les utilisateurs plateforme (super-admins)"""
+        return self.request("GET", "/platform/users", **kwargs)
+
+    def post_platform_users(self, **kwargs):
+        """Creer un utilisateur plateforme"""
+        return self.request("POST", "/platform/users", **kwargs)
+
+    def delete_platform_users_by_user(self, **kwargs):
+        """Desactiver un utilisateur plateforme (jamais de suppression physique)"""
+        return self.request("DELETE", "/platform/users/{user}", **kwargs)
+
+    def get_platform_users_by_user(self, **kwargs):
+        """Detail d'un utilisateur plateforme"""
+        return self.request("GET", "/platform/users/{user}", **kwargs)
+
+    def patch_platform_users_by_user(self, **kwargs):
+        """Mettre a jour un utilisateur plateforme"""
+        return self.request("PATCH", "/platform/users/{user}", **kwargs)
+
+    def post_platform_users_by_user_activate(self, **kwargs):
+        """Activer un utilisateur plateforme"""
+        return self.request("POST", "/platform/users/{user}/activate", **kwargs)
+
+    def post_platform_users_by_user_deactivate(self, **kwargs):
+        """Desactiver un utilisateur plateforme"""
+        return self.request("POST", "/platform/users/{user}/deactivate", **kwargs)
+
+    def post_platform_users_by_user_suspend(self, **kwargs):
+        """Suspendre un utilisateur plateforme"""
+        return self.request("POST", "/platform/users/{user}/suspend", **kwargs)
+
     def get_positions(self, **kwargs):
         """Lister les postes"""
         return self.request("GET", "/positions", **kwargs)
