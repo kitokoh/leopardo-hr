@@ -124,16 +124,19 @@ class ContractPdfAliasTest extends TestCase
      */
     private function actors(string $suffix = 'A'): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Contract Co '.$suffix,
             'slug' => 'contract-co-'.strtolower($suffix),
         ]);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => $suffix,
             'email' => 'manager-'.strtolower($suffix).'@contract.test',
         ]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Employee',
