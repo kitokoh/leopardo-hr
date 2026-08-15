@@ -183,14 +183,40 @@ class SalaryAdvanceController extends Controller
             'payment_note' => 'nullable|string|max:1000',
         ]);
 
-        $salaryAdvance->update([
-            'payment_declared_at' => now(),
-            'payment_declared_by' => $actor->id,
-            'payment_reference' => $validated['payment_reference'] ?? null,
-            'payment_note' => $validated['payment_note'] ?? null,
-            'validation_status' => 'payment_declared',
-            'status' => 'active', // keep existing status flow
-        ]);
+        // Issue #3429 (classe #2997) : TOCTOU — deux requêtes concurrentes
+        // pouvaient toutes deux passer le check `manager_approved` puis écrire
+        // ledger + document de paiement en double. L'update est désormais
+        // conditionnel ATOMIQUE : seule la première requête matche
+        // `validation_status = 'manager_approved'`, la seconde voit 0 ligne.
+        $updated = SalaryAdvance::query()
+            ->where('id', $salaryAdvance->id)
+            ->where('company_id', $actor->company_id)
+            ->where('validation_status', 'manager_approved')
+            ->update([
+                'payment_declared_at' => now(),
+                'payment_declared_by' => $actor->id,
+                'payment_reference' => $validated['payment_reference'] ?? null,
+                'payment_note' => $validated['payment_note'] ?? null,
+                'validation_status' => 'payment_declared',
+                'status' => 'active', // keep existing status flow
+            ]);
+
+        if ($updated === 0) {
+            // Soit le statut a changé (déjà déclaré → conflit), soit l'avance
+            // n'est plus dans la société de l'acteur (404, pas de fuite
+            // d'existence — le check initial couvre déjà ce cas mais garde
+            // une réponse cohérente si la ligne a été supprimée entre-temps).
+            $stillExists = SalaryAdvance::query()
+                ->where('id', $salaryAdvance->id)
+                ->where('company_id', $actor->company_id)
+                ->exists();
+
+            if (! $stillExists) {
+                abort(404);
+            }
+
+            return response()->json(['message' => 'Advance must be manager-approved before declaring payment.'], 422);
+        }
 
         $salaryAdvance->refresh();
 
