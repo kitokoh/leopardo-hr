@@ -84,7 +84,14 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   final db = ref.watch(edgeDatabaseProvider);
   final service = SyncService(
     db: db,
-    dio: Dio(),
+    // #3290 : timeouts explicites — un nœud Edge mort ne doit pas bloquer la
+    // synchro ni la file offline indéfiniment (connect 5s / receive 8s).
+    dio: Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 8),
+      ),
+    ),
     edgeBaseUrl: preferences.edgeBaseUrl.isNotEmpty
         ? preferences.edgeBaseUrl
         : 'http://leopardo.local:7878',
@@ -113,7 +120,14 @@ final attendanceOfflineServiceProvider = Provider<AttendanceOfflineService>((
   return AttendanceOfflineService(
     db: ref.watch(edgeDatabaseProvider),
     syncService: ref.watch(syncServiceProvider),
-    dio: Dio(),
+    // #3290 : timeouts explicites — un nœud Edge mort ne doit pas bloquer la
+    // synchro ni la file offline indéfiniment (connect 5s / receive 8s).
+    dio: Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 8),
+      ),
+    ),
   );
 });
 
