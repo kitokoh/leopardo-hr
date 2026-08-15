@@ -32,7 +32,7 @@ export const landingMetadata: PageMetadata = {
     'pointage numérique',
     'gestion absences',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/`,
   robots: 'index, follow',
 };
@@ -51,7 +51,7 @@ export const emploiesMetadata: PageMetadata = {
     'logiciel RH',
     'paie employés',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/employes`,
   robots: 'index, follow',
 };
@@ -70,7 +70,7 @@ export const documentsMetadata: PageMetadata = {
     'archivage conformité',
     'RGPD documents',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/documents`,
   robots: 'index, follow',
 };
@@ -89,7 +89,7 @@ export const comptabiliteMetadata: PageMetadata = {
     'bulletins de paie',
     'conformité paie',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/comptabilite`,
   robots: 'index, follow',
 };
@@ -108,7 +108,7 @@ export const marketingMetadata: PageMetadata = {
     'campagnes email',
     'marketing automation',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/marketing`,
   robots: 'index, follow',
 };
@@ -126,7 +126,7 @@ export const pricingMetadata: PageMetadata = {
     'coût gestion employés',
     'plans pricing',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/pricing`,
   robots: 'index, follow',
 };
@@ -139,7 +139,7 @@ export const aboutMetadata: PageMetadata = {
   description:
     'Découvrez notre mission, équipe et valeurs. Nous aidons les PME à gérer leurs employés simplement.',
   keywords: ['à propos', 'équipe', 'mission', 'valeurs'],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/about`,
   robots: 'index, follow',
 };
@@ -158,7 +158,7 @@ export const blogMetadata: PageMetadata = {
     'tendances RH',
     'automatisation RH',
   ],
-  ogImage: `${siteUrl}/og/default.png`,
+  ogImage: `${siteUrl}/brand/opengraph.svg`,
   canonical: `${siteUrl}/blog`,
   robots: 'index, follow',
 };
@@ -177,7 +177,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'RH pour startup',
       'conseils RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/guide-complet-rh-startup`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -195,7 +195,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'logiciel paie',
       'automatisation RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/automatiser-paie-2024`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -213,7 +213,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'absence travail',
       'logiciel RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/gestion-absences-efficace`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -231,7 +231,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'automatisation RH',
       'efficacité RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/productivite-rh-outils`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -249,7 +249,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'insights RH',
       'gestion RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/tendances-rh-2024`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -267,7 +267,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'futur RH',
       'automatisation IA',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/ia-rh-futur`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -285,7 +285,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'conformité paie',
       'gestion paie',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/checklist-paie-2024`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -303,7 +303,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'template planning',
       'gestion planning',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/modele-planning-employes`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -321,7 +321,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'protection données',
       'sécurité documents',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/conformite-rgpd-documents`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -339,7 +339,7 @@ export const blogArticlesMetadata: Record<string, PageMetadata> = {
       'marketing employés',
       'engagement RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/blog/email-marketing-rh`,
     robots: 'index, follow',
     author: 'Leopardo Team',
@@ -362,7 +362,7 @@ export const guidesMetadata: Record<string, PageMetadata> = {
       'gestion RH',
       'conseils RH',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/guides/rh-startup`,
     robots: 'index, follow',
   },
@@ -377,7 +377,7 @@ export const guidesMetadata: Record<string, PageMetadata> = {
       'conformité paie',
       'gestion paie',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/guides/checklist-paie`,
     robots: 'index, follow',
   },
@@ -392,7 +392,7 @@ export const guidesMetadata: Record<string, PageMetadata> = {
       'template Excel',
       'gestion planning',
     ],
-    ogImage: `${siteUrl}/og/default.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     canonical: `${siteUrl}/guides/planning-employes`,
     robots: 'index, follow',
   },
@@ -430,7 +430,7 @@ export function getCanonicalUrl(path: string): string {
  */
 export function getOGImageUrl(page: string): string {
   const metadata = getPageMetadata(page);
-  return metadata?.ogImage || `${siteUrl}/og/default.png`;
+  return metadata?.ogImage || `${siteUrl}/brand/opengraph.svg`;
 }
 
 /**

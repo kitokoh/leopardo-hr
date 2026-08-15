@@ -563,7 +563,7 @@ export default function DashboardPage() {
 
                 <div className="mb-4 rounded-xl bg-white/50 p-4">
                   <p className="text-sm leading-relaxed text-slate-700">
-                    &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
+                    L&apos;assistant Leo IA peut preparer votre paie mensuelle, generer le rapport hebdomadaire ou repondre a vos questions RH.
                   </p>
                 </div>
 
@@ -631,23 +631,22 @@ export default function DashboardPage() {
           <GlassCard delay={0.7}>
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h4 className="font-bold text-slate-950">Presence hebdo</h4>
-                <span className="text-xs font-bold text-emerald-600">+12%</span>
+                <h4 className="font-bold text-slate-950">Presence aujourd&apos;hui</h4>
+                <span className="text-xs font-bold text-emerald-600">
+                  {summary ? Math.round((summary.today_attendance / Math.max(1, summary.employees_active)) * 100) : '—'}%
+                </span>
               </div>
-              <div className="flex h-32 items-end gap-2">
-                {[65, 80, 75, 90, 85, 70, 88].map((height, index) => (
-                  <div key={index} className="flex flex-1 flex-col items-center gap-1">
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: `${height}%` }}
-                      transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                      className={`w-full rounded-t-lg ${
-                        height > 80 ? 'bg-emerald-500' : height > 70 ? 'bg-emerald-400' : 'bg-emerald-300'
-                      }`}
-                    />
-                    <span className="text-xs text-slate-400">{['L', 'M', 'M', 'J', 'V', 'S', 'D'][index]}</span>
-                  </div>
-                ))}
+              <div className="flex h-32 flex-col items-center justify-center gap-2">
+                {summary ? (
+                  <>
+                    <div className="text-4xl font-black text-slate-950">{summary.today_attendance}</div>
+                    <p className="text-xs text-slate-500">
+                      pointage(s) sur {summary.employees_active} employe(s) actif(s) — source /dashboard/summary
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-slate-500">Chargement des donnees de presence...</p>
+                )}
               </div>
             </div>
           </GlassCard>

@@ -208,7 +208,7 @@ export function SignupForm({
           // showing a verification screen for a code that was never sent.
           setPendingMessage(
             response.message ||
-              "c.pendingFallback"
+              c.pendingFallback
           );
           setCurrentStep('pending');
         } else {
@@ -271,7 +271,7 @@ export function SignupForm({
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
-      setOtpError('c.otpInvalidLength');
+      setOtpError(c.otpInvalidLength);
       return;
     }
 
@@ -287,10 +287,10 @@ export function SignupForm({
         reset();
         onSuccess?.({} as SignupFormData);
       } else {
-        setOtpError(response.message || 'c.otpInvalidCode');
+        setOtpError(response.message || c.otpInvalidCode);
       }
     } catch (error) {
-      setOtpError('c.otpVerifyError');
+      setOtpError(c.otpVerifyError);
     } finally {
       setIsVerifying(false);
     }
