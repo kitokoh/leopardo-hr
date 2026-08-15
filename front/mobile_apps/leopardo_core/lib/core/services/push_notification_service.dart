@@ -246,5 +246,24 @@ class PushNotificationService {
 
 Future<void> _ensureFirebaseInitialized() async {
   if (Firebase.apps.isNotEmpty) return;
-  await Firebase.initializeApp();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    // Issue #3152 : un stub à clés factices (google-services.json /
+    // GoogleService-Info.plist) compile mais rend les push muettes —
+    // l'échec doit être VISIBLE au bootstrap, pas avalé en silence.
+    final rawError = e.toString();
+    final isPlaceholderConfig =
+        rawError.contains('REPLACE') ||
+        rawError.contains('000000000000') ||
+        rawError.contains('AIzaSyREPLACE');
+    debugPrint(
+      'Firebase init failed: $e'
+      '${isPlaceholderConfig ? ' — CONFIG PLACEHOLDER détectée (issue #3152) : '
+          'injectez google-services.json / GoogleService-Info.plist réels '
+          '(secret GOOGLE_SERVICES_JSON en CI, install-mobile-firebase-configs.ps1 en local).' : ''}',
+    );
+    rethrow;
+  }
 }
