@@ -1,202 +1,20 @@
 {
-  "holidays": {
-    "type_christian": "Christian",
-    "load_error": "Unable to load public holidays.",
-    "th_date": "Date",
-    "name": {
-      "label": "Name"
-    },
-    "date": {
-      "label": "Date"
-    },
-    "save_error": "Unable to save the public holiday.",
-    "nav": {
-      "title": "Public holidays"
-    },
-    "page": {
-      "subtitle": "Calendar of public holidays used by the payroll engine to compute actual working days (issue #1811). National holidays are shared; company holidays remain specific to your company.",
-      "title": "Public holidays by country"
-    },
-    "countries": {
-      "CM": "Cameroon",
-      "TN": "Tunisia",
-      "SN": "Senegal",
-      "DZ": "Algeria",
-      "CI": "Côte d'Ivoire",
-      "MA": "Morocco"
-    },
-    "errors": {
-      "save": "Unable to save the public holiday.",
-      "delete": "Unable to delete.",
-      "load": "Unable to load public holidays."
-    },
-    "modal": {
-      "editTitle": "Edit public holiday",
-      "newTitle": "New public holiday"
-    },
-    "islamic": {
-      "th_duration": "Duration",
-      "load_error": "Error loading the Islamic calendar.",
-      "th_date": "Gregorian date",
-      "confirm_year_success": "{count} date(s) confirmed.",
-      "delete_confirm_dialog": "Delete “{name}”?",
-      "th_countries": "Countries",
-      "save_error": "Error while saving.",
-      "status_approximate": "Approximate",
-      "label_confirmed": "Confirmed (official) date",
-      "label_date": "Gregorian date",
-      "th_name": "Holiday",
-      "modal_title": "Edit {name}",
-      "empty": "No Islamic holiday recorded for {year}.",
-      "confirm_dialog": "Confirm all Islamic dates for {year}?",
-      "subtitle": "Mobile dates of the Hijri calendar (Eid, Mawlid, Tamkharit…) entered per year. They apply automatically to CEMAC/ECOWAS countries + DZ/MA/TN.",
-      "banner_unconfirmed": "{count} unconfirmed Islamic holiday(s) for {year} — please verify the dates before payroll closing.",
-      "confirm_error": "Error confirming the dates.",
-      "confirm": "Confirm {year}",
-      "title": "Islamic holidays",
-      "edit": "Edit",
-      "th_actions": "Actions",
-      "status_confirmed": "Confirmed",
-      "saved": "Islamic holiday saved.",
-      "duration_days": "{count} day(s)",
-      "th_status": "Status",
-      "label_duration": "Duration (days)"
-    },
-    "success": {
-      "deleted": "Public holiday deleted.",
-      "saved": "Public holiday saved."
-    },
-    "edit_title": "Edit public holiday",
-    "confirm": {
-      "delete": "Delete « :name »?"
-    },
-    "th_type": "Type",
-    "th": {
-      "name": "Name",
-      "type": "Type",
-      "date": "Date",
-      "actions": "Actions",
-      "scope": "Scope"
-    },
-    "type": {
-      "islamic": "Islamic",
-      "label": "Type",
-      "custom": "Custom",
-      "fixed": "Fixed",
-      "christian": "Christian"
-    },
-    "saved": "Public holiday saved.",
-    "th_scope": "Scope",
-    "type_custom": "Custom",
-    "saving": "Saving…",
-    "deleted": "Public holiday deleted.",
-    "cancel": "Cancel",
-    "country": "Country",
-    "type_fixed": "Fixed",
-    "recurring": "Recurs every year",
-    "save": "Save",
-    "th_name": "Name",
-    "delete_error": "Unable to delete.",
-    "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
-    "empty": "No public holiday for {country} / {year}.",
-    "add_title": "New public holiday",
-    "scope": {
-      "national": "National",
-      "company": "Company"
-    },
-    "edit": "Edit",
-    "th_actions": "Actions",
-    "scope_company": "Company",
-    "delete": "Delete",
-    "year": "Year",
-    "page_title": "Public holidays by country",
-    "type_islamic": "Islamic",
-    "add": "Add public holiday",
-    "scope_national": "National"
-  },
-  "social_contrib": {
-    "load_error": "Failed to load the contributions.",
-    "sim_employee": "Employee contributions",
-    "saving": "Saving…",
-    "compare_country": "Compared country",
-    "deleted": "Contribution deleted.",
-    "cancel": "Cancel",
-    "sim_tax": "Tax",
-    "save_error": "Failed to save the contribution.",
-    "th_rate": "Rate",
-    "type_employer": "Employer",
-    "th_cap": "Cap",
-    "th_country": "Country",
-    "type_employee": "Employee",
-    "save": "Save",
-    "delete_error": "Failed to delete.",
-    "type_all": "All",
-    "ignore_caps": "Without statutory cap",
-    "th_code": "Code",
-    "empty": "No contribution recorded for this country.",
-    "add_title": "Add contribution",
-    "subtitle": "CNPS, CNSS, IPRES, CNAS… — rates, caps and types (employee/employer) per country. National management + simulator with/without cap and 2-country comparator.",
-    "edit_title": "Edit contribution",
-    "sim_title": "Simulator & comparator",
-    "delete_confirm": "Delete contribution \"{name}\"?",
-    "sim_employer": "Employer contributions",
-    "title": "Social contributions by country",
-    "th_type": "Type",
-    "th_actions": "Actions",
-    "edit": "Edit",
-    "total_cost": "Total employer cost",
-    "sim_subtitle": "Enter a gross salary: employee/employer breakdown, tax and total employer cost for two countries side by side (with or without the statutory cap).",
-    "created": "Contribution created.",
-    "delete": "Delete",
-    "saved": "Contribution updated.",
-    "th_effective": "Effective",
-    "th_org": "Scheme",
-    "add": "Add contribution",
-    "sim_gross": "Gross salary"
-  },
-  "_locale": "en",
-  "marketing": {
-    "oauth": {
-      "saved_ok": "{provider} configuration saved",
-      "fields": {
-        "secret_hint": "(leave blank to keep current)",
-        "placeholder_secret": "New secret (optional)",
-        "redirect_uri": "Redirect URI",
-        "placeholder_id": "Your Client ID",
-        "placeholder_uri": "https://example.com/oauth/callback",
-        "client_secret": "Client Secret",
-        "client_id": "Client ID"
-      },
-      "save": "Save",
-      "subtitle": "Connect your social media accounts via Ayrshare",
-      "providers": {
-        "twitter": {
-          "label": "X (Twitter)",
-          "description": "Connect to Twitter API v2"
-        },
-        "linkedin": {
-          "label": "LinkedIn",
-          "description": "Connect to LinkedIn Marketing API"
-        },
-        "facebook": {
-          "label": "Facebook / Meta",
-          "description": "Connect to Facebook Graph API"
-        }
-      },
-      "nav_title": "Marketing OAuth",
-      "ayrshare_info": "These settings are used by Ayrshare to post to your social networks.",
-      "title": "Marketing OAuth Settings"
-    }
-  },
-  "_version": "1.0.0",
   "users": {
     "bulkPanel": {
       "suspend": "Suspend",
       "deactivate": "Deactivate",
-      "export": "Export",
       "cancel": "Cancel",
       "selectedCount": ":count selected",
-      "activate": "Activate"
+      "activate": "Activate",
+      "export": "Export"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete :name?"
+    },
+    "errors": {
+      "name_required": "The full name is required.",
+      "password_required": "The password is required.",
+      "fix_fields": "Please fix the highlighted fields"
     },
     "impersonation": {
       "title": "Impersonate an employee",
@@ -215,129 +33,274 @@
       "done": "Done",
       "employee": "Linked employee #:id"
     },
-    "actions": {
-      "bulk": "Actions (:count)",
-      "export": "Export",
-      "new": "New"
-    },
-    "errors": {
-      "name_required": "The full name is required.",
-      "fix_fields": "Please fix the highlighted fields",
-      "password_required": "The password is required."
-    },
     "filters": {
-      "status": {
-        "active": "Active",
-        "label": "Status",
-        "pending": "Pending",
-        "inactive": "Inactive",
-        "suspended": "Suspended",
-        "all": "All statuses"
-      },
       "advanced": {
         "hide": "Hide advanced filters",
         "show": "Show advanced filters"
       },
-      "registrationDate": {
-        "week": "This week",
-        "label": "Registration date",
-        "month": "This month",
-        "today": "Today",
-        "all": "All dates",
-        "quarter": "This quarter"
+      "search": {
+        "label": "Search",
+        "placeholder": "Name, email, company..."
       },
-      "segment": {
-        "champions": "Champions",
-        "label": "Segment",
-        "potential": "Potential",
-        "atRisk": "At risk",
-        "all": "All segments",
-        "loyal": "Loyal",
-        "new": "New"
-      },
-      "lastLogin": {
-        "never": "Never logged in",
-        "week": "This week",
-        "label": "Last login",
-        "month": "This month",
-        "today": "Today",
-        "all": "All"
+      "status": {
+        "label": "Status",
+        "inactive": "Inactive",
+        "all": "All statuses",
+        "active": "Active",
+        "pending": "Pending",
+        "suspended": "Suspended"
       },
       "company": {
         "label": "Company",
         "all": "All companies"
       },
+      "segment": {
+        "label": "Segment",
+        "atRisk": "At risk",
+        "all": "All segments",
+        "champions": "Champions",
+        "potential": "Potential",
+        "new": "New",
+        "loyal": "Loyal"
+      },
       "role": {
-        "employee": "Employee",
         "label": "Role",
-        "hr": "HR",
+        "all": "All roles",
         "admin": "Administrator",
         "manager": "Manager",
-        "all": "All roles"
+        "hr": "HR",
+        "employee": "Employee"
       },
-      "search": {
-        "label": "Search",
-        "placeholder": "Name, email, company..."
+      "registrationDate": {
+        "label": "Registration date",
+        "all": "All dates",
+        "month": "This month",
+        "quarter": "This quarter",
+        "today": "Today",
+        "week": "This week"
+      },
+      "lastLogin": {
+        "label": "Last login",
+        "all": "All",
+        "month": "This month",
+        "never": "Never logged in",
+        "today": "Today",
+        "week": "This week"
       }
-    },
-    "confirm": {
-      "delete": "Are you sure you want to delete :name?"
     },
     "page": {
       "summary": ":count user(s) - :active active - :newToday new today",
       "title": "User Management"
     },
     "toast": {
-      "updated": "User updated",
       "bulkActivated": ":count user(s) activated",
-      "loadError": "Failed to load users",
-      "deleted": "User deleted",
       "selectionExportDone": "Selection export completed",
-      "bulkDeactivated": ":count user(s) deactivated",
-      "impersonating": "Signing in as :name",
+      "exportDone": "Export completed",
+      "deleted": "User deleted",
+      "exportError": "Export failed",
       "created": "User created successfully",
       "bulkSuspended": ":count user(s) suspended",
+      "updated": "User updated",
+      "deleteError": "Failed to delete user",
+      "loadError": "Failed to load users",
       "bulkError": "Bulk action failed",
-      "exportInProgress": "Export in progress...",
-      "exportError": "Export failed",
-      "exportDone": "Export completed",
-      "deleteError": "Failed to delete user"
+      "bulkDeactivated": ":count user(s) deactivated",
+      "impersonating": "Signing in as :name",
+      "exportInProgress": "Export in progress..."
+    },
+    "actions": {
+      "new": "New",
+      "export": "Export",
+      "bulk": "Actions (:count)"
     }
   },
-  "profile": {
-    "job_title_label": "Job title",
-    "subtitle": "Personal information and language",
-    "job_title_unset": "Job title not set",
-    "back_tooltip": "Back",
-    "email_label": "Email",
-    "title": "My profile",
-    "department_label": "Department",
-    "value_unset": "Not set",
-    "open_settings": "Open account settings",
-    "language_save": "Update language",
-    "details_title": "Information",
-    "loading": "Loading profile...",
-    "language_saving": "Updating...",
-    "language_updated": "Language updated.",
-    "matricule_label": "Employee ID"
+  "signup": {
+    "haveAccount": "Already have an account?",
+    "rolePlaceholder": "Select",
+    "badge": "Free 14-day trial",
+    "pendingTitle": "Trial request received",
+    "copied": "Copied!",
+    "timeoutBody": "Your workspace is being prepared. We will email you the access link as soon as it is ready.",
+    "teamPlaceholder": "Select",
+    "otpVerifyError": "An error occurred during verification. Please try again.",
+    "otpSentTo": "We sent a 6-digit verification code to:",
+    "back": "Back",
+    "credsEmailed": "Your sign-in credentials were just sent by email.",
+    "labelTeamSize": "Team size",
+    "failedBody": "An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.",
+    "otpTitle": "Verify your email",
+    "codeHint": "A 6-digit code will be sent to your email to confirm your identity.",
+    "pendingFallback": "Trial request received. Our team will contact you within 24 business hours.",
+    "submittingLabel": "Sending code...",
+    "termsLink": "terms of use",
+    "defaultError": "Something went wrong",
+    "preparingTitle": "Preparing your workspace",
+    "successTitle": "Your workspace is ready!",
+    "readyTitle": "Your workspace is ready!",
+    "roleManager": "Manager",
+    "emailVerified": "Your email address has been verified.",
+    "readySubtitle": "The demo sandbox is provisioned. Access it directly:",
+    "changePasswordNote": "Change your password on first sign-in.",
+    "trackStatus": "Track my workspace status",
+    "credsLabel": "Sign-in credentials",
+    "validation": {
+      "emailTooLong": "Email too long",
+      "emailInvalid": "Invalid email",
+      "agreeTerms": "You must accept the terms of use",
+      "roleRequired": "Select your role",
+      "phoneInvalid": "Invalid phone number",
+      "companyTooLong": "Company name is too long",
+      "emailTooShort": "Email too short",
+      "employeesRequired": "Select a team size",
+      "companyTooShort": "Company name must be at least 2 characters"
+    },
+    "placeholderEmail": "you@company.com",
+    "timeoutTitle": "Still being created",
+    "pendingNote": "Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.",
+    "operationsNote": "We will prepare a field-focused setup: attendance, tasks, kiosk and team monitoring.",
+    "verifyLabel": "Verify and create my workspace",
+    "linkCopied": "Link copied!",
+    "placeholderCompany": "Your company name",
+    "refreshStatus": "Refresh status",
+    "roleHr": "HR",
+    "agreePrefix": "I accept the",
+    "trialNoteSuffix": "no credit card required",
+    "linkEmailed": "Your access link was also sent by email.",
+    "labelCompany": "Company",
+    "labelRole": "Your role",
+    "otpInvalidCode": "Invalid or expired code.",
+    "statusFor": "For:",
+    "fieldPassword": "Password",
+    "placeholderPhone": "+1 555 000 0000",
+    "fieldEmail": "Email",
+    "accessCta": "Access my workspace",
+    "agreeSuffix": "and the",
+    "submitLabel": "Get my verification code",
+    "loginCta": "Sign in",
+    "trialDaysUnit": "days",
+    "roleFounder": "Founder / CEO",
+    "roleOther": "Other",
+    "preparingBody": "We are provisioning your demo sandbox. This usually takes less than 30 seconds.",
+    "failedTitle": "Creation interrupted",
+    "verifyingLabel": "Verifying...",
+    "roleOperations": "Field operations",
+    "statusEvery5s": "Status checked every 5 seconds.",
+    "subtitle": "Create your trial workspace in 2 minutes. No credit card required.",
+    "credsSentByEmail": "These credentials were also sent by email to",
+    "trialNote": "Free trial of",
+    "copyLink": "Copy link",
+    "labelPhone": "Phone (optional)",
+    "labelEmail": "Work email",
+    "copyPasswordTitle": "Copy password",
+    "codeValidity": "The code is valid for 30 minutes. Check your spam folder if you cannot find it.",
+    "otpInvalidLength": "Please enter the 6 digits of the code.",
+    "title": "Try Leopardo with your company",
+    "downloadApp": "Download the app",
+    "privacyLink": "privacy policy"
   },
-  "ai_chat": {
-    "error_message": "Error: unable to reach the assistant.",
-    "empty_state_title": "Ask your HR questions",
-    "input_hint": "Type your message...",
-    "send_tooltip": "Send",
-    "back_tooltip": "Back",
-    "title": "AI Assistant"
+  "tax_rates": {
+    "saving": "Saving…",
+    "pending_empty": "No change pending validation.",
+    "rates_empty": "No rate recorded.",
+    "modal_title": "Propose a rate change",
+    "th_effective": "Effective",
+    "submitted": "Change submitted for validation.",
+    "th_rate": "Rate",
+    "th_type": "Type",
+    "type_contribution": "Contribution",
+    "save": "Save",
+    "rejected": "Change rejected (back to draft).",
+    "th_reason": "Reason",
+    "history_title": "Change history",
+    "th_action": "Action",
+    "legal_ref_required": "A legal reference is required (it is traced in the history).",
+    "reject_error": "Unable to reject the change.",
+    "cancel": "Cancel",
+    "status_only": "Read-only (tenant action)",
+    "status_pending": "🟡 Pending",
+    "saved": "Proposal saved.",
+    "close": "Close",
+    "save_error": "Unable to save the proposal.",
+    "rates_subtitle": "Only active rows are used in payslips.",
+    "legal_ref": "Legal reference",
+    "th_status": "Status",
+    "history_submitted": "Submitted",
+    "th_country": "Country",
+    "history_rejected": "Rejected",
+    "history": "History",
+    "approve_error": "Unable to approve the change.",
+    "reject_modal_title": "Reject the change",
+    "status_active": "🟢 Active",
+    "status_draft": "⚪ Draft",
+    "history_approved": "Approved",
+    "submit_error": "Unable to submit the change.",
+    "th_actor": "Actor",
+    "history_created": "Created",
+    "reject": "Reject",
+    "approved": "Change approved and active.",
+    "propose": "Propose a change",
+    "th_actions": "Actions",
+    "history_superseded": "Superseded",
+    "subtitle": "Tax brackets and social contributions used by the payroll engine. Any change goes through a two-step validation workflow (accountant → platform admin) with an immutable audit trail.",
+    "pending_title": "Pending validation",
+    "rates_title": "Rates in force",
+    "submit": "Submit",
+    "history_empty": "No history entry.",
+    "approve": "Approve",
+    "type_slab": "Bracket",
+    "load_error": "Unable to load rates.",
+    "history_error": "Unable to load history.",
+    "reject_reason": "Rejection reason (required)",
+    "th_date": "Date",
+    "th_name": "Label",
+    "title": "Legal rates — validation",
+    "status_superseded": "🔴 Superseded"
+  },
+  "app": {
+    "title": "Leopardo HR"
+  },
+  "social_contrib": {
+    "saving": "Saving…",
+    "deleted": "Contribution deleted.",
+    "add_title": "Add contribution",
+    "edit": "Edit",
+    "compare_country": "Compared country",
+    "sim_gross": "Gross salary",
+    "th_effective": "Effective",
+    "delete": "Delete",
+    "th_rate": "Rate",
+    "th_type": "Type",
+    "th_code": "Code",
+    "save": "Save",
+    "sim_employee": "Employee contributions",
+    "delete_error": "Failed to delete.",
+    "sim_subtitle": "Enter a gross salary: employee/employer breakdown, tax and total employer cost for two countries side by side (with or without the statutory cap).",
+    "total_cost": "Total employer cost",
+    "th_actions": "Actions",
+    "add": "Add contribution",
+    "cancel": "Cancel",
+    "ignore_caps": "Without statutory cap",
+    "type_employee": "Employee",
+    "sim_tax": "Tax",
+    "delete_confirm": "Delete contribution \"{name}\"?",
+    "type_employer": "Employer",
+    "saved": "Contribution updated.",
+    "created": "Contribution created.",
+    "sim_employer": "Employer contributions",
+    "save_error": "Failed to save the contribution.",
+    "type_all": "All",
+    "subtitle": "CNPS, CNSS, IPRES, CNAS… — rates, caps and types (employee/employer) per country. National management + simulator with/without cap and 2-country comparator.",
+    "edit_title": "Edit contribution",
+    "th_cap": "Cap",
+    "th_org": "Scheme",
+    "sim_title": "Simulator & comparator",
+    "load_error": "Failed to load the contributions.",
+    "empty": "No contribution recorded for this country.",
+    "title": "Social contributions by country",
+    "th_country": "Country"
   },
   "welcome": {
-    "brand": {
-      "subtitle": "Conversational, mobile-first, modular."
-    },
     "story": {
-      "modules": {
-        "body": "The product opens what is useful today first, then keeps Finance, Security, and Leo on a readable path.",
-        "title": "Active modules, visible roadmap"
-      },
       "clarity": {
         "body": "Leopardo HR starts with a few clear actions: clock in, follow the month, and find the information that matters.",
         "title": "A home screen that speaks before it overwhelms"
@@ -345,119 +308,411 @@
       "field": {
         "body": "The phone is the employee's main surface. Clock-ins, absences, and documents live here.",
         "title": "Mobile-first for field teams"
+      },
+      "modules": {
+        "body": "The product opens what is useful today first, then keeps Finance, Security, and Leo on a readable path.",
+        "title": "Active modules, visible roadmap"
       }
     },
     "hero": {
       "title": "Your workday starts here, not in a back office.",
       "description": "Clock-ins, personal tracking, and active HR modules open first on the phone, with a simple and readable experience."
+    },
+    "brand": {
+      "subtitle": "Conversational, mobile-first, modular."
     }
   },
-  "dashboard": {
-    "recent_activity_hint": "Latest actions from your team",
-    "active_employees": "Active",
-    "presence_today_summary": "{present} check-in(s) out of {active} active employee(s) today",
-    "leo_presence_insight": "Today, {today} check-in(s) out of {active} active employee(s). Would you like to send a congratulations message to the team?",
-    "launch_readiness": "Launch readiness",
-    "presence_today_empty": "No attendance data available.",
-    "leo_announcements_count": "{count} announcement(s) published in your company.",
-    "upgrade": "Upgrade",
-    "title": "Dashboard",
-    "recent_activity": "Recent activity",
-    "leo_presence_empty": "No attendance data available right now. Would you still like to send a congratulations message to the team?",
-    "priority_actions": "Priority actions",
-    "leo_ia_announcement_body": "Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!",
-    "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments.",
-    "company": "Company",
-    "presence_today_title": "Attendance today",
-    "leo_ia_announcement_title": "Congratulations team"
-  },
-  "tax_rates": {
-    "load_error": "Unable to load rates.",
-    "th_date": "Date",
-    "th_reason": "Reason",
-    "status_draft": "⚪ Draft",
-    "save_error": "Unable to save the proposal.",
-    "history_submitted": "Submitted",
-    "reject_reason": "Rejection reason (required)",
-    "approve_error": "Unable to approve the change.",
-    "type_slab": "Bracket",
-    "modal_title": "Propose a rate change",
-    "submit": "Submit",
-    "th_action": "Action",
-    "status_superseded": "🔴 Superseded",
-    "legal_ref": "Legal reference",
-    "history_empty": "No history entry.",
-    "type_contribution": "Contribution",
-    "reject_modal_title": "Reject the change",
-    "approve": "Approve",
-    "title": "Legal rates — validation",
-    "th_type": "Type",
-    "legal_ref_required": "A legal reference is required (it is traced in the history).",
-    "approved": "Change approved and active.",
-    "submit_error": "Unable to submit the change.",
-    "history": "History",
-    "status_only": "Read-only (tenant action)",
-    "history_created": "Created",
-    "saved": "Proposal saved.",
-    "rates_subtitle": "Only active rows are used in payslips.",
-    "th_status": "Status",
+  "tax_slabs": {
     "saving": "Saving…",
-    "cancel": "Cancel",
-    "rejected": "Change rejected (back to draft).",
-    "th_rate": "Rate",
-    "status_pending": "🟡 Pending",
-    "pending_empty": "No change pending validation.",
-    "th_country": "Country",
-    "history_title": "Change history",
-    "save": "Save",
-    "th_name": "Label",
-    "th_actor": "Actor",
-    "rates_title": "Rates in force",
-    "rates_empty": "No rate recorded.",
-    "pending_title": "Pending validation",
-    "history_rejected": "Rejected",
-    "history_approved": "Approved",
-    "history_superseded": "Superseded",
-    "propose": "Propose a change",
-    "history_error": "Unable to load history.",
-    "subtitle": "Tax brackets and social contributions used by the payroll engine. Any change goes through a two-step validation workflow (accountant → platform admin) with an immutable audit trail.",
-    "th_actions": "Actions",
-    "status_active": "🟢 Active",
-    "reject_error": "Unable to reject the change.",
-    "close": "Close",
+    "add_title": "Add bracket",
+    "edit": "Edit",
+    "sim_gross": "Gross salary",
     "th_effective": "Effective",
-    "reject": "Reject",
-    "submitted": "Change submitted for validation."
+    "delete": "Delete",
+    "reset_confirm": "Reset to the legal default values? Current brackets will be replaced.",
+    "sim_error": "Simulation failed.",
+    "scope_company": "Company-specific",
+    "th_rate": "Rate",
+    "reset": "Reset to legal defaults",
+    "save": "Save",
+    "reset_done": "Brackets reset.",
+    "th_min": "Min",
+    "cancel": "Cancel",
+    "sim_tax": "Tax",
+    "saved": "Bracket updated.",
+    "created": "Bracket created.",
+    "sim_base": "Base",
+    "save_error": "Failed to save the bracket.",
+    "edit_title": "Edit bracket",
+    "sim_net": "Net",
+    "legal_ref": "Legal reference",
+    "sim_running": "Calculating…",
+    "sim_compare": "Salary to compare",
+    "th_max": "Max",
+    "th_country": "Country",
+    "deleted": "Bracket deleted.",
+    "sim_slab_tax": "Bracket tax",
+    "th_deduction": "Fixed deduction",
+    "sim_social": "Contributions (employee)",
+    "delete_error": "Failed to delete.",
+    "scope_national": "National",
+    "default_name": "{country} legal bracket",
+    "th_actions": "Actions",
+    "add": "Add bracket",
+    "simulator_subtitle": "Enter a gross salary: the calculation (contributions, base, per-bracket tax, net, employer cost) runs on the real payroll engine — nothing is persisted.",
+    "delete_confirm": "Delete bracket \"{name}\"?",
+    "scope": "Scope",
+    "reset_error": "Reset failed.",
+    "subtitle": "IRG/IRPP/ITSAS brackets used by the payroll engine. National management (platform admin), real-time impact simulator — nothing is persisted.",
+    "national_note": "national scope — company overrides stay on the tenant side",
+    "sim_run": "Simulate",
+    "load_error": "Failed to load the tax brackets.",
+    "empty": "No bracket recorded for this country.",
+    "simulator_title": "Impact simulator",
+    "title": "Tax brackets by country"
+  },
+  "companies": {
+    "toast": {
+      "subscription_failed": "Failed to update the subscription.",
+      "tickets_failed": "Unable to load the support tickets.",
+      "features_failed": "Failed to save the module configuration.",
+      "load_failed": "Unable to load the company details."
+    }
+  },
+  "_version": "1.0.0",
+  "_updated_at": "2026-08-14T18:45:00Z",
+  "holidays": {
+    "saving": "Saving…",
+    "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
+    "add_title": "New public holiday",
+    "edit": "Edit",
+    "type_islamic": "Islamic",
+    "delete": "Delete",
+    "page_title": "Public holidays by country",
+    "name": {
+      "label": "Name"
+    },
+    "scope_company": "Company",
+    "th_type": "Type",
+    "save": "Save",
+    "islamic": {
+      "th_duration": "Duration",
+      "label_confirmed": "Confirmed (official) date",
+      "confirm_error": "Error confirming the dates.",
+      "edit": "Edit",
+      "confirm_dialog": "Confirm all Islamic dates for {year}?",
+      "modal_title": "Edit {name}",
+      "duration_days": "{count} day(s)",
+      "th_actions": "Actions",
+      "confirm": "Confirm {year}",
+      "status_approximate": "Approximate",
+      "saved": "Islamic holiday saved.",
+      "banner_unconfirmed": "{count} unconfirmed Islamic holiday(s) for {year} — please verify the dates before payroll closing.",
+      "label_duration": "Duration (days)",
+      "status_confirmed": "Confirmed",
+      "confirm_year_success": "{count} date(s) confirmed.",
+      "save_error": "Error while saving.",
+      "subtitle": "Mobile dates of the Hijri calendar (Eid, Mawlid, Tamkharit…) entered per year. They apply automatically to CEMAC/ECOWAS countries + DZ/MA/TN.",
+      "delete_confirm_dialog": "Delete “{name}”?",
+      "load_error": "Error loading the Islamic calendar.",
+      "label_date": "Gregorian date",
+      "empty": "No Islamic holiday recorded for {year}.",
+      "th_countries": "Countries",
+      "th_status": "Status",
+      "th_date": "Gregorian date",
+      "th_name": "Holiday",
+      "title": "Islamic holidays"
+    },
+    "type_christian": "Christian",
+    "cancel": "Cancel",
+    "saved": "Public holiday saved.",
+    "page": {
+      "title": "Public holidays by country",
+      "subtitle": "Calendar of public holidays used by the payroll engine to compute actual working days (issue #1811). National holidays are shared; company holidays remain specific to your company."
+    },
+    "save_error": "Unable to save the public holiday.",
+    "edit_title": "Edit public holiday",
+    "th_scope": "Scope",
+    "type_fixed": "Fixed",
+    "type_custom": "Custom",
+    "deleted": "Public holiday deleted.",
+    "countries": {
+      "CM": "Cameroon",
+      "SN": "Senegal",
+      "TN": "Tunisia",
+      "CI": "Côte d'Ivoire",
+      "DZ": "Algeria",
+      "MA": "Morocco"
+    },
+    "nav": {
+      "title": "Public holidays"
+    },
+    "modal": {
+      "editTitle": "Edit public holiday",
+      "newTitle": "New public holiday"
+    },
+    "th": {
+      "name": "Name",
+      "date": "Date",
+      "type": "Type",
+      "scope": "Scope",
+      "actions": "Actions"
+    },
+    "date": {
+      "label": "Date"
+    },
+    "delete_error": "Unable to delete.",
+    "year": "Year",
+    "scope_national": "National",
+    "th_actions": "Actions",
+    "add": "Add public holiday",
+    "confirm": {
+      "delete": "Delete « :name »?"
+    },
+    "scope": {
+      "company": "Company",
+      "national": "National"
+    },
+    "country": "Country",
+    "recurring": "Recurs every year",
+    "errors": {
+      "load": "Unable to load public holidays.",
+      "delete": "Unable to delete.",
+      "save": "Unable to save the public holiday."
+    },
+    "type": {
+      "label": "Type",
+      "fixed": "Fixed",
+      "islamic": "Islamic",
+      "christian": "Christian",
+      "custom": "Custom"
+    },
+    "success": {
+      "deleted": "Public holiday deleted.",
+      "saved": "Public holiday saved."
+    },
+    "load_error": "Unable to load public holidays.",
+    "empty": "No public holiday for {country} / {year}.",
+    "th_date": "Date",
+    "th_name": "Name"
+  },
+  "profile": {
+    "job_title_label": "Job title",
+    "open_settings": "Open account settings",
+    "language_save": "Update language",
+    "subtitle": "Personal information and language",
+    "loading": "Loading profile...",
+    "title": "My profile",
+    "department_label": "Department",
+    "value_unset": "Not set",
+    "details_title": "Information",
+    "back_tooltip": "Back",
+    "language_updated": "Language updated.",
+    "email_label": "Email",
+    "language_saving": "Updating...",
+    "matricule_label": "Employee ID",
+    "job_title_unset": "Job title not set"
   },
   "common": {
     "language": {
       "label": "Language",
       "variants": {
         "en-GB": "English (United Kingdom)",
-        "fr-FR": "French (France)",
-        "ar-SA": "Arabic (Saudi Arabia)",
+        "fr-BE": "French (Belgium)",
         "tr-TR": "Turkish (Turkey)",
-        "fr-CA": "French (Canada)",
-        "ar-MA": "Arabic (Morocco)",
+        "ar-SA": "Arabic (Saudi Arabia)",
         "en-US": "English (United States)",
-        "fr-BE": "French (Belgium)"
+        "fr-FR": "French (France)",
+        "fr-CA": "French (Canada)",
+        "ar-MA": "Arabic (Morocco)"
       }
     },
     "or": "or",
     "countries": {
       "ML": "Mali",
+      "SN": "Senegal",
       "TN": "Tunisia",
-      "CI": "Côte d'Ivoire",
-      "MA": "Morocco",
-      "TR": "Türkiye",
-      "FR": "France",
       "BF": "Burkina Faso",
+      "DZ": "Algeria",
+      "MA": "Morocco",
+      "FR": "France",
+      "TR": "Türkiye",
+      "CM": "Cameroon",
       "CG": "Congo",
       "GA": "Gabon",
-      "CM": "Cameroon",
-      "SN": "Senegal",
-      "DZ": "Algeria"
+      "CI": "Côte d'Ivoire"
     }
+  },
+  "_locale": "en",
+  "attendance": {
+    "retry_after_failure": "{label}. Please try again.",
+    "sending_to_server": "Sending {label} to the server..."
+  },
+  "emails": {
+    "invitation": {
+      "action": "Activate my account",
+      "greeting": "Hello :name,",
+      "footer": "If you did not request this action, ignore this email.",
+      "subject": "You are invited to join :company on Leopardo HR",
+      "body": "You have been invited to join :company. Click the link below to activate your account."
+    },
+    "absence_approved": {
+      "action": "View request",
+      "greeting": "Hello :name,",
+      "footer": "The team schedule has been updated.",
+      "subject": "Your leave request has been approved",
+      "body": "Your leave request for :period has been approved."
+    },
+    "payroll_ready": {
+      "action": "View my payslip",
+      "greeting": "Hello :name,",
+      "footer": "Please review your information before accounting export.",
+      "subject": "Your payslip is ready",
+      "body": "Your payslip for :period is ready. You can review it in Leopardo HR."
+    },
+    "absence_rejected": {
+      "action": "View request",
+      "greeting": "Hello :name,",
+      "footer": "Please contact your manager if you need more details.",
+      "subject": "Your leave request has been rejected",
+      "body": "Your leave request for :period has been rejected."
+    },
+    "reset_password": {
+      "action": "Reset password",
+      "greeting": "Hello :name,",
+      "footer": "If you did not request this action, ignore this email.",
+      "subject": "Reset your password",
+      "body": "Click the link below to reset your password."
+    }
+  },
+  "auth": {
+    "two_factor_required": "The 2FA code is required.",
+    "manager_login_subtitle": "Manager / HR sign-in",
+    "activate_invitation": "Activate my invitation",
+    "continue_with_google": "Continue with Google",
+    "activate_manager_access": "Activate my manager access",
+    "employee": {
+      "invitation": {
+        "access": "Employee access (invitation)"
+      }
+    },
+    "email_invalid": "Invalid email",
+    "login": {
+      "title": "Sign in"
+    },
+    "personal_account": {
+      "create": "Create a personal account",
+      "explanation": "Personal account: organize your documents, then create or join a company from your space."
+    },
+    "personal_account_link": "Personal account",
+    "employee_login_subtitle": "Employee sign-in",
+    "password_label": "Password",
+    "email_professional_label": "Work email",
+    "password_too_short": "Password too short",
+    "email_required": "Email required",
+    "back_tooltip": "Back",
+    "email_label": "Email",
+    "password_required": "Password required",
+    "try_demo_account": "Try a demo account"
+  },
+  "marketing": {
+    "oauth": {
+      "nav_title": "Marketing OAuth",
+      "save": "Save",
+      "ayrshare_info": "These settings are used by Ayrshare to post to your social networks.",
+      "fields": {
+        "redirect_uri": "Redirect URI",
+        "client_secret": "Client Secret",
+        "placeholder_uri": "https://example.com/oauth/callback",
+        "secret_hint": "(leave blank to keep current)",
+        "placeholder_id": "Your Client ID",
+        "client_id": "Client ID",
+        "placeholder_secret": "New secret (optional)"
+      },
+      "saved_ok": "{provider} configuration saved",
+      "providers": {
+        "facebook": {
+          "label": "Facebook / Meta",
+          "description": "Connect to Facebook Graph API"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Connect to Twitter API v2"
+        },
+        "linkedin": {
+          "label": "LinkedIn",
+          "description": "Connect to LinkedIn Marketing API"
+        }
+      },
+      "title": "Marketing OAuth Settings",
+      "subtitle": "Connect your social media accounts via Ayrshare"
+    }
+  },
+  "platform_login": {
+    "email_required": "Email required",
+    "2fa_notice": "This account protects the platform: enter the 2FA code from your authenticator app.",
+    "use_demo_account": "Use the demo account",
+    "2fa_label": "2FA code if enabled",
+    "email_label": "Super-admin email",
+    "password_required": "Password required",
+    "title": "Leopardo Platform",
+    "subtitle": "Mobile cockpit reserved for platform administration.",
+    "submitting": "Signing in..."
+  },
+  "dashboard": {
+    "company": "Company",
+    "presence_today_empty": "No attendance data available.",
+    "recent_activity_hint": "Latest actions from your team",
+    "launch_readiness": "Launch readiness",
+    "leo_announcements_count": "{count} announcement(s) published in your company.",
+    "leo_presence_insight": "Today, {today} check-in(s) out of {active} active employee(s). Would you like to send a congratulations message to the team?",
+    "leo_presence_empty": "No attendance data available right now. Would you still like to send a congratulations message to the team?",
+    "priority_actions": "Priority actions",
+    "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments.",
+    "recent_activity": "Recent activity",
+    "active_employees": "Active",
+    "leo_ia_announcement_body": "Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!",
+    "presence_today_title": "Attendance today",
+    "presence_today_summary": "{present} check-in(s) out of {active} active employee(s) today",
+    "upgrade": "Upgrade",
+    "leo_ia_announcement_title": "Congratulations team",
+    "title": "Dashboard"
+  },
+  "payroll": {
+    "confidence": {
+      "label": "Payroll rules confidence",
+      "pilot": {
+        "message": "Pilot rules for {country}: amounts based on general public references (labor code) but not yet legally validated locally. Confirm with a local legal or tax advisor before relying on these figures (tax brackets, social contributions, overtime thresholds) for your statutory obligations."
+      },
+      "level_unknown": "Unknown",
+      "production": {
+        "message": "Rules validated and used in production for {country}. Always confirm current rates with a local advisor before relying on these amounts for statutory filings."
+      },
+      "level_placeholder": "Placeholder",
+      "level_production": "Production",
+      "level_pilot": "Pilot",
+      "unknown": {
+        "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
+      },
+      "placeholder": {
+        "message": "Placeholder without values for {country}: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced."
+      }
+    }
+  },
+  "ai_chat": {
+    "empty_state_title": "Ask your HR questions",
+    "input_hint": "Type your message...",
+    "error_message": "Error: unable to reach the assistant.",
+    "back_tooltip": "Back",
+    "send_tooltip": "Send",
+    "title": "AI Assistant"
+  },
+  "modules": {
+    "cabinet": "Document vault",
+    "attendance": "Attendance",
+    "payroll": "Payroll",
+    "notifications": "Notifications",
+    "evaluations": "Evaluations"
   },
   "adminChat": {
     "title": "Leopardo AI Assistant",
@@ -474,265 +729,10 @@
     "error": "Sorry, an error occurred. Please try again.",
     "conversation": "Conversation"
   },
-  "tax_slabs": {
-    "load_error": "Failed to load the tax brackets.",
-    "sim_error": "Simulation failed.",
-    "reset_error": "Reset failed.",
-    "sim_tax": "Tax",
-    "save_error": "Failed to save the bracket.",
-    "default_name": "{country} legal bracket",
-    "th_deduction": "Fixed deduction",
-    "reset": "Reset to legal defaults",
-    "reset_confirm": "Reset to the legal default values? Current brackets will be replaced.",
-    "simulator_subtitle": "Enter a gross salary: the calculation (contributions, base, per-bracket tax, net, employer cost) runs on the real payroll engine — nothing is persisted.",
-    "legal_ref": "Legal reference",
-    "th_max": "Max",
-    "edit_title": "Edit bracket",
-    "simulator_title": "Impact simulator",
-    "title": "Tax brackets by country",
-    "national_note": "national scope — company overrides stay on the tenant side",
-    "sim_base": "Base",
-    "created": "Bracket created.",
-    "saved": "Bracket updated.",
-    "saving": "Saving…",
-    "deleted": "Bracket deleted.",
-    "cancel": "Cancel",
-    "sim_social": "Contributions (employee)",
-    "th_rate": "Rate",
-    "sim_running": "Calculating…",
-    "th_country": "Country",
-    "save": "Save",
-    "delete_error": "Failed to delete.",
-    "empty": "No bracket recorded for this country.",
-    "sim_compare": "Salary to compare",
-    "add_title": "Add bracket",
-    "subtitle": "IRG/IRPP/ITSAS brackets used by the payroll engine. National management (platform admin), real-time impact simulator — nothing is persisted.",
-    "scope_national": "National",
-    "delete_confirm": "Delete bracket \"{name}\"?",
-    "scope": "Scope",
-    "edit": "Edit",
-    "th_actions": "Actions",
-    "sim_net": "Net",
-    "scope_company": "Company-specific",
-    "delete": "Delete",
-    "th_effective": "Effective",
-    "reset_done": "Brackets reset.",
-    "sim_run": "Simulate",
-    "th_min": "Min",
-    "sim_slab_tax": "Bracket tax",
-    "add": "Add bracket",
-    "sim_gross": "Gross salary"
-  },
-  "emails": {
-    "payroll_ready": {
-      "body": "Your payslip for :period is ready. You can review it in Leopardo HR.",
-      "action": "View my payslip",
-      "greeting": "Hello :name,",
-      "subject": "Your payslip is ready",
-      "footer": "Please review your information before accounting export."
-    },
-    "invitation": {
-      "body": "You have been invited to join :company. Click the link below to activate your account.",
-      "action": "Activate my account",
-      "greeting": "Hello :name,",
-      "subject": "You are invited to join :company on Leopardo HR",
-      "footer": "If you did not request this action, ignore this email."
-    },
-    "absence_approved": {
-      "body": "Your leave request for :period has been approved.",
-      "action": "View request",
-      "greeting": "Hello :name,",
-      "subject": "Your leave request has been approved",
-      "footer": "The team schedule has been updated."
-    },
-    "absence_rejected": {
-      "body": "Your leave request for :period has been rejected.",
-      "action": "View request",
-      "greeting": "Hello :name,",
-      "subject": "Your leave request has been rejected",
-      "footer": "Please contact your manager if you need more details."
-    },
-    "reset_password": {
-      "body": "Click the link below to reset your password.",
-      "action": "Reset password",
-      "greeting": "Hello :name,",
-      "subject": "Reset your password",
-      "footer": "If you did not request this action, ignore this email."
-    }
-  },
-  "modules": {
-    "notifications": "Notifications",
-    "cabinet": "Document vault",
-    "attendance": "Attendance",
-    "evaluations": "Evaluations",
-    "payroll": "Payroll"
-  },
-  "_updated_at": "2026-08-14T18:45:00Z",
-  "attendance": {
-    "sending_to_server": "Sending {label} to the server...",
-    "retry_after_failure": "{label}. Please try again."
-  },
-  "signup": {
-    "badge": "Free 14-day trial",
-    "title": "Try Leopardo with your company",
-    "subtitle": "Create your trial workspace in 2 minutes. No credit card required.",
-    "labelEmail": "Work email",
-    "placeholderEmail": "you@company.com",
-    "labelCompany": "Company",
-    "placeholderCompany": "Your company name",
-    "labelRole": "Your role",
-    "rolePlaceholder": "Select",
-    "roleFounder": "Founder / CEO",
-    "roleManager": "Manager",
-    "roleHr": "HR",
-    "roleOperations": "Field operations",
-    "roleOther": "Other",
-    "labelTeamSize": "Team size",
-    "teamPlaceholder": "Select",
-    "labelPhone": "Phone (optional)",
-    "placeholderPhone": "+1 555 000 0000",
-    "operationsNote": "We will prepare a field-focused setup: attendance, tasks, kiosk and team monitoring.",
-    "agreePrefix": "I accept the",
-    "termsLink": "terms of use",
-    "privacyLink": "privacy policy",
-    "agreeSuffix": "and the",
-    "submitLabel": "Get my verification code",
-    "submittingLabel": "Sending code...",
-    "codeHint": "A 6-digit code will be sent to your email to confirm your identity.",
-    "haveAccount": "Already have an account?",
-    "loginCta": "Sign in",
-    "back": "Back",
-    "otpTitle": "Verify your email",
-    "otpSentTo": "We sent a 6-digit verification code to:",
-    "otpInvalidLength": "Please enter the 6 digits of the code.",
-    "otpInvalidCode": "Invalid or expired code.",
-    "otpVerifyError": "An error occurred during verification. Please try again.",
-    "verifyLabel": "Verify and create my workspace",
-    "verifyingLabel": "Verifying...",
-    "codeValidity": "The code is valid for 30 minutes. Check your spam folder if you cannot find it.",
-    "trackStatus": "Track my workspace status",
-    "pendingTitle": "Trial request received",
-    "pendingFallback": "Trial request received. Our team will contact you within 24 business hours.",
-    "pendingNote": "Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.",
-    "readyTitle": "Your workspace is ready!",
-    "readySubtitle": "The demo sandbox is provisioned. Access it directly:",
-    "accessCta": "Access my workspace",
-    "copyLink": "Copy link",
-    "linkCopied": "Link copied!",
-    "linkEmailed": "Your access link was also sent by email.",
-    "failedTitle": "Creation interrupted",
-    "failedBody": "An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.",
-    "timeoutTitle": "Still being created",
-    "timeoutBody": "Your workspace is being prepared. We will email you the access link as soon as it is ready.",
-    "refreshStatus": "Refresh status",
-    "preparingTitle": "Preparing your workspace",
-    "preparingBody": "We are provisioning your demo sandbox. This usually takes less than 30 seconds.",
-    "statusFor": "For:",
-    "statusEvery5s": "Status checked every 5 seconds.",
-    "successTitle": "Your workspace is ready!",
-    "emailVerified": "Your email address has been verified.",
-    "credsLabel": "Sign-in credentials",
-    "fieldEmail": "Email",
-    "fieldPassword": "Password",
-    "copyPasswordTitle": "Copy password",
-    "copied": "Copied!",
-    "credsSentByEmail": "These credentials were also sent by email to",
-    "credsEmailed": "Your sign-in credentials were just sent by email.",
-    "trialNote": "Free trial of",
-    "trialDaysUnit": "days",
-    "trialNoteSuffix": "no credit card required",
-    "downloadApp": "Download the app",
-    "changePasswordNote": "Change your password on first sign-in.",
-    "defaultError": "Something went wrong",
-    "validation": {
-      "emailInvalid": "Invalid email",
-      "emailTooShort": "Email too short",
-      "emailTooLong": "Email too long",
-      "companyTooShort": "Company name must be at least 2 characters",
-      "companyTooLong": "Company name is too long",
-      "roleRequired": "Select your role",
-      "employeesRequired": "Select a team size",
-      "phoneInvalid": "Invalid phone number",
-      "agreeTerms": "You must accept the terms of use"
-    }
-  },
-  "payroll": {
-    "confidence": {
-      "unknown": {
-        "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
-      },
-      "label": "Payroll rules confidence",
-      "level_placeholder": "Placeholder",
-      "level_pilot": "Pilot",
-      "level_unknown": "Unknown",
-      "pilot": {
-        "message": "Pilot rules for {country}: amounts based on general public references (labor code) but not yet legally validated locally. Confirm with a local legal or tax advisor before relying on these figures (tax brackets, social contributions, overtime thresholds) for your statutory obligations."
-      },
-      "placeholder": {
-        "message": "Placeholder without values for {country}: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced."
-      },
-      "level_production": "Production",
-      "production": {
-        "message": "Rules validated and used in production for {country}. Always confirm current rates with a local advisor before relying on these amounts for statutory filings."
-      }
-    }
-  },
-  "app": {
-    "title": "Leopardo HR"
-  },
   "seo": {
     "pricing": {
       "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
-  },
-  "companies": {
-    "toast": {
-      "load_failed": "Unable to load the company details.",
-      "tickets_failed": "Unable to load the support tickets.",
-      "subscription_failed": "Failed to update the subscription.",
-      "features_failed": "Failed to save the module configuration."
-    }
-  },
-  "auth": {
-    "activate_manager_access": "Activate my manager access",
-    "email_required": "Email required",
-    "try_demo_account": "Try a demo account",
-    "login": {
-      "title": "Sign in"
-    },
-    "two_factor_required": "The 2FA code is required.",
-    "personal_account_link": "Personal account",
-    "password_too_short": "Password too short",
-    "employee": {
-      "invitation": {
-        "access": "Employee access (invitation)"
-      }
-    },
-    "email_invalid": "Invalid email",
-    "password_label": "Password",
-    "employee_login_subtitle": "Employee sign-in",
-    "back_tooltip": "Back",
-    "email_label": "Email",
-    "password_required": "Password required",
-    "continue_with_google": "Continue with Google",
-    "manager_login_subtitle": "Manager / HR sign-in",
-    "activate_invitation": "Activate my invitation",
-    "email_professional_label": "Work email",
-    "personal_account": {
-      "explanation": "Personal account: organize your documents, then create or join a company from your space.",
-      "create": "Create a personal account"
-    }
-  },
-  "platform_login": {
-    "submitting": "Signing in...",
-    "email_required": "Email required",
-    "password_required": "Password required",
-    "subtitle": "Mobile cockpit reserved for platform administration.",
-    "2fa_notice": "This account protects the platform: enter the 2FA code from your authenticator app.",
-    "2fa_label": "2FA code if enabled",
-    "use_demo_account": "Use the demo account",
-    "email_label": "Super-admin email",
-    "title": "Leopardo Platform"
   },
   "navigation": {
     "dashboard": "Dashboard",
