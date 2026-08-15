@@ -1784,18 +1784,6 @@ class LeopardoClient:
         """Envoyer un événement géographique (entrée/sortie de zone)"""
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
 
-    def get_smart_attendance_mode_settings(self, **kwargs):
-        """Lire la configuration du mode de pointage de l'entreprise"""
-        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
-
-    def put_smart_attendance_mode_settings(self, **kwargs):
-        """Mettre à jour la configuration GPS (admin)"""
-        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
-
-    def put_smart_attendance_mode_settings_2(self, **kwargs):
-        """Mettre à jour la config mode géolocalisation (principal)"""
-        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
-
     def get_smart_attendance_my_sessions(self, **kwargs):
         """Sessions GPS de l'employé courant"""
         return self.request("GET", "/smart-attendance/my-sessions", **kwargs)
