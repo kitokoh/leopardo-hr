@@ -152,7 +152,6 @@ final class OidcFlowService
 
         $key = $this->stateCacheKey($companyId, $state);
 
-        /** @var array{nonce?: string}|null $entry */
         $entry = Cache::get($key);
 
         if (! is_array($entry) || empty($entry['nonce']) || ! is_string($entry['nonce'])) {

@@ -224,16 +224,8 @@ class PayrollCalculator
             // au conteneur et peut être STALE entre deux tests PHPUnit du
             // même process → deux runs avec le même ID → violation de la
             // contrainte unique payroll_runs.correlation_id (#2551 cause 8).
-            $header = request()?->header('X-Correlation-ID') ?: request()?->header('X-Request-Id');
-            $correlationId = is_string($header) && $header !== '' ? $header : (string) Str::uuid();
-            // Issue #2583 : garde-fou anti-collision — si un autre run porte
-            // déjà cet id (ex. 2 runs calculés dans la même requête HTTP avec
-            // le même header X-Correlation-ID, ou futur endpoint multi-runs),
-            // on suffixe par un UUID : traçabilité conservée (préfixe = header
-            // d'origine) et unicité garantie par run.
-            if (PayrollRun::query()->where('correlation_id', $correlationId)->exists()) {
-                $correlationId .= ':'.(string) Str::uuid();
-            }
+            $header = request()->header('X-Correlation-ID') ?: request()->header('X-Request-Id');
+            $correlationId = is_string($header) && $header !== '' ? $header : (string) \Illuminate\Support\Str::uuid();
             $run->forceFill(['correlation_id' => $correlationId])->save();
         }
         // Corrélation des logs de ce calcul (issue #1874).
@@ -443,7 +435,7 @@ class PayrollCalculator
         $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
         $rulesPeriod = $run->period_start->toDateString();
 
-        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules, $rulesVersion, $rulesIdentifier, $rulesPeriod): void {
+        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules): void {
             // Recalcul idempotent : on repart de zéro (aucune double application).
             $run->paySlips()->delete();
 

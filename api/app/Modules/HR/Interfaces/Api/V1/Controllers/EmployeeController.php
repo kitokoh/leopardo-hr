@@ -364,10 +364,7 @@ class EmployeeController extends Controller
             'target_employee_id' => $employee->id,
         ]);
 
-        $company = currentCompany();
-        if ($company instanceof Company) {
-            $employee->setRelation('company', $company);
-        }
+        $employee->setRelation('company', currentCompany());
 
         return (new EmployeeResource($employee))->response();
     }
