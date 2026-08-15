@@ -136,6 +136,12 @@ class EmployeeController extends Controller
     }
 
     /**
+     * #3309 : la projection LISTE exclut les PII (personal_email,
+     * recovery_email, personal_phone, adresse, contacts d'urgence) et garde
+     * les champs salaire (salary_type/base/hourly_rate) nécessaires à l'écran
+     * équipe mobile manager (affichage + formulaire d'édition). Les PII
+     * restent disponibles sur le détail /employees/{id}.
+     *
      * @return list<string>
      */
     private function employeeIndexColumns(): array
@@ -150,9 +156,6 @@ class EmployeeController extends Controller
             'last_name',
             'preferred_name',
             'email',
-            'personal_email',
-            'recovery_email',
-            'personal_phone',
             'phone',
             'role',
             'manager_role',
@@ -160,10 +163,6 @@ class EmployeeController extends Controller
             'photo_path',
             'biometric_face_enabled',
             'biometric_fingerprint_enabled',
-            'address_line',
-            'postal_code',
-            'emergency_contact_name',
-            'emergency_contact_phone',
             'contract_start',
             'salary_type',
             'salary_base',
