@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Briefcase, MapPin, Clock, ArrowRight, Rss } from 'lucide-react';
-import { Navbar } from '@/modules/vitrine/components/Navbar';
+import { CareersNavbar } from './CareersNavbar';
 import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
@@ -56,7 +56,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
-      <Navbar isDark={false} onToggleDark={() => {}} />
+      <CareersNavbar />
 
       <JsonLd
         data={{

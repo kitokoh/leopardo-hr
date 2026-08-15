@@ -29,6 +29,7 @@ class PaymentDocumentControllerTest extends TestCase
             'status' => PaymentDocument::STATUS_PENDING,
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $other */
         $other = Employee::factory()->create(['company_id' => $company->id]);
         PaymentDocument::query()->create([
             'company_id' => $company->id,
@@ -121,8 +122,12 @@ class PaymentDocumentControllerTest extends TestCase
         // Issue #2749 — l'app RH (leopardo_hr) liste les documents de paie
         // d'un run via /payments/{run}/documents : le rôle rh est désormais
         // accepté sur cette lecture (principal, comptable, rh).
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $rh */
         $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => fake()->unique()->safeEmail(),
@@ -177,8 +182,11 @@ class PaymentDocumentControllerTest extends TestCase
      */
     private function actors(): array
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => fake()->unique()->safeEmail(),

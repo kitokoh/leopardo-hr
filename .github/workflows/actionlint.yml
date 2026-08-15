@@ -58,3 +58,8 @@ jobs:
         uses: reviewdog/action-actionlint@e0207a28405ecad11953ba625a95d92f7889572a # v1
         with:
           fail_level: error
+
+      - name: Workflow paths sanity (issue #3519)
+        # Échoue si une entrée `paths:` d'un workflow ne matche aucun fichier
+        # réel — sinon le workflow ne se déclenche plus jamais (silencieux).
+        run: bash dev-hub/tools/check-workflow-paths.sh
