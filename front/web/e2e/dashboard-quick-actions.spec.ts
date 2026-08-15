@@ -187,28 +187,35 @@ test.describe('Dashboard client — actions rapides et carte Leo IA', () => {
 
     await expect(page.locator('body')).toContainText('Actions rapides');
 
-    // Nouvel employe -> /dashboard/employees
-    await page.locator('a[href="/dashboard/employees"]').click();
-    await expect(page).toHaveURL(/\/dashboard\/employees$/);
+    // QA 2026-08-15 (#2655) : les routes réelles sont SANS préfixe
+    // /dashboard/… (les anciennes URLs renvoyaient 404). On asserte en plus
+    // le contenu de la page cible pour ne pas figer une URL morte.
+
+    // Nouvel employe -> /employees
+    await page.locator('a[href="/employees"]').click();
+    await expect(page).toHaveURL(/\/employees$/);
+    await expect(page.locator('body')).toContainText('Collaborateurs recents');
     await page.goto('/dashboard');
 
-    // Conges -> /dashboard/absences
-    await page.locator('a[href="/dashboard/absences"]').click();
-    await expect(page).toHaveURL(/\/dashboard\/absences$/);
+    // Conges -> /absences
+    await page.locator('a[href="/absences"]').click();
+    await expect(page).toHaveURL(/\/absences$/);
+    await expect(page.locator('body')).toContainText('Demandes visibles');
     await page.goto('/dashboard');
 
-    // Rapports et Export -> /dashboard/reports
-    await page.locator('a[href="/dashboard/reports"]').first().click();
-    await expect(page).toHaveURL(/\/dashboard\/reports$/);
+    // Rapports et Export -> /reports
+    await page.locator('a[href="/reports"]').first().click();
+    await expect(page).toHaveURL(/\/reports$/);
+    await expect(page.locator('body')).toContainText('Rapports');
     await page.goto('/dashboard');
 
-    await page.locator('a[href="/dashboard/reports"]').last().click();
-    await expect(page).toHaveURL(/\/dashboard\/reports$/);
+    await page.locator('a[href="/reports"]').last().click();
+    await expect(page).toHaveURL(/\/reports$/);
 
-    // « Voir toute l'activite » pointe aussi sur /dashboard/reports
+    // « Voir toute l'activite » pointe aussi sur /reports
     await page.goto('/dashboard');
     await page.getByRole('link', { name: /voir toute l.activite/i }).click();
-    await expect(page).toHaveURL(/\/dashboard\/reports$/);
+    await expect(page).toHaveURL(/\/reports$/);
   });
 
   test('« Oui, envoyer » cree une vraie annonce entreprise et affiche le succes', async ({ page }) => {

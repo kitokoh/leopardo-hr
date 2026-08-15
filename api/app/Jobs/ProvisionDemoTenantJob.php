@@ -57,6 +57,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
                     ]);
             }
 
+            // Issue #2620 : magic link envoyé au manager après provisioning
+            // réussi (token 72 h à usage unique, hash stocké sur extra_data).
+            if (isset($result['manager']) && $result['manager'] instanceof \App\Core\Auth\Domain\Models\Employee) {
+                $this->issueDemoAccess($result['manager']);
+            }
+
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 
         } catch (\Throwable $e) {
