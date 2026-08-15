@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Onboarding;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -32,12 +32,12 @@ class OnboardingStepWriteGuardTest extends TestCase
         parent::setUp();
         /** @var Company $company */
         $company = Company::factory()->create();
-        /** @var Employee $manager */
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
-        /** @var Employee $employee */
-        $employee = Employee::factory()->create(['company_id' => $company->id]);
         $this->company = $company;
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         $this->manager = $manager;
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         $this->employee = $employee;
 
         $this->step = OnboardingStep::create([
@@ -57,7 +57,8 @@ class OnboardingStepWriteGuardTest extends TestCase
             ->patchJson("/api/v1/onboarding-setup/{$this->step->step_key}/complete");
 
         $response->assertForbidden();
-        $this->assertSame('pending', $this->step->fresh()?->status);
+        $this->step->refresh();
+        $this->assertSame('pending', $this->step->status);
     }
 
     /** @test */
@@ -67,7 +68,8 @@ class OnboardingStepWriteGuardTest extends TestCase
             ->patchJson("/api/v1/onboarding-setup/{$this->step->step_key}/skip");
 
         $response->assertForbidden();
-        $this->assertSame('pending', $this->step->fresh()?->status);
+        $this->step->refresh();
+        $this->assertSame('pending', $this->step->status);
     }
 
     /** @test */
@@ -78,7 +80,8 @@ class OnboardingStepWriteGuardTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('data.status', 'completed');
-        $this->assertSame('completed', $this->step->fresh()?->status);
+        $this->step->refresh();
+        $this->assertSame('completed', $this->step->status);
     }
 
     /** @test */

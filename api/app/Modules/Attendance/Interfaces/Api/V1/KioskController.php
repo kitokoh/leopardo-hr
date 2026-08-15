@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
@@ -45,6 +45,7 @@ class KioskController extends Controller
     {
         $this->setTenantSearchPath($company);
 
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'location_label' => ['nullable', 'string', 'max:120'],
@@ -69,6 +70,7 @@ class KioskController extends Controller
             ],
         ], 201);
     }
+
 
     public function punch(Request $request, string $deviceCode): JsonResponse
     {
@@ -119,13 +121,14 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doRoster($company, $kiosk),
+            fn (): JsonResponse => $this->doRoster($company, $kiosk->device_code),
         );
     }
 
-    private function doRoster(Company $company, AttendanceKiosk $kiosk): JsonResponse
+    private function doRoster(Company $company, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($company);
+
 
         $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
         $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
@@ -151,13 +154,14 @@ class KioskController extends Controller
 
         return new JsonResponse([
             'data' => [
-                'device_code' => $kiosk->device_code,
+                'device_code' => $deviceCode,
                 'company_id' => $company->id,
                 'company_name' => $company->name,
                 'employees' => $items,
             ],
         ]);
     }
+
 
     public function sync(Request $request, string $deviceCode): JsonResponse
     {
@@ -182,9 +186,13 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doSync(AttendanceKiosk $kiosk, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($kiosk->company);
+
 
         $processed = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events']);
 
@@ -196,6 +204,7 @@ class KioskController extends Controller
             ],
         ]);
     }
+
 
     public function employeeInfo(Request $request, string $deviceCode): JsonResponse
     {
@@ -213,9 +222,13 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doEmployeeInfo(Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
+
 
         $employee = Employee::query()
             ->where('company_id', $company->id)
@@ -265,6 +278,7 @@ class KioskController extends Controller
         ]);
     }
 
+
     public function announcements(Request $request, string $deviceCode): JsonResponse
     {
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
@@ -272,13 +286,14 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company),
+            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company, $kiosk->device_code),
         );
     }
 
-    private function doAnnouncements(AttendanceKiosk $kiosk, Company $company): JsonResponse
+    private function doAnnouncements(AttendanceKiosk $kiosk, Company $company, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($company);
+
 
         if (! Schema::hasTable('kiosk_announcements')) {
             return new JsonResponse(['data' => []]);
@@ -324,7 +339,7 @@ class KioskController extends Controller
         } catch (Throwable $exception) {
             Log::warning('Kiosk announcements skipped because the tenant table is not queryable.', [
                 'company_id' => $company->id,
-                'device_code' => $kiosk->device_code,
+                'device_code' => $deviceCode,
                 'error' => $exception->getMessage(),
             ]);
 
@@ -333,6 +348,7 @@ class KioskController extends Controller
 
         return new JsonResponse(['data' => $announcements]);
     }
+
 
     public function leaveBalance(Request $request, string $deviceCode): JsonResponse
     {
@@ -350,9 +366,13 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doLeaveBalance(Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
+
 
         $employee = Employee::query()
             ->where('company_id', $company->id)
@@ -378,6 +398,7 @@ class KioskController extends Controller
         ]);
     }
 
+
     public function qrPunch(Request $request, string $deviceCode): JsonResponse
     {
         $validated = $request->validate([
@@ -398,9 +419,13 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doQrPunch(AttendanceKiosk $kiosk, Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
+
 
         $qrPayload = json_decode(base64_decode($validated['qr_data'], true), true);
         $identifier = $qrPayload['employee_id'] ?? $qrPayload['matricule'] ?? $validated['qr_data'];
@@ -432,6 +457,7 @@ class KioskController extends Controller
             ],
         ], $statusCode);
     }
+
 
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
@@ -469,7 +495,7 @@ class KioskController extends Controller
                 // 'audit' channel so brute-force attempts against a kiosk device
                 // token are visible independently of the per-minute throttle.
                 Log::channel('audit')->warning('kiosk_auth.failed', [
-                    'device_code' => $kiosk->device_code,
+                    'device_code' => $deviceCode,
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                 ]);
@@ -482,6 +508,7 @@ class KioskController extends Controller
             DB::statement('SET search_path TO '.$previous);
         }
     }
+
 
     /**
      * Issue #3368 — le search_path PostgreSQL doit être restauré après chaque
@@ -618,3 +645,4 @@ class KioskController extends Controller
         ];
     }
 }
+
