@@ -1,4 +1,4 @@
-
+import { getSiteUrl } from '@/lib/site-url';
 const safeLog = (..._args: unknown[]) => {};
 /**
  * Environment variables validation and access

@@ -75,7 +75,7 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
         <div className="mx-auto max-w-3xl px-4 pt-6">
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             ⚠️ Article archivé — contenu publié en 2024, conservé pour référence.
-            Les chiffres et recommandations peuvent ne plus refléter l'état actuel du produit.
+            Les chiffres et recommandations peuvent ne plus refléter l&apos;état actuel du produit.
           </div>
         </div>
       )}

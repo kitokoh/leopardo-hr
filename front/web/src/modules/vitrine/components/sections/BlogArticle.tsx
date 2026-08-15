@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import { SocialShare } from '@/components/SocialShare';
 import { ArticleJsonLd } from '@/components/JsonLd';
+import { SITE_URL } from '@/lib/site-url';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BlogPost } from '@/modules/vitrine/data/blog';
