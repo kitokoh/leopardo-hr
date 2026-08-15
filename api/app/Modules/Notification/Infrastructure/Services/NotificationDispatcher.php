@@ -22,25 +22,42 @@ class NotificationDispatcher
         array  $data = [],
         ?string $actionUrl = null,
     ): AppNotification {
-        $notification = AppNotification::create([
-            'user_id'    => $userId,
-            'type'       => $type,
-            'title'      => $title,
-            'body'       => $body,
-            'data'       => $data,
-            'action_url' => $actionUrl,
-            'read'       => false,
-        ]);
+        // Issue #2498 — observabilité : un échec de persistance in-app doit
+        // être traçable (log structuré) AVANT de remonter, jamais silencieux
+        // (dette #1813 : la table manquante a avalé des notifications en prod).
+        try {
+            $notification = AppNotification::create([
+                'user_id'    => $userId,
+                'type'       => $type,
+                'title'      => $title,
+                'body'       => $body,
+                'data'       => $data,
+                'action_url' => $actionUrl,
+                'read'       => false,
+            ]);
+        } catch (Throwable $exception) {
+            Log::channel('structured')->error('notification.dispatch-failed', [
+                'event'             => 'notification.dispatch',
+                'notification_type' => $type,
+                'user_id'           => $userId,
+                'error'             => $exception->getMessage(),
+                'exception_class'   => $exception::class,
+            ]);
+
+            throw $exception;
+        }
 
         // Push mobile (FCM) — best-effort : un échec de push ne doit jamais
-        // casser la notification in-app (fail-open, journalisé).
+        // casser la notification in-app (fail-open, journalisé structuré).
         try {
             $this->pushService->sendToUser($userId, $title, (string) $body, $data);
         } catch (Throwable $exception) {
-            Log::warning('Push notification skipped after in-app dispatch', [
-                'user_id' => $userId,
-                'type' => $type,
-                'error' => $exception->getMessage(),
+            Log::channel('structured')->warning('notification.push-skipped', [
+                'event'             => 'notification.push',
+                'notification_type' => $type,
+                'user_id'           => $userId,
+                'error'             => $exception->getMessage(),
+                'exception_class'   => $exception::class,
             ]);
         }
 
