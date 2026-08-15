@@ -1600,6 +1600,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payroll-runs/{payrollRun}/bank-export", options);
     },
 
+    /** Lancer le paiement groupé du run (virements) */
+    postPayrollRunsByPayrollRunBulkPay(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/bulk-pay", options);
+    },
+
+    /** Statut du paiement groupé du run */
+    getPayrollRunsByPayrollRunBulkPayStatus(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/bulk-pay/status", options);
+    },
+
     /** Calculer la paie */
     postPayrollRunsByPayrollRunCalculate(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/calculate", options);
@@ -1645,6 +1655,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/declarations/ipres-sn", options);
     },
 
+    /** Export comptable du run (CSV/Excel streamé) */
+    getPayrollRunsByPayrollRunExport(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/export", options);
+    },
+
     /** Journal de paie mensuel CSV (F-10) */
     getPayrollRunsByPayrollRunJournal(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/journal", options);
@@ -1668,6 +1683,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Créer un run de régularisation (DZ-DEPTH #1818) */
     regularizePayrollRun(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/regularize", options);
+    },
+
+    /** Envoyer les bulletins du run aux employés */
+    postPayrollRunsByPayrollRunSendSlips(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/send-slips", options);
     },
 
     /** Resume de la session de paie */
@@ -1695,6 +1715,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll/audit/{correlationId}", options);
     },
 
+    /** Réglages du cycle de paie (société) */
+    getPayrollCycleSettings(options = {}) {
+      return request("GET", "/payroll/cycle-settings", options);
+    },
+
+    /** Mettre à jour les réglages du cycle de paie */
+    putPayrollCycleSettings(options = {}) {
+      return request("PUT", "/payroll/cycle-settings", options);
+    },
+
+    /** Historique des cycles de paie */
+    getPayrollCycles(options = {}) {
+      return request("GET", "/payroll/cycles", options);
+    },
+
+    /** Cycle de paie courant */
+    getPayrollCyclesCurrent(options = {}) {
+      return request("GET", "/payroll/cycles/current", options);
+    },
+
     /** Previsualiser un cycle de paie candidat */
     getPayrollCyclesPreview(options = {}) {
       return request("GET", "/payroll/cycles/preview", options);
@@ -1708,6 +1748,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Simuler l'impact d'un barème (manager, dry-run) — issue #1814 */
     simulatePayroll(options = {}) {
       return request("POST", "/payroll/simulate", options);
+    },
+
+    /** Suggestions de rééquilibrage des équipes */
+    getPlanningShiftRebalancing(options = {}) {
+      return request("GET", "/planning/shift-rebalancing", options);
+    },
+
+    /** Optimisation hebdomadaire du planning (suggestions) */
+    getPlanningWeeklyOptimization(options = {}) {
+      return request("GET", "/planning/weekly-optimization", options);
     },
 
     /** Connexion super-admin */
