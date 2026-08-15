@@ -27,6 +27,7 @@ class AiVoiceRepository {
       // transcription / coût IA sur 502/timeout).
       maxRetriesOverride: 0,
       method: 'POST',
+      maxRetriesOverride: 0,
       timeoutOverride: const Duration(seconds: 45),
       data: formData,
     );
@@ -39,6 +40,7 @@ class AiVoiceRepository {
       // #3403 : POST non-idempotent — pas de retry automatique.
       maxRetriesOverride: 0,
       method: 'POST',
+      maxRetriesOverride: 0,
       data: {'text': text},
       timeoutOverride: const Duration(seconds: 45),
       options: Options(responseType: ResponseType.bytes),
