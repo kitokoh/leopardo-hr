@@ -158,7 +158,7 @@ export const pageMetadata = {
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
+      t('fr', 'seo.pricing.description', 'Tarification transparente : plans Starter 29€/mois, Business 79€/mois, Enterprise 199€/mois. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
       "tarification paie",
