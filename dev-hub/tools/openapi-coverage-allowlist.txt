@@ -137,6 +137,9 @@ GET /dashboard/admin
 GET /dashboard/comptable
 GET /dashboard/marketing
 GET /dashboard/rh
+GET /export/accounting-od
+GET /export/payroll-journal
+GET /export/payroll-ledger
 GET /notifications/unread
 PATCH /notifications/{param}/read
 POST /api-tokens
@@ -145,7 +148,6 @@ POST /notifications/mark-all-read
 
 ## modules/expense.php — 3 route(s)
 # Expense : CRUD notes de frais — surface app RH legacy
-PUT /expense-claims/{param}/approve
 PUT /expense-claims/{param}/reject
 PUT /expense-claims/{param}/submit
 
@@ -186,8 +188,6 @@ GET reports/training-completion
 GET reports/turnover
 PATCH /recruitment/applicants/{param}/status
 PATCH /recruitment/interviews/{param}/feedback
-PUT /loans/{param}/approve
-PUT /loans/{param}/disburse
 
 ## modules/integrations.php — 9 route(s)
 # Intégrations : ZKTeco/kiosques/calendrier — dispositifs physiques + OAuth interne
@@ -220,13 +220,11 @@ POST /social-posts/{param}/publish
 
 ## modules/payroll_engine.php — 10 route(s)
 # Payroll Engine : endpoints paie avancée — documentation prioritaire F-12/F-10
-GET /bank-exports/{param}
 GET /payroll-runs/{param}/bulk-pay/status
 GET /payroll-runs/{param}/export
 GET /payroll/cycle-settings
 GET /payroll/cycles
 GET /payroll/cycles/current
-POST /payroll-runs/{param}/bank-export
 POST /payroll-runs/{param}/bulk-pay
 POST /payroll-runs/{param}/send-slips
 PUT /payroll/cycle-settings
@@ -242,16 +240,11 @@ DELETE /announcements/{param}
 DELETE /departments/{param}
 DELETE /payrolls/{param}
 GET /announcements
-GET /attendance/regularity
 GET /conversations
 GET /conversations/{param}
 GET /conversations/{param}/messages/{param}/attachment
 GET /departments
 GET /departments/{param}
-GET /employees/{param}/balance
-GET /employees/{param}/ledger
-GET /me/attendance-anomalies
-GET /me/ledger
 GET /notifications/stream
 GET /payrolls
 GET /payrolls/{param}

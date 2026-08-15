@@ -348,6 +348,10 @@ class LeopardoClient:
         """Rapport mensuel de pointage"""
         return self.request("GET", "/attendance/monthly-report", **kwargs)
 
+    def get_attendance_regularity(self, **kwargs):
+        """Régularité de présence (manager/RH)"""
+        return self.request("GET", "/attendance/regularity", **kwargs)
+
     def get_attendance_today(self, **kwargs):
         """Etat du jour"""
         return self.request("GET", "/attendance/today", **kwargs)
@@ -407,6 +411,10 @@ class LeopardoClient:
     def post_auth_register(self, **kwargs):
         """Inscription employe"""
         return self.request("POST", "/auth/register", **kwargs)
+
+    def get_bank_exports_by_bankexport(self, **kwargs):
+        """Détail d'un export bancaire"""
+        return self.request("GET", "/bank-exports/{bankExport}", **kwargs)
 
     def get_bank_exports_by_bankexport_download(self, **kwargs):
         """Telecharger un export bancaire"""
@@ -700,6 +708,10 @@ class LeopardoClient:
         """Archiver un employe"""
         return self.request("POST", "/employees/{employee}/archive", **kwargs)
 
+    def get_employees_by_employee_balance(self, **kwargs):
+        """Solde de congés d'un employé (manager/RH)"""
+        return self.request("GET", "/employees/{employee}/balance", **kwargs)
+
     def get_employees_by_employee_certificate_of_employment(self, **kwargs):
         """Certificat de travail PDF (fin de contrat, F-08)"""
         return self.request("GET", "/employees/{employee}/certificate-of-employment", **kwargs)
@@ -711,6 +723,10 @@ class LeopardoClient:
     def get_employees_by_employee_end_of_contract(self, **kwargs):
         """Solde de tout compte (fin de contrat, F-08)"""
         return self.request("GET", "/employees/{employee}/end-of-contract", **kwargs)
+
+    def get_employees_by_employee_ledger(self, **kwargs):
+        """Journal de paie d'un employé (manager/RH)"""
+        return self.request("GET", "/employees/{employee}/ledger", **kwargs)
 
     def get_employees_by_employee_quick_estimate(self, **kwargs):
         """Estimation sur periode"""
@@ -788,10 +804,6 @@ class LeopardoClient:
         """Exporter les absences"""
         return self.request("GET", "/export/absences", **kwargs)
 
-    def get_export_accounting_od(self, **kwargs):
-        """Exporter l'ordre de virement (OD)"""
-        return self.request("GET", "/export/accounting-od", **kwargs)
-
     def get_export_attendance(self, **kwargs):
         """Exporter le pointage"""
         return self.request("GET", "/export/attendance", **kwargs)
@@ -811,14 +823,6 @@ class LeopardoClient:
     def exportpayslips(self, **kwargs):
         """Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement"""
         return self.request("GET", "/export/pay-slips", **kwargs)
-
-    def get_export_payroll_journal(self, **kwargs):
-        """Exporter le journal de paie"""
-        return self.request("GET", "/export/payroll-journal", **kwargs)
-
-    def get_export_payroll_ledger(self, **kwargs):
-        """Exporter le grand livre de paie"""
-        return self.request("GET", "/export/payroll-ledger", **kwargs)
 
     def get_export_training(self, **kwargs):
         """Exporter les formations"""
@@ -889,7 +893,7 @@ class LeopardoClient:
         return self.request("GET", "/growth/partner/companies", **kwargs)
 
     def get_growth_partner_dashboard(self, **kwargs):
-        """Tableau de bord partenaire connecté"""
+        """Tableau de bord de l'espace partenaire"""
         return self.request("GET", "/growth/partner/dashboard", **kwargs)
 
     def post_growth_partner_payout(self, **kwargs):
@@ -905,7 +909,7 @@ class LeopardoClient:
         return self.request("GET", "/health", **kwargs)
 
     def get_i18n_catalog(self, **kwargs):
-        """Catalogue de traductions (toutes locales)"""
+        """Catalogue de traductions (locales disponibles)"""
         return self.request("GET", "/i18n/catalog", **kwargs)
 
     def get_i18n_catalog_by_locale(self, **kwargs):
@@ -1048,6 +1052,10 @@ class LeopardoClient:
         """Publier immediatement ou (re)planifier une publication"""
         return self.request("POST", "/marketing/social-posts/{socialPost}/publish", **kwargs)
 
+    def get_me_attendance_anomalies(self, **kwargs):
+        """Anomalies de pointage de l'employé courant"""
+        return self.request("GET", "/me/attendance-anomalies", **kwargs)
+
     def get_me_balance(self, **kwargs):
         """Mon solde de paie courant"""
         return self.request("GET", "/me/balance", **kwargs)
@@ -1071,6 +1079,10 @@ class LeopardoClient:
     def get_me_leave_balances(self, **kwargs):
         """Mes soldes de conges"""
         return self.request("GET", "/me/leave-balances", **kwargs)
+
+    def get_me_ledger(self, **kwargs):
+        """Journal de paie de l'employé courant"""
+        return self.request("GET", "/me/ledger", **kwargs)
 
     def get_me_loans(self, **kwargs):
         """Mes prets"""
@@ -1209,7 +1221,7 @@ class LeopardoClient:
         return self.request("POST", "/payment-confirmations/{paymentItem}/confirm", **kwargs)
 
     def get_payments_by_payrollrun_documents(self, **kwargs):
-        """Alias mobile pour documents de paiement d'un cycle"""
+        """Documents de paiement d.un cycle paie"""
         return self.request("GET", "/payments/{payrollRun}/documents", **kwargs)
 
     def get_payroll_runs(self, **kwargs):
@@ -1227,6 +1239,10 @@ class LeopardoClient:
     def get_payroll_runs_by_payrollrun_anomalies(self, **kwargs):
         """Rapport d'anomalies pre-cloture (F-20)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/anomalies", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_bank_export(self, **kwargs):
+        """Generer un export bancaire"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
 
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
@@ -1259,10 +1275,6 @@ class LeopardoClient:
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
-
-    def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
-        """Documents de paiement d'un cycle paie"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/payment-documents", **kwargs)
 
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
@@ -1368,9 +1380,41 @@ class LeopardoClient:
         """Lister les pays supportes et leurs defaults"""
         return self.request("GET", "/platform/country-defaults", **kwargs)
 
+    def get_platform_edge_nodes_2(self, **kwargs):
+        """Alias SPA — lister les nœuds edge (super-admin)"""
+        return self.request("GET", "/platform/edge-nodes", **kwargs)
+
+    def post_platform_edge_nodes_by_nodeid_revoke(self, **kwargs):
+        """Alias SPA — révoquer un nœud edge"""
+        return self.request("POST", "/platform/edge-nodes/{nodeId}/revoke", **kwargs)
+
+    def post_platform_edge_nodes_by_nodeid_sync_2(self, **kwargs):
+        """Alias SPA — forcer la synchronisation d'un nœud edge"""
+        return self.request("POST", "/platform/edge-nodes/{nodeId}/sync", **kwargs)
+
+    def get_platform_edge_nodes(self, **kwargs):
+        """Lister les nœuds edge de la plateforme (super-admin)"""
+        return self.request("GET", "/platform/edge/nodes", **kwargs)
+
+    def delete_platform_edge_nodes_by_nodeid(self, **kwargs):
+        """Révoquer un nœud edge (super-admin)"""
+        return self.request("DELETE", "/platform/edge/nodes/{nodeId}", **kwargs)
+
+    def post_platform_edge_nodes_by_nodeid_sync(self, **kwargs):
+        """Forcer la synchronisation d'un nœud edge (super-admin)"""
+        return self.request("POST", "/platform/edge/nodes/{nodeId}/sync", **kwargs)
+
+    def get_platform_growth_history(self, **kwargs):
+        """Historique des opérations growth (super-admin)"""
+        return self.request("GET", "/platform/growth/history", **kwargs)
+
     def get_platform_growth_partners(self, **kwargs):
         """Lister les partenaires (admin)"""
         return self.request("GET", "/platform/growth/partners", **kwargs)
+
+    def patch_platform_growth_partners_by_partner_application(self, **kwargs):
+        """Mettre à jour le statut de candidature d'un partenaire (super-admin)"""
+        return self.request("PATCH", "/platform/growth/partners/{partner}/application", **kwargs)
 
     def patch_platform_growth_partners_by_partner_rate(self, **kwargs):
         """Mettre à jour le taux de commission d'un partenaire"""
@@ -1379,6 +1423,10 @@ class LeopardoClient:
     def get_platform_growth_payouts(self, **kwargs):
         """Lister les demandes de versement"""
         return self.request("GET", "/platform/growth/payouts", **kwargs)
+
+    def patch_platform_growth_payouts_by_payout(self, **kwargs):
+        """Mettre à jour le statut d'un payout partenaire (super-admin)"""
+        return self.request("PATCH", "/platform/growth/payouts/{payout}", **kwargs)
 
     def get_platform_metrics_overview(self, **kwargs):
         """Agregats business du cockpit super-admin"""
@@ -1656,9 +1704,29 @@ class LeopardoClient:
         """Statistiques du jour — Smart Attendance (manager/RH)"""
         return self.request("GET", "/smart-attendance/dashboard", **kwargs)
 
+    def get_smart_attendance_employees_by_employeeid_preference(self, **kwargs):
+        """Préférence mode géolocalisation d'un employé (manager/RH)"""
+        return self.request("GET", "/smart-attendance/employees/{employeeId}/preference", **kwargs)
+
     def post_smart_attendance_geo_events(self, **kwargs):
         """Envoyer un événement géographique (entrée/sortie de zone)"""
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
+
+    def get_smart_attendance_mode_settings(self, **kwargs):
+        """Config mode géolocalisation de l'entreprise (manager/RH)"""
+        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
+
+    def put_smart_attendance_mode_settings(self, **kwargs):
+        """Mettre à jour la config mode géolocalisation (principal)"""
+        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
+
+    def get_smart_attendance_my_sessions(self, **kwargs):
+        """Sessions GPS de l'employé courant"""
+        return self.request("GET", "/smart-attendance/my-sessions", **kwargs)
+
+    def get_smart_attendance_preferences(self, **kwargs):
+        """Lire les préférences de pointage de l'employé"""
+        return self.request("GET", "/smart-attendance/preferences", **kwargs)
 
     def put_smart_attendance_preferences(self, **kwargs):
         """Mettre à jour les préférences de pointage"""
