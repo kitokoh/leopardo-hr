@@ -43,3 +43,13 @@
 - [ ] Branches `fix/2604-2606-web-accents`, `fix/2607-2608-web-seo-cleanup`, `fix/2789-admin-supported-countries`
       à mettre à jour + PR (issues ouvertes #2604/#2606/#2607/#2608/#2789).
 - [ ] PR #2306 (`qa-hardening-wave-2026-08-14`, draft) : à réconcilier avec main (298 commits de retard).
+
+## D. Décisions & constats post-session (16:00+ UTC)
+
+| ID | Sév | Constat | Statut |
+|----|-----|---------|--------|
+| S11 | P1 | **Décision propriétaire (594c68f2) : essai = 14 jours** (le backend provisionne 14j — PlanSeeder/ProvisionGuidedTrial). Le commit était un patch partiel avec fichiers `.rej` commités (puis retirés) → main est resté **incohérent** : 14j sur seo.ts/vitrine-locale/pricing.ts/catalogues vs **30j** sur checkout PLAN_CONFIG, about, case-studies, faq, pricing page (fr/tr/ar), testimonials, content.ts, seo-metadata, manifest PWA | PR #3135 (fix/2909-essai-14j-coherent) |
+| S12 | P1 | Checkout : clés fantômes `starter`/`business` + fallback `business` + **BOM U+FEFF** toujours présents sur main (régression #2944) | PR #3135 (Closes #2975) |
+| S13 | P2 | `TenantCountryLocksTest::test_admin_country_repair_rejects_unknown_country` — **main rouge** : `assertSame('', country)` sans trim sur char(2) PostgreSQL | Fix dans PR #3128 (trim) |
+| S14 | P2 | Build admin **rouge sur main** : `CommandPalette.vue` importe `DocumentReportIcon` (inexistant heroicons v2) — le lint passe, seul le build casse | Issue #3114 + fix PR #3111 |
+| S15 | P3 | PRs #2972 (30j) / #3112 (accents) fermées par le propriétaire — #2972 en faveur de la décision 14j ; #3112 supersédée | Notes : la garde i18n flague la dette modifiée (classe de faux positifs, non bloquante) |
