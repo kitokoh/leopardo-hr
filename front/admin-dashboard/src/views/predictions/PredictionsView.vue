@@ -46,7 +46,7 @@
       </div>
     </div>
     <div v-else-if="!loading" class="rounded-lg bg-green-50 p-4 text-center text-sm text-green-700">
-      Aucune notification proactive â€” tout est en ordre.
+      Aucune notification proactive — tout est en ordre.
     </div>
 
     <!-- Turnover Prediction -->

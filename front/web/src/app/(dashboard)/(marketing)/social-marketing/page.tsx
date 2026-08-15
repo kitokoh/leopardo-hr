@@ -229,7 +229,7 @@ export default function MarketingPage() {
               <div>
                 <p className="text-sm font-bold text-slate-950">{account.display_name ?? 'Compte social'}</p>
                 <p className="text-xs text-slate-500">
-                  Fournisseur : {account.provider} Â· Connecte depuis {account.connected_at ?? 'date inconnue'}
+                  Fournisseur : {account.provider} · Connecte depuis {account.connected_at ?? 'date inconnue'}
                 </p>
                 {account.connected_platforms && account.connected_platforms.length > 0 ? (
                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -266,7 +266,7 @@ export default function MarketingPage() {
                 <input
                   id="marketing-display-name"
                   type="text"
-                  placeholder="Ex: Leopardo RH â€” Reseaux sociaux"
+                  placeholder="Ex: Leopardo RH — Reseaux sociaux"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"

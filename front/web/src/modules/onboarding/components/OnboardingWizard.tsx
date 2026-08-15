@@ -72,7 +72,7 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 text-white">
             <div className="mb-4 flex items-center justify-between">
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                Ã‰tape {step} sur {steps.length}
+                Étape {step} sur {steps.length}
               </span>
             </div>
             <h2 className="text-2xl font-black">{steps[step - 1].title}</h2>

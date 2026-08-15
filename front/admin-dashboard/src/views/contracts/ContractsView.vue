@@ -191,7 +191,7 @@ const contractAlerts = computed(() => {
   }
   if (c.trial_end_date && new Date(c.trial_end_date) > new Date()) {
     const trialDays = Math.ceil((new Date(c.trial_end_date) - new Date()) / (1000 * 60 * 60 * 24))
-    alerts.push({ level: 'warning', message: `Periode d'essai en cours â€” ${trialDays} jours restants.` })
+    alerts.push({ level: 'warning', message: `Periode d'essai en cours — ${trialDays} jours restants.` })
   }
   return alerts
 })
