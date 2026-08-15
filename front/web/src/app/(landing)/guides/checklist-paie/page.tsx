@@ -14,7 +14,7 @@ export default function GuidesChecklistPaiePage() {
   return (
     <MainLayout>
       <HeroSection
-        headline="Checklist Paie 2024"
+        headline="Checklist Paie"
         subheadline="Assurez la conformité de votre paie avec cette checklist complète"
         badge="Guide Gratuit"
         ctaPrimary={{
@@ -33,13 +33,13 @@ export default function GuidesChecklistPaiePage() {
             <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
               <h3 className="text-lg font-bold mb-2">50+ Points</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Vérifications complètes pour votre paie 2024
+                Vérifications complètes pour votre paie
               </p>
             </div>
             <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
               <h3 className="text-lg font-bold mb-2">Conformité Garantie</h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Respectez toutes les réglementations 2024
+                Respectez toutes les réglementations en vigueur
               </p>
             </div>
             <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800">
@@ -94,9 +94,9 @@ export default function GuidesChecklistPaiePage() {
                 ✓
               </div>
               <div>
-                <h3 className="font-bold">Conformité 2024</h3>
+                <h3 className="font-bold">Conformité</h3>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Mises à jour et changements 2024
+                  Mises à jour et changements en vigueur
                 </p>
               </div>
             </div>
@@ -116,7 +116,7 @@ export default function GuidesChecklistPaiePage() {
       </Section>
 
       <CTASection
-        headline="Assurez votre conformité paie 2024"
+        headline="Assurez votre conformité paie"
         subheadline="Téléchargez la checklist et vérifiez chaque point"
         ctaPrimary={{
           text: 'Télécharger Maintenant',

@@ -100,10 +100,26 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $this->requestTrialSignup->execute($validated);
+        $otpSent = $this->requestTrialSignup->execute($validated);
+
+        if ($otpSent === false) {
+            // #3057 : le lead est capturé mais aucun code n'a pu partir —
+            // réponse honnête (provisioned=false → l'UI affiche l'état
+            // « demande reçue, contact sous 24 h » au lieu d'un écran OTP).
+            return new JsonResponse([
+                'success' => true,
+                'provisioned' => false,
+                'message' => 'Votre demande a bien été enregistrée. Notre équipe vous contacte sous 24 h ouvrables.',
+                'data' => [
+                    'email' => $email,
+                    'status' => 'pending_fallback',
+                ],
+            ], 200);
+        }
 
         return new JsonResponse([
             'success' => true,
+            'provisioned' => true,
             'message' => 'Code de vérification envoyé.',
             'data' => [
                 'email' => $email,
@@ -285,13 +301,10 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
-                    // Alignement réel : VerifyTrialSignup provisionne
-                    // subscription_end = now()->addDays(14) et le plan
-                    // fallback porte trial_days = 14 (constat QA live
-                    // 2026-08-15 : la réponse annonçait 30 jours mais
-                    // l'essai durait 14 — incohérence #3012/#3056).
-                    'days' => 14,
-                    'ends_at' => now()->addDays(14)->toIso8601String(),
+                    // Durée canonique 14 jours (décision propriétaire D-E4-01, 594c68f2) :
+                    // la réponse doit refléter le provisioning réel (#3012) et la vitrine (#2944/#3135).
+                    'days' => (int) config('billing.trial_days'),
+                    'ends_at' => now()->addDays((int) config('billing.trial_days'))->toIso8601String(),
                 ],
                 'next_steps' => [
                     'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',

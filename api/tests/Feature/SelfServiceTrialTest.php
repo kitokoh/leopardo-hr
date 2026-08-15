@@ -372,4 +372,33 @@ class SelfServiceTrialTest extends TestCase
             'Aucun tenant ne doit être créé pour une demande déjà claimée.'
         );
     }
+
+    // Issue #3057 — l'échec d'envoi de l'OTP ne doit jamais répondre
+    // « Code envoyé » : le lead est conservé mais l'état est honnête
+    // (provisioned=false → l'UI bascule en « demande reçue, contact 24 h »).
+    public function test_signup_reports_honest_state_when_otp_email_fails(): void
+    {
+        Mail::shouldReceive('to')
+            ->once()
+            ->andThrow(new \RuntimeException('smtp unavailable'));
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder.otp.fail@newtech.dz',
+            'company' => 'NewTech OTP Fail',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('provisioned', false)
+            ->assertJsonPath('data.status', 'pending_fallback');
+
+        // La demande est bien conservée malgré l'échec du mail.
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder.otp.fail@newtech.dz',
+            'status' => 'pending',
+        ]);
+    }
 }

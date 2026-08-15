@@ -52,8 +52,14 @@ class RequestTrialSignup
                 'error' => $e->getMessage(),
             ]);
 
+            // Issue #3057 : ne jamais répondre « code envoyé » si le mail a
+            // échoué — la demande est conservée mais le client doit le savoir
+            // (état honnête, pas d'écran OTP pour un code jamais parti).
+
             return false;
         }
+
+        return true;
     }
 
     public function findExistingManager(string $email): ?Employee

@@ -177,11 +177,16 @@ async function sendMessage() {
       content: reply.response || reply.message || reply.content || '',
       created_at: new Date().toISOString(),
     })
-  } catch {
+  } catch (err) {
+    // #3341 : afficher l'erreur explicite du backend (ex. 501 ADMIN_CHAT_UNAVAILABLE)
+    const backendMessage = err?.response?.data?.localized_message
+      || err?.response?.data?.message
+      || err?.response?.data?.error
+      || err?.message
     messages.value.push({
       id: Date.now() + 1,
       role: 'assistant',
-      content: 'Desole, une erreur est survenue. Veuillez reessayer.',
+      content: backendMessage || 'Desole, une erreur est survenue. Veuillez reessayer.',
       created_at: new Date().toISOString(),
     })
   } finally {

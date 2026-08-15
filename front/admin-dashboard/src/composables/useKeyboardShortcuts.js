@@ -48,6 +48,10 @@ export function useKeyboardShortcuts() {
           e.preventDefault()
           router.push('/subscriptions')
           break
+        case 'r':
+          e.preventDefault()
+          router.push('/recruitment')
+          break
       }
       return
     }
@@ -69,14 +73,20 @@ export function useKeyboardShortcuts() {
   })
 
   return {
-    shortcuts: [
-      { keys: 'Ctrl+D', description: 'Basculer mode sombre' },
-      { keys: 'Ctrl+K', description: 'Rechercher' },
-      { keys: 'Alt+H', description: 'Tableau de bord' },
-      { keys: 'Alt+U', description: 'Utilisateurs' },
-      { keys: 'Alt+C', description: 'Entreprises' },
-      { keys: 'Alt+S', description: 'Abonnements' },
-      { keys: '?', description: 'Aide raccourcis' },
-    ],
+    shortcuts: KEYBOARD_SHORTCUTS,
   }
 }
+
+// #3275 : liste unique des raccourcis — partagée entre le composable
+// (implémentation) et KeyboardShortcutsModal (affichage). Plus de drift
+// entre deux listes codées en dur.
+export const KEYBOARD_SHORTCUTS = [
+  { keys: 'Ctrl+D', description: 'Basculer mode sombre' },
+  { keys: 'Ctrl+K', description: 'Rechercher' },
+  { keys: 'Alt+H', description: 'Tableau de bord' },
+  { keys: 'Alt+U', description: 'Utilisateurs' },
+  { keys: 'Alt+C', description: 'Entreprises' },
+  { keys: 'Alt+S', description: 'Abonnements' },
+  { keys: 'Alt+R', description: 'Recrutement' },
+  { keys: '?', description: 'Aide raccourcis' },
+]
