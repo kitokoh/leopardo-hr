@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(web): plan Enterprise harmonisé « Sur devis » — checkout quote-only (Closes #3328).** Le checkout affichait 299/239 € et 250+ employés alors que le pricing annonce « Sur devis » / 500+ employés. Enterprise devient quote-only : accès direct au checkout → redirection `/contact?topic=enterprise` (conforme AGENTS.md « Enterprise sur devis »), limites alignées 500+.
 ### Fixed
 - **fix(api): webhook email-bounce configurable (Closes #3058).** `services.mail_bounce_webhook.secret` n'était défini nulle part → 503 permanent malgré le fail-closed #2616. Ajout de la clé `config/services.php` (env `MAIL_BOUNCE_WEBHOOK_SECRET`) + entrée `.env.example` ; vide = refusé (défensif).
 
