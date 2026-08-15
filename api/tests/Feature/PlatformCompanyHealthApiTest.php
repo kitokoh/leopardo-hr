@@ -83,6 +83,8 @@ class PlatformCompanyHealthApiTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.company.id', $company->id);
+        $response->assertJsonPath('data.company.slug', $company->slug);
+        $response->assertJsonPath('data.company.created_at', $company->created_at->toIso8601String());
         $response->assertJsonPath('data.plan.name', 'Pro');
         $response->assertJsonPath('data.subscription.mrr', 99);
         $response->assertJsonPath('data.features.active.finance', true);
