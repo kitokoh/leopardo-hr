@@ -85,6 +85,6 @@ EXPOSE 80
 VOLUME ["/var/leopardo"]
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost/api/edge/health || exit 1
+    CMD curl -f http://localhost/api/v1/edge/health || exit 1
 
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/leopardo.conf"]
