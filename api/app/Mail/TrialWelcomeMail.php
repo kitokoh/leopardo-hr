@@ -2,12 +2,13 @@
 
 namespace App\Mail;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class TrialWelcomeMail extends Mailable
@@ -33,7 +34,7 @@ class TrialWelcomeMail extends Mailable
         // épingler la locale applicative AVANT le rendu, sinon le corps du
         // mail se rend dans la locale ambiante (Accept-Language / défaut) et
         // le sujet/le corps peuvent être dans des langues différentes.
-        \Illuminate\Support\Facades\App::setLocale($locale);
+        App::setLocale($locale);
 
         return $this
             ->subject($this->resolveSubject($locale))
@@ -46,19 +47,23 @@ class TrialWelcomeMail extends Mailable
             ]);
     }
 
-
     /**
      * Durée d'essai réelle affichée dans l'email : dérivée du provisioning
      * (subscription_start → subscription_end), avec repli sur le plan.
      */
     private function resolveTrialDays(): int
     {
-        $start = $this->company->subscription_start
-            ? Carbon::parse($this->company->subscription_start)->startOfDay()
+        // getAttribute() renvoie la valeur BRUTE (string|null) — le ternary
+        // reste donc une vraie garde null même si l'annotation du modèle
+        // déclare subscription_start/end non-nullables (PHPStan).
+        $startRaw = $this->company->getAttribute('subscription_start');
+        $start = $startRaw
+            ? Carbon::parse($startRaw)->startOfDay()
             : Carbon::today();
 
-        $end = $this->company->subscription_end
-            ? Carbon::parse($this->company->subscription_end)->startOfDay()
+        $endRaw = $this->company->getAttribute('subscription_end');
+        $end = $endRaw
+            ? Carbon::parse($endRaw)->startOfDay()
             : null;
 
         if ($end !== null && $end->greaterThan($start)) {
@@ -85,4 +90,3 @@ class TrialWelcomeMail extends Mailable
         };
     }
 }
-
