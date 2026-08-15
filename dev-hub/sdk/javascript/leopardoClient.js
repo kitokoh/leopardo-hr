@@ -2280,9 +2280,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/courses/{trainingCourse}/sessions", options);
     },
 
+    /** Lister toutes les inscriptions formation (tenant scope) */
+    getTrainingEnrollments(options = {}) {
+      return request("GET", "/training/enrollments", options);
+    },
+
     /** Modifier une inscription */
     putTrainingEnrollmentsByTrainingEnrollment(options = {}) {
       return request("PUT", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Lister toutes les sessions de formation (toutes formations, tenant scope) */
+    getTrainingSessions(options = {}) {
+      return request("GET", "/training/sessions", options);
     },
 
     /** Modifier une session */
