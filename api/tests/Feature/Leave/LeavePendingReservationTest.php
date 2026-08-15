@@ -35,9 +35,14 @@ class LeavePendingReservationTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * @return array{0: \App\Core\Tenant\Domain\Models\Company, 1: \App\Core\Auth\Domain\Models\Employee, 2: AbsenceType, 3: LeavePolicy}
+     */
     private function context(): array
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         /** @var AbsenceType $type */
@@ -77,8 +82,9 @@ class LeavePendingReservationTest extends TestCase
             'year' => now()->year - 1,
         ]);
 
-        $this->artisan('leave:carry-forward', ['--year' => now()->year - 1])
-            ->assertExitCode(0);
+        $carry = $this->artisan('leave:carry-forward', ['--year' => now()->year - 1]);
+        $this->assertInstanceOf(\Illuminate\Testing\PendingCommand::class, $carry);
+        $carry->assertExitCode(0);
 
         // Reporté = 10 − 0 − 5 = 5 (et non 10 avant #2416).
         $carried = LeaveAccrual::query()
@@ -112,8 +118,9 @@ class LeavePendingReservationTest extends TestCase
             'year' => now()->year - 1,
         ]);
 
-        $this->artisan('leave:carry-forward', ['--year' => now()->year - 1])
-            ->assertExitCode(0);
+        $carry = $this->artisan('leave:carry-forward', ['--year' => now()->year - 1]);
+        $this->assertInstanceOf(\Illuminate\Testing\PendingCommand::class, $carry);
+        $carry->assertExitCode(0);
 
         $carried = LeaveAccrual::query()
             ->where('employee_id', $employee->id)

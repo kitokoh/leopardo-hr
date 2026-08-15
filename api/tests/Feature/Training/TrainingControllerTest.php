@@ -228,6 +228,7 @@ class TrainingControllerTest extends TestCase
             'status'             => 'planned',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $foreignEmployee */
         $foreignEmployee = Employee::factory()->create(['company_id' => $this->otherCompany->id]);
 
         Sanctum::actingAs($this->manager);
