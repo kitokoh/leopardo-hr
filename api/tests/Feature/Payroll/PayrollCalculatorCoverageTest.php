@@ -73,14 +73,16 @@ class PayrollCalculatorCoverageTest extends TestCase
 
     public function test_overtime_pay_standard_hours_at_125(): void
     {
-        // Taux horaire 60000 / 173,33 = 346,16 ; 10 h × 346,16 × 1,25 = 4327,00
-        $this->assertSame(4327.0, $this->calculator->computeOvertimePay(60000.0, 10.0, 10));
+        // Taux horaire 60000 / 173,33 = 346,16048… ; 10 h × 346,16048 × 1,25 =
+        // 4327,006 → arrondi FINAL à 2 décimales (#2685/#2885) = 4327,01.
+        $this->assertSame(4327.01, $this->calculator->computeOvertimePay(60000.0, 10.0, 10));
     }
 
     public function test_overtime_pay_premium_hours_at_150(): void
     {
-        // 15 h : 10 h à 1,25 (4327,00) + 5 h à 1,50 (5 × 346,16 × 1,50 = 2596,20)
-        $this->assertSame(6923.2, $this->calculator->computeOvertimePay(60000.0, 15.0, 10));
+        // 15 h : 10 h à 1,25 (4327,006) + 5 h à 1,50 (2596,204) = 6923,210
+        // → arrondi final 2 décimales (#2685/#2885) = 6923,21.
+        $this->assertSame(6923.21, $this->calculator->computeOvertimePay(60000.0, 15.0, 10));
     }
 
     // ── computeWorkedDays ──────────────────────────────────────────────────
