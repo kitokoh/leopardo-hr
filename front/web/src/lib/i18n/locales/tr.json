@@ -669,6 +669,17 @@
     "trialNoteSuffix": "kredi kartı gerekmez",
     "downloadApp": "Uygulamayı indir",
     "changePasswordNote": "İlk girişte parolanızı değiştirin.",
-    "defaultError": "Bir hata oluştu"
+    "defaultError": "Bir hata oluştu",
+    "validation": {
+      "emailInvalid": "Geçersiz e-posta",
+      "emailTooShort": "E-posta çok kısa",
+      "emailTooLong": "E-posta çok uzun",
+      "companyTooShort": "Şirket adı en az 2 karakter olmalıdır",
+      "companyTooLong": "Şirket adı çok uzun",
+      "roleRequired": "Rolünüzü seçin",
+      "employeesRequired": "Bir ekip boyutu seçin",
+      "phoneInvalid": "Geçersiz telefon numarası",
+      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
+    }
   }
 }

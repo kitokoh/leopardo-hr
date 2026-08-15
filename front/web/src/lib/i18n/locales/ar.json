@@ -669,6 +669,17 @@
     "trialNoteSuffix": "لا حاجة لبطاقة ائتمانية",
     "downloadApp": "تحميل التطبيق",
     "changePasswordNote": "غيّر كلمة مرورك عند أول تسجيل دخول.",
-    "defaultError": "حدث خطأ ما"
+    "defaultError": "حدث خطأ ما",
+    "validation": {
+      "emailInvalid": "البريد الإلكتروني غير صالح",
+      "emailTooShort": "البريد الإلكتروني قصير جدًا",
+      "emailTooLong": "البريد الإلكتروني طويل جدًا",
+      "companyTooShort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
+      "companyTooLong": "اسم الشركة طويل جدًا",
+      "roleRequired": "اختر دورك",
+      "employeesRequired": "اختر حجم الفريق",
+      "phoneInvalid": "رقم الهاتف غير صالح",
+      "agreeTerms": "يجب عليك قبول شروط الاستخدام"
+    }
   }
 }

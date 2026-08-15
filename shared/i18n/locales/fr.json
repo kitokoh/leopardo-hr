@@ -669,6 +669,17 @@
     "trialNoteSuffix": "aucune carte bancaire requise",
     "downloadApp": "Télécharger l'app",
     "changePasswordNote": "Changez votre mot de passe dès la première connexion.",
-    "defaultError": "Une erreur est survenue"
+    "defaultError": "Une erreur est survenue",
+    "validation": {
+      "emailInvalid": "Email invalide",
+      "emailTooShort": "Email trop court",
+      "emailTooLong": "Email trop long",
+      "companyTooShort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
+      "companyTooLong": "Le nom de l'entreprise est trop long",
+      "roleRequired": "Sélectionnez votre rôle",
+      "employeesRequired": "Sélectionnez une taille d'équipe",
+      "phoneInvalid": "Numéro de téléphone invalide",
+      "agreeTerms": "Vous devez accepter les conditions d'utilisation"
+    }
   }
 }
