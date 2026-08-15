@@ -14,8 +14,9 @@ type MiniCase = {
   flag: string;
 };
 
-const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; cases: MiniCase[] }> = {
+const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; cases: MiniCase[]; disclaimer: string }> = {
   fr: {
+    disclaimer: 'Chiffres de demonstration — profils fictifs a titre d\'illustration.',
     badge: 'Profils types',
     title: 'Des resultats',
     titleHighlight: 'concrets',
@@ -50,6 +51,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
     ],
   },
   en: {
+    disclaimer: 'Demo figures — fictional profiles shown for illustration only.',
     badge: 'Use cases',
     title: 'Real',
     titleHighlight: 'results',
@@ -84,6 +86,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
     ],
   },
   tr: {
+    disclaimer: 'Demostrasyon rakamlar — yalnizca ornek olarak kurgusal profiller.',
     badge: 'Kullanım senaryoları',
     title: 'Gercek',
     titleHighlight: 'sonuclar',
@@ -118,6 +121,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
     ],
   },
   ar: {
+    disclaimer: 'أرقام توضيحية — ملفات تعريف خيالية لأغراض العرض فقط.',
     badge: 'سيناريوهات الاستخدام',
     title: 'نتائج',
     titleHighlight: 'ملموسة',
@@ -225,6 +229,12 @@ export function MiniCaseStudies({ locale = 'fr' }: MiniCaseStudiesProps) {
             </motion.div>
           ))}
         </div>
+
+        {/* Issue #3488 : profils illustratifs, pas des clients réels — même
+            traitement que /testimonials (#3440). */}
+        <p className="mt-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+          {data.disclaimer}
+        </p>
       </div>
     </section>
   );
