@@ -5,11 +5,6 @@ import { t } from '@/lib/i18n/locale-catalog';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
-/** Build a canonical URL from the configured site URL. */
-export function canonicalUrl(path: string): string {
-  return `${siteUrl}${path}`;
-}
-
 export interface SEOMetadata {
   title: string;
   description: string;
@@ -480,66 +475,3 @@ export function generateBreadcrumbSchema(
   };
 }
 
-/**
- * Sitemap generation
- */
-export interface SitemapEntry {
-  url: string;
-  lastmod?: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: number;
-}
-
-export function generateSitemapXML(entries: SitemapEntry[]): string {
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries
-  .map(
-    (entry) => `
-  <url>
-    <loc>${entry.url}</loc>
-    ${entry.lastmod ? `<lastmod>${entry.lastmod}</lastmod>` : ""}
-    ${entry.changefreq ? `<changefreq>${entry.changefreq}</changefreq>` : ""}
-    ${entry.priority ? `<priority>${entry.priority}</priority>` : ""}
-  </url>
-`
-  )
-  .join("")}
-</urlset>`;
-
-  return xml;
-}
-
-/**
- * Robots.txt generation
- */
-export function generateRobotsTxt(): string {
-  return `User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api
-Disallow: /.env
-Disallow: /.git
-
-Sitemap: ${siteUrl}/sitemap.xml
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /`;
-}
-
-/**
- * Open Graph image generation helper
- */
-export function getOGImageUrl(page: string): string {
-  return `${siteUrl}/og/${page}.png`;
-}
-
-/**
- * Canonical URL helper
- */
-export function getCanonicalUrl(path: string): string {
-  return `${siteUrl}${path}`;
-}

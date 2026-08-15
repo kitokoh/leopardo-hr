@@ -22,7 +22,6 @@ export { LegalPageShell } from './LegalPageShell';
 export * from './common';
 
 // Animation Components
-export * from './animations';
 
 // Form Components
 export * from './forms';

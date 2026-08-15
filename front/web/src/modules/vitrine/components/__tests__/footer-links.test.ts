@@ -1,3 +1,4 @@
+// Jest runtime (next/jest) — globals describe/it/expect fournis par jest
 import { getFooterHref } from '../Footer'
 
 describe('getFooterHref', () => {
