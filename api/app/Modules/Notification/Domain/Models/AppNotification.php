@@ -43,6 +43,9 @@ class AppNotification extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Core\Auth\Domain\Models\User::class);
+        // #2436 — `user_id` stocke l'id d'un EMPLOYÉ tenant (le dispatcher est
+        // appelé avec $submitter->id d'un Employee), pas un id de public.users :
+        // la relation pointe donc vers Employee, jamais vers User.
+        return $this->belongsTo(\App\Core\Auth\Domain\Models\Employee::class);
     }
 }
