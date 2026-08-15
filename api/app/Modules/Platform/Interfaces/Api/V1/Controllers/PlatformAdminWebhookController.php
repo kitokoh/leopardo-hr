@@ -29,7 +29,7 @@ class PlatformAdminWebhookController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $webhooks = WebhookEndpoint::query()
+        $webhooks = WebhookEndpoint::query()->withoutGlobalScopes('company')
             ->leftJoin('companies', 'companies.id', '=', 'webhook_endpoints.company_id')
             ->select('webhook_endpoints.*', 'companies.name as company_name')
             ->orderByDesc('webhook_endpoints.created_at')
@@ -69,7 +69,7 @@ class PlatformAdminWebhookController extends Controller
             'active' => ['sometimes', 'boolean'],
         ]);
 
-        $webhook = WebhookEndpoint::create([
+        $webhook = WebhookEndpoint::withoutGlobalScopes('company')->create([
             'company_id' => $validated['company_id'],
             'url' => $validated['url'],
             'events' => $validated['events'],

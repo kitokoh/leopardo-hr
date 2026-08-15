@@ -52,8 +52,14 @@ class WebhookController extends Controller
             abort(403);
         }
 
+        // Issue #3727 : filtre tenant explicite en plus du scope global
+        // BelongsToCompany (défense en profondeur — le scope seul sautait en
+        // silence sans `current_company`).
         return WebhookEndpointResource::collection(
-            WebhookEndpoint::query()->orderByDesc('created_at')->get()
+            WebhookEndpoint::query()
+                ->where('company_id', $actor->company_id)
+                ->orderByDesc('created_at')
+                ->get()
         );
     }
 

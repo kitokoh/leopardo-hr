@@ -39,16 +39,16 @@ class LaunchReadinessController extends Controller
         }
 
         $companyId = (string) $company->id;
-        $activeEmployees = Employee::query()
+        $activeEmployees = Employee::query()->withoutGlobalScopes('company')
             ->where('company_id', $companyId)
             ->where('status', 'active')
             ->count();
-        $activeManagers = Employee::query()
+        $activeManagers = Employee::query()->withoutGlobalScopes('company')
             ->where('company_id', $companyId)
             ->where('role', 'manager')
             ->where('status', 'active')
             ->count();
-        $payrollReadyQuery = Employee::query()
+        $payrollReadyQuery = Employee::query()->withoutGlobalScopes('company')
             ->where('company_id', $companyId)
             ->where('status', 'active');
 

@@ -19,7 +19,7 @@ final class ActivateCompany
         return DB::transaction(function () use ($company, $planId): Company {
             $company->update(['status' => 'active']);
 
-            Subscription::updateOrCreate(
+            Subscription::withoutGlobalScopes('company')->updateOrCreate(
                 ['company_id' => $company->id],
                 [
                     'plan_id'    => $planId,

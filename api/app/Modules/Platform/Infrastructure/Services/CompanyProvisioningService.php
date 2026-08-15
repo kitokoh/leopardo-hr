@@ -75,7 +75,7 @@ class CompanyProvisioningService
 
             try {
                 /** @var Employee $manager */
-                $manager = Employee::query()->create([
+                $manager = Employee::query()->withoutGlobalScopes('company')->create([
                     'company_id' => $company->id,
                     'first_name' => $payload['manager_first_name'],
                     'last_name' => $payload['manager_last_name'],
