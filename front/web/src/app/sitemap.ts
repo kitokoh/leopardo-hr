@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
 
 function localizedAlternates(path: string) {

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
-use Tests\Support\SnPayrollFixtures;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\SnPayrollFixtures;
 use Tests\TestCase;
 
 /**
@@ -48,7 +48,7 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(58900.0);
 
         $this->assertSame(3298.40, $charges['employee']);
-        $this->assertSame(9070.60, $charges['employer']);
+        $this->assertSame(11426.60, $charges['employer']);
         $this->assertSame(SnPayrollFixtures::bracketTax(58900.0), $rules->calculateBracketTax(58900.0));
     }
 
@@ -106,9 +106,9 @@ class GoldenSnPayrollTest extends TestCase
 
         $this->assertSame(24192.0, $charges['employee']);
         // Patronal (plafonds #1913) : IPRES 8,4 % = 36 288 + CSS famille
-        // min(432 000, 63 000) × 3 % = 1 890 + CSS AT 63 000 × 1 % = 630
-        // + CFCE 432 000 × 3 % = 12 960 → 51 768,00
-        $this->assertSame(51768.0, $charges['employer']);
+        // min(432 000, 63 000) × 7 % = 4 410 + CSS AT 63 000 × 1 % = 630
+        // + CFCE 432 000 × 3 % = 12 960 → 54 288,00
+        $this->assertSame(54288.0, $charges['employer']);
         $this->assertSame(SnPayrollFixtures::bracketTax(432000.0), $rules->calculateBracketTax(432000.0));
     }
 
@@ -136,7 +136,7 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(1000000.0);
 
         $this->assertSame(37824.0, $charges['employee']);
-        $this->assertSame(89256.0, $charges['employer']);
+        $this->assertSame(91776.0, $charges['employer']);
         $this->assertSame(SnPayrollFixtures::bracketTax(1000000.0), $rules->calculateBracketTax(1000000.0));
     }
 
@@ -200,12 +200,12 @@ class GoldenSnPayrollTest extends TestCase
     public static function trimfProvider(): array
     {
         return [
-            'tranche 1 (≤ 25k)'     => [25000.0, 900.0],
-            'tranche 2 (25k-75k)'   => [75000.0, 2700.0],
-            'tranche 3 (75k-150k)'  => [150000.0, 5400.0],
+            'tranche 1 (≤ 25k)' => [25000.0, 900.0],
+            'tranche 2 (25k-75k)' => [75000.0, 2700.0],
+            'tranche 3 (75k-150k)' => [150000.0, 5400.0],
             'tranche 4 (150k-350k)' => [350000.0, 9000.0],
             'tranche 5 (350k-700k)' => [700000.0, 18000.0],
-            'tranche 6 (> 700k)'    => [800000.0, 36000.0],
+            'tranche 6 (> 700k)' => [800000.0, 36000.0],
         ];
     }
 
@@ -251,7 +251,7 @@ class GoldenSnPayrollTest extends TestCase
     {
         // Calcul manuel (SN_COMPLIANCE.md) : prorata entrée le 10 → 22 × 22/31
         // = 15,61 j (mécanique F-05). Base 250 000 × 15,61/22 = 177 386,36.
-        $this->assertSame(177386.36, (new PayrollCalculator())->computeProratedBase(250000.0, 22.0, 15.61));
+        $this->assertSame(177386.36, (new PayrollCalculator)->computeProratedBase(250000.0, 22.0, 15.61));
     }
 
     public function test_golden_sn_hs_tiers(): void
