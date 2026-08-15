@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,9 +15,6 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string|null $location_label
  * @property string $device_code
- * @property-read Company|null $company
- *     Relation définie dynamiquement via setRelation() (lookup public,
- *     jamais le search_path tenant).
  * @property string $status
  * @property string $biometric_mode
  * @property string|null $trusted_device_label

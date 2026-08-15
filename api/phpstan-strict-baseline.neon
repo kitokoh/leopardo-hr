@@ -1579,6 +1579,18 @@ parameters:
 			path: app/Modules/Attendance/Domain/Models/ApprovalRequest.php
 
 		-
+			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_seen_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_sync_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
+
+		-
 			message: '#^Class App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog has PHPDoc tag @property for property \$punch_meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1837,12 +1849,6 @@ parameters:
 			path: app/Modules/Attendance/Infrastructure/Services/KioskAttendanceService.php
 
 		-
-			message: '#^Parameter \#1 \$company of method App\\Core\\Tenant\\TenantManager\:\:withinTenant\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Modules/Attendance/Infrastructure/Services/KioskAttendanceService.php
-
-		-
 			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\TraccarService\:\:getDevices\(\) should return array\<int, array\<string, mixed\>\> but returns array\<int\|string, mixed\>\.$#'
 			identifier: return.type
 			count: 1
@@ -1963,26 +1969,8 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/BiometricEnrollmentController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doEmployeeInfo\(\) has parameter \$validated with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doLeaveBalance\(\) has parameter \$validated with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doQrPunch\(\) has parameter \$validated with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doSync\(\) has parameter \$validated with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
@@ -2005,37 +1993,7 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
 		-
-			message: '#^Parameter \#1 \$company of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doEmployeeInfo\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doLeaveBalance\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doRoster\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
 			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#2 \$company of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doAnnouncements\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#2 \$company of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:doQrPunch\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
@@ -4363,12 +4321,6 @@ parameters:
 			path: app/Modules/Platform/Domain/Contracts/CompanyProvisioningInterface.php
 
 		-
-			message: '#^Ternary operator condition is always true\.$#'
-			identifier: ternary.alwaysTrue
-			count: 4
-			path: app/Modules/Platform/Infrastructure/Services/PlatformCompanyHealthService.php
-
-		-
 			message: '#^Parameter \#1 \$companyId of method App\\AI\\Workflows\\PreparePayrollWorkflow\:\:execute\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5537,6 +5489,54 @@ parameters:
 			identifier: argument.type
 			count: 3
 			path: tests/Feature/CountryCurrencyPropagationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyB \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$employeeA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$employeeB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$managerA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$managerB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 5
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 5
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
