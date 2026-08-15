@@ -112,7 +112,18 @@ function SuccessInner() {
 
   const isSandbox = searchParams.get('sandbox') === '1';
   const sessionId = searchParams.get('session_id') || '';
-  const plan = searchParams.get('plan') || 'Business';
+  // #3919 : affiche le nom canonique du plan (Pilot/Operations/Enterprise)
+  // quel que soit le slug (pilot/operations/enterprise ou alias legacy).
+  const PLAN_DISPLAY: Record<string, string> = {
+    free: 'Free',
+    pilot: 'Pilot',
+    starter: 'Pilot',
+    operations: 'Operations',
+    business: 'Operations',
+    enterprise: 'Enterprise',
+    scale: 'Enterprise',
+  };
+  const plan = PLAN_DISPLAY[searchParams.get('plan') || ''] || 'Pilot';
   const billing = searchParams.get('billing') || 'monthly';
   const email = searchParams.get('email') || '';
   const company = searchParams.get('company') || '';
