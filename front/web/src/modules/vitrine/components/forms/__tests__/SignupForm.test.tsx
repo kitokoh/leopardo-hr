@@ -4,6 +4,53 @@ import userEvent from '@testing-library/user-event';
 import { SignupForm } from '../SignupForm';
 import { submitSignupForm, fetchTrialStatus } from '@/modules/vitrine/lib/forms';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// framer-motion neutralisé (test déterministe, issue constat QA 2026-08-15) :
+// 1. `AnimatePresence mode="wait"` ne monte l'étape suivante qu'après la sortie
+//    animée (0,3 s) pilotée par RAF. framer-motion capture la VRAIE
+//    requestAnimationFrame au chargement du module : les fake timers ne la
+//    pilotent pas → le test « polls pending → ready » échouait de façon
+//    NON DÉTERMINISTE sur main (parfois l'animation se terminait en temps réel,
+//    parfois non).
+// 2. `motion.<tag>` rend l'élément DOM réel du tag (div, input, select, …) :
+//    le design system (Input → motion.input, Select → motion.select) doit
+//    produire de vrais contrôles pour les requêtes getByRole/getAllByRole.
+// ─────────────────────────────────────────────────────────────────────────────
+jest.mock('framer-motion', () => {
+  const { createElement, Fragment, forwardRef } = require('react');
+
+  const stripMotionProps = ({
+    initial,
+    animate,
+    exit,
+    transition,
+    whileFocus,
+    whileHover,
+    whileTap,
+    whileInView,
+    variants,
+    layout,
+    ...rest
+  }: any) => rest;
+
+  return {
+    AnimatePresence: ({ children }: any) => createElement(Fragment, null, children),
+    motion: new Proxy(
+      {},
+      {
+        get: (_target, tag: string) => {
+          const MockMotionElement = forwardRef((props: any, ref: any) =>
+            createElement(tag, { ...stripMotionProps(props), ref }, props.children)
+          );
+          MockMotionElement.displayName = `MockMotion${String(tag)}`;
+
+          return MockMotionElement;
+        },
+      }
+    ),
+  };
+});
+
 // Mock the form submission
 jest.mock('@/modules/vitrine/lib/forms', () => ({
   submitSignupForm: jest.fn(),
@@ -161,8 +208,13 @@ describe('SignupForm Component', () => {
       await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
       const selects = screen.getAllByRole('combobox');
-      await userEvent.selectOptions(selects[0], 'founder');
+      // employees AVANT role : SignupForm fait `watch('role')` — la sélection
+      // du rôle re-rend le composant et (avec le mock framer-motion, commits
+      // synchrones) peut orpheliner la référence du 2e select → la valeur
+      // « employees » était perdue. L'ordre des champs n'a pas d'importance
+      // métier : on remplit employees en premier pour un test déterministe.
       await userEvent.selectOptions(selects[1], '1-10');
+      await userEvent.selectOptions(selects[0], 'founder');
       await userEvent.click(screen.getByRole('checkbox'));
     }
 
@@ -214,8 +266,13 @@ describe('SignupForm Component', () => {
       await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
       const selects = screen.getAllByRole('combobox');
-      await userEvent.selectOptions(selects[0], 'founder');
+      // employees AVANT role : SignupForm fait `watch('role')` — la sélection
+      // du rôle re-rend le composant et (avec le mock framer-motion, commits
+      // synchrones) peut orpheliner la référence du 2e select → la valeur
+      // « employees » était perdue. L'ordre des champs n'a pas d'importance
+      // métier : on remplit employees en premier pour un test déterministe.
       await userEvent.selectOptions(selects[1], '1-10');
+      await userEvent.selectOptions(selects[0], 'founder');
       await userEvent.click(screen.getByRole('checkbox'));
     }
 
@@ -276,13 +333,17 @@ describe('SignupForm Component', () => {
         await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
         await user.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
         const selects = screen.getAllByRole('combobox');
-        await user.selectOptions(selects[0], 'founder');
         await user.selectOptions(selects[1], '1-10');
-        await user.click(screen.getByRole('checkbox'));
-        await user.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+        await user.selectOptions(selects[0], 'founder');
+        // fireEvent (et non user.click) : avec jest.useFakeTimers() actif au
+        // milieu de la suite, les clicks userEvent sont intermittemment avalés
+        // (désynchronisation pointerup/click par l'avancement des timers) —
+        // échec non déterministe sur main. fireEvent est synchrone.
+        fireEvent.click(screen.getByRole('checkbox'));
+        fireEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
         await screen.findByText(/vérifiez votre email/i);
 
-        await user.click(screen.getByRole('button', { name: /suivre l'état de mon espace/i }));
+        fireEvent.click(screen.getByRole('button', { name: /suivre l'état de mon espace/i }));
 
         // premier poll immédiat : pending → spinner
         expect(await screen.findByText(/préparation de votre espace/i)).toBeInTheDocument();

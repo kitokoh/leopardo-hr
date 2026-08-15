@@ -197,21 +197,21 @@ export default function DashboardLayout({
             <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">General</p>
           </div>
           {navGroups.general.map((module) => (
-            <SidebarLink key={module.key} module={module} active={pathname === module.href} />
+            <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
           ))}
 
           <div className="mb-2 mt-6 px-4">
             <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Module RH</p>
           </div>
           {navGroups.hr.map((module) => (
-            <SidebarLink key={module.key} module={module} active={pathname === module.href} />
+            <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
           ))}
 
           <div className="mb-2 mt-6 px-4">
             <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Finance & Formation</p>
           </div>
           {navGroups.finance.map((module) => (
-            <SidebarLink key={module.key} module={module} active={pathname === module.href} />
+            <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
           ))}
         </nav>
 
@@ -386,7 +386,7 @@ type ClientNotification = {
   is_read?: boolean;
 };
 
-function SidebarLink({ module, active }: { module: ClientModuleAccess; active: boolean }) {
+function SidebarLink({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
   const className = [
     'group flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-bold uppercase tracking-tight mx-2',
     active
@@ -404,7 +404,7 @@ function SidebarLink({ module, active }: { module: ClientModuleAccess; active: b
         {module.label}
       </span>
       <div className="flex items-center gap-1.5">
-        {!module.enabled ? <LockKeyhole className="h-3 w-3 text-slate-400" aria-label="Module non inclus" /> : null}
+        {!module.enabled ? <LockKeyhole className="h-3 w-3 text-slate-400" aria-label={labels.dashboard.featureLockedBadge} /> : null}
         {module.enabled && module.state === 'trial' ? (
           <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
         ) : null}
@@ -428,7 +428,7 @@ function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; la
   }, [module.key, module.reason, module.state]);
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
+    <section data-testid="feature-locked-panel" className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
       <div className="grid gap-6 p-6 lg:grid-cols-[1fr_280px] lg:items-center">
         <div className="space-y-4">
           <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
@@ -442,16 +442,16 @@ function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; la
             </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-transparent p-4 text-sm text-slate-700">
-            Demandez l activation au super administrateur de la plateforme ou passez sur un plan incluant ce module.
+            {labels.dashboard.featureLockedAdminHint}
           </div>
         </div>
         <div className="rounded-2xl bg-slate-950 p-5 text-white">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">Plan & role</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{labels.dashboard.featureLockedPlanRoleTitle}</p>
           <p className="mt-3 text-sm leading-6 text-slate-300">
-            Les modules visibles dans cet espace sont calcules depuis les droits, le plan de l entreprise et le role utilisateur.
+            {labels.dashboard.featureLockedPlanRoleBody}
           </p>
           <Link href="/contact?topic=upgrade" className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300">
-            Demander l activation
+            {labels.dashboard.featureLockedCta}
           </Link>
         </div>
       </div>

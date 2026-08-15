@@ -282,6 +282,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/v1/edge/download/sha256.txt:
+    get:
+      tags: ["Health"]
+      summary: "Sommes SHA-256 des artefacts edge (public)"
+      description: "Manifeste des sommes SHA-256 (format texte) utilise par install.sh pour verifier l'integrite des telechargements (issues #3529/#3770)."
+      security: []
+      responses:
+        "200":
+          description: "Manifeste SHA-256"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Manifeste introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/docker-compose.yml.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Somme SHA-256 de docker-compose.yml edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256 du fichier docker-compose.yml"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Somme introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/Caddyfile.edge.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Somme SHA-256 de Caddyfile.edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256 du fichier Caddyfile.edge"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Somme introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/v1/edge/download/env-example:
     get:
       tags: ["Health"]
@@ -290,73 +348,6 @@ paths:
       responses:
         "200":
           description: "Fichier .env.example"
-          content:
-            text/plain:
-              schema:
-                type: string
-
-  /api/v1/edge/download/sha256.txt:
-    get:
-      tags: ["Health"]
-      summary: "Empreintes SHA-256 des assets d'installation edge (public)"
-      description: "Manifeste JSON des sommes SHA-256 utilisé par install.sh pour vérifier l'intégrité des téléchargements (issue #3529/#3770). Chaque entrée de `sha256` suit la convention `<hash>  <fichier>` (deux espaces)."
-      security: []
-      responses:
-        "200":
-          description: "Manifeste JSON des sommes SHA-256"
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [sha256, algorithm]
-                properties:
-                  sha256:
-                    type: array
-                    description: "Lignes `<hash>  <fichier>` (format texte parsé par install.sh)"
-                    items:
-                      type: string
-                      example: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  install.sh"
-                  algorithm:
-                    type: string
-                    example: "sha256"
-        "503":
-          description: "Un ou plusieurs assets edge sont absents du serveur"
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [error, missing]
-                properties:
-                  error:
-                    type: string
-                    example: "edge_assets_missing"
-                  missing:
-                    type: array
-                    items:
-                      type: string
-                    example: ["install.sh"]
-
-  /api/v1/edge/download/docker-compose.yml.sha256:
-    get:
-      tags: ["Health"]
-      summary: "Empreinte SHA-256 de docker-compose.yml (public)"
-      security: []
-      responses:
-        "200":
-          description: "Somme SHA-256"
-          content:
-            text/plain:
-              schema:
-                type: string
-
-  /api/v1/edge/download/Caddyfile.edge.sha256:
-    get:
-      tags: ["Health"]
-      summary: "Empreinte SHA-256 de Caddyfile.edge (public)"
-      security: []
-      responses:
-        "200":
-          description: "Somme SHA-256"
           content:
             text/plain:
               schema:
@@ -6928,7 +6919,267 @@ paths:
         "200":
           description: "Liste vehicules maintenance due"
 
-  # ─── AI Gateway ────────────────────────────────────────────────────
+  # ─── HR Reports (tenant, managers) ───────────────────────────────
+
+  /reports/headcount:
+    get:
+      tags: ["HR Reports"]
+      summary: "Effectif par département, type de contrat et genre"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Payload {total, by_department[], by_contract_type[], by_gender[]}"
+
+  /reports/turnover:
+    get:
+      tags: ["HR Reports"]
+      summary: "Taux de rotation (turnover) sur N mois"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: months
+          required: false
+          schema:
+            type: integer
+            default: 12
+      responses:
+        "200":
+          description: "Taux de rotation mensuel et agrégé"
+
+  /reports/absenteeism:
+    get:
+      tags: ["HR Reports"]
+      summary: "Absentéisme du mois/année"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Taux d'absentéisme et ventilation"
+
+  /reports/payroll-summary:
+    get:
+      tags: ["HR Reports"]
+      summary: "Synthèse paie du mois/année"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Synthèse brute/net/cotisations"
+
+  /reports/overtime:
+    get:
+      tags: ["HR Reports"]
+      summary: "Heures supplémentaires du mois/année"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Heures supplémentaires par employé"
+
+  /reports/recruitment-pipeline:
+    get:
+      tags: ["HR Reports"]
+      summary: "Pipeline recrutement (candidatures par statut)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Candidatures comptées par statut"
+
+  /reports/training-completion:
+    get:
+      tags: ["HR Reports"]
+      summary: "Taux de complétion des formations"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Complétion par formation"
+
+  /reports/loan-summary:
+    get:
+      tags: ["HR Reports"]
+      summary: "Synthèse des avances/prêts employés"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Avances et prêts par employé/statut"
+
+  /reports/demographics:
+    get:
+      tags: ["HR Reports"]
+      summary: "Ventilation démographique des employés"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Répartition âge/genre/ancienneté/département"
+
+  /reports/cost-analysis:
+    get:
+      tags: ["HR Reports"]
+      summary: "Analyse des coûts (masse salariale par département)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Coûts salariaux ventilés"
+
+  # ─── Departments (tenant, managers) ──────────────────────────────
+
+  /departments:
+    get:
+      tags: ["Departments"]
+      summary: "Lister les départements du tenant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste paginée des départements"
+    post:
+      tags: ["Departments"]
+      summary: "Créer un département"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: "Département créé"
+
+  /departments/{department}:
+    get:
+      tags: ["Departments"]
+      summary: "Détail d'un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Département"
+        "404":
+          description: "Département introuvable ou hors tenant"
+    put:
+      tags: ["Departments"]
+      summary: "Mettre à jour un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: "Département mis à jour"
+    patch:
+      tags: ["Departments"]
+      summary: "Mise à jour partielle d'un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "200":
+          description: "Département mis à jour"
+    delete:
+      tags: ["Departments"]
+      summary: "Supprimer un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Département supprimé"
 
   /ai/chat:
     post:

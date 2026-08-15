@@ -42,8 +42,10 @@ class SSOController extends Controller
             'data' => [
                 'enabled' => $sso['enabled'],
                 'provider' => $sso['provider'],
-                // Audit #1694 : validation SAML/OIDC non implémentée — toujours false.
-                'validation_available' => $sso['validation_available'],
+                // Audit #1694 + gate #3890 : la validation SAML/OIDC n'est
+                // disponible que si le moteur existe ET le flag SAML_ENABLED est posé.
+                'validation_available' => $sso['validation_available']
+                    && (bool) config('services.saml.enabled', false),
             ],
         ]);
     }
@@ -102,6 +104,13 @@ class SSOController extends Controller
 
     public function samlCallback(Request $request, string $companyId): JsonResponse
     {
+        // #3890 : gate de feature explicite — le moteur de validation SAML
+        // n'est pas livré ; tant que services.saml.enabled est false (défaut),
+        // aucun IdP ne peut aboutir (fail-closed assumé et documenté).
+        if (! (bool) config('services.saml.enabled', false)) {
+            return response()->json(['error' => 'SAML_FEATURE_DISABLED'], 501);
+        }
+
         $samlResponse = $request->input('SAMLResponse', '');
 
         if (empty($samlResponse)) {

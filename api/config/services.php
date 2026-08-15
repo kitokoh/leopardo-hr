@@ -70,6 +70,14 @@ return [
         'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
     ],
 
+    'saml' => [
+        // #3890 : moteur de validation SAML non implémenté (stub fail-closed).
+        // Gate de feature explicite : tant que SAML_ENABLED=false (défaut),
+        // le callback SAML répond 501 SAML_FEATURE_DISABLED. À passer à true
+        // uniquement quand la validation des assertions sera livrée.
+        'enabled' => (bool) env('SAML_ENABLED', false),
+    ],
+
     'mail_bounce_webhook' => [
         // Issue #3058 : le secret du webhook de rebond email n'était défini
         // nulle part → 503 permanent (fail-closed #2616). Configurable via

@@ -4,13 +4,19 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\User;
+use App\Core\Auth\Infrastructure\Services\SSO\OidcIdTokenValidator;
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Core\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 readonly class UserAuthService
 {
+    public function __construct(
+        private readonly GoogleIdentityVerifier $googleIdentityVerifier = new GoogleIdentityVerifier(new OidcIdTokenValidator()),
+    ) {
+    }
+
     /**
      * @return array{user: User, token: string, token_type: string}
      */
@@ -68,10 +74,26 @@ readonly class UserAuthService
     }
 
     /**
+     * Google Sign-In vérifié côté serveur (issue #3941).
+     *
+     * L'identité (google_id, email, nom, avatar) est dérivée des claims du
+     * ID token vérifié par {@see GoogleIdentityVerifier} (signature Google
+     * RS256/JWKS, iss, aud, exp, email_verified). Les valeurs fournies par
+     * le client ne sont plus jamais utilisées — un attaquant ne peut plus
+     * forger une identité pour prendre le contrôle d'un compte.
+     *
      * @return array{user: User, token: string, token_type: string, is_new: bool}
      */
-    public function googleSignIn(string $googleId, string $email, string $firstName, string $lastName, ?string $avatarUrl = null): array
+    public function googleSignIn(string $idToken, ?string $deviceName = null): array
     {
+        $identity = $this->googleIdentityVerifier->verify($idToken);
+
+        $googleId = $identity['google_id'];
+        $email = $identity['email'];
+        $firstName = $identity['first_name'];
+        $lastName = $identity['last_name'];
+        $avatarUrl = $identity['avatar_url'];
+
         $isNew = false;
         /** @var User|null $user */
         $user = User::where('google_id', $googleId)->first();
@@ -108,7 +130,7 @@ readonly class UserAuthService
             $user->save();
         }
 
-        $result = $this->issueToken($user, 'Google Sign-In');
+        $result = $this->issueToken($user, $deviceName ?? 'Google Sign-In');
         $result['is_new'] = $isNew;
 
         return $result;

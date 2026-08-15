@@ -86,6 +86,10 @@ export type CopyTree = {
     featureLockedPlan: string;
     featureLockedBadge: string;
     featureLockedExplanation: string;
+    featureLockedAdminHint: string;
+    featureLockedPlanRoleTitle: string;
+    featureLockedPlanRoleBody: string;
+    featureLockedCta: string;
   };
   payrollPage: {
     title: string;
@@ -378,6 +382,10 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlan: "Ce module n'est pas inclus dans votre plan actuel.",
       featureLockedBadge: 'Module non inclus',
       featureLockedExplanation: "Leopardo RH garde l'interface explicite afin d'eviter les 404 confuses et les erreurs API inutiles.",
+      featureLockedAdminHint: "Demandez l activation au super administrateur de la plateforme ou passez sur un plan incluant ce module.",
+      featureLockedPlanRoleTitle: 'Plan & role',
+      featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calcules depuis les droits, le plan de l entreprise et le role utilisateur.",
+      featureLockedCta: 'Demander l activation',
     },
     payrollPage: {
       title: 'Paie',
@@ -668,6 +676,10 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlan: 'هذه الوحدة غير مشمولة في خطتك الحالية.',
       featureLockedBadge: 'الوحدة غير مشمولة',
       featureLockedExplanation: 'يحافظ Leopardo RH على واجهة واضحة لتجنب أخطاء 404 المربكة وأخطاء API غير الضرورية.',
+      featureLockedAdminHint: 'اطلب تفعيل الوحدة من مدير المنصة أو انتقل إلى خطة تتضمن هذه الوحدة.',
+      featureLockedPlanRoleTitle: 'الخطة والدور',
+      featureLockedPlanRoleBody: 'تُحسب الوحدات الظاهرة في هذه المساحة بناءً على الصلاحيات وخطة الشركة ودور المستخدم.',
+      featureLockedCta: 'طلب التفعيل',
     },
     payrollPage: {
       title: 'الرواتب',
@@ -958,6 +970,10 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlan: "Bu modul mevcut planiniza dahil degil.",
       featureLockedBadge: 'Modul dahil degil',
       featureLockedExplanation: "Leopardo RH, kafa karistiran 404'leri ve gereksiz API hatalarini onlemek icin arayuzu acik tutar.",
+      featureLockedAdminHint: 'Aktivasyonu platform super yoneticisinden isteyin veya bu modulu iceren bir plana gecin.',
+      featureLockedPlanRoleTitle: 'Plan ve rol',
+      featureLockedPlanRoleBody: 'Bu alanda gorunen moduller, haklara, sirket planina ve kullanici rolune gore hesaplanir.',
+      featureLockedCta: 'Aktivasyon iste',
     },
     payrollPage: {
       title: 'Bordro',
@@ -1248,6 +1264,10 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlan: "This module is not included in your current plan.",
       featureLockedBadge: 'Module not included',
       featureLockedExplanation: "Leopardo RH keeps the interface explicit to avoid confusing 404s and unnecessary API errors.",
+      featureLockedAdminHint: "Ask the platform super administrator to enable it, or switch to a plan that includes this module.",
+      featureLockedPlanRoleTitle: 'Plan & role',
+      featureLockedPlanRoleBody: 'The modules visible in this space are computed from permissions, the company plan and the user role.',
+      featureLockedCta: 'Request activation',
     },
     payrollPage: {
       title: 'Payroll',
