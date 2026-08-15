@@ -142,4 +142,37 @@ class EstimationApiTest extends TestCase
         $this->getJson('/api/v1/employees/999999999/quick-estimate?from=2026-07-01&to=2026-07-31')
             ->assertNotFound();
     }
+
+    public function test_team_scoped_manager_cannot_estimate_outside_team(): void
+    {
+        /** @var Employee $superviseur */
+        $superviseur = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'superviseur',
+        ]);
+        /** @var Employee $inTeam */
+        $inTeam = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'manager_id' => $superviseur->id,
+        ]);
+        /** @var Employee $outside */
+        $outside = Employee::factory()->create([
+            'company_id' => $this->company->id,
+        ]);
+
+        Sanctum::actingAs($superviseur);
+
+        // Employé de l'équipe → OK.
+        $this->getJson("/api/v1/employees/{$inTeam->id}/quick-estimate?from=2026-07-01&to=2026-07-31")
+            ->assertOk();
+
+        // Hors équipe → 403 (régression #3943 : viewAny n'appliquait aucun scope).
+        $this->getJson("/api/v1/employees/{$outside->id}/quick-estimate?from=2026-07-01&to=2026-07-31")
+            ->assertForbidden();
+
+        // Le reçu PDF suit le même scope.
+        $this->get("/api/v1/employees/{$outside->id}/receipt?from=2026-07-01&to=2026-07-31")
+            ->assertForbidden();
+    }
 }
