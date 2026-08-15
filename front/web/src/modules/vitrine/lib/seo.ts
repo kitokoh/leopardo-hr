@@ -347,6 +347,20 @@ export const pageMetadata = {
     robots: "noindex, follow",
   },
 
+  integrations: {
+    title: "Intégrations & API | Connectez Leopardo RH à vos Outils",
+    description:
+      "API publique documentée, webhooks signés, calendrier, SSO et exports paie : connectez Leopardo RH à votre écosystème en quelques minutes.",
+    keywords: [
+      "intégrations RH",
+      "API paie",
+      "webhooks RH",
+      "SSO entreprise",
+      "connecteurs logiciel RH",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
