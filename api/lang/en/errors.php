@@ -42,4 +42,19 @@ return [
     'SERVER_ERROR' => 'An error occurred. Please try again.',
     'VALIDATION_ERROR' => 'Some fields are incorrect.',
     'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',
+
+    // #3810 — codes stables (audit 2026-08-15) : plus de message brut exposé
+    'PAYROLL_RUN_VALIDATION_FAILED' => 'Payroll run validation failed. Please retry or contact support.',
+    'PAYROLL_RUN_LOCK_FAILED' => 'Payroll run lock failed. Please retry.',
+    'PAYROLL_RUN_UNLOCK_FAILED' => 'Payroll run unlock failed. Please retry.',
+    'PAYROLL_REGULARIZATION_FAILED' => 'Regularization run creation failed. Please retry.',
+    'SAML_AUTH_FAILED' => 'SAML authentication failed. Please retry or contact your administrator.',
+    'OIDC_AUTHORIZE_FAILED' => 'OIDC sign-in could not start. Please retry.',
+    'OIDC_CALLBACK_FAILED' => 'OIDC sign-in could not complete. Please retry.',
+    'ANNOUNCEMENT_PUBLISH_FAILED' => 'Announcement could not be published. Please retry.',
+    'ANNOUNCEMENT_CANCEL_FAILED' => 'Announcement could not be cancelled. Please retry.',
+    'RATE_APPROVAL_FAILED' => 'Rate approval failed. Check the row state and retry.',
+    'RATE_REJECTION_FAILED' => 'Rate rejection failed. Check the row state and retry.',
+    'SOCIAL_CONTRIBUTION_SUBMIT_FAILED' => 'Contribution submission failed. Check the row state and retry.',
+    'TAX_SLAB_SUBMIT_FAILED' => 'Tax slab submission failed. Check the row state and retry.',
 ];

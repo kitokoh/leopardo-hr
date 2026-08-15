@@ -42,4 +42,19 @@ return [
     'SERVER_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'VALIDATION_ERROR' => 'Certains champs sont incorrects.',
     'UNSUPPORTED_API_VERSION' => 'Version API non supportee.',
+
+    // #3810 — codes stables (audit 2026-08-15) : plus de message brut exposé
+    'PAYROLL_RUN_VALIDATION_FAILED' => 'La validation du run de paie a échoué. Réessayez ou contactez le support.',
+    'PAYROLL_RUN_LOCK_FAILED' => 'Le verrouillage du run de paie a échoué. Réessayez.',
+    'PAYROLL_RUN_UNLOCK_FAILED' => 'Le déverrouillage du run de paie a échoué. Réessayez.',
+    'PAYROLL_REGULARIZATION_FAILED' => 'La création du run de régularisation a échoué. Réessayez.',
+    'SAML_AUTH_FAILED' => 'L\'authentification SAML a échoué. Réessayez ou contactez votre administrateur.',
+    'OIDC_AUTHORIZE_FAILED' => 'Le démarrage de la connexion OIDC a échoué. Réessayez.',
+    'OIDC_CALLBACK_FAILED' => 'La finalisation de la connexion OIDC a échoué. Réessayez.',
+    'ANNOUNCEMENT_PUBLISH_FAILED' => 'La publication de l\'annonce a échoué. Réessayez.',
+    'ANNOUNCEMENT_CANCEL_FAILED' => 'L\'annulation de l\'annonce a échoué. Réessayez.',
+    'RATE_APPROVAL_FAILED' => 'L\'approbation du taux a échoué. Vérifiez l\'état de la ligne puis réessayez.',
+    'RATE_REJECTION_FAILED' => 'Le rejet du taux a échoué. Vérifiez l\'état de la ligne puis réessayez.',
+    'SOCIAL_CONTRIBUTION_SUBMIT_FAILED' => 'La soumission de la cotisation a échoué. Vérifiez l\'état de la ligne puis réessayez.',
+    'TAX_SLAB_SUBMIT_FAILED' => 'La soumission de la tranche fiscale a échoué. Vérifiez l\'état de la ligne puis réessayez.',
 ];
