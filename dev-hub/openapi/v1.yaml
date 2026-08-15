@@ -273,6 +273,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/v1/edge/download/Caddyfile.edge:
+    get:
+      tags: ["Health"]
+      summary: "Caddyfile.edge de reference pour le nœud edge (public)"
+      description: "Fichier de configuration Caddy monté par docker-compose.yml du nœud edge (issue #3741)."
+      security: []
+      responses:
+        "200":
+          description: "Fichier Caddyfile.edge"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Fichier introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/v1/edge/download/env-example:
     get:
       tags: ["Health"]
@@ -281,6 +301,52 @@ paths:
       responses:
         "200":
           description: "Fichier .env.example"
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/edge/download/sha256.txt:
+    get:
+      tags: ["Health"]
+      summary: "Empreintes SHA-256 des assets d'installation edge (public)"
+      description: "Fichier de sommes SHA-256 utilisé par install.sh pour vérifier l'intégrité des téléchargements (issue #3529)."
+      security: []
+      responses:
+        "200":
+          description: "Sommes SHA-256 des assets"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Fichier introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/docker-compose.yml.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Empreinte SHA-256 de docker-compose.yml (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256"
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/edge/download/Caddyfile.edge.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Empreinte SHA-256 de Caddyfile.edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256"
           content:
             text/plain:
               schema:
@@ -2748,12 +2814,39 @@ paths:
   /admin/training/courses:
     get:
       tags: ["Platform"]
-      summary: "Formations cross-tenant (super-admin)"
+
+      summary: "Cours de formation cross-tenant (super-admin, avec société et nombre de sessions)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: "Liste des cours"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/training/courses:
+    get:
+      tags: ["Platform"]
+      summary: "Cours de formation cross-tenant (super-admin)"
       security:
         - SuperAdminBearerAuth: []
       responses:
         "200":
-          description: "Liste des formations"
+          description: "Liste des cours"
           content:
             application/json:
               schema:
@@ -13822,16 +13915,6 @@ paths:
                       additionalProperties: { type: boolean }
         "401":
           $ref: "#/components/responses/Error401"
-    put:
-      tags: ["Billing"]
-      summary: "Modifier la matrice feature x plan (reserve a l'administration plateforme)"
-      operationId: updateFeatureFlagMatrix
-      responses:
-        "403":
-          description: "Ecriture reservee a l'administration plateforme ; cet endpoint tenant renvoie toujours 403"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /feature-flags/check/{featureKey}:
     get:
       tags: ["Billing"]
@@ -19073,6 +19156,25 @@ components:
               type: array
               items:
                 type: integer
+            skipped_count:
+              type: integer
+              description: >-
+                Nombre d'événements refusés (#3587) : le bridge kiosk les
+                isole en dead-letter au lieu de les marquer synchronisés.
+            skipped:
+              type: array
+              description: Détail des événements refusés (contrat #3587).
+              items:
+                type: object
+                properties:
+                  external_event_id:
+                    type: string
+                    nullable: true
+                  identifier:
+                    type: string
+                  reason:
+                    type: string
+                    enum: ["IDENTIFIER_REQUIRED", "EMPLOYEE_NOT_FOUND", "BIOMETRIC_NOT_APPROVED", "NO_OPEN_SESSION"]
             last_sync_at:
               type: string
               format: date-time

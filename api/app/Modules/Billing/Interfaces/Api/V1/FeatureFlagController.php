@@ -50,11 +50,6 @@ class FeatureFlagController extends Controller
         ]);
     }
 
-    public function updateMatrix(Request $request): JsonResponse
-    {
-        abort(403, 'Feature plan matrix writes are reserved to platform administration.');
-    }
-
     private function getCompanyPlan(string $companyId): string
     {
         $subscription = Subscription::where('company_id', $companyId)

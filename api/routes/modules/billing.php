@@ -33,13 +33,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // Alias expected by mobile/web clients: list onboarding steps.
     Route::get('/onboarding/steps', [OnboardingStepController::class, 'checklist']);
 
-    // Feature Flags — read for all, write for principal
+    // Feature Flags — read for all (la mise à jour de la matrice est réservée à
+    // l'administration plateforme ; l'endpoint PUT #3892 n'a jamais été implémenté
+    // et renvoyait 403 en dur — retiré du contrat).
     Route::get('/feature-flags/matrix', [FeatureFlagController::class, 'matrix']);
     Route::get('/feature-flags/check/{featureKey}', [FeatureFlagController::class, 'check']);
-
-    Route::middleware('api.manager:principal')->group(function (): void {
-        Route::put('/feature-flags/matrix', [FeatureFlagController::class, 'updateMatrix']);
-    });
 
     // Billing — principal only
     Route::middleware('api.manager:principal')->group(function (): void {
