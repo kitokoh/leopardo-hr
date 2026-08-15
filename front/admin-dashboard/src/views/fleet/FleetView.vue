@@ -7,6 +7,10 @@
       <StatsCard title="Alertes" :value="stats.alerts" icon="ChartBarIcon" color="red" />
     </div>
 
+    <div v-if="alertsError" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+      {{ alertsError }}
+    </div>
+
     <div class="flex gap-2">
       <button
         v-for="tab in tabs"
@@ -61,7 +65,7 @@
       :columns="alertColumns"
       :rows="alerts"
       :loading="loading"
-      :error="error"
+      :error="alertsError"
       :search-keys="['vehicle_plate', 'type', 'message']"
       search-placeholder="Rechercher une alerte..."
       default-sort="created_at"
@@ -90,6 +94,7 @@ import VehicleDetailModal from '@/components/fleet/VehicleDetailModal.vue'
 
 const loading = ref(false)
 const error = ref('')
+const alertsError = ref('')
 const vehicles = ref([])
 const alerts = ref([])
 const activeTab = ref('map')
@@ -174,24 +179,28 @@ watch(activeTab, async (val) => {
 async function fetchData() {
   loading.value = true
   error.value = ''
+  alertsError.value = ''
   try {
-    const [vRes, aRes] = await Promise.all([
-      api.get('/v1/vehicles'),
-      api.get('/v1/admin/fleet/alerts').catch(() => ({ data: { data: [] } })),
-    ])
+    const vRes = await api.get('/v1/vehicles')
     vehicles.value = vRes.data.data || vRes.data || []
-    alerts.value = aRes.data.data || aRes.data || []
-    stats.value = {
-      total: vehicles.value.length,
-      in_service: vehicles.value.filter(v => v.status === 'active').length,
-      maintenance_due: vehicles.value.filter(v => v.status === 'maintenance').length,
-      alerts: alerts.value.filter(a => a.severity === 'high' || a.severity === 'critical').length,
-    }
   } catch {
     error.value = 'Impossible de charger les donnees de flotte.'
-  } finally {
-    loading.value = false
   }
+  // Alertes : best-effort mais jamais silencieux — un échec est surfacé
+  // (bannière) au lieu d'une liste vide sans signal (audit 360° T016/#3739).
+  try {
+    const aRes = await api.get('/v1/admin/fleet/alerts')
+    alerts.value = aRes.data.data || aRes.data || []
+  } catch {
+    alertsError.value = 'Impossible de charger les alertes de flotte.'
+  }
+  stats.value = {
+    total: vehicles.value.length,
+    in_service: vehicles.value.filter(v => v.status === 'active').length,
+    maintenance_due: vehicles.value.filter(v => v.status === 'maintenance').length,
+    alerts: alerts.value.filter(a => a.severity === 'high' || a.severity === 'critical').length,
+  }
+  loading.value = false
 }
 
 function viewVehicle(id) {
