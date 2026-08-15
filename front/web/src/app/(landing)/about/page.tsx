@@ -66,11 +66,16 @@ export default function AboutPage() {
     },
   ];
 
+  // #3246 — preuve sociale honnête : mêmes métriques vérifiables que
+  // SocialProofMetrics (PA2-MKT-006). Aucune donnée client inventée
+  // (PILOTAGE.md « Clients payants | 0 ») : règles de paie par pays,
+  // locales produit, surfaces produit et taille de la suite de tests
+  // backend — tout est vérifiable dans le dépôt public.
   const stats = [
-    { value: '50K+', label: 'Utilisateurs Actifs' },
-    { value: '99.9%', label: 'Précision' },
-    { value: '3x', label: 'Plus Rapide' },
-    { value: '24/7', label: 'Support' },
+    { value: '6', label: 'Pays avec règles de paie dédiées' },
+    { value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
+    { value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
+    { value: '1200+', label: 'Tests automatisés backend' },
   ];
 
   return (
@@ -272,7 +277,7 @@ export default function AboutPage() {
               Chiffres Clés
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
-              Notre Impact
+              Leopardo en Chiffres
             </h2>
           </motion.div>
 
@@ -297,7 +302,8 @@ export default function AboutPage() {
           </div>
 
           <p className="mt-8 text-center text-slate-400 dark:text-slate-500 text-xs">
-            Chiffres de démonstration — données fictives à titre d&apos;illustration.
+            Métriques vérifiables dans le dépôt public du produit — aucun chiffre client
+            (Leopardo n&apos;a pas encore de client payant, cf. PILOTAGE.md).
           </p>
         </div>
       </section>

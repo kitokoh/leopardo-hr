@@ -50,7 +50,7 @@
                   <div class="text-xs text-slate-500 font-medium">{{ partner.user.email }}</div>
                 </td>
                 <td class="px-6 py-4 text-sm font-black text-teal-600">
-                  {{ partner.default_commission_rate / 100 }}%
+                  {{ partner.default_commission_rate != null ? (partner.default_commission_rate / 100) : 0 }}%
                 </td>
                 <td class="px-6 py-4 text-sm font-bold text-slate-700">
                   {{ partner.referred_companies_count || 0 }}
@@ -136,6 +136,18 @@
       </div>
     </div>
   </div>
+  <!-- QA #3493 : dialog approbation candidature (remplace le confirm() natif) -->
+  <div v-if="approveDialogOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="approveDialogOpen = false">
+    <div class="glass-card w-full max-w-md p-6">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Approuver la candidature</h2>
+      <p class="text-slate-600 dark:text-slate-300 mb-2">Voulez-vous approuver la candidature de</p>
+      <p class="font-bold text-slate-900 dark:text-white mb-4">{{ approveDialogTarget?.user?.email }}</p>
+      <div class="mt-4 flex justify-end gap-2">
+        <button class="btn-secondary" @click="approveDialogOpen = false">Annuler</button>
+        <button class="btn-primary" @click="submitApprovePartner">Approuver</button>
+      </div>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -166,7 +178,6 @@ const loadData = async () => {
     partners.value = pResponse.data.data;
 
     const hResponse = await api.get('/platform/growth/history');
-    payouts.value = []; // Handled via payouts endpoint now
     auditLogs.value = hResponse.data.audit_logs;
 
     const payResponse = await api.get('/platform/growth/payouts');
@@ -208,10 +219,22 @@ async function submitPayoutNote() {
 
 onMounted(loadData);
 
-const approvePartner = async (partner) => {
-  if (!confirm(`Approuver la candidature de ${partner.user.email} ?`)) return;
+// QA #3493 : dialog in-app (remplace le confirm() natif — non i18n, bloque le rendu).
+const approveDialogOpen = ref(false);
+const approveDialogTarget = ref(null);
+
+const approvePartner = (partner) => {
+  approveDialogTarget.value = partner;
+  approveDialogOpen.value = true;
+};
+
+const submitApprovePartner = async () => {
+  const partner = approveDialogTarget.value;
+  if (!partner) return;
   try {
     await api.patch(`/platform/growth/partners/${partner.id}/application`, { status: 'approved' });
+    approveDialogOpen.value = false;
+    approveDialogTarget.value = null;
     loadData();
   } catch (e) {
     console.error('Approve partner failed:', e)
