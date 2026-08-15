@@ -71,7 +71,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'Ce que vous decouvrirez',
     benefits: [
       { title: 'Gestion complete des employés', desc: 'Pointage, absences, contrats et documents dans une experience unifiee.' },
-      { title: 'Paie multi-pays automatisee', desc: 'Modeles DZ, MA, TN, FR et TR avec cotisations, IR et bulletins PDF.' },
+      { title: 'Paie multi-pays automatisee', desc: 'Modeles DZ, MA, TN, FR, TR et SN avec cotisations, IR et bulletins PDF.' },
       { title: 'Dashboard temps reel', desc: 'KPIs, alertes et donnees operationnelles pour les RH et managers.' },
       { title: 'Sécurité enterprise', desc: 'Isolation tenant, roles, audit trail, chiffrement et workflows controles.' },
     ],
@@ -110,7 +110,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'What you will discover',
     benefits: [
       { title: 'Complete employee management', desc: 'Attendance, leave, contracts and documents in one unified experience.' },
-      { title: 'Automated multi-country payroll', desc: 'DZ, MA, TN, FR and TR models with contributions, income tax and PDF pay slips.' },
+      { title: 'Automated multi-country payroll', desc: 'DZ, MA, TN, FR, TR and SN models with contributions, income tax and PDF pay slips.' },
       { title: 'Real-time dashboard', desc: 'KPIs, alerts and operational data for HR teams and managers.' },
       { title: 'Enterprise security', desc: 'Tenant isolation, roles, audit trail, encryption and controlled workflows.' },
     ],
@@ -149,7 +149,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'Neleri goreceksiniz',
     benefits: [
       { title: 'Tam calisan yonetimi', desc: 'Devam takibi, izinler, sozlesmeler ve belgeler tek deneyimde.' },
-      { title: 'Cok ulkeli otomatik bordro', desc: 'DZ, MA, TN, FR ve TR modelleri; kesintiler, gelir vergisi ve PDF bordro.' },
+      { title: 'Cok ulkeli otomatik bordro', desc: 'DZ, MA, TN, FR, TR ve SN modelleri; kesintiler, gelir vergisi ve PDF bordro.' },
       { title: 'Gercek zamanli panel', desc: 'IK ekipleri ve yoneticiler icin KPI, uyari ve operasyon verileri.' },
       { title: 'Kurumsal guvenlik', desc: 'Tenant izolasyonu, roller, denetim kaydi, sifreleme ve kontrollu is akislar.' },
     ],
