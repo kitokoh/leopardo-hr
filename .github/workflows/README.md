@@ -96,5 +96,5 @@ Ils ne font **jamais** partie des checks requis de la branche `main`.
 1. **Ne pas dupliquer la config PHP/Flutter** — utiliser les composite actions `.github/actions/setup-backend-db` et `.github/actions/setup-flutter-android`
 2. **Nommer clairement** : `<scope>-<action>.yml` (ex: `api-lint.yml`, `mobile-test.yml`)
 3. **path filters** obligatoires sur les PRs pour éviter de déclencher tout sur chaque push
-4. **`concurrency`** obligatoire avec `cancel-in-progress: true`
+4. **`concurrency`** obligatoire avec `cancel-in-progress: ${{ github.event_name == 'pull_request' }}` — sur `main`, un push ne doit jamais annuler le run du commit précédent (sinon CodeQL/scans n'uploadent jamais leurs résultats pendant les vagues de merges — issues #2131, #3532)
 5. **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`** requis sur tous les workflows actifs

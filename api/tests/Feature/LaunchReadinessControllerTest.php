@@ -130,5 +130,29 @@ class LaunchReadinessControllerTest extends TestCase
         $this->getJson('/api/v1/launch-readiness')
             ->assertForbidden();
     }
+
+    /**
+     * QA expert5 #3306 — communication_governance ne doit pas passer à vide
+     * (0 employé actif = 0 >= 0) : un tenant sans employé actif n'est pas
+     * « prêt comm ». L'acteur est un manager archivé (le seul employé du
+     * tenant) → activeEmployees = 0.
+     */
+    public function test_communication_governance_is_not_green_on_empty_tenant(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create([
+            'company_id' => $company->id,
+            'status' => 'archived',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/launch-readiness')
+            ->assertOk()
+            ->assertJsonFragment([
+                'key' => 'communication_governance',
+                'completed' => false,
+            ]);
+    }
 }
 

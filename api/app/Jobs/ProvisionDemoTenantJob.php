@@ -35,12 +35,6 @@ class ProvisionDemoTenantJob implements ShouldQueue
         try {
             $result = $provisioner->execute($this->email, $this->companyName, $this->country);
 
-            // #2629 : le magic link (démo) est réellement émis — la méthode
-            // issueDemoAccess() envoie l'email avec un lien à usage unique
-            // (72 h) géré par DemoLoginController. Best-effort : un échec
-            // d'envoi ne fait pas échouer le provisioning.
-            $this->issueDemoAccess($result['manager']);
-
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail
             // client ; le magic link email est un bonus, jamais le seul canal).

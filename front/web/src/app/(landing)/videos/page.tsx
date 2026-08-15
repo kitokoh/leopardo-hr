@@ -33,9 +33,9 @@ const upcomingVideos = [
     category: 'Intégration',
   },
   {
-    title: 'Témoignage client : Atlas Digital',
-    description: 'Comment Atlas Digital gère 350 employés sur 3 pays avec Leopardo RH.',
-    category: 'Témoignage',
+    title: 'Démonstration produit : paie multi-pays',
+    description: 'Parcours illustratif — gestion de la paie et des présences pour une entreprise type de 350 employés répartis sur 3 pays.',
+    category: 'Démonstration',
   },
 ];
 

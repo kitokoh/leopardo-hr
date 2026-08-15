@@ -103,7 +103,7 @@ class AttendanceController extends Controller
 
         if ($actor->isManager()) {
             $this->authorize('viewAny', AttendanceLog::class);
-            $perPage = $request->integer('per_page', 50);
+            $perPage = max(1, min(100, $request->integer('per_page', 50)));
 
             $paginator = Employee::query()
                 ->select(['id', 'company_id', 'department_id', 'first_name', 'last_name', 'email', 'role', 'status'])
@@ -227,7 +227,7 @@ class AttendanceController extends Controller
             $query->where('status', $validated['status']);
         }
 
-        $perPage = $validated['per_page'] ?? 20;
+        $perPage = max(1, min(100, (int) ($validated['per_page'] ?? 20)));
         $sortBy = (string) ($validated['sort_by'] ?? 'date');
         $sortDir = (string) ($validated['sort_dir'] ?? 'desc');
 
@@ -320,10 +320,15 @@ class AttendanceController extends Controller
             ? Carbon::parse($validated['requested_check_out'])->setTimezone($timezone)
             : null;
 
-        if ($requestedCheckIn->isFuture() || ($requestedCheckOut !== null && $requestedCheckOut->isFuture())) {
-            throw ValidationException::withMessages([
-                'requested_check_in' => ['Impossible de demander une correction avec une heure future.'],
-            ]);
+        $errors = [];
+        if ($requestedCheckIn->isFuture()) {
+            $errors['requested_check_in'] = ['Impossible de demander une correction avec une heure future.'];
+        }
+        if ($requestedCheckOut !== null && $requestedCheckOut->isFuture()) {
+            $errors['requested_check_out'] = ['Impossible de demander une correction avec une heure future.'];
+        }
+        if ($errors !== []) {
+            throw ValidationException::withMessages($errors);
         }
 
         if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
@@ -386,7 +391,7 @@ class AttendanceController extends Controller
             ->orderByDesc('date')
             ->orderByDesc('id');
 
-        $paginator = $query->paginate((int) ($validated['per_page'] ?? 20));
+        $paginator = $query->paginate(max(1, min(100, (int) ($validated['per_page'] ?? 20))));
 
         return response()->json([
             'data' => $paginator->getCollection()->map(fn (AttendanceCorrectionRequest $correction): array => $this->correctionPayload($correction))->values(),

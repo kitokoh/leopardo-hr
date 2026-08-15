@@ -14,11 +14,12 @@ type MiniCase = {
   flag: string;
 };
 
-const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; cases: MiniCase[] }> = {
+const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; cases: MiniCase[]; disclaimer: string }> = {
   fr: {
-    badge: 'Profils types',
-    title: 'Des resultats',
-    titleHighlight: 'concrets',
+    disclaimer: 'Chiffres de demonstration — profils fictifs a titre d\'illustration.',
+    badge: 'Exemples illustratifs',
+    title: 'Des parcours',
+    titleHighlight: 'illustratifs',
     cases: [
       {
         company: 'IT & Services · 350 emp.',
@@ -26,7 +27,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'IT & Services',
         employees: '350',
         challenge: 'Pointage papier sur 3 sites, paie manuelle multi-bureaux',
-        result: 'Paie automatisee, pointage biometrique ZKTeco, -40% temps admin',
+        result: 'Paie automatisee, pointage biometrique ZKTeco, gains de temps administratif',
         flag: '🇩🇿',
       },
       {
@@ -35,7 +36,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'Marketing digital',
         employees: '120',
         challenge: 'Recrutement eparpille, pas de suivi integre',
-        result: 'Pipeline kanban, onboarding automatise, +60% remplissage postes',
+        result: 'Pipeline kanban, onboarding automatise, remplissage des postes accelere',
         flag: '🇲🇦',
       },
       {
@@ -44,15 +45,16 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'Transport & Logistique',
         employees: '200',
         challenge: 'Equipes terrain sans visibilite, pointage impossible hors connexion',
-        result: 'Mode offline mobile, synchro auto, -35% absenteisme',
+        result: 'Mode offline mobile, synchro auto, absenteisme reduit',
         flag: '🇸🇳',
       },
     ],
   },
   en: {
-    badge: 'Use cases',
-    title: 'Real',
-    titleHighlight: 'results',
+    disclaimer: 'Demo figures — fictional profiles shown for illustration only.',
+    badge: 'Illustrative examples',
+    title: 'Illustrative',
+    titleHighlight: 'journeys',
     cases: [
       {
         company: 'IT & Services · 350 emp.',
@@ -60,7 +62,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'IT & Services',
         employees: '350',
         challenge: 'Paper-based attendance across 3 sites, manual multi-office payroll',
-        result: 'Automated payroll, ZKTeco biometric, -40% admin time',
+        result: 'Automated payroll, ZKTeco biometric, reduced admin time',
         flag: '🇩🇿',
       },
       {
@@ -69,7 +71,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'Digital marketing',
         employees: '120',
         challenge: 'Scattered recruitment, no integrated tracking',
-        result: 'Kanban pipeline, automated onboarding, +60% position fill rate',
+        result: 'Kanban pipeline, automated onboarding, faster position filling',
         flag: '🇲🇦',
       },
       {
@@ -78,15 +80,16 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'Transport & Logistics',
         employees: '200',
         challenge: 'Field teams with no visibility, impossible offline attendance',
-        result: 'Offline mobile mode, auto sync, -35% absenteeism',
+        result: 'Offline mobile mode, auto sync, lower absenteeism',
         flag: '🇸🇳',
       },
     ],
   },
   tr: {
-    badge: 'Kullanım senaryoları',
-    title: 'Gercek',
-    titleHighlight: 'sonuclar',
+    disclaimer: 'Demostrasyon rakamlar — yalnizca ornek olarak kurgusal profiller.',
+    badge: 'Ornek senaryolar',
+    title: 'Ornek',
+    titleHighlight: 'senaryolar',
     cases: [
       {
         company: 'BT Hizmetleri · 350 çal.',
@@ -94,7 +97,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'BT ve Hizmetler',
         employees: '350',
         challenge: '3 sahada kagit devam takibi, manuel bordro',
-        result: 'Otomatik bordro, ZKTeco biyometrik, -%40 yonetim suresi',
+        result: 'Otomatik bordro, ZKTeco biyometrik, azalan yonetim suresi',
         flag: '🇩🇿',
       },
       {
@@ -103,7 +106,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'Dijital pazarlama',
         employees: '120',
         challenge: 'Daginis ise alim, entegre takip yok',
-        result: 'Kanban boru hatti, otomatik ise alim, +%60 pozisyon doldurma',
+        result: 'Kanban boru hatti, otomatik ise alim, hizli pozisyon doldurma',
         flag: '🇲🇦',
       },
       {
@@ -112,15 +115,16 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'Ulasim ve Lojistik',
         employees: '200',
         challenge: 'Saha ekipleri gorunurluk yok, cevrimdisi devam imkansiz',
-        result: 'Cevrimdisi mobil, otomatik esitleme, -%35 devamsizlik',
+        result: 'Cevrimdisi mobil, otomatik esitleme, azalan devamsizlik',
         flag: '🇸🇳',
       },
     ],
   },
   ar: {
-    badge: 'سيناريوهات الاستخدام',
-    title: 'نتائج',
-    titleHighlight: 'ملموسة',
+    disclaimer: 'أرقام توضيحية — ملفات تعريف خيالية لأغراض العرض فقط.',
+    badge: 'أمثلة توضيحية',
+    title: 'رحلات',
+    titleHighlight: 'توضيحية',
     cases: [
       {
         company: 'تكنولوجيا المعلومات · 350 موظف',
@@ -128,7 +132,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'تكنولوجيا المعلومات',
         employees: '350',
         challenge: 'حضور ورقي عبر 3 مواقع، رواتب يدوية',
-        result: 'رواتب آلية، بصمة ZKTeco، -40% وقت إداري',
+        result: 'رواتب آلية، بصمة ZKTeco، توفير في الوقت الإداري',
         flag: '🇩🇿',
       },
       {
@@ -137,7 +141,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'تسويق رقمي',
         employees: '120',
         challenge: 'توظيف مبعثر، بدون تتبع متكامل',
-        result: 'لوحة كانبان، تأهيل آلي، +60% ملء المناصب',
+        result: 'لوحة كانبان، تأهيل آلي، تسريع ملء المناصب',
         flag: '🇲🇦',
       },
       {
@@ -146,7 +150,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         sector: 'نقل ولوجستيك',
         employees: '200',
         challenge: 'فرق ميدانية بدون رؤية، حضور مستحيل بدون اتصال',
-        result: 'وضع دون اتصال، مزامنة تلقائية، -35% تغيب',
+        result: 'وضع دون اتصال، مزامنة تلقائية، تقليل التغيب',
         flag: '🇸🇳',
       },
     ],
@@ -225,6 +229,12 @@ export function MiniCaseStudies({ locale = 'fr' }: MiniCaseStudiesProps) {
             </motion.div>
           ))}
         </div>
+
+        {/* Issue #3488 : profils illustratifs, pas des clients réels — même
+            traitement que /testimonials (#3440). */}
+        <p className="mt-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+          {data.disclaimer}
+        </p>
       </div>
     </section>
   );
