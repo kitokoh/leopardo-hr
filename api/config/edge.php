@@ -26,7 +26,7 @@ return [
     /*
      | Cloud API base URL (used by Edge daemon to sync up).
      */
-    'cloud_api_url' => env('CLOUD_API_URL', 'https://api.leopardo.app'),
+    'cloud_api_url' => env('CLOUD_API_URL', 'https://gestionemployerbackend.onrender.com'),
 
     /*
      | Sync interval in minutes for the Edge daemon.
