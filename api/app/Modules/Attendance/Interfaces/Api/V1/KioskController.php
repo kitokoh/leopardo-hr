@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
+use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,12 +20,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class KioskController extends Controller
 {
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
+        private readonly OnboardingQrInterface $onboardingQr,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -339,11 +342,36 @@ class KioskController extends Controller
         app()->instance('current_company', $company);
         $this->setTenantSearchPath($company);
 
-        $qrPayload = json_decode(base64_decode($validated['qr_data'], true), true);
-        $identifier = $qrPayload['employee_id'] ?? $qrPayload['matricule'] ?? $validated['qr_data'];
+        // #3365 : le QR punch n'accepte QUE le jeton signé+expirant émis par
+        // /me/qr-profile (OnboardingQrService, type employee_profile) — les
+        // payloads JSON base64 nus (forgeables) sont rejetés.
+        try {
+            $qrPayload = $this->onboardingQr->decodeEmployeeProfile($validated['qr_data']);
+        } catch (ValidationException) {
+            return new JsonResponse([
+                'error' => 'INVALID_QR_TOKEN',
+                'message' => 'INVALID_QR_TOKEN',
+            ], 422);
+        }
+
+        $employeeId = $qrPayload['employee']['id'] ?? null;
+        $employee = $employeeId !== null
+            ? Employee::query()->where('company_id', $company->id)->whereKey($employeeId)->first()
+            : null;
+
+        if (! $employee) {
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'EMPLOYEE_NOT_FOUND',
+            ], 404);
+        }
+
+        // Le service punch résout par email/matricule/zkteco_id — on lui passe
+        // l'identifiant le plus fiable de l'employé déjà résolu (scopé tenant).
+        $identifier = $employee->email ?? $employee->matricule ?? (string) $employee->id;
 
         $allowedWorkTypes = ['normal', 'overtime', 'break', 'resume', 'mission', 'travel', 'training', 'other'];
-        $qrWorkType = is_array($qrPayload) ? ($qrPayload['work_type'] ?? null) : null;
+        $qrWorkType = $qrPayload['work_type'] ?? null;
         $qrWorkType = in_array($qrWorkType, $allowedWorkTypes, true) ? $qrWorkType : null;
 
         $log = $this->kioskAttendanceService->punch(
@@ -522,4 +550,3 @@ class KioskController extends Controller
         ];
     }
 }
-
