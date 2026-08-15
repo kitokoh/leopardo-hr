@@ -318,7 +318,7 @@ async function loadUsers() {
       status: user.status === 'deactivated' ? 'inactive' : user.status,
       role: 'admin',
       segment: null,
-      company: null,
+      company: user.company ?? null,
       createdAt: user.created_at ? new Date(user.created_at) : new Date(),
       lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
@@ -383,12 +383,12 @@ async function bulkAction(action) {
 }
 
 async function viewUser(user) {
-  // #2518 : le détail est rechargé depuis /admin/users/{id} — seule source du
-  // lien employé (company.employee_id) nécessaire à l'impersonation (#2519).
+  // #3268 : le détail reste sur le contrat /platform/users/{id}, qui porte
+  // désormais la liaison employé sans confondre les IDs super_admins et users.
   selectedUser.value = user
   showDetailModal.value = true
   try {
-    const res = await api.get(`/admin/users/${user.id}`)
+    const res = await api.get(`/platform/users/${user.id}`)
     const detail = res.data?.data ?? null
     if (detail) {
       selectedUser.value = {

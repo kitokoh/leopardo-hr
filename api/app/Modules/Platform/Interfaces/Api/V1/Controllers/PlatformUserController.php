@@ -9,7 +9,9 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 /**
@@ -49,8 +51,11 @@ class PlatformUserController extends Controller
         $users = $query->orderByDesc('id')
             ->paginate($request->integer('per_page', 20));
 
+        $items = collect($users->items());
+        $companiesByEmail = $this->linkedCompaniesByEmail($items->pluck('email')->all());
+
         return new JsonResponse([
-            'data' => collect($users->items())->map(fn (SuperAdmin $user): array => $this->serialize($user)),
+            'data' => $items->map(fn (SuperAdmin $user): array => $this->serialize($user, $companiesByEmail))->values(),
             'meta' => [
                 'current_page' => $users->currentPage(),
                 'last_page' => $users->lastPage(),
@@ -82,7 +87,9 @@ class PlatformUserController extends Controller
 
     public function show(Request $request, SuperAdmin $user): JsonResponse
     {
-        return new JsonResponse(['data' => $this->serialize($user)]);
+        $companiesByEmail = $this->linkedCompaniesByEmail([$user->email]);
+
+        return new JsonResponse(['data' => $this->serialize($user, $companiesByEmail)]);
     }
 
     public function update(Request $request, SuperAdmin $user): JsonResponse
@@ -158,10 +165,13 @@ class PlatformUserController extends Controller
     }
 
     /**
+     * @param  array<string, array<string, mixed>>  $companiesByEmail
      * @return array<string, mixed>
      */
-    private function serialize(SuperAdmin $user): array
+    private function serialize(SuperAdmin $user, array $companiesByEmail = []): array
     {
+        $email = mb_strtolower(trim($user->email));
+
         return [
             'id' => $user->id,
             'name' => $user->name,
@@ -169,7 +179,63 @@ class PlatformUserController extends Controller
             'status' => $user->status ?? 'active',
             'last_login_at' => $user->last_login_at?->toIso8601String(),
             'created_at' => $user->created_at?->toIso8601String(),
+            'company' => $companiesByEmail[$email] ?? null,
         ];
+    }
+
+    /**
+     * Resolve the employee link through the canonical public-user email, not
+     * through a shared numeric ID between the super_admins and users tables.
+     *
+     * @param  array<int, mixed>  $emails
+     * @return array<string, array<string, mixed>>
+     */
+    private function linkedCompaniesByEmail(array $emails): array
+    {
+        if (! Schema::hasTable('users') || ! Schema::hasTable('user_employee_links') || ! Schema::hasTable('companies')) {
+            return [];
+        }
+
+        $normalizedEmails = collect($emails)
+            ->map(fn ($email): string => mb_strtolower(trim((string) $email)))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($normalizedEmails === []) {
+            return [];
+        }
+
+        $links = DB::table('users as u')
+            ->join('user_employee_links as l', 'l.user_id', '=', 'u.id')
+            ->leftJoin('companies as c', 'c.id', '=', 'l.company_id')
+            ->whereIn(DB::raw('LOWER(u.email)'), $normalizedEmails)
+            ->orderByDesc('l.id')
+            ->get([
+                'u.email',
+                'l.company_id',
+                'l.employee_id',
+                'l.status as link_status',
+                'c.name as company_name',
+            ]);
+
+        $companies = [];
+        foreach ($links as $link) {
+            $email = mb_strtolower(trim((string) $link->email));
+            if (isset($companies[$email])) {
+                continue;
+            }
+
+            $companies[$email] = [
+                'id' => $link->company_id,
+                'name' => $link->company_name,
+                'employee_id' => $link->employee_id,
+                'link_status' => $link->link_status,
+            ];
+        }
+
+        return $companies;
     }
 
     /**
