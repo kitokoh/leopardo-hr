@@ -179,17 +179,19 @@ function drawMiniChart() {
   canvas.height = height * window.devicePixelRatio
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
 
-  // Generate sample data for the last 6 months + forecast
+  // Historique estimé déterministe (rampe vers la projection réelle) :
+  // plus de données synthétiques aléatoires — le seul point réel fourni par
+  // l'API est `nextMonth` ; les 6 mois antérieurs sont une estimation linéaire
+  // (widget d'aperçu, valeurs réelles via les endpoints analytics).
   const data = []
-  const baseRevenue = props.data.nextMonth * 0.8
+  const baseRevenue = props.data.nextMonth * 0.7
 
   for (let i = 6; i >= 0; i--) {
-    const variation = (Math.random() - 0.5) * 0.2
-    const value = baseRevenue * (1 + variation + (6 - i) * 0.05)
+    const value = baseRevenue + (props.data.nextMonth - baseRevenue) * ((6 - i) / 6)
     data.push(value)
   }
 
-  // Add forecast point
+  // Add forecast point (valeur réelle de l'API)
   data.push(props.data.nextMonth)
 
   // Draw chart

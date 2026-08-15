@@ -432,7 +432,7 @@ async function submitImpersonation() {
   impersonateBusy.value = true
   impersonateError.value = ''
   try {
-    const res = await api.post('/admin/impersonations', {
+    const res = await api.post('/platform/impersonations', {
       company_id: company.id,
       employee_id: company.employee_id,
       reason: impersonateReason.value.trim(),
