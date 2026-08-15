@@ -428,7 +428,7 @@ class PayrollCalculator
         $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
         $rulesPeriod = $run->period_start->toDateString();
 
-        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules, $rulesVersion, $rulesIdentifier, $rulesPeriod): void {
+        DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules): void {
             // Recalcul idempotent : on repart de zéro (aucune double application).
             $run->paySlips()->delete();
 

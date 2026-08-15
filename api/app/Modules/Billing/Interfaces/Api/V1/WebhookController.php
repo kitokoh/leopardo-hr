@@ -223,8 +223,10 @@ class WebhookController extends Controller
         }
 
         // Anti-SSRF defence-in-depth: same guard as DispatchWebhook::handle().
-        $host = parse_url($webhookEndpoint->url, PHP_URL_HOST);
-        if (! str_starts_with($webhookEndpoint->url, 'https://') || ! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
+        // `url` est nullable en base → on normalise avant tout usage (PHPStan strict).
+        $url = $webhookEndpoint->url;
+        $host = is_string($url) ? parse_url($url, PHP_URL_HOST) : null;
+        if (! is_string($url) || ! str_starts_with($url, 'https://') || ! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
             return response()->json([
                 'message' => 'Webhook URL rejected: must be a public https URL.',
                 'status' => 'blocked',
@@ -258,7 +260,7 @@ class WebhookController extends Controller
                     'X-Leopardo-Event' => 'test',
                     'Content-Type' => 'application/json',
                 ])
-                ->post($webhookEndpoint->url, $body);
+                ->post($url, $body);
 
             $durationMs = (int) ((microtime(true) - $start) * 1000);
 
