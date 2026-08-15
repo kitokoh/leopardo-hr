@@ -14,6 +14,7 @@ use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
+use App\Modules\Payroll\Application\Services\SocialDeclarationService;
 use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
 use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SocialDeclarationController extends Controller
 {
-    public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
+    public function __construct(
+        private readonly DataAccessAuditLogger $auditLogger,
+        private readonly SocialDeclarationService $declarationService,
+    ) {}
 
     public function generateCnasDz(Request $request): JsonResponse
     {
@@ -42,32 +46,16 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnas_declaration');
 
-        $employees = Employee::query()
-            ->where('company_id', $actor->company_id)
-            ->where('status', 'active')
-            ->get();
+        $employees = $this->declarationService->activeEmployees($actor->company_id);
 
-        $quarterMonths = match ($validated['quarter']) {
-            'Q1' => [1, 2, 3],
-            'Q2' => [4, 5, 6],
-            'Q3' => [7, 8, 9],
-            'Q4' => [10, 11, 12],
-        };
+        $quarterMonths = $this->declarationService->quarterMonths($validated['quarter']);
 
-        $payrollData = DB::table('pay_slips')
-            ->join('payroll_runs', 'pay_slips.payroll_run_id', '=', 'payroll_runs.id')
-            ->where('payroll_runs.company_id', $actor->company_id)
-            ->where('pay_slips.status', 'validated')
-            ->whereYear('payroll_runs.period_start', $validated['year'])
-            ->whereIn(DB::raw('EXTRACT(MONTH FROM payroll_runs.period_start)'), $quarterMonths)
-            ->select([
-                'pay_slips.employee_id',
-                DB::raw('SUM(pay_slips.gross_salary) as total_gross'),
-                DB::raw('COUNT(DISTINCT EXTRACT(MONTH FROM payroll_runs.period_start)) as months_worked'),
-            ])
-            ->groupBy('pay_slips.employee_id')
-            ->get()
-            ->keyBy('employee_id');
+        $payrollData = $this->declarationService->quarterPayrollData(
+            $actor->company_id,
+            (int) $validated['year'],
+            $quarterMonths,
+            withMonthsCount: true,
+        );
 
         $company = Company::query()->whereKey($actor->company_id)->first();
 
@@ -126,31 +114,15 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_declaration');
 
-        $employees = Employee::query()
-            ->where('company_id', $actor->company_id)
-            ->where('status', 'active')
-            ->get();
+        $employees = $this->declarationService->activeEmployees($actor->company_id);
 
-        $quarterMonths = match ($validated['quarter']) {
-            'Q1' => [1, 2, 3],
-            'Q2' => [4, 5, 6],
-            'Q3' => [7, 8, 9],
-            'Q4' => [10, 11, 12],
-        };
+        $quarterMonths = $this->declarationService->quarterMonths($validated['quarter']);
 
-        $payrollData = DB::table('pay_slips')
-            ->join('payroll_runs', 'pay_slips.payroll_run_id', '=', 'payroll_runs.id')
-            ->where('payroll_runs.company_id', $actor->company_id)
-            ->where('pay_slips.status', 'validated')
-            ->whereYear('payroll_runs.period_start', $validated['year'])
-            ->whereIn(DB::raw('EXTRACT(MONTH FROM payroll_runs.period_start)'), $quarterMonths)
-            ->select([
-                'pay_slips.employee_id',
-                DB::raw('SUM(pay_slips.gross_salary) as total_gross'),
-            ])
-            ->groupBy('pay_slips.employee_id')
-            ->get()
-            ->keyBy('employee_id');
+        $payrollData = $this->declarationService->quarterPayrollData(
+            $actor->company_id,
+            (int) $validated['year'],
+            $quarterMonths,
+        );
 
         $attendanceData = DB::table('attendance_logs')
             ->where('company_id', $actor->company_id)
@@ -225,25 +197,13 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.dsn_declaration');
 
-        $employees = Employee::query()
-            ->where('company_id', $actor->company_id)
-            ->where('status', 'active')
-            ->get();
+        $employees = $this->declarationService->activeEmployees($actor->company_id);
 
-        $payrollData = DB::table('pay_slips')
-            ->join('payroll_runs', 'pay_slips.payroll_run_id', '=', 'payroll_runs.id')
-            ->where('payroll_runs.company_id', $actor->company_id)
-            ->where('pay_slips.status', 'validated')
-            ->whereYear('payroll_runs.period_start', $validated['year'])
-            ->whereMonth('payroll_runs.period_start', $validated['month'])
-            ->select([
-                'pay_slips.employee_id',
-                DB::raw('SUM(pay_slips.gross_salary) as total_gross'),
-                DB::raw('SUM(pay_slips.net_salary) as total_net'),
-            ])
-            ->groupBy('pay_slips.employee_id')
-            ->get()
-            ->keyBy('employee_id');
+        $payrollData = $this->declarationService->monthPayrollData(
+            $actor->company_id,
+            (int) $validated['year'],
+            (int) $validated['month'],
+        );
 
         $company = Company::query()->whereKey($actor->company_id)->first();
 
@@ -298,19 +258,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateCnssCiDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
-        if ($payrollRun->country_code !== 'CI') {
-            return response()->json(['message' => 'Ce run ne concerne pas la Côte d\'Ivoire (CNSS CI).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_ci_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'CI',
+            'payroll.cnss_ci_declaration',
+            "la Côte d'Ivoire (CNSS CI)",
+        );
 
         $generator = new CnssDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -331,19 +285,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateIpresSnDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
-        if ($payrollRun->country_code !== 'SN') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Sénégal (IPRES/CSS).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.ipres_sn_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'SN',
+            'payroll.ipres_sn_declaration',
+            'le Sénégal (IPRES/CSS)',
+        );
 
         $generator = new IpresDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -364,23 +312,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateCnpsCmDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        // RBAC resserré : la déclaration CNPS DAS est réservée aux managers
-        // principal/comptable (pas n'importe quel manager).
-        if (! $actor->hasManagerRole('principal', 'comptable')) {
-            abort(403);
-        }
-        // Garde pays : la déclaration CNPS CM ne s'applique qu'aux runs
-        // camerounais (CEMAC/CM #1823).
-        if ($payrollRun->country_code !== 'CM') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Cameroun (CNPS CM).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnps_cm_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'CM',
+            'payroll.cnps_cm_declaration',
+            'le Cameroun (CNPS CM)',
+        );
 
         $generator = new CnpsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -402,19 +340,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateCnssGaDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->hasManagerRole('principal', 'comptable')) {
-            abort(403);
-        }
-        if ($payrollRun->country_code !== 'GA') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Gabon (CNSS GA).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_ga_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'GA',
+            'payroll.cnss_ga_declaration',
+            'le Gabon (CNSS GA)',
+        );
 
         $generator = new CemacCnpsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -435,19 +367,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateCnssCgDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->hasManagerRole('principal', 'comptable')) {
-            abort(403);
-        }
-        if ($payrollRun->country_code !== 'CG') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Congo (CNSS CG).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_cg_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'CG',
+            'payroll.cnss_cg_declaration',
+            'le Congo (CNSS CG)',
+        );
 
         $generator = new CemacCnpsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -468,19 +394,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateCnssBfDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->hasManagerRole('principal', 'comptable')) {
-            abort(403);
-        }
-        if ($payrollRun->country_code !== 'BF') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Burkina Faso (CNSS BF).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_bf_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'BF',
+            'payroll.cnss_bf_declaration',
+            'le Burkina Faso (CNSS BF)',
+        );
 
         $generator = new CedeaoCnsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -501,19 +421,13 @@ class SocialDeclarationController extends Controller
      */
     public function generateInpsMlDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->hasManagerRole('principal', 'comptable')) {
-            abort(403);
-        }
-        if ($payrollRun->country_code !== 'ML') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Mali (INPS ML).'], 422);
-        }
-
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.inps_ml_declaration');
+        $this->assertPayrollRunAccess(
+            $request,
+            $payrollRun,
+            'ML',
+            'payroll.inps_ml_declaration',
+            'le Mali (INPS ML)',
+        );
 
         $generator = new CedeaoCnsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
@@ -526,6 +440,39 @@ class SocialDeclarationController extends Controller
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename='.$filename,
         ]);
+    }
+
+
+    /**
+     * Gardes communes des déclarations par run : isolation tenant (404),
+     * RBAC (403 — isManager() ou rôles précis) et garde pays (422), puis
+     * journalisation d'audit. Retourne l'acteur authentifié (issue #3149).
+     *
+     * @param  list<string>|null  $requiredRoles
+     */
+    private function assertPayrollRunAccess(Request $request, PayrollRun $payrollRun, string $countryCode, string $auditKey, string $countryLabel, ?array $requiredRoles = null): Employee
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if ($requiredRoles === null) {
+            if (! $actor->isManager()) {
+                abort(403);
+            }
+        } elseif (! $actor->hasManagerRole(...$requiredRoles)) {
+            abort(403);
+        }
+
+        if ($payrollRun->country_code !== $countryCode) {
+            return response()->json(['message' => 'Ce run ne concerne pas '.$countryLabel.'.'], 422)->throwResponse();
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, $auditKey);
+
+        return $actor;
     }
 
     private function companyRegistrationNumber(?Company $company): string
