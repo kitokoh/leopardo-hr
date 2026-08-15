@@ -1,69 +1,76 @@
-# Feature Specification: Vague QA Expert 5 — 2026-08-15 (audit complet + campagne merge)
+# Feature Specification: QA Expert #5 — 2026-08-15 (vague de constats)
 
-**Feature Branch**: `fix/qa-expert5-*` (une branche par issue)
+**Feature Branch**: `docs/qa-expert5-specs-2026-08-15`
 **Created**: 2026-08-15
-**Status**: Draft → In Progress
-**Input**: Mission propriétaire — tester la plateforme dans tous les sens (vitrine, web app, admin,
-mobiles, workflows, API, logiques, onboarding, cohérence), consigner chaque manquement selon la
-méthode Spec Kit (issue + spec/plan/tasks), puis implémenter les correctifs, implémenter le maximum
-d'issues ouvertes, merger le maximum de branches, et garder `main` vert.
+**Status**: Draft → Implemented
+**Input**: Session QA expert #5 — tests dynamiques prod + revue statique 4 surfaces + builds locaux.
 
-Contexte : un swarm d'agents travaille en parallèle (~180 issues ouvertes avant cette session,
-~45 PRs ouvertes). Règle anti-doublon (#2400) appliquée : chaque finding vérifié contre les issues
-ET branches existantes avant création. Ce spec couvre les manquements **nouveaux** (non couverts).
+## User Scenarios & Testing
 
-## User Stories
+### User Story 1 — Les écritures payroll restent réservées aux managers habilités (Priority: P1)
+Tout manager authentifié (y compris dept/superviseur) peut aujourd'hui créer/modifier/valider/
+supprimer des payrolls via rh.php ; la policy produit (payroll_engine.php) restreint à
+principal/comptable. **Why**: autorisation (escalade de privilège latente).
+**Independent Test**: `PUT /payrolls/{id}` avec token dept → 403 ; avec principal → 200.
+**Acceptance Scenarios**:
+1. **Given** un manager `dept` authentifié, **When** il appelle `PUT /api/v1/payrolls/{id}`,
+   **Then** réponse 403 (politique `api.manager:principal,comptable`).
+2. **Given** un manager `principal`, **When** il appelle la même route, **Then** 200.
 
-### US1 — L'auth (login, register, reset) fonctionne pour TOUS les tenants, y compris à schéma (P1)
-**Problème** : `PasswordResetController` résout `Employee` sans middleware tenant → jamais trouvé
-pour les tenants à schéma (forgot() muet, reset() 422). `/auth/register` crée dans le mauvais
-schéma et son unique appelant mobile n'envoie jamais `invitation_token`.
+### User Story 2 — Le cockpit de lancement est honnête sur les tenants vides (Priority: P2)
+`communication_governance` passe à 1 quand 0 employé actif (0 ≥ 0). **Why**: score go-live trompeur.
+**Independent Test**: tenant sans employé → `communication_governance = 0` et score cohérent.
 
-**Independent Test** : test Feature sur tenant à schéma : forgot → token créé ; reset → 200 ;
-register avec invitation → employé mis à jour dans le bon schéma, login OK.
+### User Story 3 — Les erreurs de correction de pointage sont attachées au bon champ (Priority: P3)
+**Independent Test**: `requested_check_out` futur → erreur sur `requested_check_out`, pas
+`requested_check_in`.
 
-### US2 — Le pointage QR kiosque utilise un format signé unique, cohérent avec l'émetteur (P2)
-**Problème** : `/kiosks/{deviceCode}/qr-punch` accepte un JSON base64 forgeable et ne sait pas
-parsé le format `base64url(payload).signature` produit par `/me/qr-profile` → 404.
+### User Story 4 — La fiche entreprise admin affiche l'identité technique complète (Priority: P2)
+`PlatformCompanyHealthService` n'émet ni `slug` ni `created_at` → champs vides dans
+`CompanyDetailView`. **Independent Test**: `/platform/companies/{id}/health` contient
+`company.slug` et `company.created_at`.
 
-**Independent Test** : QR généré par `/me/qr-profile` → `qr-punch` 200 ; payload forgé → 4xx.
+### User Story 5 — Les labels pays admin existent pour tous les codes référencés (Priority: P3)
+18 codes référencés, 12 clés `common.countries.*` définies → clés brutes à l'écran.
+**Independent Test**: `$t('common.countries.CG')` rend « Congo » dans les 4 locales.
 
-### US3 — L'admin console est entièrement fonctionnelle (P1/P2)
-**Problème** : MarketingOAuthView (template string → page blanche), WebhooksView (is_active vs
-active, événements hors sync), ChatView (composer 501 sans explication), realtime read-all 405,
-VITE_WEBSOCKET_URL absent en prod, raccourci Alt+R obsolète, GrowthDashboard code mort,
-ExportsView sans catch.
+### User Story 6 — Pas de devise codée en dur dans les apps mobiles (Priority: P2)
+`DZD` par défaut dans la création entreprise platform_admin + 5 modèles partagés.
+**Independent Test**: création entreprise pays=FR → devise API (EUR), jamais DZD.
 
-**Independent Test** : lint+build admin verts ; navigation `/marketing/oauth` rend les cartes ;
-webhooks save 200 ; read-all 200.
+### User Story 7 — La cartographie des apps reflète la réalité (Priority: P3)
+AGENTS.md/README listent `leopardo_kiosk` (web) parmi les apps Flutter et omettent
+`leopardo_employee`. **Independent Test**: lecture des 2 fichiers → 6 apps mobile_apps dont
+employee, kiosk étiqueté web.
 
-### US4 — La vitrine et le dashboard client sont cohérents et localisés (P2)
-**Problème** : checkout masque le surcoût/employé actif, CTA « pilote gratuit » → checkout payant,
-Enterprise à 3 prix, robots/sitemap annoncent des routes protégées/404, checkout+dashboard FR-only,
-gating rôle fail-open, upgrade billing sans paiement, footer liens morts, portail carrières FR-only.
+### User Story 8 — Le sitemap ne publie pas /blog quand le blog est désactivé (Priority: P3)
+**Independent Test**: build avec flag off → sitemap.xml sans `/blog`.
 
-**Independent Test** : build Next.js vert ; robots.txt couvre les 13 prefixes ; sitemap sans /blog
-quand flag off ; checkout affiche le surcoût ; Playwright marketing vert.
+## Edge Cases
+- Route payroll : ne pas casser le workflow double validation salary-advances (même groupe).
+- Health service : garder la tolérance aux champs optionnels (CompanyResource existant).
+- L10n mobile : `generate: true` retiré sans casser le build (CI mobile le vérifie).
 
-### US5 — Les apps mobiles ne naviguent jamais vers des routes inexistantes (P2)
-**Problème** : manager pousse vers `/tasks`, `/team`, `/me/monthly` non déclarés ; garde
-`check-mobile-manifest-routes.sh` rouge sur main (16 incohérences) ; read-all 405 ; DateTime.parse
-HR non gardé ; retries sur POST ai_voice ; route employee orpheline ; fr_FR hardcodé ; casts directs.
+## Requirements
 
-**Independent Test** : `check-mobile-manifest-routes.sh` vert ; `flutter analyze` vert (CI) ; 0 push
-vers route non déclarée (scan statique).
+### Functional Requirements
+- **FR-001**: Les routes écriture `/payrolls` de rh.php portent la politique de rôle
+  `principal,comptable` (alignement payroll_engine.php).
+- **FR-002**: `LaunchReadiness` exige `activeEmployees > 0` pour valider communication_governance.
+- **FR-003**: La validation correction attache l'erreur au champ fautif.
+- **FR-004**: `/platform/companies/{id}/health` émet `company.slug` + `company.created_at`.
+- **FR-005**: Les 4 locales admin définissent les clés pays manquantes.
+- **FR-006**: Aucun `DZD` codé en dur dans la création entreprise mobile ni les modèles partagés.
+- **FR-007**: La cartographie AGENTS.md/README est corrigée.
+- **FR-008**: `sitemap.ts` gate l'entrée `/blog` sur `NEXT_PUBLIC_ENABLE_BLOG`.
 
-### US6 — La doc et l'outillage sont alignés sur le code (P2/P3)
-**Problème** : CHANGELOG dupliqué (450 lignes), versions fantômes /changelog, refs PLAN_ACTION2
-archivées, matrices avec doublons/orphelins, allowlist OpenAPI morte, env var non documentée.
+## Success Criteria
+- **SC-001**: Issues créées avec label `qa-expert5-2026-08-15`, specs/plan/tasks dans
+  `.specify/features/qa-expert5-2026-08-15/`.
+- **SC-002**: PRs avec `Closes #N` + CHANGELOG ; checks requis verts ; main reste vert.
+- **SC-003**: Builds locaux web + admin verts avant push.
 
-**Independent Test** : gardes du repo verts (`check-openapi-route-coverage.py`, parity env,
-i18n-diff) ; CHANGELOG sans doublon (diff des plages).
-
-## Acceptance Scenarios
-1. **Given** les issues #3363-#3416, **When** chaque PR est mergée avec `Closes #N`, **Then** les
-   issues se ferment avec le code sur main.
-2. **Given** main, **When** les checks CI requis tournent, **Then** ils sont verts (Backend Coverage,
-   PHPStan Strict, Module Structure, ESLint+TS, actionlint).
-3. **Given** la garde mobile manifeste, **When** elle s'exécute sur main, **Then** exit 0.
-4. **Given** le CHANGELOG, **When** on compare les plages dupliquées, **Then** diff vide.
+## Assumptions
+- CI = source de vérité pour API/mobile ; les changements PHP/Dart passent par les checks
+  GitHub Actions.
+- Déploiements prod (Render/Vercel) hors périmètre sans accord propriétaire.
