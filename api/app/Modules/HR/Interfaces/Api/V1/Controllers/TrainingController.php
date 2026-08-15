@@ -123,23 +123,6 @@ class TrainingController extends Controller
         return TrainingSessionResource::collection($sessions)->response();
     }
 
-    /**
-     * Issue #2225 — liste les inscriptions aux formations de la société.
-     */
-    public function indexEnrollments(Request $request): JsonResponse
-    {
-        /** @var Employee $user */
-        $user = $request->user();
-
-        $enrollments = TrainingEnrollment::query()
-            ->where('company_id', $user->company_id)
-            ->with(['session:id,start_date,status', 'employee:id,first_name,last_name'])
-            ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
-
-        return TrainingEnrollmentResource::collection($enrollments)->response();
-    }
-
     public function indexSessions(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
         /** @var Employee $user */
