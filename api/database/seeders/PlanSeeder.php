@@ -27,7 +27,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 29.00,
                 'price_yearly' => 290.00,     // -17% vs mensuel
                 'max_employees' => 20,
-                'trial_days' => 14,
+                'trial_days' => 30,
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => false,
@@ -48,7 +48,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 79.00,
                 'price_yearly' => 790.00,
                 'max_employees' => 200,
-                'trial_days' => 14,
+                'trial_days' => 30,
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,

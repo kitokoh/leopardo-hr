@@ -120,7 +120,7 @@ class ProvisionGuidedTrial
             'price_yearly' => 0,
             'max_employees' => 50,
             'features' => json_encode(['rh' => true, 'tasks' => true, 'attendance' => true, 'mobile_apps' => true]),
-            'trial_days' => 14,
+            'trial_days' => 30,
             'is_active' => true,
         ]);
     }
