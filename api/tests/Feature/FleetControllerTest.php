@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -93,6 +93,31 @@ class FleetControllerTest extends TestCase
             ->assertJsonPath('data.0.plate_number', 'DZ-TRACK')
             ->assertJsonPath('data.0.position.latitude', 36.7538)
             ->assertJsonPath('data.0.position.longitude', 3.0588);
+    }
+
+    public function test_live_map_fails_open_when_traccar_token_not_configured(): void
+    {
+        [$company, $manager] = $this->fleetActor();
+        $this->vehicle($company, [
+            'plate_number' => 'DZ-TRACK',
+            'status' => 'active',
+            'traccar_device_id' => 42,
+        ]);
+
+        // QA pass #2175 : sans TRACCAR_API_TOKEN, config('tracking.traccar_token')
+        // vaut null → TypeError « Cannot assign null to property
+        // TraccarService::$token of type string » (500 sur /fleet/live-map).
+        // Le tracking est optionnel : fail-open avec des données vides.
+        config(['tracking.traccar_token' => null]);
+        $this->app->forgetInstance(TraccarService::class);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/fleet/live-map')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.plate_number', 'DZ-TRACK')
+            ->assertJsonPath('data.0.position', null);
     }
 
     public function test_fuel_and_mileage_reports_are_grouped_by_vehicle(): void
@@ -226,5 +251,3 @@ class FleetControllerTest extends TestCase
         });
     }
 }
-
-
