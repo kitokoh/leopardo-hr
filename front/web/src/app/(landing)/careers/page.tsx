@@ -1,91 +1,65 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCareersContent } from '@/modules/vitrine/data/careers';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Heart, Zap, Globe, Users } from 'lucide-react';
 
-interface JobOpening {
-  title: string;
-  department: string;
-  location: string;
-  type: string;
-  description: string;
-}
-
-const openings: JobOpening[] = [
-  { title: 'Développeur Full-Stack Senior', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: 'Rejoignez notre équipe pour developper les nouvelles fonctionnalités de la plateforme RH.' },
-  { title: 'Designer UI/UX', department: 'Design', location: 'Paris / Remote', type: 'CDI', description: 'Concevez des interfaces intuitives pour notre application web et mobile.' },
-  { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'CDI', description: 'Accompagnez nos clients dans l\'adoption de Leopardo RH.' },
-  { title: 'Développeur Mobile Flutter', department: 'Engineering', location: 'Remote', type: 'CDI', description: 'Developpez et ameliorez notre application mobile multi-plateforme.' },
-  { title: 'DevOps Engineer', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: 'Optimisez notre infrastructure cloud et nos pipelines CI/CD.' },
-];
-
-const values = [
-  { icon: Heart, title: 'Impact reel', description: 'Nous construisons des outils qui simplifient la vie de milliers de professionnels RH chaque jour.' },
-  { icon: Zap, title: 'Innovation', description: 'Nous adoptons les dernières technologies et experimentons constamment pour offrir le meilleur produit.' },
-  { icon: Globe, title: 'Diversité', description: 'Notre équipe est distribuée globalement. Nous valorisons les perspectives differentes.' },
-  { icon: Users, title: 'Collaboration', description: 'Nous travaillons ensemble, partageons nos connaissances et celebrons nos reussites en equipe.' },
-];
+const valueIcons = [Heart, Zap, Globe, Users];
 
 export default function CareersPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
+  const { locale } = useVitrineLocale();
   useScrollReveal();
+  const content = getCareersContent(locale);
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
       <HeroSection
-        headline="Rejoignez l'Équipe"
-        subheadline="Construisez le futur de la gestion RH avec nous"
-        ctaPrimary={{ text: 'Voir les Postes', href: '#openings' }}
-        badge={{ text: 'Carrieres', icon: <Briefcase className="w-3 h-3" /> }}
+        headline={content.hero.headline}
+        subheadline={content.hero.subheadline}
+        ctaPrimary={{ text: content.hero.cta, href: '#openings' }}
+        badge={{ text: content.hero.badge, icon: <Briefcase className="w-3 h-3" /> }}
       />
 
-      {/* Values */}
       <section className="py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">Nos Valeurs</h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400">Ce qui nous anime au quotidien</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">{content.values.title}</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400">{content.values.subtitle}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((val, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center p-6"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-                  <val.icon className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{val.title}</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{val.description}</p>
-              </motion.div>
-            ))}
+            {content.values.items.map((val, i) => {
+              const Icon = valueIcons[i % valueIcons.length];
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="text-center p-6"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+                    <Icon className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{val.title}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{val.description}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Benefits */}
       <section className="py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-10 text-center">Avantages</h2>
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-10 text-center">{content.benefits.title}</h2>
           <div className="grid sm:grid-cols-2 gap-6">
-            {[
-              'Teletravail flexible (full remote possible)',
-              'Mutuelle sante premium',
-              'Budget formation annuel',
-              'Materiel au choix (Mac/PC/Linux)',
-              'Tickets restaurant',
-              'Team buildings trimestriels',
-              'Congés supplementaires apres 2 ans',
-              'Stock options pour les postes senior',
-            ].map((benefit, i) => (
+            {content.benefits.items.map((benefit, i) => (
               <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-transparent dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
                 <span className="text-slate-700 dark:text-slate-300">{benefit}</span>
@@ -95,15 +69,14 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Openings */}
       <section id="openings" className="py-24 bg-transparent dark:bg-slate-900/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">Postes Ouverts</h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400">{openings.length} postes disponibles</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">{content.openings.title}</h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400">{content.openings.items.length} {content.openings.subtitle}</p>
           </div>
           <div className="space-y-4">
-            {openings.map((job, i) => (
+            {content.openings.items.map((job, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
@@ -131,9 +104,9 @@ export default function CareersPage() {
       </section>
 
       <CTASection
-        headline="Aucun Poste ne Correspond ?"
-        subheadline="Envoyez-nous votre candidature spontanee"
-        ctaPrimary={{ text: 'Candidature Spontanee', href: '/contact' }}
+        headline={content.cta.headline}
+        subheadline={content.cta.subheadline}
+        ctaPrimary={{ text: content.cta.ctaText, href: '/contact' }}
         background="gradient"
       />
 
@@ -141,4 +114,3 @@ export default function CareersPage() {
     </div>
   );
 }
-

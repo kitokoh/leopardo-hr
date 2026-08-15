@@ -19,6 +19,7 @@
 - **fix(edge): bundle d’installation complet et contextes Compose autonomes (Closes #3741).** `install.sh` télécharge et vérifie maintenant `Caddyfile.edge`, un endpoint public dédié est ajouté, et les builds dépendant de contextes absents sont retirés du compose installé.
 
 - **docs(spec-kit): audit 360° 2026-08-15 — registre, spec, tasks et 23 issues (T001–T023, #3724–#3746).** Couverture API (OAuth auto-provision, erreurs brutes, race import CSV, scope fail-open), vitrine (e2e no-op, SW pages authentifiées, /mobile, OG guides, a11y FAQ, seo-metadata mort, footer, sync ?lang=), admin (notifications 405, palette, titre onglet, FleetView), mobile/kiosk/edge/CI (App ID HR, Caddyfile.edge, garde branch-protection 403, routes GoRouter dupliquées, builds doublés, perms kiosk.db, bornes bridge). Artifacts : `.specify/features/qa-360-audit-expert-2026-08-15/`.
+- **fix(web): i18n pages /about, /careers, /faq — contenu par locale (Closes #2605).** Nouveaux jeux de données `data/about.ts`, `data/careers.ts`, `data/faq-page.ts` (4 locales fr/en/tr/ar, RTL inclus) ; les trois pages rendent désormais via `useVitrineLocale` au lieu de chaînes FR codées en dur. Bonus : accents restaurés dans les catalogues FR (résiduel #3249) et catégories FAQ canoniques localisées.
 
 - **fix(admin/api): UsersView utilise le contrat super-admin pour le détail et l’impersonation (Closes #3268).** `/platform/users` expose la liaison société/employé par email canonique et le dashboard n’interroge plus `/admin/users` avec un ID `super_admins`.
 
