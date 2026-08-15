@@ -121,9 +121,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/bank-exports', [BankExportController::class, 'index']);
         Route::post('/bank-exports', [BankExportController::class, 'store']);
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
-        // Issue #2267 : contrat OpenAPI GET/POST /bank-exports (liste + génération).
-        Route::get('/bank-exports', [BankExportController::class, 'index']);
-        Route::post('/bank-exports', [BankExportController::class, 'store']);
+        // Contrat OpenAPI #2267 : GET liste, POST génération asynchrone, GET
+        // {bankExport} détail, GET {bankExport}/download.
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
 

@@ -7,6 +7,9 @@
 ## [Unreleased]
 
 ### Fixed
+
+- **fix(api): routes backend dédoublonnées — /bank-exports et /me/vehicles enregistrés une seule fois (Closes #2494).** Artefacts de merges parallèles : `GET/POST /bank-exports` déclarés 2× dans `payroll_engine.php` (PR #2411 + #2426) et `GET /me/vehicles` déclaré 2× (`hr_extended.php` + `tracking.php`, même groupe middleware). Correctif : la 2e déclaration bank-exports est supprimée (bloc consolidé : GET liste, POST génération, GET {bankExport}, GET {bankExport}/download — la route legacy `POST /payroll-runs/{run}/bank-export` conservée) ; `/me/vehicles` ne vit plus que dans `tracking.php` (documenté canonique, commentaire sécurité #2217). Aucun changement de comportement (mêmes contrôleurs/méthodes).
+
 ### Fixed
 - **fix(api): openapi.yaml — lint Redocly 0 erreur : YAML réparé (6 chemins + schéma dédoublonnés, artefacts de merge de PRs concurrentes) + 7 erreurs struct corrigées (Closes #2480).** Le YAML était cassé sur main (`duplicated mapping key` → lint impossible) : `/admin/users`, `/export/history`, `/export/pay-slips`, `/growth/partner/dashboard`, `/me/vehicles`, `/smart-attendance/mode-settings` et le schéma `PlatformUser` étaient définis DEUX fois (merges concurrents #2405/#2452/… — le lint OpenAPI ne tournait plus depuis la saturation #2131). Bloc le plus complet conservé pour chaque doublon. Corrections struct : `Compliance` nullable sans `type` (→ `type: object` ajouté), `verification_date`/`token_expires_at`/`manager_role` en `type: [string, "null"]` interdit OAS3 (→ `type: string` + `nullable: true`), paramètre path fantôme `payrollRun` sur `POST /bank-exports` retiré (le run id est dans le body), `$ref` `TrainingSession`/`TrainingEnrollment` inexistants (→ schémas ajoutés, shape réelle des resources). SDK JS/Python + miroir dev-hub régénérés. Vérifié : `redocly lint` 0 erreur / 512 warnings pré-existants.
 
