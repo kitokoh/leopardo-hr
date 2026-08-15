@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -38,17 +38,25 @@ readonly class AuthService
             if ($lookup) {
                 $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
 
-                if ($lookupSchema && $this->isSafeSchemaName($lookupSchema)) {
+                // Garde anti-500 (issue #2652, session QA 2026-08-15) : un
+                // lookup périmé peut pointer vers un schéma tenant supprimé
+                // (reset de démo, drop/recréation). Le chemin rapide ne doit
+                // JAMAIS lever de QueryException : si la table employees du
+                // schéma visé n'existe pas, on ignore le lookup et on laisse
+                // le fallback findEmployeeInTenantSchemas() (qui vérifie
+                // tenantEmployeesTableExists()) faire le travail.
+                if ($lookupSchema && $this->isSafeSchemaName($lookupSchema)
+                    && $this->tenantEmployeesTableExists($lookupSchema)) {
                     $this->setTenantSearchPath($lookupSchema);
                     $employeeSchema = $lookupSchema;
-                }
 
-                /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->with('company')
-                    ->where('company_id', $lookup->company_id)
-                    ->where('id', $lookup->employee_id)
-                    ->first();
+                    /** @var Employee|null $employee */
+                    $employee = Employee::withoutGlobalScopes()
+                        ->with('company')
+                        ->where('company_id', $lookup->company_id)
+                        ->where('id', $lookup->employee_id)
+                        ->first();
+                }
             }
 
             if (! $employee) {
@@ -191,18 +199,27 @@ readonly class AuthService
                 if ($lookup !== null) {
                     $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
 
-                    if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
+                    // Garde anti-500 (issue #2652, session QA 2026-08-15) : un
+                    // lookup périmé peut pointer vers un schéma tenant supprimé
+                    // (reset de démo, drop/recréation). Le chemin rapide ne doit
+                    // JAMAIS lever de QueryException : si la table employees du
+                    // schéma visé n'existe pas, on ignore le lookup et on laisse
+                    // le fallback findEmployeeInTenantSchemas() (qui vérifie
+                    // tenantEmployeesTableExists()) faire le travail.
+                    if ($lookupSchema !== null
+                        && $this->isSafeSchemaName($lookupSchema)
+                        && $this->tenantEmployeesTableExists($lookupSchema)) {
                         $this->setTenantSearchPath($lookupSchema);
                         $employeeSchema = $lookupSchema;
-                    }
 
-                    /** @var Employee|null $employee */
-                    $employee = Employee::withoutGlobalScopes()
-                        ->with('company')
-                        ->where('company_id', $lookup->company_id)
-                        ->where('id', $lookup->employee_id)
-                        ->where('email', $email)
-                        ->first();
+                        /** @var Employee|null $employee */
+                        $employee = Employee::withoutGlobalScopes()
+                            ->with('company')
+                            ->where('company_id', $lookup->company_id)
+                            ->where('id', $lookup->employee_id)
+                            ->where('email', $email)
+                            ->first();
+                    }
                 }
             }
 
@@ -369,4 +386,3 @@ readonly class AuthService
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
     }
 }
-
