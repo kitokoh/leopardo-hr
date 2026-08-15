@@ -171,8 +171,9 @@ class CedeaoRulesUnitTest extends TestCase
     public function test_other_uemoa_members_unaffected(): void
     {
         // ML/BF sont PILOT depuis #1829 (IUTS/ITS + CNSS/INPS sourcés) ;
-        // BJ/TG/NE restent placeholder.
-        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
+        // TG est PILOT depuis #2578 (préavis jours ouvrés) ; BJ/NE restent
+        // placeholder.
+        foreach (['BJ', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             // Placeholder intact : pas de barème légal, pas de CN, pas de
@@ -196,6 +197,10 @@ class CedeaoRulesUnitTest extends TestCase
             $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
             $this->assertCount(6, $rules->taxSlabs(), $memberCode);
         }
+
+        // TG passé pilot (#2578) : barème + préavis jours ouvrés.
+        $tg = (new CedeaoPayrollRules)->forMemberCountry('TG');
+        $this->assertSame('pilot', $tg->confidenceLevel());
     }
 
     public function test_bf_is_pilot_with_cnss_rules(): void
