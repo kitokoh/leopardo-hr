@@ -8,6 +8,10 @@
 
 ### Fixed
 ### Fixed
+
+- **fix(test): OpenApiDocsTest — séquences `<?php`/`<?=` brutes dans les commentaires retirées, parse PHP rétabli (Closes #2531).** Le `?>` d'un commentaire `//` ferme le mode PHP (comportement documenté) : les lignes 72-75 de `api/tests/Feature/OpenApiDocsTest.php` (commentaire de non-régression #2265) contenaient `<?php` et `<?= ... ?>` → le reste du fichier était traité en HTML → `PHP Parse error: Unclosed '{' on line 61` → PHPStan `phpstan.parse` échouait (main rouge « PHPStan — Strict » + « Module Structure Validator »). Commentaires reformulés (guillemets + `&lt;?php`), `php -l` vert. Même classe d'artifact de merge que #2415 (fatal `use` dupliqué, PR #2514).
+
+### Fixed
 - **fix(api): openapi.yaml — lint Redocly 0 erreur : YAML réparé (6 chemins + schéma dédoublonnés, artefacts de merge de PRs concurrentes) + 7 erreurs struct corrigées (Closes #2480).** Le YAML était cassé sur main (`duplicated mapping key` → lint impossible) : `/admin/users`, `/export/history`, `/export/pay-slips`, `/growth/partner/dashboard`, `/me/vehicles`, `/smart-attendance/mode-settings` et le schéma `PlatformUser` étaient définis DEUX fois (merges concurrents #2405/#2452/… — le lint OpenAPI ne tournait plus depuis la saturation #2131). Bloc le plus complet conservé pour chaque doublon. Corrections struct : `Compliance` nullable sans `type` (→ `type: object` ajouté), `verification_date`/`token_expires_at`/`manager_role` en `type: [string, "null"]` interdit OAS3 (→ `type: string` + `nullable: true`), paramètre path fantôme `payrollRun` sur `POST /bank-exports` retiré (le run id est dans le body), `$ref` `TrainingSession`/`TrainingEnrollment` inexistants (→ schémas ajoutés, shape réelle des resources). SDK JS/Python + miroir dev-hub régénérés. Vérifié : `redocly lint` 0 erreur / 512 warnings pré-existants.
 
 
