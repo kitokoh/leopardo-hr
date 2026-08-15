@@ -41,6 +41,20 @@ class EdgeDownloadController extends Controller
         ]);
     }
 
+    /** GET /edge/download/Caddyfile.edge */
+    public function caddyfile(): Response
+    {
+        $filePath = base_path('edge/Caddyfile.edge');
+
+        abort_unless(file_exists($filePath), 404, 'Caddyfile.edge not found.');
+
+        return response((string) file_get_contents($filePath), 200, [
+            'Content-Type'        => 'text/plain',
+            'Content-Disposition' => 'attachment; filename="Caddyfile.edge"',
+            'Cache-Control'       => 'public, max-age=3600',
+        ]);
+    }
+
     /** GET /edge/license-public-key */
     public function licensePublicKey(): Response
     {
