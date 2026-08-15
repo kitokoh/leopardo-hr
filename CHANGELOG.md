@@ -156,6 +156,7 @@
 - **chore(deps): bump github-actions-dependencies — 5 actions (#1754).** Dependabot : `github/codeql-action` v4, `actions/github-script` v9, `dorny/paths-filter` v4.0.2 → v4.0.3, `actions/download-artifact` v7 → v8.0.1 (SHA pinnées actualisées dans 8 workflows).
 
 ### Fixed
+- **fix(web): vitrine — durée d'essai unifiée à 30 jours (Closes #2753).** « 14 jours » (about, case-studies, faq JSON-LD, pricing layout, testimonials, content.ts, seo-metadata/seo, manifest, EXAMPLES/README des sections) contredisait le « 30 jours » officiel du pricing (structure SaaS canonique AGENTS.md). 23 occurrences FR remplacées par « 30 jours » ; `grep '14 jour' src/` = 0.
 
 - **fix(api): `per_page` borné 1-100 sur les listes ExpenseClaim/LeaveAccrual/Payroll/SalaryAdvance/PayrollRun/PayrollAudit (Closes #2682).** Clamp `max(1, min(100, ...))` (pattern PayrollCycle) ; `PayrollRunController:129` `?->` → `->` (PHPStan strict).
 - **fix(api): `work_state_label` localisé — fin du français codé en dur (Closes #2681).** 6 clés ajoutées à `lang/{fr,en,ar,tr}/employees.php` ; `EmployeeController` utilise `__('employees.work_state_*')`.
