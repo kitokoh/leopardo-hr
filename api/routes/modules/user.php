@@ -36,6 +36,8 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
 });
 
 // Manager: lier un utilisateur ordinaire a un employe
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
+// Manager: lier un utilisateur ordinaire a un employe
+// #3244 : api.manager en profondeur (le contrôleur garde son isManager()).
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'api.manager'])->group(function (): void {
     Route::post('/employees/link-user', [UserEmployeeLinkController::class, 'linkByEmail']);
 });
