@@ -8,9 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class CompanyRequestController extends Controller
@@ -125,16 +127,31 @@ class CompanyRequestController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
         if ($employee instanceof Employee) {
-            $user = User::firstOrCreate(
-                ['email' => $employee->email],
-                [
-                    'first_name' => $employee->first_name,
-                    'last_name' => $employee->last_name,
-                    'password_hash' => $employee->password_hash ?: Hash::make(str()->random(32)),
-                    'provider' => 'employee',
-                    'preferred_language' => $employee->preferred_language ?? 'fr',
-                ]
-            );
+            try {
+                $user = User::firstOrCreate(
+                    ['email' => $employee->email],
+                    [
+                        'first_name' => $employee->first_name,
+                        'last_name' => $employee->last_name,
+                        'password_hash' => $employee->password_hash ?: Hash::make(str()->random(32)),
+                        'provider' => 'employee',
+                        'preferred_language' => $employee->preferred_language ?? 'fr',
+                    ]
+                );
+            } catch (QueryException $e) {
+                // Issue #3811 : firstOrCreate n'est PAS atomique — deux requêtes
+                // concurrentes sur le même email (employé et user plateforme)
+                // violent l'index unique users.email → 23505. Le gagnant a créé
+                // la ligne : on la récupère (jamais de 500, jamais de doublon).
+                // Pattern 23505, cf. PartnerService #3238.
+                if ($e->getCode() === '23505') {
+                    Log::warning("User firstOrCreate race on email {$employee->email} — fetching winner row.");
+
+                    $user = User::where('email', $employee->email)->firstOrFail();
+                } else {
+                    throw $e;
+                }
+            }
 
             // Issue #3597 : status non mass-assignable — assignation explicite.
             $user->status = $employee->status ?? 'active';

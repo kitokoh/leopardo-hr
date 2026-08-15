@@ -10,9 +10,11 @@ use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Support\CountryDefaults;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -76,7 +78,24 @@ class PublicHolidayController extends Controller
         $this->assertUnique($data);
         $data['created_by'] = $request->user()?->id;
 
-        $holiday = PublicHoliday::create($data);
+        try {
+            $holiday = PublicHoliday::create($data);
+        } catch (QueryException $e) {
+            // Issue #3811 : course entre assertUnique() et create() (contrainte
+            // unique public_holidays_country_year_date_company_unique) — une
+            // requête concurrente a inséré le même férié entre les deux.
+            // 23505 = SQLSTATE unique_violation (pattern PartnerService #3238) :
+            // réponse 422 identique à celle d'assertUnique, jamais de 500.
+            if ($e->getCode() === '23505') {
+                Log::warning('Public holiday race — concurrent create won: '.json_encode($data));
+
+                throw ValidationException::withMessages([
+                    'date' => 'A public holiday already exists for this country, year, date and company.',
+                ]);
+            }
+
+            throw $e;
+        }
 
         if (($data['company_id'] ?? null) === null) {
             // Férié NATIONAL : tous les tenants le voient → invalider tous les scopes (BUG #1897).
