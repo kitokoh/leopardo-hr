@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): N+1 sur GET /v1/training/enrollments et /v1/admin/training/enrollments (Closes #3598).** `session.course` n'etait pas eager-loade alors que `TrainingEnrollmentResource` accede a `$this->session?->course?->title` — une requete supplementaire par ligne. Ajout de `'session.course:id,title'` dans les `with()` des deux controleurs (TrainingController + PlatformAdminTrainingController).
+
 ### Fixed
 - **fix(api): webhook email-bounce configurable (Closes #3058).** `services.mail_bounce_webhook.secret` n'était défini nulle part → 503 permanent malgré le fail-closed #2616. Ajout de la clé `config/services.php` (env `MAIL_BOUNCE_WEBHOOK_SECRET`) + entrée `.env.example` ; vide = refusé (défensif).
 
