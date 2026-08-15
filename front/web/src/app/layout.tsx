@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { headers } from "next/headers";
+
 import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
@@ -33,7 +34,8 @@ export const metadata: Metadata = {
       { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/favicon.svg", type: "image/svg+xml" },
     ],
-    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    // Issue #2756 — iOS exige un PNG 180×180 pour apple-touch-icon (SVG ignoré).
+    apple: [{ url: "/apple-touch-icon.png", type: "image/png" }],
   },
   openGraph: {
     type: 'website',
@@ -87,11 +89,19 @@ function resolveSsrLang(acceptLanguage: string | null): string {
   return ['fr', 'en', 'ar', 'tr'].includes(base) ? base : 'fr';
 }
 
+// Issue #2719 — dir SSR : l'arabe est rendu RTL (pas de FOUC ltr→rtl).
+function resolveSsrDir(lang: string): 'rtl' | 'ltr' {
+  return lang === 'ar' ? 'rtl' : 'ltr';
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Issue #2719 — lang/dir calculés par requête (Accept-Language) au SSR :
+  // plus de lang="fr" systématique pour les visiteurs en/tr/ar (LocaleSync
+  // ajuste ensuite côté client selon les préférences utilisateur).
   const headerList = await headers();
   const ssrLang = resolveSsrLang(headerList.get('accept-language'));
   // Analytics scripts (GA4, Mixpanel) are only loaded when the vitrine
@@ -104,14 +114,14 @@ export default async function RootLayout({
   const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
   return (
-    <html lang={ssrLang} suppressHydrationWarning>
+    <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#10b981" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Leopardo" />
-        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
 
         {gaId && (

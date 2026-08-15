@@ -29,6 +29,7 @@ import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 
 interface SignupFormProps {
   page?: string;
@@ -48,32 +49,7 @@ const TRIAL_POLL_MAX_ATTEMPTS = 12;
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
 
-type SignupFormCopy = {
-  badge: string; title: string; subtitle: string;
-  labelEmail: string; placeholderEmail: string;
-  labelCompany: string; placeholderCompany: string;
-  labelRole: string; rolePlaceholder: string;
-  roleFounder: string; roleManager: string; roleHr: string; roleOperations: string; roleOther: string;
-  labelTeamSize: string; teamPlaceholder: string;
-  labelPhone: string; placeholderPhone: string;
-  operationsNote: string;
-  agreePrefix: string; termsLink: string; privacyLink: string; agreeSuffix: string;
-  submitLabel: string; submittingLabel: string;
-  codeHint: string; haveAccount: string; loginCta: string;
-  back: string; otpTitle: string; otpSentTo: string;
-  otpInvalidLength: string; otpInvalidCode: string; otpVerifyError: string;
-  verifyLabel: string; verifyingLabel: string; codeValidity: string; trackStatus: string;
-  pendingTitle: string; pendingFallback: string; pendingNote: string;
-  readyTitle: string; readySubtitle: string; accessCta: string;
-  copyLink: string; linkCopied: string; linkEmailed: string;
-  failedTitle: string; failedBody: string;
-  timeoutTitle: string; timeoutBody: string; refreshStatus: string;
-  preparingTitle: string; preparingBody: string; statusFor: string; statusEvery5s: string;
-  successTitle: string; emailVerified: string; credsLabel: string;
-  fieldEmail: string; fieldPassword: string; copyPasswordTitle: string; copied: string;
-  credsSentByEmail: string; credsEmailed: string; trialNote: string; trialNoteSuffix: string;
-  downloadApp: string; changePasswordNote: string; defaultError: string;
-};
+type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 
 const signupFormCopy: Record<AppLocale, SignupFormCopy> = {
   fr: {
@@ -366,6 +342,13 @@ const signupFormCopy: Record<AppLocale, SignupFormCopy> = {
   },
 };
 
+function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
+  const copy = {} as SignupFormCopy;
+  for (const key of signupFormKeys) {
+    copy[key] = t(locale, `signup.${key}`);
+  }
+  return copy;
+}
 
 export function SignupForm({
   page = '/signup',
@@ -374,7 +357,7 @@ export function SignupForm({
   className = '',
 }: SignupFormProps) {
   const { locale } = useVitrineLocale();
-  const c = signupFormCopy[locale] ?? signupFormCopy.fr;
+  const c = buildSignupFormCopy(locale);
 
   const {
     register,
@@ -400,14 +383,14 @@ export function SignupForm({
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [provisionedData, setProvisionedData] = useState<{
-    manager?: { email: string; temp_password: string };
+    manager?: { email: string };
     trial?: { days: number; ends_at: string };
     company?: { name: string };
   } | null>(null);
   const [pendingMessage, setPendingMessage] = useState('');
-  const [copied, setCopied] = useState(false);
 
   // #2469 — suivi du provisioning du guided trial
+  const [copied, setCopied] = useState(false);
   const [trialToken, setTrialToken] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     try {
@@ -480,23 +463,6 @@ export function SignupForm({
     setTrialTimedOut(false);
     setIsTracking(true);
     setCurrentStep('tracking');
-  };
-
-  const copyPassword = async (password: string) => {
-    try {
-      await navigator.clipboard.writeText(password);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = password;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
   };
 
   // ── Step 1: Submit signup form ──
@@ -1098,28 +1064,11 @@ export function SignupForm({
                             {provisionedData.manager.email}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm text-slate-600 dark:text-slate-300">{c.fieldPassword}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-900 dark:bg-slate-700 dark:text-white">
-                              {provisionedData.manager.temp_password}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => copyPassword(provisionedData.manager!.temp_password)}
-                              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-                              title={c.copyPasswordTitle}
-                            >
-                              <ClipboardCopy className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                        {copied && (
-                          <p className="text-right text-xs font-medium text-emerald-600">{c.copied}</p>
-                        )}
                       </div>
+                      {/* #2680 : le mot de passe temporaire ne transite plus
+                          dans la réponse API — il est envoyé par email. */}
                       <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                        {c.credsSentByEmail} {provisionedData.manager.email}.
+                        {c.credsEmailed}
                       </p>
                     </>
                   ) : (

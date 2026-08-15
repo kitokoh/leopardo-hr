@@ -1,5 +1,9 @@
 import type { AppLocale } from '@/lib/i18n'
 
+// Issue #2726 — témoignages de DÉMO : aucune citation client réelle
+// (le code l'admet : « no real customer photos exist yet »). Le composant
+// d'affichage doit les marquer comme démo / ne pas les présenter comme réels.
+export const TESTIMONIALS_ARE_DEMO = true
 export type Testimonial = {
   name: string
   role: string
@@ -21,7 +25,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Amina Diallo',
       role: 'DRH',
       company: 'TechAfrika',
-      content: 'Leopardo RH a transforme notre gestion du personnel. Le gain de temps est phenomenal, surtout sur la paie et le pointage.',
+      content: 'Leopardo RH a transformé notre gestion du personnel. Le gain de temps est phénoménal, surtout sur la paie et le pointage.',
       rating: 5,
     },
     {
@@ -35,7 +39,7 @@ const testimonialsByLocale: Record<AppLocale, Testimonial[]> = {
       name: 'Fatou Sow',
       role: 'Responsable RH',
       company: 'SenLogistics',
-      content: 'Le pointage biometrisque et les anomalies manager ont change notre discipline terrain.',
+      content: 'Le pointage biométrique et les anomalies manager ont change notre discipline terrain.',
       rating: 5,
     },
     {

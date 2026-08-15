@@ -25,19 +25,19 @@ export type LegalPageCopy = {
 const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
   fr: {
     privacy: {
-      eyebrow: 'Conformité et donnees RH',
-      title: 'Politique de confidentialite',
+      eyebrow: 'Conformite et données RH',
+      title: 'Politique de confidentialité',
       intro:
-        'Leopardo RH traite des donnees RH sensibles pour aider les entreprises a piloter le pointage, la paie, les absences et les workflows terrain. Cette page explique notre approche de protection, de transparence et de controle.',
-      updatedAt: 'Derniere mise a jour : 14 mai 2026',
+        'Leopardo RH traite des données RH sensibles pour aider les entreprises a piloter le pointage, la paie, les absences et les workflows terrain. Cette page explique notre approche de protection, de transparence et de controle.',
+      updatedAt: 'Dernière mise a jour : 14 mai 2026',
       backLabel: 'Retour a l accueil',
       languageLabel: 'Langue du document',
       sections: [
         {
-          title: 'Donnees traitees',
+          title: 'Données traitees',
           body: [
-            'Nous pouvons traiter des donnees d identification, de contact, de poste, de pointage, d absence, de paie, de documents RH, de roles, de permissions et de journaux techniques.',
-            'Les donnees biometriques ou assimilees ne doivent etre activees que lorsque le client dispose d une base legale claire et d un consentement ou cadre interne documente.',
+            'Nous pouvons traiter des données d identification, de contact, de poste, de pointage, d absence, de paie, de documents RH, de roles, de permissions et de journaux techniques.',
+            'Les données biometriques ou assimilees ne doivent etre activees que lorsque le client dispose d une base legale claire et d un consentement ou cadre interne documente.',
           ],
         },
         {
@@ -50,8 +50,8 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Droits des utilisateurs',
           body: [
-            'Les utilisateurs peuvent demander l export de leurs donnees, une correction, une limitation ou une suppression selon les lois applicables et les obligations de conservation de l employeur.',
-            'La plateforme expose aussi des controles produit pour tracer les demandes de suppression et le consentement biometrique.',
+            'Les utilisateurs peuvent demander l export de leurs données, une correction, une limitation ou une suppression selon les lois applicables et les obligations de conservation de l employeur.',
+            'La plateforme expose aussi des controles produit pour tracer les demandes de suppression et le consentement biométrique.',
           ],
         },
         {
@@ -63,8 +63,8 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         },
       ],
       contact: {
-        title: 'Contact confidentialite',
-        body: 'Pour une demande de confidentialite ou de conformité, contactez notre équipe avec le nom de votre entreprise et le contexte de la demande.',
+        title: 'Contact confidentialité',
+        body: 'Pour une demande de confidentialité ou de conformité, contactez notre équipe avec le nom de votre entreprise et le contexte de la demande.',
         email: 'privacy@leopardo-rh.com',
       },
     },
@@ -88,7 +88,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           title: 'Usage acceptable',
           body: [
             'La plateforme doit etre utilisee pour des processus RH legitimes : pointage, paie, absences, documents, notifications, reporting, support et operations associees.',
-            'Il est interdit de contourner la sécurité, d extraire massivement des donnees sans autorisation ou d utiliser le service pour surveiller des personnes hors cadre legal.',
+            'Il est interdit de contourner la sécurité, d extraire massivement des données sans autorisation ou d utiliser le service pour surveiller des personnes hors cadre legal.',
           ],
         },
         {
@@ -99,7 +99,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           ],
         },
         {
-          title: 'Disponibilite et evolution',
+          title: 'Disponibilité et evolution',
           body: [
             'Leopardo RH peut faire evoluer les modules, APIs et interfaces pour ameliorer la sécurité, la performance et la valeur produit.',
             'Les operations critiques de maintenance, migration ou incident sont traitees selon les procedures d exploitation et de support en vigueur.',

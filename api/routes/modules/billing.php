@@ -18,16 +18,16 @@ use Illuminate\Support\Facades\Route;
 // ── Authenticated routes ──────────────────────────────────────────────────────
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
 
-    // Onboarding Steps — all managers
-    Route::middleware('api.manager')->group(function (): void {
-        Route::get('/onboarding-setup/checklist', [OnboardingStepController::class, 'checklist']);
-        Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
-        Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete']);
-        Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip']);
+    // Onboarding Steps — tous les utilisateurs authentifiés du tenant
+    // (l'app Employee complète son onboarding : T118 — plus de 403
+    // api.manager pour un employé non-manager).
+    Route::get('/onboarding-setup/checklist', [OnboardingStepController::class, 'checklist']);
+    Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
+    Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete']);
+    Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip']);
 
-        // Alias expected by mobile/web clients: list onboarding steps.
-        Route::get('/onboarding/steps', [OnboardingStepController::class, 'checklist']);
-    });
+    // Alias expected by mobile/web clients: list onboarding steps.
+    Route::get('/onboarding/steps', [OnboardingStepController::class, 'checklist']);
 
     // Feature Flags — read for all, write for principal
     Route::get('/feature-flags/matrix', [FeatureFlagController::class, 'matrix']);

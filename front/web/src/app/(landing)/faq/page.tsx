@@ -31,7 +31,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Tarification',
     question: 'Y a-t-il un essai gratuit ?',
-    answer: 'Oui ! Nous offrons un essai gratuit de 30 jours sans engagement et sans carte de crédit. Vous avez accès à toutes les fonctionnalités des plans payants pendant la période d\'essai.',
+    answer: 'Oui ! Nous offrons un essai gratuit de 14 jours sans engagement et sans carte de crédit. Vous avez accès à toutes les fonctionnalités des plans payants pendant la période d\'essai.',
   },
   {
     category: 'Fonctionnalités',

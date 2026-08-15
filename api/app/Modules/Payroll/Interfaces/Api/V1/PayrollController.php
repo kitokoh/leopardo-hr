@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PayrollResource;
+use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\PayrollIndexRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRequest;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\UpdatePayrollRequest;
-use App\Http\Resources\Api\V1\PayrollResource;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Payroll\Domain\Models\Payroll;
-use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -63,7 +63,7 @@ class PayrollController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
         $paginated = $query->orderByDesc('period_year')->orderByDesc('period_month')->paginate($perPage);
 
         return PayrollResource::collection($paginated)->response();
@@ -146,4 +146,3 @@ class PayrollController extends Controller
         return response()->json(['message' => 'Payroll deleted successfully']);
     }
 }
-

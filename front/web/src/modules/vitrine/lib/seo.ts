@@ -5,6 +5,11 @@ import { t } from '@/lib/i18n/locale-catalog';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
+/** Build a canonical URL from the configured site URL. */
+export function canonicalUrl(path: string): string {
+  return `${siteUrl}${path}`;
+}
+
 export interface SEOMetadata {
   title: string;
   description: string;
@@ -201,10 +206,10 @@ export const pageMetadata = {
   docs: {
     title: "Documentation API | Guides techniques Leopardo RH",
     description:
-      "Documentation technique et guides d'integration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
+      "Documentation technique et guides d'intégration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
     keywords: [
       "documentation API RH",
-      "integration Leopardo",
+      "intégration Leopardo",
       "webhooks paie",
       "API gestion employés",
     ],
@@ -214,7 +219,7 @@ export const pageMetadata = {
   download: {
     title: "Télécharger Leopardo RH | Windows, macOS, Android, iOS",
     description:
-      "Telechargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
+      "Téléchargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
     keywords: [
       "télécharger Leopardo RH",
       "application pointage mobile",
@@ -251,11 +256,11 @@ export const pageMetadata = {
   },
 
   testimonials: {
-    title: "Temoignages Clients | Avis sur Leopardo RH",
+    title: "Témoignages Clients | Avis sur Leopardo RH",
     description:
       "Découvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
     keywords: [
-      "temoignages Leopardo RH",
+      "témoignages Leopardo RH",
       "avis clients logiciel RH",
       "retours utilisateurs paie SaaS",
       "case success RH PME",
@@ -266,7 +271,7 @@ export const pageMetadata = {
   caseStudies: {
     title: "Etudes de Cas | Success Stories Leopardo RH",
     description:
-      "Etudes de cas detaillees d'entreprises ayant deploye Leopardo RH pour automatiser paie, pointage et absences.",
+      "Etudes de cas detaillees d'entreprises ayant déployé Leopardo RH pour automatiser paie, pointage et absences.",
     keywords: [
       "etudes de cas RH",
       "success story paie SaaS",
@@ -283,7 +288,7 @@ export const pageMetadata = {
     keywords: [
       "videos Leopardo RH",
       "demo logiciel RH",
-      "tutoriel pointage biometrique",
+      "tutoriel pointage biométrique",
       "demonstration paie SaaS",
     ],
     ogImage: `${siteUrl}/og/videos.png`,
@@ -370,9 +375,9 @@ export function generateOrganizationSchema() {
     logo: `${siteUrl}/logo.png`,
     description: "Plateforme complète de gestion RH pour PME et startups",
     sameAs: [
-      "https://twitter.com/leopardo",
+      "https://x.com/leopardo_hr",
       "https://linkedin.com/company/leopardo",
-      "https://facebook.com/leopardo",
+      "https://www.facebook.com/leopardo_hr",
     ],
     contactPoint: {
       "@type": "ContactPoint",

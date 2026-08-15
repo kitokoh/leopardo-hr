@@ -80,7 +80,7 @@ const copy: Record<AppLocale, {
     howItWorks: {
       title: 'Comment ca marche',
       steps: [
-        { step: '01', title: 'Installez', description: 'Telechargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
+        { step: '01', title: 'Installez', description: 'Téléchargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
         { step: '02', title: 'Connectez', description: 'Entrez l\'adresse IP de vos bornes ZKTeco. Detection automatique sur le reseau local.' },
         { step: '03', title: 'Synchronisez', description: 'Les pointages remontent automatiquement vers Leopardo RH dans le cloud. Temps reel ou par batch.' },
       ],
@@ -335,18 +335,18 @@ type KioskCopy = {
 const kioskCopy: Record<AppLocale, KioskCopy> = {
   fr: {
     sectionTitle: 'Kiosk terrain (borne ZKTeco)',
-    sectionSubtitle: 'Une borne d\'entree biometrie/QR pour les équipes qui pointent sur site, sans smartphone obligatoire.',
+    sectionSubtitle: 'Une borne d\'entrée biometrie/QR pour les équipes qui pointent sur site, sans smartphone obligatoire.',
     bullets: [
       'Pointage par empreinte, visage ou QR/matricule en fallback',
       'Fonctionne hors-ligne : les pointages sont mis en file locale puis synchronises au retour du reseau',
       'Bridge desktop local (Python) + interface tactile plein ecran, deployable sur PC ou mini-PC',
-      'Provisionne depuis l\'app manager : code appareil et token de synchronisation generes en quelques secondes',
+      'Provisionne depuis l\'app manager : code appareil et token de synchronisation générés en quelques secondes',
     ],
     ctaSetup: 'Guide d\'installation kiosk',
     ctaSetupHref: '/docs#kiosk',
     ctaContact: 'Etre accompagne pour l\'installation',
     ctaContactHref: '/contact?topic=download-kiosk',
-    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est necessaire.',
+    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est nécessaire.',
   },
   en: {
     sectionTitle: 'Field Kiosk (ZKTeco terminal)',

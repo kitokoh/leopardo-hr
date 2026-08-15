@@ -244,9 +244,10 @@ async function fetchData() {
   error.value = ''
   try {
     const [coursesRes, sessionsRes, enrollRes] = await Promise.all([
-      api.get('/v1/training/courses'),
-      api.get('/v1/training/sessions').catch(() => ({ data: { data: [] } })),
-      api.get('/v1/training/enrollments').catch(() => ({ data: { data: [] } })),
+      // #2634 : sessions/enrollments en vue cross-tenant console (routes /admin/*).
+      api.get('/v1/training/courses').catch(() => ({ data: { data: [] } })),
+      api.get('/admin/training/sessions').catch(() => ({ data: { data: [] } })),
+      api.get('/admin/training/enrollments').catch(() => ({ data: { data: [] } })),
     ])
     courses.value = coursesRes.data.data || coursesRes.data || []
     sessions.value = sessionsRes.data.data || sessionsRes.data || []
