@@ -111,7 +111,6 @@ class UserAuthRepository {
         method: 'POST', maxRetriesOverride: 0,
         useUserSession: true,
         timeoutOverride: const Duration(seconds: 8),
-        maxRetriesOverride: 0,
       );
     } catch (_) {
       // Ignore
@@ -134,7 +133,6 @@ class UserAuthRepository {
       method: 'POST', maxRetriesOverride: 0,
       useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
-      maxRetriesOverride: 0,
       data: {
         'company_name': companyName,
         'email': email,

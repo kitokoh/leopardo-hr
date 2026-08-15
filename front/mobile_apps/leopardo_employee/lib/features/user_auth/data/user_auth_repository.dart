@@ -22,7 +22,6 @@ class UserAuthRepository {
       '/user/register',
       method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
-      maxRetriesOverride: 0,
       data: {
         'first_name': firstName,
         'last_name': lastName,
@@ -70,7 +69,6 @@ class UserAuthRepository {
       '/user/google-signin',
       method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
-      maxRetriesOverride: 0,
       data: {
         'google_id': googleId,
         'email': email,
@@ -113,7 +111,6 @@ class UserAuthRepository {
         method: 'POST', maxRetriesOverride: 0,
         useUserSession: true,
         timeoutOverride: const Duration(seconds: 8),
-        maxRetriesOverride: 0,
       );
     } catch (_) {
       // Ignore
@@ -136,7 +133,6 @@ class UserAuthRepository {
       method: 'POST', maxRetriesOverride: 0,
       useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
-      maxRetriesOverride: 0,
       data: {
         'company_name': companyName,
         'email': email,
