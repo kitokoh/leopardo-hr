@@ -96,4 +96,12 @@ return [
         'base_url' => env('AYRSHARE_BASE_URL', 'https://api.ayrshare.com/api'),
     ],
 
+    'mail_bounce_webhook' => [
+        // #3058 : secret partage authentifiant les webhooks de rebond email
+        // (header X-Bounce-Webhook-Secret, EmailBounceWebhookController).
+        // Vide = webhook rejete (fail-closed #2616). A positionner en
+        // production (MAIL_BOUNCE_WEBHOOK_SECRET).
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET', ''),
+    ],
+
 ];

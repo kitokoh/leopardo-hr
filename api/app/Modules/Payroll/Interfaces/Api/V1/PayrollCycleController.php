@@ -35,7 +35,7 @@ class PayrollCycleController extends Controller
         $runs = PayrollRun::query()
             ->where('company_id', $actor->company_id)
             ->orderByDesc('period_start')
-            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
+            ->paginate(max(1, min(100, max(1, min(100, $request->integer('per_page', 15))))));
 
         // PA2-API-001: this endpoint used to return Laravel's raw paginator
         // shape (top-level current_page/data/links/...), which diverges from
