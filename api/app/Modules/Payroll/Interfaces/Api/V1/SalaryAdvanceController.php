@@ -34,6 +34,7 @@ class SalaryAdvanceController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
         $query = SalaryAdvance::query()
+            ->where('company_id', $actor->company_id)
             ->with([
                 'employee:id,first_name,last_name,email,company_id',
                 'employee.company:id,currency',
