@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 ### Fixed
+- **fix(docs): matrice RBAC réalignée sur T118 (Closes #3064).** `/onboarding-setup*` documenté comme ouvert à tout employé authentifié du tenant (checklist/progress/complete/skip) conformément au code et à la décision T118 — fin du drift docs↔code.
 - **fix(api): per_page borné à 100 sur 11 endpoints de liste (Closes #3059).** `per_page`/`limit` acceptés sans borne supérieure (hors périmètre #2682) → un client pouvait demander des pages énormes. Application du pattern partagé `max(1, min(100, …))` (déjà utilisé par DashboardController/PlatformCompanyController) sur Approvals (×2), Billing, AI Gateway, Audit Log, Cabinet Documents, Contracts, Vehicles (×4), Vehicle Alerts, Vehicle Maintenance, Vehicle Trips, Payroll Cycles. Test `VehicleControllerTest::test_per_page_is_capped_at_100` (500 → 100, 0 → 1). Spec Kit : `.specify/features/qa-expert2-api-2026-08-15/`.
 - **docs(qa): session expert 4 (runtime + merge campaign) 2026-08-15 — registre + spec/plan/tasks.** Bilan : ~25 PRs mergées, 84 runs CI orphelins annulés, 7 issues implémentées (#3055/#3034/#3036/#3037/#3038/#3022/#3058), 2 issues fermées avec preuve code (#2697/#2699), décision essai 14 jours consignée (arbitrage propriétaire demandé vs texte #2909).
 - **fix(admin): UsersView/UserTable company+dates réelles, UserDetailView états loading/erreur, HolidaysView interpolation i18n (Closes #2988, #2989, #2990).**
