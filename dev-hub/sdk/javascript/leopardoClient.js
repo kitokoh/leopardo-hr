@@ -1165,6 +1165,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/health", options);
     },
 
+    /** Liveness probe — processus API vivant (sans dépendances) */
+    getHealthLive(options = {}) {
+      return request("GET", "/health/live", options);
+    },
+
+    /** Readiness probe — base de données disponible */
+    getHealthReady(options = {}) {
+      return request("GET", "/health/ready", options);
+    },
+
     /** Catalogue de traductions complet */
     getI18nCatalog(options = {}) {
       return request("GET", "/i18n/catalog", options);
@@ -1465,6 +1475,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/me/vehicles", options);
     },
 
+    /** Métriques plateforme (super-admin) */
+    getMetrics(options = {}) {
+      return request("GET", "/metrics", options);
+    },
+
     /** Lire les preferences de notification de l'utilisateur courant */
     getNotificationPreferences(options = {}) {
       return request("GET", "/notification-preferences", options);
@@ -1748,6 +1763,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Simuler l'impact d'un barème (manager, dry-run) — issue #1814 */
     simulatePayroll(options = {}) {
       return request("POST", "/payroll/simulate", options);
+    },
+
+    /** Liste des campagnes de paie (tenant) */
+    getPayrolls(options = {}) {
+      return request("GET", "/payrolls", options);
+    },
+
+    /** Crée une campagne de paie */
+    postPayrolls(options = {}) {
+      return request("POST", "/payrolls", options);
     },
 
     /** Suggestions de rééquilibrage des équipes */
@@ -2535,9 +2560,39 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Demande d'essai guidé / auto-service (onboarding) */
+    postTrialSignup(options = {}) {
+      return request("POST", "/trial/signup", options);
+    },
+
     /** Statut de provisioning du guided trial */
     getTrialStatus(options = {}) {
       return request("GET", "/trial/status", options);
+    },
+
+    /** Statut du provisioning d'un essai guidé (polling) */
+    getTrialStatus2(options = {}) {
+      return request("GET", "/trial/status", options);
+    },
+
+    /** Vérifie le code OTP et provisionne l'espace d'essai */
+    postTrialVerify(options = {}) {
+      return request("POST", "/trial/verify", options);
+    },
+
+    /** Connexion utilisateur sans entreprise (parcours legacy mobile) */
+    postUserLogin(options = {}) {
+      return request("POST", "/user/login", options);
+    },
+
+    /** Profil de l'utilisateur connecté */
+    getUserMe(options = {}) {
+      return request("GET", "/user/me", options);
+    },
+
+    /** Crée un compte utilisateur sans entreprise (parcours legacy mobile) */
+    postUserRegister(options = {}) {
+      return request("POST", "/user/register", options);
     },
 
     /** Liste de toutes les alertes vehicules */
