@@ -456,10 +456,13 @@ class ExportController extends Controller
             'format' => 'nullable|in:json,csv,xlsx',
         ]);
 
+        /** @var Employee|null $user */
+        $user = $request->user();
+
         $format = $validated['format'] ?? 'json';
         if ($format === 'csv' || $format === 'xlsx') {
             $filename = $filenamePrefix.'_'.now()->format('Y-m-d').'.csv';
-            $this->recordExport($request, $request->user(), $filenamePrefix, 'csv', $records->count(), $filename);
+            $this->recordExport($request, $user, $filenamePrefix, 'csv', $records->count(), $filename);
 
             return response()->json([
                 'data' => [
@@ -471,7 +474,7 @@ class ExportController extends Controller
             ]);
         }
 
-        $this->recordExport($request, $request->user(), $filenamePrefix, 'json', $records->count());
+        $this->recordExport($request, $user, $filenamePrefix, 'json', $records->count());
 
         return response()->json([
             'data' => [
