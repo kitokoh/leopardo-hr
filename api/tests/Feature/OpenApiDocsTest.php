@@ -73,8 +73,9 @@ class OpenApiDocsTest extends TestCase
                 // échappé via la séquence php d'ouverture courte dans la vue ; le
                 // HTML rendu doit contenir la séquence brute (assertSee(..., false)
                 // car le défaut chercherait la forme échappée `&lt;?php`).
-                // NB: ne JAMAIS écrire de tags php littéraux (<?=, ?>) dans un
-                // commentaire PHP — le `?>` ferme le bloc et casse le lexer.
+                // NB: ne JAMAIS écrire de tags php littéraux (short-open ou
+                // closing tag) dans un commentaire PHP — le closing tag ferme
+                // le bloc et casse le lexer.
                 ->assertSee('<?php', false)
                 ->assertSee('GuzzleHttp', false)
                 ->assertSee('Copier');
