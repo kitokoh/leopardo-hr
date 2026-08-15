@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(web): images OpenGraph et Twitter localisées (Closes #3261).** Quatre variantes FR/EN/TR/AR sont générées avec RTL arabe et les compteurs canoniques de 3 apps mobiles et 2 apps web.
+
 - **fix(web): JSON-LD pricing aligné sur les quatre plans (Closes #3260).** Les offres structurées proviennent désormais de pricing.ts ; Enterprise est décrit sur devis sans prix inventé.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
