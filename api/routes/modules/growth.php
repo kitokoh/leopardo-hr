@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route;
 // Espace Partenaire (Web Client)
 // Access via the main dashboard requires the sanctum guard (Employee token).
 Route::prefix('growth')->group(function () {
-    Route::middleware(['auth:sanctum'])->prefix('partner')->group(function () {
+    // Issue #2622 : isolation tenant obligatoire (cross-tenant = 404).
+    Route::middleware(['auth:sanctum', 'tenant'])->prefix('partner')->group(function () {
         Route::post('/apply', [PartnerDashboardController::class, 'apply']);
         Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
         Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);

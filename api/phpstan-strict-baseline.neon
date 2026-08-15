@@ -4249,12 +4249,6 @@ parameters:
 			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Planning\\Domain\\Models\\AbsenceType\>\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
-
-		-
 			message: '#^Cannot access property \$deducts_leave on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
 			identifier: property.nonObject
 			count: 2
@@ -7491,13 +7485,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 33
+			count: 37
 			path: tests/Feature/PayrollCycleIntegrationTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 11
+			count: 15
 			path: tests/Feature/PayrollCycleIntegrationTest.php
 
 		-
@@ -7545,7 +7539,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 29
+			count: 43
 			path: tests/Feature/PayrollRunControllerTest.php
 
 		-
@@ -7563,7 +7557,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 10
+			count: 13
 			path: tests/Feature/PayrollRunControllerTest.php
 
 		-
@@ -8669,3 +8663,64 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/SocialDeclarationGeneratorTest.php
+
+		-
+			message: '#^Using nullsafe method call on non-nullable type Illuminate\\Support\\Carbon\. Use -> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Listeners/AuditLogger.php
+
+		-
+			message: '#^Using nullsafe method call on non-nullable type Illuminate\\Http\\Request\. Use -> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 4
+			path: app/Listeners/AuditLogger.php
+
+		-
+			message: '#^Call to an undefined method Tests\\Feature\\Payroll\\DeclarationRatesMatchEngineTest::assertNotMatchesRegularExpression\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/Payroll/DeclarationRatesMatchEngineTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Contracts\\ContractPdfAliasTest::actors\(\) should return .* but returns array\{.*\}\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Feature/Contracts/ContractPdfAliasTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Payroll\\BankExportContractApiTest::context\(\) should return .* but returns array\{.*\}\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Feature/Payroll/BankExportContractApiTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Demo\\DemoMagicLinkTest::createDemoManager\(\) has parameter \$extraData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Demo/DemoMagicLinkTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Leave\\LeavePendingReservationTest::context\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Feature/Leave/LeavePendingReservationTest.php
+
+		-
+			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\\|int\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Feature/Payroll/PayrollCycleIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert::assertNotNull\(\) with .* will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Feature/Payroll/DeclarationRatesMatchEngineTest.php
+
+		-
+			message: '#^Unreachable statement - code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Modules/Payroll/Infrastructure/Services/PayrollCalculator.php
+

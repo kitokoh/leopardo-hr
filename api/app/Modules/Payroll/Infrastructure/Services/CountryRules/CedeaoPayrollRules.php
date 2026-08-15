@@ -467,14 +467,13 @@ class CedeaoPayrollRules extends AbstractCountryRules
         }
 
         // CI_COMPLIANCE.md §8 (Code du travail CI art. 18) : catégorie × ancienneté —
-        // ouvriers 8/15 j, employés-techniciens 1/2 mois, cadres 3 mois. Défaut
-        // (sans catégorie) = employé/technicien (pilot).
-        // Issue #2219/#2280 : JOURS OUVRÉS — 1 mois = 22 j ouvrés, 2 mois = 44
-        // (même conversion que BF/ML/CM/GA/CG/SN ; 30/60 calendaires surpayaient
-        // 30/22 = 1,36× — régression #2551 cause 7).
+        // ouvriers 8/15 j calendaires (= 6/11 j ouvrés), employés-techniciens 1/2 mois
+        // (= 22/44 j ouvrés), cadres 3 mois (= 66 j ouvrés). Issue #2219 : JOURS
+        // OUVRÉS — le moteur divise par les jours ouvrés du mois (22) ; renvoyer les
+        // jours calendaires surpaierait 30/22 = 1,36× (alignement DZ #1943).
         return match (strtolower((string) $category)) {
-            'cadre' => 90.0,
-            'ouvrier', 'worker' => $yearsOfService < 5.0 ? 8.0 : 15.0,
+            'cadre' => 66.0,
+            'ouvrier', 'worker' => $yearsOfService < 5.0 ? 6.0 : 11.0,
             default => $yearsOfService < 5.0 ? 22.0 : 44.0,
         };
     }

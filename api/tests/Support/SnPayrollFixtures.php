@@ -35,14 +35,13 @@ final class SnPayrollFixtures
         return match ($gross) {
             0.0 => ['employee' => 0.0, 'employer' => 0.0],
             // SMIG : 58 900 × 5,6 % = 3 298,40 ; patronal
-            // 4 947,60 (T1) + 4 123,00 (CSS famille 7 %) + 589 + 1 767 (AT/CFCE)
-            // = 11 426,60 — #2473 (CSS famille 3 % → 7 % officiel CIPRES/CLEISS)
+            // 4 947,60 (T1) + 4 123 + 589 + 1 767 (CSS famille 7 % / AT 1 % /
+            // CFCE 3 %, #2473) = 11 426,60
             58900.0 => ['employee' => 3298.40, 'employer' => 11426.60],
             100000.0 => ['employee' => 5600.0, 'employer' => 16440.0],
             200000.0 => ['employee' => 11200.0, 'employer' => 27840.0],
             250000.0 => ['employee' => 14000.0, 'employer' => 33540.0],
-            // Plafond T1 : 24 192 ; patronal 36 288 + 4 410 (CSS famille 7 %
-            // plafonné 63 000) + 630 + 12 960 = 54 288
+            // Plafond T1 : 24 192 ; patronal 36 288 + 4 410 + 630 + 12 960 = 54 288
             432000.0 => ['employee' => 24192.0, 'employer' => 54288.0],
             // T1 24 192 + T2 (600 000−432 000)×2,4 % = 4 032 → 28 224 ; patronal
             // 36 288 + 6 048 + 4 410 + 630 + 18 000 = 65 376

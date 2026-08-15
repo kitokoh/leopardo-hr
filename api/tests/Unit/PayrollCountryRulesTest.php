@@ -23,7 +23,7 @@ class PayrollCountryRulesTest extends TestCase
             'TN' => [new TunisiaPayrollRules, 91.8, 165.7],
             'FR' => [new FrancePayrollRules, 170.3, 300.0],
             'TR' => [new TurkeyPayrollRules, 150.0, 225.0],
-            'SN' => [new SenegalPayrollRules, 56.0, 194.0], // CSS famille 7 % (#2473) : 8,4+3,6+7+1+3 % = 19,4 % × 1000 = 194
+            'SN' => [new SenegalPayrollRules, 56.0, 194.0],
         ];
 
         foreach ($rules as $countryCode => [$countryRules, $expectedEmployeeCharge, $expectedEmployerCharge]) {

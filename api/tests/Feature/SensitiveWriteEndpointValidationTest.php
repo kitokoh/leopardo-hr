@@ -33,9 +33,12 @@ class SensitiveWriteEndpointValidationTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+        /** @var Company $this->company */
         $this->company = Company::factory()->create();
+        /** @var Company $this->otherCompany */
         $this->otherCompany = Company::factory()->create();
         $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        /** @var Employee $this->employee */
         $this->employee = Employee::factory()->create(['company_id' => $this->company->id]);
     }
 
