@@ -54,7 +54,7 @@ class AIGatewayController extends Controller
             ->where('company_id', $user->company_id)
             ->select(['id', 'title', 'token_count', 'created_at', 'updated_at'])
             ->orderByDesc('updated_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return response()->json([
             'data' => $conversations->items(),
