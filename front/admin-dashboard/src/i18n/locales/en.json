@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "User Management",
-      "summary": ":count user(s) - :active active - :newToday new today"
+      "summary": ":count platform user(s)"
     },
     "actions": {
       "bulk": "Actions (:count)",
@@ -701,5 +701,8 @@
     "pricing": {
       "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
+  },
+  "webhooks": {
+    "confirm_delete": "Delete this webhook?"
   }
 }

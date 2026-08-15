@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "Kullanici Yonetimi",
-      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
+      "summary": ":count platform kullanıcısı"
     },
     "actions": {
       "bulk": "Islemler (:count)",
@@ -701,5 +701,8 @@
     "pricing": {
       "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
+  },
+  "webhooks": {
+    "confirm_delete": "Bu webhook silinsin mi?"
   }
 }

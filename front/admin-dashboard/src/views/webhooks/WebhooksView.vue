@@ -120,7 +120,7 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
 
 const loading = ref(false)
@@ -152,6 +152,10 @@ const availableEvents = [
 
 
 const localeStore = useLocaleStore()
+
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString(toIntlLocale(localeStore.current), { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -221,7 +225,7 @@ async function testWebhook(id) {
 }
 
 async function deleteWebhook(id) {
-  if (!confirm('Supprimer ce webhook ?')) return
+  if (!window.confirm(t('webhooks.confirm_delete', 'Supprimer ce webhook ?'))) return
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()

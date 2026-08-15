@@ -135,10 +135,12 @@ async function loadReport(key) {
 
 async function loadMetrics() {
   try {
-    const [hc, ab, to] = await Promise.allSettled([
+    const [hc, ab, to, ot, ps] = await Promise.allSettled([
       api.get('/v1/reports/headcount'),
       api.get('/v1/reports/absenteeism'),
       api.get('/v1/reports/turnover'),
+      api.get('/v1/reports/overtime'),
+      api.get('/v1/reports/payroll-summary'),
     ])
 
     if (hc.status === 'fulfilled') {
@@ -149,6 +151,16 @@ async function loadMetrics() {
     }
     if (to.status === 'fulfilled') {
       metrics.value.turnover_rate = to.value.data?.data?.rate ?? 0
+    }
+    // #3494 : les 2 KPIs annoncés en en-tête n'étaient jamais chargés (toujours 0).
+    // overtime renvoie le top 50 employés du mois courant → somme des heures.
+    if (ot.status === 'fulfilled') {
+      const rows = ot.value.data?.data?.employees ?? []
+      const total = rows.reduce((sum, r) => sum + (Number(r.total_overtime) || 0), 0)
+      metrics.value.overtime_hours = Math.round(total * 100) / 100
+    }
+    if (ps.status === 'fulfilled') {
+      metrics.value.payroll_total = ps.value.data?.data?.total_gross ?? 0
     }
   } catch (e) {
     console.warn('Metrics load failed', e)
