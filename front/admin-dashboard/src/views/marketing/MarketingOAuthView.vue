@@ -115,7 +115,7 @@ async function saveProvider(provider) {
     if (form.clientSecret.trim()) {
       payload.client_secret = form.clientSecret
     }
-    await api.put('/v1/admin/platform/marketing/oauth-config', payload)
+    await api.put('/admin/platform/marketing/oauth-config', payload)
     toast.success(t('marketing.oauth.saved_ok', { provider }))
     forms[provider].clientSecret = ''
   } catch {
