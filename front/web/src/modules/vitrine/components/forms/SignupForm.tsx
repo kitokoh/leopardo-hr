@@ -207,8 +207,7 @@ export function SignupForm({
           // The lead was still captured, so tell the user honestly instead of
           // showing a vérification screen for a code that was never sent.
           setPendingMessage(
-            response.message ||
-              "c.pendingFallback"
+            response.message || c.pendingFallback
           );
           setCurrentStep('pending');
         } else {
