@@ -58,7 +58,7 @@
               <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ c.effective_from }}</td>
               <td class="py-2.5 text-right whitespace-nowrap">
                 <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="busy" @click="openEdit(c)">{{ $t('social_contrib.edit') }}</button>
-                <button class="btn-danger py-1 px-2.5" :disabled="busy" @click="removeItem(c)">{{ $t('social_contrib.delete') }}</button>
+                <button class="btn-danger py-1 px-2.5" :disabled="busy" @click="askRemoveItem(c)">{{ $t('social_contrib.delete') }}</button>
               </td>
             </tr>
             <tr v-if="items.length === 0">
@@ -177,10 +177,19 @@
       </div>
     </div>
   </div>
+  <ConfirmDialog
+    :open="deleteOpen"
+    :title="t('social_contrib.delete_confirm_title', 'Supprimer cette cotisation ?')"
+    :message="deleteTarget ? t('social_contrib.delete_confirm', { name: deleteTarget.name }) : ''"
+    confirm-label="Supprimer"
+    @confirm="removeItem"
+    @cancel="deleteOpen = false"
+  />
 </template>
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate, toIntlLocale } from '@/i18n/index.js'
@@ -282,8 +291,18 @@ async function save() {
   }
 }
 
-async function removeItem(item) {
-  if (!window.confirm(t('social_contrib.delete_confirm', { name: item.name }))) return
+const deleteTarget = ref(null)
+const deleteOpen = ref(false)
+
+function askRemoveItem(item) {
+  deleteTarget.value = item
+  deleteOpen.value = true
+}
+
+async function removeItem() {
+  const item = deleteTarget.value
+  if (!item) return
+  deleteOpen.value = false
   busy.value = true
   try {
     await api.delete(`/admin/social-contributions/${item.id}`)
