@@ -45,8 +45,8 @@ class AbstractCountryRulesCapTest extends TestCase
         //   · CFCE 3 % = 30 000 → patronale totale 91 776,00
         $charges = $rules->calculateSocialCharges(1000000.0);
 
-        $this->assertSame(37824.0, $charges['employee']);
-        $this->assertSame(91776.0, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(1000000.0)['employee'], $charges['employee']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(1000000.0)['employer'], $charges['employer']);
     }
 
     public function test_senegal_contribution_uncapped_when_gross_below_432k(): void
@@ -61,8 +61,8 @@ class AbstractCountryRulesCapTest extends TestCase
         //             + 200 000 × 3 % (CFCE) = 6 000,00 → 27 840,00
         $charges = $rules->calculateSocialCharges(200000.0);
 
-        $this->assertSame(11200.0, $charges['employee']);
-        $this->assertSame(27840.0, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(200000.0)['employee'], $charges['employee']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(200000.0)['employer'], $charges['employer']);
     }
 
     public function test_cameroon_cnps_capped_at_750k_xaf(): void
