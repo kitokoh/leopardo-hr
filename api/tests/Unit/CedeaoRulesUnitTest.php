@@ -167,11 +167,14 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // Seuls les membres restés placeholder (BJ, NE) conservent le
-        // comportement générique : CI/BF/ML/TG sont pilot (barèmes légaux
-        // implémentés — #1825/#1829/#2121) et n'ont ni CN ivoirienne ni
-        // abattement frais pro par défaut.
-        foreach (['BJ', 'NE'] as $memberCode) {
+        // BF/ML (#1829) : IUTS/ITS + CNSS/INPS implémentés depuis sources
+        // légales publiques — niveau 'pilot' (pas de placeholder).
+        foreach (['ML', 'BF'] as $memberCode) {
+            $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
+            $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
+        }
+
+        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             // Placeholder intact : pas de barème légal, pas de CN, pas de

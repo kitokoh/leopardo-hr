@@ -149,8 +149,11 @@ class PayrollTenantIsolationTest extends TestCase
         Sanctum::actingAs($this->managerB);
 
         $this->getJson('/api/v1/tax-slabs')->assertOk()->assertJsonMissing(['id' => $dataA['taxSlab']->id]);
-        $this->putJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}", ['rate' => 99])->assertNotFound();
-        $this->deleteJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}")->assertNotFound();
+        // Les endpoints admin barèmes sont réservés au SuperAdmin
+        // (assertPlatformAdmin → 403) ; un manager tenant ne doit ni lire
+        // ni modifier la ligne d'un autre tenant.
+        $this->putJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}", ['rate' => 99])->assertForbidden();
+        $this->deleteJson("/api/v1/tax-slabs/{$dataA['taxSlab']->id}")->assertForbidden();
     }
 
     public function test_payroll_runs_list_is_scoped_to_current_tenant(): void
