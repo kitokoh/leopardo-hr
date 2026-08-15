@@ -8,8 +8,8 @@ type SyncStatus = 'checking' | 'online' | 'offline' | 'error';
 
 interface EdgeHealth {
   status: string;
-  node_id: string;
-  pending_sync: number;
+  node_id?: string;
+  pending_sync?: number;
   last_sync?: string;
 }
 
@@ -22,7 +22,7 @@ export default function HomePage() {
     setChecking(true);
     setSyncStatus('checking');
     try {
-      const res = await fetch(`${EDGE_API}/api/edge/health`, {
+      const res = await fetch(`${EDGE_API}/api/v1/edge/health`, {
         signal: AbortSignal.timeout(4000),
       });
       if (res.ok) {
@@ -36,18 +36,6 @@ export default function HomePage() {
       setSyncStatus('offline');
     } finally {
       setChecking(false);
-    }
-  };
-
-  const triggerSync = async () => {
-    try {
-      await fetch(`${EDGE_API}/api/edge/sync`, {
-        method: 'POST',
-        signal: AbortSignal.timeout(10000),
-      });
-      await checkEdge();
-    } catch {
-      setSyncStatus('error');
     }
   };
 
@@ -94,7 +82,7 @@ export default function HomePage() {
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Node ID</span>
-                <span className="text-white font-mono">{health.node_id}</span>
+                <span className="text-white font-mono">{health.node_id ?? '—'}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Statut</span>
@@ -104,7 +92,7 @@ export default function HomePage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">En attente de sync</span>
-                <span className="text-white">{health.pending_sync} enregistrement(s)</span>
+                <span className="text-white">{health.pending_sync ?? '—'}{typeof health.pending_sync === 'number' ? ' enregistrement(s)' : ''}</span>
               </div>
               {health.last_sync && (
                 <div className="flex justify-between text-sm">
@@ -132,11 +120,12 @@ export default function HomePage() {
             {checking ? 'Vérification…' : 'Actualiser'}
           </button>
           <button
-            onClick={triggerSync}
-            disabled={syncStatus !== 'online'}
+            disabled
+            title="La synchronisation nécessite un nodeId et un jeton Edge authentifié."
+
             className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors"
           >
-            Synchroniser maintenant
+            Synchronisation disponible depuis le node Edge authentifié
           </button>
         </div>
 
