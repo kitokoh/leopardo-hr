@@ -7,6 +7,8 @@
 ## [Unreleased]
 
 ### Fixed
+
+- **docs(api): routes critiques documentées OpenAPI — trial, health, user, payrolls, metrics (Closes #2915).** Blocs ajoutés pour /trial/signup|verify|status, /health/live|ready, /user/register|login|me, /payrolls, /metrics ; miroir dev-hub + SDKs régénérés, garde coverage CI verte (0 nouveau drift). Le drift restant reste tracé dans l'allowlist (dette documentée).
 - **fix(api): routes /training/* — refs cassées `allSessions`/`allEnrollments` retirées (Closes #2502).** Le fatal PHP (indexEnrollments dupliqué) était corrigé, mais `hr_extended.php` référençait toujours `allSessions`/`allEnrollments` (méthodes inexistantes) dans le groupe général → `GET /training/sessions` + `/training/enrollments` répondaient 500 (Laravel matche la première déclaration). Les 2 routes du groupe général sont retirées ; le groupe manager porte les vraies routes (`indexAllSessions`, `indexEnrollments`).
 - **fix(gov): gardes de gouvernance — en-têtes CHANGELOG dupliqués interdits + scratch `.claude/` retiré du repo.** Les merges parallèles du swarm d'agents ont dupliqué l'en-tête `### Fixed` du CHANGELOG à plusieurs reprises (#2480/#2495/#2503…) : `check-governance.ps1` échoue désormais si un en-tête de section (`### Fixed`/`Added`/`Changed`/`Removed`) apparaît deux fois de suite. Le scratch de planification `.claude/planning/*.md` (fichiers locaux d'agent) avait fuité dans main : supprimé du suivi (`git rm --cached`, `.gitignore` déjà en place) + garde `check-governance.ps1` qui fait échouer toute PR committant des fichiers `.claude/`.
 ### Fixed
