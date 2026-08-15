@@ -167,7 +167,7 @@
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.active_employees }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients Ã  risque</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients à risque</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ summary.risk.high + summary.risk.medium }}</dd>
           </div>
         </dl>
@@ -299,14 +299,14 @@ const workflowCards = computed(() => [
   },
   {
     title: 'Traiter les demandes entrantes',
-    description: 'Suivre les demandes dâ€™essai, prioriser les leads et éviter les prospects bloqués.',
+    description: 'Suivre les demandes d’essai, prioriser les leads et éviter les prospects bloqués.',
     action: 'Voir les demandes clients',
     to: '/support',
-    badge: `${pendingRequests.value} Ã  traiter`,
+    badge: `${pendingRequests.value} à traiter`,
     badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
   },
   {
-    title: 'Surveiller les clients Ã  risque',
+    title: 'Surveiller les clients à risque',
     description: 'Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.',
     action: 'Analyser les priorités',
     to: '/analytics',
@@ -323,7 +323,7 @@ const workflowCards = computed(() => [
   },
   {
     title: 'Vérifier système et sécurité',
-    description: 'Contrôler santé API, configuration, logs, sauvegardes et signaux dâ€™incident.',
+    description: 'Contrôler santé API, configuration, logs, sauvegardes et signaux d’incident.',
     action: 'Ouvrir système',
     to: '/system',
     badge: 'Ops',

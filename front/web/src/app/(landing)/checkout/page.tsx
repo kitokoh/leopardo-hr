@@ -26,9 +26,9 @@ import { Navbar, Footer } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PLAN CONFIG
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 const PLAN_CONFIG = {
   free: {
     label: 'Free',
@@ -174,9 +174,9 @@ const PLAN_CONFIG = {
 
 type PlanKey = keyof typeof PLAN_CONFIG;
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    SANDBOX TEST CARD
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 const SANDBOX_CARD = {
   number: '4242 4242 4242 4242',
   expiry: '12/29',
@@ -184,9 +184,9 @@ const SANDBOX_CARD = {
   name: 'Test User',
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    GOOGLE AUTH HREF
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 function googleAuthHref(): string {
   const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
   const baseUrl =
@@ -196,9 +196,9 @@ function googleAuthHref(): string {
   return `${baseUrl}/auth/google`;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    STEP INDICATOR
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 function StepIndicator({
   step,
   total,
@@ -243,9 +243,9 @@ function StepIndicator({
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PLAN SUMMARY CARD
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 function PlanSummaryCard({
   plan,
   billing,
@@ -275,7 +275,7 @@ function PlanSummaryCard({
         {cfg.isFree ? (
           <div>
             <span className="text-white font-black text-4xl">Gratuit</span>
-            <p className="text-white/80 text-sm mt-1">Pour toujours Â· Sans carte bancaire</p>
+            <p className="text-white/80 text-sm mt-1">Pour toujours · Sans carte bancaire</p>
           </div>
         ) : (
           <div>
@@ -286,7 +286,7 @@ function PlanSummaryCard({
             </div>
             {billing === 'annual' && (
               <p className="text-white/70 text-xs mt-1">
-                Facturé annuellement â€” économisez EUR {cfg.savings}/an
+                Facturé annuellement — économisez EUR {cfg.savings}/an
               </p>
             )}
           </div>
@@ -338,14 +338,14 @@ function PlanSummaryCard({
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-transparent dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700/50">
             <ShieldCheck className="w-4 h-4 text-slate-600 dark:text-slate-400 flex-shrink-0" />
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-300">
-              Aucune carte bancaire requise Â· Accès immédiat
+              Aucune carte bancaire requise · Accès immédiat
             </p>
           </div>
         ) : (
           <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
             <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-              {cfg.trialDays} jours gratuits inclus Â· Aucune CB débitée avant la fin de l&apos;essai
+              {cfg.trialDays} jours gratuits inclus · Aucune CB débitée avant la fin de l&apos;essai
             </p>
           </div>
         )}
@@ -354,16 +354,16 @@ function PlanSummaryCard({
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    TRUST BADGES
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 function TrustBadges() {
   return (
     <div className="mt-6 space-y-2">
       {[
         { icon: Lock, text: 'Paiement sécurisé TLS 1.3 + AES-256' },
-        { icon: ShieldCheck, text: 'Données hébergées en Europe â€” conforme RGPD' },
-        { icon: Shield, text: 'Sans engagement Â· Résiliation en 2 clics' },
+        { icon: ShieldCheck, text: 'Données hébergées en Europe — conforme RGPD' },
+        { icon: Shield, text: 'Sans engagement · Résiliation en 2 clics' },
       ].map(({ icon: Icon, text }) => (
         <div key={text} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <Icon className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
@@ -374,9 +374,9 @@ function TrustBadges() {
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    GOOGLE OAUTH BUTTON (reusable)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 function GoogleButton({ label = 'Continuer avec Google' }: { label?: string }) {
   return (
     <a
@@ -406,9 +406,9 @@ function GoogleButton({ label = 'Continuer avec Google' }: { label?: string }) {
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   STEP 0 â€” RECAP
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─────────────────────────────────────────────
+   STEP 0 — RECAP
+───────────────────────────────────────────── */
 function StepRecap({
   plan,
   billing,
@@ -463,16 +463,16 @@ function StepRecap({
         {cfg.isFree ? (
           <>Créer mon compte gratuit <ArrowRight className="w-5 h-5" /></>
         ) : (
-          <>Continuer â€” EUR {price}/mois <ArrowRight className="w-5 h-5" /></>
+          <>Continuer — EUR {price}/mois <ArrowRight className="w-5 h-5" /></>
         )}
       </button>
     </motion.div>
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    ACCOUNT DATA TYPE
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 type AccountData = {
   firstName: string;
   lastName: string;
@@ -482,9 +482,9 @@ type AccountData = {
   employees: string;
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   STEP 1 â€” ACCOUNT (Paid plans)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─────────────────────────────────────────────
+   STEP 1 — ACCOUNT (Paid plans)
+───────────────────────────────────────────── */
 function StepAccount({
   data,
   onChange,
@@ -670,9 +670,9 @@ function StepAccount({
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   STEP 1 â€” FREE ACCOUNT
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─────────────────────────────────────────────
+   STEP 1 — FREE ACCOUNT
+───────────────────────────────────────────── */
 function StepFreeAccount({
   data,
   onChange,
@@ -720,7 +720,7 @@ function StepFreeAccount({
         }),
       });
     } catch {
-      // Redirect regardless â€” backend may not yet support free plan creation
+      // Redirect regardless — backend may not yet support free plan creation
     } finally {
       setSubmitting(false);
       router.push('/auth/login?registered=true&plan=free');
@@ -753,9 +753,9 @@ function StepFreeAccount({
         Aucune carte bancaire requise. Accès immédiat.
       </p>
 
-      {/* Google OAuth â€” prominent */}
+      {/* Google OAuth — prominent */}
       <div className="mb-4">
-        <GoogleButton label="Continuer avec Google â€” c'est gratuit" />
+        <GoogleButton label="Continuer avec Google — c'est gratuit" />
       </div>
 
       <div className="flex items-center gap-3 mb-6">
@@ -851,7 +851,7 @@ function StepFreeAccount({
           ) : (
             <>
               <Gift className="w-4 h-4" />
-              Créer mon espace gratuit â€” EUR 0
+              Créer mon espace gratuit — EUR 0
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -859,16 +859,16 @@ function StepFreeAccount({
 
         <p className="text-center text-xs text-slate-400 flex items-center justify-center gap-1">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          Sans carte bancaire Â· Accès immédiat Â· Résiliable à tout moment
+          Sans carte bancaire · Accès immédiat · Résiliable à tout moment
         </p>
       </form>
     </motion.div>
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   STEP 2 â€” PAYMENT (Sandbox)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─────────────────────────────────────────────
+   STEP 2 — PAYMENT (Sandbox)
+───────────────────────────────────────────── */
 function StepPayment({
   plan,
   billing,
@@ -992,7 +992,7 @@ function StepPayment({
           </div>
           <div>
             <p className="text-sm font-bold text-amber-900 dark:text-amber-200 mb-1">
-              Mode test activé â€” Aucune carte réelle débitée
+              Mode test activé — Aucune carte réelle débitée
             </p>
             <p className="text-xs text-amber-700 dark:text-amber-400 mb-2">
               Les Stripe Price IDs ne sont pas encore configurés. Utilisez la carte de test ci-dessous.
@@ -1003,12 +1003,12 @@ function StepPayment({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white text-xs font-black rounded-lg hover:bg-amber-600 transition-colors"
             >
               <Sparkles className="w-3 h-3" />
-              {sandboxFilled ? 'âœ“ Carte test remplie' : 'Remplir avec la carte test'}
+              {sandboxFilled ? '✓ Carte test remplie' : 'Remplir avec la carte test'}
             </button>
             <div className="mt-2 font-mono text-xs text-amber-700 dark:text-amber-400 space-y-0.5">
               <p>Carte : {SANDBOX_CARD.number}</p>
               <p>
-                Expiry : {SANDBOX_CARD.expiry} Â· CVC : {SANDBOX_CARD.cvc}
+                Expiry : {SANDBOX_CARD.expiry} · CVC : {SANDBOX_CARD.cvc}
               </p>
             </div>
           </div>
@@ -1131,7 +1131,7 @@ function StepPayment({
           ) : (
             <>
               <Lock className="w-4 h-4" />
-              Démarrer l&apos;essai gratuit â€” EUR 0,00 dû maintenant
+              Démarrer l&apos;essai gratuit — EUR 0,00 dû maintenant
               <ArrowRight className="w-5 h-5" />
             </>
           )}
@@ -1153,9 +1153,9 @@ function StepPayment({
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    CHECKOUT INNER (uses useSearchParams)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 function CheckoutInner() {
   const searchParams = useSearchParams();
   const rawPlan = (searchParams.get('plan') || 'business') as string;
@@ -1208,7 +1208,7 @@ function CheckoutInner() {
           <StepIndicator step={step} total={totalSteps} stepLabels={stepLabels} />
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
-            {/* Left â€” Wizard */}
+            {/* Left — Wizard */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50 border border-slate-200 dark:border-slate-800">
               <AnimatePresence mode="wait">
                 {step === 0 && (
@@ -1249,7 +1249,7 @@ function CheckoutInner() {
               </AnimatePresence>
             </div>
 
-            {/* Right â€” Summary (desktop) */}
+            {/* Right — Summary (desktop) */}
             <div className="hidden lg:block sticky top-24">
               <PlanSummaryCard plan={plan} billing={billing} onChangeBilling={setBilling} />
               <TrustBadges />
@@ -1263,9 +1263,9 @@ function CheckoutInner() {
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PAGE EXPORT
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────────── */
 export default function CheckoutPage() {
   return (
     <Suspense

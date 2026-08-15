@@ -457,7 +457,7 @@ export default function DashboardPage() {
                   <div className="flex-1">
                     <p className="font-bold text-slate-950">{activity.name}</p>
                     <p className="text-sm text-slate-500">
-                      {activity.action} â€¢ {activity.time}
+                      {activity.action} ”¢ {activity.time}
                     </p>
                   </div>
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">

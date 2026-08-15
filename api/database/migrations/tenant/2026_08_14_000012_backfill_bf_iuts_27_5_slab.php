@@ -38,6 +38,20 @@ return new class extends Migration
 
         $scopes = $this->bfSlabScopes();
 
+        // Issue #2153 (CI) : si la table ne contient AUCUNE ligne BF (base
+        // fraîche, seed #1829 pas encore exécuté — ex. bases de test), il n'y
+        // a rien à backfiller : on sort sans rien insérer. Avant ce garde-fou,
+        // `bfSlabScopes()` ajoutait un scope national synthétique qui insérait
+        // une tranche ORPHELINE unique (6 000 001 → NULL @ 27,5 %) dans une
+        // table vide — `taxSlabs()` résolvait alors ce barème partiel depuis
+        // la base (1 seule tranche) → tout revenu annuel < 6 000 000 était
+        // taxé à 0,0 (échec GoldenBfPayrollTest::test_golden_bf_cadre_300k_iuts
+        // : 0,0 attendu 32 714,50). Sur table vide, les défauts du code
+        // (defaultTaxSlabs) restent la source de vérité.
+        if ($scopes === []) {
+            return;
+        }
+
         foreach ($scopes as $scope) {
             $this->repairScope($scope['company_id'], $scope['effective_from']);
         }
@@ -81,11 +95,6 @@ return new class extends Migration
                     ? (string) $effectiveFrom
                     : '2024-01-01', // barème BF CGI 2024 (#1829)
             ];
-        }
-
-        // Garde : au moins le scope national doit exister (seed #1829).
-        if ($scopes === []) {
-            $scopes[] = ['company_id' => null, 'effective_from' => '2024-01-01'];
         }
 
         return $scopes;
