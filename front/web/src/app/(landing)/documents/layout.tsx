@@ -1,12 +1,18 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = generateSEOMetadata({
-  ...pageMetadata.documents,
-  canonical: `${SITE_URL}/documents`,
-});
+export async function generateMetadata({ searchParams }: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const seo = getPageMetadata('documents', lang);
+  return generateSEOMetadata({
+    ...seo,
+    canonical: `${SITE_URL}/documents`,
+    locale: lang,
+  });
+}
 
 export default function DocumentsLayout({
   children,

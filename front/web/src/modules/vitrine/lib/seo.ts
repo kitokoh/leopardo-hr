@@ -554,3 +554,118 @@ export function generateBreadcrumbSchema(
   };
 }
 
+/**
+ * #4004 — Métadonnées SEO localisées (EN/TR/AR).
+ *
+ * `pageMetadata` (ci-dessus) reste la source FR par défaut. Ce dictionnaire
+ * porte les overrides title/description par locale pour les 27 pages ;
+ * `getPageMetadata(page, lang)` fusionne override → FR.
+ * Les keywords/ogImage restent partagés (FR) — l'essentiel SEO est title+
+ * description, désormais cohérents avec le body de chaque locale.
+ */
+export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SEOMetadata, 'title' | 'description'>>> = {
+  en: {
+    landing: { title: "Employee Management, Payroll & Documents | All-in-One Platform", description: "Manage employees, payroll and documents in one place. Free 14-day trial, no credit card required." },
+    employes: { title: "Complete HR Management | Attendance, Leave, Schedules", description: "Manage attendance, leave and schedules easily. Smart check-in with NFC and biometrics. Free trial." },
+    documents: { title: "Secure Digital Filing Cabinet | Compliant Document Management", description: "Digital filing cabinet with AES-256 encryption. Secure sharing, automatic archiving and compliant storage." },
+    comptabilite: { title: "Automated Payroll & Compliance | Payslips Generated", description: "Automated payroll with exact calculations and guaranteed compliance. Generated payslips, social declarations and bank exports." },
+    marketing: { title: "Integrated Digital Marketing | Email, SMS, Social Media", description: "Complete marketing tools: email, SMS, social media. Automation, analytics and integrated campaigns for your business." },
+    integrations: { title: "Integrations & Connectors | Leopardo HR", description: "Accounting connectors and Leopardo HR API: Sage, QuickBooks, public API, webhooks and more." },
+    pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing for your HR needs: Starter €29/month, Business €79/month, Enterprise €199/month. Free 14-day trial." },
+    about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
+    blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
+    changelog: { title: "Changelog | Leopardo HR", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
+    docs: { title: "API Documentation | Leopardo HR Technical Guides", description: "Technical documentation and integration guides for the Leopardo HR API: authentication, endpoints and webhooks." },
+    download: { title: "Download Leopardo HR | Windows, macOS, Android, iOS", description: "Download the ZKTeco desktop client and Leopardo HR mobile apps for employees, managers and admins." },
+    contact: { title: "Contact Us | Leopardo HR Support and Sales", description: "A question about Leopardo HR? Contact our sales or support team by email, phone or chat." },
+    guideRhStartup: { title: "Complete HR Guide for Startups | Download", description: "Complete HR guide for startups. Advice, templates and best practices. Free download." },
+    guidePlanningEmployes: { title: "Employee Planning Template | Download Excel", description: "Employee planning template. Free, flexible and easy-to-use Excel template." },
+    guideChecklistPaie: { title: "2026 Payroll Checklist | Free Download", description: "Complete checklist for your payroll. Checks and compliance. Free download." },
+    guides: { title: "HR Guides & Resources | Free Downloads", description: "Download our free guides: Startup HR Guide, 2026 Payroll Checklist, Employee Planning Template." },
+    demo: { title: "Request a Demo | Leopardo HR", description: "Schedule a free Leopardo HR demo. Discover automated HR management for your SMB in 30 minutes." },
+    faq: { title: "Frequently Asked Questions | Leopardo HR FAQ", description: "Answers to the most asked questions about Leopardo HR: pricing, free trial, features, security and support." },
+    testimonials: { title: "Customer Testimonials | Leopardo HR Reviews", description: "Discover how our customers transform their HR management with Leopardo HR: attendance, payroll and recruitment." },
+    caseStudies: { title: "Case Studies | Leopardo HR Success Stories", description: "Detailed case studies of companies that deployed Leopardo HR to automate attendance, payroll and HR processes." },
+    videos: { title: "Videos & Demonstrations | Leopardo HR in Action", description: "Watch our tutorials and video demos: ZKTeco setup, multi-country payroll, mobile apps and more." },
+    branding: { title: "Branding & Customization | Leopardo HR Multi-Tenant", description: "Customize Leopardo HR with your logo, colors and display name for your company." },
+    careers: { title: "Careers | Join the Leopardo HR Team", description: "Discover our job openings and join the team building the HR platform for field SMBs." },
+    mobile: { title: "Mobile Apps | Leopardo HR on Android and iOS", description: "Leopardo HR mobile apps for employees, managers and admins: attendance, leave, payslips and notifications." },
+    signup: { title: "Free Guided Trial | Discover Leopardo HR", description: "Request your free guided Leopardo HR trial: no password required, a specialist contacts you within 24h." },
+    checkout: { title: "Choose Your Plan | Leopardo HR Subscription", description: "Select and subscribe to the Leopardo HR plan that fits your company: Starter, Business or Enterprise." },
+  },
+  tr: {
+    landing: { title: "Çalışan Yönetimi, Maaş & Belgeler | Hepsi Bir Arada Platform", description: "Çalışanlarınızı, maaş işlemlerinizi ve belgelerinizi tek yerden yönetin. 14 gün ücretsiz deneme, kredi kartı gerekmez." },
+    employes: { title: "Eksiksiz İK Yönetimi | Giriş-Çıkış, İzinler, Vardiyalar", description: "Giriş-çıkış, izin ve vardiyaları kolayca yönetin. NFC ve biyometri ile akıllı yoklama. Ücretsiz deneme." },
+    documents: { title: "Güvenli Dijital Arşiv | Uyumlu Belge Yönetimi", description: "AES-256 şifrelemeli dijital arşiv. Güvenli paylaşım, otomatik arşivleme ve uyumlu depolama." },
+    comptabilite: { title: "Otomatik Maaş & Uyumluluk | Oluşturulan Maaş Bordroları", description: "Hassas hesaplamalar ve garantili uyumlulukla otomatik maaş işlemleri. Oluşturulan bordrolar, sosyal bildirimler ve banka ihracatları." },
+    marketing: { title: "Entegre Dijital Pazarlama | E-posta, SMS, Sosyal Medya", description: "Eksiksiz pazarlama araçları: e-posta, SMS, sosyal medya. Otomasyon, analitik ve entegre kampanyalar." },
+    integrations: { title: "Entegrasyonlar & Bağlayıcılar | Leopardo İK", description: "Muhasebe bağlayıcıları ve Leopardo İK API'si: Sage, QuickBooks, genel API, webhook'lar ve daha fazlası." },
+    pricing: { title: "Şeffaf Fiyatlandırma | Esnek Planlar", description: "İK ihtiyaçlarınız için basit fiyatlandırma: Starter ayda 29 €, Business ayda 79 €, Enterprise ayda 199 €. 14 gün ücretsiz deneme." },
+    about: { title: "Hakkımızda | Misyonumuz ve Ekibimiz", description: "Misyonumuzu, ekibimizi ve değerlerimizi keşfedin. Saha KOBİ'leri için mobil öncelikli bir İK platformu inşa ediyoruz." },
+    blog: { title: "Blog & Kaynaklar | İK Rehberleri ve İpuçları", description: "KOBİ'ler için İK yönetimi, maaş ve üretkenlik üzerine rehberler, makaleler ve webinarlar." },
+    changelog: { title: "Sürüm Geçmişi | Leopardo İK", description: "En son ürün güncellemelerini keşfedin: API, maaş, izleme ve yönetim." },
+    docs: { title: "API Dokümantasyonu | Leopardo İK Teknik Rehberleri", description: "Leopardo İK API'si için teknik dokümantasyon ve entegrasyon rehberleri: kimlik doğrulama, uç noktalar ve webhook'lar." },
+    download: { title: "Leopardo İK İndir | Windows, macOS, Android, iOS", description: "ZKTeco masaüstü istemcisini ve çalışan, yönetici ve admin uygulamaları için Leopardo İK mobil uygulamalarını indirin." },
+    contact: { title: "İletişim | Leopardo İK Destek ve Satış", description: "Leopardo İK hakkında bir sorunuz mu var? Satış veya destek ekibimizle e-posta, telefon veya sohbet yoluyla iletişime geçin." },
+    guideRhStartup: { title: "Startup'lar için Eksiksiz İK Rehberi | İndir", description: "Startup'lar için eksiksiz İK rehberi. Tavsiyeler, şablonlar ve en iyi uygulamalar. Ücretsiz indirin." },
+    guidePlanningEmployes: { title: "Çalışan Planlama Şablonu | Excel İndir", description: "Çalışan planlama şablonu. Ücretsiz, esnek ve kullanımı kolay Excel şablonu." },
+    guideChecklistPaie: { title: "2026 Maaş Kontrol Listesi | Ücretsiz İndir", description: "Maaş işlemleriniz için eksiksiz kontrol listesi. Kontroller ve uyumluluk. Ücretsiz indirin." },
+    guides: { title: "İK Rehberleri & Kaynaklar | Ücretsiz İndirmeler", description: "Ücretsiz rehberlerimizi indirin: Startup İK Rehberi, 2026 Maaş Kontrol Listesi, Çalışan Planlama Şablonu." },
+    demo: { title: "Demo Talep Edin | Leopardo İK", description: "Ücretsiz Leopardo İK demosu planlayın. KOBİ'niz için otomatik İK yönetimini 30 dakikada keşfedin." },
+    faq: { title: "Sık Sorulan Sorular | Leopardo İK SSS", description: "Leopardo İK hakkında en çok sorulan soruların yanıtları: fiyatlandırma, ücretsiz deneme, özellikler, güvenlik ve destek." },
+    testimonials: { title: "Müşteri Yorumları | Leopardo İK Değerlendirmeleri", description: "Müşterilerimizin Leopardo İK ile İK yönetimini nasıl dönüştürdüğünü keşfedin: giriş-çıkış, maaş ve işe alım." },
+    caseStudies: { title: "Vaka Çalışmaları | Leopardo İK Başarı Hikayeleri", description: "Giriş-çıkış, maaş ve İK süreçlerini otomatikleştirmek için Leopardo İK dağıtan şirketlerin ayrıntılı vaka çalışmaları." },
+    videos: { title: "Videolar & Demolar | Leopardo İK Eylemde", description: "Eğiticilerimizi ve video demolarımızı izleyin: ZKTeco kurulumu, çok ülkeli maaş, mobil uygulamalar ve daha fazlası." },
+    branding: { title: "Marka & Özelleştirme | Leopardo İK Çok Kiracılı", description: "Leopardo İK'yı şirketiniz için logonuz, renkleriniz ve görünen adınızla özelleştirin." },
+    careers: { title: "Kariyer | Leopardo İK Ekibine Katılın", description: "Açık pozisyonlarımızı keşfedin ve saha KOBİ'leri için İK platformu kuran ekibe katılın." },
+    mobile: { title: "Mobil Uygulamalar | Android ve iOS'ta Leopardo İK", description: "Çalışan, yönetici ve admin uygulamaları: giriş-çıkış, izinler, maaş bordroları ve bildirimler." },
+    signup: { title: "Ücretsiz Rehberli Deneme | Leopardo İK'yı Keşfedin", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
+    checkout: { title: "Planınızı Seçin | Leopardo İK Aboneliği", description: "Şirketinize uygun Leopardo İK planını seçin ve abone olun: Starter, Business veya Enterprise." },
+  },
+  ar: {
+    landing: { title: "إدارة الموظفين والرواتب والمستندات | منصة متكاملة", description: "أدر موظفيك ورواتبهم ومستنداتهم في مكان واحد. نسخة تجريبية مجانية لمدة 14 يومًا دون بطاقة ائتمان." },
+    employes: { title: "إدارة موارد بشرية شاملة | الحضور والإجازات والجداول", description: "أدر الحضور والإجازات والجداول بسهولة. تسجيل ذكي مع NFC والقياسات الحيوية. نسخة تجريبية مجانية." },
+    documents: { title: "أرشيف رقمي آمن | إدارة مستندات متوافقة", description: "أرشيف رقمي بتشفير AES-256. مشاركة آمنة وأرشفة تلقائية وتخزين متوافق." },
+    comptabilite: { title: "رواتب آلية ومتوافقة | كشوف رواتب مولّدة", description: "رواتب آلية بحسابات دقيقة وامتثال مضمون. كشوف رواتب مولّدة وتصريحات اجتماعية وتصديرات بنكية." },
+    marketing: { title: "تسويق رقمي متكامل | بريد إلكتروني ورسائل نصية وتواصل اجتماعي", description: "أدوات تسويق كاملة: البريد الإلكتروني والرسائل النصية ووسائل التواصل الاجتماعي. أتمتة وتحليلات وحملات متكاملة." },
+    integrations: { title: "التكاملات والموصلات | ليوباردو لإدارة الموارد البشرية", description: "موصلات محاسبية وواجهة برمجة ليوباردو: Sage وQuickBooks وواجهة عامة وwebhooks والمزيد." },
+    pricing: { title: "تسعير شفاف | خطط مرنة", description: "تسعير بسيط لاحتياجاتك: Starter بـ 29 يورو شهريًا، Business بـ 79 يورو، Enterprise بـ 199 يورو. نسخة تجريبية مجانية 14 يومًا." },
+    about: { title: "من نحن | مهمتنا وفريقنا", description: "اكتشف مهمتنا وفريقنا وقيمنا. نساعد الشركات الصغيرة والمتوسطة في إدارة موظفيها عبر منصة موارد بشرية متنقلة." },
+    blog: { title: "المدونة والموارد | أدلة ونصائح الموارد البشرية", description: "أدلة ومقالات وندوات عبر الإنترنت حول إدارة الموارد البشرية والرواتب والإنتاجية للشركات الصغيرة." },
+    changelog: { title: "سجل التحديثات | ليوباردو", description: "اكتشف أحدث تطورات المنتج: واجهة API والرواتب والمراقبة والإدارة." },
+    docs: { title: "توثيق واجهة API | الأدلة الفنية لليوباردو", description: "توثيق فني وأدلة تكامل لواجهة برمجة ليوباردو: المصادقة ونقاط النهاية وwebhooks." },
+    download: { title: "تنزيل ليوباردو | Windows وmacOS وAndroid وiOS", description: "نزّل تطبيق سطح المكتب ZKTeco وتطبيقات ليوباردو للجوال للموظفين والمديرين والمشرفين." },
+    contact: { title: "اتصل بنا | دعم ومبيعات ليوباردو", description: "لديك سؤال عن ليوباردو؟ تواصل مع فريق المبيعات أو الدعم عبر البريد الإلكتروني أو الهاتف أو الدردشة." },
+    guideRhStartup: { title: "الدليل الشامل للموارد البشرية للشركات الناشئة | تنزيل", description: "دليل موارد بشرية شامل للشركات الناشئة. نصائح وقوالب وأفضل الممارسات. تنزيل مجاني." },
+    guidePlanningEmployes: { title: "قالب جدولة الموظفين | تنزيل Excel", description: "قالب جدولة للموظفين. قالب Excel مجاني ومرن وسهل الاستخدام." },
+    guideChecklistPaie: { title: "قائمة فحص الرواتب 2026 | تنزيل مجاني", description: "قائمة فحص شاملة لرواتبك. تحققات وامتثال. تنزيل مجاني." },
+    guides: { title: "أدلة وموارد الموارد البشرية | تنزيلات مجانية", description: "نزّل أدلتنا المجانية: دليل الموارد البشرية للشركات الناشئة، قائمة فحص الرواتب 2026، قالب جدولة الموظفين." },
+    demo: { title: "اطلب عرضًا توضيحيًا | ليوباردو", description: "احجز عرضًا توضيحيًا مجانيًا لليوباردو. اكتشف إدارة الموارد البشرية الآلية لشركتك في 30 دقيقة." },
+    faq: { title: "الأسئلة الشائعة | أسئلة ليوباردو المتكررة", description: "إجابات على أكثر الأسئلة شيوعًا حول ليوباردو: التسعير والنسخة التجريبية والميزات والأمان والدعم." },
+    testimonials: { title: "آراء العملاء | تقييمات ليوباردو", description: "اكتشف كيف يحوّل عملاؤنا إدارة مواردهم البشرية مع ليوباردو: الحضور والرواتب والتوظيف." },
+    caseStudies: { title: "دراسات الحالة | قصص نجاح ليوباردو", description: "دراسات حالة مفصلة لشركات نشرت ليوباردو لأتمتة الحضور والرواتب وعمليات الموارد البشرية." },
+    videos: { title: "فيديوهات وعروض | ليوباردو قيد التشغيل", description: "شاهد دروسنا وعروض الفيديو: إعداد ZKTeco والرواتب متعددة الدول وتطبيقات الجوال والمزيد." },
+    branding: { title: "العلامة التجارية والتخصيص | ليوباردو متعدد المستأجرين", description: "خصّص ليوباردو بشعارك وألوانك واسم العرض الخاص بشركتك." },
+    careers: { title: "الوظائف | انضم إلى فريق ليوباردو", description: "اكتشف فرص العمل لدينا وانضم إلى الفريق الذي يبني منصة الموارد البشرية للشركات الميدانية." },
+    mobile: { title: "تطبيقات الجوال | ليوباردو على Android وiOS", description: "تطبيقات ليوباردو للموظفين والمديرين والمشرفين: الحضور والإجازات وكشوف الرواتب والإشعارات." },
+    signup: { title: "تجربة موجهة مجانية | اكتشف ليوباردو", description: "اطلب تجربتك الموجهة المجانية: لا كلمة مرور مطلوبة، ويتواصل معك مختص خلال 24 ساعة." },
+    checkout: { title: "اختر خطتك | اشتراك ليوباردو", description: "اختر خطة ليوباردو المناسبة لشركتك واشترك: Starter أو Business أو Enterprise." },
+  },
+};
+
+/**
+ * Résout les métadonnées SEO d'une page pour la locale courante.
+ * Sans `lang` (ou `lang=fr`) → pageMetadata (FR par défaut).
+ */
+export function getPageMetadata(page: string, lang?: string): SEOMetadata {
+  const base = (pageMetadata as Record<string, SEOMetadata>)[page] ?? pageMetadata.landing;
+  if (!lang || lang === 'fr') {
+    return base;
+  }
+  const override = pageMetadataI18n[lang as 'en' | 'tr' | 'ar']?.[page];
+  if (!override) {
+    return base;
+  }
+  return { ...base, title: override.title, description: override.description };
+}
+

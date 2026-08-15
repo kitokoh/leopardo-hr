@@ -1,15 +1,23 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.videos.title,
-  description: pageMetadata.videos.description,
-  keywords: pageMetadata.videos.keywords,
-  ogImage: pageMetadata.videos.ogImage,
+export async function generateMetadata({ searchParams }: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const seo = getPageMetadata('videos', lang);
+  return generateSEOMetadata({
+
+  title: seo.title,
+  description: seo.description,
+  keywords: seo.keywords,
+  ogImage: seo.ogImage,
   ogType: 'website',
   canonical: `${SITE_URL}/videos`,
-});
+    locale: lang,
+  });
+}
 
 export default function VideosLayout({
   children,

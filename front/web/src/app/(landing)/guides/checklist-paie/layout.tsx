@@ -1,15 +1,23 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.guideChecklistPaie.title,
-  description: pageMetadata.guideChecklistPaie.description,
-  keywords: pageMetadata.guideChecklistPaie.keywords,
-  ogImage: pageMetadata.guideChecklistPaie.ogImage,
+export async function generateMetadata({ searchParams }: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const seo = getPageMetadata('guideChecklistPaie', lang);
+  return generateSEOMetadata({
+
+  title: seo.title,
+  description: seo.description,
+  keywords: seo.keywords,
+  ogImage: seo.ogImage,
   ogType: 'article',
   canonical: `${SITE_URL}/guides/checklist-paie`,
-});
+    locale: lang,
+  });
+}
 
 export default function GuidesChecklistPaieLayout({
   children,

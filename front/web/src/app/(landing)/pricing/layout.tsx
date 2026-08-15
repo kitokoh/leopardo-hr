@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/site-url';
 import {
   generateMetadata as generateSEOMetadata,
-  pageMetadata,
+  getPageMetadata,
   generateFAQSchema,
 } from '@/modules/vitrine/lib/seo';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -24,22 +24,22 @@ function resolveSsrLang(acceptLanguage: string | null): AppLocale {
     : 'fr';
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang } = await searchParams;
   const headerList = await headers();
-  const locale = resolveSsrLang(headerList.get('accept-language'));
+  // #4004 : ?lang= (liens internes vitrine) prime sur Accept-Language SSR.
+  const locale = (lang as AppLocale | undefined) ?? resolveSsrLang(headerList.get('accept-language'));
+  const seo = getPageMetadata('pricing', locale);
 
   return generateSEOMetadata({
-    title: pageMetadata.pricing.title,
-    description:
-      locale === 'fr'
-        ? pageMetadata.pricing.description
-        : t(locale, 'seo.pricing.description', pageMetadata.pricing.description),
-    keywords: pageMetadata.pricing.keywords,
-    ogImage: pageMetadata.pricing.ogImage,
-    ogType: 'website',
+    ...seo,
     canonical: `${SITE_URL}/pricing`,
     robots: 'index, follow',
-    // #3807 : og:locale aligné sur la locale SSR réelle (pas de fr_FR global).
+    // #3807 : og:locale aligné sur la locale réelle (pas de fr_FR global).
     locale,
   });
 }

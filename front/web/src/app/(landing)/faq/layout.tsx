@@ -2,18 +2,26 @@ import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { cache } from 'react';
-import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, getPageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
 import { getFaqPageContent } from '@/modules/vitrine/data/faq-page';
 import type { AppLocale } from '@/lib/i18n';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.faq.title,
-  description: pageMetadata.faq.description,
-  keywords: pageMetadata.faq.keywords,
-  ogImage: pageMetadata.faq.ogImage,
+export async function generateMetadata({ searchParams }: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const seo = getPageMetadata('faq', lang);
+  return generateSEOMetadata({
+
+  title: seo.title,
+  description: seo.description,
+  keywords: seo.keywords,
+  ogImage: seo.ogImage,
   ogType: 'website',
   canonical: `${SITE_URL}/faq`,
-});
+    locale: lang,
+  });
+}
 
 // Issue #3921 : le schéma FAQPage doit suivre la locale SSR (Accept-Language),
 // comme le lang/dir du document racine — plus de Q/R FR codées en dur pour

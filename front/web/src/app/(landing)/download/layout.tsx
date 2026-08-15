@@ -1,16 +1,23 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.download.title,
-  description: pageMetadata.download.description,
-  keywords: pageMetadata.download.keywords,
-  ogImage: pageMetadata.download.ogImage,
+export async function generateMetadata({ searchParams }: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const seo = getPageMetadata('download', lang);
+  return generateSEOMetadata({
+
+  title: seo.title,
+  description: seo.description,
+  keywords: seo.keywords,
+  ogImage: seo.ogImage,
   ogType: 'website',
   canonical: `${SITE_URL}/download`,
-});
+    locale: lang,
+  });
+}
 
 export default function DownloadLayout({
   children,
