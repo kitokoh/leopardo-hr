@@ -349,13 +349,6 @@ function statusLabel(status) {
     superseded: t('tax_rates.status_superseded'),
   }
   return map[status] || status
-}function formatDate(iso) {
-  if (!iso) return '—'
-  try {
-    return new Date(iso).toLocaleString(localeStore.current === 'fr' ? 'fr-FR' : localeStore.current)
-  } catch {
-    return iso
-  }
 }
 
 onMounted(async () => {
