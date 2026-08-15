@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React, { useReducer, useState, useRef, useCallback } from 'react';
+import React, { useReducer, useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,7 +25,7 @@ import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
 import { Card } from '@/modules/vitrine/components/common/Card';
 import { signupFormSchema, SignupFormData } from '@/modules/vitrine/lib/validation';
-import { submitSignupForm, submitVerifyForm, createFormReducer, initialFormState } from '@/modules/vitrine/lib/forms';
+import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer, initialFormState } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 
 interface SignupFormProps {
@@ -35,7 +35,13 @@ interface SignupFormProps {
   className?: string;
 }
 
-type Step = 'form' | 'otp' | 'pending' | 'success';
+type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+
+// #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
+const TRIAL_TOKEN_STORAGE_KEY = 'lp_trial_provisioning_token';
+// Repli après ~60 s de polling (12 × 5 s).
+const TRIAL_POLL_INTERVAL_MS = 5000;
+const TRIAL_POLL_MAX_ATTEMPTS = 12;
 
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
@@ -77,6 +83,81 @@ export function SignupForm({
   const [pendingMessage, setPendingMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // #2469 — suivi du provisioning du guided trial
+  const [trialToken, setTrialToken] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return sessionStorage.getItem(TRIAL_TOKEN_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  });
+  const [trialStatus, setTrialStatus] = useState<'pending' | 'ready' | 'failed' | 'unknown'>('pending');
+  const [trialLoginUrl, setTrialLoginUrl] = useState('');
+  const [trialTimedOut, setTrialTimedOut] = useState(false);
+  const [isTracking, setIsTracking] = useState(false);
+
+  const persistTrialToken = (token: string | null | undefined) => {
+    if (!token) return;
+    setTrialToken(token);
+    try {
+      sessionStorage.setItem(TRIAL_TOKEN_STORAGE_KEY, token);
+    } catch {
+      // sessionStorage indisponible (SSR/sandboxé) — le suivi restera en mémoire
+    }
+  };
+
+  // #2469 — polling du statut (pending → ready/failed) tant que l'écran de
+  // suivi est affiché ; repli honnête après ~60 s.
+  useEffect(() => {
+    if (currentStep !== 'tracking' || !trialToken) return;
+
+    let cancelled = false;
+    let attempts = 0;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const poll = async () => {
+      if (cancelled) return;
+      const res = await fetchTrialStatus(trialToken);
+      if (cancelled) return;
+      if (res.success && res.data?.status) {
+        const status = res.data.status;
+        if (status === 'ready') {
+          setTrialStatus('ready');
+          setTrialLoginUrl(res.data.login_url || '');
+          if (intervalId) clearInterval(intervalId);
+          return;
+        }
+        if (status === 'failed') {
+          setTrialStatus('failed');
+          if (intervalId) clearInterval(intervalId);
+          return;
+        }
+      }
+      attempts += 1;
+      if (attempts >= TRIAL_POLL_MAX_ATTEMPTS) {
+        setTrialTimedOut(true);
+        if (intervalId) clearInterval(intervalId);
+      }
+    };
+
+    void poll();
+    intervalId = setInterval(() => void poll(), TRIAL_POLL_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [currentStep, trialToken]);
+
+  const startTracking = () => {
+    if (!trialToken) return;
+    setTrialStatus('pending');
+    setTrialTimedOut(false);
+    setIsTracking(true);
+    setCurrentStep('tracking');
+  };
+
   const copyPassword = async (password: string) => {
     try {
       await navigator.clipboard.writeText(password);
@@ -112,6 +193,10 @@ export function SignupForm({
 
         setPendingEmail(data.email);
         dispatch({ type: 'RESET' });
+
+        // #2469 : on conserve le token de provisioning (quand le backend en
+        // renvoie un) pour permettre le suivi du statut sans email.
+        persistTrialToken(response.data?.provisioning_token);
 
         if (response.provisioned === false) {
           // Backend could not send an OTP right now (e.g. cold-start timeout).
@@ -472,6 +557,17 @@ export function SignupForm({
             <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
               Le code est valide pendant 30 minutes. Verifiez vos spams si vous ne le trouvez pas.
             </p>
+
+            {trialToken && (
+              <button
+                type="button"
+                onClick={startTracking}
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
+              >
+                <Rocket className="h-4 w-4" />
+                Suivre l&apos;etat de mon espace
+              </button>
+            )}
           </motion.div>
         )}
 
@@ -515,6 +611,128 @@ export function SignupForm({
                 Se connecter
               </Link>
             </p>
+
+            {trialToken && (
+              <button
+                type="button"
+                onClick={startTracking}
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
+              >
+                <Rocket className="h-4 w-4" />
+                Suivre l&apos;etat de mon espace
+              </button>
+            )}
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════ */}
+        {/* STEP 2c: Tracking (guided trial status) */}
+        {/* ═══════════════════════════════════════ */}
+        {currentStep === 'tracking' && (
+          <motion.div
+            key="step-tracking"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
+            {trialStatus === 'ready' ? (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
+                  <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Votre espace est pret !
+                </h2>
+                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Le sandbox de demonstration est provisionne. Accedez-y directement :
+                </p>
+                {trialLoginUrl ? (
+                  <div className="space-y-3">
+                    <a
+                      href={trialLoginUrl}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      Acceder a mon espace
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void navigator.clipboard
+                          ?.writeText(trialLoginUrl)
+                          .then(() => setCopied(true))
+                          .catch(() => undefined);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-slate-700 dark:text-slate-400"
+                    >
+                      <ClipboardCopy className="h-3.5 w-3.5" />
+                      {copied ? 'Lien copie !' : 'Copier le lien'}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Votre lien d&apos;acces a egalement ete envoye par email.
+                  </p>
+                )}
+              </>
+            ) : trialStatus === 'failed' ? (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-900/40">
+                  <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Creation interrompue
+                </h2>
+                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Une erreur est survenue lors de la creation de votre espace. Notre equipe
+                  vous contactera par email sous 24h ouvrables avec un acces adapte.
+                </p>
+              </>
+            ) : trialTimedOut ? (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/40">
+                  <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Creation toujours en cours
+                </h2>
+                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Votre espace est en cours de preparation. Nous vous enverrons le lien
+                  d&apos;acces par email des qu&apos;il sera pret.
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  onClick={() => {
+                    setTrialTimedOut(false);
+                    setTrialStatus('pending');
+                  }}
+                >
+                  Rafraichir le statut
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Preparation de votre espace
+                </h2>
+                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Nous provisionnons votre sandbox de demonstration. Cela prend
+                  generalement moins de 30 secondes.
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  {pendingEmail ? `Pour : ${pendingEmail}` : 'Statut verifie toutes les 5 secondes.'}
+                </p>
+              </>
+            )}
           </motion.div>
         )}
 

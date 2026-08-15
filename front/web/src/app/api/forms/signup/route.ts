@@ -143,6 +143,13 @@ export async function POST(request: NextRequest) {
             status: signupResult.status,
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
+            // #2469 : le token transite vers la vitrine pour permettre le
+            // suivi du provisioning (polling GET /api/forms/trial-status).
+            // Jamais exposé dans l'URL : sessionStorage côté client.
+            provisioning_token:
+              typeof signupResult.provisioning_token === 'string'
+                ? signupResult.provisioning_token
+                : undefined,
           },
         },
         { status: 200 }
