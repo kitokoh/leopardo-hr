@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(web): login/signup — démo conditionnelle, bannière localisée, locale réelle, typos arabes (Closes #2730, #2728, #2729).** Plus de comptes `password123` en dur ; bannière post-inscription localisée (4 locales) ; `locale: 'fr'` → `getCurrentLocale()` ; typos arabes corrigées.
 - **fix(admin): console super-admin honnête — actions simulées et identifiants démo retirés (Closes #2693, #2695, #2696, #2697).** Maintenance non simulée, `LoginView` sans `admin@leopardo-rh.com`/`password123`, `MiniGlobe` sans points fictifs, bouton Éditer mort supprimé.
 - **fix(admin): realtime — skipAuthRedirect, ids serveur, watch au lieu de $subscribe (Closes #2705, #2707, #2716).**
 - **fix(planning): garde de solde de création d'absence verrouillée dans une transaction (Closes #2676).** Le contrôle check-then-insert pouvait laisser deux demandes simultanées sur-réserver le solde ; vérification désormais sous `lockForUpdate` sur la ligne snapshot `leave_balances` (pattern #2666).
