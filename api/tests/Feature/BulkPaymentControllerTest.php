@@ -24,6 +24,23 @@ class BulkPaymentControllerTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // QA #2997 — les claims Redis `bulk_pay:*` ont un TTL de 6 h et les
+        // IDs de payroll_run sont réutilisés entre runs de test : sans purge,
+        // un run déjà claimé par un test précédent bloque le suivant (409).
+        // NB : avec predis + préfixe, keys() retourne des clés déjà préfixées
+        // (un del() ré-appliquerait le préfixe → échec silencieux). flushdb est
+        // fiable et sûr : la suite tourne en séquentiel dans un job CI dédié.
+        try {
+            \Illuminate\Support\Facades\Redis::connection('default')->flushdb();
+        } catch (\Throwable) {
+            // Redis indisponible : les tests continuent (garde non bloquante).
+        }
+    }
+
     public function test_manager_can_bulk_pay_a_selected_subset_of_pay_slips(): void
     {
         Bus::fake();

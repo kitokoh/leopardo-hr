@@ -19,7 +19,8 @@ Route::prefix('growth')->group(function () {
 });
 
 // Espace Administration (Super Admin)
-Route::middleware(['auth:super_admin_api'])->prefix('platform/growth')->group(function () {
+// QA #3000 : throttle aligné sur les autres groupes plateforme (api.php:264).
+Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
     Route::get('/partners', [GrowthAdminController::class, 'partners']);
     Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
     Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);

@@ -107,7 +107,9 @@ class MobilePayloadContractTest extends TestCase
         $response->assertJsonPath('data.role', 'employee');
         $response->assertJsonPath('data.company.name', 'Company A');
         $response->assertJsonPath('data.features.rh', true);
-        $response->assertJsonPath('data.mobile_experience.stage', 'regular');
+        // Employée fraîchement créée sans pointage/absence → stage 'new'
+        // (MobileExperienceService::stageFor — signaux réels d'activité).
+        $response->assertJsonPath('data.mobile_experience.stage', 'new');
         $modules = $response->json('data.mobile_experience.modules');
         $quickActions = $response->json('data.mobile_experience.quick_actions');
 

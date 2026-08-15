@@ -71,7 +71,7 @@ class SelfServiceController extends Controller
             ->where('company_id', $user->company_id)
             ->with(['session.course:id,title,category,type,duration_hours'])
             ->orderByDesc('created_at')
-            ->paginate(min(100, $request->integer('per_page', 20)));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingEnrollmentResource::collection($enrollments)->response();
     }
@@ -110,7 +110,7 @@ class SelfServiceController extends Controller
             ->where('company_id', $user->company_id)
             ->withCount('repayments')
             ->orderByDesc('created_at')
-            ->paginate(min(100, $request->integer('per_page', 20)));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return LoanResource::collection($loans)->response();
     }
