@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { headers } from "next/headers";
+
 import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
@@ -88,13 +89,29 @@ function resolveSsrLang(acceptLanguage: string | null): string {
   return ['fr', 'en', 'ar', 'tr'].includes(base) ? base : 'fr';
 }
 
+// Issue #2719 — dir SSR : l'arabe est rendu RTL (pas de FOUC ltr→rtl).
+function resolveSsrDir(lang: string): 'rtl' | 'ltr' {
+  return lang === 'ar' ? 'rtl' : 'ltr';
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+<<<<<<< HEAD
+  // Issue #2719 — lang/dir calculés par requête (Accept-Language) au SSR :
+  // plus de lang="fr" systématique pour les visiteurs en/tr/ar (LocaleSync
+  // ajuste ensuite côté client selon les préférences utilisateur).
+  const headerList = await headers();
+  const acceptLanguage = headerList.get("accept-language") ?? "";
+  const htmlLang = normalizeLocale(acceptLanguage.split(",")[0]?.trim().slice(0, 2));
+  const htmlDir = htmlLang === "ar" ? "rtl" : "ltr";
+
+=======
   const headerList = await headers();
   const ssrLang = resolveSsrLang(headerList.get('accept-language'));
+>>>>>>> origin/main
   // Analytics scripts (GA4, Mixpanel) are only loaded when the vitrine
   // feature flag is explicitly enabled. Previously `gaId`/`mixpanelToken`
   // were read and injected independently of `NEXT_PUBLIC_ENABLE_ANALYTICS`,
@@ -105,7 +122,11 @@ export default async function RootLayout({
   const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
   return (
-    <html lang={ssrLang} suppressHydrationWarning>
+<<<<<<< HEAD
+    <html lang={htmlLang} dir={htmlDir} suppressHydrationWarning>
+=======
+    <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} suppressHydrationWarning>
+>>>>>>> origin/main
       <head>
         <meta name="theme-color" content="#10b981" />
         <meta name="mobile-web-app-capable" content="yes" />
