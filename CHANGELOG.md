@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **docs(qa): session expert 9 2026-08-15 — audit live + consolidation (spec `.specify/features/qa-expert9-session-2026-08-15/`).** Vérifications live (API prod v4.23.5, queue driver sync → #3562, vitrine NXDOMAIN confirmée #3452) ; consolidation : merge #3455 (main PHPStan vert, #3453), fermeture doublons PRs (#3451/#3353/#3371/#3119/#3218/#3460), issues résolues closes avec preuve (#3056, #3226, #3401), nouvelles issues hygiène (#3564, #3565).
 - **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 - **fix(admin): route morte /users/:id supprimée (Closes #3280).** UserDetailView (prop `:show` inexistante, « Impersonner » inerte) jamais liée — code mort retiré du bundle.
 - **fix(admin): notifications temps réel — id de repli déterministe (Closes #3191).** `stores/realtime.js` : `socket-<timestamp>-<compteur>` au lieu de `Date.now()+Math.random()` (id non persistant, non corrélable).
