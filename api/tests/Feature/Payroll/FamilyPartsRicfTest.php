@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll;
 
-use App\Core\Auth\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;

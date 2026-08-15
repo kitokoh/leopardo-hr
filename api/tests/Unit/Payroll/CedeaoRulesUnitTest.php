@@ -81,9 +81,7 @@ class CedeaoRulesUnitTest extends TestCase
     public function test_ci_notice_period_employee_level(): void
     {
         // Code du travail CI art. 18 — niveau employé/technicien
-        // (CI_COMPLIANCE.md §8, issue #2219) : JOURS OUVRÉS (alignement DZ
-        // #1943) — 1 mois = 22 j ouvrés ; 2 mois = 44 j ouvrés. Les durées
-        // calendaires (30/60) surpaiement 30/22 = 1,36× l'indemnité.
+        // (CI_COMPLIANCE.md §8) : < 5 ans → 30 j ; ≥ 5 ans → 60 j.
         $this->assertSame(22.0, $this->ci()->noticePeriodDays(3.0));
         $this->assertSame(22.0, $this->ci()->noticePeriodDays(4.9));
         $this->assertSame(44.0, $this->ci()->noticePeriodDays(5.0));
@@ -106,11 +104,10 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // Les membres BJ/TG/NE ne doivent PAS hériter des règles CI. BF et ML
+        // Les membres BJ/NE ne doivent PAS hériter des règles CI. BF et ML
         // ont leurs propres barèmes pilot (#1829) — testés dans
         // test_cedeao_members_pilot_metadata (PayrollCountryRulesTest).
-        // TG est pilot depuis #2160 (onboarding pays #2121) — seul BJ/NE
-        // restent placeholder.
+        // TG est pilot depuis #2121 (testé à la fin).
         foreach (['BJ', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
@@ -128,5 +125,12 @@ class CedeaoRulesUnitTest extends TestCase
         $bjCharges = (new CedeaoPayrollRules)->forMemberCountry('BJ')->calculateSocialCharges(1000.0);
         $this->assertSame(36.0, $bjCharges['employee']);
         $this->assertSame(164.0, $bjCharges['employer']);
+
+        // TG (#2121) : pilot — ses codes CNSS et son IRPP sont les siens.
+        $tg = (new CedeaoPayrollRules)->forMemberCountry('TG');
+        $this->assertSame('pilot', $tg->confidenceLevel());
+        $tgCodes = array_column($tg->socialContributions(), 'code');
+        $this->assertNotContains('CNSS_CI_RET_EMP', $tgCodes);
+        $this->assertNotContains('CNSS_CI_RET_PAT', $tgCodes);
     }
 }

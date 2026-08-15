@@ -132,13 +132,6 @@
                 <EyeIcon class="h-4 w-4" />
               </button>
               <button
-                @click="$emit('edit', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
-                title="Modifier"
-              >
-                <PencilIcon class="h-4 w-4" />
-              </button>
-              <button
                 @click="$emit('delete', user)"
                 class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
                 title="Supprimer"
@@ -159,7 +152,6 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
   EyeIcon,
-  PencilIcon,
   TrashIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'

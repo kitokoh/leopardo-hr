@@ -1,6 +1,12 @@
 <?php
 
 return [
+'work_state_offline' => 'Çevrimdışı',
+    'work_state_leave' => 'İzinli',
+    'work_state_absent' => 'Devamsız',
+    'work_state_break' => 'Molada',
+    'work_state_mission' => 'Görevde',
+    'work_state_present' => 'Mevcut',
     // Rôles
     'role_manager' => 'Yönetici',
     'role_employee' => 'Çalışan',

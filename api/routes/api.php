@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
@@ -75,6 +76,9 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
         Route::post('/auth/register', [AuthController::class, 'register']);
+        // Issue #2626 : réinitialisation de mot de passe (usage unique, 60 min).
+        Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
         Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
         Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
@@ -98,8 +102,11 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
-        Route::get('/trial/status', [SelfServiceTrialController::class, 'status']);
     });
+
+    // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req/5 s)
+    // — limit dédié 60/min (hors throttle:5,15 qui 429erait le polling).
+    Route::middleware(['throttle:trial-status'])->get('/trial/status', [SelfServiceTrialController::class, 'status']);
 
     // PA2-MKT-007 - Public vitrine lead capture (signup/demo/contact/
     // newsletter), called server-to-server from front/web's Next.js API
@@ -299,6 +306,13 @@ Route::prefix('v1')->group(function (): void {
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
     // création côté API des routes manquantes (décision produit).
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+        // Issue #2624 : impersonation super-admin aussi sous /admin (le SPA
+        // admin-dashboard consomme /admin/*) — réutilise le contrôleur
+        // platform existant (PA2-ADM-006).
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+
         Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
         Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
         Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);

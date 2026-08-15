@@ -271,13 +271,16 @@ class BulletinDeclarationReconciliationTest extends TestCase
             round($t1Base * 5.6 / 100 + $t2Base * 2.4 / 100, 2),
             $charges['employee'],
         );
-        // total_patronal déclaré (T1 + T2 + CSS famille plafonnée 63 000) —
-        // cohérent avec le moteur sur les mêmes composantes (AT 1 % + CFCE 3 %
-        // hors périmètre CSV — déclarations dédiées, décision #2014 §11).
+        // total_patronal déclaré (T1 + T2 + CSS famille plafonnée 63 000 à 7 %
+        // depuis #2486) — cohérent avec le moteur sur les mêmes composantes
+        // (AT 1 % + CFCE 3 % hors périmètre CSV — décision #2014 §11).
         $declaredPatronal = (float) $row[12];
         $cssCap = min($gross, 63000.0);
+        // Issue #2473/#2486 : CSS famille portée à 7 % (CIPRES/CLEISS) dans
+        // le moteur ET le générateur CSV (#2568) — le calcul manuel du test
+        // doit suivre (il était à 3 %, régression #2590).
         $enginePatronalDeclaredScope = round(
-            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 3.0 / 100,
+            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 7.0 / 100,
             2,
         );
         $this->assertEquals($enginePatronalDeclaredScope, $declaredPatronal);
