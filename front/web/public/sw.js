@@ -6,6 +6,33 @@
 const CACHE_NAME = 'leopardo-edge-v1';
 const OFFLINE_URL = '/offline';
 
+// Préfixes session-protégés — miroir de src/lib/protected-prefixes.ts (#3377).
+// ⚠️ Source unique côté TS ; la garde Jest `protected-prefixes.test.ts` vérifie
+// que cette liste ne dérive pas. Ne pas mettre en cache le HTML authentifié.
+const PROTECTED_PREFIXES = [
+  '/dashboard',
+  '/absences',
+  '/attendance',
+  '/billing',
+  '/contracts',
+  '/employees',
+  '/partner',
+  '/payroll',
+  '/reports',
+  '/training',
+  '/settings',
+  '/smart-attendance',
+  '/social',
+  '/social-marketing',
+];
+
+function isProtectedPath(url) {
+  const { pathname } = new URL(url);
+  return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
+  );
+}
+
 // Assets to pre-cache on install
 // Issue #2983 : les routes dashboard/attendance/absences/employees sont des
 // routes AUTHENTIFIÉES — les précacher expose la page de login en cache et
@@ -60,7 +87,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Pages/assets: network first, cache fallback
+  // Pages/assets: network first, cache fallback. Issue #3729 (audit 360°) :
+  // le HTML des routes AUTHENTIFIÉES ne doit jamais être mis en cache — même
+  // transitoirement (décision #2983, symétrique du précache).
+  if (isProtectedPath(event.request.url)) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request).then((cached) => cached || caches.match(OFFLINE_URL)))
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
