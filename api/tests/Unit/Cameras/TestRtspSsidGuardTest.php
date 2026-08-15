@@ -40,12 +40,14 @@ class TestRtspSsidGuardTest extends TestCase
         yield 'IPv6 link-local' => ['rtsp://[fe80::1]:8554/stream'];
         yield 'hôte .internal' => ['rtsp://db.internal:8554/stream'];
         yield 'hôte .local' => ['rtsp://printer.local:8554/stream'];
+        yield 'IP documentation (TEST-NET-3)' => ['rtsp://203.0.113.10:8554/stream'];
     }
 
     public static function publicTargets(): iterable
     {
-        yield 'IP documentation (TEST-NET-3)' => ['rtsp://203.0.113.10:8554/stream'];
-        yield 'hôte public' => ['rtsp://camera.example.com:8554/stream'];
+        // hôte réellement résoluble (camera.example.com n'existe pas → la
+        // garde fail-closed le bloque, comme il se doit).
+        yield 'hôte public' => ['rtsp://example.com:8554/stream'];
     }
 
     /**
