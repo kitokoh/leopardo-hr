@@ -150,22 +150,15 @@ import {
   ChatBubbleLeftRightIcon,
   CogIcon,
   ArrowRightOnRectangleIcon,
-  CurrencyEuroIcon,
-  CalendarDaysIcon,
-  DocumentDuplicateIcon,
-  UserPlusIcon,
   AcademicCapIcon,
   TruckIcon,
   SparklesIcon,
   LinkIcon,
   ArrowDownTrayIcon,
-  ChartPieIcon,
-  ShieldCheckIcon,
   FunnelIcon,
   LifebuoyIcon,
   ServerIcon,
   ArrowTrendingUpIcon,
-  ChartBarSquareIcon,
   MegaphoneIcon
 } from '@heroicons/vue/24/outline'
 import router from '@/router'
@@ -237,30 +230,6 @@ const navigation = computed(() => [
     icon: CreditCardIcon
   },
   {
-    name: 'payroll',
-    title: t('navigation.payroll', 'Paie'),
-    path: '/payroll',
-    icon: CurrencyEuroIcon
-  },
-  {
-    name: 'leaves',
-    title: t('navigation.leaves', 'Congés & Absences'),
-    path: '/leaves',
-    icon: CalendarDaysIcon
-  },
-  {
-    name: 'contracts',
-    title: t('navigation.contracts', 'Contrats'),
-    path: '/contracts',
-    icon: DocumentDuplicateIcon
-  },
-  {
-    name: 'recruitment',
-    title: t('navigation.recruitment', 'Recrutement'),
-    path: '/recruitment',
-    icon: UserPlusIcon
-  },
-  {
     name: 'training',
     title: t('navigation.training', 'Formations'),
     path: '/training',
@@ -277,18 +246,6 @@ const navigation = computed(() => [
     title: t('navigation.chat', 'Chat IA'),
     path: '/chat',
     icon: SparklesIcon
-  },
-  {
-    name: 'reports',
-    title: t('navigation.reports', 'Rapports RH'),
-    path: '/reports',
-    icon: ChartPieIcon
-  },
-  {
-    name: 'audit',
-    title: t('navigation.audit', "Journal d'audit"),
-    path: '/audit',
-    icon: ShieldCheckIcon
   },
   {
     name: 'webhooks',
@@ -326,12 +283,6 @@ const navigation = computed(() => [
     title: t('navigation.crm', 'Pipeline CRM'),
     path: '/crm/pipeline',
     icon: FunnelIcon
-  },
-  {
-    name: 'predictions',
-    title: t('navigation.predictions', 'Dashboard Prédictif IA'),
-    path: '/predictions',
-    icon: ChartBarSquareIcon
   },
   {
     name: 'growth',
