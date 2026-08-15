@@ -41,5 +41,11 @@ return [
     'FORBIDDEN' => 'Bu işlem için yetkiniz yok.',
     'SERVER_ERROR' => 'Bir hata oluştu. Lütfen tekrar deneyin.',
     'VALIDATION_ERROR' => 'Bazı alanlar hatalı.',
+    'BAD_REQUEST' => 'Gecersiz istek.',
+    'CONFLICT' => 'Veri cakismasi bu islemi engelliyor.',
+    'VALIDATION_FAILED' => 'Bazi alanlar hatali.',
+    'TOO_MANY_REQUESTS' => 'Cok fazla istek. Lutfen daha sonra tekrar deneyin.',
+    'SERVICE_UNAVAILABLE' => 'Hizmet gecici olarak kullanilamiyor.',
+    'HTTP_ERROR' => 'Bir hata olustu. Lutfen tekrar deneyin.',
     'UNSUPPORTED_API_VERSION' => 'Desteklenmeyen API surumu.',
 ];
