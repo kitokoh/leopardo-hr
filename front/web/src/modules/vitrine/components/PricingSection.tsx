@@ -19,10 +19,10 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
   const name = (planName ?? '').toLowerCase()
   const planKey = name.includes('free') ? 'free'
-    : name.includes('pilot') ? 'pilot'
-    : name.includes('operations') ? 'operations'
+    : name.includes('pilot') ? 'starter'
+    : name.includes('operations') ? 'business'
     : name.includes('scale') || name.includes('enterprise') ? 'enterprise'
-    : 'pilot'
+    : 'starter'
   return `/checkout?plan=${planKey}&billing=${billing}`
 }
 

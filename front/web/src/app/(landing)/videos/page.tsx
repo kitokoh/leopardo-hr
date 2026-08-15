@@ -33,8 +33,8 @@ const upcomingVideos = [
     category: 'Intégration',
   },
   {
-    title: 'Témoignage client : Atlas Industries',
-    description: 'Comment Atlas Industries gère 350 employés sur 3 pays avec Leopardo RH.',
+    title: 'Témoignage client : Atlas Digital',
+    description: 'Comment Atlas Digital gère 350 employés sur 3 pays avec Leopardo RH.',
     category: 'Témoignage',
   },
 ];

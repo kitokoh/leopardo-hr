@@ -90,7 +90,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'Pour groupes multi-pays, franchises, reseaux de sites et exigences fortes',
       employeeLimit: '500+ employes',
       features: [
-        'Tout Growth, plus :',
+        'Tout Operations, plus :',
         'SSO SAML/OIDC et politiques avancees',
         'SLA, accompagnement migration et formation',
         'Environnements dedies ou region cloud choisie',
@@ -176,7 +176,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'For multi-country groups, franchises, site networks and strict governance',
       employeeLimit: '500+ employees',
       features: [
-        'Everything in Growth, plus:',
+        'Everything in Operations, plus:',
         'SAML/OIDC SSO and advanced policies',
         'SLA, migration guidance and training',
         'Dedicated environments or selected cloud region',
@@ -262,7 +262,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'Cok ulkeli gruplar, franchise lar, saha aglari ve yuksek yonetisim icin',
       employeeLimit: '500+ calisan',
       features: [
-        'Growth taki her sey, arti:',
+        'Operations taki her sey, arti:',
         'SAML/OIDC SSO ve gelismis politikalar',
         'SLA, gecis destegi ve egitim',
         'Ozel ortamlar veya secilen bulut bolgesi',
@@ -327,7 +327,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       priceNote: '14 يوما مجانا. يشمل 40 موظفا.',
       employeeLimit: '15-250 موظفا',
       features: [
-        'كل ما في Starter، بالإضافة إلى:',
+        'كل ما في Pilot، بالإضافة إلى:',
         'رواتب متعددة البلدان وموافقات موارد بشرية',
         'مديرون وفرق ومسارات اعتماد',
         'حضور ZKTeco والكشك والجوال',
@@ -335,7 +335,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
         'API وwebhooks وتكاملات',
         'دعم أولوية خلال 24 ساعة',
       ],
-      cta: 'جرّب Growth مجانا',
+      cta: 'جرّب Operations',
       popular: true,
       gradient: 'from-emerald-500 to-cyan-500',
     },
@@ -348,7 +348,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'للمجموعات متعددة البلدان وشبكات المواقع والحوكمة المتقدمة',
       employeeLimit: '500+ موظف',
       features: [
-        'كل ما في Growth، بالإضافة إلى:',
+        'كل ما في Operations، بالإضافة إلى:',
         'SSO عبر SAML/OIDC وسياسات متقدمة',
         'اتفاقية خدمة ومرافقة انتقال وتدريب',
         'بيئات مخصصة أو منطقة سحابية مختارة',

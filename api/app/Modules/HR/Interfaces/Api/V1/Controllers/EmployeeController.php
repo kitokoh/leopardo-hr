@@ -223,14 +223,14 @@ class EmployeeController extends Controller
         $employees->each(function (Employee $employee) use ($approvedAbsenceIds, $latestLogs): void {
             if ($employee->status !== 'active') {
                 $employee->setAttribute('work_state', 'offline');
-                $employee->setAttribute('work_state_label', 'Hors ligne');
+                $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
 
                 return;
             }
 
             if ($approvedAbsenceIds->has($employee->id)) {
                 $employee->setAttribute('work_state', 'leave');
-                $employee->setAttribute('work_state_label', 'En conge');
+                $employee->setAttribute('work_state_label', __('employees.work_state_leave'));
 
                 return;
             }
@@ -240,14 +240,14 @@ class EmployeeController extends Controller
 
             if (! $log) {
                 $employee->setAttribute('work_state', 'offline');
-                $employee->setAttribute('work_state_label', 'Hors ligne');
+                $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
 
                 return;
             }
 
             if ($log->status === 'absent') {
                 $employee->setAttribute('work_state', 'absent');
-                $employee->setAttribute('work_state_label', 'Absent');
+                $employee->setAttribute('work_state_label', __('employees.work_state_absent'));
 
                 return;
             }
@@ -260,16 +260,16 @@ class EmployeeController extends Controller
                 };
                 $employee->setAttribute('work_state', $state);
                 $employee->setAttribute('work_state_label', match ($state) {
-                    'break' => 'En pause',
-                    'mission' => 'En mission',
-                    default => 'Present',
+                    'break' => __('employees.work_state_break'),
+                    'mission' => __('employees.work_state_mission'),
+                    default => __('employees.work_state_present'),
                 });
 
                 return;
             }
 
             $employee->setAttribute('work_state', 'offline');
-            $employee->setAttribute('work_state_label', 'Hors ligne');
+            $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
         });
     }
 
@@ -364,10 +364,9 @@ class EmployeeController extends Controller
             'target_employee_id' => $employee->id,
         ]);
 
-        $company = currentCompany();
-        if ($company instanceof Company) {
-            $employee->setRelation('company', $company);
-        }
+        // currentCompany() retourne toujours une Company résolue par le
+        // middleware tenant (jamais null ici) — pas de garde instanceof.
+        $employee->setRelation('company', currentCompany());
 
         return (new EmployeeResource($employee))->response();
     }
