@@ -44,6 +44,8 @@ class BulletinDeclarationReconciliationTest extends TestCase
      * Run réel calculé par le moteur pour un employé donné (même entrée que
      * la déclaration). Le contrat couvre toute la période (factory sinon
      * aléatoire → prorata flaky, cf. #1966).
+     *
+     * @param array<string, mixed> $employeeExtra
      */
     /**
      * @param  array<string, mixed>  $employeeExtra

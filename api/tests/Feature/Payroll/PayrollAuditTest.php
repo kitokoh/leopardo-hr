@@ -307,7 +307,7 @@ class PayrollAuditTest extends TestCase
         // (y compris Log::withContext) est vérifié — aucun secret ne doit
         // apparaître dans les messages ni les contextes.
         $log = Log::spy();
-        /** @var Expectation $channelExpectation */
+        /** @var \Mockery\Expectation $channelExpectation */
         $channelExpectation = $log->shouldReceive('channel');
         $channelExpectation->andReturn($log);
 
