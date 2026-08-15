@@ -24,6 +24,7 @@ class PayrollController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
         $query = Payroll::query()
+            ->where('company_id', $actor->company_id)
             ->select([
                 'id',
                 'company_id',

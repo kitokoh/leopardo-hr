@@ -66,6 +66,14 @@ type LaunchReadiness = {
   next_actions?: Array<{ key: string; label: string; required: boolean }>;
 };
 
+// Interpolation légère pour les clés i18n à trous ({placeholder}) du
+// dashboard — le catalogue JSON ne fait pas d'interpolation lui-même.
+function formatMessage(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in values ? String(values[name]) : match
+  );
+}
+
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
 
@@ -117,6 +125,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [leoCardDismissed, setLeoCardDismissed] = useState(false);
+  const [announcementsCount, setAnnouncementsCount] = useState<number | null>(null);
   const [announcementSending, setAnnouncementSending] = useState(false);
   const [announcementSent, setAnnouncementSent] = useState(false);
   const [announcementError, setAnnouncementError] = useState<string | null>(null);
@@ -240,11 +249,16 @@ export default function DashboardPage() {
       setLoadError(null);
 
       try {
-        const [summaryResponse, activityResponse, readinessPayload] = await Promise.all([
+        const [summaryResponse, activityResponse, readinessPayload, announcementsResponse] = await Promise.all([
           apiFetch('/dashboard/summary'),
           apiFetch('/dashboard/recent-activity?limit=5'),
           apiFetch('/launch-readiness')
             .then((response) => response.json() as Promise<{ data?: LaunchReadiness }>)
+            .catch(() => null),
+          // #3027 : compteur réel d'annonces entreprise (PA2-COMM-004) —
+          // alimente la carte « Leo IA » sans pourcentage fabriqué.
+          apiFetch('/announcements?per_page=1')
+            .then((response) => response.json() as Promise<{ data?: unknown[]; meta?: { total?: number } }>)
             .catch(() => null),
         ]);
 
@@ -262,6 +276,10 @@ export default function DashboardPage() {
         });
         setActivities(Array.isArray(activityPayload.data) ? activityPayload.data : []);
         setReadiness(readinessPayload?.data ?? null);
+        const announcementsPayload = announcementsResponse as { data?: unknown[]; meta?: { total?: number } } | null;
+        setAnnouncementsCount(
+          Number(announcementsPayload?.meta?.total ?? announcementsPayload?.data?.length ?? 0)
+        );
         trackDashboardLoaded({
           surface: 'manager',
           employees_active: Number(summaryPayload.data?.employees_active ?? 0),
@@ -562,9 +580,28 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="mb-4 rounded-xl bg-white/50 p-4">
-                  <p className="text-sm leading-relaxed text-slate-700">
-                    &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
-                  </p>
+                  {/* #3027 : plus d'« insight » fabriqué (ex. « retards en
+                      baisse de 15% ») — uniquement des chiffres réels issus de
+                      /dashboard/summary et du compteur d'annonces réel. */}
+                  {summary && summary.employees_active > 0 ? (
+                    <p className="text-sm leading-relaxed text-slate-700">
+                      {formatMessage(i18nT(locale, 'dashboard.leo_presence_insight'), {
+                        today: summary.today_attendance,
+                        active: summary.employees_active,
+                      })}
+                    </p>
+                  ) : (
+                    <p className="text-sm leading-relaxed text-slate-700">
+                      {i18nT(locale, 'dashboard.leo_presence_empty')}
+                    </p>
+                  )}
+                  {announcementsCount !== null && (
+                    <p className="mt-2 text-xs font-medium text-slate-500">
+                      {formatMessage(i18nT(locale, 'dashboard.leo_announcements_count'), {
+                        count: announcementsCount,
+                      })}
+                    </p>
+                  )}
                 </div>
 
                 {announcementSent ? (
@@ -631,24 +668,41 @@ export default function DashboardPage() {
           <GlassCard delay={0.7}>
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h4 className="font-bold text-slate-950">Presence hebdo</h4>
-                <span className="text-xs font-bold text-emerald-600">+12%</span>
+                <h4 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.presence_today_title')}</h4>
+                {summary && summary.employees_active > 0 ? (
+                  <span className="text-xs font-bold text-emerald-600">
+                    {Math.round((summary.today_attendance / summary.employees_active) * 100)}%
+                  </span>
+                ) : null}
               </div>
-              <div className="flex h-32 items-end gap-2">
-                {[65, 80, 75, 90, 85, 70, 88].map((height, index) => (
-                  <div key={index} className="flex flex-1 flex-col items-center gap-1">
+              {/* #3027 : les barres hebdo et le « +12% » étaient codés en dur
+                  (aucun endpoint ne les fournit). Le taux affiché est calculé
+                  depuis /dashboard/summary (données réelles) ; sans donnée, un
+                  état vide honnête remplace le graphique fictif. */}
+              {summary && summary.employees_active > 0 ? (
+                <>
+                  <div className="h-4 w-full overflow-hidden rounded-full bg-slate-100">
                     <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: `${height}%` }}
-                      transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                      className={`w-full rounded-t-lg ${
-                        height > 80 ? 'bg-emerald-500' : height > 70 ? 'bg-emerald-400' : 'bg-emerald-300'
-                      }`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, Math.round((summary.today_attendance / summary.employees_active) * 100))}%` }}
+                      transition={{ delay: 0.8, duration: 0.5 }}
+                      className="h-full rounded-full bg-emerald-500"
                     />
-                    <span className="text-xs text-slate-400">{['L', 'M', 'M', 'J', 'V', 'S', 'D'][index]}</span>
                   </div>
-                ))}
-              </div>
+                  <p className="mt-3 text-sm text-slate-500">
+                    {formatMessage(i18nT(locale, 'dashboard.presence_today_summary'), {
+                      present: summary.today_attendance,
+                      active: summary.employees_active,
+                    })}
+                  </p>
+                </>
+              ) : (
+                <div className="flex h-20 items-center justify-center rounded-xl bg-slate-50">
+                  <p className="text-sm text-slate-500">
+                    {i18nT(locale, 'dashboard.presence_today_empty')}
+                  </p>
+                </div>
+              )}
             </div>
           </GlassCard>
         </div>

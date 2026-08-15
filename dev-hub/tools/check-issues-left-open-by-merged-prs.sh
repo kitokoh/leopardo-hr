@@ -36,10 +36,13 @@ PRS=$(gh api "repos/${REPO}/pulls?state=closed&sort=updated&direction=desc&per_p
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
-echo "${PRS}" | python3 -c '
+echo "${PRS}" > "${TMP_DIR}/prs.json"
+
+cat > "${TMP_DIR}/lp_mentions.py" <<'PYSCRIPT'
+
 import json, sys, re
 
-prs = json.load(sys.stdin)
+prs = json.load(open(sys.argv[1]))
 # Toutes les issues référencées (titre + body), avec ou sans mot-clé Closes.
 mention_re = re.compile(r"#(\d{3,5})")
 closes_re = re.compile(r"(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s*:?\s*#(\d{3,5})", re.I)
@@ -55,12 +58,21 @@ for pr in prs:
         if ref in closed:
             mentions[ref]["explicitly_closed"].add(pr["number"])
 
-with open(sys.argv[1], "w") as f:
+for m in mentions.values():
+    m["prs"] = sorted(set(m["prs"]))
+    m["explicitly_closed"] = sorted(m["explicitly_closed"])
+
+with open(sys.argv[2], "w") as f:
     json.dump(mentions, f)
-' "${TMP_DIR}/mentions.json"
+
+PYSCRIPT
+
+python3 "${TMP_DIR}/lp_mentions.py" "${TMP_DIR}/prs.json" "${TMP_DIR}/mentions.json"
+
 
 # 2) Pour chaque issue mentionnée : état courant + PRs ouvertes la ciblant.
-python3 -c '
+cat > "${TMP_DIR}/lp_report.py" <<'PYSCRIPT'
+
 import json, sys, subprocess, os
 
 REPO = sys.argv[1]
@@ -95,4 +107,8 @@ for issue_num, prs in results:
 
 print(f"\n{len(results)} issue(s) référencée(s) par des PRs mergées mais restée(s) ouverte(s) "
       f"(aucune PR ouverte en cours). Fermeture manuelle avec preuve code recommandée.")
-' "${REPO}" "${TMP_DIR}/mentions.json"
+
+PYSCRIPT
+
+python3 "${TMP_DIR}/lp_report.py" "${REPO}" "${TMP_DIR}/mentions.json"
+

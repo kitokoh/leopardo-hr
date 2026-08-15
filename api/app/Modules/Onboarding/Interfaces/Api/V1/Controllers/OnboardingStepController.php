@@ -14,6 +14,14 @@ use Illuminate\Http\Request;
 
 class OnboardingStepController extends Controller
 {
+    /**
+     * Checklist pilotée par la table `onboarding_steps`.
+     *
+     * #3239 — shape alignée sur le moteur calculé canonique
+     * (OnboardingChecklistController) : data{ completed_steps, total_steps,
+     * progress_percent, progress (alias), go_live_ready, next_actions, steps }.
+     * La collection d'étapes reste exposée telle quelle sous `data.steps`.
+     */
     public function checklist(Request $request): JsonResponse
     {
         /** @var Employee $user */
@@ -27,7 +35,30 @@ class OnboardingStepController extends Controller
             $steps = $this->seedDefaultSteps($user->company_id);
         }
 
-        return OnboardingStepResource::collection($steps)->response();
+        $total = $steps->count();
+        $completed = $steps->whereIn('status', ['completed', 'skipped'])->count();
+        $percent = $total > 0 ? (int) round(($completed / $total) * 100) : 0;
+
+        return response()->json([
+            'data' => [
+                'completed_steps' => $completed,
+                'total_steps' => $total,
+                'progress_percent' => $percent,
+                'progress' => $percent,
+                'go_live_ready' => $total > 0 && $completed >= $total - 1,
+                'next_actions' => $steps
+                    ->where('status', 'pending')
+                    ->take(3)
+                    ->map(fn (OnboardingStep $step): array => [
+                        'key' => $step->step_key,
+                        'label' => $step->title,
+                    ])
+                    ->values(),
+                'steps' => $steps
+                    ->map(fn (OnboardingStep $step): array => (new OnboardingStepResource($step))->resolve($request))
+                    ->all(),
+            ],
+        ]);
     }
 
     public function progress(Request $request): JsonResponse
@@ -39,14 +70,23 @@ class OnboardingStepController extends Controller
         $total = $steps->count();
 
         if ($total === 0) {
-            return response()->json(['data' => ['progress' => 0, 'completed' => 0, 'total' => 0]]);
+            return response()->json([
+                'data' => [
+                    'progress' => 0,
+                    'progress_percent' => 0,
+                    'completed' => 0,
+                    'total' => 0,
+                ],
+            ]);
         }
 
         $completed = $steps->whereIn('status', ['completed', 'skipped'])->count();
+        $percent = (int) round(($completed / $total) * 100);
 
         return response()->json([
             'data' => [
-                'progress' => round(($completed / $total) * 100),
+                'progress' => $percent,
+                'progress_percent' => $percent,
                 'completed' => $completed,
                 'total' => $total,
             ],

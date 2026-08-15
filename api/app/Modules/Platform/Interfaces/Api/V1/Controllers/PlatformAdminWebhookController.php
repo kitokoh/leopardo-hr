@@ -33,7 +33,7 @@ class PlatformAdminWebhookController extends Controller
             ->leftJoin('companies', 'companies.id', '=', 'webhook_endpoints.company_id')
             ->select('webhook_endpoints.*', 'companies.name as company_name')
             ->orderByDesc('webhook_endpoints.created_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return WebhookEndpointResource::collection($webhooks);
     }

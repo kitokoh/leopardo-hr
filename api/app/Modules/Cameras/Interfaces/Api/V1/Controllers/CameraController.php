@@ -145,23 +145,30 @@ class CameraController extends Controller
         $result = $this->cameras->testRtsp($request->string('rtsp_url')->toString());
 
         if (! $result['ok']) {
+            // Contrat #3147 : host_not_allowed et invalid_url sont des refus
+            // métier attendus (200 + corps d'erreur), pas des erreurs HTTP —
+            // le client affiche la raison (cible interne interdite / URL invalide).
             $status = match ($result['error']) {
                 'timeout' => 408,
                 'ffprobe_unavailable' => 503,
+                'host_not_allowed', 'invalid_url' => 200,
                 default => 422,
             };
 
             return new JsonResponse([
+                'ok' => false,
                 'error' => match ($result['error']) {
                     'timeout' => 'RTSP_TIMEOUT',
                     'ffprobe_unavailable' => 'VIDEO_PROXY_UNAVAILABLE',
-                    'invalid_url' => 'VALIDATION_ERROR',
+                    'host_not_allowed' => 'host_not_allowed',
+                    'invalid_url' => 'invalid_url',
                     default => 'RTSP_CONNECTION_FAILED',
                 },
                 'message' => match ($result['error']) {
                     'timeout' => 'Connection to camera timed out. Verify the URL and network.',
                     'ffprobe_unavailable' => 'Video proxy unavailable. Please try again.',
-                    'invalid_url' => 'The rtsp_url must be a valid RTSP URL starting with rtsp://',
+                    'host_not_allowed' => 'Host not allowed: internal/private network targets are forbidden.',
+                    'invalid_url' => 'The rtsp_url must be a valid URL.',
                     default => 'Unable to connect to the camera.',
                 },
             ], $status);

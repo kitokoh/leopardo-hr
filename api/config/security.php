@@ -21,11 +21,9 @@ return [
     ],
 
     'plan_rate_limits' => [
-        'trial_per_minute' => (int) env('RATE_LIMIT_PLAN_TRIAL_PER_MINUTE', 60),
-        'starter_per_minute' => (int) env('RATE_LIMIT_PLAN_STARTER_PER_MINUTE', 100),
-        'business_per_minute' => (int) env('RATE_LIMIT_PLAN_BUSINESS_PER_MINUTE', 1000),
-        'professional_per_minute' => (int) env('RATE_LIMIT_PLAN_PROFESSIONAL_PER_MINUTE', 1000),
-        'pro_per_minute' => (int) env('RATE_LIMIT_PLAN_PRO_PER_MINUTE', 1000),
+        'free_per_minute' => (int) env('RATE_LIMIT_PLAN_FREE_PER_MINUTE', 60),
+        'pilot_per_minute' => (int) env('RATE_LIMIT_PLAN_PILOT_PER_MINUTE', 100),
+        'operations_per_minute' => (int) env('RATE_LIMIT_PLAN_OPERATIONS_PER_MINUTE', 1000),
         'enterprise_per_minute' => (int) env('RATE_LIMIT_PLAN_ENTERPRISE_PER_MINUTE', 0),
         'default_per_minute' => (int) env('RATE_LIMIT_PLAN_DEFAULT_PER_MINUTE', 100),
     ],
