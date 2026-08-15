@@ -127,7 +127,6 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
-import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const loading = ref(false)
 const saving = ref(false)

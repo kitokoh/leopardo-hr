@@ -346,12 +346,13 @@ export const useRealtimeStore = defineStore('realtime', () => {
     if (notification) {
       notification.read = true
     }
-    // Issue #2239 — persister côté backend (PATCH /notifications/{id}/read).
+    // Issue #2239 — persister côté backend (PATCH /notifications/{id}/read,
+    // contrat canonique rh.php:177 / dashboard.php:40 — le PUT répondait 405).
     // Best-effort : un échec réseau ne doit pas casser l'UX locale.
     try {
       // Issue #2705 — _skipAuthRedirect : en super-admin ces routes tenant
       // répondent 401 ; sans ce flag l'intercepteur détruisait la session.
-      await api.put(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
+      await api.patch(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist notification read state', err)
     }
@@ -359,10 +360,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
-    // Issue #2239 — persister côté backend (PUT /notifications/read-all,
-    // contrat canonique #3121 — le POST répondait 405).
+    // Issue #2239 — persister côté backend (POST /notifications/read-all,
+    // contrat canonique rh.php:176 — le PUT répondait 405).
     try {
-      await api.put('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
+      await api.post('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist mark-all-read', err)
     }
