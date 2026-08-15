@@ -39,7 +39,7 @@ class ApiErrorContractTest extends TestCase
         $response = $this->get('/api/v1/employees');
 
         $response->assertStatus(401);
-        $this->assertStringContainsString('application/json', $response->headers->get('Content-Type', ''));
+        $this->assertStringContainsString('application/json', (string) $response->headers->get('Content-Type', ''));
         $response->assertJsonPath('error', 'UNAUTHENTICATED');
         $response->assertJsonPath('message', 'UNAUTHENTICATED');
         $this->assertNotNull($response->json('localized_message'));

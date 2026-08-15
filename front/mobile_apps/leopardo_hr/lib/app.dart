@@ -16,6 +16,8 @@ import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
+import 'package:leopardo_hr/features/home/screens/hr_main_shell.dart';
+import 'package:leopardo_hr/features/modules/screens/modules_screen.dart';
 import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_hr/features/salary_advances/screens/salary_advance_list_screen.dart';
@@ -32,7 +34,9 @@ import 'package:leopardo_hr/features/user_auth/screens/company_request_screen.da
 import 'package:leopardo_hr/features/contracts/screens/contract_screen.dart';
 import 'package:leopardo_hr/features/training/screens/training_screen.dart';
 import 'package:leopardo_hr/features/expenses/screens/expense_list_screen.dart';
+import 'package:leopardo_hr/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_hr/features/ai_voice/screens/ai_voice_screen.dart';
+import 'package:leopardo_hr/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_hr/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_hr/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_hr/features/organigramme/screens/organigramme_screen.dart';
@@ -122,6 +126,131 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(
+        path: '/welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/access-denied',
+        builder: (context, state) => const AccessDeniedScreen(),
+      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/user-register',
+        builder: (context, state) => const UserRegisterScreen(),
+      ),
+      GoRoute(
+        path: '/user-login',
+        builder: (context, state) => const UserLoginScreen(),
+      ),
+      GoRoute(
+        path: '/user-home',
+        builder: (context, state) => const UserHomeScreen(),
+      ),
+      GoRoute(
+        path: '/company-request',
+        builder: (context, state) => const CompanyRequestScreen(),
+      ),
+
+      // --- Authenticated routes with bottom nav ---
+      ShellRoute(
+        builder: (context, state, child) => HrMainShell(child: child),
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/modules',
+            builder: (context, state) => const ModulesHubScreen(),
+          ),
+      GoRoute(
+        path: '/absences',
+        builder: (context, state) => const AbsenceListScreen(),
+      ),
+      GoRoute(
+        path: '/salary-advances',
+        builder: (context, state) => const SalaryAdvanceListScreen(),
+      ),
+      GoRoute(
+        path: '/payrolls',
+        builder: (context, state) => const PayrollListScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: '/evaluations',
+        builder: (context, state) => const EvaluationListScreen(),
+      ),
+      GoRoute(
+        path: '/attendance',
+        builder: (context, state) => const AttendanceScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const HistoryScreen(),
+      ),
+      GoRoute(
+        path: '/me/monthly',
+        builder: (context, state) => const MonthlySummaryScreen(),
+      ),
+      GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
+      GoRoute(
+        path: '/tasks',
+        builder: (context, state) => const TaskListScreen(),
+      ),
+      GoRoute(
+        path: '/modules/rh',
+        builder: (context, state) => const ModulesScreen(),
+      ),
+      GoRoute(
+        path: '/cabinet',
+        builder: (context, state) => const CabinetScreen(),
+      ),
+      GoRoute(
+        path: '/cabinet/folder/:folderId',
+        builder: (context, state) {
+          final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
+            if (folderId == null) {
+              // T121 : deep-link avec folderId non numérique → écran vide
+              // plutôt qu'un crash int.parse.
+              return const Scaffold(body: SizedBox.shrink());
+            }
+          final folderName = state.extra as String?;
+          return CabinetScreen(folderId: folderId, folderName: folderName);
+        },
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/contracts',
+        builder: (context, state) => const ContractScreen(),
+      ),
+      GoRoute(
+        path: '/training',
+        builder: (context, state) => const TrainingScreen(),
+      ),
+      GoRoute(
+        path: '/expenses',
+        builder: (context, state) => const ExpenseListScreen(),
+      ),
+      GoRoute(
+        path: '/ai-chat',
+        builder: (context, state) => const AiChatScreen(),
+      ),
+      GoRoute(
+        path: '/ai-voice',
+        builder: (context, state) => const AiVoiceScreen(),
+      ),
+      GoRoute(
+        path: '/vehicle-map',
+        builder: (context, state) => const VehicleMapScreen(),
+      ),
+      GoRoute(
         path: '/approvals',
         builder: (context, state) => const ApprovalScreen(),
       ),
@@ -161,6 +290,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/smart-attendance/pending',
         builder: (context, state) => const PendingGeoSessionsScreen(),
+      ),
+        ],
       ),
     ],
   );
@@ -231,7 +362,7 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

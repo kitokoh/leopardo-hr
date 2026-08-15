@@ -1117,8 +1117,10 @@ function StepPayment({
 ───────────────────────────────────────────── */
 function CheckoutInner() {
   const searchParams = useSearchParams();
-  const rawPlan = (searchParams.get('plan') || 'business') as string;
-  const plan: PlanKey = (rawPlan in PLAN_CONFIG ? rawPlan : 'business') as PlanKey;
+  // #2975 (QA 2026-08-15) : fallback sur le plan d'entrée payant (Pilot) —
+  // jamais sur Operations (99€) sans choix explicite de l'utilisateur.
+  const rawPlan = (searchParams.get('plan') || 'starter') as string;
+  const plan: PlanKey = (rawPlan in PLAN_CONFIG ? rawPlan : 'starter') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
+ * @property string|null $company_id
  * @property int $employee_id
  * @property string $provider
  * @property string|null $access_token

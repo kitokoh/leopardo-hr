@@ -22,7 +22,7 @@ class AdminImpersonationEndpointsTest extends TestCase
 
     public function test_admin_impersonation_route_exists_and_requires_super_admin(): void
     {
-        $routes = collect(app('router')->getRoutes())
+        $routes = collect(app('router')->getRoutes()->getRoutes())
             ->filter(fn ($r) => str_contains($r->uri(), 'api/v1/admin/impersonations'));
 
         $this->assertGreaterThanOrEqual(1, $routes->count(), 'Les routes /admin/impersonations doivent exister.');
