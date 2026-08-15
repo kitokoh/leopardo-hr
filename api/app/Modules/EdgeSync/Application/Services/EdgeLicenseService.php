@@ -111,6 +111,10 @@ class EdgeLicenseService
 
     /**
      * Decode and verify a JWT.
+     *
+     * Fail-closed : sans clé publique configurée, la vérification échoue
+     * (issue #3317). Le décodage sans vérification n'est toléré qu'en
+     * environnement local/testing (développement sans paire RSA).
      */
     protected function decode(string $token): array
     {
@@ -120,6 +124,12 @@ class EdgeLicenseService
             $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($publicKey, 'RS256'));
 
             return (array) $decoded;
+        }
+
+        // Fail-closed : EDGE_LICENSE_PUBLIC_KEY absent en production → refuser
+        // (le défaut config/edge.php est null ; un token non signé serait accepté).
+        if (! app()->environment(['local', 'testing'])) {
+            throw new \RuntimeException('Edge license public key not configured');
         }
 
         // Dev/test fallback — decode without verification

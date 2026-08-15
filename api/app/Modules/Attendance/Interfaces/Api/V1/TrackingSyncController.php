@@ -77,8 +77,21 @@ class TrackingSyncController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+        // #3369 : plage de dates bornée (max 90 jours, pas de futur, from <= to)
         $from = Carbon::parse($request->input('from', now()->startOfDay()));
         $to = Carbon::parse($request->input('to', now()));
+
+        if ($to->lt($from)) {
+            return response()->json(['error' => 'The to date must be after the from date.'], 422);
+        }
+
+        if ($to->gt(now()->addHour())) {
+            return response()->json(['error' => 'The to date cannot be in the future.'], 422);
+        }
+
+        if ($from->diffInDays($to) > 90) {
+            return response()->json(['error' => 'The date range cannot exceed 90 days.'], 422);
+        }
 
         $vehicles = Vehicle::where('company_id', $user->company_id)
             ->whereNotNull('traccar_device_id')

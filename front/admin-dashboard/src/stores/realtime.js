@@ -347,10 +347,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
-    // Issue #2239 — persister côté backend (PUT /notifications/read-all,
+    // Issue #2239 — persister côté backend (POST /notifications/read-all,
     // contrat canonique #3121 — le POST répondait 405).
     try {
-      await api.put('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
+      await api.post('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist mark-all-read', err)
     }

@@ -9,7 +9,6 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
-use App\Support\CompanyBankDetails;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -97,6 +96,7 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
             // désormais les coordonnées bancaires en interne (companyBankDetails,
             // public schema) et jette MISSING_COMPANY_IBAN si absentes — le job
             // marque alors l'export en échec avec ce message.
+
             $content = $generator->generate($run, $format);
             $extension = $generator->fileExtension($format);
 
