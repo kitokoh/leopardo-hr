@@ -245,8 +245,16 @@ class LeopardoClient:
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
     def get_admin_users(self, **kwargs):
-        """Liste reelle des utilisateurs plateforme"""
+        """Lister les utilisateurs plateforme (super-admin) — issue #2269"""
         return self.request("GET", "/admin/users", **kwargs)
+
+    def get_admin_users_by_user(self, **kwargs):
+        """Détail d'un utilisateur plateforme (super-admin) — issue #2269"""
+        return self.request("GET", "/admin/users/{user}", **kwargs)
+
+    def patch_admin_users_by_user(self, **kwargs):
+        """Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269"""
+        return self.request("PATCH", "/admin/users/{user}", **kwargs)
 
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
@@ -921,10 +929,6 @@ class LeopardoClient:
         return self.request("GET", "/growth/partner/companies", **kwargs)
 
     def get_growth_partner_dashboard(self, **kwargs):
-        """Tableau de bord partenaire connecté"""
-        return self.request("GET", "/growth/partner/dashboard", **kwargs)
-
-    def get_growth_partner_dashboard_2(self, **kwargs):
         """Tableau de bord de l'espace partenaire"""
         return self.request("GET", "/growth/partner/dashboard", **kwargs)
 
@@ -1169,7 +1173,7 @@ class LeopardoClient:
         return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
 
     def get_me_vehicles(self, **kwargs):
-        """Mes vehicules (employee)"""
+        """Vehicules assignes a l'employe connecte (mobile)"""
         return self.request("GET", "/me/vehicles", **kwargs)
 
     def get_notification_preferences(self, **kwargs):
@@ -1315,6 +1319,10 @@ class LeopardoClient:
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
+        """Documents de paiement d'un cycle paie"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/payment-documents", **kwargs)
 
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
@@ -1783,6 +1791,14 @@ class LeopardoClient:
     def post_smart_attendance_geo_events(self, **kwargs):
         """Envoyer un événement géographique (entrée/sortie de zone)"""
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
+
+    def get_smart_attendance_mode_settings(self, **kwargs):
+        """Lire la configuration du mode de pointage de l'entreprise"""
+        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
+
+    def put_smart_attendance_mode_settings(self, **kwargs):
+        """Mettre à jour la configuration GPS (admin)"""
+        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
 
     def get_smart_attendance_my_sessions(self, **kwargs):
         """Sessions GPS de l'employé courant"""

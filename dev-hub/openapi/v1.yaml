@@ -14,6 +14,9 @@ openapi: "3.0.3"
 info:
   title: "Leopardo RH API"
   version: "4.24.0"
+  license:
+    name: "MIT"
+    url: "https://github.com/kitokoh/leopardo-hr/blob/main/LICENSE"
   description: |
     OpenAPI alignee sur la surface API reellement exposee par origin/main.
 
@@ -1798,6 +1801,7 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+
   /admin/dashboard/activities:
     get:
       tags: ["Platform"]
@@ -11044,20 +11048,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /export/pay-slips:
-    get:
-      tags: ["Exports"]
-      summary: "Exporter les bulletins"
-      parameters:
-        - name: format
-          in: query
-          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
-      responses:
-        "200":
-          description: "Donnees export"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /export/absences:
     get:
       tags: ["Exports"]
@@ -18887,3 +18877,33 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
+    TrainingSession:
+      type: object
+      description: "Session de formation (contrat TrainingSessionResource)."
+      properties:
+        id: { type: integer }
+        training_course_id: { type: integer }
+        trainer_id: { type: integer, nullable: true }
+        external_trainer: { type: string, nullable: true }
+        start_date: { type: string, format: date, nullable: true }
+        end_date: { type: string, format: date, nullable: true }
+        location: { type: string, nullable: true }
+        status: { type: string, enum: [planned, in_progress, completed, cancelled] }
+        notes: { type: string, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+
+    TrainingEnrollment:
+      type: object
+      description: "Inscription à une session de formation (contrat TrainingEnrollmentResource)."
+      properties:
+        id: { type: integer }
+        training_session_id: { type: integer }
+        employee_id: { type: integer }
+        status: { type: string, enum: [enrolled, attended, completed, no_show, cancelled] }
+        score: { type: number, nullable: true }
+        feedback: { type: string, nullable: true }
+        completed_at: { type: string, format: date-time, nullable: true }
+        course_title: { type: string, nullable: true }
+        session_date: { type: string, format: date, nullable: true }
+        progress: { type: integer, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }

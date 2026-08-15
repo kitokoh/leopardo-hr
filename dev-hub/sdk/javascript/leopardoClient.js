@@ -280,9 +280,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
-    /** Liste reelle des utilisateurs plateforme */
+    /** Lister les utilisateurs plateforme (super-admin) — issue #2269 */
     getAdminUsers(options = {}) {
       return request("GET", "/admin/users", options);
+    },
+
+    /** Détail d'un utilisateur plateforme (super-admin) — issue #2269 */
+    getAdminUsersByUser(options = {}) {
+      return request("GET", "/admin/users/{user}", options);
+    },
+
+    /** Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269 */
+    patchAdminUsersByUser(options = {}) {
+      return request("PATCH", "/admin/users/{user}", options);
     },
 
     /** Couts IA par periode */
@@ -1125,13 +1135,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/growth/partner/companies", options);
     },
 
-    /** Tableau de bord partenaire connecté */
-    getGrowthPartnerDashboard(options = {}) {
-      return request("GET", "/growth/partner/dashboard", options);
-    },
-
     /** Tableau de bord de l'espace partenaire */
-    getGrowthPartnerDashboard2(options = {}) {
+    getGrowthPartnerDashboard(options = {}) {
       return request("GET", "/growth/partner/dashboard", options);
     },
 
@@ -1435,7 +1440,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
-    /** Mes vehicules (employee) */
+    /** Vehicules assignes a l'employe connecte (mobile) */
     getMeVehicles(options = {}) {
       return request("GET", "/me/vehicles", options);
     },
@@ -1618,6 +1623,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
+    },
+
+    /** Documents de paiement d'un cycle paie */
+    getPayrollRunsByPayrollRunPaymentDocuments(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/payment-documents", options);
     },
 
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
@@ -2203,6 +2213,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Envoyer un événement géographique (entrée/sortie de zone) */
     postSmartAttendanceGeoEvents(options = {}) {
       return request("POST", "/smart-attendance/geo-events", options);
+    },
+
+    /** Lire la configuration du mode de pointage de l'entreprise */
+    getSmartAttendanceModeSettings(options = {}) {
+      return request("GET", "/smart-attendance/mode-settings", options);
+    },
+
+    /** Mettre à jour la configuration GPS (admin) */
+    putSmartAttendanceModeSettings(options = {}) {
+      return request("PUT", "/smart-attendance/mode-settings", options);
     },
 
     /** Sessions GPS de l'employé courant */
