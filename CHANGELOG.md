@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **refactor(mobile-manager): suppression de six routes GoRouter sans UI ni manifest (Closes #3285).** Les deep-links contracts, training, expenses, ai-voice, onboarding et organigramme ne tombent plus sur une route morte.
 - **fix(admin): dates et nombres respectent la locale active (Closes #3277).** Analytics, barèmes fiscaux et modales recrutement/flotte n’imposent plus `fr-FR` pour l’affichage.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
