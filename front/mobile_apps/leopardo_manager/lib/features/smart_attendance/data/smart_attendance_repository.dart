@@ -40,7 +40,8 @@ class ManagerSmartAttendanceRepository {
       '/smart-attendance/sessions/$sessionId/approve',
       method: 'POST',
       data: {if (note != null) 'note': note},
-      maxRetriesOverride: 1,
+      // #3010 : POST non-idempotent — pas de retry (double validation).
+      maxRetriesOverride: 0,
       timeoutOverride: _writeTimeout,
     );
   }
@@ -51,7 +52,8 @@ class ManagerSmartAttendanceRepository {
       '/smart-attendance/sessions/$sessionId/reject',
       method: 'POST',
       data: {'reason': note},
-      maxRetriesOverride: 1,
+      // #3010 : POST non-idempotent — pas de retry (double validation).
+      maxRetriesOverride: 0,
       timeoutOverride: _writeTimeout,
     );
   }
