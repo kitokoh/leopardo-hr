@@ -385,3 +385,7 @@ router.afterEach(() => {
 })
 
 export default router
+
+// Export the routes table for layouts that need to resolve parent routes by
+// name (e.g. DashboardLayout breadcrumbs). See issue #2335.
+export { routes }

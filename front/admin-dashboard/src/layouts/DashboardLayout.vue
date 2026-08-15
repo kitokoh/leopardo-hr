@@ -87,6 +87,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { routes } from '@/router'
 import { ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useRealtimeStore } from '@/stores/realtime'
