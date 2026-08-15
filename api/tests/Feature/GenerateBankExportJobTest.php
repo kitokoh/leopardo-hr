@@ -131,8 +131,7 @@ class GenerateBankExportJobTest extends TestCase
         $this->assertSame(BankExport::STATUS_GENERATED, $export->status);
         $this->assertNull($export->error_message);
 
-        $content = Storage::disk('local')->get($export->file_path);
-
+        $content = Storage::disk('local')->get((string) $export->file_path);
         $this->assertIsString($content);
         $this->assertStringContainsString('FR7610071750000000000000000', $content);
         $this->assertStringContainsString('PSSTFRPP', $content);
@@ -203,8 +202,7 @@ class GenerateBankExportJobTest extends TestCase
 
         $this->assertSame(BankExport::STATUS_GENERATED, $export->status);
 
-        $content = Storage::disk('local')->get($export->file_path);
-
+        $content = Storage::disk('local')->get((string) $export->file_path);
         $this->assertIsString($content);
         $this->assertStringContainsString('FR7610071750000000000000000', $content);
         $this->assertStringNotContainsString('<CdtrAgt>', $content);
@@ -216,7 +214,9 @@ class GenerateBankExportJobTest extends TestCase
      */
     private function companyAndEmployee(): array
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => fake()->unique()->safeEmail(),

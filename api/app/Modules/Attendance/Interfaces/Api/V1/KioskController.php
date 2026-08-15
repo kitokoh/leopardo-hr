@@ -376,7 +376,8 @@ class KioskController extends Controller
         // (try/finally) pour ne pas laisser l'état de connexion PostgreSQL
         // pointer vers shared_tenants sur les requêtes suivantes du même
         // worker (pattern RequestTrialSignup).
-        $previous = (string) DB::selectOne('SHOW search_path')?->search_path ?? 'public,shared_tenants';
+        $row = DB::selectOne('SHOW search_path');
+        $previous = (string) ($row->search_path ?? 'public,shared_tenants');
         DB::statement('SET search_path TO shared_tenants,public');
 
         try {

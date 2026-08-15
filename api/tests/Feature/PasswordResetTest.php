@@ -22,8 +22,6 @@ class PasswordResetTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $company;
-
     private Employee $employee;
 
     protected function setUp(): void
@@ -32,7 +30,6 @@ class PasswordResetTest extends TestCase
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->company = $company;
 
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
@@ -95,7 +92,7 @@ class PasswordResetTest extends TestCase
         ])->assertOk();
 
         $this->employee->refresh();
-        $this->assertTrue(Hash::check('new-password-123', $this->employee->password_hash));
+        $this->assertTrue(Hash::check('new-password-123', (string) $this->employee->password_hash));
         $this->assertCount(0, $this->employee->tokens()->get(), 'Les tokens Sanctum existants doivent être révoqués.');
 
         $this->assertNotNull(

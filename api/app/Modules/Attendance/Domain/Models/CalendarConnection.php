@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property int $employee_id
+ * @property int|string|null $company_id
  * @property string $provider
  * @property string|null $access_token
  * @property string|null $refresh_token

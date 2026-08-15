@@ -12,6 +12,7 @@ use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -98,8 +99,8 @@ readonly class AuthService
             $lockedUntil = $employee->getAttributes()['locked_until'] ?? null;
             if ($this->supportsLoginLocking($employee)
                 && $lockedUntil instanceof \DateTimeInterface
-                && $lockedUntil->isFuture()) {
-                throw new AccountLockedException($lockedUntil);
+                && Carbon::parse($lockedUntil)->isFuture()) {
+                throw new AccountLockedException(Carbon::parse($lockedUntil));
             }
 
             // QA 2026-08-15 (#2652) : un `password_hash` null/absent ne doit
