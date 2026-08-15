@@ -210,11 +210,6 @@
     </div>
 
     <!-- Modals -->
-    <CreateTaskModal
-      v-if="showCreateTaskModal"
-      @close="showCreateTaskModal = false"
-      @created="handleTaskCreated"
-    />
 
     <ImportConfigModal
       v-if="showImportModal"
@@ -251,7 +246,6 @@ import BackupManagement from '@/components/system/BackupManagement.vue'
 import SecurityMonitoring from '@/components/system/SecurityMonitoring.vue'
 import SystemConfiguration from '@/components/system/SystemConfiguration.vue'
 import ApiTestingTools from '@/components/system/ApiTestingTools.vue'
-import CreateTaskModal from '@/components/system/CreateTaskModal.vue'
 import ImportConfigModal from '@/components/system/ImportConfigModal.vue'
 import ApiTesterModal from '@/components/system/ApiTesterModal.vue'
 
@@ -264,7 +258,6 @@ const isLoadingObservability = ref(false)
 const notificationObservability = ref(null)
 const isLoadingNotificationObservability = ref(false)
 const isCreatingBackup = ref(false)
-const showCreateTaskModal = ref(false)
 const showImportModal = ref(false)
 const showApiTesterModal = ref(false)
 
@@ -273,7 +266,7 @@ const systemStatus = reactive({
   overall: 'healthy',
   overallDetails: 'Tous les services fonctionnent normalement',
   database: 'healthy',
-  databaseDetails: 'Connexions: 45/100 â€¢ Latence: 12ms',
+  databaseDetails: 'Connexions: 45/100 ”¢ Latence: 12ms',
   api: 'healthy',
   apiDetails: 'Temps de réponse moyen: 89ms',
   websocket: 'healthy',
@@ -297,8 +290,6 @@ const resourceUsage = reactive({
   network: 23
 })
 
-// Automated tasks
-const automatedTasks = ref([])
 const backups = ref([])
 const securityAlerts = ref([])
 const apiTests = ref([])
@@ -306,7 +297,7 @@ const apiTests = ref([])
 // Security status
 const securityStatus = reactive({
   level: 'high',
-  label: 'SÃ‰CURISÃ‰',
+  label: 'SÉCURISÉ',
   score: 95
 })
 
@@ -333,7 +324,6 @@ onUnmounted(() => {
 async function loadSystemData() {
   try {
     await Promise.all([
-      loadAutomatedTasks(),
       loadBackups(),
       loadSecurityAlerts(),
       loadApiTests(),
@@ -346,7 +336,7 @@ async function loadSystemData() {
   }
 }
 
-// PA2-QA-006 â€” Redis/jobs observability: queue depth, failed jobs and last
+// PA2-QA-006 — Redis/jobs observability: queue depth, failed jobs and last
 // run of scheduled tasks, backed by GET /platform/observability/queues.
 async function loadQueueObservability() {
   isLoadingObservability.value = true
@@ -362,7 +352,7 @@ async function loadQueueObservability() {
   }
 }
 
-// PA2-ADM-005 â€” Cross-tenant notification failure rate (24h) + curated
+// PA2-ADM-005 — Cross-tenant notification failure rate (24h) + curated
 // runbook links, backed by GET /platform/observability/notifications.
 async function loadNotificationObservability() {
   isLoadingNotificationObservability.value = true
@@ -376,42 +366,6 @@ async function loadNotificationObservability() {
   } finally {
     isLoadingNotificationObservability.value = false
   }
-}
-
-async function loadAutomatedTasks() {
-  // Mock automated tasks
-  automatedTasks.value = [
-    {
-      id: 1,
-      name: 'Sauvegarde quotidienne',
-      description: 'Sauvegarde automatique de la base de données',
-      schedule: '0 2 * * *',
-      enabled: true,
-      lastRun: new Date(Date.now() - 3600000),
-      nextRun: new Date(Date.now() + 82800000),
-      status: 'success'
-    },
-    {
-      id: 2,
-      name: 'Nettoyage des logs',
-      description: 'Suppression des logs de plus de 30 jours',
-      schedule: '0 3 * * 0',
-      enabled: true,
-      lastRun: new Date(Date.now() - 86400000 * 2),
-      nextRun: new Date(Date.now() + 86400000 * 5),
-      status: 'success'
-    },
-    {
-      id: 3,
-      name: 'Mise Ã  jour des certificats',
-      description: 'Renouvellement automatique des certificats SSL',
-      schedule: '0 4 1 * *',
-      enabled: true,
-      lastRun: new Date(Date.now() - 86400000 * 15),
-      nextRun: new Date(Date.now() + 86400000 * 15),
-      status: 'pending'
-    }
-  ]
 }
 
 async function loadBackups() {
@@ -452,7 +406,7 @@ async function loadSecurityAlerts() {
       type: 'suspicious_login',
       severity: 'medium',
       message: 'Tentative de connexion depuis une IP inhabituelle',
-      details: 'IP: 192.168.1.100 â€¢ Utilisateur: admin@example.com',
+      details: 'IP: 192.168.1.100 ”¢ Utilisateur: admin@example.com',
       timestamp: new Date(Date.now() - 1800000),
       status: 'open'
     },
@@ -461,7 +415,7 @@ async function loadSecurityAlerts() {
       type: 'rate_limit_exceeded',
       severity: 'low',
       message: 'Limite de taux dépassée pour l\'API',
-      details: 'Endpoint: /api/users â€¢ IP: 10.0.0.50',
+      details: 'Endpoint: /api/users ”¢ IP: 10.0.0.50',
       timestamp: new Date(Date.now() - 3600000),
       status: 'investigating'
     }
@@ -532,7 +486,6 @@ async function loadSystemConfig() {
   }
 }
 
-
 function startMetricsRefresh() {
   // Update metrics every 5 seconds
   metricsInterval = setInterval(updatePerformanceMetrics, 5000)
@@ -580,7 +533,7 @@ async function runHealthCheck() {
     systemStatus.api = 'healthy'
     systemStatus.websocket = 'healthy'
 
-    toast.success('Health check terminé â€¢ Tous les services sont opérationnels')
+    toast.success('Health check terminé ”¢ Tous les services sont opérationnels')
   } catch (error) {
     console.error('Health check failed:', error)
     toast.error('Erreur lors du health check')
@@ -607,12 +560,6 @@ async function toggleMaintenanceMode() {
 function refreshMetrics() {
   updatePerformanceMetrics()
   toast.success('Métriques actualisées')
-}
-
-function handleTaskCreated(task) {
-  automatedTasks.value.push(task)
-  showCreateTaskModal.value = false
-  toast.success('Tâche créée avec succès')
 }
 
 // Backup management
@@ -667,7 +614,7 @@ function dismissSecurityAlert(alertId) {
 // Configuration
 function updateConfig(section, config) {
   systemConfig.value[section] = { ...systemConfig.value[section], ...config }
-  toast.success('Configuration mise Ã  jour')
+  toast.success('Configuration mise à jour')
 }
 
 function resetConfig(section) {
@@ -700,7 +647,7 @@ function runApiTest(test) {
 }
 
 function editApiTest(test) {
-  toast.info(`Ã‰dition du test: ${test.name}`)
+  toast.info(`Édition du test: ${test.name}`)
 }
 
 function deleteApiTest(testId) {
@@ -713,4 +660,5 @@ function handleApiTestCreated(test) {
   showApiTesterModal.value = false
   toast.success('Test API créé')
 }
+
 </script>
