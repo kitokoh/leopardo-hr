@@ -28,9 +28,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  Future<void> _skip(int stepId) async {
+  Future<void> _skip(String stepKey) async {
     try {
-      await ref.read(onboardingRepositoryProvider).skipStep(stepId);
+      await ref.read(onboardingRepositoryProvider).skipStep(stepKey);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -166,7 +166,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     size: 20,
                                   ),
                                   tooltip: 'Passer',
-                                  onPressed: () => _skip(step.id),
+                                  onPressed: () => _skip(step.key),
                                 ),
                                 IconButton(
                                   icon: const Icon(
@@ -175,7 +175,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     size: 20,
                                   ),
                                   tooltip: 'Terminer',
-                                  onPressed: () => _complete(step.id),
+                                  onPressed: () => _complete(step.key),
                                 ),
                               ],
                             ),

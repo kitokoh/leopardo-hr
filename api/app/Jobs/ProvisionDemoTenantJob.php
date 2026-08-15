@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Mail\CommunicationMail;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use Illuminate\Bus\Queueable;
@@ -37,6 +35,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
         try {
             $result = $provisioner->execute($this->email, $this->companyName, $this->country);
 
+            // #2629 : le magic link (démo) est réellement émis — la méthode
+            // issueDemoAccess() envoie l'email avec un lien à usage unique
+            // (72 h) géré par DemoLoginController. Best-effort : un échec
+            // d'envoi ne fait pas échouer le provisioning.
+            $this->issueDemoAccess($result['manager']);
+
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail
             // client ; le magic link email est un bonus, jamais le seul canal).
@@ -47,12 +51,18 @@ class ProvisionDemoTenantJob implements ShouldQueue
                         'status' => 'ready',
                         'company_id' => $result['company']->id,
                         'login_url' => '/auth/login',
+                        'access_sent_at' => now(),
                         'provisioned_at' => now(),
                         'updated_at' => now(),
                     ]);
             }
 
-            // TODO: Generate magic link and send email to the user
+            // Issue #2620 : magic link envoyé au manager après provisioning
+            // réussi (token 72 h à usage unique, hash stocké sur extra_data).
+            if (isset($result['manager']) && $result['manager'] instanceof \App\Core\Auth\Domain\Models\Employee) {
+                $this->issueDemoAccess($result['manager']);
+            }
+
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 
         } catch (\Throwable $e) {
@@ -70,10 +80,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
         }
     }
 
-    /**
-     * @param  \App\Core\Auth\Domain\Models\Employee  $manager
-     */
-    private function issueDemoAccess(\App\Core\Auth\Domain\Models\Employee $manager): void
+    private function issueDemoAccess(Employee $manager): void
     {
         $token = Str::random(48);
         $expiresAt = now()->addHours(72);
