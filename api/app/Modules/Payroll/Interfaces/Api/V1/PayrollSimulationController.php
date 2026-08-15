@@ -131,39 +131,21 @@ class PayrollSimulationController extends Controller
             $rules->withCapsEnabled(! (bool) ($validated['ignore_caps'] ?? false));
         }
 
-        /** @var array{employee: float, employer: float} $social */
-        $social = $rules->calculateSocialCharges($gross);
+        // Issue #2220 — parité simulation/bulletin : le net, l'impôt et les
+        // cotisations passent par le pipeline UNIQUE utilisé par les
+        // bulletins (computeNetBreakdown), y compris la taxe de minimum
+        // fiscal (TRIMF SN via combineMinimumFiscalTax) — plus de divergence
+        // simulation vs bulletin (#1869).
+        $breakdown = $this->payrollCalculator->computeNetBreakdown($gross, $rules);
+        $social = $breakdown['social'];
+        $taxBase = round($breakdown['taxable_gross'], 2);
+        $incomeTax = $breakdown['income_tax'];
+        $netSalary = $breakdown['net_salary'];
+        $totalCost = $breakdown['total_cost'];
 
-        $taxBase = round($gross - $social['employee'], 2);
-
-        // Impôt par tranche (même logique que calculateProgressiveTax).
-        $bySlab = [];
-        $tax = 0.0;
-        foreach ($rules->taxSlabs() as $slab) {
-            $lowerBound = (float) $slab['min'];
-            if ($lowerBound > 0) {
-                $lowerBound -= 1;
-            }
-            $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
-            $taxableInSlab = min($taxBase, $upperBound) - $lowerBound;
-            if ($taxableInSlab <= 0) {
-                continue;
-            }
-            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
-            $tax += $slabTax;
-            $bySlab[] = [
-                'min' => (float) $slab['min'],
-                'max' => $slab['max'],
-                'rate' => (float) $slab['rate'],
-                'taxable_amount' => round($taxableInSlab, 2),
-                'tax' => $slabTax,
-            ];
-        }
-
-        // L'impôt réel du pays (abattements DZ, etc.) prime sur la somme brute.
-        $incomeTax = $rules->calculateIncomeTax($taxBase, 12, $gross);
-        $netSalary = round($gross - $social['employee'] - $incomeTax, 2);
-        $totalCost = round($gross + $social['employer'], 2);
+        // Impôt par tranche : convention mensuelle OU annualisée selon la
+        // règle pays — le total converge vers l'impôt du moteur (#2220).
+        $bySlab = $this->payrollCalculator->slabTaxBreakdown($rules, $gross, $taxBase, $incomeTax);
 
         // Issue #1874 — audit de la simulation (résultats agrégés uniquement).
         $this->auditRecorder->recordSimulation(
