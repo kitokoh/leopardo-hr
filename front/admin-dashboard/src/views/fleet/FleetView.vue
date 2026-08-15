@@ -17,7 +17,7 @@
         :key="tab.key"
         :class="[
           'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 hover:glass-bg'
+          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 glass-bg-hover'
         ]"
         @click="activeTab = tab.key"
       >
