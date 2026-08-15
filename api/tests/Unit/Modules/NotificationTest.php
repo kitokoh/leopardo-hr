@@ -7,6 +7,7 @@ namespace Tests\Unit\Modules;
 use App\Modules\Notification\Application\Actions\MarkNotificationsRead;
 use App\Modules\Notification\Application\Actions\SendNotification;
 use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,7 +17,7 @@ class NotificationTest extends TestCase
 
     public function test_send_notification_action_instantiates(): void
     {
-        $dispatcher = new NotificationDispatcher;
+        $dispatcher = new NotificationDispatcher(new PushNotificationService);
         $action = new SendNotification($dispatcher);
         $this->assertInstanceOf(SendNotification::class, $action);
     }

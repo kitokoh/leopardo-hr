@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { headers } from "next/headers";
 import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 
 export const metadata: Metadata = {
   title: {
@@ -66,15 +67,34 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: "/",
+    // QA 2026-08-15 (#2656) : le layout racine n'épingle plus de canonical
+    // global — chaque page porte le sien (sinon toutes les pages sans
+    // metadata propre émettaient canonical = homepage).
+    canonical: siteUrl,
   },
 };
 
-export default function RootLayout({
+// QA 2026-08-15 (#2657) : l'attribut lang est posé au SSR à partir de
+// Accept-Language (normalisé fr/en/ar/tr, défaut fr) au lieu de « fr »
+// codé en dur — les crawlers voyaient lang=fr sur du contenu en/tr/ar.
+// Le client corrige ensuite via LocaleSync (préférence localStorage).
+function resolveSsrLang(acceptLanguage: string | null): string {
+  const base = (acceptLanguage ?? '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .slice(0, 2);
+
+  return ['fr', 'en', 'ar', 'tr'].includes(base) ? base : 'fr';
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerList = await headers();
+  const ssrLang = resolveSsrLang(headerList.get('accept-language'));
   // Analytics scripts (GA4, Mixpanel) are only loaded when the vitrine
   // feature flag is explicitly enabled. Previously `gaId`/`mixpanelToken`
   // were read and injected independently of `NEXT_PUBLIC_ENABLE_ANALYTICS`,
@@ -85,7 +105,7 @@ export default function RootLayout({
   const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang={ssrLang} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#10b981" />
         <meta name="mobile-web-app-capable" content="yes" />
