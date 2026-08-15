@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/site-url';
 import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
-import { CaseStudyClient } from './CaseStudyClient';
+import { CaseStudyClient } from '../CaseStudyClient';
 
 // #3435 : metadata propres par slug (title/description/canonical) au lieu du
 // canonical /case-studies fixe du layout pour les 12 études de cas.
