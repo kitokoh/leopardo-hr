@@ -57,7 +57,19 @@ class TaxRateChangeLog extends Model
     // Append-only : pas de gestion des timestamps Eloquent (created_at = NOW()).
     public $timestamps = false;
 
-    protected $guarded = ['id'];
+    // Table append-only d'audit conformité (#3894) : $fillable explicite
+    // (allowlist) au lieu de $guarded — un futur create($request->all())
+    // ne peut pas falsifier les lignes d'audit.
+    protected $fillable = [
+        'table_name',
+        'record_id',
+        'action',
+        'actor_id',
+        'actor_role',
+        'previous_value',
+        'new_value',
+        'reason',
+    ];
 
     protected $casts = [
         'record_id' => 'integer',
