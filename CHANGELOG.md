@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(web): a11y FAQ + Navbar (Closes #3732).** Input de recherche /faq avec `<label>` sr-only + `aria-label` localisés (4 locales), accordéons avec `aria-expanded`/`aria-controls` + `role=region`, tiroir mobile Navbar : `aria-label` localisé (`copy.nav.menuLabel`) et toggle avec `aria-expanded`/`aria-controls` (parité desktop).
+
 - **fix(ci): gardes dev-hub câblées en CI — job hygiene-guards (Closes #3708).** `architecture-check.yml` exécute désormais sur PR et push main : `check-app-version-sync.sh` (anti-drift APP_VERSION, #3528), `check-env-example-parity.sh` (#1487), `check-migration-basename-collisions.sh` (#1962) et `check-country-catalog.sh` (#2600). Ces gardes bash-pures n'étaient appelées par aucun workflow — la régression APP_VERSION 4.23.5 (b0630dd5) et la dérive des 6 clés .env.example sont passées inaperçues sur main.
 - **docs: CHANGELOG.md — séquences mojibake résiduelles ré-encodées (issues #1589/#1612).** Deux occurrences mojibake ré-encodées en « Aucune évaluation » (ligne hygiène mobile #2738) ; garde Governance Gates repassée au vert pour les PRs API.
 - **fix(api): plus aucun message d'exception brut dans les réponses d'erreur (Closes #3725).** `EmployeeImportController`, `BulkPaymentController`, `WebhookController` (test), `AuthController` (callback Google + échange de jeton) renvoyaient `$e->getMessage()` (SQL/PDO/Redis/Socialite) vers les tenants — remplacé par des codes d'erreur stables (`EMPLOYEE_IMPORT_FAILED`, `BULK_PAYMENT_STATUS_UNAVAILABLE`, `WEBHOOK_DELIVERY_FAILED`, `GOOGLE_AUTH_FAILED`, `GOOGLE_TOKEN_INVALID`) + message générique, détails loggés serveur (pattern `PartnerDashboardController`). Spec : `docs/specifications/ISSUE_3725_EXCEPTION_LEAK.md`.
