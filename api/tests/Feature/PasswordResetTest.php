@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -137,5 +138,66 @@ class PasswordResetTest extends TestCase
             'password_confirmation' => 'new-password-123',
         ])->assertStatus(422)
             ->assertJsonPath('error', 'INVALID_RESET_TOKEN');
+    }
+
+    public function test_forgot_password_resolves_employee_in_dedicated_schema(): void
+    {
+        // #3363 : un employé d'un tenant à schéma dédié est invisible depuis
+        // shared_tenants/public — la résolution doit passer par
+        // public.user_lookups + SET search_path (pattern AuthService).
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Schéma dédié : test PostgreSQL uniquement.');
+        }
+
+        $schema = 'company_'.Str::lower(Str::random(8));
+
+        DB::statement('CREATE SCHEMA '.$schema);
+        try {
+            DB::statement('SET search_path TO '.$schema.', public');
+            $this->artisan('migrate', ['--path' => 'database/migrations/tenant', '--force' => true]);
+        } finally {
+            DB::statement('SET search_path TO public,shared_tenants');
+        }
+
+        // #3363 : le modèle Company bloque la création de tenants à schéma
+        // (booted() → abort 422, isolation physique phase 3) — le factory
+        // remplit toutes les colonnes, puis passage en mode schéma par update
+        // brut (le hook creating ne s'applique pas à l'update).
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        DB::table('companies')->where('id', $company->id)->update([
+            'schema_name' => $schema,
+            'tenancy_type' => 'schema',
+        ]);
+
+        try {
+            DB::statement('SET search_path TO '.$schema.', public');
+            /** @var Employee $employee */
+            $employee = Employee::factory()->create([
+                'company_id' => $company->id,
+                'email' => 'schema-tenant@example.com',
+                'password_hash' => Hash::make('old-password'),
+            ]);
+        } finally {
+            DB::statement('SET search_path TO public,shared_tenants');
+        }
+
+        DB::table('public.user_lookups')->updateOrInsert(
+            ['email' => 'schema-tenant@example.com'],
+            [
+                'company_id' => $company->id,
+                'schema_name' => $schema,
+                'employee_id' => $employee->id,
+                'role' => 'manager',
+            ]
+        );
+
+        Mail::fake();
+
+        $this->postJson('/api/v1/auth/forgot-password', ['email' => 'schema-tenant@example.com'])
+            ->assertOk();
+
+        Mail::assertSent(PasswordResetMail::class, fn ($mail) => $mail->hasTo('schema-tenant@example.com'));
+        $this->assertDatabaseHas('public.password_reset_tokens', ['email' => 'schema-tenant@example.com']);
     }
 }
