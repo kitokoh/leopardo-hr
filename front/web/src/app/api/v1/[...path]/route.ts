@@ -61,13 +61,33 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
-  const response = await fetch(toBackendUrl(request, path), {
-    method,
-    headers: proxyHeaders(request, sessionToken),
-    body,
-    redirect: 'manual',
-    cache: 'no-store',
-  });
+  // Issue #3523 : panne backend (DNS/socket/timeout) → exception non gérée
+  // → page HTML Next au lieu d'une 502 JSON parseable. Wrapper + timeout.
+  let response: Response;
+  try {
+    response = await fetch(toBackendUrl(request, path), {
+      method,
+      headers: proxyHeaders(request, sessionToken),
+      body,
+      redirect: 'manual',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (error) {
+    console.error('[api-proxy] backend unreachable', {
+      path: path.join('/'),
+      method,
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    return Response.json(
+      {
+        error: 'backend_unavailable',
+        message: 'Le service backend est temporairement indisponible.',
+      },
+      { status: 502 },
+    );
+  }
 
   const headers = new Headers(response.headers);
   headers.delete('content-encoding');
