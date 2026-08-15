@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web-offline): garde CI — les icônes du manifest PWA doivent exister (Closes #3963).** Les icônes 192/512 existent désormais sur main (ajoutées en parallèle) ; ce PR verrouille la non-régression : le workflow web-offline échoue si `manifest.json` déclare une icône absente de `public/`.
 - **fix(ci): deploy-main — déduplication par SHA réellement active (Closes #3904).** `cancel-in-progress: ${{ github.event_name == 'pull_request' }}` n'était jamais vrai (événements `workflow_run`/`workflow_dispatch`) → le même SHA s'exécutait en série à chaque run parent (observé 4× en 11 min, doublant E2E + OWASP et saturant la file CI). Groupe par-SHA conservé (`head_sha`, fallback `github.sha` pour le dispatch manuel) + `cancel-in-progress: true` : le 2e run du même SHA annule le 1er, deux SHA différents restent indépendants.
 
 - **fix(api): token.refresh applique aux 16 groupes de routes modules (Closes #3889).** Le middleware `TokenAutoRefreshMiddleware` (refresh silencieux des tokens Sanctum expirants) etait applique au groupe principal + growth/sso/user, mais absent de absence, billing, cabinet, cameras, dashboard, expense, hr_app, hr_extended, integrations, marketing, payroll_engine, planning, rh, tracking, user et ai → les clients mobiles recevaient un 401 a l'expiration au lieu du refresh silencieux (deconnexions forcees).
