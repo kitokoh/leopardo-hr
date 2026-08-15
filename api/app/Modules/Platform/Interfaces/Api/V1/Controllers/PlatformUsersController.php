@@ -13,7 +13,13 @@ use Illuminate\Support\Facades\DB;
 /**
  * Gestion des utilisateurs plateforme (issue #2269).
  *
- * Contrat SPA super-admin (front/admin-dashboard/src/views/users/*) :
+ * Décision #2519 (review 2026-08-15) : depuis le merge de #2466, le CRUD SPA
+ * super-admin passe par /platform/users (PlatformUserController). Cet endpoint
+ * /admin/users est CONSERVÉ comme source du lien employé (company.employee_id)
+ * nécessaire à la surface d'impersonation PA2-ADM-006 (#2518) — aucune autre
+ * API ne l'expose. À supprimer uniquement si l'impersonation est abandonnée.
+ *
+ * Contrat :
  *   - GET   /api/v1/admin/users          → liste paginée (recherche, tri, filtre statut)
  *   - GET   /api/v1/admin/users/{user}   → détail + entreprise liée
  *   - PATCH /api/v1/admin/users/{user}   → {is_active: bool} (422 si auto-désactivation)
