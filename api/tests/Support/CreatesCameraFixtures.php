@@ -32,6 +32,8 @@ trait CreatesCameraFixtures
             'status' => 'active',
             'features' => $features,
         ]);
+
+        return $company;
     }
 
     protected function createManager(
@@ -60,6 +62,9 @@ trait CreatesCameraFixtures
         ]);
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function authHeaders(Employee $employee, string $tokenName = 'tests'): array
     {
         $token = $employee->createToken($tokenName)->plainTextToken;
