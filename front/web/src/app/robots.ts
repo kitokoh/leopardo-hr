@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,7 +8,14 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api', '/auth', '/dashboard', '/.env', '/.git', '/node_modules'],
+        disallow: [
+        // Miroir du matcher middleware (src/middleware.ts) — routes session-protégées (#3375).
+        '/admin', '/api', '/auth', '/dashboard',
+        '/absences', '/attendance', '/billing', '/contracts', '/employees',
+        '/partner', '/payroll', '/reports', '/training', '/settings',
+        '/smart-attendance', '/social', '/social-marketing',
+        '/.env', '/.git', '/node_modules',
+      ],
       },
       {
         userAgent: 'Googlebot',

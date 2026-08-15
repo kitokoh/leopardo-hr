@@ -24,11 +24,11 @@ class Project {
       description: json['description'] as String?,
       startDate:
           json['start_date'] != null
-              ? DateTime.parse(json['start_date'] as String)
+              ? DateTime.tryParse(json['start_date'] as String? ?? '')
               : null,
       endDate:
           json['end_date'] != null
-              ? DateTime.parse(json['end_date'] as String)
+              ? DateTime.tryParse(json['end_date'] as String? ?? '')
               : null,
       status: json['status'] as String,
       memberIds:
@@ -82,7 +82,7 @@ class Task {
       projectId: json['project_id'] as int?,
       dueDate:
           json['due_date'] != null
-              ? DateTime.parse(json['due_date'] as String)
+              ? DateTime.tryParse(json['due_date'] as String? ?? '')
               : null,
       priority: json['priority'] as String,
       status: json['status'] as String,

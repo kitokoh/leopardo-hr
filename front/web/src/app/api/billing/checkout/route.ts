@@ -3,7 +3,7 @@ import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({
-  plan: z.enum(['starter', 'business', 'enterprise', 'pilot', 'operations', 'scale']),
+  plan: z.enum(['free', 'pilot', 'operations', 'enterprise']),
   billing: z.enum(['monthly', 'annual']).default('monthly'),
   email: z.string().email().max(255),
   company: z.string().min(2).max(120),
@@ -29,20 +29,16 @@ const SANDBOX_CHECKOUT = process.env.SANDBOX_CHECKOUT === 'true';
 
 /** Sandbox plan prices (EUR cents) — used when Stripe is not configured or in test mode */
 const SANDBOX_PRICES: Record<string, Record<string, number>> = {
+  free: { monthly: 0, annual: 0 },
   pilot: { monthly: 2900, annual: 2400 },
-  starter: { monthly: 2900, annual: 2400 },
   operations: { monthly: 9900, annual: 7900 },
-  business: { monthly: 9900, annual: 7900 },
-  scale: { monthly: 29900, annual: 23900 },
   enterprise: { monthly: 0, annual: 0 },
 };
 
 const PLAN_LABELS: Record<string, string> = {
+  free: 'Free',
   pilot: 'Pilot',
-  starter: 'Pilot',
   operations: 'Operations',
-  business: 'Operations',
-  scale: 'Scale',
   enterprise: 'Enterprise',
 };
 

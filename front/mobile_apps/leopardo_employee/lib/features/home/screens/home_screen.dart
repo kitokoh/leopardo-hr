@@ -14,6 +14,7 @@ import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -70,6 +71,13 @@ class HomeScreen extends ConsumerWidget {
                       stage: stage,
                       branding: branding,
                     ),
+                    if (stage == 'new') ...[
+                      const SizedBox(height: 12),
+                      // T117 (QA omnichannel 2026-08-15) : l'onboarding était
+                      // déclaré dans le routeur mais injoignable — entrée
+                      // visible quand le stage est « new ».
+                      _OnboardingEntryCard(primary: primary),
+                    ],
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
@@ -107,8 +115,7 @@ class _HeaderRow extends StatelessWidget {
   });
 
   final String firstName;
-  final String stage;
-  final TenantBranding? branding;
+  final String stage;  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +162,7 @@ class _HeroHeader extends StatelessWidget {
     const text = MobileSurface.text;
     const muted = MobileSurface.muted;
     final dateLabel = DateFormat.EEEE(
-      'fr_FR',
+      deviceIntlDateLocale,
     ).add_d().add_MMMM().format(DateTime.now());
 
     return Container(
@@ -335,3 +342,49 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
+
+/// T117 (QA omnichannel 2026-08-15) — entrée vers l'écran /onboarding,
+/// affichée quand le stage mobile est « new » (checklist non complétée).
+class _OnboardingEntryCard extends StatelessWidget {
+  const _OnboardingEntryCard({required this.primary});
+
+  final Color primary;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/onboarding'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: primary.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: primary.withValues(alpha: 0.30)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.rocket_launch, color: primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Compléter mon onboarding',
+                    style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Configurez votre espace en quelques étapes.',
+                    style: AppTypography.caption,
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: primary),
+          ],
+        ),
+      ),
+    );
+  }
+}

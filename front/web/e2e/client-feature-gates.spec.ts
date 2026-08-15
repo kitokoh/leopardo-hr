@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { setSessionCookie } from './session-helpers';
 
 type AnalyticsWindow = Window & {
   __LEOPARDO_ANALYTICS_EVENTS__?: Array<{
@@ -59,6 +60,11 @@ async function seedSession(page: Page, overrides: Record<string, unknown> = {}) 
     window.localStorage.removeItem('auth_token');
     window.localStorage.setItem('auth_user', JSON.stringify(user));
   }, userToStore);
+
+  // Issue #2746 — le middleware serveur exige le cookie httpOnly
+  // `leopardo_token` pour la zone dashboard : les sessions mockées doivent
+  // le poser (comme le proxy Next après un vrai login).
+  await setSessionCookie(page);
 }
 
 async function analyticsEvents(page: Page) {
@@ -106,7 +112,7 @@ test.describe('Client web feature gates', () => {
     await page.goto('/employees', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/employees$/);
-    await expect(page.locator('body')).toContainText('Total equipe');
+    await expect(page.locator('body')).toContainText('Total équipe');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
   });
 
@@ -158,7 +164,7 @@ test.describe('Client web feature gates', () => {
 
     await expect(page).toHaveURL(/\/reports$/);
     await expect(page.getByText('Trial').first()).toBeVisible();
-    await expect(page.locator('body')).toContainText('Generez et telechargez vos rapports RH');
+    await expect(page.locator('body')).toContainText('Générez et téléchargez vos rapports RH');
   });
 
   test('employee role cannot open manager payroll even if the feature exists', async ({ page }) => {

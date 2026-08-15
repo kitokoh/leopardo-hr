@@ -74,6 +74,12 @@
       </div>
 
       <div class="border-t border-gray-200 p-4">
+        <div
+          v-if="chatUnavailable"
+          class="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"
+        >
+          Chat IA plateforme indisponible (contrat 501 ADMIN_CHAT_UNAVAILABLE). Le service reviendra quand le backend sera branché.
+        </div>
         <form class="flex gap-2" @submit.prevent="sendMessage">
           <input
             v-model="inputMessage"
@@ -109,6 +115,9 @@ const activeConversation = ref(null)
 const messages = ref([])
 const inputMessage = ref('')
 const streaming = ref(false)
+// Contrat backend : POST /admin/ai/chat retourne 501 ADMIN_CHAT_UNAVAILABLE
+// tant que le service n'est pas branché (#3390) — on désactive le composer.
+const chatUnavailable = ref(false)
 const messagesContainer = ref(null)
 
 function formatDate(date) {

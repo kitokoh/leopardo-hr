@@ -126,8 +126,10 @@ import { computed, onMounted, ref } from 'vue'
 import api from '@/services/api'
 import TaxSlabEditor from '@/components/payroll/TaxSlabEditor.vue'
 import { useToast } from 'vue-toastification'
-import { translate } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
+const supportedCountries = useSupportedCountries()
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -140,21 +142,6 @@ function t(key, vars = {}) {
   }
   return msg
 }
-
-const supportedCountries = [
-  { code: 'DZ', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
-  { code: 'CM', flag: '🇨🇲', labelKey: 'common.countries.CM' },
-  { code: 'CI', flag: '🇨🇮', labelKey: 'common.countries.CI' },
-  { code: 'SN', flag: '🇸🇳', labelKey: 'common.countries.SN' },
-  { code: 'MA', flag: '🇲🇦', labelKey: 'common.countries.MA' },
-  { code: 'TN', flag: '🇹🇳', labelKey: 'common.countries.TN' },
-  { code: 'TR', flag: '🇹🇷', labelKey: 'common.countries.TR' },
-  { code: 'FR', flag: '🇫🇷', labelKey: 'common.countries.FR' },
-  { code: 'CG', flag: '🇨🇬', labelKey: 'common.countries.CG' },
-  { code: 'GA', flag: '🇬🇦', labelKey: 'common.countries.GA' },
-  { code: 'BF', flag: '🇧🇫', labelKey: 'common.countries.BF' },
-  { code: 'ML', flag: '🇲🇱', labelKey: 'common.countries.ML' },
-]
 
 const countryCode = ref('DZ')
 const scope = ref('national')
@@ -240,7 +227,8 @@ async function runSimulate() {
 }
 
 function money(value) {
-  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0))
+  // Issue #2715 — formatage selon la locale active (plus de fr-FR codé).
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), { maximumFractionDigits: 0 }).format(Number(value || 0))
 }
 
 onMounted(runSimulate)

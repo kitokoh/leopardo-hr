@@ -14,6 +14,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Plan 61 - cycles de paie et solde employe mobile-first.
@@ -34,7 +35,7 @@ class PayrollCycleController extends Controller
         $runs = PayrollRun::query()
             ->where('company_id', $actor->company_id)
             ->orderByDesc('period_start')
-            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
+            ->paginate(max(1, min(100, max(1, min(100, $request->integer('per_page', 15))))));
 
         // PA2-API-001: this endpoint used to return Laravel's raw paginator
         // shape (top-level current_page/data/links/...), which diverges from
@@ -264,6 +265,13 @@ class PayrollCycleController extends Controller
                 'verification_date' => $rules->verificationDate(),
             ];
         } catch (\Throwable $exception) {
+            // Ne jamais masquer silencieusement l'état de conformité (T132) :
+            // l'erreur est tracée pour l'observabilité, le front reçoit un
+            // état vide explicite.
+            Log::warning('payroll.compliance_for_failed', [
+                'exception' => $exception->getMessage(),
+            ]);
+
             return [];
         }
     }
