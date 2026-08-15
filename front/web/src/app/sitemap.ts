@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 
-import { SITE_URL as siteUrl } from '@/lib/site-url';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
 
 function localizedAlternates(path: string) {
@@ -65,27 +65,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
   // Déduplication des slugs toutes locales confondues : un seul entry par slug,
   // le post de la locale par défaut 'fr' gagne (itérée en premier).
-  const postsBySlug = new Map<string, BlogPost>();
-  for (const locale of locales) {
-    for (const post of getBlogPosts(locale)) {
-      if (!postsBySlug.has(post.slug)) {
-        postsBySlug.set(post.slug, post);
+  //
+  // #2276 / #2904 (régression merge hybride #2469) : le blog est gated par
+  // NEXT_PUBLIC_ENABLE_BLOG (blog/layout.tsx → notFound() si off → 404 live).
+  // Le sitemap ne doit JAMAIS publier d'URLs /blog/* quand le flag est off,
+  // sinon crawl 404 massif. `enableBlog` était relu mais inutilisé.
+  if (enableBlog) {
+    const postsBySlug = new Map<string, BlogPost>();
+    for (const locale of locales) {
+      for (const post of getBlogPosts(locale)) {
+        if (!postsBySlug.has(post.slug)) {
+          postsBySlug.set(post.slug, post);
+        }
       }
     }
+
+    const blogPages: MetadataRoute.Sitemap = [...postsBySlug.values()].map((post) => ({
+      url: `${siteUrl}/blog/${post.slug}`,
+      lastModified: post.date ? new Date(post.date) : today,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+      alternates: localizedAlternates(`/blog/${post.slug}`),
+    }));
+
+    return [...staticPages, ...blogPages];
   }
 
-  // The blog route is gated by NEXT_PUBLIC_ENABLE_BLOG (see
-  // app/(landing)/blog/layout.tsx): when the flag is off the pages return 404,
-  // so their URLs must NOT be advertised in the sitemap (SEO). Issue #2647.
-  const blogPages: MetadataRoute.Sitemap = enableBlog
-    ? [...postsBySlug.values()].map((post) => ({
-        url: `${siteUrl}/blog/${post.slug}`,
-        lastModified: post.date ? new Date(post.date) : today,
-        changeFrequency: 'monthly' as const,
-        priority: 0.6,
-        alternates: localizedAlternates(`/blog/${post.slug}`),
-      }))
-    : [];
-
-  return [...staticPages, ...blogPages];
+  return staticPages;
 }
