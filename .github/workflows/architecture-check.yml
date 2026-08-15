@@ -49,6 +49,9 @@ jobs:
       - name: Canonical domains guard (issue #3706)
         run: bash dev-hub/tools/check-canonical-domains.sh
 
+      - name: Mobile Firebase stubs guard (issue #3152)
+        run: bash dev-hub/tools/check-mobile-firebase-configs.sh
+
   phpstan-modules:
     name: PHPStan — Modules Architecture
     runs-on: ubuntu-latest
