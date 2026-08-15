@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Modules\Payroll\Domain\Models\Payroll;
 
+/** @extends \Illuminate\Database\Eloquent\Factories\Factory<Payroll> */
 class PayrollFactory extends Factory
 {
     protected $model = Payroll::class;
