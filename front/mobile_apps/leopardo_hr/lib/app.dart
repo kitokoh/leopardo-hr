@@ -13,17 +13,13 @@ import 'package:leopardo_hr/features/auth/screens/login_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/register_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
-import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
 import 'package:leopardo_hr/features/home/screens/hr_main_shell.dart';
-import 'package:leopardo_hr/features/modules/screens/modules_screen.dart';
 import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_hr/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_hr/features/payrolls/screens/payroll_list_screen.dart';
-import 'package:leopardo_hr/features/notifications/screens/notification_list_screen.dart';
-import 'package:leopardo_hr/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_hr/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_hr/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_hr/features/team/screens/team_screen.dart';
@@ -32,11 +28,6 @@ import 'package:leopardo_hr/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_hr/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_hr/features/user_auth/screens/company_request_screen.dart';
 import 'package:leopardo_hr/features/contracts/screens/contract_screen.dart';
-import 'package:leopardo_hr/features/training/screens/training_screen.dart';
-import 'package:leopardo_hr/features/expenses/screens/expense_list_screen.dart';
-import 'package:leopardo_hr/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:leopardo_hr/features/ai_voice/screens/ai_voice_screen.dart';
-import 'package:leopardo_hr/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_hr/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_hr/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_hr/features/schedules/screens/schedule_list_screen.dart';
@@ -175,20 +166,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PayrollListScreen(),
       ),
       GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationListScreen(),
-      ),
-      GoRoute(
-        path: '/evaluations',
-        builder: (context, state) => const EvaluationListScreen(),
-      ),
-      GoRoute(
         path: '/attendance',
         builder: (context, state) => const AttendanceScreen(),
-      ),
-      GoRoute(
-        path: '/history',
-        builder: (context, state) => const HistoryScreen(),
       ),
       GoRoute(
         path: '/me/monthly',
@@ -198,10 +177,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/tasks',
         builder: (context, state) => const TaskListScreen(),
-      ),
-      GoRoute(
-        path: '/modules/rh',
-        builder: (context, state) => const ModulesScreen(),
       ),
       GoRoute(
         path: '/cabinet',
@@ -227,26 +202,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/contracts',
         builder: (context, state) => const ContractScreen(),
-      ),
-      GoRoute(
-        path: '/training',
-        builder: (context, state) => const TrainingScreen(),
-      ),
-      GoRoute(
-        path: '/expenses',
-        builder: (context, state) => const ExpenseListScreen(),
-      ),
-      GoRoute(
-        path: '/ai-chat',
-        builder: (context, state) => const AiChatScreen(),
-      ),
-      GoRoute(
-        path: '/ai-voice',
-        builder: (context, state) => const AiVoiceScreen(),
-      ),
-      GoRoute(
-        path: '/vehicle-map',
-        builder: (context, state) => const VehicleMapScreen(),
       ),
 
       GoRoute(
