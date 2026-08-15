@@ -255,7 +255,8 @@
       "exportInProgress": "Disa aktarim yapiliyor...",
       "exportDone": "Disa aktarim tamamlandi",
       "exportError": "Disa aktarim basarisiz oldu",
-      "selectionExportDone": "Secim disa aktarimi tamamlandi"
+      "selectionExportDone": "Secim disa aktarimi tamamlandi",
+      "bulkDone": "Güncelleme tamamlandı"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
@@ -263,7 +264,10 @@
     "errors": {
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
-      "fix_fields": "Lütfen kırmızı alanları düzeltin"
+      "fix_fields": "Lütfen kırmızı alanları düzeltin",
+      "password_min": "Şifre en az 8 karakter olmalıdır",
+      "search_no_match": "Aramanızla eşleşen sayfa yok",
+      "update_failed": "Kullanıcı güncellenemedi"
     },
     "impersonation": {
       "title": "Bir çalışanı taklit et",
@@ -281,6 +285,11 @@
       "error": "Taklit oturumu oluşturulurken hata oluştu",
       "done": "Tamam",
       "employee": "Bağlı çalışan #:id"
+    },
+    "edit": {
+      "title": "Kullanıcıyı düzenle",
+      "status": "Durum",
+      "save": "Güncelle"
     }
   },
   "dashboard": {

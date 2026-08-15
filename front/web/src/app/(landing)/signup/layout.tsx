@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.signup.title,
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.signup.keywords,
   ogImage: pageMetadata.signup.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/signup',
+  canonical: `${getSiteUrl()}/signup`,
   robots: pageMetadata.signup.robots,
 });
 

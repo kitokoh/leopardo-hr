@@ -1,3 +1,4 @@
+import { getSiteUrl } from '@/lib/site';
 interface JsonLdProps {
   data: Record<string, unknown>;
 }
@@ -6,7 +7,7 @@ interface JsonLdProps {
 // construction US sans rapport — ne jamais l'utiliser dans les données
 // structurées. On utilise l'URL réelle de la marque (configurable).
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+  getSiteUrl();
 
 export function JsonLd({ data }: JsonLdProps) {
   return (

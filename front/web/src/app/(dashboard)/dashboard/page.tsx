@@ -608,10 +608,13 @@ export default function DashboardPage() {
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/dashboard/employees' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/dashboard/absences' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/dashboard/reports' },
-                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/dashboard/reports' },
+                  // Audit expert 2026-08-15 (issue #2603) : liens corrigés —
+                  // /dashboard/* n'existait pas (404) ; les routes réelles
+                  // sont /employees, /absences, /reports (route group (dashboard)).
+                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/employees' },
+                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/absences' },
+                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
+                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
                 ].map((action) => (
                   <Link
                     key={action.label}

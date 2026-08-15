@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { pageMetadata } from '@/modules/vitrine/lib/seo';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
+import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.blog.title,
@@ -10,7 +11,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.blog.keywords,
   ogImage: pageMetadata.blog.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/blog',
+  canonical: `${getSiteUrl()}/blog`,
 });
 
 export default function BlogLayout({

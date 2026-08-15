@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
+import { getSiteUrl } from '@/lib/site';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
 
 function localizedAlternates(path: string) {
@@ -60,6 +61,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/rh-startup', today, 'monthly', 0.7),
     page('/guides/checklist-paie', today, 'monthly', 0.7),
     page('/guides/planning-employes', today, 'monthly', 0.7),
+    // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
+    page('/blog', today, 'weekly', 0.7),
+    page('/signup', today, 'monthly', 0.6),
+    page('/checkout', today, 'monthly', 0.5),
+    page('/offline', today, 'monthly', 0.4),
+    page('/share', today, 'monthly', 0.4),
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).

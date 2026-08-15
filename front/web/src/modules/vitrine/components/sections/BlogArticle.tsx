@@ -8,6 +8,7 @@ import { ArticleJsonLd } from '@/components/JsonLd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BlogPost } from '@/modules/vitrine/data/blog';
+import { getSiteUrl } from '@/lib/site';
 
 export interface BlogArticleProps {
   post: BlogPost;
@@ -94,7 +95,7 @@ export function BlogArticle({
       });
   };
 
-  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://gestionemployer-backend.vercel.app';
+  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : getSiteUrl();
   const localeQuery = locale && locale !== 'fr' ? `?lang=${locale}` : '';
   const articleUrl = `${siteOrigin}/blog/${post.slug}${localeQuery}`;
   const articleImageUrl = new URL(post.image, siteOrigin).toString();

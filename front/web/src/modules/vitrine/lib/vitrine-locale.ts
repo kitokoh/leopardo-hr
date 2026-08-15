@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { getSiteUrl } from '@/lib/site';
 import {
   type AppLocale,
   applyDocumentLocale,
@@ -14,7 +15,7 @@ const LOCALE_EVENT = 'vitrine-locale-changed'
 // résout pas — DNS mort). Configurable via NEXT_PUBLIC_SITE_URL.
 const DEMO_APP_URL = process.env.NEXT_PUBLIC_SITE_URL
   ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '')}/dashboard`
-  : 'https://gestionemployer-backend.vercel.app/dashboard'
+  : `${getSiteUrl()}/dashboard`
 
 type LocaleOption = {
   value: AppLocale
@@ -154,9 +155,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
   fr: {
     nav: {
       sections: [
-        { id: 'fonctionnalites', label: 'Fonctionnalites' },
+        { id: 'fonctionnalités', label: 'Fonctionnalites' },
         { id: 'tarifs', label: 'Tarifs' },
-        { id: 'temoignages', label: 'Temoignages' },
+        { id: 'témoignages', label: 'Temoignages' },
         { id: 'faq', label: 'FAQ' },
       ],
       login: 'Connexion',
@@ -167,11 +168,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'RH Platform',
     },
     hero: {
-      badge: 'OS mobile-first pour equipes terrain',
+      badge: 'OS mobile-first pour équipes terrain',
       badgeNew: 'Nouveau',
       titleTop: 'Pilotez votre entreprise',
       titleBottom: 'avec une precision absolue.',
-      subtitle: 'Simplifiez vos RH, automatisez votre paie et connectez vos equipes terrain.',
+      subtitle: 'Simplifiez vos RH, automatisez votre paie et connectez vos équipes terrain.',
       subtitleHighlight: 'Leopardo est l\'OS tout-en-un',
       subtitleTail: 'pour transformer vos operations quotidiennes sans la complexite d\'un ERP.',
       mobileBadge: 'Disponible sur mobile',
@@ -190,31 +191,31 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       placeholder: 'email@entreprise.com',
       submit: 'Tester maintenant',
       submitting: 'Envoi...',
-      legal: 'Email uniquement. Notre equipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
-      success: "Demande recue. L'equipe Leopardo vous contacte sous 24h ouvrables.",
+      legal: 'Email uniquement. Notre équipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
+      success: "Demande recue. L'équipe Leopardo vous contacte sous 24h ouvrables.",
       error: "Impossible d'envoyer la demande pour le moment.",
     },
     problem: {
       badge: 'Le constat',
       title: 'La gestion RH traditionnelle vous freine ?',
-      subtitle: 'Les feuilles de presence papier, les erreurs de paie et le manque de visibilite sur le terrain ralentissent votre croissance.',
+      subtitle: 'Les feuilles de présence papier, les erreurs de paie et le manque de visibilité sur le terrain ralentissent votre croissance.',
       items: [
         { title: 'Pointage manuel et erreurs', description: 'Les oublis et les saisies manuelles coutent des heures precieuses chaque semaine.' },
-        { title: 'Opacite du terrain', description: 'Difficile de savoir qui est present et sur quelle tache en temps reel.' },
+        { title: 'Opacite du terrain', description: 'Difficile de savoir qui est present et sur quelle tâche en temps reel.' },
         { title: 'Complexite de la paie', description: 'Le calcul des variables de paie est un casse-tete mensuel sujet aux erreurs.' },
         { title: 'Documents eparpilles', description: 'Les contrats et justificatifs sont perdus dans des emails ou des classeurs.' },
       ],
     },
     solution: {
       badge: 'La solution Leopardo',
-      title: 'Un systeme d\'exploitation pour',
+      title: 'Un système d\'exploitation pour',
       subtitle: 'vos operations terrain.',
       description: 'Leopardo unifie tout votre flux operationnel dans une plateforme moderne, mobile-first et intuitive.',
       features: [
-        { title: 'Pointage Biometrique & Mobile', description: 'Securisez les entrees avec ZKTeco, QR code ou GPS mobile.' },
+        { title: 'Pointage Biometrique & Mobile', description: 'Securisez les entrées avec ZKTeco, QR code ou GPS mobile.' },
         { title: 'Automatisation de la Paie', description: 'Generez les variables de paie en un clic, sans risque d\'erreur.' },
         { title: 'Visibilite en Temps Reel', description: 'Dashboards dynamiques pour une prise de decision immediate.' },
-        { title: 'Self-Service Employe', description: 'Donnez de l\'autonomie a vos equipes avec une application dediee.' },
+        { title: 'Self-Service Employe', description: 'Donnez de l\'autonomie a vos équipes avec une application dediee.' },
       ],
     },
     features: {
@@ -225,7 +226,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     demo: {
       badge: 'Interface moderne',
-      title: 'Une experience',
+      title: 'Une expérience',
       titleHighlight: 'revolutionnaire',
       subtitle: 'Decouvrez une interface pensee pour la productivite. Chaque pixel est concu pour simplifier vos operations RH quotidiennes.',
       highlights: [
@@ -279,9 +280,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: "Mobile-First Company OS pour gerer votre personnel sur le terrain, en bureau et a distance. Employee, Manager et Platform Admin disponibles sur mobile.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
-        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute'] },
-        { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
+        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'A propos'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute', 'Branding'] },
+        { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)', 'Application mobile'] },
         { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
       ],
       rights: 'Tous droits reserves.',
@@ -423,9 +424,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
-        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
-        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
-        { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
+        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community', 'Branding'] },
+        { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)', 'Mobile apps'] },
         { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
       ],
       rights: 'All rights reserved.',
@@ -567,9 +568,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo'] },
-        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
-        { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkımızda'] },
+        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk', 'Marka'] },
+        { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)', 'Mobil uygulamalar'] },
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
       ],
       rights: 'Tum haklari saklidir.',
@@ -711,8 +712,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز'] },
-        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن'] },
+        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع', 'الهوية'] },
         { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
       ],

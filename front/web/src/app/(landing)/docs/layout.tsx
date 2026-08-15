@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { pageMetadata } from '@/modules/vitrine/lib/seo';
+import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.docs.title,
@@ -8,7 +9,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.docs.keywords,
   ogImage: pageMetadata.docs.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/docs',
+  canonical: `${getSiteUrl()}/docs`,
 });
 
 export default function DocsLayout({

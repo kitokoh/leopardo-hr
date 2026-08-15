@@ -1,10 +1,11 @@
+import { getSiteUrl } from '@/lib/site';
 /**
  * SEO Metadata for all pages
  * Optimized titles (50-60 chars), descriptions (150-160 chars), keywords (3-5)
  * Validates: Requirements 2.1, 2.2
  */
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+const siteUrl = getSiteUrl();;
 
 export interface PageMetadata {
   title: string;

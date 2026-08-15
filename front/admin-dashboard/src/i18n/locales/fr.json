@@ -255,7 +255,8 @@
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
       "exportError": "Erreur lors de l'export",
-      "selectionExportDone": "Export de la selection termine"
+      "selectionExportDone": "Export de la selection termine",
+      "bulkDone": "Mise à jour effectuée"
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
@@ -263,7 +264,10 @@
     "errors": {
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
-      "fix_fields": "Veuillez corriger les champs en rouge"
+      "fix_fields": "Veuillez corriger les champs en rouge",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères",
+      "search_no_match": "Aucune page ne correspond à votre recherche",
+      "update_failed": "Erreur lors de la mise à jour de l'utilisateur"
     },
     "impersonation": {
       "title": "Impersonner un employé",
@@ -281,6 +285,11 @@
       "error": "Erreur lors de la création de la session d'impersonation",
       "done": "Terminé",
       "employee": "Employé #:id"
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur",
+      "status": "Statut",
+      "save": "Mettre à jour"
     }
   },
   "dashboard": {

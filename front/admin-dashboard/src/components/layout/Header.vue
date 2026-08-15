@@ -185,6 +185,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -197,11 +198,12 @@ import {
   SunIcon,
   MoonIcon,
 } from '@heroicons/vue/24/outline'
+import { useToast } from 'vue-toastification'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 defineEmits(['toggle-sidebar'])
 
@@ -210,6 +212,9 @@ const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
+const router = useRouter()
+const toast = useToast()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const searchQuery = ref('')
 const showNotifications = ref(false)
 const showAlerts = ref(false)
@@ -233,11 +238,43 @@ onUnmounted(() => {
   }
 })
 
-// Methods
+// Audit expert 2026-08-15 (issue #2611) : la recherche du header était un
+// stub (console.log). Implémentation : navigation par mot-clé (titre/path
+// français → route SPA), avec feedback si aucune correspondance.
+const SEARCH_INDEX = [
+  { keywords: ['tableau de bord', 'dashboard', 'accueil'], path: '/' },
+  { keywords: ['analytics', 'statistiques', 'stats'], path: '/analytics' },
+  { keywords: ['globe', 'temps réel', 'temps reel', 'carte'], path: '/globe' },
+  { keywords: ['utilisateurs', 'users', 'comptes'], path: '/users' },
+  { keywords: ['entreprises', 'companies', 'tenants'], path: '/companies' },
+  { keywords: ['abonnements', 'subscriptions', 'plans'], path: '/subscriptions' },
+  { keywords: ['paie', 'payroll', 'salaires', 'bulletins'], path: '/payroll' },
+  { keywords: ['congés', 'conges', 'absences', 'leaves', 'vacances'], path: '/leaves' },
+  { keywords: ['contrats', 'contracts'], path: '/contracts' },
+  { keywords: ['recrutement', 'recruitment', 'candidats'], path: '/recruitment' },
+  { keywords: ['formations', 'training', 'sessions'], path: '/training' },
+  { keywords: ['flotte', 'fleet', 'véhicules', 'vehicules'], path: '/fleet' },
+  { keywords: ['chat', 'ia', 'ai', 'intelligence'], path: '/chat' },
+  { keywords: ['rapports', 'reports', 'export'], path: '/exports' },
+  { keywords: ['audit', 'journal'], path: '/audit' },
+  { keywords: ['webhooks', 'notifications sortantes'], path: '/webhooks' },
+  { keywords: ['marketing', 'oauth', 'réseaux', 'reseaux'], path: '/marketing/oauth' },
+  { keywords: ['support', 'tickets'], path: '/support' },
+  { keywords: ['système', 'system', 'tâches', 'taches', 'file', 'observabilite', 'observability'], path: '/system' },
+]
+
 function handleSearch() {
-  if (searchQuery.value.trim()) {
-    // Implement search functionality
-    console.log('Searching for:', searchQuery.value)
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return
+
+  const match = SEARCH_INDEX.find((entry) =>
+    entry.keywords.some((keyword) => query.includes(keyword) || keyword.includes(query))
+  )
+
+  if (match) {
+    router.push(match.path)
+  } else {
+    toast.error(t('users.errors.search_no_match', 'Aucune page ne correspond à votre recherche'))
   }
 }
 

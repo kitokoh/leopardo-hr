@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.testimonials.title,
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.testimonials.keywords,
   ogImage: pageMetadata.testimonials.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/testimonials',
+  canonical: `${getSiteUrl()}/testimonials`,
 });
 
 export default function TestimonialsLayout({

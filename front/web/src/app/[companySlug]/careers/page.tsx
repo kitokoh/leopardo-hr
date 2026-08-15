@@ -6,6 +6,7 @@ import { Navbar } from '@/modules/vitrine/components/Navbar';
 import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
+import { getSiteUrl } from '@/lib/site';
 import {
   getPublicCareersCompany,
   getPublicJobPostings,
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: CareersPortalPageProps): Prom
   return generateSEOMetadata({
     title: `Carrieres${displayName ? ` - ${displayName}` : ''} - ${jobs.length} offre${jobs.length > 1 ? 's' : ''} d'emploi`,
     description: `Decouvrez les offres d'emploi ouvertes chez ${displayName || 'cette entreprise'} et postulez en ligne en quelques minutes.`,
-    canonical: `https://gestionemployer-backend.vercel.app/${companySlug}/careers`,
+    canonical: `${getSiteUrl()}/${companySlug}/careers`,
     ogType: 'website',
     ogImage: company?.logo_url ?? undefined,
   });
@@ -64,7 +65,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
           itemListElement: jobs.map((job, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            url: `https://gestionemployer-backend.vercel.app/${companySlug}/careers/jobs/${job.id}`,
+            url: `${getSiteUrl()}/${companySlug}/careers/jobs/${job.id}`,
           })),
         }}
       />

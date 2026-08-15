@@ -204,7 +204,7 @@ export function SignupForm({
           // showing a verification screen for a code that was never sent.
           setPendingMessage(
             response.message ||
-              "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables."
+              "Demande d'essai recue. Notre équipe vous contacte sous 24h ouvrables."
           );
           setCurrentStep('pending');
         } else {
@@ -286,7 +286,7 @@ export function SignupForm({
         setOtpError(response.message || 'Code invalide ou expire.');
       }
     } catch (error) {
-      setOtpError('Erreur lors de la verification. Veuillez reessayer.');
+      setOtpError('Erreur lors de la verification. Veuillez réessayer.');
     } finally {
       setIsVerifying(false);
     }
@@ -381,7 +381,7 @@ export function SignupForm({
                 <label className="block">
                   <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                     <Users className="h-4 w-4" />
-                    Taille equipe
+                    Taille équipe
                   </span>
                   <select
                     className={selectClassName}
@@ -415,7 +415,7 @@ export function SignupForm({
 
               {role === 'operations' && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-                  Nous preparerons un parcours axe terrain : pointage, taches, kiosk et suivi d&apos;equipe.
+                  Nous preparerons un parcours axe terrain : pointage, tâches, kiosk et suivi d&apos;équipe.
                 </div>
               )}
 
@@ -435,7 +435,7 @@ export function SignupForm({
                   </Link>{' '}
                   et la{' '}
                   <Link href="/privacy" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                    politique de confidentialite
+                    politique de confidentialité
                   </Link>
                 </label>
               </div>
@@ -598,9 +598,9 @@ export function SignupForm({
             </p>
 
             <div className="rounded-xl bg-transparent px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-              Notre systeme de creation d&apos;espace instantane est momentanement
+              Notre système de creation d&apos;espace instantane est momentanement
               indisponible (redemarrage serveur). Votre demande est bien
-              enregistree : une personne de l&apos;equipe Leopardo vous contactera
+              enregistree : une personne de l&apos;équipe Leopardo vous contactera
               par email sous 24h ouvrables avec un acces adapte a votre
               contexte.
             </div>
@@ -646,7 +646,7 @@ export function SignupForm({
                   Votre espace est pret !
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Le sandbox de demonstration est provisionne. Accedez-y directement :
+                  Le sandbox de demonstration est provisionne. Accédez-y directement :
                 </p>
                 {trialLoginUrl ? (
                   <div className="space-y-3">
@@ -687,7 +687,7 @@ export function SignupForm({
                   Creation interrompue
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  Une erreur est survenue lors de la creation de votre espace. Notre equipe
+                  Une erreur est survenue lors de la creation de votre espace. Notre équipe
                   vous contactera par email sous 24h ouvrables avec un acces adapte.
                 </p>
               </>
@@ -828,7 +828,7 @@ export function SignupForm({
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-transparent dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     <Download className="h-4 w-4" />
-                    Telecharger l&apos;app
+                    Télécharger l&apos;app
                   </Link>
                 </div>
 
