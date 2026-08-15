@@ -20,7 +20,7 @@
 | 13ème mois (conventions de branche) | ✅ implémentée (pilot) | pratique généralisée | à valider expert |
 | Congés (2,2 j/mois, +0,2 j/5 ans) | 📝 à documenter/test | Code travail CI art. 25.1 | — |
 | HS (15 % / 35 % / 50 %) | ✅ implémentée (pilot) | Code travail CI art. 21 | à valider expert |
-| Préavis (art. 18) | ✅ implémentée (pilot, niveau employé) | Code travail CI art. 18 | à valider expert |
+| Préavis (art. 18) | ✅ implémentée (pilot, par catégorie — #2264) | Code travail CI art. 18 | à valider expert |
 | Jours fériés fixes CI | 📝 via CRUD jours fériés (#1811) | loi | — |
 | Jours fériés islamiques mobiles | 📝 via calendrier islamique (#1812) | table `islamic_calendar` | — |
 
@@ -121,10 +121,18 @@ Codes : `CNSS_CI_RET_EMP`, `CNSS_CI_RET_PAT`, `CNSS_CI_FAM_PAT`,
 | Employés / Techniciens | 1 mois | 2 mois |
 | Cadres | 3 mois | 3 mois |
 
-⚠️ L'interface `noticePeriodDays(yearsOfService)` n'expose que l'ancienneté :
-implémentation pilote au niveau **employé/technicien** (< 5 ans : 30 j ;
-≥ 5 ans : 60 j) — ouvriers et cadres documentés ici, la catégorie du contrat
-sera prise en compte dans un suivi.
+Implémentation par catégorie professionnelle (issue #2264, `category` porté
+par `employees.ipres_category`, transmis par `EndOfContractService`) :
+
+| Catégorie | < 5 ans | ≥ 5 ans |
+|---|---|---|
+| Ouvriers | 8 jours | 15 jours |
+| Employés / Techniciens (défaut) | 30 j (1 mois) | 60 j (2 mois) |
+| Cadres | 90 j (3 mois) | 90 j (3 mois) |
+
+Le palier « 90 j sans catégorie pour ≥ 10 ans » (ancienne approximation) est
+supprimé : il contredisait la ligne employé/technicien. Niveau pilot — à
+valider par expert-comptable OHADA-CI (#1904).
 
 ## 9. 13ème mois
 

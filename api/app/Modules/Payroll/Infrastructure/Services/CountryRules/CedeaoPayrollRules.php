@@ -323,13 +323,17 @@ class CedeaoPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * CI (#1825) : préavis légal (Code du travail CI art. 18) — la matrice
-     * complète distingue ouvriers (< 5 ans : 8 j ; ≥ 5 ans : 15 j),
-     * employés/techniciens (< 5 ans : 1 mois ; ≥ 5 ans : 2 mois) et cadres
-     * (3 mois). Le moteur ne transmet pas la catégorie à
-     * noticePeriodDays() : approximation pilote sur l'ancienneté seule
-     * (palier employé/technicien), matrice complète documentée
-     * CI_COMPLIANCE.md §6 — à valider par expert-comptable OHADA-CI.
+     * CI (#1825/#2264) : préavis légal (Code du travail CI art. 18) — matrice
+     * complète par catégorie professionnelle :
+     * - 'cadre' → 90 j (3 mois, quelle que soit l'ancienneté)
+     * - 'ouvrier'/'worker' → 8 j (< 5 ans) / 15 j (≥ 5 ans)
+     * - défaut (employés/techniciens, null) → 30 j (< 5 ans) / 60 j (≥ 5 ans)
+     * La catégorie est portée par `employees.ipres_category` et transmise par
+     * EndOfContractService::resolveNoticeDays() (SN #2123). Le palier 90 j
+     * sans catégorie (≥ 10 ans) a été retiré : il contredisait la ligne
+     * employé/technicien de CI_COMPLIANCE.md §8. Sources : CI_COMPLIANCE.md
+     * §8 (Code travail CI art. 18) — à valider par expert-comptable
+     * OHADA-CI (niveau pilot).
      */
     public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
@@ -344,11 +348,18 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return parent::noticePeriodDays($yearsOfService);
         }
 
-        return match (true) {
-            $yearsOfService < 5.0 => 30.0,
-            $yearsOfService < 10.0 => 60.0,
-            default => 90.0,
-        };
+        $category = strtolower((string) $category);
+
+        if ($category === 'cadre') {
+            return 90.0;
+        }
+
+        if (in_array($category, ['ouvrier', 'worker'], true)) {
+            return $yearsOfService < 5.0 ? 8.0 : 15.0;
+        }
+
+        // Employés / techniciens (défaut, pilote historique).
+        return $yearsOfService < 5.0 ? 30.0 : 60.0;
     }
 
     public function timezone(): string
