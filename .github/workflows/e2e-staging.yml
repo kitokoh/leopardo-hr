@@ -1,18 +1,23 @@
-name: E2E - Playwright Staging
+name: E2E - Playwright Prod Smoke
 
+# ⚠️ #3906 : « staging » visait en réalité la PRODUCTION (URLs par défaut =
+# Render prod, admin pages.dev prod, vitrine vercel prod). Aucun environnement
+# de staging réel n'existe (#1485) — ce workflow est un **prod smoke test**.
+# Renommé en « E2E - Playwright Prod Smoke » pour être honnête ; provisionner
+# un vrai staging (vars.STAGING_API_URL) permettra de repasser en staging.
 on:
   workflow_dispatch:
     inputs:
       staging_url:
-        description: "API/admin staging base URL to test"
+        description: "API/admin base URL to test (défaut = PRODUCTION)"
         required: false
         default: ""
       web_staging_url:
-        description: "Web vitrine staging base URL to test"
+        description: "Web vitrine base URL to test (défaut = PRODUCTION)"
         required: false
         default: ""
       demo_auth_smoke:
-        description: "Run real demo auth smoke with staging/demo credentials"
+        description: "Run real demo auth smoke with production/demo credentials"
         required: false
         default: "false"
   workflow_run:
