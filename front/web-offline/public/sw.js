@@ -10,7 +10,18 @@ const STATIC_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        STATIC_ASSETS.map(async (asset) => {
+          try {
+            const response = await fetch(asset, { cache: 'no-cache' });
+            if (response.ok) await cache.put(asset, response);
+          } catch {
+            // An unavailable optional asset must not abort SW installation.
+          }
+        })
+      );
+    })
   );
   self.skipWaiting();
 });
