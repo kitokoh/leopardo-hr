@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(kiosk): hygiène — config.json gitignoré, apiBaseUrl normalisé, sonde /health (Closes #3590).** (1) `config.json` (token réel, scénario documenté « copier config.example.json ») n'était ignoré nulle part → ajouté au `.gitignore` kiosk. (2) Drift `apiBaseUrl` : `bridge.py` concaténait brut alors qu'`app.js` normalise `/api/v1` — une config sans suffixe marchait pour l'UI mais 404 toute la sync → `SyncEngine` applique la même normalisation. (3) `online_status()` téléchargeait le roster complet à chaque poll 15 s → sonde `GET /health` (léger, public). Tests unitaires bridge : 3 globals + 4 normalisation/sonde.
 ### Fixed
 - **fix(api): webhook email-bounce configurable (Closes #3058).** `services.mail_bounce_webhook.secret` n'était défini nulle part → 503 permanent malgré le fail-closed #2616. Ajout de la clé `config/services.php` (env `MAIL_BOUNCE_WEBHOOK_SECRET`) + entrée `.env.example` ; vide = refusé (défensif).
 
