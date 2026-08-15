@@ -26,7 +26,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Tarification',
     question: 'Comment fonctionne la tarification ?',
-    answer: 'Nous proposons trois plans en facturation mensuelle ou annuelle : Starter à 29 €/mois (20 employés inclus), Business à 79 €/mois (200 employés inclus) et Enterprise à 199 €/mois (employés illimités). Chaque plan démarre par un essai gratuit de 14 jours.',
+    answer: 'Nous proposons des plans mensuels et annuels adaptés à la taille de votre équipe. Le plan Free est gratuit jusqu\'à 5 employés, le plan Pilot démarre à 29 €/mois, le plan Operations inclut toutes les fonctionnalités avancées, et le plan Enterprise offre des options sur mesure.',
   },
   {
     category: 'Tarification',
@@ -39,12 +39,12 @@ const faqItems: FaqItem[] = [
     answer: 'Leopardo RH s\'integre avec les bornes ZKTeco pour le pointage par empreinte digitale, reconnaissance faciale ou QR code. Les pointages sont synchronises en temps reel avec le serveur central, avec support du mode offline.',
   },
   {
-    category: 'Fonctionnalités',
+    category: 'Fonctionnalites',
     question: 'Peut-on generer des bulletins de paie multi-pays ?',
-    answer: 'Oui, Leopardo RH supporte la paie multi-pays avec 9 moteurs de regles locales (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie) : baremes fiscaux et cotisations sociales specifiques a chaque pays ou zone. Les bulletins sont generes en PDF.',
+    answer: 'Oui, Leopardo RH supporte la paie pour 5 pays (France, Algerie, Turquie, Maroc, Tunisie) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
   },
   {
-    category: 'Fonctionnalités',
+    category: 'Fonctionnalites',
     question: 'L\'application mobile est-elle disponible ?',
     answer: 'Oui, l\'application mobile Leopardo RH est disponible pour iOS et Android. Elle permet aux employés de pointer, consulter leurs fiches de paie, demander des congés, voir l\'organigramme et recevoir des notifications push.',
   },
@@ -54,14 +54,14 @@ const faqItems: FaqItem[] = [
     answer: 'Toutes les donnees sont chiffrees en transit (TLS 1.3) et au repos. L\'architecture multi-tenant utilise des schemas PostgreSQL isoles par entreprise. Nous appliquons les bonnes pratiques OWASP et effectuons des audits de sécurité reguliers.',
   },
   {
-    category: 'Sécurité',
+    category: 'Securite',
     question: 'Etes-vous conforme au RGPD ?',
     answer: 'Oui, Leopardo RH est conforme au RGPD. Les donnees sont hebergees en Europe, et nous offrons des outils d\'export et de suppression des donnees personnelles conformes aux exigences reglementaires.',
   },
   {
     category: 'Support',
     question: 'Quel support est disponible ?',
-    answer: 'Le plan Starter inclut le support par email sous 48h. Le plan Business inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
+    answer: 'Le plan Free inclut le support communautaire. Le plan Pilot inclut le support par email sous 48h. Le plan Operations inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
   },
   {
     category: 'Integration',

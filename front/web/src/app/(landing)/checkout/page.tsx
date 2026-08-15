@@ -206,7 +206,7 @@ function PlanSummaryCard({
   billing: 'monthly' | 'annual';
   onChangeBilling: (b: 'monthly' | 'annual') => void;
 }) {
-  const cfg = PLAN_CONFIG[plan] ?? PLAN_CONFIG.free;
+  const cfg = PLAN_CONFIG[plan];
   const Icon = cfg.icon;
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
 
@@ -371,7 +371,7 @@ function StepRecap({
   onChangeBilling: (b: 'monthly' | 'annual') => void;
   onNext: () => void;
 }) {
-  const cfg = PLAN_CONFIG[plan] ?? PLAN_CONFIG.free;
+  const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
 
   return (
@@ -845,7 +845,7 @@ function StepPayment({
   onBack: () => void;
 }) {
   const router = useRouter();
-  const cfg = PLAN_CONFIG[plan] ?? PLAN_CONFIG.free;
+  const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
 
   const [cardNumber, setCardNumber] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.number : '');
@@ -1126,13 +1126,13 @@ function CheckoutInner() {
   const searchParams = useSearchParams();
   // #2907 : clés canoniques free/pilot/operations/enterprise ; les anciens
   // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
-  const rawPlan = (searchParams.get('plan') || 'starter') as string;
+  const rawPlan = (searchParams.get('plan') || 'business') as string;
   const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
-  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'free') as PlanKey;
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'operations') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 
-  const cfg = PLAN_CONFIG[plan] ?? PLAN_CONFIG.free;
+  const cfg = PLAN_CONFIG[plan];
   const isFree = cfg.isFree;
   const totalSteps = isFree ? 2 : 3;
   const stepLabels = isFree

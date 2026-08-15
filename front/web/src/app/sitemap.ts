@@ -2,7 +2,6 @@ import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
-import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
 
 const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -53,7 +52,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/faq', today, 'monthly', 0.6),
     page('/testimonials', today, 'monthly', 0.6),
     page('/case-studies', today, 'monthly', 0.6),
-    ...getAllCaseStudySlugs().map((slug) => page(`/case-studies/${slug}`, today, 'monthly', 0.6)),
     page('/videos', today, 'monthly', 0.55),
     page('/branding', today, 'monthly', 0.5),
     page('/careers', today, 'monthly', 0.5),
@@ -63,11 +61,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/rh-startup', today, 'monthly', 0.7),
     page('/guides/checklist-paie', today, 'monthly', 0.7),
     page('/guides/planning-employes', today, 'monthly', 0.7),
-    // #3378 : /blog gated sur NEXT_PUBLIC_ENABLE_BLOG (404 si off), /offline
-    // retiré (route interne du service worker — pas une page crawlable),
-    // /share déjà retiré (#3399/#3355, route POST-only).
+    // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
+    page('/blog', today, 'weekly', 0.7),
     page('/signup', today, 'monthly', 0.6),
     page('/checkout', today, 'monthly', 0.5),
+    page('/offline', today, 'monthly', 0.4),
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
@@ -79,8 +77,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Le sitemap ne doit JAMAIS publier d'URLs /blog/* quand le flag est off,
   // sinon crawl 404 massif. `enableBlog` était relu mais inutilisé.
   if (enableBlog) {
-    staticPages.push(page('/blog', today, 'weekly', 0.7));
-
     const postsBySlug = new Map<string, BlogPost>();
     for (const locale of locales) {
       for (const post of getBlogPosts(locale)) {
