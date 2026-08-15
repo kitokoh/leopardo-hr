@@ -137,6 +137,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // ── Module 4 — HR Referentials ────────────────────────────────────────────
     Route::get('/departments', [DepartmentController::class, 'index']);
     Route::post('/departments', [DepartmentController::class, 'store']);
+    Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::get('/departments/{department}', [DepartmentController::class, 'show'])->whereNumber('department');
     Route::put('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::patch('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
