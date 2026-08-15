@@ -126,15 +126,19 @@ class BankExportContractApiTest extends TestCase
         ])->assertStatus(422);
     }
 
-    public function test_store_unknown_run_returns_404(): void
+    public function test_store_unknown_run_returns_422(): void
     {
         [$company, $manager] = $this->context();
 
         Sanctum::actingAs($manager);
+        // Le contrôleur masque l'existence du run (anti-fuite) : réponse 422
+        // « Payroll run not found » (cf. BankExportController@store — le run
+        // inconnu OU cross-tenant renvoie la même erreur de validation).
         $this->postJson('/api/v1/bank-exports', [
             'payroll_run_id' => 999_999,
             'format' => 'csv_generic',
-        ])->assertNotFound();
+        ])->assertStatus(422)
+            ->assertJsonPath('message', 'Payroll run not found.');
     }
 
     /**

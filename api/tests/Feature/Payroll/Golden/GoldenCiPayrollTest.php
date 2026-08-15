@@ -277,6 +277,25 @@ class GoldenCiPayrollTest extends TestCase
     }
 
     /**
+     * @return array<string, array{string, float, float}>
+     */
+    public static function preavisParCategorieProvider(): array
+    {
+        // CI_COMPLIANCE.md §8 (Code du travail art. 18, implémenté #2372) :
+        //  ouvriers 8/15 j · employés/techniciens 30/60 j · cadres 90 j.
+        return [
+            'ouvrier moins de 5 ans' => ['ouvrier', 2.0, 8.0],
+            'ouvrier 5 ans et plus' => ['ouvrier', 7.0, 15.0],
+            'worker 10 ans' => ['worker', 10.0, 15.0],
+            'employe moins de 5 ans' => ['employee', 2.0, 30.0],
+            'employe 5 ans et plus' => ['employee', 7.0, 60.0],
+            'technicien 12 ans' => ['technician', 12.0, 60.0],
+            'cadre 2 ans' => ['cadre', 2.0, 90.0],
+            'cadre 15 ans' => ['cadre', 15.0, 90.0],
+        ];
+    }
+
+    /**
      * @return array<string, array{float, float}>
      */
     public static function preavisProvider(): array
