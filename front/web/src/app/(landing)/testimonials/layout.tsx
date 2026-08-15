@@ -1,15 +1,20 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { headers } from 'next/headers';
+import { generateMetadata as generateSEOMetadata, localizedPageMetadata, resolveSsrLang, pageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.testimonials.title,
-  description: pageMetadata.testimonials.description,
+export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const lang = headerList.get('x-lang') ?? resolveSsrLang(headerList.get('accept-language'));
+  const meta = localizedPageMetadata('testimonials', lang);
+  return generateSEOMetadata({    title: meta.title,
+    description: meta.description,
   keywords: pageMetadata.testimonials.keywords,
   ogImage: pageMetadata.testimonials.ogImage,
   ogType: 'website',
   canonical: `${SITE_URL}/testimonials`,
 });
+}
 
 export default function TestimonialsLayout({
   children,

@@ -1,18 +1,23 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, resolveSsrLang} from '@/modules/vitrine/lib/seo';
+import { localizedPageMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.blog.title,
-  description: pageMetadata.blog.description,
+export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const lang = headerList.get('x-lang') ?? resolveSsrLang(headerList.get('accept-language'));
+  const meta = localizedPageMetadata('blog', lang);
+  return generateSEOMetadata({    title: meta.title,
+    description: meta.description,
   keywords: pageMetadata.blog.keywords,
   ogImage: pageMetadata.blog.ogImage,
   ogType: 'website',
   canonical: `${SITE_URL}/blog`,
 });
+}
 
 export default function BlogLayout({
   children,

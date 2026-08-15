@@ -3,37 +3,25 @@ import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/site-url';
 import {
   generateMetadata as generateSEOMetadata,
+  localizedPageMetadata,
   pageMetadata,
   generateFAQSchema,
+  resolveSsrLang,
 } from '@/modules/vitrine/lib/seo';
 import { t } from '@/lib/i18n/locale-catalog';
 import { getPricingFaq } from '@/modules/vitrine/data/pricing-faq';
 import type { AppLocale } from '@/lib/i18n';
 
-// #3487 — la meta description pricing est localisée par requête (Accept-Language
-// SSR, même logique que le root layout #2719) au lieu de t('fr', …) codé en dur.
-function resolveSsrLang(acceptLanguage: string | null): AppLocale {
-  const base = (acceptLanguage ?? '')
-    .split(',')[0]
-    .trim()
-    .toLowerCase()
-    .slice(0, 2);
-
-  return (['fr', 'en', 'ar', 'tr'] as const).includes(base as AppLocale)
-    ? (base as AppLocale)
-    : 'fr';
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const headerList = await headers();
-  const locale = resolveSsrLang(headerList.get('accept-language'));
+  const locale =
+    (headerList.get('x-lang') as AppLocale | null) ??
+    resolveSsrLang(headerList.get('accept-language'));
 
+  const meta = localizedPageMetadata('pricing', locale);
   return generateSEOMetadata({
-    title: pageMetadata.pricing.title,
-    description:
-      locale === 'fr'
-        ? pageMetadata.pricing.description
-        : t(locale, 'seo.pricing.description', pageMetadata.pricing.description),
+    title: meta.title,
+    description: meta.description,
     keywords: pageMetadata.pricing.keywords,
     ogImage: pageMetadata.pricing.ogImage,
     ogType: 'website',

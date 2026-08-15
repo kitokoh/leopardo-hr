@@ -1,16 +1,8 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { headers } from 'next/headers';
+import { generateMetadata as generateSEOMetadata, localizedPageMetadata, pageMetadata, resolveSsrLang } from '@/modules/vitrine/lib/seo';
 import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
-
-const listingMetadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.caseStudies.title,
-  description: pageMetadata.caseStudies.description,
-  keywords: pageMetadata.caseStudies.keywords,
-  ogImage: pageMetadata.caseStudies.ogImage,
-  ogType: 'website',
-  canonical: `${SITE_URL}/case-studies`,
-});
 
 // #3435 : metadata par slug (title/description/canonical propres) au lieu du
 // canonical fixe du layout pour les 12 études de cas.
@@ -20,13 +12,24 @@ export async function generateMetadata({
   params: Promise<{ slug?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const headerList = await headers();
+  const lang = headerList.get('x-lang') ?? resolveSsrLang(headerList.get('accept-language'));
+  const meta = localizedPageMetadata('caseStudies', lang);
+  const listing = generateSEOMetadata({
+    title: meta.title,
+    description: meta.description,
+    keywords: pageMetadata.caseStudies.keywords,
+    ogImage: pageMetadata.caseStudies.ogImage,
+    ogType: 'website',
+    canonical: `${SITE_URL}/case-studies`,
+  });
   if (!slug) {
-    return listingMetadata;
+    return listing;
   }
 
   const study = getCaseStudy(slug);
   if (!study) {
-    return listingMetadata;
+    return listing;
   }
 
   return generateSEOMetadata({

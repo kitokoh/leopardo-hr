@@ -18,8 +18,42 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
+// #4004 : les landing pages portent la locale ?lang= (useVitrineLocale). Le
+// middleware la transmet en en-tête `x-lang` pour que generateMetadata() des
+// layouts puisse localiser title/description en SSR (les layouts Next ne
+// reçoivent pas searchParams). Les chemins dashboard gardent le garde session.
+const LANDING_MATCHER = [
+  '/', '/about', '/blog/:path*', '/branding', '/careers', '/case-studies',
+  '/changelog', '/checkout/:path*', '/comptabilite', '/contact', '/demo',
+  '/docs/:path*', '/documents', '/download', '/employes', '/faq',
+  '/guides/:path*', '/integrations', '/marketing', '/mobile', '/pricing',
+  '/signup', '/testimonials', '/videos',
+];
+
+function isLandingPath(pathname: string): boolean {
+  return LANDING_MATCHER.some((pattern) => {
+    if (pattern === '/') return pathname === '/';
+    // Normalise les segments dynamiques du matcher ('/guides/:path*' → '/guides').
+    const base = pattern.replace(/:.*$/, '').replace(/\/$/, '');
+    return pathname === base || pathname.startsWith(base + '/');
+  });
+}
+
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (isLandingPath(pathname)) {
+    const lang = request.nextUrl.searchParams.get('lang');
+    if (lang) {
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-lang', lang);
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+
 
   // NOTE (issue #3522): this is a cosmetic/UX gate only, meant to avoid
   // serving dashboard HTML/JS to obviously unauthenticated visitors before
@@ -39,6 +73,11 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/', '/about', '/blog/:path*', '/branding', '/careers', '/case-studies',
+    '/changelog', '/checkout/:path*', '/comptabilite', '/contact', '/demo',
+    '/docs/:path*', '/documents', '/download', '/employes', '/faq',
+    '/guides/:path*', '/integrations', '/marketing', '/mobile', '/pricing',
+    '/signup', '/testimonials', '/videos',
     '/dashboard/:path*',
     '/absences/:path*',
     '/attendance/:path*',
