@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): N+1 sur /v1/training/enrollments et /v1/admin/training/enrollments — session.course eager-loadé (Closes #3598).** `TrainingController::indexEnrollments` et `PlatformAdminTrainingController::indexEnrollments` chargeaient `session` mais pas `session.course` → lazy-load par enregistrement (N+1) lorsque `TrainingEnrollmentResource` accède à `session.course.title`. Ajout de `session.course:id,title` aux relations eager-loadées. `SelfServiceController` déjà correct.
 - **fix(api): N+1 sur GET /v1/training/enrollments et /v1/admin/training/enrollments (Closes #3598).** `session.course` n'etait pas eager-loade alors que `TrainingEnrollmentResource` accede a `$this->session?->course?->title` — une requete supplementaire par ligne. Ajout de `'session.course:id,title'` dans les `with()` des deux controleurs (TrainingController + PlatformAdminTrainingController).
 
 - **fix(ci): k6-load-smoke.yml — 11 inputs workflow_dispatch ramenes a 10 (max GitHub) (Closes #3612).** `attendance_punch_mode` retire des inputs (11 > 10 max GitHub = actionlint 1.7.7 erreur) ; `PUNCH_MODE` hardcoded a `manual` (defaut precedent) dans l'env du job. Le mode `path` reste accessible par edition du workflow si besoin.
