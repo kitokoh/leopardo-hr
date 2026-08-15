@@ -4,6 +4,7 @@ return [
     // Auth
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'ACCOUNT_SUSPENDED' => 'Your account has been suspended. Contact your manager.',
+    'REGISTRATION_UNAVAILABLE' => 'Self-service account creation is not available. Use the invitation link sent by your employer.',
     'ACCOUNT_ARCHIVED' => 'This account is archived.',
     'TOKEN_EXPIRED' => 'Your session has expired. Please log in again.',
     'TOO_MANY_ATTEMPTS' => 'Too many attempts. Try again in :minutes minutes.',

@@ -8,13 +8,13 @@ use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
-use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -29,7 +29,8 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly LoginAction $loginAction,
-        private readonly RegisterAction $registerAction,
+        // #2636 : RegisterAction retiré — /auth/register est désactivé (compte
+        // orphelin sans company_id inutilisable).
         private readonly LogoutAction $logoutAction,
         private readonly RefreshTokenAction $refreshTokenAction,
         private readonly UpdateProfileAction $updateProfileAction,
@@ -57,15 +58,15 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        $result = $this->registerAction->execute($request->validated());
-
-        return (new EmployeeResource($result['employee']))
-            ->additional([
-                'token' => $result['token'],
-                'token_type' => $result['token_type'],
-            ])
-            ->response()
-            ->setStatusCode(201);
+        // Sécurité/cohérence #2636 : la création d'un compte employé autonome sans
+        // société (company_id null) produit un compte inutilisable (login impossible)
+        // et permet du probing cross-tenant. Le parcours officiel passe par
+        // l'invitation employeur ou /user/register + company-request.
+        return new JsonResponse([
+            'error' => 'REGISTRATION_UNAVAILABLE',
+            'message' => 'La création de compte autonome n\'est pas disponible. Utilisez le lien d\'invitation envoyé par votre employeur.',
+            'localized_message' => __('errors.REGISTRATION_UNAVAILABLE'),
+        ], 422);
     }
 
     public function me(Request $request): JsonResponse
@@ -183,6 +184,18 @@ class AuthController extends Controller
             ]);
         }
 
+        // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
+        // ne peut pas s'authentifier, y compris via Google.
+        if ($employee->status !== 'active') {
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
+        }
+
         $token = $employee->createToken('google-auth');
 
         return (new EmployeeResource($employee))
@@ -212,6 +225,17 @@ class AuthController extends Controller
 
         if (! $employee) {
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
+        }
+
+        // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
+        if ($employee->status !== 'active') {
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

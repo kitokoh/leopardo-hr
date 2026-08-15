@@ -4,6 +4,7 @@ return [
     // Auth
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
+    'REGISTRATION_UNAVAILABLE' => 'La création de compte autonome n\'est pas disponible. Utilisez le lien d\'invitation envoyé par votre employeur.',
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
     'TOKEN_EXPIRED' => 'Votre session a expiré. Veuillez vous reconnecter.',
     'TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Réessayez dans :minutes minutes.',
