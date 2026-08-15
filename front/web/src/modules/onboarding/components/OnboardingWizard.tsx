@@ -56,6 +56,7 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
   const [isOpen, setIsOpen] = useState(true);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const locale = useVitrineLocale().locale ?? 'fr';
   const copy = onboardingCopy[locale] ?? onboardingCopy.fr;
@@ -74,11 +75,33 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
     }
 
     setLoading(true);
+    setError(null);
     try {
-      // Marquer le onboarding comme terminé via l'endpoint dédié
-      // (PATCH /api/v1/onboarding-setup/{stepKey}/complete), jamais via
-      // /company/branding qui sert à la configuration visuelle du tenant.
-      await apiFetch('/onboarding-setup/configure_schedules/complete', {
+      // Issue #3325 : `onboarding_steps` n'est seedé nulle part au
+      // provisioning — seul `GET /onboarding-setup/checklist` seede les
+      // étapes par défaut. Sans appel préalable, le PATCH ci-dessous
+      // répondait 404 (table vide) et l'erreur était avalée → l'onboarding
+      // backend restait à 0 % alors que le wizard se fermait. On seede
+      // d'abord via le checklist, puis on complète la dernière étape
+      // requise servie par le backend.
+      const checklistRes = await apiFetch('/onboarding-setup/checklist');
+      const payload = (await checklistRes.json()) as {
+        data?: Array<{ step_key?: string; required?: boolean; order?: number }>;
+      };
+      const stepsData = payload.data ?? [];
+      const requiredSteps = stepsData
+        .filter((s) => s.required)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      const targetStepKey =
+        requiredSteps.length > 0
+          ? requiredSteps[requiredSteps.length - 1].step_key
+          : 'configure_schedules';
+
+      if (!targetStepKey) {
+        throw new Error("Impossible de déterminer l'étape à compléter.");
+      }
+
+      await apiFetch(`/onboarding-setup/${targetStepKey}/complete`, {
         method: 'PATCH',
       });
 
@@ -89,10 +112,11 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
       setIsOpen(false);
       onComplete();
     } catch (e) {
-      // Le wizard se ferme même si l'API échoue : ne pas bloquer l'utilisateur.
+      // Issue #3325 : plus d'échec silencieux — on affiche l'erreur et on
+      // laisse le wizard ouvert ; l'onboarding backend n'est pas marqué
+      // terminé à tort.
       console.error(e);
-      setIsOpen(false);
-      onComplete();
+      setError(e instanceof Error ? e.message : 'Une erreur est survenue.');
     } finally {
       setLoading(false);
     }
@@ -147,7 +171,12 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
               })}
             </div>
 
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex flex-col items-end gap-2">
+              {error && (
+                <p className="w-full rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700" role="alert">
+                  {error}
+                </p>
+              )}
               <button
                 onClick={handleNext}
                 disabled={loading}
