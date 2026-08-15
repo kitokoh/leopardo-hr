@@ -111,7 +111,7 @@ function scrollToBottom() {
 
 async function fetchConversations() {
   try {
-    const res = await api.get('/v1/ai/conversations')
+    const res = await api.get('/v1/admin/ai/conversations')
     conversations.value = res.data.data || res.data || []
   } catch (err) {
     console.warn('Failed to load AI conversations', err)
@@ -121,7 +121,7 @@ async function fetchConversations() {
 async function selectConversation(conv) {
   activeConversation.value = conv
   try {
-    const res = await api.get(`/v1/ai/conversations/${conv.id}/messages`)
+    const res = await api.get(`/v1/admin/ai/conversations/${conv.id}/messages`)
     messages.value = res.data.data || res.data || []
     scrollToBottom()
   } catch (err) {
