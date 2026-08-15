@@ -225,7 +225,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 });
 
 // ── Kiosk — auth par X-Kiosk-Token ────────────────────────────────────────────
-Route::middleware(['throttle:api'])->group(function (): void {
+// #3367 : bucket dédié par device_code (kiosk-punch).
+Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function (): void {
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);

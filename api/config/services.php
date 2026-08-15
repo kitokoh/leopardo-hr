@@ -50,8 +50,8 @@ return [
     'stripe' => [
         'secret' => env('STRIPE_SECRET_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
-        'price_starter' => env('STRIPE_PRICE_STARTER'),
-        'price_business' => env('STRIPE_PRICE_BUSINESS'),
+        'price_pilot' => env('STRIPE_PRICE_PILOT', env('STRIPE_PRICE_STARTER')),
+        'price_operations' => env('STRIPE_PRICE_OPERATIONS', env('STRIPE_PRICE_BUSINESS')),
         'price_enterprise' => env('STRIPE_PRICE_ENTERPRISE'),
     ],
 
@@ -68,6 +68,13 @@ return [
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
         'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
+    ],
+
+    'mail_bounce_webhook' => [
+        // Issue #3058 : le secret du webhook de rebond email n'était défini
+        // nulle part → 503 permanent (fail-closed #2616). Configurable via
+        // MAIL_BOUNCE_WEBHOOK_SECRET ; vide = webhook refusé (défensif).
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
     ],
 
     'marketing_lead_webhook' => [

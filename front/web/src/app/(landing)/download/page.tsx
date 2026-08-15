@@ -86,7 +86,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Le client Windows est-il gratuit ?', answer: 'Oui, le client desktop est inclus dans tous les plans Leopardo RH, y compris Starter.' },
+      { question: 'Le client Windows est-il gratuit ?', answer: 'Oui, le client desktop est inclus dans tous les plans Leopardo RH (Free, Pilot, Operations, Enterprise).' },
       { question: 'Quelles bornes sont supportees ?', answer: 'Toutes les bornes ZKTeco (iClock, SpeedFace, ProFace, uFace). Support etendu pour d\'autres fabricants prevu en 2026.' },
       { question: 'Peut-on déployer via GPO ?', answer: 'Oui, l\'installateur MSI supporte le deploiement silencieux. Documentation disponible dans le guide d\'administration.' },
     ],
@@ -121,7 +121,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Is the Windows client free?', answer: 'Yes, the desktop client is included in all Leopardo RH plans, including Starter.' },
+      { question: 'Is the Windows client free?', answer: 'Yes, the desktop client is included in all Leopardo RH plans (Free, Pilot, Operations, Enterprise).' },
       { question: 'Which terminals are supported?', answer: 'All ZKTeco terminals (iClock, SpeedFace, ProFace, uFace). Extended support for other manufacturers planned for 2026.' },
       { question: 'Can it be deployed via GPO?', answer: 'Yes, the MSI installer supports silent deployment. Documentation available in the admin guide.' },
     ],
@@ -156,7 +156,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Windows istemcisi ucretsiz mi?', answer: 'Evet, masaustu istemcisi Starter dahil tum Leopardo RH planlarinda yer alir.' },
+      { question: 'Windows istemcisi ucretsiz mi?', answer: 'Evet, masaustu istemcisi Free, Pilot, Operations ve Enterprise dahil tum Leopardo RH planlarinda yer alir.' },
       { question: 'Hangi terminaller destekleniyor?', answer: 'Tum ZKTeco terminalleri (iClock, SpeedFace, ProFace, uFace). Diger ureticiler icin genisletilmis destek 2026\'da planlanmaktadir.' },
       { question: 'GPO ile dagitilabilir mi?', answer: 'Evet, MSI yukleyici sessiz dagitimi destekler.' },
     ],
@@ -191,7 +191,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'هل عميل ويندوز مجاني؟', answer: 'نعم، عميل سطح المكتب مضمن في جميع خطط Leopardo RH بما في ذلك Starter.' },
+      { question: 'هل عميل ويندوز مجاني؟', answer: 'نعم، عميل سطح المكتب مضمن في جميع خطط Leopardo RH (Free وPilot وOperations وEnterprise).' },
       { question: 'ما الأجهزة المدعومة؟', answer: 'جميع أجهزة ZKTeco (iClock, SpeedFace, ProFace, uFace).' },
       { question: 'هل يمكن نشره عبر GPO؟', answer: 'نعم، مثبت MSI يدعم النشر الصامت.' },
     ],

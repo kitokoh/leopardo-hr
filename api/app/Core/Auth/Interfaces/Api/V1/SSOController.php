@@ -6,9 +6,9 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
+use App\Rules\NotPrivateUrl;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
-use App\Core\Auth\Interfaces\Api\V1\Requests\SsoConfigureRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,7 +47,7 @@ class SSOController extends Controller
         ]);
     }
 
-    public function configure(SsoConfigureRequest $request): JsonResponse
+    public function configure(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -55,7 +55,22 @@ class SSOController extends Controller
             abort(403);
         }
 
-        $validated = $request->validated();
+        $validated = $request->validate([
+            'provider' => 'required|string|in:saml,oidc',
+            'entity_id' => 'nullable|string|url',
+            'sso_url' => 'nullable|string|url',
+            'slo_url' => 'nullable|string|url',
+            'certificate' => 'nullable|string',
+            'client_id' => 'nullable|string',
+            'client_secret' => 'nullable|string',
+            // OpenID Connect (issue #2231) — champs du flux authorize/callback.
+            'issuer' => 'nullable|string|url',
+            'authorize_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'token_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'jwks_uri' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'redirect_uri' => 'nullable|string|url',
+            'scopes' => 'nullable|string|max:255',
+        ]);
 
         $config = $this->ssoService->configureSSO(
             $actor->company_id,

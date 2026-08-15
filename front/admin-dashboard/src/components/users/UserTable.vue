@@ -175,7 +175,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['select', 'select-all', 'view', 'edit', 'delete'])
+defineEmits(['select', 'select-all', 'view', 'delete'])
 
 // Sorting
 const sortBy = ref('name')

@@ -18,8 +18,9 @@ class ManagerSmartAttendanceRepository {
       '/smart-attendance/sessions?status=pending_validation&per_page=50',
       timeoutOverride: _readTimeout,
     );
-    final raw = response.data;
-    final list = (raw is Map ? raw['data'] : raw) as List<dynamic>? ?? [];
+    // #3500 : extractDataList absorbe les payloads directs, enveloppés et
+    // paginés Laravel ({data:{data:[...]}}) — le cast direct crashait dessus.
+    final list = extractDataList(response.data);
     return list
         .map((e) => GeoAttendanceSession.fromJson(e as Map<String, dynamic>))
         .toList();

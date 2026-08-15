@@ -16,9 +16,13 @@
 # Usage :
 #   DATABASE_URL=postgres://user:pwd@source-host/leopardo_db \
 #   RESTORE_DB_URL=postgres://user:pwd@scratch-host/leopardo_drill \
+#   CONFIRM_RESTORE=YES \                  # obligatoire : confirmation destructive
 #   BACKUP_DIR=/tmp/leopardo-drills \
 #   BACKUP_AGE_RECIPIENT="age1example..." \   # optionnel : chiffrement age
 #   ./dev-hub/scripts/backup_drill.sh
+#
+# Gardes (issue #3518) : le script refuse de tourner si RESTORE_DB_URL pointe
+# sur la meme base que DATABASE_URL, ou si CONFIRM_RESTORE != YES.
 #
 # Sortie :
 #   - un fichier `$BACKUP_DIR/leopardo-YYYYmmdd-HHMMSS.dump[.age]`
@@ -35,6 +39,46 @@ set -euo pipefail
 
 : "${DATABASE_URL:?DATABASE_URL is required}"
 : "${RESTORE_DB_URL:?RESTORE_DB_URL is required}"
+
+# ---------------------------------------------------------------------------
+# Garde anti-destruction (issue #3518)
+# ---------------------------------------------------------------------------
+# Le script DROPpe des schemas CASCADE sur RESTORE_DB_URL (etape 3 + trap de
+# cleanup). Si RESTORE_DB_URL pointe par erreur sur la MEME base que
+# DATABASE_URL (copier-coller d'env), le drill detruit la base source
+# (production incluse). On compare donc les identites normalisees
+# (hote:port/base, sans userinfo ni query string, case-insensitive) et on
+# exige une confirmation explicite non interactive (CONFIRM_RESTORE=YES)
+# avant toute operation destructive.
+db_identity() {
+  local url="$1" rest hostport db
+  rest="${url#*://}"            # strip scheme postgres:// / postgresql://
+  rest="${rest#*@}"             # strip userinfo eventuel (user:pass@)
+  rest="${rest%%\?*}"           # strip query string (?sslmode=...)
+  hostport="${rest%%/*}"
+  db="${rest#*/}"
+  [[ -z "${db}" || "${db}" == "${rest}" ]] && db=""
+  [[ "${hostport}" != *:* ]] && hostport="${hostport}:5432"
+  echo "${hostport,,}/${db,,}"
+}
+
+SOURCE_ID="$(db_identity "${DATABASE_URL}")"
+TARGET_ID="$(db_identity "${RESTORE_DB_URL}")"
+
+if [[ -z "${TARGET_ID%/}" || "${TARGET_ID}" == */ ]]; then
+  echo "REFUS: RESTORE_DB_URL ne contient pas de nom de base exploitable." >&2
+  exit 2
+fi
+if [[ "${TARGET_ID}" == "${SOURCE_ID}" ]]; then
+  echo "REFUS: RESTORE_DB_URL (${TARGET_ID}) pointe sur la MEME base que DATABASE_URL." >&2
+  echo "       Le drill DROPpe des schemas CASCADE sur la cible : viser une base scratch." >&2
+  exit 2
+fi
+if [[ "${CONFIRM_RESTORE:-}" != "YES" ]]; then
+  echo "REFUS: drill destructeur sur ${TARGET_ID}." >&2
+  echo "       Re-lancer avec CONFIRM_RESTORE=YES apres avoir verifie la cible." >&2
+  exit 2
+fi
 
 BACKUP_DIR="${BACKUP_DIR:-/tmp/leopardo-drills}"
 mkdir -p "${BACKUP_DIR}"

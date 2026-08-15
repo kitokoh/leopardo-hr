@@ -53,7 +53,7 @@ type FaqItem = {
 
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
-  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string; freeBadge: string; freePriceLabel: string; freeNoCard: string };
+  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
@@ -84,9 +84,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
       trialNote: '14 jours offerts · Aucune CB requise',
-      freeBadge: '100% Gratuit',
-      freePriceLabel: 'Gratuit',
-      freeNoCard: 'Sans carte bancaire · Pour toujours',
     },
     currency: {
       label: 'Afficher les prix en',
@@ -120,11 +117,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
             { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
             { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -144,7 +141,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
             { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
@@ -197,9 +194,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
       trialNote: '14 days free · No credit card required',
-      freeBadge: '100% Free',
-      freePriceLabel: 'Free',
-      freeNoCard: 'No credit card · Forever',
     },
     currency: {
       label: 'Show prices in',
@@ -233,11 +227,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Payroll & finance',
           features: [
-            { name: 'Automated payroll', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
             { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
             { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-country & currency', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
             { name: 'Advanced legal compliance', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -257,7 +251,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Document vault', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Immutable audit trail', free: false, starter: false, business: false, enterprise: true },
             { name: 'Isolated PostgreSQL schema', free: false, starter: false, business: false, enterprise: true },
             { name: 'Dedicated SLA & support', free: false, starter: false, business: false, enterprise: true },
@@ -275,8 +269,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Is the Free plan really free?', answer: 'Yes, 100% free. No credit card ever required. Immediate access for up to 5 employees. Upgrade to a paid plan anytime.', category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
         { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
-        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 30 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
-        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 30 more days. No automatic billing without your consent.', category: 'Trial' },
+        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 14 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
         { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
@@ -310,9 +304,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
       trialNote: '14 gün ücretsiz · Kredi kartı gerekmez',
-      freeBadge: '%100 Ücretsiz',
-      freePriceLabel: 'Ücretsiz',
-      freeNoCard: 'Kredi kartı gerekmez · Her zaman',
     },
     currency: {
       label: 'Fiyatları şu para birimiyle göster',
@@ -346,11 +337,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
             { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
             { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -370,7 +361,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
             { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
             { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
@@ -388,7 +379,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Free plan gerçekten ücretsiz mi?', answer: 'Evet, %100 ücretsiz. Hiçbir zaman kredi kartı gerekmez. 5 çalışana kadar anında erişim. İstediğiniz zaman ücretli plana geçin.', category: 'Deneme' },
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
         { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
-        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
         { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
         { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Pilot: 48 saatte e-posta. Operations: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
@@ -422,10 +413,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'حسب الطلب',
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
-      trialNote: '30 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
-      freeBadge: 'مجاني 100%',
-      freePriceLabel: 'مجاني',
-      freeNoCard: 'بدون بطاقة ائتمان · للأبد',
+      trialNote: '14 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
     },
     currency: {
       label: 'عرض الأسعار بعملة',
@@ -459,7 +447,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'الرواتب والمالية',
           features: [
-            { name: 'حساب رواتب آلي', free: false, starter: true, business: true, enterprise: true },
+            { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
             { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
             { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
@@ -483,7 +471,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
             { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },
@@ -501,8 +489,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
         { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
-        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 30 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
+        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
         { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Pilot: بريد إلكتروني خلال 48 ساعة. Operations: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
@@ -842,6 +830,10 @@ export default function PricingPage() {
               const Icon = planIcons[index % planIcons.length];
               const iconColor = planIconColors[index % planIconColors.length];
               const displayPrice = isAnnual ? plan.annualPrice : plan.price;
+              // #3023 — le vrai period du plan (avec surcoût par employé actif
+              // pour Pilot/Operations), sinon le libellé générique localisé.
+              const displayPeriod = (isAnnual ? plan.annualPeriod : plan.period)
+                || (isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly);
               const isFree = plan.price === '0';
               const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
               const ctaHref = getPlanHref(plan);
@@ -876,7 +868,7 @@ export default function PricingPage() {
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg">
                           <Gift className="w-3 h-3" />
-                          {copy.plans.freeBadge}
+                          100% Gratuit
                         </div>
                       </div>
                     )}
@@ -895,7 +887,7 @@ export default function PricingPage() {
                       <div className="flex items-baseline gap-1.5">
                         {isFree ? (
                           <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                            {copy.plans.freePriceLabel}
+                            Gratuit
                           </span>
                         ) : hasNumericPrice ? (
                           <>
@@ -914,12 +906,12 @@ export default function PricingPage() {
                       </div>
                       {isFree ? (
                         <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-                          {copy.plans.freeNoCard}
+                          Sans carte bancaire · Pour toujours
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
                           <p className="text-sm text-slate-500">
-                            {isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly}
+                            {displayPeriod}
                           </p>
                           {isAnnual && (
                             <p className="text-xs text-slate-400 dark:text-slate-600">

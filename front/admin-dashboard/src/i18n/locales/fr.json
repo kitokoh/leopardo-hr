@@ -74,18 +74,27 @@
     },
     "or": "ou",
     "countries": {
-      "DZ": "Algérie",
-      "CM": "Cameroun",
-      "CI": "Côte d'Ivoire",
-      "SN": "Sénégal",
-      "MA": "Maroc",
-      "TN": "Tunisie",
-      "FR": "France",
-      "TR": "Turquie",
-      "CG": "Congo",
-      "GA": "Gabon",
       "BF": "Burkina Faso",
-      "ML": "Mali"
+      "BJ": "Bénin",
+      "CA": "Canada",
+      "CF": "République centrafricaine",
+      "CG": "Congo",
+      "CI": "Côte d'Ivoire",
+      "CM": "Cameroun",
+      "DZ": "Algérie",
+      "FR": "France",
+      "GA": "Gabon",
+      "GB": "Royaume-Uni",
+      "GQ": "Guinée équatoriale",
+      "MA": "Maroc",
+      "ML": "Mali",
+      "NE": "Niger",
+      "SN": "Sénégal",
+      "TD": "Tchad",
+      "TG": "Togo",
+      "TN": "Tunisie",
+      "TR": "Turquie",
+      "US": "États-Unis"
     }
   },
   "modules": {
@@ -171,7 +180,7 @@
   "users": {
     "page": {
       "title": "Gestion des Utilisateurs",
-      "summary": ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui"
+      "summary": ":count utilisateur(s) plateforme"
     },
     "actions": {
       "bulk": "Actions (:count)",
@@ -255,7 +264,8 @@
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
       "exportError": "Erreur lors de l'export",
-      "selectionExportDone": "Export de la selection termine"
+      "selectionExportDone": "Export de la selection termine",
+      "bulkDone": "Action groupee terminee"
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
@@ -263,6 +273,7 @@
     "errors": {
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères.",
       "fix_fields": "Veuillez corriger les champs en rouge"
     }
   },
@@ -701,5 +712,8 @@
     "pricing": {
       "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     }
+  },
+  "webhooks": {
+    "confirm_delete": "Supprimer ce webhook ?"
   }
 }
