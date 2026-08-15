@@ -119,7 +119,7 @@ export const marketingMetadata: PageMetadata = {
 export const pricingMetadata: PageMetadata = {
   title: 'Tarification Transparente | Plans Flexibles',
   description:
-    'Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 30 jours.',
+    'Pricing transparent: Pilot 29€, Operations 99€, Enterprise sur devis. Essai gratuit 30 jours.',
   keywords: [
     'prix logiciel RH',
     'tarification paie',

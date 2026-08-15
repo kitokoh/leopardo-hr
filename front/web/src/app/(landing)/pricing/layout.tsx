@@ -36,7 +36,7 @@ export default function PricingLayout({
     {
       question: 'Support client disponible?',
       answer:
-        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Business et Enterprise.',
+        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Operations et Enterprise.',
     },
     {
       question: 'Données sécurisées?',

@@ -331,7 +331,7 @@ export const modulePageContent = {
         },
         {
           question: "Quel est l'espace de stockage?",
-          answer: "L'espace dépend de votre plan. Starter: 100GB, Business: 1TB, Enterprise: Illimité.",
+          answer: "L'espace dépend de votre plan. Pilot : 100GB, Operations : 1TB, Enterprise : Illimité.",
         },
         {
           question: "Comment fonctionne l'archivage?",
