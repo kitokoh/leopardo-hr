@@ -8,6 +8,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use Tests\Support\SnPayrollFixtures;
 use PHPUnit\Framework\TestCase;
 
 /**

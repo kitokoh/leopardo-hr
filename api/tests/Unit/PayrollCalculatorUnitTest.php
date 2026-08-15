@@ -14,6 +14,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TunisiaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\TurkeyPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 
