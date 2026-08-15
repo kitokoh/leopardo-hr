@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
@@ -31,9 +31,13 @@ type Invoice = {
 };
 
 const PLAN_LABELS: Record<string, string> = {
-  starter: 'Starter',
-  business: 'Business',
+  free: 'Free',
+  pilot: 'Pilot',
+  operations: 'Operations',
   enterprise: 'Enterprise',
+  // Anciens codes (matrice backend feature_plan_matrix) — alias doux.
+  starter: 'Pilot',
+  business: 'Operations',
 };
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
