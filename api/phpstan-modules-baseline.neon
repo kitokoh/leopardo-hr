@@ -1,94 +1,40 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
+			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_seen_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
 			count: 1
-			path: app/Core/Auth/Application/Actions/LogoutAction.php
+			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Routing\\Route\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
+			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_sync_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
 			count: 1
-			path: app/Core/Auth/Infrastructure/Services/DataAccessAuditLogger.php
+			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
 
 		-
-			message: '#^Offset 3 on array\{non\-falsy\-string, non\-empty\-string, non\-empty\-string, string\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Core/Feature/Infrastructure/Services/AnnotationReader.php
-
-		-
-			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\FeatureDetector\:\:findRouteByEndpoint\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Core/Feature/Infrastructure/Services/FeatureDetector.php
-
-		-
-			message: '#^Parameter \#1 \$employee of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceService\:\:checkIn\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, App\\Modules\\Attendance\\Application\\DTOs\\CheckInDTO given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Application/Actions/ProcessCheckIn.php
-
-		-
-			message: '#^Parameter \#1 \$employee of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceService\:\:checkOut\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Application/Actions/ProcessCheckOut.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Infrastructure/Services/AttendanceMonthlyReportService.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Attendance\\Infrastructure\\Services\\AttendanceAnomalyService\:\:summarize\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array given\.$#'
-			identifier: argument.type
+			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type App\\Core\\Auth\\Domain\\Models\\Employee\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
+			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
 		-
-			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 2
-			path: app/Modules/Billing/Interfaces/Api/V1/CompanyRequestController.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController\:\:getCompanyPlan\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Billing/Interfaces/Api/V1/FeatureFlagController.php
-
-		-
-			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Modules/Billing/Interfaces/Api/V1/SelfServiceTrialController.php
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 3
+			path: app/Modules/Billing/Domain/Models/Feature.php
 
 		-
 			message: '#^Offset ''type'' on array\{type\: string, data\: array\<string, mixed\>\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Modules/Billing/Interfaces/Api/V1/StripeWebhookController.php
-
-		-
-			message: '#^Parameter \#1 \$owner of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cabinet/Application/Actions/UploadDocument.php
 
 		-
 			message: '#^Parameter \#2 \$file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given\.$#'
@@ -103,52 +49,10 @@ parameters:
 			path: app/Modules/Cabinet/Application/Actions/UploadDocument.php
 
 		-
-			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
+			message: '#^Property App\\Modules\\Cameras\\Domain\\Camera\:\:\$company_id \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetDocumentController.php
-
-		-
-			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetFolderController.php
-
-		-
-			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetShareController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessLogController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Modules\\Cameras\\Domain\\CameraAccessToken\)\: array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array\<string, mixed\>, Closure\(App\\Modules\\Cameras\\Domain\\Camera\)\: array\<string, mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array, Closure\(App\\Modules\\Cameras\\Domain\\CameraPermission\)\: array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Parameter \#2 \$default of method Illuminate\\Http\\Request\:\:query\(\) expects array\|string\|null, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/InternalCameraTokenController.php
+			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
 
 		-
 			message: '#^Property App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\PublicCameraViewerController\:\:\$cameras is never read, only written\.$#'
@@ -161,18 +65,6 @@ parameters:
 			identifier: arrayFilter.same
 			count: 1
 			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraAccessTokenRequest.php
-
-		-
-			message: '#^Parameter \#1 \$item of method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:applyToCloud\(\) expects App\\Modules\\EdgeSync\\Domain\\Models\\SyncQueue, stdClass given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
-
-		-
-			message: '#^Parameter \#1 \$item of method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:resolveConflict\(\) expects App\\Modules\\EdgeSync\\Domain\\Models\\SyncQueue, stdClass given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -193,34 +85,16 @@ parameters:
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
 
 		-
-			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\AbsenteeismPredictor\:\:predict\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
+			message: '#^Property App\\Modules\\HR\\Domain\\Models\\UserInvitation\:\:\$employee_id \(string\|null\) does not accept int\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PredictionController.php
+			path: app/Modules/HR/Infrastructure/Services/UserInvitationService.php
 
 		-
-			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\ProactiveNotificationService\:\:getNotifications\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
+			message: '#^Property App\\Modules\\HR\\Domain\\Models\\Department\:\:\$company_id \(int\|null\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PredictionController.php
-
-		-
-			message: '#^Parameter \#1 \$companyId of method App\\AI\\Predictions\\TurnoverPredictor\:\:predict\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PredictionController.php
-
-		-
-			message: '#^Parameter \#1 \$modelClass of method App\\Modules\\HR\\Interfaces\\Api\\V1\\Controllers\\PrivacyController\:\:countEmployeeRows\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
-			identifier: argument.type
-			count: 4
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/PrivacyController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array\{id\: int, name\: string, email\: string, role\: string, manager_role\: string\|null, role_label\: string, status\: string, photo_path\: string\|null\}, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array\{id\: int, name\: string, email\: string, role\: string, manager_role\: string\|null, role_label\: string, status\: string, photo_path\: string\|null\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/RoleAssignmentController.php
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/DepartmentController.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -235,16 +109,58 @@ parameters:
 			path: app/Modules/Notification/Interfaces/Api/V1/Controllers/NotificationStreamController.php
 
 		-
-			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Onboarding\\Interfaces\\Api\\V1\\Controllers\\OnboardingStepController\:\:seedDefaultSteps\(\) expects string, int\|null given\.$#'
-			identifier: argument.type
+			message: '#^Call to function abort_if\(\) with false and 401 will always evaluate to false\.$#'
+			identifier: function.impossibleType
 			count: 1
-			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingStepController.php
+			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingChecklistController.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,stdClass\>\:\:map\(\) expects callable\(stdClass, int\)\: array\<string, mixed\>, Closure\(App\\Core\\Auth\\Domain\\Models\\Employee\)\: array\<string, mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Payroll/Infrastructure/Services/PayrollCycleService.php
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 2
+			path: app/Modules/Payroll/Domain/Models/PaySlip.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 3
+			path: app/Modules/Payroll/Domain/Models/PaymentConfirmation.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 3
+			path: app/Modules/Payroll/Domain/Models/PayrollRun.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 3
+			path: app/Modules/Payroll/Domain/Models/SalaryAdvance.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 4
+			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 2
+			path: app/Modules/Payroll/Domain/Models/SalaryStructure.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 4
+			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
+			identifier: parameter.notFound
+			count: 2
+			path: app/Modules/Payroll/Domain/Models/TaxSlab.php
 
 		-
 			message: '#^Offset ''days_worked'' on array\{employee_id\: int, num_cnss\: string, last_name\: string, first_name\: string, cin\: string, gross_salary\: float, days_worked\: int\} on left side of \?\? always exists and is not nullable\.$#'
@@ -259,31 +175,13 @@ parameters:
 			path: app/Modules/Planning/Application/Actions/ApproveLeave.php
 
 		-
-			message: '#^Parameter \#2 \$now of method App\\Modules\\Platform\\Infrastructure\\Services\\PlatformCompanyHealthService\:\:subscription\(\) expects Illuminate\\Support\\Carbon, Carbon\\CarbonInterface given\.$#'
-			identifier: argument.type
+			message: '#^Method App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PlatformAdminDashboardController\:\:redisAlert\(\) never returns array\<string, mixed\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
 			count: 1
-			path: app/Modules/Platform/Infrastructure/Services/PlatformCompanyHealthService.php
-
-		-
-			message: '#^Parameter \#1 \$session of method App\\Modules\\SmartAttendance\\Interfaces\\Api\\V1\\GeoSessionController\:\:formatSession\(\) expects App\\Modules\\SmartAttendance\\Domain\\Models\\GeoAttendanceSession, stdClass given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/SmartAttendance/Interfaces/Api/V1/GeoSessionController.php
+			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAdminDashboardController.php
 
 		-
 			message: '#^Trait App\\Shared\\Traits\\Approvable is used zero times and is not analysed\.$#'
 			identifier: trait.unused
 			count: 1
 			path: app/Shared/Traits/Approvable.php
-
-		-
-			message: '#^Trait App\\Shared\\Traits\\Auditable is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: app/Shared/Traits/Auditable.php
-
-		-
-			message: '#^Trait App\\Shared\\Traits\\BelongsToCompany is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: app/Shared/Traits/BelongsToCompany.php
