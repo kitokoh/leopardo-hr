@@ -28,6 +28,7 @@
 - **refactor(payroll): SocialDeclarationService — agrégation paie + gardes dédupliquées (Closes #3149).** Les 3 méthodes JSON (CNAS DZ, CNSS MA, DSN FR) consomment désormais `SocialDeclarationService` (activeEmployees/quarterMonths/quarterPayrollData/monthPayrollData) au lieu de réimplémenter l'extraction pay_slips/payroll_runs ; les 7 déclarations par run partagent le helper `assertPayrollRunAccess` (404 tenant → 403 RBAC → 422 pays → audit). Controller : 556 → 503 lignes, comportement identique (tests Feature existants).
 
 - **refactor(mobile-hr): 9 routes GoRouter mortes retirées (Closes #3284).** `/notifications`, `/evaluations`, `/history`, `/modules/rh`, `/training`, `/expenses`, `/ai-chat`, `/ai-voice`, `/vehicle-map` n'avaient aucune entrée UI (`push`/`go`) ni manifest backend — surface de navigation morte + écrans orphelins (`ModulesScreen` inaccessible). Retrait des routes + imports dans `app.dart` (motif aligné sur le chantier manager #3285).
+- **fix(web): CTA pricing alignés sur les clés checkout canoniques (Closes #3718).** Les plans Starter et Business ne retombent plus sur `free` : ils routent respectivement vers `pilot` et `operations`, tandis qu’Enterprise reste `enterprise`.
 
 - **fix(admin/api): UsersView utilise le contrat super-admin pour le détail et l’impersonation (Closes #3268).** `/platform/users` expose la liaison société/employé par email canonique et le dashboard n’interroge plus `/admin/users` avec un ID `super_admins`.
 

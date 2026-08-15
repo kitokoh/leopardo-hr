@@ -11,20 +11,24 @@ function showsCurrency(price: string) {
   return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض'].includes(price)
 }
 
+export function planNameToCheckoutKey(planName?: string): 'free' | 'pilot' | 'operations' | 'enterprise' {
+  const name = (planName ?? '').trim().toLowerCase()
+  if (name.includes('pilot') || name.includes('starter')) return 'pilot'
+  if (name.includes('operations') || name.includes('business')) return 'operations'
+  if (name.includes('scale') || name.includes('enterprise')) return 'enterprise'
+  if (name.includes('free')) return 'free'
+  return 'free'
+}
+
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   if (!showsCurrency(price)) return '/contact?topic=enterprise'
   const billing = isAnnual ? 'annual' : 'monthly'
   // #2907 : mappe le NOM de plan affiché vers la clé canonique du checkout.
   // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :
   // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
-  const name = (planName ?? '').toLowerCase()
-  // #3329 : « Lancer un pilote gratuit » doit mener au parcours d'essai sans
-  // carte (/signup), comme /pricing — pas au checkout payant Pilot.
-  if (name.includes('pilot')) return `/signup?source=home_pilot`
-  const planKey = name.includes('free') ? 'free'
-    : name.includes('operations') ? 'business'
-    : name.includes('scale') || name.includes('enterprise') ? 'enterprise'
-    : 'free'
+  // #3329 : le plan pilote gratuit doit mener au parcours d'essai sans carte.
+  if (planNameToCheckoutKey(planName) === 'pilot') return `/signup?source=home_pilot`
+  const planKey = planNameToCheckoutKey(planName)
   return `/checkout?plan=${planKey}&billing=${billing}`
 }
 
