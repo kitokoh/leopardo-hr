@@ -8,7 +8,6 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/onboarding/providers/onboarding_provider.dart';
-import 'package:leopardo_core/models/onboarding_step.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,9 +17,9 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  Future<void> _complete(OnboardingStep step) async {
+  Future<void> _complete(String stepKey) async {
     try {
-      await ref.read(onboardingRepositoryProvider).completeStep(step.key);
+      await ref.read(onboardingRepositoryProvider).completeStep(stepKey);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -34,9 +33,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  Future<void> _skip(OnboardingStep step) async {
+  Future<void> _skip(String stepKey) async {
     try {
-      await ref.read(onboardingRepositoryProvider).skipStep(step.key);
+      await ref.read(onboardingRepositoryProvider).skipStep(stepKey);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -210,7 +209,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                         color: MobileSurface.muted,
                                       ),
                                       tooltip: 'Passer',
-                                      onPressed: () => _skip(step),
+                                      onPressed: () => _skip(step.key),
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
@@ -223,7 +222,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                           color: AppColors.success,
                                         ),
                                         tooltip: 'Terminer',
-                                        onPressed: () => _complete(step),
+                                        onPressed: () => _complete(step.key),
                                       ),
                                     ),
                                   ],

@@ -12,92 +12,61 @@ test.describe('Forms and Submissions E2E Tests', () => {
   });
 
   test.describe('Signup Form', () => {
-    test('should display signup form with all required fields', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
+    // #2823/#2648 : essai guidé sans mot de passe (v4.16.250) — champs requis :
+    // email (+ entreprise/rôle/taille), pas de password.
+    test('should display guided-trial signup form with required fields', async ({ page }) => {
+      await page.goto('/signup');
 
-      // Check for form fields
-      const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
+      const emailInput = page.locator('input[type="email"]').first();
+      const submitButton = page.locator('button[type="submit"]').first();
 
       await expect(emailInput).toBeVisible();
-      await expect(passwordInput).toBeVisible();
       await expect(submitButton).toBeVisible();
+      await expect(page.locator('input[type="password"]')).toHaveCount(0);
     });
 
     test('should validate email format', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
+      await page.goto('/signup');
 
-      // Enter invalid email
-      const emailInput = page.locator('input[type="email"]');
+      const emailInput = page.locator('input[type="email"]').first();
       await emailInput.fill('invalid-email');
 
-      // Try to submit
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
+      const submitButton = page.locator('button[type="submit"]').first();
       await submitButton.click();
 
-      // Should show error
-      const errorMessage = page.locator('text=/invalid|email/i');
+      const errorMessage = page.locator('text=/email|e-mail/i').first();
       await expect(errorMessage).toBeVisible({ timeout: 5000 });
     });
 
-    test('should validate password strength', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
+    test('should accept valid signup data without password', async ({ page }) => {
+      await page.goto('/signup');
 
-      // Enter weak password
-      const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
-      await emailInput.fill('test@example.com');
-      await passwordInput.fill('weak');
+      const emailInput = page.locator('input[type="email"]').first();
+      await emailInput.fill('e2e-forms@example.com');
 
-      // Try to submit
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
-      await submitButton.click();
-
-      // Should show error
-      const errorMessage = page.locator('text=/password|character|length/i');
-      await expect(errorMessage).toBeVisible({ timeout: 5000 });
-    });
-
-    test('should accept valid signup data', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
-
-      // Enter valid data
-      const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
-      await emailInput.fill('test@example.com');
-      await passwordInput.fill('ValidPassword123!');
-
-      // Submit button should be enabled
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
+      const submitButton = page.locator('button[type="submit"]').first();
       await expect(submitButton).toBeEnabled();
+      await submitButton.click();
+
+      // OTP (backend joignable) ou état d'attente honnête — jamais de spinner infini.
+      const state = page.locator('text=/code de vérification|vérifiez votre email|pending|demande/i').first();
+      await expect(state).toBeVisible({ timeout: 8000 });
     });
 
     test('should show loading state during submission', async ({ page }) => {
-      // Click signup CTA
-      const signupCTA = page.locator('button:has-text("Essai gratuit"), a:has-text("Essai gratuit")').first();
-      await signupCTA.click();
+      await page.goto('/signup');
 
-      // Enter valid data
-      const emailInput = page.locator('input[type="email"]');
-      const passwordInput = page.locator('input[type="password"]');
-      await emailInput.fill('test@example.com');
-      await passwordInput.fill('ValidPassword123!');
+      const emailInput = page.locator('input[type="email"]').first();
+      await emailInput.fill('e2e-loading@example.com');
 
-      // Click submit
-      const submitButton = page.locator('button:has-text("Sign up"), button:has-text("Get Started")').first();
+      const submitButton = page.locator('button[type="submit"]').first();
       await submitButton.click();
 
-      // Wait for submission
-      await page.waitForTimeout(1000);
+      // Le bouton passe en état de soumission (label de chargement) ou l'écran évolue
+      await page.waitForTimeout(1200);
+      const submitting = page.locator('button:has-text("Envoi"), button:has-text("Sending"), button:disabled').first();
+      const otpOrState = page.locator('text=/code de vérification|vérifiez votre email|pending/i').first();
+      await expect(submitting.or(otpOrState)).toBeVisible({ timeout: 8000 });
     });
   });
 

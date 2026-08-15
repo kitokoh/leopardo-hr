@@ -20,9 +20,7 @@ class OnboardingRepository {
     return items.map((e) => OnboardingStep.fromJson(e)).toList();
   }
 
-  // T115 (QA omnichannel 2026-08-15) : le backend expose
-  // PATCH /onboarding-setup/{stepKey}/complete|skip (clé string) — l'ancien
-  // appel POST + id numérique renvoyait 405/404.
+  /// [stepKey] is the string key (e.g. 'first_employee'), matching route {stepKey}
   Future<void> completeStep(String stepKey) async {
     await apiClient.requestWithRetry(
       '/onboarding-setup/$stepKey/complete',
@@ -32,6 +30,7 @@ class OnboardingRepository {
     );
   }
 
+  /// [stepKey] is the string key (e.g. 'invite_manager'), matching route {stepKey}
   Future<void> skipStep(String stepKey) async {
     await apiClient.requestWithRetry(
       '/onboarding-setup/$stepKey/skip',
