@@ -25,6 +25,11 @@
       Synchronisation des données...
     </div>
 
+    <div v-if="loadError" class="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400">
+      {{ loadError }}
+      <button class="ml-3 underline" @click="loadData">Réessayer</button>
+    </div>
+
     <div v-else>
       <div v-if="currentTab === 'partners'" class="space-y-6">
         <div class="glass-card overflow-hidden">
@@ -63,10 +68,10 @@
                   >
                     Approuver
                   </button>
-                  <span class="text-xs font-semibold text-slate-400">Approuvé</span>
+                  <span class="text-xs font-semibold text-slate-400">{{ statusLabel(partner.application_status) }}</span>
                 </td>
               </tr>
-              <tr v-if="partners.length === 0">
+              <tr v-if="partners.length === 0 && !loadError">
                 <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">Aucun partenaire trouvé.</td>
               </tr>
             </tbody>
@@ -120,6 +125,17 @@
         </div>
       </div>
     </div>
+  <!-- QA #2994 : dialog note de paiement (remplace le prompt() natif) -->
+  <div v-if="payoutNoteOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="payoutNoteOpen = false">
+    <div class="glass-card w-full max-w-md p-6">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Note de paiement (Audit)</h2>
+      <textarea v-model="payoutNoteText" rows="3" class="form-input w-full" placeholder="Motif / référence de l'audit..."></textarea>
+      <div class="mt-4 flex justify-end gap-2">
+        <button class="btn-secondary" @click="payoutNoteOpen = false">Annuler</button>
+        <button class="btn-primary" @click="submitPayoutNote" :disabled="!payoutNoteText.trim()">Valider</button>
+      </div>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -132,6 +148,7 @@ const toast = useToast();
 
 const currentTab = ref('partners');
 const loading = ref(true);
+const loadError = ref('')
 const tabs = [
   { id: 'partners', label: 'Partenaires' },
   { id: 'payouts', label: 'Paiements' },
@@ -156,10 +173,38 @@ const loadData = async () => {
     payouts.value = payResponse.data.data;
   } catch (e) {
     console.error("Growth Admin: Data load failed", e);
+    loadError.value = 'Erreur lors du chargement des données Growth.';
   } finally {
     loading.value = false;
   }
 };
+
+function statusLabel(status) {
+  const labels = { pending: 'En attente', approved: 'Approuvé', rejected: 'Rejeté' }
+  return labels[status] || status || '—'
+}
+
+const payoutNoteTarget = ref(null)
+const payoutNoteStatus = ref('')
+const payoutNoteOpen = ref(false)
+const payoutNoteText = ref('')
+
+async function submitPayoutNote() {
+  const target = payoutNoteTarget.value
+  const status = payoutNoteStatus.value
+  const reason = payoutNoteText.value.trim()
+  if (!target || !reason) { payoutNoteOpen.value = false; return }
+  try {
+    await api.patch(`/platform/growth/payouts/${target.id}`, { status, notes: reason })
+    loadData()
+    payoutNoteOpen.value = false
+    payoutNoteText.value = ''
+    toast.success('Paiement mis à jour')
+  } catch (e) {
+    console.error('Update payout failed:', e)
+    toast.error(`Erreur : ${e?.response?.data?.message || e.message}`)
+  }
+}
 
 onMounted(loadData);
 
@@ -175,15 +220,11 @@ const approvePartner = async (partner) => {
 };
 
 const updatePayout = async (payout, status) => {
-  const reason = prompt("Note de paiement (Audit) :");
-  if (!reason) return;
-  try {
-    await api.patch(`/platform/growth/payouts/${payout.id}`, { status, notes: reason });
-    loadData();
-  } catch (e) {
-    console.error('Update payout failed:', e)
-    toast.error(`Erreur : ${e?.response?.data?.message || e.message}`)
-  }
+  // QA #2994 : plus de prompt() natif (non i18n, bloque le rendu) — dialog in-app.
+  payoutNoteTarget.value = payout
+  payoutNoteStatus.value = status
+  payoutNoteText.value = ''
+  payoutNoteOpen.value = true
 };
 
 const getStatusClass = (status) => {
