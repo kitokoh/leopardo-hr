@@ -35,8 +35,6 @@ GET v1/auth/google/callback
 GET v1/company-requests
 GET v1/health/live
 GET v1/health/ready
-GET v1/i18n/catalog
-GET v1/i18n/catalog/{param}
 GET v1/metrics
 GET v1/onboarding/checklist
 GET v1/support-tickets
@@ -139,16 +137,6 @@ GET /dashboard/admin
 GET /dashboard/comptable
 GET /dashboard/marketing
 GET /dashboard/rh
-GET /export/absences
-GET /export/accounting-od
-GET /export/attendance
-GET /export/contracts
-GET /export/employees
-GET /export/history
-GET /export/payroll-journal
-GET /export/payroll-ledger
-GET /export/training
-GET /export/vehicles
 GET /notifications/unread
 PATCH /notifications/{param}/read
 POST /api-tokens
@@ -163,17 +151,12 @@ PUT /expense-claims/{param}/submit
 
 ## modules/growth.php — 11 route(s)
 # Growth/Partenaires : programmes partenaires — interne
-GET growthpartner/companies
-GET growthpartner/dashboard
-GET growthpartner/stats
 GET platform/growth/history
 GET platform/growth/partners
 GET platform/growth/payouts
 PATCH platform/growth/partners/{param}/application
 PATCH platform/growth/partners/{param}/rate
 PATCH platform/growth/payouts/{param}
-POST growthpartner/apply
-POST growthpartner/payout
 
 ## modules/hr_app.php — 3 route(s)
 # App RH mobile legacy : parcours app HR — en cours de convergence (#1557)
@@ -211,12 +194,8 @@ PUT /loans/{param}/disburse
 DELETE /calendar/disconnect/{param}
 GET /calendar/connections
 GET /calendar/events
-GET /kiosks/{param}/announcements
 POST /calendar/connect
 POST /calendar/sync
-POST /kiosks/{param}/employee-info
-POST /kiosks/{param}/leave-balance
-POST /kiosks/{param}/qr-punch
 
 ## modules/marketing.php — 18 route(s)
 # Marketing : campagnes/landing — consommation vitrine uniquement
@@ -321,3 +300,41 @@ GET v1admin/social-contributions
 POST v1admin/social-contributions
 PUT v1admin/social-contributions/{param}
 DELETE v1admin/social-contributions/{param}
+
+## api.php (routes chaînées désormais visibles) — 2 route(s)
+# demo-users : contrat QA public mais hard-gated (404 si DEMO_MODE_ENABLED=false, AUDIT_API_2026-07-19) — non documenté volontairement
+GET v1/demo-users
+# marketing/leads : webhook serveur-à-serveur vitrine (PA2-MKT-007), protégé par secret partagé — hors contrat public
+POST v1/marketing/leads
+
+## api/app/Modules/EdgeSync/routes/api.php — 15 route(s)
+# EdgeSync : endpoints machine-to-cloud et distribution install (install.sh, docker-compose, license) — hors contrat public
+GET api/v1/edge/health
+GET api/v1/edge/install.sh
+GET api/v1/edge/download/docker-compose.yml
+GET api/v1/edge/download/env-example
+GET api/v1/edge/license-public-key
+POST api/v1/edge/heartbeat
+GET api/v1/edge
+POST api/v1/edge
+GET api/v1/edge/{param}
+POST api/v1/edge/{param}/sync
+POST api/v1/edge/{param}/license
+POST api/v1/edge-node/{param}/push
+GET api/v1/edge-node/{param}/pull
+POST api/v1/edge-node/{param}/heartbeat
+POST api/v1/edge-node/validate-license
+
+## api/app/Modules/SmartAttendance/routes/smart_attendance.php — 2 route(s)
+# SmartAttendance : my-sessions (self-service) et préférence employé (manager) — non encore documentés
+GET api/v1/smart-attendance/my-sessions
+GET api/v1/smart-attendance/employees/{param}/preference
+## modules/growth.php — espace partenaire (5 route(s))
+# Partenaire : préfixes imbriqués growth+partner — le parseur forward ne compose
+# pas les préfixes avec '/' (gap parser #2181) ; endpoints documentés côté OpenAPI
+# sous /growth/partner/* (GET dashboard ajouté dans #2181).
+POST growthpartner/apply
+POST growthpartner/payout
+GET growthpartner/dashboard
+GET growthpartner/stats
+GET growthpartner/companies

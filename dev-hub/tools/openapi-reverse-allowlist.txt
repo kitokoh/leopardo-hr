@@ -1,0 +1,15 @@
+# Allowlist inverse (issue #2181) : opérations OpenAPI documentées mais
+# absentes des routes PHP.
+#
+# La passe inverse de check-openapi-route-coverage.py échoue quand une
+# opération de openapi.yaml ne correspond à AUCUNE route Laravel réelle
+# (un client suivant la spec recevrait un 404). Cette liste ne doit rester
+# QUE pour des exclusions volontaires et justifiées (ex. endpoint documenté
+# pour compat, route supprimée en attente de dépréciation).
+#
+# Format : une entrée par ligne « METHODE /chemin/normalisé » ({param}).
+# Les lignes commençant par # sont des commentaires.
+#
+# État au 2026-08-14 (audit #2181) : 0 entrée — tous les chemins documentés
+# existent dans les routes. Maintenir ce fichier vide ; toute nouvelle
+# entrée doit être justifiée ici.

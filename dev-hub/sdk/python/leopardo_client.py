@@ -5,7 +5,7 @@ import json
 from urllib import error, parse, request as urllib_request
 
 
-open_api_version = "4.23.5"
+open_api_version = "4.24.0"
 
 
 class LeopardoApiError(Exception):
@@ -408,14 +408,6 @@ class LeopardoClient:
         """Inscription employe"""
         return self.request("POST", "/auth/register", **kwargs)
 
-    def get_bank_exports(self, **kwargs):
-        """Lister les exports bancaires"""
-        return self.request("GET", "/bank-exports", **kwargs)
-
-    def post_bank_exports(self, **kwargs):
-        """Generer un export bancaire"""
-        return self.request("POST", "/bank-exports", **kwargs)
-
     def get_bank_exports_by_bankexport_download(self, **kwargs):
         """Telecharger un export bancaire"""
         return self.request("GET", "/bank-exports/{bankExport}/download", **kwargs)
@@ -492,9 +484,9 @@ class LeopardoClient:
         """Telecharger un document"""
         return self.request("GET", "/cabinet/documents/{cabinetDocument}/download", **kwargs)
 
-    def post_cabinet_documents_by_cabinetdocument_move(self, **kwargs):
+    def patch_cabinet_documents_by_cabinetdocument_move(self, **kwargs):
         """Deplacer un document"""
-        return self.request("POST", "/cabinet/documents/{cabinetDocument}/move", **kwargs)
+        return self.request("PATCH", "/cabinet/documents/{cabinetDocument}/move", **kwargs)
 
     def get_cabinet_folders(self, **kwargs):
         """Lister les dossiers"""
@@ -780,9 +772,9 @@ class LeopardoClient:
         """Voir une note de frais"""
         return self.request("GET", "/expense-claims/{expenseClaim}", **kwargs)
 
-    def post_expense_claims_by_expenseclaim_approve(self, **kwargs):
+    def put_expense_claims_by_expenseclaim_approve(self, **kwargs):
         """Approuver une note de frais"""
-        return self.request("POST", "/expense-claims/{expenseClaim}/approve", **kwargs)
+        return self.request("PUT", "/expense-claims/{expenseClaim}/approve", **kwargs)
 
     def post_expense_claims_by_expenseclaim_reject(self, **kwargs):
         """Rejeter une note de frais"""
@@ -792,41 +784,49 @@ class LeopardoClient:
         """Soumettre une note de frais"""
         return self.request("POST", "/expense-claims/{expenseClaim}/submit", **kwargs)
 
+    def get_export_absences(self, **kwargs):
+        """Exporter les absences"""
+        return self.request("GET", "/export/absences", **kwargs)
+
+    def get_export_accounting_od(self, **kwargs):
+        """Exporter l'ordre de virement (OD)"""
+        return self.request("GET", "/export/accounting-od", **kwargs)
+
+    def get_export_attendance(self, **kwargs):
+        """Exporter le pointage"""
+        return self.request("GET", "/export/attendance", **kwargs)
+
+    def get_export_contracts(self, **kwargs):
+        """Exporter les contrats"""
+        return self.request("GET", "/export/contracts", **kwargs)
+
+    def get_export_employees(self, **kwargs):
+        """Exporter les employes"""
+        return self.request("GET", "/export/employees", **kwargs)
+
+    def get_export_history(self, **kwargs):
+        """Historique des exports"""
+        return self.request("GET", "/export/history", **kwargs)
+
     def exportpayslips(self, **kwargs):
         """Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement"""
         return self.request("GET", "/export/pay-slips", **kwargs)
 
-    def get_exports_absences(self, **kwargs):
-        """Exporter les absences"""
-        return self.request("GET", "/exports/absences", **kwargs)
+    def get_export_payroll_journal(self, **kwargs):
+        """Exporter le journal de paie"""
+        return self.request("GET", "/export/payroll-journal", **kwargs)
 
-    def get_exports_attendance(self, **kwargs):
-        """Exporter le pointage"""
-        return self.request("GET", "/exports/attendance", **kwargs)
+    def get_export_payroll_ledger(self, **kwargs):
+        """Exporter le grand livre de paie"""
+        return self.request("GET", "/export/payroll-ledger", **kwargs)
 
-    def get_exports_contracts(self, **kwargs):
-        """Exporter les contrats"""
-        return self.request("GET", "/exports/contracts", **kwargs)
-
-    def get_exports_employees(self, **kwargs):
-        """Exporter les employes"""
-        return self.request("GET", "/exports/employees", **kwargs)
-
-    def get_exports_history(self, **kwargs):
-        """Historique des exports"""
-        return self.request("GET", "/exports/history", **kwargs)
-
-    def get_exports_pay_slips(self, **kwargs):
-        """Exporter les bulletins"""
-        return self.request("GET", "/exports/pay-slips", **kwargs)
-
-    def get_exports_training(self, **kwargs):
+    def get_export_training(self, **kwargs):
         """Exporter les formations"""
-        return self.request("GET", "/exports/training", **kwargs)
+        return self.request("GET", "/export/training", **kwargs)
 
-    def get_exports_vehicles(self, **kwargs):
+    def get_export_vehicles(self, **kwargs):
         """Exporter la flotte"""
-        return self.request("GET", "/exports/vehicles", **kwargs)
+        return self.request("GET", "/export/vehicles", **kwargs)
 
     def checkfeatureflag(self, **kwargs):
         """Verifier si une fonctionnalite est activee pour le plan de l'entreprise courante"""
@@ -880,13 +880,37 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def post_growth_partner_apply(self, **kwargs):
+        """Candidature partenaire"""
+        return self.request("POST", "/growth/partner/apply", **kwargs)
+
+    def get_growth_partner_companies(self, **kwargs):
+        """Entreprises parrainées par le partenaire"""
+        return self.request("GET", "/growth/partner/companies", **kwargs)
+
+    def get_growth_partner_dashboard(self, **kwargs):
+        """Tableau de bord partenaire connecté"""
+        return self.request("GET", "/growth/partner/dashboard", **kwargs)
+
+    def post_growth_partner_payout(self, **kwargs):
+        """Demande de versement commission"""
+        return self.request("POST", "/growth/partner/payout", **kwargs)
+
+    def get_growth_partner_stats(self, **kwargs):
+        """Statistiques partenaire connecté"""
+        return self.request("GET", "/growth/partner/stats", **kwargs)
+
     def get_health(self, **kwargs):
         """Healthcheck live + ready"""
         return self.request("GET", "/health", **kwargs)
 
-    def get_i18n_by_locale(self, **kwargs):
+    def get_i18n_catalog(self, **kwargs):
+        """Catalogue de traductions (toutes locales)"""
+        return self.request("GET", "/i18n/catalog", **kwargs)
+
+    def get_i18n_catalog_by_locale(self, **kwargs):
         """Traductions pour une locale"""
-        return self.request("GET", "/i18n/{locale}", **kwargs)
+        return self.request("GET", "/i18n/catalog/{locale}", **kwargs)
 
     def get_internal_camera_token_verify(self, **kwargs):
         """Verification interne MediaMTX"""
@@ -904,9 +928,25 @@ class LeopardoClient:
         """Enregistrer un kiosk"""
         return self.request("POST", "/kiosks", **kwargs)
 
+    def get_kiosks_by_devicecode_announcements(self, **kwargs):
+        """Annonces du kiosk (device token)"""
+        return self.request("GET", "/kiosks/{deviceCode}/announcements", **kwargs)
+
+    def post_kiosks_by_devicecode_employee_info(self, **kwargs):
+        """Infos employe pour ecran kiosk (device token)"""
+        return self.request("POST", "/kiosks/{deviceCode}/employee-info", **kwargs)
+
+    def post_kiosks_by_devicecode_leave_balance(self, **kwargs):
+        """Solde conges employe pour kiosk (device token)"""
+        return self.request("POST", "/kiosks/{deviceCode}/leave-balance", **kwargs)
+
     def post_kiosks_by_devicecode_punch(self, **kwargs):
         """Pointage via kiosk"""
         return self.request("POST", "/kiosks/{deviceCode}/punch", **kwargs)
+
+    def post_kiosks_by_devicecode_qr_punch(self, **kwargs):
+        """Pointage QR via kiosk (device token)"""
+        return self.request("POST", "/kiosks/{deviceCode}/qr-punch", **kwargs)
 
     def get_kiosks_by_devicecode_roster(self, **kwargs):
         """Roster biometrie d'un kiosk"""
@@ -964,13 +1004,13 @@ class LeopardoClient:
         """Voir un pret"""
         return self.request("GET", "/loans/{employeeLoan}", **kwargs)
 
-    def post_loans_by_employeeloan_approve(self, **kwargs):
+    def put_loans_by_employeeloan_approve(self, **kwargs):
         """Approuver un pret"""
-        return self.request("POST", "/loans/{employeeLoan}/approve", **kwargs)
+        return self.request("PUT", "/loans/{employeeLoan}/approve", **kwargs)
 
-    def post_loans_by_employeeloan_disburse(self, **kwargs):
+    def put_loans_by_employeeloan_disburse(self, **kwargs):
         """Decaisser un pret"""
-        return self.request("POST", "/loans/{employeeLoan}/disburse", **kwargs)
+        return self.request("PUT", "/loans/{employeeLoan}/disburse", **kwargs)
 
     def get_marketing_social_account(self, **kwargs):
         """Compte social connecte du tenant"""
@@ -1135,22 +1175,6 @@ class LeopardoClient:
     def get_org_chart_by_employeeid_subordinates(self, **kwargs):
         """Subordonnes d'un employe"""
         return self.request("GET", "/org-chart/{employeeId}/subordinates", **kwargs)
-
-    def post_partner_apply(self, **kwargs):
-        """Candidature partenaire"""
-        return self.request("POST", "/partner/apply", **kwargs)
-
-    def get_partner_companies(self, **kwargs):
-        """Entreprises parrainées par le partenaire"""
-        return self.request("GET", "/partner/companies", **kwargs)
-
-    def post_partner_payout(self, **kwargs):
-        """Demande de versement commission"""
-        return self.request("POST", "/partner/payout", **kwargs)
-
-    def get_partner_stats(self, **kwargs):
-        """Statistiques partenaire connecté"""
-        return self.request("GET", "/partner/stats", **kwargs)
 
     def get_pay_slips(self, **kwargs):
         """Lister les bulletins du tenant (manager)"""
@@ -1628,10 +1652,6 @@ class LeopardoClient:
         """Lire la configuration de mode active pour l'employe connecte"""
         return self.request("GET", "/smart-attendance/config", **kwargs)
 
-    def put_smart_attendance_config(self, **kwargs):
-        """Mettre à jour la configuration GPS (admin)"""
-        return self.request("PUT", "/smart-attendance/config", **kwargs)
-
     def get_smart_attendance_dashboard(self, **kwargs):
         """Statistiques du jour — Smart Attendance (manager/RH)"""
         return self.request("GET", "/smart-attendance/dashboard", **kwargs)
@@ -1640,9 +1660,13 @@ class LeopardoClient:
         """Envoyer un événement géographique (entrée/sortie de zone)"""
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
 
-    def get_smart_attendance_preferences(self, **kwargs):
-        """Lire les préférences de pointage de l'employé"""
-        return self.request("GET", "/smart-attendance/preferences", **kwargs)
+    def get_smart_attendance_mode_settings(self, **kwargs):
+        """Lire la configuration GPS de l'entreprise (manager/RH)"""
+        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
+
+    def put_smart_attendance_mode_settings(self, **kwargs):
+        """Mettre à jour la configuration GPS (admin)"""
+        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
 
     def put_smart_attendance_preferences(self, **kwargs):
         """Mettre à jour les préférences de pointage"""
@@ -1656,9 +1680,13 @@ class LeopardoClient:
         """Détail d'une session GPS"""
         return self.request("GET", "/smart-attendance/sessions/{id}", **kwargs)
 
-    def post_smart_attendance_sessions_by_id_validate(self, **kwargs):
-        """Valider ou rejeter une session GPS (manager/RH)"""
-        return self.request("POST", "/smart-attendance/sessions/{id}/validate", **kwargs)
+    def post_smart_attendance_sessions_by_id_approve(self, **kwargs):
+        """Approuver une session GPS (manager/RH)"""
+        return self.request("POST", "/smart-attendance/sessions/{id}/approve", **kwargs)
+
+    def post_smart_attendance_sessions_by_id_reject(self, **kwargs):
+        """Rejeter une session GPS (manager/RH)"""
+        return self.request("POST", "/smart-attendance/sessions/{id}/reject", **kwargs)
 
     def listsocialcontributions(self, **kwargs):
         """Lister les regles de cotisations sociales (manager)"""
