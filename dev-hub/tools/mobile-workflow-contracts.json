@@ -160,7 +160,7 @@
           ],
           "endpoints": [
             "/notifications",
-            "/notifications/mark-all-read",
+            "/notifications/read-all",
             "/device-tokens"
           ],
           "screenFiles": [
@@ -191,26 +191,6 @@
             "context.push('/company-request')",
             "_submit",
             "context.push('/cabinet')"
-          ]
-        },
-        {
-          "name": "my_vehicles",
-          "routes": [
-            "/vehicle-map"
-          ],
-          "endpoints": [
-            "/me/vehicles",
-            "/vehicles/$vehicleId/position"
-          ],
-          "screenFiles": [
-            "lib/features/vehicle_position/screens/vehicle_map_screen.dart",
-            "lib/features/vehicle_position/providers/vehicle_position_provider.dart",
-            "lib/features/vehicle_position/data/vehicle_position_repository.dart"
-          ],
-          "sourceTokens": [
-            "getMyVehicles",
-            "getPosition",
-            "myVehiclesProvider"
           ]
         }
       ]
@@ -550,14 +530,11 @@
         "/absences",
         "/salary-advances",
         "/payrolls",
-        "/evaluations",
-        "/notifications",
         "/cabinet",
         "/team",
         "/organigramme",
         "/schedules",
         "/me/monthly",
-        "/history",
         "/modules",
         "/settings"
       ],
