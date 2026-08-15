@@ -272,6 +272,7 @@ import {
   ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
@@ -313,7 +314,7 @@ const filters = reactive({
   segment: ''
 })
 
-// Mock data
+// Données réelles — GET /admin/users (issues #2238/#2269), plus de mocks.
 const users = ref([])
 const companies = ref([])
 const stats = reactive({
@@ -407,11 +408,27 @@ async function loadUsers() {
   isLoading.value = true
 
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const params = { per_page: 100 }
+    if (searchQuery.value.trim()) params.search = searchQuery.value.trim()
+    if (filters.status) params.status = filters.status === 'inactive' ? 'disabled' : filters.status
 
-    // Generate mock users
-    users.value = generateMockUsers(150)
+    const res = await api.get('/v1/admin/users', { params })
+    const rows = res.data?.data || []
+    users.value = rows.map(row => ({
+      id: row.id,
+      name: [row.first_name, row.last_name].filter(Boolean).join(' ') || row.email,
+      email: row.email,
+      // 'disabled' (contrat API) → 'inactive' pour l'affichage composant.
+      status: row.status === 'disabled' ? 'inactive' : row.status,
+      rawStatus: row.status,
+      role: null,
+      segment: null,
+      company: row.company ? { id: row.company.id, name: row.company.name, employee_id: row.company.employee_id } : null,
+      createdAt: row.created_at,
+      lastLoginAt: row.last_login_at,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent([row.first_name, row.last_name].filter(Boolean).join(' '))}&background=0ea5e9&color=fff`
+    }))
+    updateStats()
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -421,47 +438,22 @@ async function loadUsers() {
 }
 
 async function loadCompanies() {
-  // Generate mock companies
-  companies.value = [
-    { id: 1, name: 'Acme Corp' },
-    { id: 2, name: 'TechStart Inc' },
-    { id: 3, name: 'Global Solutions' },
-    { id: 4, name: 'Innovation Labs' },
-    { id: 5, name: 'Digital Dynamics' }
-  ]
-}
-
-function generateMockUsers(count) {
-  const mockUsers = []
-  const statuses = ['active', 'inactive', 'suspended', 'pending']
-  const roles = ['admin', 'manager', 'employee', 'hr']
-  const segments = ['champions', 'loyal', 'potential', 'new', 'at-risk']
-
-  for (let i = 1; i <= count; i++) {
-    mockUsers.push({
-      id: i,
-      name: `Utilisateur ${i}`,
-      email: `user${i}@example.com`,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      role: roles[Math.floor(Math.random() * roles.length)],
-      segment: segments[Math.floor(Math.random() * segments.length)],
-      company: companies.value[Math.floor(Math.random() * companies.value.length)],
-      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-      lastLoginAt: Math.random() > 0.2 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000) : null,
-      avatar: `https://ui-avatars.com/api/?name=Utilisateur+${i}&background=random`
-    })
+  try {
+    const res = await api.get('/v1/platform/companies', { params: { per_page: 100 } })
+    const rows = res.data?.data || []
+    companies.value = rows.map(c => ({ id: c.id, name: c.name || c.company_name || String(c.id) }))
+  } catch (error) {
+    console.error('Failed to load companies:', error)
+    companies.value = []
   }
-
-  return mockUsers
 }
 
 function updateStats() {
   stats.totalUsers = users.value.length
-  stats.activeUsers = users.value.filter(u => u.status === 'active').length
-
+  stats.activeUsers = users.value.filter(u => u.rawStatus === 'active').length
   const today = new Date().toDateString()
   stats.newToday = users.value.filter(u =>
-    new Date(u.createdAt).toDateString() === today
+    u.createdAt && new Date(u.createdAt).toDateString() === today
   ).length
 }
 
@@ -486,25 +478,21 @@ function clearSelection() {
   showBulkActions.value = false
 }
 
-async function bulkAction(action) {
-  try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+async function setUserStatus(userId, action) {
+  await api.post(`/v1/admin/users/${userId}/${action}`)
+}
 
-    switch (action) {
-      case 'activate':
-        toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) activé(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'deactivate':
-        toast.success(t('users.toast.bulkDeactivated', ':count utilisateur(s) désactivé(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'suspend':
-        toast.success(t('users.toast.bulkSuspended', ':count utilisateur(s) suspendu(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'export':
-        exportSelectedUsers()
-        return
-    }
+async function bulkAction(action) {
+  if (action === 'export') {
+    exportSelectedUsers()
+    return
+  }
+
+  try {
+    await Promise.all(selectedUsers.value.map(id => setUserStatus(id, action)))
+
+    const key = { activate: 'bulkActivated', deactivate: 'bulkDeactivated', suspend: 'bulkSuspended' }[action]
+    toast.success(t(`users.toast.${key}`, ':count utilisateur(s) mis à jour').replace(':count', String(selectedUsers.value.length)))
 
     clearSelection()
     await loadUsers()
@@ -525,23 +513,39 @@ function editUser(user) {
 }
 
 async function deleteUser(user) {
-  if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
+  if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir désactiver :name ?').replace(':name', user.name))) {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      toast.success(t('users.toast.deleted', 'Utilisateur supprimé'))
+      await api.delete(`/v1/admin/users/${user.id}`)
+      toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
       await loadUsers()
     } catch (error) {
       console.error('Delete failed:', error)
-      toast.error(t('users.toast.deleteError', 'Erreur lors de la suppression'))
+      toast.error(t('users.toast.deleteError', "Erreur lors de la désactivation"))
     }
   }
 }
 
-function impersonateUser(user) {
-  toast.info(t('users.toast.impersonating', 'Connexion en tant que :name').replace(':name', user.name))
-  // Implement impersonation logic
+async function impersonateUser(user) {
+  const employeeId = user.company?.employee_id
+  const companyId = user.company?.id
+
+  if (!employeeId || !companyId) {
+    toast.info(t('users.toast.impersonationUnavailable', 'Impersonation indisponible : ce compte n\'a pas de lien employé.'))
+    return
+  }
+
+  try {
+    await api.post('/v1/platform/impersonations', {
+      company_id: companyId,
+      employee_id: employeeId,
+      reason: 'Impersonation depuis la console admin (UsersView)',
+      ttl_minutes: 30
+    })
+    toast.success(t('users.toast.impersonating', 'Session d\'impersonation ouverte pour :name').replace(':name', user.name))
+  } catch (error) {
+    console.error('Impersonation failed:', error)
+    toast.error(t('users.toast.impersonationError', "Erreur lors de l'ouverture de la session d'impersonation"))
+  }
 }
 
 function handleUserCreated() {
@@ -556,27 +560,23 @@ function handleUserUpdated() {
   loadUsers()
 }
 
+function csvOf(rows) {
+  return "data:text/csv;charset=utf-8," +
+    "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
+    rows.map(user =>
+      `${user.name},${user.email},${user.status},${user.company?.name || ''},${user.createdAt || ''},${user.lastLoginAt || ''}`
+    ).join('\n')
+}
+
 async function exportUsers() {
   try {
-    toast.info(t('users.toast.exportInProgress', 'Export en cours...'))
-
-    // Simulate export
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    const csvContent = "data:text/csv;charset=utf-8," +
-      "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
-      filteredUsers.value.map(user =>
-        `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
-      ).join('\n')
-
-    const encodedUri = encodeURI(csvContent)
+    const csvContent = csvOf(filteredUsers.value)
     const link = document.createElement("a")
-    link.setAttribute("href", encodedUri)
+    link.setAttribute("href", encodeURI(csvContent))
     link.setAttribute("download", "users-export.csv")
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-
     toast.success(t('users.toast.exportDone', 'Export terminé'))
   } catch (error) {
     console.error('Export failed:', error)
@@ -586,22 +586,29 @@ async function exportUsers() {
 
 function exportSelectedUsers() {
   const selectedUserData = users.value.filter(u => selectedUsers.value.includes(u.id))
-
-  const csvContent = "data:text/csv;charset=utf-8," +
-    "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
-    selectedUserData.map(user =>
-      `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
-    ).join('\n')
-
-  const encodedUri = encodeURI(csvContent)
+  const csvContent = csvOf(selectedUserData)
   const link = document.createElement("a")
-  link.setAttribute("href", encodedUri)
+  link.setAttribute("href", encodeURI(csvContent))
   link.setAttribute("download", "selected-users-export.csv")
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-
   toast.success(t('users.toast.selectionExportDone', 'Export de la sélection terminé'))
 }
+
+// Recherche serveur débouncée (l'API filtre nom/email).
+let searchDebounce = null
+watch(searchQuery, () => {
+  clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => {
+    currentPage.value = 1
+    loadUsers()
+  }, 400)
+})
+
+watch(() => filters.status, () => {
+  currentPage.value = 1
+  loadUsers()
+})
 </script>
 

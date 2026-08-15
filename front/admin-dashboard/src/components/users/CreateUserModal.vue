@@ -175,6 +175,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { UserPlusIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
 import FormField from '@/components/common/FormField.vue'
@@ -222,14 +223,9 @@ onMounted(async () => {
 
 // Methods
 async function loadCompanies() {
-  // Mock companies data
-  companies.value = [
-    { id: 1, name: 'Acme Corp' },
-    { id: 2, name: 'TechStart Inc' },
-    { id: 3, name: 'Global Solutions' },
-    { id: 4, name: 'Innovation Labs' },
-    { id: 5, name: 'Digital Dynamics' }
-  ]
+  // Issue #2238 : plus de sociétés factices — la création de compte ne lie
+  // pas de société côté API ; le champ entreprise reste hors contrat.
+  companies.value = []
 }
 
 async function handleSubmit() {
@@ -243,7 +239,7 @@ async function handleSubmit() {
 
   try {
     // Validate form
-    if (!form.name || !form.email || !form.role) {
+    if (!form.name || !form.email) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return
     }
@@ -253,37 +249,28 @@ async function handleSubmit() {
       return
     }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Create user object
-    const newUser = {
-      id: Date.now(),
-      name: form.name,
+    // Issue #2238 : création réelle via POST /admin/users (le backend ne
+    // gère ni rôle, ni société, ni invitation à ce stade — payload réel).
+    const nameParts = form.name.trim().split(/\s+/)
+    const payload = {
+      first_name: nameParts[0] || form.name.trim(),
+      last_name: nameParts.slice(1).join(' ') || '',
       email: form.email,
-      role: form.role,
-      status: form.status,
-      company: companies.value.find(c => c.id === parseInt(form.companyId)),
-      createdAt: new Date(),
-      lastLoginAt: null,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=random`
+      status: form.status || 'active'
+    }
+    if (!form.generatePassword && form.password) {
+      payload.password = form.password
     }
 
-    // Success feedback
-    let message = 'Utilisateur créé avec succès'
-    if (form.sendInvitation) {
-      message += ' • Email d\'invitation envoyé'
-    }
-    if (form.generatePassword) {
-      message += ' • Mot de passe temporaire généré'
-    }
+    const res = await api.post('/v1/admin/users', payload)
+    const row = res.data?.data
 
-    toast.success(message)
-    emit('created', newUser)
+    toast.success('Utilisateur créé avec succès')
+    emit('created', row)
 
   } catch (error) {
     console.error('Failed to create user:', error)
-    toast.error('Erreur lors de la création de l\'utilisateur')
+    toast.error(error?.response?.data?.message || 'Erreur lors de la création de l\'utilisateur')
   } finally {
     isLoading.value = false
   }

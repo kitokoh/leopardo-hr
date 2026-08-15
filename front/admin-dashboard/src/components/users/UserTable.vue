@@ -115,7 +115,7 @@
 
           <!-- Role -->
           <td class="whitespace-nowrap px-6 py-5">
-            <span :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border', getRoleColor(user.role)]">
+            <span v-if="user.role" :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border', getRoleColor(user.role)]">
               {{ getRoleLabel(user.role) }}
             </span>
           </td>
@@ -127,7 +127,7 @@
 
           <!-- Segment -->
           <td class="whitespace-nowrap px-6 py-5">
-            <span :class="getSegmentColor(user.segment)">
+            <span v-if="user.segment" :class="getSegmentColor(user.segment)">
               {{ getSegmentLabel(user.segment) }}
             </span>
           </td>

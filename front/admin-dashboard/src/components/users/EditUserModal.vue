@@ -211,6 +211,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import FormField from '@/components/common/FormField.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale, translate } from '@/i18n/index.js'
@@ -265,13 +266,9 @@ watch(() => props.user, () => {
 
 // Methods
 async function loadCompanies() {
-  companies.value = [
-    { id: 1, name: 'Acme Corp' },
-    { id: 2, name: 'TechStart Inc' },
-    { id: 3, name: 'Global Solutions' },
-    { id: 4, name: 'Innovation Labs' },
-    { id: 5, name: 'Digital Dynamics' }
-  ]
+  // Issue #2238 : plus de sociétés factices — le PATCH /admin/users ne
+  // gère ni rôle, ni société, ni segment.
+  companies.value = []
 }
 
 function populateForm() {
@@ -296,32 +293,28 @@ async function handleSubmit() {
 
   try {
     // Validate form
-    if (!form.name || !form.email || !form.role) {
+    if (!form.name || !form.email) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return
     }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // Create updated user object
-    const updatedUser = {
-      ...props.user,
-      name: form.name,
-      email: form.email,
-      role: form.role,
-      status: form.status,
-      segment: form.segment,
-      company: companies.value.find(c => c.id === parseInt(form.companyId)) || null,
-      updatedAt: new Date()
+    // Issue #2238 : mise à jour réelle via PATCH /admin/users/{id}.
+    const nameParts = form.name.trim().split(/\s+/)
+    const payload = {
+      first_name: nameParts[0] || form.name.trim(),
+      last_name: nameParts.slice(1).join(' ') || '',
+      email: form.email
     }
+    if (form.status) payload.status = form.status === 'inactive' ? 'disabled' : form.status
+
+    await api.patch(`/v1/admin/users/${props.user.id}`, payload)
 
     toast.success('Utilisateur mis à jour avec succès')
-    emit('updated', updatedUser)
+    emit('updated', { ...props.user, name: form.name, email: form.email, status: form.status })
 
   } catch (error) {
     console.error('Failed to update user:', error)
-    toast.error('Erreur lors de la mise à jour de l\'utilisateur')
+    toast.error(error?.response?.data?.message || 'Erreur lors de la mise à jour de l\'utilisateur')
   } finally {
     isLoading.value = false
   }

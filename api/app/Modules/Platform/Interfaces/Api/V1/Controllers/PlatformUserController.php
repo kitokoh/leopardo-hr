@@ -56,7 +56,8 @@ class PlatformUserController extends Controller
             ->select(
                 'users.*',
                 'companies.id as linked_company_id',
-                'companies.name as linked_company_name'
+                'companies.name as linked_company_name',
+                'user_employee_links.employee_id as linked_employee_id'
             )
             ->distinct();
 
@@ -229,7 +230,11 @@ class PlatformUserController extends Controller
             'last_login_at' => $user->last_login_at?->toIso8601String(),
             'created_at' => $user->created_at?->toIso8601String(),
             'company' => $user->linked_company_id !== null
-                ? ['id' => $user->linked_company_id, 'name' => $user->linked_company_name]
+                ? [
+                    'id' => $user->linked_company_id,
+                    'name' => $user->linked_company_name,
+                    'employee_id' => $user->linked_employee_id,
+                ]
                 : null,
         ];
     }

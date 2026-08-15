@@ -32,6 +32,7 @@
                       {{ getStatusLabel(user?.status) }}
                     </span>
                     <span
+                      v-if="user?.role"
                       :class="[
                         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                         getRoleColor(user?.role)
@@ -292,7 +293,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['close', 'edit'])
+defineEmits(['close', 'edit', 'impersonate'])
 
 const toast = useToast()
 
@@ -476,7 +477,7 @@ function formatTime(timestamp) {
 
 // Action methods
 function impersonateUser() {
-  toast.info(`Connexion en tant que ${props.user.name}`)
+  emit('impersonate', props.user)
 }
 
 function resetPassword() {

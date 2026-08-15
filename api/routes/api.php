@@ -312,6 +312,18 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/edge-nodes/{nodeId}/sync', [EdgeNodeController::class, 'forceSync']);
         Route::post('/edge-nodes/{nodeId}/revoke', [EdgeNodeController::class, 'revokeNode']);
 
+        // Users plateforme : alias du contrat /platform/users pour le SPA
+        // (issues #2238/#2269) — même contrôleur, mêmes règles (jamais de
+        // suppression physique, garde self-disable).
+        Route::get('/users', [PlatformUserController::class, 'index']);
+        Route::post('/users', [PlatformUserController::class, 'store']);
+        Route::get('/users/{id}', [PlatformUserController::class, 'show'])->whereNumber('id');
+        Route::patch('/users/{id}', [PlatformUserController::class, 'update'])->whereNumber('id');
+        Route::delete('/users/{id}', [PlatformUserController::class, 'destroy'])->whereNumber('id');
+        Route::post('/users/{id}/activate', [PlatformUserController::class, 'activate'])->whereNumber('id');
+        Route::post('/users/{id}/deactivate', [PlatformUserController::class, 'deactivate'])->whereNumber('id');
+        Route::post('/users/{id}/suspend', [PlatformUserController::class, 'suspend'])->whereNumber('id');
+
         Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index']);
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
             ->whereNumber('conversation');
