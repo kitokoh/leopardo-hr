@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 
+/** @extends \Illuminate\Database\Eloquent\Factories\Factory<LeaveBalanceLog> */
 class LeaveBalanceLogFactory extends Factory
 {
     protected $model = LeaveBalanceLog::class;

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Modules\Planning\Domain\Models\AbsenceType;
 
+/** @extends \Illuminate\Database\Eloquent\Factories\Factory<AbsenceType> */
 class AbsenceTypeFactory extends Factory
 {
     protected $model = AbsenceType::class;
