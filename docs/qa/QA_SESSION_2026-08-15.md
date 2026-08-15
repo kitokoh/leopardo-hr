@@ -74,7 +74,26 @@ Feature spec kit : `.specify/features/qa-wave-2026-08-15/` (plan.md, spec.md, ta
 ## Implémentation (PRs)
 | Issue | PR | Statut |
 |-------|----|--------|
-| … | … | à remplir en fin de session |
+| #2628 checkout sandbox | #2665 | ✅ mergé |
+| #2629 trial guidé magic link | #2864 | ⏳ PR ouverte |
+| #2630 auth statut (tokens + Google + super-admin) | #2860 | ⏳ PR ouverte (statut login déjà couvert par #2816) |
+| #2631 mobile onboarding 405 | #2663 | ✅ mergé |
+| #2632 déploiements stale | — | 📋 ops (documenté) |
+| #2633 organigramme hierarchy | #2861 | ⏳ PR ouverte |
+| #2634 admin training/webhooks /admin | #2862 | ⏳ PR ouverte |
+| #2635 middleware tenant ai/growth/sso | #2863 | ⏳ PR ouverte (growth partiellement couvert par #2818) |
+| #2636 /auth/register orphelin | — | ✅ couvert par #2617 (mergé) |
+| #2637 invitation société suspendue | #2865 | ⏳ PR ouverte |
+| #2638 drift OpenAPI | — | 📋 P3 (tasks spec kit) |
+| #2639 i18n admin (clés) | #2866 | ⏳ PR ouverte (document.title via #2862) |
+| #2640 command palette | #2866 | ⏳ PR ouverte |
+| #2641 handlers factices admin | #2875 | ⏳ PR ouverte |
+| #2642 pages vitrine FR-only | — | 📋 P3 (tasks spec kit) |
+| #2643 robots /api/sitemap | #2664 | ✅ mergé |
+| #2644 updateCountry dupliqué | #2871 | ⏳ PR ouverte |
+| #2645 orphelins admin | — | 📋 P3 (tasks spec kit) |
+
+13 PRs au total (3 mergées, 10 ouvertes) — détails : `git log` des branches `fix/<issue>-<slug>` / PRs #2663-#2876.
 
 ## Notes
 - Pas de run backend local (pas de PHP/Postgres dans le sandbox) : les changements PHP
