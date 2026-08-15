@@ -35,17 +35,13 @@ final class CompanyBankDetails
             return ['name' => 'Leopardo RH', 'iban' => null, 'bic' => null];
         }
 
-        // PDO pgsql retourne les colonnes jsonb en STRING (pas en array) :
-        // `DB::table()` n'applique aucun cast Eloquent. Sans décodage explicite,
-        // le metadata n'était JAMAIS lu → SEPA échouait systématiquement avec
-        // MISSING_COMPANY_IBAN malgré `company_iban` renseigné (régression #2198).
-        $rawMetadata = $row->metadata;
-        if (is_string($rawMetadata)) {
-            $decoded = json_decode($rawMetadata, true);
-            $metadata = is_array($decoded) ? $decoded : [];
-        } else {
-            $metadata = is_array($rawMetadata) ? $rawMetadata : [];
-        }
+        // jsonb revient en STRING via le query builder (pas de cast Eloquent)
+        // — le décoder explicitement, sinon company_iban/company_bic sont
+        // invisibles et le SEPA échoue en MISSING_COMPANY_IBAN (#2551 cause 5).
+        $raw = $row->metadata ?? [];
+        $metadata = is_array($raw)
+            ? $raw
+            : (is_string($raw) ? (json_decode($raw, true) ?: []) : []);
 
         return [
             'name' => (string) ($row->name ?? 'Leopardo RH'),

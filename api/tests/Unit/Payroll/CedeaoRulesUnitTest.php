@@ -81,11 +81,13 @@ class CedeaoRulesUnitTest extends TestCase
     public function test_ci_notice_period_employee_level(): void
     {
         // Code du travail CI art. 18 — niveau employé/technicien
-        // (CI_COMPLIANCE.md §8) : < 5 ans → 30 j ; ≥ 5 ans → 60 j.
-        $this->assertSame(30.0, $this->ci()->noticePeriodDays(3.0));
-        $this->assertSame(30.0, $this->ci()->noticePeriodDays(4.9));
-        $this->assertSame(60.0, $this->ci()->noticePeriodDays(5.0));
-        $this->assertSame(60.0, $this->ci()->noticePeriodDays(12.0));
+        // (CI_COMPLIANCE.md §8, issue #2219) : JOURS OUVRÉS (alignement DZ
+        // #1943) — 1 mois = 22 j ouvrés ; 2 mois = 44 j ouvrés. Les durées
+        // calendaires (30/60) surpaiement 30/22 = 1,36× l'indemnité.
+        $this->assertSame(22.0, $this->ci()->noticePeriodDays(3.0));
+        $this->assertSame(22.0, $this->ci()->noticePeriodDays(4.9));
+        $this->assertSame(44.0, $this->ci()->noticePeriodDays(5.0));
+        $this->assertSame(44.0, $this->ci()->noticePeriodDays(12.0));
     }
 
     public function test_ci_exposes_pilot_metadata(): void
@@ -107,7 +109,9 @@ class CedeaoRulesUnitTest extends TestCase
         // Les membres BJ/TG/NE ne doivent PAS hériter des règles CI. BF et ML
         // ont leurs propres barèmes pilot (#1829) — testés dans
         // test_cedeao_members_pilot_metadata (PayrollCountryRulesTest).
-        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
+        // TG est pilot depuis #2160 (onboarding pays #2121) — seul BJ/NE
+        // restent placeholder.
+        foreach (['BJ', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             $this->assertSame('placeholder', $rules->confidenceLevel(), "{$memberCode} doit rester placeholder");

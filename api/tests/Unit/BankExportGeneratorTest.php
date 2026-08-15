@@ -95,7 +95,7 @@ class BankExportGeneratorTest extends TestCase
             'iban' => 'FR7630006000011234567890189',
         ]);
 
-        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'MAD');
+        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'MAD', ['iban' => 'FR7630006000011234567890189', 'bic' => 'AGRIFRPP882']);
 
         self::assertStringContainsString('<MsgId>LEO-20260520100000-77</MsgId>', $xml);
         self::assertStringContainsString('<NbOfTxs>1</NbOfTxs>', $xml);
@@ -136,7 +136,7 @@ class BankExportGeneratorTest extends TestCase
             'iban' => 'FR7630006000011234567890189',
         ]);
 
-        $xml = $method->invoke($generator, $run, new Collection([$slip]));
+        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'EUR', ['iban' => 'FR7630006000011234567890189']);
 
         self::assertStringContainsString('<InstdAmt Ccy="EUR">1200.00</InstdAmt>', $xml);
 
@@ -236,7 +236,7 @@ class BankExportGeneratorTest extends TestCase
         $slip->setRelation('employee', (object) ['first_name' => 'A', 'last_name' => 'B', 'iban' => 'FR7630006000011234567890189']);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('SEPA export requires the company bank details');
+        $this->expectExceptionMessage('MISSING_COMPANY_IBAN');
 
         $method->invoke($generator, $run, new Collection([$slip]), 'EUR');
     }
@@ -259,9 +259,9 @@ class BankExportGeneratorTest extends TestCase
         $slip->setRelation('employee', (object) ['first_name' => 'No', 'last_name' => 'Iban', 'iban' => null]);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('requires an IBAN for every employee');
+        $this->expectExceptionMessage('MISSING_EMPLOYEE_IBAN');
 
-        $method->invoke($generator, $run, new Collection([$slip]), 'EUR');
+        $method->invoke($generator, $run, new Collection([$slip]), 'EUR', ['iban' => 'FR7630006000011234567890189']);
     }
 
     public function test_sepa_uses_company_iban_and_bic(): void
@@ -277,13 +277,11 @@ class BankExportGeneratorTest extends TestCase
             'id' => 81,
             'period_start' => Carbon::parse('2026-05-01'),
         ]);
-        $this->attachCompanyBank($run);
-
         $slip = new PaySlip;
         $slip->setRawAttributes(['employee_id' => 3, 'net_salary' => 1200]);
         $slip->setRelation('employee', (object) ['first_name' => 'Jean', 'last_name' => 'Dupont', 'iban' => 'FR7630006000011234567890189']);
 
-        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'EUR');
+        $xml = $method->invoke($generator, $run, new Collection([$slip]), 'EUR', ['iban' => 'FR7630006000011234567890189', 'bic' => 'AGRIFRPP882']);
 
         self::assertStringContainsString('<DbtrAcct><Id><IBAN>FR7630006000011234567890189</IBAN></Id></DbtrAcct>', $xml);
         self::assertStringContainsString('<DbtrAgt><FinInstnId><BIC>AGRIFRPP882</BIC></FinInstnId></DbtrAgt>', $xml);
