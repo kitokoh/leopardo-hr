@@ -5,6 +5,12 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): races trial/verify et bulk-pay — verrou atomique + claims Redis idempotents (Closes #2996, #2997).** `VerifyTrialSignup` réserve la CompanyRequest en `processing` sous `lockForUpdate` (2 POST simultanés ne créent plus 2 tenants pour 1 email ; 409 `ALREADY_PROCESSED` si déjà traitée ; revert `pending` sur échec de provisioning ; migration publique 000007 étend la contrainte CHECK). `BulkPaymentController` passe en garde `SET NX EX` (TOCTOU fermé) ; `ProcessBulkPaymentJob` claim chaque slip en Redis (retry = seuls les slips en échec rejoués, plus de doubles documents de paiement).
+- **fix(api): OAuth Google refuse les emails inconnus (Closes #2998).** Plus d'auto-création d'employé tenantless + token (variante #2636) — `EMPLOYEE_NOT_FOUND` 401 explicite.
+- **fix(api): throttles endpoints publics SSO + groupe /platform/growth (Closes #3000).** `throttle:api` sur SAML/OIDC callbacks + `whereUuid` SAML ; `throttle:platform-sensitive` sur growth admin.
+- **fix(api): magic link démo émis une seule fois (Closes #3002).** `ProvisionDemoTenantJob` appelait `issueDemoAccess()` 2× → 2 emails, 1er lien mort.
+- **fix(cohérence): durée d'essai unifiée 14 jours (Closes #3012).** PlanSeeder canonique — fallback 30 de VerifyTrialSignup corrigé ; surfaces web (manifest, pricing, FAQ, content.ts, i18n badges) alignées.
+- **fix(tests): SelfServiceTrialTest/BulkPaymentControllerTest — régressions races + flushdb setUp (préfixe Redis).**
 
 - **fix(web): plan Enterprise harmonisé « Sur devis » — checkout quote-only (Closes #3328).** Le checkout affichait 299/239 € et 250+ employés alors que le pricing annonce « Sur devis » / 500+ employés. Enterprise devient quote-only : accès direct au checkout → redirection `/contact?topic=enterprise` (conforme AGENTS.md « Enterprise sur devis »), limites alignées 500+.
 ### Fixed
