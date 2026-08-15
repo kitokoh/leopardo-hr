@@ -4249,6 +4249,12 @@ parameters:
 			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
 
 		-
+			message: '#^Access to an undefined property App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Planning\\Domain\\Models\\AbsenceType\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Planning/Infrastructure/Services/AbsenceService.php
+
+		-
 			message: '#^Cannot access property \$deducts_leave on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
 			identifier: property.nonObject
 			count: 2
