@@ -49,6 +49,7 @@ const PLAN_CONFIG = {
     trialDays: 0,
     employeeLimit: '1-5 employés',
     isFree: true,
+    quoteOnly: false,
   },
   pilot: {
     label: 'Pilot',
@@ -69,6 +70,7 @@ const PLAN_CONFIG = {
     trialDays: 14,
     employeeLimit: '1-30 employés',
     isFree: false,
+    quoteOnly: false,
   },
   operations: {
     label: 'Operations',
@@ -89,15 +91,21 @@ const PLAN_CONFIG = {
     trialDays: 14,
     employeeLimit: '15-250 employés',
     isFree: false,
+    quoteOnly: false,
   },
   enterprise: {
     label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
-    priceMonthly: 299,
-    priceAnnual: 239,
-    savings: 720,
+    // #3328 : Enterprise est « Sur devis » — pas de tarif fixe au checkout.
+    // Le pricing vitrine affiche « Sur devis » (500+ employés) ; ce plan passe
+    // par le contact commercial (/contact?topic=enterprise), jamais par la
+    // carte bancaire. Les montants 299/239 € (historiques) sont retirés.
+    priceMonthly: 0,
+    priceAnnual: 0,
+    savings: 0,
+    quoteOnly: true,
     features: [
       'Tout Operations inclus',
       'Multi-pays & multi-devises',
@@ -107,7 +115,7 @@ const PLAN_CONFIG = {
       'Account manager dédié',
     ],
     trialDays: 14,
-    employeeLimit: '250+ employés',
+    employeeLimit: '500+ employés',
     isFree: false,
   },
 } as const;
@@ -1128,12 +1136,15 @@ function CheckoutInner() {
   // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
   const rawPlan = (searchParams.get('plan') || 'starter') as string;
   const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
-  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'starter') as PlanKey;
+  // #3326 : fallback sur 'free' (clé réelle) — 'starter' n'existe pas dans
+  // PLAN_CONFIG et provoquait un TypeError (page blanche) sur plan inconnu.
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'free') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 
   const cfg = PLAN_CONFIG[plan];
   const isFree = cfg.isFree;
+  const router = useRouter();
   const totalSteps = isFree ? 2 : 3;
   const stepLabels = isFree
     ? ['Récapitulatif', 'Créer mon compte']
@@ -1155,6 +1166,20 @@ function CheckoutInner() {
   useEffect(() => {
     if (rawBilling) setBilling(rawBilling);
   }, [rawBilling]);
+
+  // #3328 : Enterprise = « Sur devis » → contact commercial, jamais de
+  // checkout avec carte (harmonisé avec pricing.ts : Sur devis, 500+ employés).
+  useEffect(() => {
+    if (cfg.quoteOnly) router.replace('/contact?topic=enterprise');
+  }, [cfg.quoteOnly, router]);
+
+  if (cfg.quoteOnly) {
+    return (
+      <div dir={direction} className="min-h-screen flex items-center justify-center text-slate-500 dark:text-slate-400">
+        Redirection vers la demande de devis…
+      </div>
+    );
+  }
 
   return (
     <div

@@ -54,7 +54,7 @@ class FleetController extends Controller
         // Issue #3148 : un seul appel Traccar agrégé (deviceId=1,2,3…) au lieu
         // d'un appel HTTP par véhicule actif.
         $positionsByDevice = $traccar->getLastPositions(
-            $vehicles->pluck('traccar_device_id')->filter()->map(fn ($id): int => (int) $id)->all()
+            array_values($vehicles->pluck('traccar_device_id')->filter()->map(fn ($id): int => (int) $id)->all())
         );
         foreach ($vehicles as $vehicle) {
             $positions[] = [
