@@ -9,6 +9,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_manager/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 /// Écran liste des sessions GPS en attente de validation — Manager
 class PendingGeoSessionsScreen extends ConsumerStatefulWidget {
@@ -225,7 +226,7 @@ class _SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fmt = DateFormat('d MMM · HH:mm', 'fr_FR');
+    final fmt = DateFormat('d MMM · HH:mm', deviceIntlDateLocale);
 
     return GlassCard(
       padding: const EdgeInsets.all(20),

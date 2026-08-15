@@ -11,6 +11,7 @@ use App\Modules\HR\Domain\Models\Evaluation;
 use App\Modules\HR\Interfaces\Api\V1\Requests\EvaluationIndexRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEvaluationRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEvaluationRequest;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -32,6 +33,7 @@ class EvaluationController extends Controller
         $actor = $request->user();
 
         $query = Evaluation::query()
+            ->where('company_id', $actor->company_id)
             ->select([
                 'id',
                 'company_id',
@@ -80,7 +82,7 @@ class EvaluationController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
 
         return EvaluationResource::collection($query->orderByDesc('created_at')->paginate($perPage))
             ->response();
@@ -112,18 +114,29 @@ class EvaluationController extends Controller
             return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);
         }
 
-        $evaluation = Evaluation::create([
-            'company_id' => $actor->company_id,
-            'employee_id' => $data['employee_id'],
-            'evaluator_id' => $actor->id,
-            'period' => $data['period'],
-            'score' => $data['score'] ?? null,
-            'criteria' => $data['criteria'] ?? [],
-            'strengths' => $data['strengths'] ?? null,
-            'improvements' => $data['improvements'] ?? null,
-            'overall_comment' => $data['overall_comment'] ?? null,
-            'status' => 'draft',
-        ]);
+        try {
+            $evaluation = Evaluation::create([
+                'company_id' => $actor->company_id,
+                'employee_id' => $data['employee_id'],
+                'evaluator_id' => $actor->id,
+                'period' => $data['period'],
+                'score' => $data['score'] ?? null,
+                'criteria' => $data['criteria'] ?? [],
+                'strengths' => $data['strengths'] ?? null,
+                'improvements' => $data['improvements'] ?? null,
+                'overall_comment' => $data['overall_comment'] ?? null,
+                'status' => 'draft',
+            ]);
+        } catch (QueryException $e) {
+            // Issue #3238 : double soumission concurrente (double-tap, retry) —
+            // la contrainte unique (employee_id, period, evaluator_id) rattrape
+            // la course entre exists() et create() : on renvoie la même 422.
+            // 23505 = SQLSTATE unique_violation (pattern PartnerService).
+            if ($e->getCode() === '23505') {
+                return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);
+            }
+            throw $e;
+        }
 
         return (new EvaluationResource($evaluation->load('employee', 'evaluator')))
             ->response()

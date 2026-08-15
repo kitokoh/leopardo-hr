@@ -1,8 +1,14 @@
 import { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+import { SITE_URL as siteUrl } from '@/lib/site-url';
+import { t } from '@/lib/i18n/locale-catalog';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
+
+/** Build a canonical URL from the configured site URL. */
+export function canonicalUrl(path: string): string {
+  return `${siteUrl}${path}`;
+}
 
 export interface SEOMetadata {
   title: string;
@@ -90,7 +96,7 @@ export const pageMetadata = {
       "pointage numérique",
       "gestion absences",
     ],
-    ogImage: `${siteUrl}/og/landing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   employes: {
@@ -104,7 +110,7 @@ export const pageMetadata = {
       "logiciel RH",
       "paie employés",
     ],
-    ogImage: `${siteUrl}/og/employes.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   documents: {
@@ -118,7 +124,7 @@ export const pageMetadata = {
       "archivage conformité",
       "RGPD documents",
     ],
-    ogImage: `${siteUrl}/og/documents.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   comptabilite: {
@@ -132,7 +138,7 @@ export const pageMetadata = {
       "bulletins de paie",
       "conformité paie",
     ],
-    ogImage: `${siteUrl}/og/comptabilite.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   marketing: {
@@ -146,20 +152,37 @@ export const pageMetadata = {
       "campagnes email",
       "marketing automation",
     ],
-    ogImage: `${siteUrl}/og/marketing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
+  integrations: {
+    title: "Integrations & Connecteurs | Leopardo RH",
+    description:
+      "Connecteurs comptables et API Leopardo RH : Sage, QuickBooks, API publique, webhooks. Intégrez la paie et les RH à votre stack.",
+    keywords: [
+      "integrations RH",
+      "connecteurs comptables",
+      "API paie",
+      "webhooks RH",
+      "Sage QuickBooks",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      "Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 14 jours.",
+      // Issue #3487 : la locale n'est pas résolue ici (metadata statique du
+      // module) — le layout /pricing lit ?lang= et appelle t(locale, ...).
+      // Ce fallback FR ne sert que si la clé i18n manque.
+      t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
       "tarification paie",
       "coût gestion employés",
       "plans pricing",
     ],
-    ogImage: `${siteUrl}/og/pricing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   about: {
@@ -167,7 +190,7 @@ export const pageMetadata = {
     description:
       "Découvrez notre mission, équipe et valeurs. Nous aidons les PME à gérer leurs employés simplement.",
     keywords: ["à propos", "équipe", "mission", "valeurs"],
-    ogImage: `${siteUrl}/og/about.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   blog: {
@@ -181,98 +204,98 @@ export const pageMetadata = {
       "tendances RH",
       "automatisation RH",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   changelog: {
     title: "Journal des versions | Leopardo RH",
     description:
-      "Decouvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
+      "Découvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
     keywords: [
       "changelog Leopardo",
       "nouveautes RH",
       "releases logiciel paie",
       "notes de version",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   docs: {
     title: "Documentation API | Guides techniques Leopardo RH",
     description:
-      "Documentation technique et guides d'integration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
+      "Documentation technique et guides d'intégration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
     keywords: [
       "documentation API RH",
-      "integration Leopardo",
+      "intégration Leopardo",
       "webhooks paie",
-      "API gestion employes",
+      "API gestion employés",
     ],
-    ogImage: `${siteUrl}/og/docs.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   download: {
-    title: "Telecharger Leopardo RH | Windows, macOS, Android, iOS",
+    title: "Télécharger Leopardo RH | Windows, macOS, Android, iOS",
     description:
-      "Telechargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
+      "Téléchargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
     keywords: [
-      "telecharger Leopardo RH",
+      "télécharger Leopardo RH",
       "application pointage mobile",
       "client desktop ZKTeco",
       "app RH Android iOS",
     ],
-    ogImage: `${siteUrl}/og/download.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   contact: {
     title: "Contactez-nous | Support et Ventes Leopardo RH",
     description:
-      "Une question sur Leopardo RH ? Contactez notre equipe commerciale ou support par email, telephone ou formulaire.",
+      "Une question sur Leopardo RH ? Contactez notre équipe commerciale ou support par email, telephone ou formulaire.",
     keywords: [
       "contact Leopardo RH",
       "support RH SaaS",
       "demande commerciale",
       "assistance logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/contact.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   faq: {
     title: "Questions Frequentes | FAQ Leopardo RH",
     description:
-      "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, securite, integrations et support.",
+      "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, sécurité, integrations et support.",
     keywords: [
       "FAQ Leopardo RH",
       "questions logiciel RH",
-      "aide gestion employes",
+      "aide gestion employés",
       "support paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/faq.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   testimonials: {
-    title: "Temoignages Clients | Avis sur Leopardo RH",
+    title: "Témoignages Clients | Avis sur Leopardo RH",
     description:
-      "Decouvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
+      "Découvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
     keywords: [
-      "temoignages Leopardo RH",
+      "témoignages Leopardo RH",
       "avis clients logiciel RH",
       "retours utilisateurs paie SaaS",
       "case success RH PME",
     ],
-    ogImage: `${siteUrl}/og/testimonials.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   caseStudies: {
     title: "Etudes de Cas | Success Stories Leopardo RH",
     description:
-      "Etudes de cas detaillees d'entreprises ayant deploye Leopardo RH pour automatiser paie, pointage et absences.",
+      "Etudes de cas detaillees d'entreprises ayant déployé Leopardo RH pour automatiser paie, pointage et absences.",
     keywords: [
       "etudes de cas RH",
       "success story paie SaaS",
       "cas client Leopardo RH",
       "ROI logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/case-studies.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   videos: {
@@ -282,10 +305,10 @@ export const pageMetadata = {
     keywords: [
       "videos Leopardo RH",
       "demo logiciel RH",
-      "tutoriel pointage biometrique",
+      "tutoriel pointage biométrique",
       "demonstration paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/videos.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   branding: {
@@ -298,37 +321,37 @@ export const pageMetadata = {
       "logo entreprise application RH",
       "theme personnalise paie",
     ],
-    ogImage: `${siteUrl}/og/branding.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   careers: {
-    title: "Carrieres | Rejoignez l'Equipe Leopardo RH",
+    title: "Carrieres | Rejoignez l'Équipe Leopardo RH",
     description:
-      "Decouvrez nos offres d'emploi et rejoignez l'equipe qui construit la plateforme RH de reference pour les PME.",
+      "Découvrez nos offres d'emploi et rejoignez l'équipe qui construit la plateforme RH de reference pour les PME.",
     keywords: [
       "carrieres Leopardo RH",
       "emploi logiciel RH",
       "recrutement startup SaaS",
       "offres emploi tech RH",
     ],
-    ogImage: `${siteUrl}/og/careers.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   mobile: {
     title: "Applications Mobiles | Leopardo RH sur Android et iOS",
     description:
-      "Applications mobiles Leopardo RH pour employes, managers et administrateurs : pointage, absences et validation en mobilite.",
+      "Applications mobiles Leopardo RH pour employés, managers et administrateurs : pointage, absences et validation en mobilite.",
     keywords: [
       "application mobile RH",
       "pointage mobile Android iOS",
       "app manager RH",
-      "app employe pointage",
+      "app employé pointage",
     ],
-    ogImage: `${siteUrl}/og/mobile.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   signup: {
-    title: "Essai Guide Gratuit | Decouvrez Leopardo RH",
+    title: "Essai Guide Gratuit | Découvrez Leopardo RH",
     description:
       "Demandez votre essai guide gratuit de Leopardo RH : aucun mot de passe requis, un espace de demonstration provisionne automatiquement.",
     keywords: [
@@ -337,21 +360,21 @@ export const pageMetadata = {
       "sandbox logiciel RH",
       "inscription essai paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/signup.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
 
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Free, Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",
       "checkout SaaS RH",
       "paiement plan paie",
     ],
-    ogImage: `${siteUrl}/og/checkout.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
 };
@@ -369,9 +392,9 @@ export function generateOrganizationSchema() {
     logo: `${siteUrl}/logo.png`,
     description: "Plateforme complète de gestion RH pour PME et startups",
     sameAs: [
-      "https://twitter.com/leopardo",
+      "https://x.com/leopardo_hr",
       "https://linkedin.com/company/leopardo",
-      "https://facebook.com/leopardo",
+      "https://www.facebook.com/leopardo_hr",
     ],
     contactPoint: {
       "@type": "ContactPoint",

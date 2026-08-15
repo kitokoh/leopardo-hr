@@ -33,7 +33,7 @@ const reports: ReportConfig[] = [
   {
     id: 'attendance-summary',
     title: 'Resume Presences',
-    description: 'Rapport mensuel des presences, retards et absences par employe.',
+    description: 'Rapport mensuel des présences, retards et absences par employé.',
     icon: Clock,
     color: 'text-security-dark bg-security-light',
     endpoint: '/attendance/monthly-report',
@@ -50,7 +50,7 @@ const reports: ReportConfig[] = [
   {
     id: 'payroll-summary',
     title: 'Resume Paie',
-    description: 'Total brut/net, cotisations et charges par periode de paie.',
+    description: 'Total brut/net, cotisations et charges par période de paie.',
     icon: DollarSign,
     color: 'text-emerald-600 bg-emerald-50',
     endpoint: '/reports/payroll-summary',
@@ -70,7 +70,7 @@ const reports: ReportConfig[] = [
   {
     id: 'leave-balances',
     title: 'Soldes Conges',
-    description: 'Etat des soldes de conges pour tous les employes.',
+    description: 'État des soldes de congés pour tous les employés.',
     icon: Calendar,
     color: 'text-ia-dark bg-ia-light',
     endpoint: '/leave-balances',
@@ -162,7 +162,7 @@ export default function ReportsPage() {
   return (
     <ModulePageShell
       title="Rapports"
-      subtitle="Generez et telechargez vos rapports RH : presences, paie, conges, effectifs, formations et contrats."
+      subtitle="Générez et téléchargez vos rapports RH : présences, paie, congés, effectifs, formations et contrats."
       accentClassName="bg-gradient-to-br from-ia/10 via-white to-white"
     >
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,490 +1,436 @@
 {
-  "_updated_at": "2026-08-14T18:45:00Z",
   "platform_login": {
+    "2fa_notice": "Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.",
     "2fa_label": "Code 2FA si active",
+    "email_required": "Email requis",
     "password_required": "Mot de passe requis",
     "title": "Leopardo Platform",
-    "subtitle": "Cockpit mobile reserve a l administration de la plateforme.",
-    "2fa_notice": "Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.",
-    "email_required": "Email requis",
     "use_demo_account": "Utiliser le compte demo",
     "submitting": "Connexion...",
-    "email_label": "Email super-admin"
+    "email_label": "Email super-admin",
+    "subtitle": "Cockpit mobile reserve a l administration de la plateforme."
+  },
+  "dashboard": {
+    "leo_ia_announcement_error": "Impossible d'envoyer le message. Reessayez dans quelques instants.",
+    "recent_activity_hint": "Dernieres actions de votre equipe",
+    "leo_presence_insight": "Aujourd'hui, {today} presence(s) sur {active} employe(s) actif(s). Souhaitez-vous envoyer un message de felicitations a l'equipe ?",
+    "company": "Entreprise",
+    "presence_today_title": "Presence aujourd hui",
+    "title": "Tableau de bord",
+    "presence_today_summary": "{present} presence(s) sur {active} employe(s) actif(s) aujourd hui",
+    "presence_today_empty": "Aucune donnee de presence disponible.",
+    "leo_presence_empty": "Aucune donnee de presence disponible pour le moment. Souhaitez-vous quand meme envoyer un message de felicitations a l'equipe ?",
+    "recent_activity": "Activite recente",
+    "upgrade": "Upgrade",
+    "priority_actions": "Actions prioritaires",
+    "launch_readiness": "Readiness lancement",
+    "leo_announcements_count": "{count} annonce(s) publiee(s) dans votre entreprise.",
+    "active_employees": "Actifs",
+    "leo_ia_announcement_body": "Felicitations a toute l'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !",
+    "leo_ia_announcement_title": "Felicitations equipe"
   },
   "tax_slabs": {
-    "reset_done": "Barème réinitialisé.",
+    "saving": "Enregistrement…",
+    "sim_error": "Simulation impossible.",
     "legal_ref": "Référence légale",
+    "saved": "Tranche mise à jour.",
+    "delete_confirm": "Supprimer la tranche « {name} » ?",
+    "sim_compare": "Salaire à comparer",
+    "th_effective": "Effet au",
+    "title": "Barèmes fiscaux par pays",
+    "simulator_title": "Simulateur d'impact",
+    "sim_net": "Net",
+    "sim_tax": "Impôt",
+    "add": "Ajouter une tranche",
+    "delete": "Supprimer",
+    "sim_run": "Simuler",
+    "scope": "Portée",
     "created": "Tranche créée.",
     "save_error": "Impossible d'enregistrer la tranche.",
-    "th_deduction": "Déduction fixe",
     "sim_base": "Assiette",
-    "simulator_title": "Simulateur d'impact",
-    "sim_error": "Simulation impossible.",
-    "reset": "Réinitialiser aux valeurs légales",
-    "th_country": "Pays",
-    "sim_gross": "Salaire brut",
-    "reset_error": "Réinitialisation impossible.",
-    "scope": "Portée",
-    "save": "Enregistrer",
-    "saved": "Tranche mise à jour.",
-    "saving": "Enregistrement…",
-    "scope_company": "Spécifique entreprise",
-    "sim_run": "Simuler",
-    "sim_running": "Calcul…",
+    "deleted": "Tranche supprimée.",
     "default_name": "{country} tranche légale",
     "delete_error": "Impossible de supprimer.",
-    "empty": "Aucune tranche enregistrée pour ce pays.",
-    "th_effective": "Effet au",
-    "national_note": "portée nationale — les overrides entreprise restent côté tenant",
-    "sim_net": "Net",
+    "sim_slab_tax": "Impôt tranche",
     "load_error": "Impossible de charger le barème.",
     "cancel": "Annuler",
-    "add": "Ajouter une tranche",
-    "th_rate": "Taux",
-    "title": "Barèmes fiscaux par pays",
-    "subtitle": "Barèmes IRG/IRPP/ITSAS utilisés par le moteur de paie. Gestion nationale (platform admin), simulateur d'impact en temps réel, sans persistance.",
     "simulator_subtitle": "Saisissez un salaire brut : le calcul (cotisations, assiette, impôt par tranche, net, coût employeur) est exécuté par le moteur de paie réel, sans rien persister.",
+    "empty": "Aucune tranche enregistrée pour ce pays.",
+    "national_note": "portée nationale — les overrides entreprise restent côté tenant",
+    "sim_gross": "Salaire brut",
+    "th_country": "Pays",
+    "scope_company": "Spécifique entreprise",
+    "reset": "Réinitialiser aux valeurs légales",
     "edit": "Modifier",
-    "delete_confirm": "Supprimer la tranche « {name} » ?",
-    "delete": "Supprimer",
-    "scope_national": "National",
-    "th_min": "Tranche min",
-    "edit_title": "Modifier la tranche",
-    "reset_confirm": "Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.",
-    "sim_social": "Cotisations (salariales)",
-    "th_actions": "Actions",
-    "deleted": "Tranche supprimée.",
+    "th_deduction": "Déduction fixe",
     "add_title": "Ajouter une tranche",
+    "save": "Enregistrer",
+    "th_actions": "Actions",
     "th_max": "Tranche max",
-    "sim_slab_tax": "Impôt tranche",
-    "sim_compare": "Salaire à comparer",
-    "sim_tax": "Impôt"
+    "reset_confirm": "Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.",
+    "subtitle": "Barèmes IRG/IRPP/ITSAS utilisés par le moteur de paie. Gestion nationale (platform admin), simulateur d'impact en temps réel, sans persistance.",
+    "sim_running": "Calcul…",
+    "reset_error": "Réinitialisation impossible.",
+    "scope_national": "National",
+    "edit_title": "Modifier la tranche",
+    "th_rate": "Taux",
+    "sim_social": "Cotisations (salariales)",
+    "reset_done": "Barème réinitialisé.",
+    "th_min": "Tranche min"
   },
-  "seo": {
-    "pricing": {
-      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
-    }
-  },
+  "_updated_at": "2026-08-14T18:45:00Z",
   "app": {
     "title": "Leopardo RH"
   },
-  "_version": "1.0.0",
-  "holidays": {
-    "save_error": "Impossible d'enregistrer le jour férié.",
-    "th_date": "Date",
-    "year": "Année",
-    "th_scope": "Portée",
-    "scope": {
-      "national": "National",
-      "company": "Entreprise"
-    },
-    "save": "Enregistrer",
-    "saved": "Jour férié enregistré.",
-    "saving": "Enregistrement…",
-    "page": {
-      "title": "Jours fériés par pays",
-      "subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels (issue #1811). Les fériés nationaux sont partagés ; les fériés d'entreprise restent propres à votre société."
-    },
-    "errors": {
-      "delete": "Impossible de supprimer.",
-      "save": "Impossible d'enregistrer le jour férié.",
-      "load": "Impossible de charger les jours fériés."
-    },
-    "scope_company": "Entreprise",
-    "page_title": "Jours fériés par pays",
-    "islamic": {
-      "empty": "Aucune fête islamique enregistrée pour {year}.",
-      "confirm": "Confirmer {year}",
-      "save_error": "Erreur lors de l'enregistrement.",
-      "load_error": "Erreur lors du chargement du calendrier islamique.",
-      "status_confirmed": "Confirmé",
-      "label_duration": "Durée (jours)",
-      "th_date": "Date grégorienne",
-      "title": "Fêtes islamiques",
-      "subtitle": "Dates mobiles du calendrier hégirien (Aïd, Maouloud, Tamkharit…) saisies par année. Elles s'appliquent automatiquement aux pays CEMAC/CEDEAO + DZ/MA/TN.",
-      "th_countries": "Pays",
-      "label_date": "Date grégorienne",
-      "edit": "Modifier",
-      "status_approximate": "Approximatif",
-      "banner_unconfirmed": "{count} fête(s) islamique(s) non confirmée(s) pour {year} — vérifiez les dates avant la clôture de paie.",
-      "saved": "Fête islamique enregistrée.",
-      "confirm_error": "Erreur lors de la confirmation des dates.",
-      "label_confirmed": "Date confirmée (officielle)",
-      "th_actions": "Actions",
-      "th_duration": "Durée",
-      "confirm_year_success": "{count} date(s) confirmée(s).",
-      "duration_days": "{count} jour(s)",
-      "delete_confirm_dialog": "Supprimer « {name} » ?",
-      "th_name": "Fête",
-      "confirm_dialog": "Confirmer toutes les dates islamiques de {year} ?",
-      "modal_title": "Modifier {name}",
-      "th_status": "Statut"
-    },
-    "type_fixed": "Fixe",
-    "delete_error": "Impossible de supprimer.",
-    "th_type": "Type",
-    "success": {
-      "saved": "Jour férié enregistré.",
-      "deleted": "Jour férié supprimé."
-    },
-    "recurring": "Récurent chaque année",
-    "countries": {
-      "TN": "Tunisie",
-      "CM": "Cameroun",
-      "DZ": "Algérie",
-      "CI": "Côte d'Ivoire",
-      "MA": "Maroc",
-      "SN": "Sénégal"
-    },
-    "empty": "Aucun jour férié pour {country} / {year}.",
-    "confirm": {
-      "delete": "Supprimer « :name » ?"
-    },
-    "type_islamic": "Islamique",
-    "type_custom": "Personnalisé",
-    "load_error": "Impossible de charger les jours fériés.",
-    "type_christian": "Chrétien",
-    "cancel": "Annuler",
-    "add": "Ajouter un jour férié",
-    "nav": {
-      "title": "Jours fériés"
-    },
-    "type": {
-      "fixed": "Fixe",
-      "christian": "Chrétien",
-      "islamic": "Islamique",
-      "label": "Type",
-      "custom": "Personnalisé"
-    },
-    "country": "Pays",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "scope_national": "National",
-    "edit_title": "Modifier le jour férié",
-    "modal": {
-      "editTitle": "Modifier le jour férié",
-      "newTitle": "Nouveau jour férié"
-    },
-    "page_subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812) alimentent automatiquement les bulletins de paie de tous les pays concernés.",
-    "th": {
-      "scope": "Portée",
-      "type": "Type",
-      "name": "Nom",
-      "actions": "Actions",
-      "date": "Date"
-    },
-    "date": {
-      "label": "Date"
-    },
-    "th_actions": "Actions",
-    "deleted": "Jour férié supprimé.",
-    "add_title": "Nouveau jour férié",
-    "th_name": "Nom",
-    "name": {
-      "label": "Nom"
-    }
-  },
-  "social_contrib": {
-    "sim_title": "Simulateur & comparateur",
-    "created": "Cotisation créée.",
-    "empty": "Aucune cotisation enregistrée pour ce pays.",
-    "type_employer": "Patronale",
-    "th_effective": "Effet au",
-    "save_error": "Impossible d'enregistrer la cotisation.",
-    "sim_tax": "Impôt",
-    "load_error": "Impossible de charger les cotisations.",
-    "cancel": "Annuler",
-    "add": "Ajouter une cotisation",
-    "th_rate": "Taux",
-    "sim_employee": "Cotisations salariales",
-    "title": "Cotisations sociales par pays",
-    "subtitle": "CNPS, CNSS, IPRES, CNAS… — taux, plafonds et types (salariale/patronale) par pays. Gestion nationale + simulateur avec/sans plafond et comparateur 2 pays.",
-    "th_cap": "Plafond",
-    "total_cost": "Coût total employeur",
-    "sim_employer": "Cotisations patronales",
-    "edit": "Modifier",
-    "delete_confirm": "Supprimer « {name} » ?",
-    "delete": "Supprimer",
-    "edit_title": "Modifier la cotisation",
-    "th_country": "Pays",
-    "sim_gross": "Salaire brut",
-    "save": "Enregistrer",
-    "type_all": "Tous",
-    "saved": "Cotisation mise à jour.",
-    "saving": "Enregistrement…",
-    "ignore_caps": "Sans plafond légal",
-    "th_actions": "Actions",
-    "type_employee": "Salariale",
-    "deleted": "Cotisation supprimée.",
-    "th_code": "Code",
-    "sim_subtitle": "Saisissez un brut : décomposition salariale/patronale, impôt et coût total employeur, pour deux pays côte à côte (avec ou sans plafond légal).",
-    "add_title": "Ajouter une cotisation",
-    "th_org": "Organisme",
-    "delete_error": "Suppression impossible.",
-    "compare_country": "Pays comparé",
-    "th_type": "Type"
-  },
   "auth": {
-    "password_too_short": "Mot de passe trop court",
-    "login": {
-      "title": "Se connecter"
-    },
-    "back_tooltip": "Retour",
-    "personal_account_link": "Compte perso",
-    "two_factor_required": "Le code 2FA est requis.",
-    "password_required": "Mot de passe obligatoire",
-    "email_required": "Email obligatoire",
-    "personal_account": {
-      "create": "Creer un compte personnel",
-      "explanation": "Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace."
-    },
-    "email_invalid": "Email invalide",
-    "email_label": "Email",
     "employee_login_subtitle": "Connexion employe",
-    "manager_login_subtitle": "Connexion Manager / RH",
-    "try_demo_account": "Tester avec un compte demo",
-    "activate_manager_access": "Activer mon acces manager",
+    "email_professional_label": "Email professionnel",
+    "personal_account": {
+      "explanation": "Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace.",
+      "create": "Creer un compte personnel"
+    },
     "employee": {
       "invitation": {
         "access": "Acces employe (invitation)"
       }
     },
-    "continue_with_google": "Continuer avec Google",
-    "email_professional_label": "Email professionnel",
+    "personal_account_link": "Compte perso",
+    "manager_login_subtitle": "Connexion Manager / RH",
+    "two_factor_required": "Le code 2FA est requis.",
+    "email_label": "Email",
+    "login": {
+      "title": "Se connecter"
+    },
     "password_label": "Mot de passe",
+    "continue_with_google": "Continuer avec Google",
+    "email_required": "Email obligatoire",
+    "back_tooltip": "Retour",
+    "email_invalid": "Email invalide",
+    "try_demo_account": "Tester avec un compte demo",
+    "password_required": "Mot de passe obligatoire",
+    "password_too_short": "Mot de passe trop court",
+    "activate_manager_access": "Activer mon acces manager",
     "activate_invitation": "Activer mon invitation"
   },
-  "_locale": "fr",
-  "dashboard": {
-    "leo_ia_announcement_body": "Felicitations a toute l'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !",
-    "leo_ia_announcement_error": "Impossible d'envoyer le message. Reessayez dans quelques instants.",
-    "launch_readiness": "Readiness lancement",
-    "presence_today_title": "Presence aujourd hui",
-    "priority_actions": "Actions prioritaires",
-    "recent_activity": "Activite recente",
-    "presence_today_empty": "Aucune donnee de presence disponible.",
-    "leo_announcements_count": "{count} annonce(s) publiee(s) dans votre entreprise.",
-    "presence_today_summary": "{present} presence(s) sur {active} employe(s) actif(s) aujourd hui",
-    "leo_presence_empty": "Aucune donnee de presence disponible pour le moment. Souhaitez-vous quand meme envoyer un message de felicitations a l'equipe ?",
-    "active_employees": "Actifs",
-    "title": "Tableau de bord",
-    "recent_activity_hint": "Dernieres actions de votre equipe",
-    "leo_presence_insight": "Aujourd'hui, {today} presence(s) sur {active} employe(s) actif(s). Souhaitez-vous envoyer un message de felicitations a l'equipe ?",
-    "upgrade": "Upgrade",
-    "company": "Entreprise",
-    "leo_ia_announcement_title": "Felicitations equipe"
+  "common": {
+    "countries": {
+      "CI": "Côte d'Ivoire",
+      "SN": "Sénégal",
+      "CA": "Canada",
+      "CM": "Cameroun",
+      "GQ": "Guinée équatoriale",
+      "US": "États-Unis",
+      "TR": "Turquie",
+      "TN": "Tunisie",
+      "CF": "République centrafricaine",
+      "BJ": "Bénin",
+      "BF": "Burkina Faso",
+      "ML": "Mali",
+      "TG": "Togo",
+      "DZ": "Algérie",
+      "GA": "Gabon",
+      "TD": "Tchad",
+      "GB": "Royaume-Uni",
+      "MA": "Maroc",
+      "CG": "Congo",
+      "NE": "Niger",
+      "FR": "France"
+    },
+    "language": {
+      "variants": {
+        "fr-FR": "Francais (France)",
+        "fr-CA": "Francais (Canada)",
+        "fr-BE": "Francais (Belgique)",
+        "ar-MA": "Arabe (Maroc)",
+        "en-GB": "Anglais (Royaume-Uni)",
+        "ar-SA": "Arabe (Arabie saoudite)",
+        "tr-TR": "Turc (Turquie)",
+        "en-US": "Anglais (Etats-Unis)"
+      },
+      "label": "Langue"
+    },
+    "or": "ou"
+  },
+  "social_contrib": {
+    "saving": "Enregistrement…",
+    "empty": "Aucune cotisation enregistrée pour ce pays.",
+    "th_code": "Code",
+    "sim_title": "Simulateur & comparateur",
+    "saved": "Cotisation mise à jour.",
+    "delete_confirm": "Supprimer « {name} » ?",
+    "type_all": "Tous",
+    "sim_gross": "Salaire brut",
+    "title": "Cotisations sociales par pays",
+    "th_country": "Pays",
+    "edit": "Modifier",
+    "type_employer": "Patronale",
+    "type_employee": "Salariale",
+    "add_title": "Ajouter une cotisation",
+    "save": "Enregistrer",
+    "sim_tax": "Impôt",
+    "sim_subtitle": "Saisissez un brut : décomposition salariale/patronale, impôt et coût total employeur, pour deux pays côte à côte (avec ou sans plafond légal).",
+    "th_actions": "Actions",
+    "add": "Ajouter une cotisation",
+    "th_org": "Organisme",
+    "total_cost": "Coût total employeur",
+    "subtitle": "CNPS, CNSS, IPRES, CNAS… — taux, plafonds et types (salariale/patronale) par pays. Gestion nationale + simulateur avec/sans plafond et comparateur 2 pays.",
+    "delete": "Supprimer",
+    "compare_country": "Pays comparé",
+    "ignore_caps": "Sans plafond légal",
+    "sim_employee": "Cotisations salariales",
+    "edit_title": "Modifier la cotisation",
+    "sim_employer": "Cotisations patronales",
+    "created": "Cotisation créée.",
+    "save_error": "Impossible d'enregistrer la cotisation.",
+    "deleted": "Cotisation supprimée.",
+    "th_rate": "Taux",
+    "delete_error": "Suppression impossible.",
+    "th_type": "Type",
+    "load_error": "Impossible de charger les cotisations.",
+    "th_cap": "Plafond",
+    "th_effective": "Effet au",
+    "cancel": "Annuler"
+  },
+  "ai_chat": {
+    "error_message": "Erreur : impossible de contacter l assistant.",
+    "empty_state_title": "Posez vos questions RH",
+    "send_tooltip": "Envoyer",
+    "input_hint": "Tapez votre message...",
+    "back_tooltip": "Retour",
+    "title": "Assistant IA"
+  },
+  "emails": {
+    "absence_rejected": {
+      "greeting": "Bonjour :name,",
+      "subject": "Votre absence a ete refusee",
+      "footer": "Consultez votre manager si vous avez besoin d un complement.",
+      "body": "Votre demande d absence pour :period a ete refusee.",
+      "action": "Voir la demande"
+    },
+    "absence_approved": {
+      "greeting": "Bonjour :name,",
+      "subject": "Votre absence a ete approuvee",
+      "footer": "Le planning equipe a ete mis a jour.",
+      "body": "Votre demande d absence pour :period a ete approuvee.",
+      "action": "Voir la demande"
+    },
+    "invitation": {
+      "greeting": "Bonjour :name,",
+      "subject": "Vous etes invite(e) a rejoindre :company sur Leopardo RH",
+      "footer": "Si vous n avez pas demande cette action, ignorez cet email.",
+      "body": "Vous avez ete invite(e) a rejoindre :company. Cliquez sur le lien ci-dessous pour activer votre compte.",
+      "action": "Activer mon compte"
+    },
+    "reset_password": {
+      "greeting": "Bonjour :name,",
+      "subject": "Reinitialisation de votre mot de passe",
+      "footer": "Si vous n avez pas demande cette action, ignorez cet email.",
+      "body": "Cliquez sur le lien ci-dessous pour reinitialiser votre mot de passe.",
+      "action": "Reinitialiser le mot de passe"
+    },
+    "payroll_ready": {
+      "greeting": "Bonjour :name,",
+      "subject": "Votre bulletin de paie est disponible",
+      "footer": "Merci de verifier vos informations avant export comptable.",
+      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo RH.",
+      "action": "Voir mon bulletin"
+    }
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
     "retry_after_failure": "{label}. Reessayez."
   },
-  "webhooks": {
-    "confirm_delete": "Supprimer ce webhook ?"
-  },
-  "payroll": {
-    "confidence": {
-      "production": {
-        "message": "Règles validées et utilisées en production pour {country}. Confirmez toujours les taux en vigueur auprès d'un conseil local avant de vous appuyer sur ces montants pour des déclarations obligatoires."
-      },
-      "level_production": "Production",
-      "level_placeholder": "Maquette",
-      "label": "Confiance des règles de paie",
-      "level_unknown": "Inconnu",
-      "pilot": {
-        "message": "Règles pilotes pour {country} : montants issus de références publiques générales (code du travail) mais non encore validés juridiquement sur place. Confirmez avec un conseil juridique ou fiscal local avant de vous appuyer sur ces chiffres (tranches d'impôt, cotisations sociales, seuils d'heures supplémentaires) pour vos obligations légales."
-      },
-      "level_pilot": "Pilote",
-      "placeholder": {
-        "message": "Maquette sans valeurs pour {country} : les montants d'impôt et de cotisations sociales ne sont pas encore documentés et ne doivent pas être utilisés pour de vrais cycles de paie tant qu'ils n'ont pas été remplacés."
-      },
-      "unknown": {
-        "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
-      }
-    }
-  },
-  "emails": {
-    "absence_rejected": {
-      "subject": "Votre absence a ete refusee",
-      "action": "Voir la demande",
-      "greeting": "Bonjour :name,",
-      "footer": "Consultez votre manager si vous avez besoin d un complement.",
-      "body": "Votre demande d absence pour :period a ete refusee."
-    },
-    "absence_approved": {
-      "subject": "Votre absence a ete approuvee",
-      "action": "Voir la demande",
-      "greeting": "Bonjour :name,",
-      "footer": "Le planning equipe a ete mis a jour.",
-      "body": "Votre demande d absence pour :period a ete approuvee."
-    },
-    "payroll_ready": {
-      "subject": "Votre bulletin de paie est disponible",
-      "action": "Voir mon bulletin",
-      "greeting": "Bonjour :name,",
-      "footer": "Merci de verifier vos informations avant export comptable.",
-      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo RH."
-    },
-    "invitation": {
-      "subject": "Vous etes invite(e) a rejoindre :company sur Leopardo RH",
-      "action": "Activer mon compte",
-      "greeting": "Bonjour :name,",
-      "footer": "Si vous n avez pas demande cette action, ignorez cet email.",
-      "body": "Vous avez ete invite(e) a rejoindre :company. Cliquez sur le lien ci-dessous pour activer votre compte."
-    },
-    "reset_password": {
-      "subject": "Reinitialisation de votre mot de passe",
-      "action": "Reinitialiser le mot de passe",
-      "greeting": "Bonjour :name,",
-      "footer": "Si vous n avez pas demande cette action, ignorez cet email.",
-      "body": "Cliquez sur le lien ci-dessous pour reinitialiser votre mot de passe."
-    }
-  },
   "modules": {
-    "cabinet": "Coffre documentaire",
+    "payroll": "Paie",
     "evaluations": "Evaluations",
-    "notifications": "Notifications",
     "attendance": "Pointage",
-    "payroll": "Paie"
+    "cabinet": "Coffre documentaire",
+    "notifications": "Notifications"
   },
+  "welcome": {
+    "story": {
+      "modules": {
+        "title": "Modules actifs, feuille de route visible",
+        "body": "Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible."
+      },
+      "clarity": {
+        "title": "Une home qui vous parle avant de vous noyer",
+        "body": "Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent."
+      },
+      "field": {
+        "title": "Mobile-first pour le terrain",
+        "body": "Le telephone est la surface principale de l employe. Votre pointage, vos absences et vos documents vivent ici."
+      }
+    },
+    "brand": {
+      "subtitle": "Conversationnelle, mobile-first, modulaire."
+    },
+    "hero": {
+      "title": "Votre journee commence ici, pas dans un back-office.",
+      "description": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible."
+    }
+  },
+  "_locale": "fr",
   "signup": {
-    "badge": "Essai gratuit 14 jours",
-    "title": "Tester Leopardo avec votre entreprise",
-    "subtitle": "Créez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.",
+    "trackStatus": "Suivre l'état de mon espace",
     "labelEmail": "Email professionnel",
-    "placeholderEmail": "vous@entreprise.com",
-    "labelCompany": "Entreprise",
-    "placeholderCompany": "Nom de votre entreprise",
     "labelRole": "Votre rôle",
-    "rolePlaceholder": "Choisir",
-    "roleFounder": "Fondateur / dirigeant",
-    "roleManager": "Manager",
-    "roleHr": "RH",
-    "roleOperations": "Opérations terrain",
-    "roleOther": "Autre",
-    "labelTeamSize": "Taille équipe",
-    "teamPlaceholder": "Choisir",
-    "labelPhone": "Téléphone (optionnel)",
-    "placeholderPhone": "+213 555 000 000",
-    "operationsNote": "Nous préparerons un parcours axé terrain : pointage, tâches, kiosk et suivi d'équipe.",
-    "agreePrefix": "J'accepte les",
-    "termsLink": "conditions d'utilisation",
-    "privacyLink": "politique de confidentialité",
-    "agreeSuffix": "et la",
-    "submitLabel": "Recevoir mon code de vérification",
-    "submittingLabel": "Envoi du code...",
-    "codeHint": "Un code à 6 chiffres sera envoyé à votre email pour confirmer votre identité.",
-    "haveAccount": "Vous avez déjà un compte ?",
-    "loginCta": "Se connecter",
+    "readySubtitle": "Le sandbox de démonstration est provisionné. Accédez-y directement :",
+    "verifyLabel": "Vérifier et créer mon espace",
+    "preparingTitle": "Préparation de votre espace",
+    "readyTitle": "Votre espace est prêt !",
+    "downloadApp": "Télécharger l'app",
+    "pendingFallback": "Demande d'essai reçue. Notre équipe vous contacte sous 24h ouvrables.",
+    "emailVerified": "Votre adresse email a bien été vérifiée.",
     "back": "Retour",
+    "otpVerifyError": "Erreur lors de la vérification. Veuillez réessayer.",
+    "title": "Tester Leopardo avec votre entreprise",
+    "roleManager": "Manager",
+    "copyLink": "Copier le lien",
+    "changePasswordNote": "Changez votre mot de passe dès la première connexion.",
+    "codeValidity": "Le code est valide pendant 30 minutes. Vérifiez vos spams si vous ne le trouvez pas.",
+    "labelCompany": "Entreprise",
+    "timeoutBody": "Votre espace est en cours de préparation. Nous vous enverrons le lien d'accès par email dès qu'il sera prêt.",
+    "submitLabel": "Recevoir mon code de vérification",
+    "codeHint": "Un code à 6 chiffres sera envoyé à votre email pour confirmer votre identité.",
+    "placeholderCompany": "Nom de votre entreprise",
+    "placeholderEmail": "vous@entreprise.com",
+    "teamPlaceholder": "Choisir",
+    "otpInvalidLength": "Veuillez entrer les 6 chiffres du code.",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "trialDaysUnit": "jours",
+    "validation": {
+      "companyTooShort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
+      "emailInvalid": "Email invalide",
+      "agreeTerms": "Vous devez accepter les conditions d'utilisation",
+      "emailTooShort": "Email trop court",
+      "roleRequired": "Sélectionnez votre rôle",
+      "phoneInvalid": "Numéro de téléphone invalide",
+      "emailTooLong": "Email trop long",
+      "companyTooLong": "Le nom de l'entreprise est trop long",
+      "employeesRequired": "Sélectionnez une taille d'équipe"
+    },
+    "labelTeamSize": "Taille équipe",
+    "placeholderPhone": "+213 555 000 000",
+    "termsLink": "conditions d'utilisation",
+    "operationsNote": "Nous préparerons un parcours axé terrain : pointage, tâches, kiosk et suivi d'équipe.",
+    "roleOther": "Autre",
+    "pendingNote": "Notre système de création d'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.",
+    "linkCopied": "Lien copié !",
+    "failedBody": "Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.",
+    "loginCta": "Se connecter",
+    "trialNote": "Essai gratuit de",
+    "defaultError": "Une erreur est survenue",
+    "roleFounder": "Fondateur / dirigeant",
+    "preparingBody": "Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.",
+    "labelPhone": "Téléphone (optionnel)",
+    "otpInvalidCode": "Code invalide ou expiré.",
+    "roleHr": "RH",
+    "agreeSuffix": "et la",
+    "submittingLabel": "Envoi du code...",
+    "roleOperations": "Opérations terrain",
+    "rolePlaceholder": "Choisir",
+    "successTitle": "Votre espace est prêt !",
+    "failedTitle": "Création interrompue",
+    "subtitle": "Créez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.",
+    "badge": "Essai gratuit 14 jours",
+    "linkEmailed": "Votre lien d'accès a également été envoyé par email.",
     "otpTitle": "Vérifiez votre email",
     "otpSentTo": "Nous avons envoyé un code de vérification à 6 chiffres à :",
-    "otpInvalidLength": "Veuillez entrer les 6 chiffres du code.",
-    "otpInvalidCode": "Code invalide ou expiré.",
-    "otpVerifyError": "Erreur lors de la vérification. Veuillez réessayer.",
-    "verifyLabel": "Vérifier et créer mon espace",
-    "verifyingLabel": "Vérification en cours...",
-    "codeValidity": "Le code est valide pendant 30 minutes. Vérifiez vos spams si vous ne le trouvez pas.",
-    "trackStatus": "Suivre l'état de mon espace",
-    "pendingTitle": "Demande d'essai reçue",
-    "pendingFallback": "Demande d'essai reçue. Notre équipe vous contacte sous 24h ouvrables.",
-    "pendingNote": "Notre système de création d'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.",
-    "readyTitle": "Votre espace est prêt !",
-    "readySubtitle": "Le sandbox de démonstration est provisionné. Accédez-y directement :",
-    "accessCta": "Accéder à mon espace",
-    "copyLink": "Copier le lien",
-    "linkCopied": "Lien copié !",
-    "linkEmailed": "Votre lien d'accès a également été envoyé par email.",
-    "failedTitle": "Création interrompue",
-    "failedBody": "Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.",
-    "timeoutTitle": "Création toujours en cours",
-    "timeoutBody": "Votre espace est en cours de préparation. Nous vous enverrons le lien d'accès par email dès qu'il sera prêt.",
-    "refreshStatus": "Rafraîchir le statut",
-    "preparingTitle": "Préparation de votre espace",
-    "preparingBody": "Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.",
-    "statusFor": "Pour :",
-    "statusEvery5s": "Statut vérifié toutes les 5 secondes.",
-    "successTitle": "Votre espace est prêt !",
-    "emailVerified": "Votre adresse email a bien été vérifiée.",
     "credsLabel": "Identifiants de connexion",
-    "fieldEmail": "Email",
-    "fieldPassword": "Mot de passe",
-    "copyPasswordTitle": "Copier le mot de passe",
+    "statusEvery5s": "Statut vérifié toutes les 5 secondes.",
+    "verifyingLabel": "Vérification en cours...",
+    "statusFor": "Pour :",
+    "pendingTitle": "Demande d'essai reçue",
     "copied": "Copié !",
+    "privacyLink": "politique de confidentialité",
+    "accessCta": "Accéder à mon espace",
+    "refreshStatus": "Rafraîchir le statut",
     "credsSentByEmail": "Ces identifiants ont aussi été envoyés par email à",
+    "copyPasswordTitle": "Copier le mot de passe",
+    "fieldEmail": "Email",
     "credsEmailed": "Vos identifiants de connexion viennent de vous être envoyés par email.",
-    "trialNote": "Essai gratuit de",
-    "trialDaysUnit": "jours",
-    "trialNoteSuffix": "aucune carte bancaire requise",
-    "downloadApp": "Télécharger l'app",
-    "changePasswordNote": "Changez votre mot de passe dès la première connexion.",
-    "defaultError": "Une erreur est survenue",
-    "validation": {
-      "emailInvalid": "Email invalide",
-      "emailTooShort": "Email trop court",
-      "emailTooLong": "Email trop long",
-      "companyTooShort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
-      "companyTooLong": "Le nom de l'entreprise est trop long",
-      "roleRequired": "Sélectionnez votre rôle",
-      "employeesRequired": "Sélectionnez une taille d'équipe",
-      "phoneInvalid": "Numéro de téléphone invalide",
-      "agreeTerms": "Vous devez accepter les conditions d'utilisation"
+    "agreePrefix": "J'accepte les",
+    "fieldPassword": "Mot de passe",
+    "timeoutTitle": "Création toujours en cours",
+    "trialNoteSuffix": "aucune carte bancaire requise"
+  },
+  "marketing": {
+    "oauth": {
+      "save": "Enregistrer",
+      "providers": {
+        "twitter": {
+          "description": "Connexion à l'API Twitter v2",
+          "label": "X (Twitter)"
+        },
+        "facebook": {
+          "description": "Connexion à l'API Facebook Graph",
+          "label": "Facebook / Meta"
+        },
+        "linkedin": {
+          "description": "Connexion à l'API LinkedIn Marketing",
+          "label": "LinkedIn"
+        }
+      },
+      "fields": {
+        "placeholder_uri": "https://example.com/oauth/callback",
+        "placeholder_id": "Votre Client ID",
+        "secret_hint": "(laissez vide pour conserver)",
+        "placeholder_secret": "Nouveau secret (optionnel)",
+        "redirect_uri": "Redirect URI",
+        "client_secret": "Client Secret",
+        "client_id": "Client ID"
+      },
+      "saved_ok": "Configuration {provider} enregistrée",
+      "nav_title": "Marketing OAuth",
+      "title": "Paramètres OAuth Marketing",
+      "ayrshare_info": "Ces paramètres sont utilisés par Ayrshare pour publier sur vos réseaux sociaux.",
+      "subtitle": "Connectez vos comptes réseaux sociaux via Ayrshare"
     }
   },
   "users": {
-    "filters": {
-      "status": {
-        "pending": "En attente",
-        "suspended": "Suspendu",
-        "active": "Actif",
-        "all": "Tous les statuts",
-        "label": "Statut",
-        "inactive": "Inactif"
-      },
-      "role": {
-        "hr": "RH",
-        "employee": "Employe",
-        "manager": "Manager",
-        "all": "Tous les roles",
-        "label": "Role",
-        "admin": "Administrateur"
-      },
-      "registrationDate": {
-        "month": "Ce mois",
-        "week": "Cette semaine",
-        "quarter": "Ce trimestre",
-        "all": "Toutes les dates",
-        "label": "Date d'inscription",
-        "today": "Aujourd'hui"
-      },
-      "lastLogin": {
-        "month": "Ce mois",
-        "week": "Cette semaine",
-        "all": "Toutes",
-        "label": "Derniere connexion",
-        "never": "Jamais connecte",
-        "today": "Aujourd'hui"
-      },
-      "advanced": {
-        "hide": "Masquer les filtres avances",
-        "show": "Afficher les filtres avances"
-      },
-      "segment": {
-        "new": "Nouveaux",
-        "champions": "Champions",
-        "loyal": "Loyaux",
-        "all": "Tous les segments",
-        "label": "Segment",
-        "potential": "Potentiels",
-        "atRisk": "A risque"
-      },
-      "company": {
-        "all": "Toutes les entreprises",
-        "label": "Entreprise"
-      },
-      "search": {
-        "label": "Rechercher",
-        "placeholder": "Nom, email, entreprise..."
-      }
+    "errors": {
+      "name_required": "Le nom complet est requis.",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères.",
+      "password_required": "Le mot de passe est requis.",
+      "fix_fields": "Veuillez corriger les champs en rouge"
+    },
+    "page": {
+      "title": "Gestion des Utilisateurs",
+      "summary": ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui"
+    },
+    "confirm": {
+      "delete": "Etes-vous sur de vouloir supprimer :name ?"
+    },
+    "toast": {
+      "selectionExportDone": "Export de la selection termine",
+      "impersonating": "Connexion en tant que :name",
+      "bulkDeactivated": ":count utilisateur(s) desactive(s)",
+      "bulkDone": "Action groupee terminee",
+      "created": "Utilisateur cree avec succes",
+      "updated": "Utilisateur mis a jour",
+      "bulkError": "Erreur lors de l'action groupee",
+      "bulkSuspended": ":count utilisateur(s) suspendu(s)",
+      "deleted": "Utilisateur supprime",
+      "deleteError": "Erreur lors de la suppression",
+      "bulkActivated": ":count utilisateur(s) active(s)",
+      "loadError": "Erreur lors du chargement des utilisateurs",
+      "exportDone": "Export termine",
+      "exportError": "Erreur lors de l'export",
+      "exportInProgress": "Export en cours..."
+    },
+    "actions": {
+      "bulk": "Actions (:count)",
+      "new": "Nouveau",
+      "export": "Exporter"
+    },
+    "bulkPanel": {
+      "activate": "Activer",
+      "selectedCount": ":count selectionne(s)",
+      "export": "Exporter",
+      "suspend": "Suspendre",
+      "cancel": "Annuler",
+      "deactivate": "Desactiver"
     },
     "impersonation": {
       "title": "Impersonner un employé",
@@ -503,234 +449,288 @@
       "done": "Terminé",
       "employee": "Employé #:id"
     },
-    "confirm": {
-      "delete": "Etes-vous sur de vouloir supprimer :name ?"
-    },
-    "bulkPanel": {
-      "cancel": "Annuler",
-      "deactivate": "Desactiver",
-      "export": "Exporter",
-      "suspend": "Suspendre",
-      "activate": "Activer",
-      "selectedCount": ":count selectionne(s)"
-    },
-    "toast": {
-      "created": "Utilisateur cree avec succes",
-      "selectionExportDone": "Export de la selection termine",
-      "exportInProgress": "Export en cours...",
-      "loadError": "Erreur lors du chargement des utilisateurs",
-      "updated": "Utilisateur mis a jour",
-      "exportError": "Erreur lors de l'export",
-      "deleted": "Utilisateur supprime",
-      "bulkDone": "Action groupee terminee",
-      "bulkActivated": ":count utilisateur(s) active(s)",
-      "deleteError": "Erreur lors de la suppression",
-      "exportDone": "Export termine",
-      "impersonating": "Connexion en tant que :name",
-      "bulkSuspended": ":count utilisateur(s) suspendu(s)",
-      "bulkDeactivated": ":count utilisateur(s) desactive(s)",
-      "bulkError": "Erreur lors de l'action groupee"
-    },
-    "page": {
-      "title": "Gestion des Utilisateurs",
-      "summary": ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui"
-    },
-    "errors": {
-      "password_required": "Le mot de passe est requis.",
-      "password_min": "Le mot de passe doit contenir au moins 8 caractères.",
-      "name_required": "Le nom complet est requis.",
-      "fix_fields": "Veuillez corriger les champs en rouge"
-    },
-    "actions": {
-      "bulk": "Actions (:count)",
-      "new": "Nouveau",
-      "export": "Exporter"
-    }
-  },
-  "common": {
-    "countries": {
-      "CG": "Congo",
-      "NE": "Niger",
-      "TD": "Tchad",
-      "BJ": "Bénin",
-      "US": "États-Unis",
-      "DZ": "Algérie",
-      "TR": "Turquie",
-      "CF": "République centrafricaine",
-      "CI": "Côte d'Ivoire",
-      "GQ": "Guinée équatoriale",
-      "BF": "Burkina Faso",
-      "TG": "Togo",
-      "GB": "Royaume-Uni",
-      "TN": "Tunisie",
-      "CM": "Cameroun",
-      "GA": "Gabon",
-      "FR": "France",
-      "CA": "Canada",
-      "MA": "Maroc",
-      "ML": "Mali",
-      "SN": "Sénégal"
-    },
-    "or": "ou",
-    "language": {
-      "variants": {
-        "fr-CA": "Francais (Canada)",
-        "ar-SA": "Arabe (Arabie saoudite)",
-        "ar-MA": "Arabe (Maroc)",
-        "fr-FR": "Francais (France)",
-        "fr-BE": "Francais (Belgique)",
-        "en-US": "Anglais (Etats-Unis)",
-        "en-GB": "Anglais (Royaume-Uni)",
-        "tr-TR": "Turc (Turquie)"
+    "filters": {
+      "status": {
+        "suspended": "Suspendu",
+        "inactive": "Inactif",
+        "label": "Statut",
+        "all": "Tous les statuts",
+        "pending": "En attente",
+        "active": "Actif"
       },
-      "label": "Langue"
+      "segment": {
+        "atRisk": "A risque",
+        "label": "Segment",
+        "all": "Tous les segments",
+        "potential": "Potentiels",
+        "new": "Nouveaux",
+        "champions": "Champions",
+        "loyal": "Loyaux"
+      },
+      "advanced": {
+        "show": "Afficher les filtres avances",
+        "hide": "Masquer les filtres avances"
+      },
+      "role": {
+        "admin": "Administrateur",
+        "manager": "Manager",
+        "employee": "Employe",
+        "hr": "RH",
+        "label": "Role",
+        "all": "Tous les roles"
+      },
+      "company": {
+        "label": "Entreprise",
+        "all": "Toutes les entreprises"
+      },
+      "lastLogin": {
+        "today": "Aujourd'hui",
+        "never": "Jamais connecte",
+        "month": "Ce mois",
+        "label": "Derniere connexion",
+        "all": "Toutes",
+        "week": "Cette semaine"
+      },
+      "registrationDate": {
+        "quarter": "Ce trimestre",
+        "today": "Aujourd'hui",
+        "month": "Ce mois",
+        "label": "Date d'inscription",
+        "all": "Toutes les dates",
+        "week": "Cette semaine"
+      },
+      "search": {
+        "placeholder": "Nom, email, entreprise...",
+        "label": "Rechercher"
+      }
     }
   },
-  "ai_chat": {
-    "empty_state_title": "Posez vos questions RH",
-    "title": "Assistant IA",
-    "back_tooltip": "Retour",
-    "send_tooltip": "Envoyer",
-    "input_hint": "Tapez votre message...",
-    "error_message": "Erreur : impossible de contacter l assistant."
+  "seo": {
+    "pricing": {
+      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+    }
+  },
+  "webhooks": {
+    "confirm_delete": "Supprimer ce webhook ?"
+  },
+  "holidays": {
+    "saving": "Enregistrement…",
+    "errors": {
+      "save": "Impossible d'enregistrer le jour férié.",
+      "load": "Impossible de charger les jours fériés.",
+      "delete": "Impossible de supprimer."
+    },
+    "saved": "Jour férié enregistré.",
+    "th_scope": "Portée",
+    "success": {
+      "deleted": "Jour férié supprimé.",
+      "saved": "Jour férié enregistré."
+    },
+    "confirm": {
+      "delete": "Supprimer « :name » ?"
+    },
+    "type_islamic": "Islamique",
+    "recurring": "Récurent chaque année",
+    "add": "Ajouter un jour férié",
+    "islamic": {
+      "confirm_error": "Erreur lors de la confirmation des dates.",
+      "empty": "Aucune fête islamique enregistrée pour {year}.",
+      "saved": "Fête islamique enregistrée.",
+      "title": "Fêtes islamiques",
+      "edit": "Modifier",
+      "th_countries": "Pays",
+      "banner_unconfirmed": "{count} fête(s) islamique(s) non confirmée(s) pour {year} — vérifiez les dates avant la clôture de paie.",
+      "confirm": "Confirmer {year}",
+      "th_actions": "Actions",
+      "modal_title": "Modifier {name}",
+      "confirm_year_success": "{count} date(s) confirmée(s).",
+      "label_date": "Date grégorienne",
+      "th_status": "Statut",
+      "th_name": "Fête",
+      "status_approximate": "Approximatif",
+      "duration_days": "{count} jour(s)",
+      "subtitle": "Dates mobiles du calendrier hégirien (Aïd, Maouloud, Tamkharit…) saisies par année. Elles s'appliquent automatiquement aux pays CEMAC/CEDEAO + DZ/MA/TN.",
+      "label_confirmed": "Date confirmée (officielle)",
+      "label_duration": "Durée (jours)",
+      "th_date": "Date grégorienne",
+      "status_confirmed": "Confirmé",
+      "confirm_dialog": "Confirmer toutes les dates islamiques de {year} ?",
+      "save_error": "Erreur lors de l'enregistrement.",
+      "th_duration": "Durée",
+      "load_error": "Erreur lors du chargement du calendrier islamique.",
+      "delete_confirm_dialog": "Supprimer « {name} » ?"
+    },
+    "delete": "Supprimer",
+    "type": {
+      "islamic": "Islamique",
+      "label": "Type",
+      "fixed": "Fixe",
+      "custom": "Personnalisé",
+      "christian": "Chrétien"
+    },
+    "year": "Année",
+    "scope": {
+      "national": "National",
+      "company": "Entreprise"
+    },
+    "save_error": "Impossible d'enregistrer le jour férié.",
+    "deleted": "Jour férié supprimé.",
+    "country": "Pays",
+    "delete_error": "Impossible de supprimer.",
+    "load_error": "Impossible de charger les jours fériés.",
+    "modal": {
+      "editTitle": "Modifier le jour férié",
+      "newTitle": "Nouveau jour férié"
+    },
+    "type_fixed": "Fixe",
+    "cancel": "Annuler",
+    "page_title": "Jours fériés par pays",
+    "empty": "Aucun jour férié pour {country} / {year}.",
+    "scope_company": "Entreprise",
+    "edit": "Modifier",
+    "th": {
+      "date": "Date",
+      "type": "Type",
+      "actions": "Actions",
+      "scope": "Portée",
+      "name": "Nom"
+    },
+    "save": "Enregistrer",
+    "add_title": "Nouveau jour férié",
+    "page": {
+      "title": "Jours fériés par pays",
+      "subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels (issue #1811). Les fériés nationaux sont partagés ; les fériés d'entreprise restent propres à votre société."
+    },
+    "type_christian": "Chrétien",
+    "th_actions": "Actions",
+    "date": {
+      "label": "Date"
+    },
+    "th_name": "Nom",
+    "name": {
+      "label": "Nom"
+    },
+    "page_subtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812) alimentent automatiquement les bulletins de paie de tous les pays concernés.",
+    "th_date": "Date",
+    "scope_national": "National",
+    "nav": {
+      "title": "Jours fériés"
+    },
+    "edit_title": "Modifier le jour férié",
+    "type_custom": "Personnalisé",
+    "th_type": "Type",
+    "countries": {
+      "DZ": "Algérie",
+      "TN": "Tunisie",
+      "MA": "Maroc",
+      "CI": "Côte d'Ivoire",
+      "SN": "Sénégal",
+      "CM": "Cameroun"
+    }
   },
   "companies": {
     "toast": {
       "load_failed": "Impossible de charger la fiche entreprise.",
-      "tickets_failed": "Impossible de charger les tickets support.",
       "subscription_failed": "Échec de la mise à jour de l'abonnement.",
+      "tickets_failed": "Impossible de charger les tickets support.",
       "features_failed": "Échec de la configuration des modules."
     }
   },
-  "profile": {
-    "job_title_label": "Poste",
-    "back_tooltip": "Retour",
-    "department_label": "Departement",
-    "language_updated": "Langue mise a jour.",
-    "matricule_label": "Matricule",
-    "job_title_unset": "Poste non renseigne",
-    "value_unset": "Non renseigne",
-    "language_save": "Mettre a jour la langue",
-    "title": "Mon profil",
-    "subtitle": "Informations personnelles et langue",
-    "loading": "Chargement du profil...",
-    "language_saving": "Mise a jour...",
-    "open_settings": "Ouvrir les parametres du compte",
-    "details_title": "Informations",
-    "email_label": "Email"
+  "payroll": {
+    "confidence": {
+      "pilot": {
+        "message": "Règles pilotes pour {country} : montants issus de références publiques générales (code du travail) mais non encore validés juridiquement sur place. Confirmez avec un conseil juridique ou fiscal local avant de vous appuyer sur ces chiffres (tranches d'impôt, cotisations sociales, seuils d'heures supplémentaires) pour vos obligations légales."
+      },
+      "unknown": {
+        "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
+      },
+      "level_placeholder": "Maquette",
+      "production": {
+        "message": "Règles validées et utilisées en production pour {country}. Confirmez toujours les taux en vigueur auprès d'un conseil local avant de vous appuyer sur ces montants pour des déclarations obligatoires."
+      },
+      "level_production": "Production",
+      "level_pilot": "Pilote",
+      "placeholder": {
+        "message": "Maquette sans valeurs pour {country} : les montants d'impôt et de cotisations sociales ne sont pas encore documentés et ne doivent pas être utilisés pour de vrais cycles de paie tant qu'ils n'ont pas été remplacés."
+      },
+      "label": "Confiance des règles de paie",
+      "level_unknown": "Inconnu"
+    }
   },
   "tax_rates": {
-    "legal_ref": "Référence légale",
-    "history": "Historique",
-    "save_error": "Impossible d'enregistrer la proposition.",
-    "th_date": "Date",
-    "history_error": "Impossible de charger l'historique.",
-    "reject_error": "Impossible de rejeter la modification.",
-    "th_country": "Pays",
-    "rejected": "Modification rejetée (retour en brouillon).",
-    "save": "Enregistrer",
-    "saved": "Proposition enregistrée.",
     "saving": "Enregistrement…",
     "status_superseded": "🔴 Remplacée",
-    "th_reason": "Motif",
-    "th_action": "Action",
-    "modal_title": "Proposer une modification de taux",
-    "history_created": "Créé",
-    "history_submitted": "Soumis",
-    "rates_empty": "Aucun taux enregistré.",
-    "type_contribution": "Cotisation",
-    "history_title": "Historique des modifications",
-    "pending_empty": "Aucune modification en attente de validation.",
-    "th_type": "Type",
-    "submit": "Soumettre",
-    "status_only": "Lecture seule (action tenant)",
-    "rates_subtitle": "Seules les lignes actives sont utilisées dans les bulletins.",
-    "propose": "Proposer une modification",
-    "history_superseded": "Remplacé",
-    "th_effective": "Effet au",
-    "reject": "Rejeter",
-    "status_draft": "⚪ Brouillon",
-    "type_slab": "Barème",
-    "history_rejected": "Rejeté",
-    "submit_error": "Impossible de soumettre la modification.",
-    "history_empty": "Aucune entrée d'historique.",
-    "load_error": "Impossible de charger les taux.",
+    "legal_ref": "Référence légale",
+    "saved": "Proposition enregistrée.",
     "submitted": "Modification soumise pour validation.",
-    "cancel": "Annuler",
-    "th_rate": "Taux",
     "title": "Taux légaux — validation",
-    "subtitle": "Barèmes fiscaux et cotisations sociales utilisés par le moteur de paie. Toute modification passe par un workflow de validation à double signature (comptable → platform admin) avec audit trail immuable.",
-    "th_actor": "Acteur",
-    "reject_modal_title": "Rejeter la modification",
-    "reject_reason": "Motif du rejet (obligatoire)",
-    "rates_title": "Taux en vigueur",
-    "history_approved": "Approuvé",
-    "close": "Fermer",
-    "status_pending": "🟡 En attente",
-    "th_actions": "Actions",
+    "status_active": "🟢 Active",
     "approve_error": "Impossible d'approuver la modification.",
-    "th_name": "Intitulé",
-    "legal_ref_required": "La référence légale est obligatoire (elle est tracée dans l'historique).",
-    "approved": "Modification approuvée et active.",
-    "th_status": "Statut",
     "approve": "Approuver",
+    "modal_title": "Proposer une modification de taux",
+    "submit": "Soumettre",
+    "history_approved": "Approuvé",
+    "history_rejected": "Rejeté",
+    "history_superseded": "Remplacé",
+    "approved": "Modification approuvée et active.",
+    "reject_error": "Impossible de rejeter la modification.",
+    "save_error": "Impossible d'enregistrer la proposition.",
+    "history_submitted": "Soumis",
+    "load_error": "Impossible de charger les taux.",
+    "type_slab": "Barème",
+    "reject_reason": "Motif du rejet (obligatoire)",
+    "legal_ref_required": "La référence légale est obligatoire (elle est tracée dans l'historique).",
+    "submit_error": "Impossible de soumettre la modification.",
+    "history_created": "Créé",
+    "cancel": "Annuler",
+    "rejected": "Modification rejetée (retour en brouillon).",
+    "history_error": "Impossible de charger l'historique.",
+    "propose": "Proposer une modification",
+    "th_country": "Pays",
+    "type_contribution": "Cotisation",
+    "history": "Historique",
+    "save": "Enregistrer",
+    "th_actions": "Actions",
+    "th_action": "Action",
+    "status_only": "Lecture seule (action tenant)",
+    "status_draft": "⚪ Brouillon",
+    "th_status": "Statut",
+    "th_actor": "Acteur",
+    "th_name": "Intitulé",
+    "th_reason": "Motif",
+    "subtitle": "Barèmes fiscaux et cotisations sociales utilisés par le moteur de paie. Toute modification passe par un workflow de validation à double signature (comptable → platform admin) avec audit trail immuable.",
+    "reject": "Rejeter",
+    "th_date": "Date",
+    "history_title": "Historique des modifications",
+    "status_pending": "🟡 En attente",
+    "pending_empty": "Aucune modification en attente de validation.",
+    "close": "Fermer",
+    "rates_title": "Taux en vigueur",
+    "th_rate": "Taux",
+    "rates_empty": "Aucun taux enregistré.",
     "pending_title": "En attente de validation",
-    "status_active": "🟢 Active"
+    "th_type": "Type",
+    "rates_subtitle": "Seules les lignes actives sont utilisées dans les bulletins.",
+    "reject_modal_title": "Rejeter la modification",
+    "th_effective": "Effet au",
+    "history_empty": "Aucune entrée d'historique."
   },
-  "welcome": {
-    "brand": {
-      "subtitle": "Conversationnelle, mobile-first, modulaire."
-    },
-    "story": {
-      "field": {
-        "title": "Mobile-first pour le terrain",
-        "body": "Le telephone est la surface principale de l employe. Votre pointage, vos absences et vos documents vivent ici."
-      },
-      "modules": {
-        "title": "Modules actifs, feuille de route visible",
-        "body": "Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible."
-      },
-      "clarity": {
-        "title": "Une home qui vous parle avant de vous noyer",
-        "body": "Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent."
-      }
-    },
-    "hero": {
-      "title": "Votre journee commence ici, pas dans un back-office.",
-      "description": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible."
-    }
+  "profile": {
+    "matricule_label": "Matricule",
+    "job_title_unset": "Poste non renseigne",
+    "language_saving": "Mise a jour...",
+    "details_title": "Informations",
+    "back_tooltip": "Retour",
+    "department_label": "Departement",
+    "job_title_label": "Poste",
+    "loading": "Chargement du profil...",
+    "title": "Mon profil",
+    "email_label": "Email",
+    "language_updated": "Langue mise a jour.",
+    "value_unset": "Non renseigne",
+    "open_settings": "Ouvrir les parametres du compte",
+    "language_save": "Mettre a jour la langue",
+    "subtitle": "Informations personnelles et langue"
   },
-  "marketing": {
-    "oauth": {
-      "fields": {
-        "client_secret": "Client Secret",
-        "secret_hint": "(laissez vide pour conserver)",
-        "placeholder_uri": "https://example.com/oauth/callback",
-        "placeholder_id": "Votre Client ID",
-        "client_id": "Client ID",
-        "placeholder_secret": "Nouveau secret (optionnel)",
-        "redirect_uri": "Redirect URI"
-      },
-      "save": "Enregistrer",
-      "title": "Paramètres OAuth Marketing",
-      "subtitle": "Connectez vos comptes réseaux sociaux via Ayrshare",
-      "nav_title": "Marketing OAuth",
-      "ayrshare_info": "Ces paramètres sont utilisés par Ayrshare pour publier sur vos réseaux sociaux.",
-      "providers": {
-        "twitter": {
-          "label": "X (Twitter)",
-          "description": "Connexion à l'API Twitter v2"
-        },
-        "linkedin": {
-          "label": "LinkedIn",
-          "description": "Connexion à l'API LinkedIn Marketing"
-        },
-        "facebook": {
-          "label": "Facebook / Meta",
-          "description": "Connexion à l'API Facebook Graph"
-        }
-      },
-      "saved_ok": "Configuration {provider} enregistrée"
-    }
-  }
+  "_version": "1.0.0"
 }

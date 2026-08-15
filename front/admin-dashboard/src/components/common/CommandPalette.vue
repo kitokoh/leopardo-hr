@@ -88,6 +88,14 @@ import {
   ChatBubbleLeftRightIcon,
   SunIcon,
   MoonIcon,
+  ArrowTrendingUpIcon,
+  ServerIcon,
+  GlobeAltIcon,
+  ShieldCheckIcon,
+  MegaphoneIcon,
+  LifebuoyIcon,
+  PresentationChartLineIcon,
+  SparklesIcon,
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
@@ -104,15 +112,20 @@ const items = [
   { id: 'users', label: 'Utilisateurs', description: 'Gestion des utilisateurs', icon: UsersIcon, route: '/users', shortcut: 'Alt+U' },
   { id: 'companies', label: 'Entreprises', description: 'Gestion des entreprises', icon: BuildingOfficeIcon, route: '/companies', shortcut: 'Alt+C' },
   { id: 'subscriptions', label: 'Abonnements', description: 'Plans et facturation', icon: CreditCardIcon, route: '/subscriptions', shortcut: 'Alt+S' },
-  { id: 'payroll', label: 'Paie', description: 'Cycles de paie et bulletins', icon: DocumentTextIcon, route: '/payroll' },
-  { id: 'leaves', label: 'Conges', description: 'Gestion des conges et absences', icon: CalendarDaysIcon, route: '/leaves' },
-  { id: 'recruitment', label: 'Recrutement', description: 'Pipeline de recrutement', icon: BriefcaseIcon, route: '/recruitment', shortcut: 'Alt+R' },
-  { id: 'training', label: 'Formations', description: 'Catalogue de formations', icon: AcademicCapIcon, route: '/training' },
-  { id: 'vehicles', label: 'Vehicules', description: 'Flotte et suivi GPS', icon: TruckIcon, route: '/vehicles' },
-  { id: 'exports', label: 'Exports', description: 'Rapports et exports CSV/PDF', icon: ArrowDownTrayIcon, route: '/exports' },
-  { id: 'webhooks', label: 'Webhooks', description: 'Configuration des webhooks', icon: CogIcon, route: '/webhooks' },
-  { id: 'chat', label: 'Chat IA', description: 'Assistant RH intelligent', icon: ChatBubbleLeftRightIcon, route: '/chat' },
-  { id: 'settings', label: 'Parametres', description: 'Configuration systeme', icon: CogIcon, route: '/system' },
+  // Routes tenant (guard #2272) : hors périmètre console super-admin — retirées
+  // de la palette pour éviter les redirections muettes vers /.
+  // (payroll, leaves, recruitment, exports, chat restent accessibles côté client)
+  { id: 'settings', label: 'Parametres', description: 'Compte et preferences', icon: CogIcon, route: '/settings' },
+  { id: 'growth', label: 'Growth', description: 'Partenaires et croissance', icon: ArrowTrendingUpIcon, route: '/growth' },
+  { id: 'edge', label: 'Edge Nodes', description: 'Nœuds edge synchronises', icon: ServerIcon, route: '/edge' },
+  { id: 'globe', label: 'Globe', description: 'Presence mondiale en temps reel', icon: GlobeAltIcon, route: '/globe' },
+  { id: 'fleet', label: 'Flotte', description: 'Alertes flotte vehicules', icon: TruckIcon, route: '/fleet' },
+  { id: 'reports', label: 'Rapports RH', description: 'Rapports avances', icon: DocumentTextIcon, route: '/reports' },
+  { id: 'audit', label: 'Journal audit', description: 'Traces et evenements', icon: ShieldCheckIcon, route: '/audit' },
+  { id: 'marketing', label: 'Marketing OAuth', description: 'Configuration OAuth marketing', icon: MegaphoneIcon, route: '/marketing/oauth' },
+  { id: 'support', label: 'Support', description: 'Tickets support clients', icon: LifebuoyIcon, route: '/support' },
+  { id: 'crm', label: 'CRM', description: 'Pipeline CRM', icon: PresentationChartLineIcon, route: '/crm/pipeline' },
+  { id: 'predictions', label: 'Predictions IA', description: 'Dashboard predictif', icon: SparklesIcon, route: '/predictions' },
   { id: 'toggle-dark', label: 'Basculer mode sombre', description: 'Changer le theme', icon: themeStore.isDark ? SunIcon : MoonIcon, action: () => themeStore.toggle(), shortcut: 'Ctrl+D' },
 ]
 

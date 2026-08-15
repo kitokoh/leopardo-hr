@@ -118,20 +118,23 @@ class EmployeeImportController extends Controller
                     continue;
                 }
 
-                $fillData = ['company_id' => $companyId];
+                $fillData = [];
                 foreach ($allowedColumns as $col) {
                     if (isset($row[$col]) && $row[$col] !== '') {
                         $fillData[$col] = $row[$col];
                     }
                 }
 
-                if (! isset($fillData['status'])) {
-                    $fillData['status'] = 'active';
-                }
+                // Sensitive fields extracted — not mass-assignable (#3597)
+                $status = $fillData['status'] ?? 'active';
+                unset($fillData['status']);
 
                 $fillData['password_hash'] = Hash::make(Str::random(32));
 
-                Employee::create($fillData);
+                $employee = Employee::create($fillData);
+                $employee->company_id = $companyId;
+                $employee->status = $status;
+                $employee->save();
                 $imported++;
             }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { motion } from 'framer-motion';
 import {
   Navbar,
@@ -21,7 +22,7 @@ import {
   Cpu,
   ArrowRight,
 } from 'lucide-react';
-import { DEFAULT_BACKEND_API_URL } from '@/lib/backend-url';
+import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
 type Integration = {
   icon: React.ReactNode;
@@ -38,17 +39,17 @@ const integrationsByLocale: Record<string, { title: string; subtitle: string; ba
     badge: 'Ecosysteme',
     docsNote: 'API publique documentee sur',
     statusLabels: { available: 'Disponible', coming_soon: 'Bientot' },
-    categories: ['Tous', 'Pointage', 'Paiement', 'Calendrier', 'API', 'Securite'],
+    categories: ['Tous', 'Pointage', 'Paiement', 'Calendrier', 'API', 'Sécurité'],
     integrations: [
       { icon: <Fingerprint className="w-6 h-6" />, name: 'ZKTeco', description: 'Pointeuses biometriques TCP/IP. Synchronisation automatique des pointages.', status: 'available', category: 'Pointage' },
       { icon: <CreditCard className="w-6 h-6" />, name: 'Stripe', description: 'Paiement SaaS par carte bancaire. Abonnements et factures automatises.', status: 'available', category: 'Paiement' },
       { icon: <CreditCard className="w-6 h-6" />, name: 'Chargily', description: 'Paiement en ligne pour l\'Algerie. CIB, EDAHABIA et virement bancaire.', status: 'available', category: 'Paiement' },
-      { icon: <CalendarClock className="w-6 h-6" />, name: 'Google Calendar', description: 'Synchronisation des conges et formations avec Google Calendar.', status: 'available', category: 'Calendrier' },
-      { icon: <CalendarClock className="w-6 h-6" />, name: 'Outlook Calendar', description: 'Synchronisation des evenements RH avec Microsoft Outlook.', status: 'available', category: 'Calendrier' },
+      { icon: <CalendarClock className="w-6 h-6" />, name: 'Google Calendar', description: 'Synchronisation des congés et formations avec Google Calendar.', status: 'available', category: 'Calendrier' },
+      { icon: <CalendarClock className="w-6 h-6" />, name: 'Outlook Calendar', description: 'Synchronisation des événements RH avec Microsoft Outlook.', status: 'available', category: 'Calendrier' },
       { icon: <Globe className="w-6 h-6" />, name: 'API REST publique', description: 'API versionnee (v1) avec documentation OpenAPI. Rate limiting par plan.', status: 'available', category: 'API' },
-      { icon: <Webhook className="w-6 h-6" />, name: 'Webhooks', description: 'Notifications HTTP pour les evenements RH (embauche, paie, conge, pointage).', status: 'available', category: 'API' },
-      { icon: <Shield className="w-6 h-6" />, name: 'SSO SAML/OIDC', description: 'Authentification unique via Azure AD, Google Workspace ou Okta.', status: 'coming_soon', category: 'Securite' },
-      { icon: <FileText className="w-6 h-6" />, name: 'Sage Comptabilite', description: 'Export des ecritures de paie vers Sage 50/100. Format FEC compatible.', status: 'coming_soon', category: 'API' },
+      { icon: <Webhook className="w-6 h-6" />, name: 'Webhooks', description: 'Notifications HTTP pour les événements RH (embauche, paie, congé, pointage).', status: 'available', category: 'API' },
+      { icon: <Shield className="w-6 h-6" />, name: 'SSO SAML/OIDC', description: 'Authentification unique via Azure AD, Google Workspace ou Okta.', status: 'coming_soon', category: 'Sécurité' },
+      { icon: <FileText className="w-6 h-6" />, name: 'Sage Comptabilité', description: 'Export des ecritures de paie vers Sage 50/100. Format FEC compatible.', status: 'coming_soon', category: 'API' },
       { icon: <FileText className="w-6 h-6" />, name: 'QuickBooks', description: 'Synchronisation des ecritures de paie vers QuickBooks Online.', status: 'coming_soon', category: 'API' },
       { icon: <Smartphone className="w-6 h-6" />, name: 'Firebase', description: 'Push notifications pour l\'app mobile. Alertes pointage, paie et conges.', status: 'available', category: 'API' },
       { icon: <Building2 className="w-6 h-6" />, name: 'Slack / Teams', description: 'Notifications RH dans vos canaux de communication existants.', status: 'coming_soon', category: 'API' },
@@ -123,7 +124,7 @@ const integrationsByLocale: Record<string, { title: string; subtitle: string; ba
 };
 
 export default function IntegrationsPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [activeCategory, setActiveCategory] = useState(0);
   useScrollReveal();
   const { locale, direction } = useVitrineLocale();
@@ -136,7 +137,7 @@ export default function IntegrationsPage() {
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* id="api": PA2-MKT-013 — Footer's "API" link points to /integrations#api */}
       <section id="api" className="relative pt-32 pb-20 overflow-hidden">
@@ -218,7 +219,7 @@ export default function IntegrationsPage() {
           >
             <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-full px-6 py-3 text-slate-600 dark:text-slate-400">
               <span className="text-sm">{data.docsNote}</span>
-              <a href={`${DEFAULT_BACKEND_API_URL.replace(/\/api\/v1$/, "")}/docs`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
+              <a href={`${resolveBackendBaseUrl().replace(/\/api\/v1$/, '')}/docs`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
                 /docs <ArrowRight className="w-3 h-3" />
               </a>
             </div>
