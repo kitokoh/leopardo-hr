@@ -6,9 +6,9 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -62,8 +62,12 @@ class EmployeeImportController extends Controller
         $errors = [];
         $companyId = $actor->company_id;
 
-        DB::beginTransaction();
-
+        // Issue #3726 : pas de transaction globale — sous PostgreSQL, une
+        // violation d'unicité (import concurrent / doublon arrivé entre le
+        // check et l'insert) empoisonne toute la transaction et forçait un
+        // rollback + 500. L'import est par nature à succès partiel (réponse
+        // imported/skipped/errors) : chaque ligne est indépendante et la race
+        // check-then-create est rattrapée ligne par ligne (SQLSTATE 23505).
         try {
             foreach ($lines as $index => $line) {
                 $line = trim($line);
@@ -132,17 +136,27 @@ class EmployeeImportController extends Controller
 
                 $fillData['password_hash'] = Hash::make(Str::random(32));
 
-                $employee = Employee::create($fillData);
-                $employee->company_id = $companyId;
-                $employee->status = $status;
-                $employee->save();
-                $imported++;
+                try {
+                    $employee = Employee::create($fillData);
+                    $employee->company_id = $companyId;
+                    $employee->status = $status;
+                    $employee->save();
+                    $imported++;
+                } catch (QueryException $e) {
+                    if ($e->getCode() === '23505') {
+                        // Race check-then-create (#3726) : le doublon est arrivé
+                        // entre le exists() et l'insert (import concurrent) —
+                        // ligne skippée, jamais 500.
+                        $errors[] = ['line' => $index + 2, 'error' => "Email {$row['email']} existe deja"];
+                        $skipped++;
+
+                        continue;
+                    }
+
+                    throw $e;
+                }
             }
-
-            DB::commit();
         } catch (\Throwable $e) {
-            DB::rollBack();
-
             Log::error('hr.employee_import.failed', [
                 'company_id' => $companyId,
                 'error' => $e->getMessage(),
