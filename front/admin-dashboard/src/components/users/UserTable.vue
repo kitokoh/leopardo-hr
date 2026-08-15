@@ -113,12 +113,12 @@
 
           <!-- Company -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {{ user.company_name || '-' }}
+            {{ user.company?.name || '-' }}
           </td>
 
           <!-- Created At -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {{ formatDate(user.created_at) }}
+            {{ formatDate(user.createdAt ?? user.created_at) }}
           </td>
 
           <!-- Actions -->
@@ -130,13 +130,6 @@
                 title="Voir les détails"
               >
                 <EyeIcon class="h-4 w-4" />
-              </button>
-              <button
-                @click="$emit('edit', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
-                title="Modifier"
-              >
-                <PencilIcon class="h-4 w-4" />
               </button>
               <button
                 @click="$emit('delete', user)"
@@ -159,7 +152,6 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
   EyeIcon,
-  PencilIcon,
   TrashIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
@@ -183,7 +175,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['select', 'select-all', 'view', 'edit', 'delete'])
+defineEmits(['select', 'select-all', 'view', 'delete'])
 
 // Sorting
 const sortBy = ref('name')
@@ -213,8 +205,8 @@ const sortedUsers = computed(() => {
     let bValue = b[sortBy.value]
 
     if (sortBy.value === 'company') {
-      aValue = a.company_name || ''
-      bValue = b.company_name || ''
+      aValue = a.company?.name || ''
+      bValue = b.company?.name || ''
     }
 
     if (sortBy.value === 'created_at') {

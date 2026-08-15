@@ -4,18 +4,69 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronRight, X, Users, Building, ShieldCheck } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { type StoredAuthUser, storeAuthSession } from '@/lib/i18n';
+
+// Issue #2642 (QA 2026-08-15) : l'onboarding était 100 % en français pour
+// tous les dashboards — localisé FR/EN/TR/AR (fallback FR).
+const onboardingCopy: Record<string, { steps: Array<{ title: string; desc: string }>; validating: string; finish: string; next: string }> = {
+  fr: {
+    steps: [
+      { title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.' },
+      { title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.' },
+      { title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.' },
+    ],
+    validating: 'Validation...',
+    finish: 'Terminer',
+    next: 'Suivant',
+  },
+  en: {
+    steps: [
+      { title: 'Welcome to Leopardo', desc: 'Discover your new HR workspace in a few steps.' },
+      { title: 'Add your teams', desc: 'Invite your employees to start clocking in.' },
+      { title: 'Finish the setup', desc: 'Your schedules and company rules are ready.' },
+    ],
+    validating: 'Validating...',
+    finish: 'Finish',
+    next: 'Next',
+  },
+  tr: {
+    steps: [
+      { title: 'Leopardo\'ya hoş geldiniz', desc: 'Yeni İK alanınızı birkaç adımda keşfedin.' },
+      { title: 'Ekiplerinizi ekleyin', desc: 'Çalışanlarınızı davet ederek puantaja başlayın.' },
+      { title: 'Kurulumu tamamlayın', desc: 'Planlarınız ve şirket kurallarınız hazır.' },
+    ],
+    validating: 'Doğrulanıyor...',
+    finish: 'Bitir',
+    next: 'İleri',
+  },
+  ar: {
+    steps: [
+      { title: 'مرحباً بك في Leopardo', desc: 'اكتشف مساحة الموارد البشرية الجديدة في خطوات قليلة.' },
+      { title: 'أضف فرقك', desc: 'ادعُ موظفيك لبدء تسجيل الحضور.' },
+      { title: 'أكمل الإعداد', desc: 'جداولك وقواعد شركتك جاهزة.' },
+    ],
+    validating: 'جارٍ التحقق...',
+    finish: 'إنهاء',
+    next: 'التالي',
+  },
+};
 
 export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; onComplete: () => void }) {
   const [isOpen, setIsOpen] = useState(true);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const steps = [
-    { id: 1, title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.', icon: Building },
-    { id: 2, title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.', icon: Users },
-    { id: 3, title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.', icon: ShieldCheck },
-  ];
+  const locale = useVitrineLocale().locale ?? 'fr';
+  const copy = onboardingCopy[locale] ?? onboardingCopy.fr;
+
+  const steps = copy.steps.map((stepCopy, index) => ({
+    id: index + 1,
+    title: stepCopy.title,
+    desc: stepCopy.desc,
+    icon: [Building, Users, ShieldCheck][index] ?? Building,
+  }));
 
   const handleNext = async () => {
     if (step < steps.length) {
@@ -24,11 +75,33 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
     }
 
     setLoading(true);
+    setError(null);
     try {
-      // Marquer le onboarding comme terminé via l'endpoint dédié
-      // (PATCH /api/v1/onboarding-setup/{stepKey}/complete), jamais via
-      // /company/branding qui sert à la configuration visuelle du tenant.
-      await apiFetch('/onboarding-setup/configure_schedules/complete', {
+      // Issue #3325 : `onboarding_steps` n'est seedé nulle part au
+      // provisioning — seul `GET /onboarding-setup/checklist` seede les
+      // étapes par défaut. Sans appel préalable, le PATCH ci-dessous
+      // répondait 404 (table vide) et l'erreur était avalée → l'onboarding
+      // backend restait à 0 % alors que le wizard se fermait. On seede
+      // d'abord via le checklist, puis on complète la dernière étape
+      // requise servie par le backend.
+      const checklistRes = await apiFetch('/onboarding-setup/checklist');
+      const payload = (await checklistRes.json()) as {
+        data?: Array<{ step_key?: string; required?: boolean; order?: number }>;
+      };
+      const stepsData = payload.data ?? [];
+      const requiredSteps = stepsData
+        .filter((s) => s.required)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      const targetStepKey =
+        requiredSteps.length > 0
+          ? requiredSteps[requiredSteps.length - 1].step_key
+          : 'configure_schedules';
+
+      if (!targetStepKey) {
+        throw new Error("Impossible de déterminer l'étape à compléter.");
+      }
+
+      await apiFetch(`/onboarding-setup/${targetStepKey}/complete`, {
         method: 'PATCH',
       });
 
@@ -39,10 +112,11 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
       setIsOpen(false);
       onComplete();
     } catch (e) {
-      // Le wizard se ferme même si l'API échoue : ne pas bloquer l'utilisateur.
+      // Issue #3325 : plus d'échec silencieux — on affiche l'erreur et on
+      // laisse le wizard ouvert ; l'onboarding backend n'est pas marqué
+      // terminé à tort.
       console.error(e);
-      setIsOpen(false);
-      onComplete();
+      setError(e instanceof Error ? e.message : 'Une erreur est survenue.');
     } finally {
       setLoading(false);
     }
@@ -97,13 +171,18 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
               })}
             </div>
 
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex flex-col items-end gap-2">
+              {error && (
+                <p className="w-full rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700" role="alert">
+                  {error}
+                </p>
+              )}
               <button
                 onClick={handleNext}
                 disabled={loading}
                 className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
               >
-                {loading ? 'Validation...' : step === steps.length ? 'Terminer' : 'Suivant'}
+                {loading ? copy.validating : step === steps.length ? copy.finish : copy.next}
                 {!loading && step < steps.length && <ChevronRight className="h-4 w-4" />}
               </button>
             </div>

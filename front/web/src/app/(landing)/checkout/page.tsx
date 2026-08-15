@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -10,7 +10,6 @@ import {
   Building2,
   Check,
   CreditCard,
-  Gift,
   Lock,
   Mail,
   Phone,
@@ -23,35 +22,21 @@ import {
   Zap,
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
-import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
    PLAN CONFIG
+   Montants alignés sur PlanSeeder (api/database/seeders/PlanSeeder.php) :
+   Starter 29€/mois (290€/an, 20 employés) · Business 79€/mois (790€/an,
+   200 employés) · Enterprise 199€/mois (1990€/an, employés illimités).
+   Tarif annuel affiché au mois (24/66/166 €) — équivalent 290/790/1990 €/an.
+   Essai : 14 jours (décision D-E4-01). Seuls les 3 plans du backend sont
+   gérés ici (Closes #3247) : plus de plan Free ni de « Sur devis ».
 ───────────────────────────────────────────── */
 const PLAN_CONFIG = {
-  free: {
-    label: 'Free',
-    icon: Gift,
-    color: 'slate',
-    gradient: 'from-slate-500 to-slate-600',
-    priceMonthly: 0,
-    priceAnnual: 0,
-    savings: 0,
-    features: [
-      'Pointage web (5 employés max)',
-      'Absences & congés basiques',
-      'Dossiers employés',
-      'App mobile Employee',
-      'Dashboard manager (lecture)',
-      'Support communauté',
-    ],
-    trialDays: 0,
-    employeeLimit: '1-5 employés',
-    isFree: true,
-  },
   starter: {
-    label: 'Pilot',
+    label: 'Starter',
     icon: Rocket,
     color: 'blue',
     gradient: 'from-blue-500 to-indigo-600',
@@ -62,57 +47,65 @@ const PLAN_CONFIG = {
       'Pointage web & mobile',
       'Absences & congés',
       'Dossiers employés',
+      'Bulletins de paie PDF',
       'Dashboard manager',
       'Apps Employee & Manager',
       'Support email 48h',
     ],
-    trialDays: 30,
-    employeeLimit: '1-30 employés',
-    isFree: false,
+    trialDays: 14,
+    employeeLimit: "Jusqu'à 20 employés",
   },
   business: {
-    label: 'Operations',
+    label: 'Business',
     icon: Zap,
     color: 'emerald',
     gradient: 'from-emerald-500 to-cyan-600',
-    priceMonthly: 99,
-    priceAnnual: 79,
-    savings: 240,
+    priceMonthly: 79,
+    priceAnnual: 66,
+    savings: 156,
     features: [
-      'Tout Pilot inclus',
+      'Tout Starter inclus',
       'Paie automatisée',
       'Biométrie ZKTeco',
       'API & Webhooks',
       'Exports comptables',
       'Support prioritaire 24h',
     ],
-    trialDays: 30,
-    employeeLimit: '15-250 employés',
-    isFree: false,
+    trialDays: 14,
+    employeeLimit: "Jusqu'à 200 employés",
   },
   enterprise: {
     label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
-    priceMonthly: 299,
-    priceAnnual: 239,
-    savings: 720,
+    priceMonthly: 199,
+    priceAnnual: 166,
+    savings: 396,
     features: [
-      'Tout Operations inclus',
+      'Tout Business inclus',
       'Multi-pays & multi-devises',
-      'SSO SAML/OIDC',
+      'SSO SAML/OIDC (bientot disponible)',
       'Audit trail immuable',
       'Schema PostgreSQL isolé',
       'Account manager dédié',
     ],
-    trialDays: 30,
-    employeeLimit: '250+ employés',
-    isFree: false,
+    trialDays: 14,
+    employeeLimit: 'Employés illimités',
   },
 } as const;
 
 type PlanKey = keyof typeof PLAN_CONFIG;
+
+// Anciens slugs de plans (pré #2907) : redirigés vers les clés canoniques
+// starter/business/enterprise. L'ancien « free » (plan supprimé du backend,
+// Closes #3247) atterrit sur Starter : l'essai gratuit de 14 jours.
+const PLAN_ALIASES: Record<string, PlanKey> = {
+  pilot: 'starter',
+  operations: 'business',
+  scale: 'enterprise',
+  free: 'starter',
+};
 
 /* ─────────────────────────────────────────────
    CHECKOUT MODE (sandbox = explicit opt-in via NEXT_PUBLIC_CHECKOUT_SANDBOX=true)
@@ -134,12 +127,10 @@ const SANDBOX_CARD = {
    GOOGLE AUTH HREF
 ───────────────────────────────────────────── */
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-      ? directApi
-      : getApiBaseUrl();
-  return `${baseUrl}/auth/google`;
+  // Issue #2725 — même pattern que login (QA #2277) : passer par le proxy
+  // Next.js (même origine) pour que le cookie de session soit posé sur la
+  // vitrine, pas sur l'origine API directe.
+  return '/api/v1/auth/google';
 }
 
 /* ─────────────────────────────────────────────
@@ -218,31 +209,23 @@ function PlanSummaryCard({
             <h3 className="text-white font-black text-xl">{cfg.label}</h3>
           </div>
         </div>
-        {cfg.isFree ? (
-          <div>
-            <span className="text-white font-black text-4xl">Gratuit</span>
-            <p className="text-white/80 text-sm mt-1">Pour toujours · Sans carte bancaire</p>
+        <div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-white/70 text-sm">EUR</span>
+            <span className="text-white font-black text-5xl">{price}</span>
+            <span className="text-white/70 text-sm">/mois</span>
           </div>
-        ) : (
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-white/70 text-sm">EUR</span>
-              <span className="text-white font-black text-5xl">{price}</span>
-              <span className="text-white/70 text-sm">/mois</span>
-            </div>
-            {billing === 'annual' && (
-              <p className="text-white/70 text-xs mt-1">
-                Facturé annuellement — économisez EUR {cfg.savings}/an
-              </p>
-            )}
-          </div>
-        )}
+          {billing === 'annual' && (
+            <p className="text-white/70 text-xs mt-1">
+              Facturé annuellement — économisez EUR {cfg.savings}/an
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Billing toggle (only for paid plans) */}
-      {!cfg.isFree && (
-        <div className="p-4 bg-transparent dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
-          <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+      {/* Billing toggle */}
+      <div className="p-4 bg-transparent dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
             <button
               onClick={() => onChangeBilling('monthly')}
               className={`flex-1 py-2.5 text-sm font-bold transition-all duration-200 ${
@@ -262,11 +245,10 @@ function PlanSummaryCard({
               }`}
             >
               Annuel
-              <span className="ml-1.5 text-[10px] font-black">-20%</span>
+              <span className="ml-1.5 text-[10px] font-black">-17%</span>
             </button>
           </div>
-        </div>
-      )}
+      </div>
 
       {/* Features */}
       <ul className="p-5 space-y-2.5">
@@ -280,21 +262,12 @@ function PlanSummaryCard({
 
       {/* Badge */}
       <div className="px-5 pb-5">
-        {cfg.isFree ? (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-transparent dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700/50">
-            <ShieldCheck className="w-4 h-4 text-slate-600 dark:text-slate-400 flex-shrink-0" />
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-300">
-              Aucune carte bancaire requise · Accès immédiat
-            </p>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
-            <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-              {cfg.trialDays} jours gratuits inclus · Aucune CB débitée avant la fin de l&apos;essai
-            </p>
-          </div>
-        )}
+        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
+          <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+          <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+            {cfg.trialDays} jours gratuits inclus · Aucune CB débitée avant la fin de l&apos;essai
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -385,15 +358,9 @@ function StepRecap({
 
       <PlanSummaryCard plan={plan} billing={billing} onChangeBilling={onChangeBilling} />
 
-      {cfg.isFree ? (
-        <div className="mt-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-sm text-emerald-800 dark:text-emerald-300">
-          <strong>Plan 100% gratuit.</strong> Aucune carte bancaire requise. Commencez immédiatement, jusqu&apos;à 5 employés.
-        </div>
-      ) : (
-        <div className="mt-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 text-sm text-blue-800 dark:text-blue-300">
-          <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera débitée qu&apos;après la période d&apos;essai. Annulez à tout moment depuis votre tableau de bord.
-        </div>
-      )}
+      <div className="mt-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 text-sm text-blue-800 dark:text-blue-300">
+        <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera débitée qu&apos;après la période d&apos;essai. Annulez à tout moment depuis votre tableau de bord.
+      </div>
 
       <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
         <span>Mauvais plan ? </span>
@@ -406,11 +373,7 @@ function StepRecap({
         onClick={onNext}
         className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
-        {cfg.isFree ? (
-          <>Créer mon compte gratuit <ArrowRight className="w-5 h-5" /></>
-        ) : (
-          <>Continuer — EUR {price}/mois <ArrowRight className="w-5 h-5" /></>
-        )}
+        <>Continuer — EUR {price}/mois <ArrowRight className="w-5 h-5" /></>
       </button>
     </motion.div>
   );
@@ -617,215 +580,6 @@ function StepAccount({
 }
 
 /* ─────────────────────────────────────────────
-   STEP 1 — FREE ACCOUNT
-───────────────────────────────────────────── */
-function StepFreeAccount({
-  data,
-  onChange,
-  onBack,
-}: {
-  data: AccountData;
-  onChange: (d: Partial<AccountData>) => void;
-  onBack: () => void;
-}) {
-  const router = useRouter();
-  const [errors, setErrors] = useState<Partial<AccountData>>({});
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  function validate(): boolean {
-    const e: Partial<AccountData> = {};
-    if (!data.firstName.trim()) e.firstName = 'Prénom requis';
-    if (!data.lastName.trim()) e.lastName = 'Nom requis';
-    if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
-      e.email = 'Email professionnel valide requis';
-    if (!data.company.trim() || data.company.length < 2)
-      e.company = 'Nom de société requis';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!validate()) return;
-    setSubmitting(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/forms/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          first_name: data.firstName,
-          last_name: data.lastName,
-          email: data.email,
-          company: data.company,
-          phone: data.phone || undefined,
-          employees: data.employees || undefined,
-          plan: 'free',
-          locale: 'fr',
-        }),
-      });
-
-      const payload = (await res.json().catch(() => null)) as {
-        success?: boolean;
-        message?: string;
-      } | null;
-
-      // On ne redirige qu'en cas de succès réel (response.ok + success:true).
-      // En cas d'échec, on affiche l'erreur et on reste sur la page.
-      if (!res.ok || !payload?.success) {
-        setError(payload?.message || 'Une erreur est survenue. Réessayez dans quelques instants.');
-        return;
-      }
-
-      router.push('/auth/login?registered=true&plan=free');
-    } catch {
-      setError('Une erreur réseau est survenue. Réessayez dans quelques instants.');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  const inputBase =
-    'w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-900 text-sm font-medium text-slate-900 dark:text-white outline-none transition focus:ring-4 placeholder:text-slate-400';
-  const inputOk = 'border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-emerald-500/10';
-  const inputErr = 'border-red-400 focus:border-red-400 focus:ring-red-500/10';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 30 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -30 }}
-      transition={{ duration: 0.3 }}
-    >
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" /> Retour
-      </button>
-
-      <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-        Créez votre espace gratuit
-      </h2>
-      <p className="text-slate-500 dark:text-slate-400 mb-6">
-        Aucune carte bancaire requise. Accès immédiat.
-      </p>
-
-      {/* Google OAuth — prominent */}
-      <div className="mb-4">
-        <GoogleButton label="Continuer avec Google — c'est gratuit" />
-      </div>
-
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-        <span className="text-xs text-slate-400 font-medium">ou avec votre email</span>
-        <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-      </div>
-
-      {error && (
-        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Prénom <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={data.firstName}
-                onChange={(e) => onChange({ firstName: e.target.value })}
-                placeholder="Marie"
-                className={`${inputBase} pl-10 ${errors.firstName ? inputErr : inputOk}`}
-              />
-            </div>
-            {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Nom <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={data.lastName}
-              onChange={(e) => onChange({ lastName: e.target.value })}
-              placeholder="Dupont"
-              className={`${inputBase} ${errors.lastName ? inputErr : inputOk}`}
-            />
-            {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            Email <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="email"
-              value={data.email}
-              onChange={(e) => onChange({ email: e.target.value })}
-              placeholder="marie@societe.com"
-              className={`${inputBase} pl-10 ${errors.email ? inputErr : inputOk}`}
-            />
-          </div>
-          {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            Société <span className="text-red-500">*</span>
-          </label>
-          <div className="relative">
-            <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={data.company}
-              onChange={(e) => onChange({ company: e.target.value })}
-              placeholder="Nom de votre entreprise"
-              className={`${inputBase} pl-10 ${errors.company ? inputErr : inputOk}`}
-            />
-          </div>
-          {errors.company && <p className="mt-1 text-xs text-red-500">{errors.company}</p>}
-        </div>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-slate-700 to-slate-900 text-white font-black rounded-2xl hover:from-slate-800 hover:to-black transition-all duration-300 shadow-lg hover:scale-[1.01] active:scale-[0.99] text-base disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {submitting ? (
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-            />
-          ) : (
-            <>
-              <Gift className="w-4 h-4" />
-              Créer mon espace gratuit — EUR 0
-              <ArrowRight className="w-5 h-5" />
-            </>
-          )}
-        </button>
-
-        <p className="text-center text-xs text-slate-400 flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          Sans carte bancaire · Accès immédiat · Résiliable à tout moment
-        </p>
-      </form>
-    </motion.div>
-  );
-}
-
-/* ─────────────────────────────────────────────
    STEP 2 — PAYMENT (Sandbox)
 ───────────────────────────────────────────── */
 function StepPayment({
@@ -902,7 +656,7 @@ function StepPayment({
           last_name: account.lastName,
           phone: account.phone || undefined,
           employees: account.employees || undefined,
-          locale: 'fr',
+          locale: getCurrentLocale(),
           success_url: successUrl,
           cancel_url: cancelUrl,
         }),
@@ -1119,17 +873,19 @@ function StepPayment({
 ───────────────────────────────────────────── */
 function CheckoutInner() {
   const searchParams = useSearchParams();
-  const rawPlan = (searchParams.get('plan') || 'business') as string;
-  const plan: PlanKey = (rawPlan in PLAN_CONFIG ? rawPlan : 'business') as PlanKey;
+  // Clés canoniques starter/business/enterprise (Closes #3247) ; les anciens
+  // slugs (free/pilot/operations/scale) sont des alias doux pour la compat
+  // des URLs (voir PLAN_ALIASES).
+  const rawPlan = (searchParams.get('plan') || 'starter') as string;
+  const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
+  // #3326 : fallback sur 'starter' (clé réelle) — plan inconnu → Starter.
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'starter') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 
   const cfg = PLAN_CONFIG[plan];
-  const isFree = cfg.isFree;
-  const totalSteps = isFree ? 2 : 3;
-  const stepLabels = isFree
-    ? ['Récapitulatif', 'Créer mon compte']
-    : ['Récapitulatif', 'Compte', 'Paiement'];
+  const totalSteps = 3;
+  const stepLabels = ['Récapitulatif', 'Compte', 'Paiement'];
 
   const [isDark, setIsDark] = useState(false);
   const [step, setStep] = useState(0);
@@ -1181,15 +937,7 @@ function CheckoutInner() {
                     onNext={() => setStep(1)}
                   />
                 )}
-                {step === 1 && isFree && (
-                  <StepFreeAccount
-                    key="free-account"
-                    data={account}
-                    onChange={(d) => setAccount((prev) => ({ ...prev, ...d }))}
-                    onBack={() => setStep(0)}
-                  />
-                )}
-                {step === 1 && !isFree && (
+                {step === 1 && (
                   <StepAccount
                     key="account"
                     data={account}
@@ -1198,7 +946,7 @@ function CheckoutInner() {
                     onBack={() => setStep(0)}
                   />
                 )}
-                {step === 2 && !isFree && (
+                {step === 2 && (
                   <StepPayment
                     key="payment"
                     plan={plan}

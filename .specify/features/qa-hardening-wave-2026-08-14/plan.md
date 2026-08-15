@@ -1,56 +1,28 @@
-# Plan: Vague QA Hardening 2026-08-14
+# Plan: Vague QA & Durcissement Plateforme 2026-08-14
 
-**Input**: spec.md (US1-US4) + Constitution + audit 2026-08-14 (session)
+**Input**: spec.md (US1-US5) + Constitution + constats reconnaissance 2026-08-14
 
 ## Architecture / Décisions techniques
 
-- **Mobile employee — endpoints manquants** : ajout backend (rétro-compatible), pas de changement mobile :
-  - `GET /api/v1/me/training-enrollments` → `SelfServiceController@myTrainings` (alias) + enrichissement additif de `TrainingEnrollmentResource` (`course_title`, `session_date`, `progress` via `session.course` déjà chargée).
-  - `GET /api/v1/me/vehicles` → nouvelle méthode `VehicleController@myVehicles` : `where('company_id', ...)->where('assigned_driver_id', $user->id)`, position Traccar best-effort (try/catch, null si pas de tracker).
-- **Cockpit admin — chemins** : le backend sert les routes cockpit sous `/admin/*` (auth `super_admin_api`) ; corriger les 4 vues qui appellent `/v1/...` → `/admin/...` (Chat, Exports hr-reports, Fleet alerts, Marketing OAuth). Le client Axios de l'admin normalise `/v1/` → `/api/v1/` mais ne connaît pas `/admin/` — vérifier le mapping dans `src/services/api.js` (les autres vues admin utilisent déjà `/admin/...` et fonctionnent).
-- **Cockpit admin — endpoints tenant à créer** :
-  - `GET /api/v1/training/sessions` (toutes les sessions, avec cours) et `GET /api/v1/training/enrollments` (liste paginée) sur `TrainingController` — additif, tests + OpenAPI.
-  - `POST /api/v1/webhooks/{webhookEndpoint}/test` sur `WebhookController` — dispatch d'un événement de test (`webhook.test`) tracé dans `webhook_deliveries`, 422 si endpoint invalide.
-- **Cockpit admin — suppression des mocks** :
-  - `UsersView` : charger les invitations réelles (`GET /invitations`), impersonation réelle (`POST /platform/impersonations`), suppression des `generateMockUsers`/`setTimeout`. Si aucun endpoint « delete user » n'existe, l'action est retirée plutôt que simulée.
-  - `AnalyticsView` : KPI/activité/alertes depuis `/admin/dashboard/stats|activities|alerts` ; les sections sans backend (cohorte, funnel, segmentation) passent en état vide documenté ou sont retirées.
-  - `SystemView` : Health Check → `/health/live` + `/health/ready` ; les actions sans backend (maintenance, backups, config) → état « non disponible » explicite, plus de simulation.
-- **Hygiène** : `.env.example` + clés `BIOMETRIC_RETENTION_MONTHS`, `MAIL_URL` ; boutons morts branchés/retirés ; `legal_reference` envoyé dans le payload TaxRates ; `glass-bg0/50` → token `glass-bg-white/50` (ou équivalent existant) ; `openRequest(id)` utilise l'id ; `UserDetailView` n'affiche pas un autre utilisateur par défaut.
-- **Gouvernance contrats** : tout endpoint ajouté = OpenAPI + `FrontendApiContractTest` + `docs/validation/FRONTEND_API_CONTRACT_MATRIX.md` + (mobile) `dev-hub/tools/mobile-workflow-contracts.json`.
-
-## Phases
-
-### Phase 1 — Backend endpoints mobiles (US1)
-- `me/training-enrollments` (alias + resource enrichie) + tests.
-- `me/vehicles` + tests (isolation tenant, empty state, position null-safe).
-
-### Phase 2 — Cockpit : chemins corrigés + endpoints créés (US2)
-- 4 vues corrigées (Chat, Exports, Fleet, Marketing OAuth).
-- `GET /training/sessions`, `GET /training/enrollments`, `POST /webhooks/{id}/test` + vues Training/Webhooks branchées.
-- OpenAPI + tests + matrice.
-
-### Phase 3 — Suppression des mocks cockpit (US3)
-- UsersView, AnalyticsView, SystemView → données réelles / états vides honnêtes.
-
-### Phase 4 — Hygiène et petits défauts (US4)
-- `.env.example`, boutons morts, legal_reference, glass typo, openRequest, UserDetailView.
+- **US1 Backend** : la suite de tests complète (`php artisan test`) est exécutée localement (PHP 8.4 + PostgreSQL 16 + Redis 7, env identique CI). Tout échec est corrigé à la source (pas de skip). PHPStan strict + Pint en validation. Nouveaux tests Feature pour le module `user` (contrat register/login/me/logout/employee-links) en suivant le pattern des tests existants (RefreshDatabase + tenant). `BankExportGenerator` : IBAN/BIC résolus depuis la config tenant (`company.bank_iban`/`bank_bic` ou settings), refus explicite (ValidationException) si absents. Routes notifications : conserver `PUT /notifications/read-all` (convention rh.php), ajouter alias POST `mark-all-read` → même controller (compat clients), supprimer le doublon si aucune référence client.
+- **US2 Web** : câbler les boutons du dashboard sur des routes réelles existantes (router Next) : actions rapides → `/employees/new`?, `/leave`, `/reports`, `/exports` selon l'existant ; cloche → panneau notifications coulissant ou route ; Leo IA → lien chat IA ; activité → route journal ; recherche → filtre client des cartes du dashboard (recherche locale, pas d'endpoint dédié). Détail bulletin (œil) → modal de détail avec les champs du payslip (réutiliser les données déjà chargées). Aucun nouveau composant lourd : rester sur le design system existant.
+- **US3 Admin** : `AnalyticsView.vue` — écouter les événements `view-users`, `create-campaign`, `export-list`, `view-details`, `export-forecast`, `analyze-features`, `create-campaign` des widgets et implémenter les handlers (router.push vers les routes existantes : users, campaigns/marketing, exports). `CompanyDetailView` — « Accès Super-Console » → `router.push` vers la console (route existante `super-console` ou défaut). `GrowthDashboardView` — « Gérer » → navigation vers le détail partenaire (route existante ou toast explicite si pas de route). `EditUserModal` — « Changer l'avatar » → `<input type="file" accept="image/*">` déclenché au clic, prévisualisation, upload via le service users existant (ou désactivation explicite documentée si l'API n'existe pas).
+- **US4 Mobile** : `user_auth_repository.dart` (3 apps) — remplacer la mutation `apiClient.dio.options.headers['Accept-Language']` par le passage de la langue dans les appels `requestWithRetry` (header par requête). `leopardo_marketing` — remplacer l'import `PrimaryButton` par `PulseButton` (widget existant dans core) ou pointer vers le vrai chemin ; vérifier la cohérence des autres imports.
+- **US5 Traçabilité** : ouvrir des issues GitHub pour SSO (ref #1694), push FCM/APNs, magic link démo, drift OpenAPI (168 routes non documentées + 15 chemins fantômes — ne pas toucher openapi.yaml à cause des PR en cours), fériés placeholder PA2-COUNTRY-012 ; référencer la vague dans chaque issue.
 
 ## Fichiers touchés (référence)
 
-- `api/app/Modules/HR/Interfaces/Api/V1/Controllers/{SelfServiceController,TrainingController}.php`
-- `api/app/Modules/Fleet/Interfaces/Api/V1/VehicleController.php`
-- `api/app/Modules/Billing/Interfaces/Api/V1/WebhookController.php`
-- `api/app/Http/Resources/Api/V1/TrainingEnrollmentResource.php`
-- `api/routes/modules/{rh,hr_extended,payroll_engine?}.php`
-- `api/openapi.yaml`, `api/tests/Feature/**`, `docs/validation/FRONTEND_API_CONTRACT_MATRIX.md`
-- `front/admin-dashboard/src/views/{chat,exports,fleet,marketing,training,webhooks,users,analytics,system,companies,growth,settings,crm,users}/**`
-- `front/mobile_apps/leopardo_core/lib/models/{training_enrollment,vehicle_position}.dart` (si ajustement shape)
-- `.env.example`, `dev-hub/tools/mobile-workflow-contracts.json`, `CHANGELOG.md`, `AGENTS.md`
+- `api/tests/Feature/User/**` (nouveaux), `api/app/Modules/User/**` (si correctifs)
+- `api/app/Modules/Payroll/Infrastructure/Services/BankExportGenerator.php` + tests
+- `api/routes/modules/rh.php` / `dashboard.php` (notifications) + tests
+- `front/web/src/app/(dashboard)/dashboard/page.tsx`, `front/web/src/app/(dashboard)/payroll/page.tsx`, `front/web/src/app/[companySlug]/careers/**`
+- `front/admin-dashboard/src/views/analytics/AnalyticsView.vue`, `src/views/companies/CompanyDetailView.vue`, `src/views/growth/GrowthDashboardView.vue`, `src/components/users/EditUserModal.vue` + widgets
+- `front/mobile_apps/*/lib/features/auth/data/user_auth_repository.dart` (3 apps), `front/mobile_apps/leopardo_marketing/lib/**`
+- `CHANGELOG.md`, `.specify/features/qa-hardening-wave-2026-08-14/*`
 
 ## Contraintes
 
-- Ne pas toucher aux branches/PR en cours des autres agents (fix/2136, feat/2116, feat/2121, feat/2131, fix/openapi-*).
-- Constitution §IV : PHPStan strict level 8 vert, Pint, tests avant/avec implémentation, isolation tenant testée.
-- Constitution §VII : PR par issue avec `Closes #N`, CHANGELOG, branche supprimée après merge.
-- Multi-agents : s'assigner les issues avant de coder ; vérifier `gh issue list --assignee @me`.
-- Rétro-compat : ne pas renommer/casser `/me/trainings`, `/vehicles/{id}/position`, `/admin/...` existants.
+- **Ne pas toucher** aux zones des PR en cours : `openapi.yaml`/SDK (PR #2147/#2156), web compliance badge (PR #2157), CI saturation (PR #2159), TG onboarding (PR #2160).
+- Multi-tenant inviolable : tout nouveau test isole par tenant (`company_id`), aucun accès cross-tenant.
+- Un commit par tâche ou groupe logique ; PR unique pour la vague avec `Closes #<issue-vague>`.
+- Validation finale : `php artisan test` + `phpstan-strict` + `pint --test` (api) ; `npm run build` + `npm run lint` (web, admin) ; grep patterns mobile.

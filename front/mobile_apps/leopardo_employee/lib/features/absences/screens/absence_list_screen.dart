@@ -14,6 +14,7 @@ import 'package:leopardo_employee/features/absences/providers/absence_provider.d
 import 'package:leopardo_core/models/absence.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class AbsenceListScreen extends ConsumerStatefulWidget {
   const AbsenceListScreen({super.key});
@@ -236,7 +237,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
   }
 
   static String _formatDate(DateTime date) {
-    return DateFormat('d MMM', 'fr_FR').format(date);
+    return DateFormat('d MMM', deviceIntlDateLocale).format(date);
   }
 
   static String _statusLabel(String status) => switch (status) {
@@ -527,7 +528,7 @@ class _DateTile extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              DateFormat('d MMM yyyy', 'fr_FR').format(value),
+              DateFormat('d MMM yyyy', deviceIntlDateLocale).format(value),
               style: AppTypography.bodySmall.copyWith(
                 color: MobileSurface.text,
                 fontWeight: FontWeight.w700,

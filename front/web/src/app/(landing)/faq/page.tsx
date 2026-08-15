@@ -16,7 +16,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'General',
     question: 'Qu\'est-ce que Leopardo RH ?',
-    answer: 'Leopardo RH est une plateforme SaaS multi-tenant de gestion des ressources humaines qui couvre la paie, les conges, le pointage, le recrutement, la formation et bien plus. Elle est disponible en version web, mobile (Flutter) et borne kiosk (ZKTeco).',
+    answer: 'Leopardo RH est une plateforme SaaS multi-tenant de gestion des ressources humaines qui couvre la paie, les congés, le pointage, le recrutement, la formation et bien plus. Elle est disponible en version web, mobile (Flutter) et borne kiosk (ZKTeco).',
   },
   {
     category: 'General',
@@ -26,42 +26,42 @@ const faqItems: FaqItem[] = [
   {
     category: 'Tarification',
     question: 'Comment fonctionne la tarification ?',
-    answer: 'Nous proposons des plans mensuels et annuels adaptés à la taille de votre équipe. Le plan Free est gratuit jusqu\'à 5 employés, le plan Pilot démarre à 29 €/mois, le plan Operations inclut toutes les fonctionnalités avancées, et le plan Enterprise offre des options sur mesure.',
+    answer: 'Nous proposons trois plans en facturation mensuelle ou annuelle : Starter à 29 €/mois (20 employés inclus), Business à 79 €/mois (200 employés inclus) et Enterprise à 199 €/mois (employés illimités). Chaque plan démarre par un essai gratuit de 14 jours.',
   },
   {
     category: 'Tarification',
     question: 'Y a-t-il un essai gratuit ?',
-    answer: 'Oui ! Nous offrons un essai gratuit de 30 jours sans engagement et sans carte de crédit. Vous avez accès à toutes les fonctionnalités des plans payants pendant la période d\'essai.',
+    answer: 'Oui ! Nous offrons un essai gratuit de 14 jours sans engagement et sans carte de crédit. Vous avez accès à toutes les fonctionnalités des plans payants pendant la période d\'essai.',
   },
   {
-    category: 'Fonctionnalites',
+    category: 'Fonctionnalités',
     question: 'Comment fonctionne le pointage biometrique ?',
     answer: 'Leopardo RH s\'integre avec les bornes ZKTeco pour le pointage par empreinte digitale, reconnaissance faciale ou QR code. Les pointages sont synchronises en temps reel avec le serveur central, avec support du mode offline.',
   },
   {
-    category: 'Fonctionnalites',
+    category: 'Fonctionnalités',
     question: 'Peut-on generer des bulletins de paie multi-pays ?',
-    answer: 'Oui, Leopardo RH supporte la paie pour 6 pays (France, Algerie, Turquie, Senegal, Maroc, Tunisie) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
+    answer: 'Oui, Leopardo RH supporte la paie multi-pays avec 9 moteurs de regles locales (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie) : baremes fiscaux et cotisations sociales specifiques a chaque pays ou zone. Les bulletins sont generes en PDF.',
   },
   {
-    category: 'Fonctionnalites',
+    category: 'Fonctionnalités',
     question: 'L\'application mobile est-elle disponible ?',
-    answer: 'Oui, l\'application mobile Leopardo RH est disponible pour iOS et Android. Elle permet aux employes de pointer, consulter leurs fiches de paie, demander des conges, voir l\'organigramme et recevoir des notifications push.',
+    answer: 'Oui, l\'application mobile Leopardo RH est disponible pour iOS et Android. Elle permet aux employés de pointer, consulter leurs fiches de paie, demander des congés, voir l\'organigramme et recevoir des notifications push.',
   },
   {
-    category: 'Securite',
+    category: 'Sécurité',
     question: 'Comment sont protegees les donnees ?',
-    answer: 'Toutes les donnees sont chiffrees en transit (TLS 1.3) et au repos. L\'architecture multi-tenant utilise des schemas PostgreSQL isoles par entreprise. Nous appliquons les bonnes pratiques OWASP et effectuons des audits de securite reguliers.',
+    answer: 'Toutes les donnees sont chiffrees en transit (TLS 1.3) et au repos. L\'architecture multi-tenant utilise des schemas PostgreSQL isoles par entreprise. Nous appliquons les bonnes pratiques OWASP et effectuons des audits de sécurité reguliers.',
   },
   {
-    category: 'Securite',
+    category: 'Sécurité',
     question: 'Etes-vous conforme au RGPD ?',
     answer: 'Oui, Leopardo RH est conforme au RGPD. Les donnees sont hebergees en Europe, et nous offrons des outils d\'export et de suppression des donnees personnelles conformes aux exigences reglementaires.',
   },
   {
     category: 'Support',
     question: 'Quel support est disponible ?',
-    answer: 'Le plan Free inclut le support communautaire. Le plan Pilot inclut le support par email sous 48h. Le plan Operations inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
+    answer: 'Le plan Starter inclut le support par email sous 48h. Le plan Business inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
   },
   {
     category: 'Integration',
@@ -71,7 +71,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Integration',
     question: 'Peut-on exporter les donnees vers des logiciels comptables ?',
-    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV compatible avec les principaux logiciels comptables (Sage, QuickBooks, etc.).',
+    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV, compatible avec la plupart des logiciels comptables. Les connecteurs dedies Sage et QuickBooks arrivent prochainement.',
   },
 ];
 
@@ -95,7 +95,7 @@ export default function FaqPage() {
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
       <HeroSection
         headline="Questions Frequentes"
-        subheadline="Trouvez rapidement les reponses a vos questions"
+        subheadline="Trouvez rapidement les réponses a vos questions"
         badge={{ text: 'FAQ', icon: <HelpCircle className="w-3 h-3" /> }}
       />
 
@@ -166,7 +166,7 @@ export default function FaqPage() {
 
       <CTASection
         headline="Encore des Questions ?"
-        subheadline="Contactez notre equipe pour une reponse personnalisee"
+        subheadline="Contactez notre équipe pour une réponse personnalisée"
         ctaPrimary={{ text: 'Nous Contacter', href: '/contact' }}
         ctaSecondary={{ text: 'Essai gratuit', href: '/demo' }}
         background="gradient"

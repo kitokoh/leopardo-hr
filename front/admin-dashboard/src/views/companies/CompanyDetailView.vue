@@ -75,11 +75,8 @@
                   <dd class="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ health.adoption.employees.payroll_ready }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
-                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Kiosk</dt>
-                  <dd class="mt-2 flex items-center text-sm font-bold text-slate-900 dark:text-white">
-                    <div :class="['mr-2 h-2.5 w-2.5 rounded-full', health.adoption.kiosk.active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300']"></div>
-                    {{ health.adoption.kiosk.active ? 'Actif' : 'Inactif' }}
-                  </dd>
+                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Employés Actifs (30j)</dt>
+                  <dd class="mt-2 text-2xl font-black text-slate-900 dark:text-white">{{ health.adoption.attendance.active_employees_30d ?? 0 }}</dd>
                 </div>
               </div>
 
@@ -327,6 +324,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n'
+import { useLocaleStore } from '@/stores/locale'
 import { Switch } from '@headlessui/vue'
 import {
   ArrowLeftIcon,
@@ -348,7 +347,6 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
-import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const route = useRoute()
@@ -416,6 +414,7 @@ async function loadCompany() {
   } catch (error) {
     console.error('Failed to load company detail:', error)
     errorMessage.value = 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.'
+    toast.error(translate(localeStore.current, 'companies.toast.load_failed', 'companies.toast.load_failed'))
   } finally {
     isLoading.value = false
   }
@@ -438,6 +437,7 @@ async function loadSupportTickets() {
   } catch (error) {
     console.error('Failed to load support tickets for company:', error)
     supportTickets.value = []
+    toast.error(translate(localeStore.current, 'companies.toast.tickets_failed', 'companies.toast.tickets_failed'))
   } finally {
     isSupportLoading.value = false
   }
@@ -453,6 +453,7 @@ async function saveSubscription() {
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
+    toast.error(translate(localeStore.current, 'companies.toast.subscription_failed', 'companies.toast.subscription_failed'))
   } finally {
     isSavingSubscription.value = false
   }
@@ -470,6 +471,7 @@ async function saveFeatures() {
     originalFeatures.value = { ...featuresForm.value }
   } catch (error) {
     console.error('Failed to save features:', error)
+    toast.error(translate(localeStore.current, 'companies.toast.features_failed', 'companies.toast.features_failed'))
   } finally {
     isSavingFeatures.value = false
   }
@@ -564,6 +566,17 @@ function formatFeatureName(key) {
     planning: 'Planning & Equipe',
     training: 'Centre de Formation',
     cabinet: 'Placard Numérique',
+    biometric: 'Biométrie',
+    tasks: 'Tâches',
+    advanced_reports: 'Rapports avancés',
+    excel_export: 'Export Excel',
+    bank_export: 'Export bancaire',
+    billing_auto: 'Facturation auto',
+    multi_managers: 'Multi-gérants',
+    photo_attendance: 'Pointage photo',
+    api_public: 'API publique',
+    evaluations: 'Évaluations',
+    schema_isolation: 'Isolation schéma',
   }
   return names[key] || key.toUpperCase()
 }

@@ -19,7 +19,7 @@ class EvaluationListScreen extends ConsumerWidget {
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Mes Ã‰valuations',
+          'Mes Évaluations',
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
@@ -32,9 +32,9 @@ class EvaluationListScreen extends ConsumerWidget {
         data: (evaluations) => evaluations.isEmpty
             ? const EmptyState(
                 icon: Icons.assignment_turned_in,
-                title: 'Aucune Ã©valuation',
+                title: 'Aucune évaluation',
                 description:
-                    'Vous n\'avez pas encore d\'Ã©valuation enregistrÃ©e.',
+                    'Vous n\'avez pas encore d\'évaluation enregistrée.',
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -46,7 +46,7 @@ class EvaluationListScreen extends ConsumerWidget {
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       title: Text(
-                        'PÃ©riode: ${evaluation.period}',
+                        'Période: ${evaluation.period}',
                         style: AppTypography.subtitle.copyWith(
                           color: AppColors.textDark,
                         ),

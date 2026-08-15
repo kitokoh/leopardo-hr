@@ -14,16 +14,6 @@ class PayrollRepository {
 
   static const _readTimeout = Duration(seconds: 8);
 
-  Future<List<Payroll>> getMyPayrolls() async {
-    final response = await apiClient.requestWithRetry(
-      '/payrolls',
-      maxRetriesOverride: 0,
-      timeoutOverride: _readTimeout,
-    );
-    final items = extractDataList(response.data);
-    return items.map((e) => Payroll.fromJson(e)).toList();
-  }
-
   Future<PayrollMobileSummary> getMobileSummary() async {
     final response = await apiClient.requestWithRetry(
       '/payroll/mobile-summary',

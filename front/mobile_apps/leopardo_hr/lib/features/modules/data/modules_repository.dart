@@ -270,7 +270,7 @@ class ModulesRepository {
   Future<AppNotification> markNotificationRead(int notificationId) async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/notifications/$notificationId/read',
-      method: 'PUT',
+      method: 'PATCH',
       timeoutOverride: const Duration(seconds: 12),
     );
     return AppNotification.fromJson(extractDataMap(response.data));
@@ -278,8 +278,8 @@ class ModulesRepository {
 
   Future<void> markAllNotificationsRead() async {
     await _apiClient.requestWithRetry<void>(
-      '/notifications/read-all',
-      method: 'PUT',
+      '/notifications/mark-all-read',
+      method: 'POST',
       timeoutOverride: const Duration(seconds: 12),
     );
   }

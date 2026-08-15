@@ -160,7 +160,7 @@
           ],
           "endpoints": [
             "/notifications",
-            "/notifications/read-all",
+            "/notifications/mark-all-read",
             "/device-tokens"
           ],
           "screenFiles": [
@@ -185,8 +185,7 @@
           ],
           "screenFiles": [
             "lib/features/user_auth/screens/user_home_screen.dart",
-            "lib/features/user_auth/screens/company_request_screen.dart",
-            "lib/features/personal_space/screens/personal_space_screen.dart"
+            "lib/features/user_auth/screens/company_request_screen.dart"
           ],
           "sourceTokens": [
             "context.push('/company-request')",
@@ -195,38 +194,23 @@
           ]
         },
         {
-          "name": "training_enrollments",
-          "routes": [
-            "/training"
-          ],
-          "endpoints": [
-            "/me/training-enrollments",
-            "/me/trainings"
-          ],
-          "screenFiles": [
-            "lib/features/training/screens/training_screen.dart"
-          ],
-          "sourceTokens": [
-            "trainingEnrollmentsProvider",
-            "getMyEnrollments"
-          ]
-        },
-        {
           "name": "my_vehicles",
           "routes": [
-            "/vehicles"
+            "/vehicle-map"
           ],
           "endpoints": [
             "/me/vehicles",
-            "/vehicles/{vehicleId}/position"
+            "/vehicles/$vehicleId/position"
           ],
           "screenFiles": [
-            "lib/features/vehicle_position/screens/vehicle_map_screen.dart"
+            "lib/features/vehicle_position/screens/vehicle_map_screen.dart",
+            "lib/features/vehicle_position/providers/vehicle_position_provider.dart",
+            "lib/features/vehicle_position/data/vehicle_position_repository.dart"
           ],
           "sourceTokens": [
             "getMyVehicles",
             "getPosition",
-            "vehiclePositionProvider"
+            "myVehiclesProvider"
           ]
         }
       ]
@@ -420,7 +404,7 @@
           ],
           "endpoints": [
             "/notifications",
-            "/notifications/read-all",
+            "/notifications/mark-all-read",
             "/device-tokens"
           ],
           "screenFiles": [
@@ -449,19 +433,6 @@
             "Identite entreprise",
             ".update(",
             "/company/branding"
-          ]
-        },
-        {
-          "name": "manager_dashboard_placeholder",
-          "routes": [
-            "/manager/dashboard"
-          ],
-          "endpoints": [],
-          "screenFiles": [
-            "lib/features/manager/screens/manager_placeholder_screen.dart"
-          ],
-          "sourceTokens": [
-            "ManagerPlaceholderScreen"
           ]
         }
       ]
