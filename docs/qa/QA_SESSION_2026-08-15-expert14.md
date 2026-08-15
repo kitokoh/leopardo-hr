@@ -19,7 +19,7 @@ Bilan de session agent : audit global, spécifications, implémentations, triage
 - Admin : #3900 (glass-bg), #3901 (a11y), #3902 (raccourcis morts), #3903 (i18n).
 - CI/Ops : #3904 (deploy-main dedupe), #3905 (URL prod mobile), #3906 (staging=prod), #3907 (worker/APP_KEY), #3908 (healthcheck edge), #3909 (docs PLAN_ACTION2).
 
-## 3. Phase 2/3 — Implémentations livrées (7 mergées / en PR)
+## 3. Phase 2/3 — Implémentations livrées (12 mergées / en PR)
 
 | Issue | Correctif | PR | État |
 |---|---|---|---|
@@ -33,7 +33,10 @@ Bilan de session agent : audit global, spécifications, implémentations, triage
 | #3905 (P1 ops) | mobile-distribute URL prod → onrender live | #4012 | PR ouverte |
 | #3906 (P2 ci) | e2e-staging → « Prod Smoke » honnête | #4013 | PR ouverte |
 | #3903 volet 1 (P2 admin) | coquilles FR (Paramètres/Télécharger/Terminé/Échec) | #4015 | PR ouverte |
-| #3891 (P3 api) | ContractLifecycleAction + ContractPolicy branchée + 7 tests | #4025 | PR ouverte |
+| #3891 (P3 api) | ContractLifecycleAction + ContractPolicy branchée + 7 tests | #4025 | ✅ merge |
+| #3890 (P3 api) | SSO SAML — gate `SAML_ENABLED` explicite + test | #4040 | PR ouverte |
+| #3909 (P3 docs) | liens PLAN_ACTION2 repointés vers docs/archive/ (9 réf.) | #4037 | PR ouverte |
+| docs | session expert14b (ce document) | #4031 | PR ouverte |
 
 ## 4. Triage & anti-doublon (protocole #2400)
 
@@ -42,7 +45,7 @@ Bilan de session agent : audit global, spécifications, implémentations, triage
 - **#3915 fermé (déjà corrigé)** : 0 référence `/leaves` dans tout le codebase.
 - **#3881 fermé (déjà corrigé sur main)** : renderer `AuthenticationException` standardisé (bootstrap/app.php:224, #2653) — prod stale v4.23.5.
 - **#3882/#3879 triés** : symptômes prod stale → garder ouverts, vérifier après déploiement (#3767) + smoke prod (#3771).
-- **#3897/#3899/#3889/#3896** : cédés (branches/PRs d'autres agents — #4002, #4006…).
+- **#3897/#3899/#3889/#3896/#3892** : cédés (branches/PRs d'autres agents — #4002, #4006, #3993…).
 
 ## 5. Leçons
 
