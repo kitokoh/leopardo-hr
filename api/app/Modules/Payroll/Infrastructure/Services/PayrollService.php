@@ -11,6 +11,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class PayrollService
@@ -27,6 +28,23 @@ class PayrollService
 
         $net = $this->computeNet($data);
 
+        try {
+            return $this->persist($manager, $data, $month, $year, $net);
+        } catch (QueryException $e) {
+            // Issue #3238 : double soumission concurrente (double-tap, retry) —
+            // la contrainte unique (employee_id, period_year, period_month)
+            // rattrape la course entre exists() et create().
+            // 23505 = SQLSTATE unique_violation (pattern PartnerService).
+            if ($e->getCode() === '23505') {
+                throw new PayrollPeriodConflictException($month, $year);
+            }
+            throw $e;
+        }
+    }
+
+    /** @param array<string, mixed> $data */
+    private function persist(Employee $manager, array $data, int $month, int $year, float $net): Payroll
+    {
         return Payroll::create([
             'company_id' => $manager->company_id,
             'employee_id' => $data['employee_id'],
