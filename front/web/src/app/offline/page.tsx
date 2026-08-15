@@ -6,6 +6,7 @@ import { useSyncExternalStore } from 'react';
 import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 const emptySubscribe = () => () => {};
+const edgeNodeUrl = process.env.NEXT_PUBLIC_EDGE_NODE_URL;
 
 export default function OfflinePage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
@@ -21,13 +22,17 @@ export default function OfflinePage() {
         <p className="text-gray-500 mb-6">
           {labels.body}
         </p>
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left text-sm mb-6">
-          <p className="font-medium text-orange-800 mb-2">💡 {labels.edgeModeTitle}</p>
-          <p className="text-orange-700">
-            {labels.edgeModeBody}{' '}
-            <span className="underline font-mono">leopardo.local</span>
-          </p>
-        </div>
+        {edgeNodeUrl ? (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left text-sm mb-6">
+            <p className="font-medium text-orange-800 mb-2">💡 {labels.edgeModeTitle}</p>
+            <p className="text-orange-700">
+              {labels.edgeModeBody}{' '}
+              <a href={edgeNodeUrl} className="underline font-mono">
+                {edgeNodeUrl}
+              </a>
+            </p>
+          </div>
+        ) : null}
         <button
           onClick={() => window.location.reload()}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
