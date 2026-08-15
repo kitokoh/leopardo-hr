@@ -34,7 +34,22 @@ echo "   Cloud   : $CLOUD_URL"
 # Check Docker
 if ! command -v docker &> /dev/null; then
     echo "📦 Installing Docker..."
-    curl -fsSL https://get.docker.com | sh
+    # Issue #3964 : plus de pipe direct `curl | sh` — un échec de
+    # téléchargement (réseau coupé, MITM, réponse tronquée) interprétait un
+    # script partiel en root. On télécharge, on vérifie, puis on exécute.
+    DOCKER_INSTALL_SCRIPT="$(mktemp)"
+    if ! curl -fsSL https://get.docker.com -o "$DOCKER_INSTALL_SCRIPT"; then
+        echo "❌ Échec du téléchargement du script d'installation Docker depuis https://get.docker.com" >&2
+        rm -f "$DOCKER_INSTALL_SCRIPT"
+        exit 1
+    fi
+    if [[ ! -s "$DOCKER_INSTALL_SCRIPT" ]] || ! head -1 "$DOCKER_INSTALL_SCRIPT" | grep -q '^#!/bin/sh'; then
+        echo "❌ Le script d'installation Docker téléchargé est invalide ou vide" >&2
+        rm -f "$DOCKER_INSTALL_SCRIPT"
+        exit 1
+    fi
+    sh "$DOCKER_INSTALL_SCRIPT"
+    rm -f "$DOCKER_INSTALL_SCRIPT"
 fi
 
 if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
