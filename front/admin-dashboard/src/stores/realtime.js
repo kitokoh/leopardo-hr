@@ -19,7 +19,14 @@ export const useRealtimeStore = defineStore('realtime', () => {
   const socket = ref(null)
   const isConnected = ref(false)
   const isPolling = ref(false)
+  // Issue #3269 — vrai quand aucun endpoint push n'est configuré
+  // (VITE_WEBSOCKET_URL absent) ou que le profil n'a pas d'inbox tenant :
+  // l'UI doit afficher un état neutre, jamais « Connexion perdue ».
+  const pushUnavailable = ref(false)
   const notifications = ref([])
+
+  // #3191 : compteur d'événements socket pour ids de repli déterministes.
+  let socketEventCounter = 0
   const onlineUsers = ref([])
   const globePoints = ref([])
 
@@ -55,7 +62,18 @@ export const useRealtimeStore = defineStore('realtime', () => {
       return
     }
 
-    socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:6001', {
+    const websocketUrl = import.meta.env.VITE_WEBSOCKET_URL
+    if (!websocketUrl) {
+      // Issue #3269 — aucun serveur push configuré en production : ne JAMAIS
+      // tenter ws://localhost:6001 (cela pointerait vers la machine du
+      // client). On bascule directement sur le polling REST best-effort et
+      // l'UI passe en état neutre (« push non configuré »).
+      pushUnavailable.value = true
+      startPolling()
+      return
+    }
+
+    socket.value = io(websocketUrl, {
       auth: {
         token
       },
@@ -71,6 +89,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     socket.value.on('connect', () => {
       // console.log removed (audit 2026-08-15) — WebSocket connecté
       isConnected.value = true
+      pushUnavailable.value = false
       clearPushGraceTimer()
       stopPolling()
       toast.success('Connexion temps réel établie')
@@ -187,6 +206,11 @@ export const useRealtimeStore = defineStore('realtime', () => {
       // silencieuses (retentées au prochain tick).
       if (error?.response?.status === 401) {
         console.warn('Notifications super-admin indisponibles (401) — polling désactivé')
+        // Issue #3269 — l'inbox /notifications est une route tenant : le
+        // profil super-admin n'a pas de canal de notification. L'état passe
+        // en neutre pour ne plus afficher « les notifications continuent
+        // d'arriver » (faux pour ce profil).
+        pushUnavailable.value = true
         stopPolling()
       } else {
         console.error('Fallback polling notifications a échoué:', error)
@@ -292,6 +316,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
   function disconnect() {
     clearPushGraceTimer()
     stopPolling()
+    pushUnavailable.value = false
     knownNotificationIds = new Set()
     if (socket.value) {
       socket.value.disconnect()
@@ -305,7 +330,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // Issue #2707 — id synthétique uniquement si le payload socket n'en
     // fournit pas (sinon PATCH /v1/notifications/{id}/read → 404).
     const newNotification = {
-      id: rest.id ?? Date.now() + Math.random(),
+      // #3191 : id de repli déterministe (évite Date.now()+Math.random()
+      // non persistant et non corrélable entre rafraîchissements).
+      id: rest.id ?? `socket-${Date.now()}-${++socketEventCounter}`,
       read: false,
       ...rest
     }
@@ -347,10 +374,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
-    // Issue #2239 — persister côté backend (PUT /notifications/read-all,
+    // Issue #2239 — persister côté backend (POST /notifications/read-all,
     // contrat canonique #3121 — le POST répondait 405).
     try {
-      await api.put('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
+      await api.post('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist mark-all-read', err)
     }
@@ -380,6 +407,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     socket,
     isConnected,
     isPolling,
+    pushUnavailable,
     notifications,
     onlineUsers,
     globePoints,

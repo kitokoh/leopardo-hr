@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -77,19 +77,20 @@ class TrackingSyncController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+        // #3369 : plage de dates bornée (max 90 jours, pas de futur, from <= to)
         $from = Carbon::parse($request->input('from', now()->startOfDay()));
         $to = Carbon::parse($request->input('to', now()));
 
-        // #3369 : bornage de la plage (max 31 jours, from <= to, pas de futur)
-        // pour éviter qu'une plage 1970→now génère un volume massif de trips.
-        if ($from->greaterThan($to)) {
-            return response()->json(['error' => 'INVALID_DATE_RANGE', 'message' => 'INVALID_DATE_RANGE'], 422);
+        if ($to->lt($from)) {
+            return response()->json(['error' => 'The to date must be after the from date.'], 422);
         }
-        if ($from->lessThan(now()->subDays(31))) {
-            $from = now()->subDays(31);
+
+        if ($to->gt(now()->addHour())) {
+            return response()->json(['error' => 'The to date cannot be in the future.'], 422);
         }
-        if ($to->greaterThan(now())) {
-            $to = now();
+
+        if ($from->diffInDays($to) > 90) {
+            return response()->json(['error' => 'The date range cannot exceed 90 days.'], 422);
         }
 
         $vehicles = Vehicle::where('company_id', $user->company_id)
@@ -143,3 +144,5 @@ class TrackingSyncController extends Controller
         ]);
     }
 }
+
+

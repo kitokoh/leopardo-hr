@@ -56,7 +56,15 @@ class PartnerDashboardController extends Controller
             'payment_details' => 'nullable|string',
         ]);
 
-        $partner = $this->partnerService->apply($globalUser->id, $validated);
+        try {
+            $partner = $this->partnerService->apply($globalUser->id, $validated);
+        } catch (\App\Exceptions\DomainException $e) {
+            return new JsonResponse([
+                'error' => $e->errorCode(),
+                'message' => 'Candidature deja soumise.',
+                'localized_message' => 'Candidature deja soumise.',
+            ], 400);
+        }
 
         return new JsonResponse(['data' => $partner], 201);
     }
@@ -81,8 +89,24 @@ class PartnerDashboardController extends Controller
         try {
             $payout = $this->partnerService->requestPayout($partner, $validated['amount'], $validated['currency']);
             return new JsonResponse(['data' => $payout], 201);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 422);
+        } catch (\App\Exceptions\DomainException $e) {
+            // Erreur métier propre : code d'erreur générique, jamais de message brut.
+            return new JsonResponse([
+                'error' => $e->errorCode(),
+                'message' => 'Demande de paiement refusee.',
+                'localized_message' => 'Demande de paiement refusee.',
+            ], $e->statusCode());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('partner.payout.request_failed', [
+                'partner_id' => $partner->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'error' => 'PAYOUT_REQUEST_FAILED',
+                'message' => 'Une erreur est survenue lors de la demande de paiement.',
+                'localized_message' => 'Une erreur est survenue lors de la demande de paiement.',
+            ], 500);
         }
     }
 

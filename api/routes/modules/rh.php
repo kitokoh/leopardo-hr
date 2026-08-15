@@ -172,8 +172,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // Issue #2674 — verbes canoniques alignés sur dashboard.php :
     // POST mark-all-read / PATCH {id}/read. Ces chemins alias restent pour
     // rétro-compat (anciens clients mobile), mêmes verbes que le canonique.
-    Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
-    Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
+    // (Un PR antérieur a tenté PUT et a été rejeté — ne pas réintroduire PUT.)
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
     Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);

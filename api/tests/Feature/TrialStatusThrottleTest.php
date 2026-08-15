@@ -25,7 +25,7 @@ class TrialStatusThrottleTest extends TestCase
 
     public function test_trial_status_route_carries_dedicated_throttle(): void
     {
-        $route = collect(app('router')->getRoutes())
+        $route = collect(app('router')->getRoutes()->getRoutes())
             ->first(fn ($r) => $r->uri() === 'api/v1/trial/status' && in_array('GET', $r->methods(), true));
 
         $this->assertNotNull($route, 'Route GET /api/v1/trial/status introuvable.');

@@ -60,9 +60,9 @@ Future<void> _safeGoogleSignInInitialize() async {
         'GOOGLE_WEB_CLIENT_ID',
         // T095 (QA 2026-08-15) : l'ID n'est plus codé en dur — fourni par
         // --dart-define en build ; repli DEBUG uniquement (masqué en release).
-        defaultValue: kDebugMode
-            ? '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com'
-            : '',
+        // #3294 : aucun repli en dur — l'ID doit venir de --dart-define
+        // (GOOGLE_WEB_CLIENT_ID), sinon le sign-in Google est désactivé.
+        defaultValue: '',
       ),
     );
   } catch (error, stackTrace) {
