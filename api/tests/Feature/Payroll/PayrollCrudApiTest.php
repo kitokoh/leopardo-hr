@@ -115,4 +115,35 @@ class PayrollCrudApiTest extends TestCase
         $this->assertNull(Payroll::query()->find($draft->id));
         $this->assertNotNull(Payroll::query()->find($payroll->id));
     }
+
+    /**
+     * QA expert5 #3305 — les écritures payroll suivent la policy produit
+     * principal/comptable : un manager de département/superviseur doit recevoir
+     * 403 sur store/update/validate/destroy (résiduel #3150, alignement
+     * payroll_engine.php).
+     */
+    public function test_write_routes_are_restricted_to_principal_comptable(): void
+    {
+        /** @var Employee $deptManager */
+        $deptManager = Employee::factory()->managerDept()->create(['company_id' => $this->manager->company_id]);
+        Sanctum::actingAs($deptManager);
+
+        $payroll = (new \App\Modules\Payroll\Infrastructure\Services\PayrollService())->create($this->manager, [
+            'employee_id' => $this->employee->id,
+            'period_month' => 6,
+            'period_year' => 2026,
+            'gross_salary' => 60000,
+            'overtime_amount' => 0,
+        ]);
+
+        $this->postJson('/api/v1/payrolls', ['employee_id' => $this->employee->id])->assertStatus(403);
+        $this->putJson("/api/v1/payrolls/{$payroll->id}", ['gross_salary' => 70000])->assertStatus(403);
+        $this->patchJson("/api/v1/payrolls/{$payroll->id}", ['gross_salary' => 70000])->assertStatus(403);
+        $this->putJson("/api/v1/payrolls/{$payroll->id}/validate")->assertStatus(403);
+        $this->deleteJson("/api/v1/payrolls/{$payroll->id}")->assertStatus(403);
+
+        // Le principal, lui, reste autorisé.
+        Sanctum::actingAs($this->manager);
+        $this->putJson("/api/v1/payrolls/{$payroll->id}/validate")->assertOk();
+    }
 }

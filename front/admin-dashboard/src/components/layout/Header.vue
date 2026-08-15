@@ -38,13 +38,29 @@
             <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
-                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : 'bg-red-400')
+                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : (realtimeStore.pushUnavailable ? 'bg-gray-400' : 'bg-red-400'))
               ]"
             ></div>
             <span class="text-xs text-gray-500 hidden sm:block">
-              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : 'Déconnecté') }}
+              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : (realtimeStore.pushUnavailable ? 'Push non configuré' : 'Déconnecté')) }}
             </span>
           </div>
+
+          <!-- Language selector -->
+          <label class="sr-only" for="admin-language-select">
+            {{ $t('common.language.label', 'Language') }}
+          </label>
+          <select
+            id="admin-language-select"
+            :value="localeStore.current"
+            :aria-label="$t('common.language.label', 'Language')"
+            class="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            @change="localeStore.setLocale($event.target.value)"
+          >
+            <option v-for="locale in localeStore.supported" :key="locale" :value="locale">
+              {{ languageLabels[locale] }}
+            </option>
+          </select>
 
           <!-- Quick stats -->
           <div class="hidden md:flex items-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
@@ -244,6 +260,13 @@ const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+
+const languageLabels = {
+  fr: 'Français',
+  ar: 'العربية',
+  tr: 'Türkçe',
+  en: 'English',
+}
 
 const searchQuery = ref('')
 const showNotifications = ref(false)

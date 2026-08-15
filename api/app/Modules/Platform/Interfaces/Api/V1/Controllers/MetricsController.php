@@ -7,6 +7,8 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MetricsController extends Controller
 {
@@ -28,8 +30,12 @@ class MetricsController extends Controller
             $trial = DB::table('companies')->where('status', 'trial')->count();
 
             return compact('total', 'active', 'trial');
-        } catch (\Throwable) {
-            return ['total' => 0, 'active' => 0, 'trial' => 0];
+        } catch (\Throwable $e) {
+            Log::error('Platform metrics data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform metrics are temporarily unavailable.');
         }
     }
 
@@ -40,8 +46,12 @@ class MetricsController extends Controller
             $active = DB::table('employees')->where('status', 'active')->count();
 
             return compact('total', 'active');
-        } catch (\Throwable) {
-            return ['total' => 0, 'active' => 0];
+        } catch (\Throwable $e) {
+            Log::error('Platform metrics data source failed', [
+                'operation' => __FUNCTION__,
+                'exception' => $e,
+            ]);
+            throw new HttpException(503, 'Platform metrics are temporarily unavailable.');
         }
     }
 
