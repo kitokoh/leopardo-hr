@@ -108,6 +108,16 @@ type CopyTree = {
     detailEmployerCost: string;
     detailError: string;
   };
+  dashboardPage: {
+    leoCongratsTitle: string;
+    leoCongratsBody: string;
+    leoSendError: string;
+    searchPlaceholder: string;
+    noSearchResults: string;
+    collapseActivity: string;
+    viewAllActivity: string;
+    sendingInProgress: string;
+  };
   smartAttendancePage: {
     title: string;
     subtitle: string;
@@ -424,6 +434,16 @@ const copy: Record<AppLocale, CopyTree> = {
       detailEmployerCost: 'Cout employeur',
       detailError: 'Impossible de charger le detail du bulletin.',
     },
+    dashboardPage: {
+      leoCongratsTitle: 'Felicitations de l equipe',
+      leoCongratsBody: 'Bravo a toute l equipe : vos retards sont en baisse de 15% cette semaine. Continuons sur cette dynamique !',
+      leoSendError: 'Impossible d envoyer le message.',
+      searchPlaceholder: 'Rechercher dans l activite...',
+      noSearchResults: 'Aucune activite ne correspond a votre recherche.',
+      collapseActivity: 'Replier l activite',
+      viewAllActivity: 'Voir toute l activite',
+      sendingInProgress: 'Envoi en cours...',
+    },
     smartAttendancePage: {
       title: 'Smart Attendance',
       subtitle: 'Suivi intelligent de presence par geolocalisation — validation des sessions en attente et statistiques du jour.',
@@ -737,6 +757,16 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDeductions: 'الخصومات',
       detailEmployerCost: 'تكلفة صاحب العمل',
       detailError: 'تعذر تحميل تفاصيل كشف الراتب.',
+    },
+    dashboardPage: {
+      leoCongratsTitle: 'تهنئة من الفريق',
+      leoCongratsBody: 'أحسنت أيها الفريق: انخفضت حالات التأخر بنسبة 15٪ هذا الأسبوع. لنواصل بهذا الزخم!',
+      leoSendError: 'تعذر إرسال الرسالة.',
+      searchPlaceholder: 'ابحث في النشاط...',
+      noSearchResults: 'لا يوجد نشاط يطابق بحثك.',
+      collapseActivity: 'طي النشاط',
+      viewAllActivity: 'عرض كل النشاط',
+      sendingInProgress: 'جارٍ الإرسال...',
     },
     smartAttendancePage: {
       title: 'الحضور الذكي',
@@ -1052,6 +1082,16 @@ const copy: Record<AppLocale, CopyTree> = {
       detailEmployerCost: 'Isveren maliyeti',
       detailError: 'Bordro detayi yuklenemedi.',
     },
+    dashboardPage: {
+      leoCongratsTitle: 'Ekip tebrikleri',
+      leoCongratsBody: 'Tebrikler ekip: gecikmeler bu hafta %15 azaldi. Bu ivmeyi surdurelim!',
+      leoSendError: 'Mesaj gonderilemedi.',
+      searchPlaceholder: 'Etkinlikte ara...',
+      noSearchResults: 'Aramanizla eslesen etkinlik yok.',
+      collapseActivity: 'Etkinligi daralt',
+      viewAllActivity: 'Tum etkinligi gor',
+      sendingInProgress: 'Gonderiliyor...',
+    },
     smartAttendancePage: {
       title: 'Akilli Devam',
       subtitle: 'Konum tabanli akilli devam takibi — bekleyen oturumlarin onayi ve gunun istatistikleri.',
@@ -1365,6 +1405,16 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDeductions: 'Deductions',
       detailEmployerCost: 'Employer cost',
       detailError: 'Unable to load pay slip details.',
+    },
+    dashboardPage: {
+      leoCongratsTitle: 'Team congratulations',
+      leoCongratsBody: 'Well done team: late arrivals are down 15% this week. Let us keep this momentum going!',
+      leoSendError: 'Unable to send the message.',
+      searchPlaceholder: 'Search activity...',
+      noSearchResults: 'No activity matches your search.',
+      collapseActivity: 'Collapse activity',
+      viewAllActivity: 'View all activity',
+      sendingInProgress: 'Sending...',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',

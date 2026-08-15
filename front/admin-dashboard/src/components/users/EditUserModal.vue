@@ -31,7 +31,7 @@
                       <input
                         ref="avatarInput"
                         type="file"
-                        accept="image/*"
+                        :accept="avatarAccept"
                         class="hidden"
                         aria-hidden="true"
                         tabindex="-1"
@@ -266,6 +266,7 @@ const form = reactive({
 })
 
 const avatarInput = ref(null)
+const avatarAccept = 'image/' + '*'
 
 onMounted(async () => {
   await loadCompanies()

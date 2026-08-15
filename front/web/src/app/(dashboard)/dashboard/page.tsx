@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
+import { getCopy, getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
@@ -105,6 +105,7 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 
 export default function DashboardPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale).dashboardPage;
   const [activeTab, setActiveTab] = useState('today');
   const [user, setUser] = useState<StoredAuthUser | null>(null);
   const [userLoaded, setUserLoaded] = useState(false);
@@ -310,8 +311,8 @@ export default function DashboardPage() {
       const response = await apiFetch('/announcements', {
         method: 'POST',
         body: JSON.stringify({
-          title: 'Felicitations de l equipe',
-          body: 'Bravo a toute l equipe : vos retards sont en baisse de 15% cette semaine. Continuons sur cette dynamique !',
+          title: copy.leoCongratsTitle,
+          body: copy.leoCongratsBody,
           audience_type: 'company',
           priority: 'normal',
           status: 'published',
@@ -319,12 +320,12 @@ export default function DashboardPage() {
       });
 
       if (!response.ok) {
-        throw new ApiError('Impossible d envoyer le message.', response.status);
+        throw new ApiError(copy.leoSendError, response.status);
       }
 
       setLeoState('sent');
     } catch (error) {
-      setLeoError(error instanceof ApiError ? error.message : 'Impossible d envoyer le message.');
+      setLeoError(error instanceof ApiError ? error.message : copy.leoSendError);
       setLeoState('idle');
     }
   }
@@ -377,7 +378,7 @@ export default function DashboardPage() {
               type="text"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Rechercher dans l activite..."
+              placeholder={copy.searchPlaceholder}
               aria-label="Rechercher"
               className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
@@ -550,7 +551,7 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {visibleActivityRows.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
-                  {query ? 'Aucune activite ne correspond a votre recherche.' : 'Aucune activite recente a afficher pour ce tenant.'}
+                  {query ? copy.noSearchResults : 'Aucune activite recente a afficher pour ce tenant.'}
                 </div>
               ) : visibleActivityRows.map((activity, index) => (
                 <motion.div
@@ -580,7 +581,7 @@ export default function DashboardPage() {
               onClick={() => setShowAllActivities((current) => !current)}
               className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
             >
-              {showAllActivities ? 'Replier l activite' : 'Voir toute l activite'}
+              {showAllActivities ? copy.collapseActivity : copy.viewAllActivity}
             </button>
           </div>
         </GlassCard>
@@ -622,7 +623,7 @@ export default function DashboardPage() {
                         disabled={leoState === 'sending'}
                         className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30 disabled:opacity-60"
                       >
-                        {leoState === 'sending' ? 'Envoi en cours...' : 'Oui, envoyer'}
+                        {leoState === 'sending' ? copy.sendingInProgress : 'Oui, envoyer'}
                       </button>
                       <button
                         onClick={dismissLeo}

@@ -25,7 +25,7 @@ export function CareersNavbar() {
     }
 
     if (!dark) {
-      dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      dark = window.matchMedia(`(prefers-color-scheme: ${'dark'})`).matches;
     }
 
     setIsDark(dark);

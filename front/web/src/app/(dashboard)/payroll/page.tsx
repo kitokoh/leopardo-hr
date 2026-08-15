@@ -110,7 +110,7 @@ export default function PayrollPage() {
       const payload = await res.json() as { data?: PaySlipDetail };
       setSlipDetail(payload.data ?? null);
     } catch {
-      setDetailError(labels.detailError ?? 'Impossible de charger le detail du bulletin.');
+      setDetailError(labels.detailError);
     } finally {
       setDetailLoading(false);
     }

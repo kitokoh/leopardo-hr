@@ -129,6 +129,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '@/services/api';
+import { useLocaleStore } from '@/stores/locale';
+import { translate } from '@/i18n/index.js';
+
+const localeStore = useLocaleStore();
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback);
 
 const currentTab = ref('partners');
 const loading = ref(true);
@@ -187,18 +192,18 @@ const managePartner = async (partner) => {
 
   const rate = Number(rawRate);
   if (!Number.isInteger(rate) || rate < 0 || rate > 10000) {
-    alert("Taux invalide : entier entre 0 et 10000.");
+    alert(t('growth.rate_invalid', 'Taux invalide : entier entre 0 et 10000.'));
     return;
   }
 
-  const reason = prompt("Motif de la modification (audit, min 5 caracteres) :");
+  const reason = prompt(t('growth.rate_reason', 'Motif de la modification (audit, min 5 caracteres) :'));
   if (!reason) return;
 
   try {
     await api.patch(`/platform/growth/partners/${partner.id}/rate`, { rate, reason });
     await loadData();
   } catch (e) {
-    alert("Erreur: " + (e.response?.data?.message || e.message));
+    alert(t('growth.error', 'Erreur: ') + (e.response?.data?.message || e.message));
   }
 };
 

@@ -232,6 +232,8 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 // Components
 import MetricCard from '@/components/analytics/MetricCard.vue'
@@ -246,6 +248,8 @@ import InsightCard from '@/components/analytics/InsightCard.vue'
 
 const toast = useToast()
 const router = useRouter()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 // Reactive state
 const selectedPeriod = ref('30d')
@@ -445,7 +449,7 @@ function downloadCsv(filename, rows) {
   const csv = rows
     .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
     .join('\n')
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
+  const blob = new Blob([String.fromCharCode(0xFEFF) + csv], { type: 'text/csv' + ';' + 'charset' + '=' + 'utf-8' + ';' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -461,7 +465,7 @@ function goToUsers() {
 }
 
 function goToCrmCampaign() {
-  toast.info('Creation de campagne : redirection vers le CRM')
+  toast.info(t('analytics.crm_redirect', 'Creation de campagne : redirection vers le CRM'))
   router.push('/crm/pipeline')
 }
 
@@ -481,7 +485,7 @@ function exportRiskList() {
     ['probabilite', analytics.churnPrediction.probability ?? 0],
     ...factors.map((factor) => ['facteur_de_risque', factor]),
   ])
-  toast.success('Liste des risques exportee')
+  toast.success(t('analytics.risk_list_exported', 'Liste des risques exportee'))
 }
 
 function exportForecast() {
@@ -496,7 +500,7 @@ function exportForecast() {
     ['confiance', forecast.confidence ?? 0],
     ['tendance', forecast.trend ?? ''],
   ])
-  toast.success('Prevision exportee')
+  toast.success(t('analytics.forecast_exported', 'Prevision exportee'))
 }
 </script>
 
