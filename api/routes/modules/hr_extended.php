@@ -96,6 +96,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/contracts/{contract}/amendments', [ContractController::class, 'amendments']);
         Route::post('/contracts/{contract}/amendments', [ContractController::class, 'storeAmendment']);
         Route::get('/contracts/{contract}/generate-pdf', [ContractController::class, 'generatePdf']);
+        // Alias consommé par la Web App (front/web/src/app/(dashboard)/contracts/page.tsx:81).
+        Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);
 
         // ── Recruitment / ATS ────────────────────────────────────────────
         Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);

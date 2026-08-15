@@ -6001,6 +6001,23 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /contracts/{contract}/pdf:
+    get:
+      tags: ["Contracts"]
+      summary: "Alias PDF du contrat (consomme par la Web App)"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Donnees contrat pour generation PDF"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/contracts:
     get:
       tags: ["Me"]
