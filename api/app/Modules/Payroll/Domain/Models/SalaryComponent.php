@@ -55,7 +55,7 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeActive(Builder $query): Builder
@@ -64,7 +64,7 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeEarnings(Builder $query): Builder
@@ -73,7 +73,7 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeDeductions(Builder $query): Builder
@@ -82,7 +82,7 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeEmployerContributions(Builder $query): Builder

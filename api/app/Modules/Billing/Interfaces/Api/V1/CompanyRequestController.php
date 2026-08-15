@@ -125,7 +125,7 @@ class CompanyRequestController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
         if ($employee instanceof Employee) {
-            return User::firstOrCreate(
+            $user = User::firstOrCreate(
                 ['email' => $employee->email],
                 [
                     'first_name' => $employee->first_name,
@@ -135,9 +135,12 @@ class CompanyRequestController extends Controller
                     'preferred_language' => $employee->preferred_language ?? 'fr',
                 ]
             );
-        // Issue #3597 : status non mass-assignable — assignation explicite.
-        $user->status = $employee->status ?? 'active';
-        $user->save();
+
+            // Issue #3597 : status non mass-assignable — assignation explicite.
+            $user->status = $employee->status ?? 'active';
+            $user->save();
+
+            return $user;
         }
 
         abort(401);

@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * Rétention gérée en Phase 2 par un job planifié.
  *
  * @property int $id
- * @property int $company_id
+ * @property string|null $company_id
  * @property int $camera_id
  * @property int|null $employee_id
  * @property int|null $access_token_id

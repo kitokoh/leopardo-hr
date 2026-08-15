@@ -47,8 +47,13 @@ trait Auditable
             return;
         }
 
+        /** @var \Illuminate\Http\Request|null $request */
         $request = request();
-        $employee = $request?->user();
+        if ($request === null) {
+            return;
+        }
+
+        $employee = $request->user();
 
         AuditLog::create([
             'company_id'     => $companyId,
@@ -58,8 +63,8 @@ trait Auditable
             'auditable_id'   => $model->getKey(),
             'old_values'     => $old ?: null,
             'new_values'     => $new ?: null,
-            'ip_address'     => $request?->ip(),
-            'user_agent'     => $request?->userAgent() ? mb_substr($request->userAgent(), 0, 500) : null,
+            'ip_address'     => $request->ip(),
+            'user_agent'     => $request->userAgent() ? mb_substr($request->userAgent(), 0, 500) : null,
         ]);
     }
 }

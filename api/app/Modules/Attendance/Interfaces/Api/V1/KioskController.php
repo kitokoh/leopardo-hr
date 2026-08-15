@@ -463,7 +463,7 @@ class KioskController extends Controller
         $identifier = $employee->email ?? $employee->matricule ?? (string) $employee->id;
 
         $allowedWorkTypes = ['normal', 'overtime', 'break', 'resume', 'mission', 'travel', 'training', 'other'];
-        $qrWorkType = is_array($qrPayload) ? ($qrPayload['work_type'] ?? null) : null;
+        $qrWorkType = $qrPayload['work_type'] ?? null;
         $qrWorkType = in_array($qrWorkType, $allowedWorkTypes, true) ? $qrWorkType : null;
 
         $log = $this->kioskAttendanceService->punch(

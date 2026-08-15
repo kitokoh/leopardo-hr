@@ -59,7 +59,7 @@ class Feature extends Model
     ];
 
     /**
-     * GÃƒÂ©nÃƒÂ¨re le tableau de donnÃƒÂ©es pour le manifeste JSON.
+     * Génère le tableau de données pour le manifeste JSON.
      *
      * @return array<string, mixed>
      */
@@ -87,10 +87,9 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour rÃƒÂ©cupÃƒÂ©rer uniquement les fonctionnalitÃƒÂ©s actives.
-     */
-    /**
-     * @param  Builder<static>  $q
+     * Scope pour récupérer uniquement les fonctionnalités actives.
+     *
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeActive(Builder $query): Builder
@@ -99,10 +98,9 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour rÃƒÂ©cupÃƒÂ©rer les fonctionnalitÃƒÂ©s compatibles avec une version mobile.
-     */
-    /**
-     * @param  Builder<static>  $q
+     * Scope pour récupérer les fonctionnalités compatibles avec une version mobile.
+     *
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeCompatibleWith(Builder $query, string $mobileVersion): Builder
@@ -115,10 +113,9 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour rÃƒÂ©cupÃƒÂ©rer les fonctionnalitÃƒÂ©s par version API.
-     */
-    /**
-     * @param  Builder<static>  $q
+     * Scope pour récupérer les fonctionnalités par version API.
+     *
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForApiVersion(Builder $query, string $apiVersion): Builder

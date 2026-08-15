@@ -129,7 +129,7 @@ class SelfServiceController extends Controller
             ->orderBy('due_date')
             ->get();
 
-        return response()->json(['data' => $repayments]); // LoanRepayment â€” no dedicated Resource yet
+        return response()->json(['data' => $repayments]); // LoanRepayment — no dedicated Resource yet
     }
 }
 

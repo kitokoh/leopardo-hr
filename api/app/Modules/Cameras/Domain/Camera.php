@@ -22,7 +22,7 @@ use Illuminate\Support\Carbon;
  * cast Laravel "encrypted" (AES-256 dérivé d'APP_KEY).
  *
  * @property int $id
- * @property int $company_id
+ * @property string $company_id
  * @property string $name
  * @property string $rtsp_url
  * @property string|null $location

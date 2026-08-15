@@ -42,6 +42,10 @@ final class SensitiveFillableGuardTest extends TestCase
         ];
     }
 
+    /**
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelClass
+     * @param  array<int, string>  $forbidden
+     */
     #[DataProvider('sensitiveFillableProvider')]
     public function test_sensitive_fields_are_not_mass_assignable(string $modelClass, array $forbidden): void
     {
