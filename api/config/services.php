@@ -50,8 +50,8 @@ return [
     'stripe' => [
         'secret' => env('STRIPE_SECRET_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
-        'price_starter' => env('STRIPE_PRICE_STARTER'),
-        'price_business' => env('STRIPE_PRICE_BUSINESS'),
+        'price_pilot' => env('STRIPE_PRICE_PILOT', env('STRIPE_PRICE_STARTER')),
+        'price_operations' => env('STRIPE_PRICE_OPERATIONS', env('STRIPE_PRICE_BUSINESS')),
         'price_enterprise' => env('STRIPE_PRICE_ENTERPRISE'),
     ],
 
@@ -70,6 +70,13 @@ return [
         'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
     ],
 
+    'mail_bounce_webhook' => [
+        // Issue #3058 : le secret du webhook de rebond email n'était défini
+        // nulle part → 503 permanent (fail-closed #2616). Configurable via
+        // MAIL_BOUNCE_WEBHOOK_SECRET ; vide = webhook refusé (défensif).
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
+    ],
+
     'marketing_lead_webhook' => [
         // PA2-MKT-007 - Shared secret the public vitrine (front/web Next.js
         // API routes) sends in `X-Marketing-Lead-Token` (or as a Bearer
@@ -79,6 +86,14 @@ return [
         // CRM/email forward webhooks. Left empty in local/test environments,
         // in which case the check is skipped.
         'secret' => env('MARKETING_LEAD_WEBHOOK_TOKEN'),
+    ],
+
+    'mail_bounce_webhook' => [
+        // PA2-COMM-007 - Secret partagé du webhook entrant de rebonds email
+        // (Postmark/SES/Mailgun). Le contrôleur est fail-closed (#2616) :
+        // secret absent → 503. La clé n'existait dans aucune config ni dans
+        // .env.example (#3058) → la feature était morte en permanence.
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
     ],
 
     'ayrshare' => [

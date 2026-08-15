@@ -23,7 +23,7 @@ env:
 # croisée) : le gate anti-stale de deploy-main tranche seul.
 concurrency:
   group: deploy-main-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   prepare:

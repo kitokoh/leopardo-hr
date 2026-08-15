@@ -4,7 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Mail\PasswordResetMail;
+use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;

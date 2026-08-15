@@ -63,18 +63,17 @@ class AttendanceLog {
             (json['employee_id'] ?? json['employeeId'])?.toString() ?? '',
           ) ??
           0,
-      date: DateTime.parse(
-        (json['date'] ?? DateTime.now().toIso8601String()) as String,
-      ),
+      // #3433 : date nullable/malformée → tryParse avec repli sur maintenant.
+      date: DateTime.tryParse((json['date'] ?? '').toString()) ?? DateTime.now(),
       sessionNumber:
           int.tryParse(
             (json['session_number'] ?? json['sessionNumber'])?.toString() ?? '',
           ) ??
           1,
       checkIn:
-          json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
+          json['check_in'] != null ? DateTime.tryParse(json['check_in'] as String? ?? '') : null,
       checkOut:
-          json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
+          json['check_out'] != null ? DateTime.tryParse(json['check_out'] as String? ?? '') : null,
       status: (json['status'] ?? 'incomplete') as String,
       workType: (json['work_type'] ?? json['workType'] ?? 'normal').toString(),
       punchNote: json['punch_note']?.toString(),
