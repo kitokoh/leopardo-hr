@@ -27,7 +27,8 @@ class Contract {
       employeeId: json['employee_id'] as int,
       reference: json['reference'] as String? ?? '',
       type: json['type'] as String? ?? 'cdi',
-      startDate: json['start_date'] as String,
+      // #3432 : start_date est nullable côté API (ContractResource) — cast gardé.
+      startDate: json['start_date'] as String? ?? '',
       endDate: json['end_date'] as String?,
       baseSalary: (json['base_salary'] as num?)?.toDouble() ?? 0,
       currency: json['currency'] as String? ?? 'DZD',
