@@ -1392,7 +1392,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get signupBadge => '30 günlük ücretsiz deneme';
+  String get signupBadge => '14 günlük ücretsiz deneme';
 
   @override
   String get signupTitle => 'Leopardo\'yu şirketinizle deneyin';
