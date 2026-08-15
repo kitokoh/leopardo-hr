@@ -123,7 +123,7 @@ class LeopardoMarketingApp extends StatelessWidget {
       title: 'Leopardo Marketing',
       theme: TenantTheme.light(),
       darkTheme: TenantTheme.dark(),
-      themeMode: ThemeMode.dark, // Default to dark for Glassmorphism
+      themeMode: ThemeMode.system,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
     );

@@ -193,4 +193,85 @@ class SelfServiceTrialTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['email', 'company']);
     }
+
+    public function test_second_verify_with_same_otp_does_not_double_provision()
+    {
+        // QA #2996 — race double-provisioning : deux verify avec le même OTP
+        // valide ne doivent créer qu'UN SEUL tenant/manager.
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@race-test.dz',
+            'company' => 'Race Test Algeria',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $otp = CompanyRequest::where('email', 'founder@race-test.dz')
+            ->where('status', 'pending')->first()->verification_token;
+
+        // 1er verify → succès + provisioning
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@race-test.dz',
+            'code' => $otp,
+        ])->assertStatus(201);
+
+        // 2e verify (simule la 2e requête concurrente) → refus, aucun second tenant
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@race-test.dz',
+            'code' => $otp,
+        ])->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'error' => 'INVALID_OR_EXPIRED_CODE',
+            ]);
+
+        // Un seul tenant créé pour cet email
+        $this->assertSame(
+            1,
+            \Illuminate\Support\Facades\DB::table('companies')
+                ->where('name', 'Race Test Algeria')
+                ->count(),
+            'Le double verify ne doit pas créer deux tenants.'
+        );
+    }
+
+    public function test_verify_returns_409_when_request_already_claimed()
+    {
+        // QA #2996 — une demande déjà claimée (statut processing, verrou
+        // posé par une requête concurrente) → 409 ALREADY_PROCESSED, sans
+        // aucun provisioning.
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@claimed.dz',
+            'company' => 'Claimed Test',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $request = CompanyRequest::where('email', 'founder@claimed.dz')
+            ->where('status', 'pending')->first();
+        $otp = $request->verification_token;
+
+        // Simule le claim d'une requête concurrente (fenêtre de provisioning)
+        $request->update(['status' => 'processing']);
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@claimed.dz',
+            'code' => $otp,
+        ])->assertStatus(409)
+            ->assertJson([
+                'success' => false,
+                'error' => 'ALREADY_PROCESSED',
+            ]);
+
+        $this->assertSame(
+            0,
+            \Illuminate\Support\Facades\DB::table('companies')
+                ->where('name', 'Claimed Test')
+                ->count(),
+            'Aucun tenant ne doit être créé pour une demande déjà claimée.'
+        );
+    }
 }
