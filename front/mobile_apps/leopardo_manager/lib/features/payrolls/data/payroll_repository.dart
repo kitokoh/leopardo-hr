@@ -32,11 +32,10 @@ class PayrollRepository {
       return filePath;
     }
 
-    await apiClient.dio.download(
+    await apiClient.downloadWithRetry(
       '/pay-slips/$payslipId/pdf',
       filePath,
       options: Options(
-        responseType: ResponseType.bytes,
         headers: {'Accept': 'application/pdf'},
       ),
     );
@@ -72,11 +71,10 @@ class PayrollRepository {
       return filePath;
     }
 
-    await apiClient.dio.download(
+    await apiClient.downloadWithRetry(
       '/me/payment-documents/${document.id}/download',
       filePath,
       options: Options(
-        responseType: ResponseType.bytes,
         headers: {'Accept': 'application/pdf'},
       ),
     );

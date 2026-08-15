@@ -71,7 +71,7 @@ class SalaryAdvanceRepository {
       return filePath;
     }
 
-    await apiClient.dio.download(
+    await apiClient.downloadWithRetry(
       '/salary-advances/$advanceId/proof',
       filePath,
       options: Options(responseType: ResponseType.bytes),

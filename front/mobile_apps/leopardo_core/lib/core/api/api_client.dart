@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -221,6 +222,100 @@ class ApiClient {
       throw lastError;
     }
     throw ApiException('Request failed after retries');
+  }
+
+  /// Téléchargement avec retry + garde anti-page-d'erreur (issue #3289).
+  ///
+  /// Remplace les `dio.download` directs : retry GET idempotent sur
+  /// cold-start/timeout/réseau, validation du status 2xx, suppression du
+  /// fichier partiel ou de la page d'erreur JSON écrite localement, et
+  /// mapping d'erreur cohérent avec [requestWithRetry].
+  Future<String> downloadWithRetry(
+    String path,
+    String savePath, {
+    Options? options,
+    Duration? timeoutOverride,
+    RetryCallback? onRetry,
+  }) async {
+    final maxRetries = _defaultMaxRetries;
+    final timeout = timeoutOverride ?? _defaultTimeout;
+
+    Object? lastError;
+
+    for (int attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        final requestOptions = (options ?? Options()).copyWith(
+          responseType: ResponseType.bytes,
+          sendTimeout: timeout,
+          receiveTimeout: timeout,
+        );
+
+        final response = await _dio.download<ResponseBody>(
+          path,
+          savePath,
+          options: requestOptions,
+          deleteOnError: true,
+        );
+
+        final statusCode = response.statusCode ?? 0;
+        if (statusCode < 200 || statusCode >= 300) {
+          await _deleteDownload(savePath);
+
+          throw DioException.badResponse(
+            statusCode: statusCode,
+            requestOptions: response.requestOptions,
+            response: response,
+          );
+        }
+
+        // Une réponse 2xx peut quand même être une page d'erreur (reverse
+        // proxy) : un fichier vide ou minuscule n'est pas un PDF valide.
+        final file = File(savePath);
+        if (!await file.exists() || await file.length() < 1) {
+          await _deleteDownload(savePath);
+
+          throw ApiException(
+            'Download produced an empty file',
+            statusCode: statusCode,
+            code: 'EMPTY_DOWNLOAD',
+          );
+        }
+
+        return savePath;
+      } on DioException catch (e) {
+        lastError = e;
+
+        final isRetryable =
+            _isColdStartStatus(e.response?.statusCode ?? 0) ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.connectionError;
+
+        if (isRetryable && attempt < maxRetries) {
+          onRetry?.call(attempt + 1, e);
+          await _backoff(attempt);
+          continue;
+        }
+
+        await _deleteDownload(savePath);
+        rethrow;
+      }
+    }
+
+    await _deleteDownload(savePath);
+    throw lastError ?? ApiException('Download failed after retries');
+  }
+
+  Future<void> _deleteDownload(String savePath) async {
+    try {
+      final file = File(savePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {
+      // Nettoyage best-effort — ne jamais masquer l'erreur d'origine.
+    }
   }
 
   bool _isColdStartStatus(int statusCode) =>
