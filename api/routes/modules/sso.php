@@ -9,12 +9,15 @@ use App\Core\Auth\Interfaces\Api\V1\SSOController;
 use Illuminate\Support\Facades\Route;
 
 // Public: supported providers list
-Route::get('/sso/providers', [SSOController::class, 'providers'])->middleware('throttle:60,1');
-
-// Public: SSO callbacks (no auth required — these receive IdP responses)
-Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback']);
-Route::get('/sso/oidc/{companyId}/authorize', [SSOController::class, 'oidcAuthorize'])->whereUuid('companyId');
-Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallback'])->whereUuid('companyId');
+// Issue #3497 : throttles sur les callbacks publics (SAML décode du XML non
+// authentifié → abus possible en flood/bruteforce de companyId). #3000 avait
+// été fermé à tort sur ce point — rétabli avec un throttle IP dédié.
+Route::middleware('throttle:30,1')->group(function (): void {
+    Route::get('/sso/providers', [SSOController::class, 'providers']);
+    Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback']);
+    Route::get('/sso/oidc/{companyId}/authorize', [SSOController::class, 'oidcAuthorize'])->whereUuid('companyId');
+    Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallback'])->whereUuid('companyId');
+});
 
 // Authenticated: SSO management (manager principal only)
 // #2635 : aligné sur le groupe standard (token.refresh + throttle:api-plan).
